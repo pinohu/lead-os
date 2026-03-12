@@ -1,0 +1,116 @@
+import { NextRequest, NextResponse } from "next/server";
+import { createCompany, createContact, SuiteDashError } from "@/lib/suitedash";
+
+interface Employee {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role?: string;
+}
+
+interface ComplianceTrainingRequest {
+  companyName: string;
+  employees: Employee[];
+  courses: string[];
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = (await req.json()) as Partial<ComplianceTrainingRequest>;
+
+    const { companyName, employees, courses } = body;
+
+    if (!companyName || !employees?.length || !courses?.length) {
+      return NextResponse.json(
+        { error: "companyName, employees (non-empty array), and courses (non-empty array) are required." },
+        { status: 400 },
+      );
+    }
+
+    for (const emp of employees) {
+      if (!emp.firstName || !emp.lastName || !emp.email) {
+        return NextResponse.json(
+          { error: "Each employee must have firstName, lastName, and email." },
+          { status: 400 },
+        );
+      }
+    }
+
+    const courseTags = courses.map((c) => `course-${c.toLowerCase().replace(/\s+/g, "-")}`);
+    const companyTags = ["compliance-training", "neatcircle", ...courseTags];
+
+    const [primaryEmployee, ...remainingEmployees] = employees;
+
+    const companyResult = await createCompany({
+      name: companyName,
+      role: "Lead",
+      primaryContact: {
+        email: primaryEmployee.email,
+        first_name: primaryEmployee.firstName,
+        last_name: primaryEmployee.lastName,
+        create_primary_contact_if_not_exists: true,
+      },
+      tags: companyTags,
+      background_info: `Compliance courses: ${courses.join(", ")}\nEmployee count: ${employees.length}`,
+    });
+
+    const contactResults: Array<{
+      email: string;
+      uid?: string;
+      existing?: boolean;
+    }> = [];
+
+    // Primary employee is auto-created via primaryContact
+    contactResults.push({
+      email: primaryEmployee.email,
+      uid: companyResult.data?.uid as string | undefined,
+    });
+
+    for (const emp of remainingEmployees) {
+      const employeeTags = [
+        "compliance-training",
+        "neatcircle",
+        ...courseTags,
+        emp.role ? `role-${emp.role.toLowerCase().replace(/\s+/g, "-")}` : "",
+      ].filter(Boolean);
+
+      const result = await createContact({
+        first_name: emp.firstName,
+        last_name: emp.lastName,
+        email: emp.email,
+        company_name: companyName,
+        role: emp.role ?? "Employee",
+        tags: employeeTags,
+        notes: [`Assigned courses: ${courses.join(", ")}`],
+        send_welcome_email: false,
+      });
+
+      contactResults.push({
+        email: emp.email,
+        uid: result.data?.uid as string | undefined,
+        existing: result.message === "Contact already exists",
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      automation: "compliance-training",
+      companyUid: companyResult.data?.uid,
+      contacts: contactResults,
+      coursesAssigned: courses,
+      message: `${contactResults.length} employees enrolled in ${courses.length} compliance course(s)`,
+    });
+  } catch (err) {
+    console.error("compliance-training error:", err);
+    if (err instanceof SuiteDashError) {
+      return NextResponse.json(
+        { error: err.message, automation: "compliance-training" },
+        { status: err.statusCode ?? 502 },
+      );
+    }
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
