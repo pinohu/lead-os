@@ -3,24 +3,25 @@
 /**
  * deploy-hot-lead-radar.mjs — Make.com Scenario #23
  *
- * Polls DataStore every 15 minutes for leads with priority_score >= 80.
- * Sends instant alerts to Discord #high-value-leads, Telegram high-value chat,
- * and optionally WhatsApp to Ike. Flags records to prevent duplicate alerts.
+ * Webhook-triggered hot lead alert system.
+ * When any part of the system detects a lead with priority_score >= 80,
+ * it POSTs to this webhook. The scenario sends instant alerts to:
+ *   - Discord #high-value-leads (rich embed)
+ *   - Telegram high-value chat
+ *   - AITable event log
  *
  * Pipeline:
- *   Schedule (15min) → DataStore: Search → Iterator → Filter (not notified)
- *   → Discord embed → Telegram alert → DataStore: Update flag
+ *   Webhook → SetVar → Discord embed → Telegram alert → AITable log → WebhookRespond
  */
 
 import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
 
-// ── Config (same as deploy-advanced-scenarios.mjs) ──
+// ── Config ──
 
 const API_BASE = 'https://integrator.boost.space/api/v2';
 const API_TOKEN = process.env.MAKE_API_TOKEN || '24595d5e-9b7f-48f9-ab61-9644c46ed7f9';
-const DS_ID = 3748;
 
 const DISCORD = {
   highValue: 'https://discord.com/api/webhooks/1480429897263480962/e-vvArec6HCRc_HpzxmWOpz3GbJ7ncekeLBD7hSnKHm4v-zXTwt8fm6DjrY7TUBeo6Ct',
@@ -31,13 +32,11 @@ const TELEGRAM = {
   highValue: '-1003862266875',
 };
 
-const WBIZTOOL = {
-  apiKey: '54140a11389a13031a2eb19070ce35c5ce769a30',
-  instanceId: '12316',
-  apiBase: 'https://app.wbiztool.com/api',
+const AITABLE = {
+  apiToken: 'usk8wYBrRgsc6RHxkZP9VAN',
+  datasheetId: 'dstBicDQKC6gpLAMYj',
+  apiBase: 'https://aitable.ai/fusion/v1',
 };
-
-const IKE_PHONE = process.env.IKE_PHONE || '';
 
 const BACKUP_DIR = join(process.cwd(), 'backups', 'hot-lead-radar');
 const API_DELAY = 500;
@@ -65,228 +64,62 @@ async function makeApi(method, path, body = null) {
   return { status: res.status, ok: res.ok, data };
 }
 
-// ── Blueprint builder ──
-
-function buildHotLeadRadarBlueprint() {
-  const tgUrl = `https://api.telegram.org/bot${TELEGRAM.botToken}/sendMessage`;
-
-  // Discord rich embed for hot lead
-  const discordBody = `{"embeds":[{"title":"\\ud83d\\udd25 HOT LEAD DETECTED","color":15548997,"fields":[{"name":"Company","value":"{{4.data.company}}","inline":true},{"name":"Contact","value":"{{4.data.contact}} ({{4.data.email}})","inline":true},{"name":"Scenario","value":"{{4.data.scenario}}","inline":true},{"name":"Priority Score","value":"{{4.data.priority_score}}","inline":true},{"name":"Intent","value":"{{4.data.intent_score}}","inline":true},{"name":"Engagement","value":"{{4.data.engagement_score}}","inline":true},{"name":"Advisor","value":"{{4.data.advisor}}","inline":true},{"name":"Status","value":"{{4.data.status}}","inline":true}],"footer":{"text":"Hot Lead Radar \\u2022 Priority >= 80"},"timestamp":"{{now}}"}]}`;
-
-  // Telegram alert
-  const telegramBody = `{"chat_id":"${TELEGRAM.highValue}","parse_mode":"HTML","text":"\\ud83d\\udd25 <b>HOT LEAD DETECTED</b>\\n\\n<b>Company:</b> {{4.data.company}}\\n<b>Contact:</b> {{4.data.contact}} ({{4.data.email}})\\n<b>Scenario:</b> {{4.data.scenario}}\\n<b>Priority:</b> {{4.data.priority_score}}\\n<b>Intent:</b> {{4.data.intent_score}} | <b>Engagement:</b> {{4.data.engagement_score}}\\n<b>Advisor:</b> {{4.data.advisor}}"}`;
-
-  const flow = [
-    // Module 1: Schedule trigger (every 15 minutes)
-    {
-      id: 1,
-      module: 'builtin:BasicScheduler',
-      version: 1,
-      mapper: { time: '{{formatDate(now; "HH:mm")}}' },
-      parameters: { scheduling: { type: 'indefinitely', interval: 15 } },
-      metadata: d(0, 0),
-    },
-
-    // Module 2: DataStore — Search for hot leads
-    {
-      id: 2,
-      module: 'datastore:SearchRecords',
-      version: 1,
-      parameters: { datastore: DS_ID },
-      mapper: {
-        filter: [
-          [{ a: '{{data.priority_score}}', b: '80', o: 'number:greaterorequal' }],
-        ],
-        limit: 20,
-      },
-      metadata: d(300, 0),
-      onerror: [{ id: 202, module: 'builtin:Resume', version: 1, mapper: {}, metadata: d(300, 200) }],
-    },
-
-    // Module 3: Iterator — process each matching record
-    {
-      id: 3,
-      module: 'builtin:BasicFeeder',
-      version: 1,
-      mapper: { array: '{{2.records}}' },
-      metadata: d(600, 0),
-    },
-
-    // Module 4: Set Variables — extract record data
-    {
-      id: 4,
-      module: 'util:SetVariable',
-      version: 1,
-      mapper: {
-        name: 'data',
-        value: '{{3.value}}',
-        scope: 'roundtrip',
-      },
-      metadata: d(900, 0),
-    },
-
-    // Module 5: Filter — skip already-notified leads
-    {
-      id: 5,
-      module: 'builtin:BasicRouter',
-      version: 1,
-      metadata: d(1200, 0),
-      routes: [
-        {
-          flow: [
-            // Module 10: Discord — rich embed to #high-value-leads
-            {
-              id: 10,
-              module: 'http:ActionSendData',
-              version: 3,
-              parameters: { handleErrors: true },
-              mapper: {
-                url: DISCORD.highValue,
-                method: 'post',
-                headers: [{ name: 'Content-Type', value: 'application/json' }],
-                body: discordBody,
-                parseResponse: false,
-              },
-              metadata: d(1500, -200),
-              onerror: [{ id: 210, module: 'builtin:Resume', version: 1, mapper: {}, metadata: d(1500, 0) }],
-            },
-
-            // Module 11: Telegram — hot lead alert
-            {
-              id: 11,
-              module: 'http:ActionSendData',
-              version: 3,
-              parameters: { handleErrors: true },
-              mapper: {
-                url: tgUrl,
-                method: 'post',
-                headers: [{ name: 'Content-Type', value: 'application/json' }],
-                body: telegramBody,
-                parseResponse: false,
-              },
-              metadata: d(1800, -200),
-              onerror: [{ id: 211, module: 'builtin:Resume', version: 1, mapper: {}, metadata: d(1800, 0) }],
-            },
-
-            // Module 12: DataStore — flag as notified
-            {
-              id: 12,
-              module: 'datastore:UpdateRecord',
-              version: 1,
-              parameters: { datastore: DS_ID },
-              mapper: {
-                key: '{{4.data.scenario}}_{{4.data.email}}',
-                data: { hot_lead_notified: 'true' },
-              },
-              metadata: d(2100, -200),
-              onerror: [{ id: 212, module: 'builtin:Resume', version: 1, mapper: {}, metadata: d(2100, 0) }],
-            },
-          ],
-          filter: {
-            name: 'Not already notified',
-            conditions: [[{ a: '{{4.data.hot_lead_notified}}', b: 'true', o: 'text:notequal' }]],
-          },
-        },
-      ],
-    },
-  ];
-
+function modHttp(id, url, body, extraHeaders, x, y) {
+  const headers = [{ name: 'Content-Type', value: 'application/json' }, ...(extraHeaders || [])];
   return {
-    name: SCENARIO_NAME,
-    flow,
-    metadata: { version: 1 },
+    id, module: 'http:ActionSendData', version: 3,
+    parameters: { handleErrors: true },
+    mapper: { url, method: 'post', headers, body, parseResponse: false },
+    metadata: d(x, y),
+    onerror: [{ id: id + 200, module: 'builtin:Resume', version: 1, mapper: {}, metadata: d(x, y + 200) }],
   };
 }
 
-// ── Alternative: Linear pipeline version (no router) ──
-// If the router causes validation issues (like V10 did), use this linear version.
+// ── Blueprint ──
 
-function buildHotLeadRadarLinear() {
+function buildHotLeadRadar() {
   const tgUrl = `https://api.telegram.org/bot${TELEGRAM.botToken}/sendMessage`;
+  const atUrl = `${AITABLE.apiBase}/datasheets/${AITABLE.datasheetId}/records?fieldKey=name`;
+  const atAuth = { name: 'Authorization', value: `Bearer ${AITABLE.apiToken}` };
 
-  const discordBody = `{"embeds":[{"title":"\\ud83d\\udd25 HOT LEAD DETECTED","color":15548997,"fields":[{"name":"Company","value":"{{2.data.company}}","inline":true},{"name":"Contact","value":"{{2.data.contact}} ({{2.data.email}})","inline":true},{"name":"Scenario","value":"{{2.data.scenario}}","inline":true},{"name":"Priority Score","value":"{{2.data.priority_score}}","inline":true},{"name":"Intent","value":"{{2.data.intent_score}}","inline":true},{"name":"Engagement","value":"{{2.data.engagement_score}}","inline":true},{"name":"Advisor","value":"{{2.data.advisor}}","inline":true}],"footer":{"text":"Hot Lead Radar \\u2022 Priority >= 80"},"timestamp":"{{now}}"}]}`;
+  // Discord rich embed
+  const discordBody = `{"embeds":[{"title":"\\ud83d\\udd25 HOT LEAD DETECTED","color":15548997,"fields":[{"name":"Company","value":"{{1.company}}","inline":true},{"name":"Contact","value":"{{1.contact}} ({{1.email}})","inline":true},{"name":"Scenario","value":"{{1.scenario}}","inline":true},{"name":"Priority Score","value":"{{1.priority_score}}","inline":true},{"name":"Intent","value":"{{1.intent_score}}","inline":true},{"name":"Engagement","value":"{{1.engagement_score}}","inline":true},{"name":"Advisor","value":"{{1.advisor}}","inline":true}],"footer":{"text":"Hot Lead Radar \\u2022 Priority >= 80"},"timestamp":"{{now}}"}]}`;
 
-  const telegramBody = `{"chat_id":"${TELEGRAM.highValue}","parse_mode":"HTML","text":"\\ud83d\\udd25 <b>HOT LEAD DETECTED</b>\\n\\n<b>Company:</b> {{2.data.company}}\\n<b>Contact:</b> {{2.data.contact}} ({{2.data.email}})\\n<b>Scenario:</b> {{2.data.scenario}}\\n<b>Priority:</b> {{2.data.priority_score}}\\n<b>Advisor:</b> {{2.data.advisor}}"}`;
+  // Telegram alert
+  const telegramBody = `{"chat_id":"${TELEGRAM.highValue}","parse_mode":"HTML","text":"\\ud83d\\udd25 <b>HOT LEAD DETECTED</b>\\n\\n<b>Company:</b> {{1.company}}\\n<b>Contact:</b> {{1.contact}} ({{1.email}})\\n<b>Scenario:</b> {{1.scenario}}\\n<b>Priority:</b> {{1.priority_score}}\\n<b>Intent:</b> {{1.intent_score}} | <b>Engagement:</b> {{1.engagement_score}}\\n<b>Advisor:</b> {{1.advisor}}"}`;
+
+  // AITable log
+  const aitableBody = `{"records":[{"fields":{"Title":"HOT-LEAD — {{1.scenario}} — {{1.company}}","Scenario":"{{1.scenario}}","Company":"{{1.company}}","Contact Email":"{{1.email}}","Contact Name":"{{1.contact}}","Status":"HOT-LEAD-ALERT","Touchpoint":"hot_lead.detected","AI Generated":"Priority: {{1.priority_score}} | Intent: {{1.intent_score}} | Engagement: {{1.engagement_score}} | Fit: {{1.fit_score}} | Urgency: {{1.urgency_score}}"}}],"fieldKey":"name"}`;
 
   return {
     name: SCENARIO_NAME,
     metadata: { version: 1 },
     flow: [
-      // Schedule trigger (15 min)
+      // Webhook trigger
       {
         id: 1,
-        module: 'builtin:BasicScheduler',
+        module: 'gateway:CustomWebHook',
         version: 1,
-        mapper: { time: '{{formatDate(now; "HH:mm")}}' },
-        parameters: { scheduling: { type: 'indefinitely', interval: 15 } },
+        parameters: { hook: null, maxResults: 1 },
         metadata: d(0, 0),
       },
 
-      // DataStore search: priority_score >= 80 AND hot_lead_notified != true
-      {
-        id: 2,
-        module: 'datastore:SearchRecords',
-        version: 1,
-        parameters: { datastore: DS_ID },
-        mapper: {
-          filter: [
-            [
-              { a: '{{data.priority_score}}', b: '80', o: 'number:greaterorequal' },
-              { a: '{{data.hot_lead_notified}}', b: 'true', o: 'text:notequal' },
-            ],
-          ],
-          limit: 20,
-        },
-        metadata: d(300, 0),
-        onerror: [{ id: 202, module: 'builtin:Resume', version: 1, mapper: {}, metadata: d(300, 200) }],
-      },
-
-      // Discord — rich embed to #high-value-leads
-      {
-        id: 10,
-        module: 'http:ActionSendData',
-        version: 3,
-        parameters: { handleErrors: true },
-        mapper: {
-          url: DISCORD.highValue,
-          method: 'post',
-          headers: [{ name: 'Content-Type', value: 'application/json' }],
-          body: discordBody,
-          parseResponse: false,
-        },
-        metadata: d(600, 0),
-        onerror: [{ id: 210, module: 'builtin:Resume', version: 1, mapper: {}, metadata: d(600, 200) }],
-      },
+      // Discord #high-value-leads
+      modHttp(10, DISCORD.highValue, discordBody, null, 300, 0),
 
       // Telegram alert
-      {
-        id: 11,
-        module: 'http:ActionSendData',
-        version: 3,
-        parameters: { handleErrors: true },
-        mapper: {
-          url: tgUrl,
-          method: 'post',
-          headers: [{ name: 'Content-Type', value: 'application/json' }],
-          body: telegramBody,
-          parseResponse: false,
-        },
-        metadata: d(900, 0),
-        onerror: [{ id: 211, module: 'builtin:Resume', version: 1, mapper: {}, metadata: d(900, 200) }],
-      },
+      modHttp(20, tgUrl, telegramBody, null, 600, 0),
 
-      // DataStore — flag as hot-lead-notified
+      // AITable log
+      modHttp(30, atUrl, aitableBody, [atAuth], 900, 0),
+
+      // Webhook respond
       {
-        id: 12,
-        module: 'datastore:UpdateRecord',
+        id: 90,
+        module: 'gateway:WebhookRespond',
         version: 1,
-        parameters: { datastore: DS_ID },
-        mapper: {
-          key: '{{2.data.scenario}}_{{2.data.email}}',
-          data: { hot_lead_notified: 'true' },
-        },
+        mapper: { status: '200', body: '{"received":true,"alert":"hot-lead-radar"}' },
         metadata: d(1200, 0),
-        onerror: [{ id: 212, module: 'builtin:Resume', version: 1, mapper: {}, metadata: d(1200, 200) }],
       },
     ],
   };
@@ -298,7 +131,7 @@ async function main() {
   console.log('');
   console.log('  ╔══════════════════════════════════════════════════╗');
   console.log('  ║   HOT LEAD RADAR — Scenario #23 Deployment      ║');
-  console.log('  ║   15-min schedule → DataStore → Discord + TG    ║');
+  console.log('  ║   Webhook → Discord + Telegram + AITable        ║');
   console.log('  ╚══════════════════════════════════════════════════╝');
   console.log('');
 
@@ -306,86 +139,56 @@ async function main() {
     await mkdir(BACKUP_DIR, { recursive: true });
   }
 
-  // Step 1: Create new scenario via Make.com API
-  log('Creating new scenario...');
+  const blueprint = buildHotLeadRadar();
 
-  const createRes = await makeApi('POST', '/scenarios', {
-    teamId: 1, // default team
-    folderId: null,
-    blueprint: JSON.stringify(buildHotLeadRadarLinear()),
-    scheduling: { type: 'indefinitely', interval: 15 },
-  });
+  // Check for existing scenario
+  const listRes = await makeApi('GET', '/scenarios?teamId=2568&pg[limit]=100');
   await sleep(API_DELAY);
 
-  if (!createRes.ok) {
-    // If create fails, try to find existing scenario by name
-    log(`Create failed (${createRes.status}). Checking if scenario already exists...`);
+  let scenarioId = null;
+  if (listRes.ok) {
+    const scenarios = listRes.data?.scenarios || listRes.data || [];
+    const existing = scenarios.find(s => s.name === SCENARIO_NAME);
+    if (existing) {
+      scenarioId = existing.id;
+      log(`Found existing: #${scenarioId}`);
 
-    const listRes = await makeApi('GET', '/scenarios?pg[limit]=100');
-    await sleep(API_DELAY);
+      await makeApi('POST', `/scenarios/${scenarioId}/stop`);
+      await sleep(API_DELAY);
 
-    if (listRes.ok) {
-      const scenarios = listRes.data?.scenarios || listRes.data || [];
-      const existing = scenarios.find(s => s.name === SCENARIO_NAME);
+      const patchRes = await makeApi('PATCH', `/scenarios/${scenarioId}`, {
+        blueprint: JSON.stringify(blueprint),
+      });
+      await sleep(API_DELAY);
 
-      if (existing) {
-        log(`Found existing scenario: ID ${existing.id}`);
+      if (!patchRes.ok) throw new Error(`PATCH: ${patchRes.status}`);
 
-        // Backup existing blueprint
-        const bpRes = await makeApi('GET', `/scenarios/${existing.id}/blueprint`);
-        await sleep(API_DELAY);
-        if (bpRes.ok) {
-          await writeFile(
-            join(BACKUP_DIR, `${existing.id}-backup.json`),
-            JSON.stringify(bpRes.data, null, 2),
-          );
-          log(`  Backup saved`);
-        }
-
-        // Stop, update, restart
-        await makeApi('POST', `/scenarios/${existing.id}/stop`);
-        await sleep(API_DELAY);
-
-        const patchRes = await makeApi('PATCH', `/scenarios/${existing.id}`, {
-          blueprint: JSON.stringify(buildHotLeadRadarLinear()),
-        });
-        await sleep(API_DELAY);
-
-        if (!patchRes.ok) {
-          throw new Error(`PATCH failed: ${patchRes.status} — ${JSON.stringify(patchRes.data).slice(0, 300)}`);
-        }
-
-        const startRes = await makeApi('POST', `/scenarios/${existing.id}/start`);
-        await sleep(API_DELAY);
-        log(`  ${startRes.ok ? 'DEPLOYED — Radar active' : `Activation: ${startRes.status}`}`);
-        return;
-      }
+      await makeApi('POST', `/scenarios/${scenarioId}/start`);
+      await sleep(API_DELAY);
     }
-
-    throw new Error(`Cannot create scenario: ${createRes.status} — ${JSON.stringify(createRes.data).slice(0, 300)}`);
   }
 
-  const scenarioId = createRes.data?.scenario?.id || createRes.data?.id;
-  log(`Created scenario #${scenarioId}`);
+  if (!scenarioId) {
+    const createRes = await makeApi('POST', '/scenarios', {
+      teamId: 2568,
+      folderId: 10436,
+      blueprint: JSON.stringify(blueprint),
+      scheduling: JSON.stringify({ type: 'immediately' }),
+    });
+    await sleep(API_DELAY);
 
-  // Save blueprint backup
-  await writeFile(
-    join(BACKUP_DIR, `${scenarioId}-initial.json`),
-    JSON.stringify(buildHotLeadRadarLinear(), null, 2),
-  );
+    if (!createRes.ok) throw new Error(`CREATE: ${createRes.status} — ${JSON.stringify(createRes.data).slice(0, 300)}`);
 
-  // Activate scenario
-  const startRes = await makeApi('POST', `/scenarios/${scenarioId}/start`);
-  await sleep(API_DELAY);
-  log(startRes.ok ? 'DEPLOYED — Hot Lead Radar active' : `Activation: ${startRes.status}`);
+    scenarioId = createRes.data?.scenario?.id || createRes.data?.id;
+    await makeApi('POST', `/scenarios/${scenarioId}/start`);
+    await sleep(API_DELAY);
+  }
 
-  console.log('');
-  console.log('  ════════════════════════════════════════════════');
-  console.log(`  Scenario #${scenarioId}: ${SCENARIO_NAME}`);
-  console.log('  Schedule: Every 15 minutes');
-  console.log('  Threshold: priority_score >= 80');
-  console.log('  Channels: Discord #high-value-leads + Telegram');
-  console.log('  ════════════════════════════════════════════════');
+  await writeFile(join(BACKUP_DIR, `${scenarioId}-blueprint.json`), JSON.stringify(blueprint, null, 2));
+
+  log(`DEPLOYED — Hot Lead Radar #${scenarioId}`);
+  console.log('\n  Trigger: Webhook (POST lead data when priority >= 80)');
+  console.log('  Channels: Discord #high-value-leads + Telegram + AITable');
 }
 
 main().catch((e) => {

@@ -93,7 +93,7 @@ function buildReferralEngine() {
     name: 'Referral Engine (#28)',
     metadata: { version: 1 },
     flow: [
-      // Webhook trigger — SuiteDash project-completed event
+      // Webhook trigger — project-completed event
       {
         id: 1,
         module: 'gateway:CustomWebHook',
@@ -103,42 +103,18 @@ function buildReferralEngine() {
       },
 
       // AITable — log project completion
-      modHttp(10, atUrl, `{"records":[{"fields":{"Title":"project.completed — {{1.scenario}} — {{1.company}}","Scenario":"{{1.scenario}}","Company":"{{1.company}}","Contact Email":"{{1.email}}","Contact Name":"{{1.firstName}} {{1.lastName}}","Status":"PROJECT-COMPLETED","Touchpoint":"project.completed","AI Generated":"Project completed. Referral sequence initiated."}}],"fieldKey":"name"}`, [atAuth], 300, 0),
+      modHttp(10, atUrl, `{"records":[{"fields":{"Title":"project.completed — {{1.scenario}} — {{1.company}}","Scenario":"{{1.scenario}}","Company":"{{1.company}}","Contact Email":"{{1.email}}","Contact Name":"{{1.firstName}} {{1.lastName}}","Status":"PROJECT-COMPLETED","Touchpoint":"project.completed","AI Generated":"Project completed. Feedback email sent. Referral email scheduled for Day 14 via nurture cron."}}],"fieldKey":"name"}`, [atAuth], 300, 0),
 
       // Discord #wins — project completed
       modHttp(15, DISCORD.wins,
-        `{"embeds":[{"title":"\\u2705 Project Completed: {{1.company}}","color":5763719,"fields":[{"name":"Client","value":"{{1.firstName}} {{1.lastName}}","inline":true},{"name":"Scenario","value":"{{1.scenario}}","inline":true},{"name":"Email","value":"{{1.email}}","inline":true}],"footer":{"text":"Referral sequence starts in 24h"},"timestamp":"{{now}}"}]}`,
+        `{"embeds":[{"title":"\\u2705 Project Completed: {{1.company}}","color":5763719,"fields":[{"name":"Client","value":"{{1.firstName}} {{1.lastName}}","inline":true},{"name":"Scenario","value":"{{1.scenario}}","inline":true},{"name":"Email","value":"{{1.email}}","inline":true}],"footer":{"text":"Feedback email sent. Referral in 14 days."},"timestamp":"{{now}}"}]}`,
         null, 600, 0),
 
-      // Sleep 24 hours before feedback request
-      {
-        id: 20,
-        module: 'builtin:Sleep',
-        version: 1,
-        mapper: { duration: 86400 },
-        metadata: d(900, 0),
-      },
-
-      // Send feedback request email
-      modHttp(30, EMAILIT_URL, feedbackEmailBody, [emailAuth], 1200, 0),
+      // Send feedback request email immediately
+      modHttp(30, EMAILIT_URL, feedbackEmailBody, [emailAuth], 900, 0),
 
       // AITable — log feedback sent
-      modHttp(35, atUrl, `{"records":[{"fields":{"Title":"feedback.requested — {{1.scenario}} — {{1.company}}","Scenario":"{{1.scenario}}","Company":"{{1.company}}","Contact Email":"{{1.email}}","Status":"FEEDBACK-REQUESTED","Touchpoint":"feedback.requested"}}],"fieldKey":"name"}`, [atAuth], 1500, 0),
-
-      // Sleep 14 days before referral request
-      {
-        id: 40,
-        module: 'builtin:Sleep',
-        version: 1,
-        mapper: { duration: 1209600 },
-        metadata: d(1800, 0),
-      },
-
-      // Send referral request email with UpViral link
-      modHttp(50, EMAILIT_URL, referralEmailBody, [emailAuth], 2100, 0),
-
-      // AITable — log referral sent
-      modHttp(55, atUrl, `{"records":[{"fields":{"Title":"referral.requested — {{1.scenario}} — {{1.company}}","Scenario":"{{1.scenario}}","Company":"{{1.company}}","Contact Email":"{{1.email}}","Status":"REFERRAL-REQUESTED","Touchpoint":"referral.requested","AI Generated":"UpViral referral link sent. Cross-sell campaign activated."}}],"fieldKey":"name"}`, [atAuth], 2400, 0),
+      modHttp(35, atUrl, `{"records":[{"fields":{"Title":"feedback.requested — {{1.scenario}} — {{1.company}}","Scenario":"{{1.scenario}}","Company":"{{1.company}}","Contact Email":"{{1.email}}","Status":"FEEDBACK-REQUESTED","Touchpoint":"feedback.requested"}}],"fieldKey":"name"}`, [atAuth], 1200, 0),
 
       // WebhookRespond
       {
@@ -146,7 +122,7 @@ function buildReferralEngine() {
         module: 'gateway:WebhookRespond',
         version: 1,
         mapper: { status: '200', body: '{"received":true,"sequence":"referral-engine"}' },
-        metadata: d(2700, 0),
+        metadata: d(1500, 0),
       },
     ],
   };
@@ -170,7 +146,7 @@ async function main() {
   const scenarioName = 'Referral Engine (#28)';
 
   // Check for existing
-  const listRes = await makeApi('GET', '/scenarios?pg[limit]=100');
+  const listRes = await makeApi('GET', '/scenarios?teamId=2568&pg[limit]=100');
   await sleep(API_DELAY);
 
   let scenarioId = null;
@@ -198,8 +174,10 @@ async function main() {
 
   if (!scenarioId) {
     const createRes = await makeApi('POST', '/scenarios', {
-      teamId: 1,
+      teamId: 2568,
+      folderId: 10436,
       blueprint: JSON.stringify(blueprint),
+      scheduling: JSON.stringify({ type: 'immediately' }),
     });
     await sleep(API_DELAY);
 

@@ -3,15 +3,11 @@
 /**
  * deploy-niche-intelligence.mjs — Make.com Scenario #29
  *
- * Weekly niche intelligence report. Runs Monday 6 AM EST.
- * Fetches past 7 days of AITable records, calculates per-niche metrics
- * (leads, conversion rate, avg priority, top email subjects, days to consultation),
- * writes a NICHE-INTELLIGENCE summary row to AITable, emails Ike a weekly
- * briefing, and posts digest to Discord #wins.
+ * Weekly niche intelligence report. Webhook-triggered by Vercel cron
+ * which computes metrics and POSTs them here for distribution.
  *
  * Pipeline:
- *   Schedule (Monday 6 AM) → HTTP: AITable fetch → Custom Code: metrics
- *   → HTTP: AITable write summary → HTTP: Emailit briefing → HTTP: Discord digest
+ *   Webhook (metrics payload) → AITable summary row → Emailit briefing → Discord digest
  */
 
 import { writeFile, mkdir } from 'fs/promises';
@@ -83,100 +79,43 @@ function buildNicheIntelligence() {
   const atAuth = { name: 'Authorization', value: `Bearer ${AITABLE.apiToken}` };
   const emailAuth = { name: 'Authorization', value: `Bearer ${EMAILIT.apiKey}` };
 
-  // Custom code module processes AITable data and generates metrics
-  // Make.com custom code module uses JavaScript
-  const analysisCode = `
-// Parse AITable records from the HTTP response
-const records = JSON.parse(body).data.records || [];
-const now = new Date();
-const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-// Filter to this week's records
-const thisWeek = records.filter(r => new Date(r.createdAt) >= weekAgo);
-
-// Per-niche metrics
-const niches = {};
-for (const rec of thisWeek) {
-  const f = rec.fields || {};
-  const scenario = f.Scenario || 'unknown';
-  if (!niches[scenario]) niches[scenario] = { leads: 0, converted: 0, errors: 0, nurture: 0, events: 0 };
-  niches[scenario].leads++;
-  if (f.Status === 'CONVERTED') niches[scenario].converted++;
-  if ((f.Status || '').startsWith('ERROR')) niches[scenario].errors++;
-  if ((f.Status || '').startsWith('NURTURE-')) niches[scenario].nurture++;
-  if ((f.Status || '').startsWith('EVENT-')) niches[scenario].events++;
-}
-
-// Build summary
-const summary = Object.entries(niches)
-  .sort((a, b) => b[1].leads - a[1].leads)
-  .map(([name, m]) => name + ': ' + m.leads + ' leads, ' + m.converted + ' converted (' + (m.leads > 0 ? Math.round(m.converted/m.leads*100) : 0) + '%), ' + m.events + ' events, ' + m.errors + ' errors')
-  .join('\\n');
-
-return {
-  totalThisWeek: thisWeek.length,
-  nicheCount: Object.keys(niches).length,
-  topNiche: Object.entries(niches).sort((a, b) => b[1].leads - a[1].leads)[0]?.[0] || 'none',
-  summary: summary,
-  niches: JSON.stringify(niches)
-};`;
-
   return {
     name: 'Niche Intelligence (#29)',
     metadata: { version: 1 },
     flow: [
-      // Schedule trigger — Monday 6 AM EST (11:00 UTC)
+      // Webhook — receives pre-computed metrics from Vercel cron
+      // Expected: { totalThisWeek, nicheCount, topNiche, summary, weekEnding }
       {
         id: 1,
-        module: 'builtin:BasicScheduler',
+        module: 'gateway:CustomWebHook',
         version: 1,
-        mapper: { time: '11:00' },
-        parameters: { scheduling: { type: 'indefinitely', interval: 10080 } }, // 7 days in minutes
+        parameters: { hook: null, maxResults: 1 },
         metadata: d(0, 0),
       },
 
-      // HTTP — Fetch all AITable records
-      {
-        id: 10,
-        module: 'http:ActionSendData',
-        version: 3,
-        parameters: { handleErrors: true },
-        mapper: {
-          url: `${atUrl}&pageSize=1000`,
-          method: 'get',
-          headers: [{ name: 'Authorization', value: `Bearer ${AITABLE.apiToken}` }],
-          parseResponse: true,
-        },
-        metadata: d(300, 0),
-        onerror: [{ id: 210, module: 'builtin:Resume', version: 1, mapper: {}, metadata: d(300, 200) }],
-      },
-
-      // Custom Code — Calculate per-niche metrics
-      {
-        id: 20,
-        module: 'util:FunctionJavaScript',
-        version: 1,
-        mapper: {
-          code: analysisCode,
-        },
-        metadata: d(600, 0),
-        onerror: [{ id: 220, module: 'builtin:Resume', version: 1, mapper: {}, metadata: d(600, 200) }],
-      },
-
       // AITable — Write NICHE-INTELLIGENCE summary row
-      modHttp(30, atUrl,
-        `{"records":[{"fields":{"Title":"NICHE-INTELLIGENCE — Week of {{formatDate(now; YYYY-MM-DD)}}","Scenario":"all","Company":"SYSTEM","Contact Email":"system@neatcircle.com","Status":"NICHE-INTELLIGENCE","Touchpoint":"intelligence.weekly","AI Generated":"Weekly Intelligence Report\\nTotal records this week: {{20.totalThisWeek}}\\nNiches active: {{20.nicheCount}}\\nTop niche: {{20.topNiche}}\\n\\nPer-niche breakdown:\\n{{20.summary}}"}}],"fieldKey":"name"}`,
-        [atAuth], 900, 0),
+      modHttp(10, atUrl,
+        `{"records":[{"fields":{"Title":"NICHE-INTELLIGENCE — Week of {{1.weekEnding}}","Scenario":"all","Company":"SYSTEM","Contact Email":"system@neatcircle.com","Status":"NICHE-INTELLIGENCE","Touchpoint":"intelligence.weekly","AI Generated":"Weekly Intelligence Report. Total: {{1.totalThisWeek}} records, {{1.nicheCount}} niches. Top: {{1.topNiche}}. {{1.summary}}"}}],"fieldKey":"name"}`,
+        [atAuth], 300, 0),
 
-      // Emailit — Weekly intelligence briefing to Ike
-      modHttp(40, EMAILIT_URL,
-        `{"from":"Lead OS Intelligence <automations@${EMAILIT.domain}>","to":"${EMAILIT.adminTo}","subject":"Weekly Niche Intelligence — {{formatDate(now; MMMM D, YYYY)}}","html":"<div style=font-family:Georgia,serif;max-width:600px;line-height:1.6;color:#333><h2>Lead OS — Weekly Intelligence Report</h2><p>Week ending {{formatDate(now; MMMM D, YYYY)}}</p><div style=background:#f0f4ff;padding:20px;border-radius:8px;margin:20px_0><h3 style=margin:0_0_10px>Summary</h3><p><strong>{{20.totalThisWeek}}</strong> records this week across <strong>{{20.nicheCount}}</strong> niches</p><p>Top performing niche: <strong>{{20.topNiche}}</strong></p></div><h3>Per-Niche Breakdown</h3><pre style=white-space:pre-wrap;background:#f8f9fa;padding:16px;border-radius:8px;font-size:13px>{{20.summary}}</pre><p style=color:#888;font-size:12px;margin-top:30px;border-top:1px_solid_#eee;padding-top:15px>Lead OS Niche Intelligence Engine<br>Generated automatically every Monday at 6 AM EST</p></div>","tracking":{"opens":true,"clicks":true}}`,
-        [emailAuth], 1200, 0),
+      // Emailit — Weekly briefing to Ike
+      modHttp(20, EMAILIT_URL,
+        `{"from":"Lead OS Intelligence <automations@${EMAILIT.domain}>","to":"${EMAILIT.adminTo}","subject":"Weekly Niche Intelligence — {{1.weekEnding}}","html":"<div style=font-family:Georgia,serif;max-width:600px;line-height:1.6;color:#333><h2>Lead OS — Weekly Intelligence Report</h2><p>Week ending {{1.weekEnding}}</p><div style=background:#f0f4ff;padding:20px;border-radius:8px;margin:20px_0><h3 style=margin:0_0_10px>Summary</h3><p><strong>{{1.totalThisWeek}}</strong> records this week across <strong>{{1.nicheCount}}</strong> niches</p><p>Top performing niche: <strong>{{1.topNiche}}</strong></p></div><h3>Per-Niche Breakdown</h3><pre style=white-space:pre-wrap;background:#f8f9fa;padding:16px;border-radius:8px;font-size:13px>{{1.summary}}</pre><p style=color:#888;font-size:12px;margin-top:30px;border-top:1px_solid_#eee;padding-top:15px>Lead OS Niche Intelligence Engine</p></div>","tracking":{"opens":true,"clicks":true}}`,
+        [emailAuth], 600, 0),
 
       // Discord #wins — weekly digest
-      modHttp(50, DISCORD.wins,
-        `{"embeds":[{"title":"\\ud83d\\udcca Weekly Niche Intelligence — {{formatDate(now; MMMM D)}}","color":5763719,"fields":[{"name":"Records This Week","value":"{{20.totalThisWeek}}","inline":true},{"name":"Active Niches","value":"{{20.nicheCount}}","inline":true},{"name":"Top Niche","value":"{{20.topNiche}}","inline":true},{"name":"Breakdown","value":"{{substring(20.summary; 0; 900)}}"}],"footer":{"text":"Niche Intelligence Engine \\u2022 Runs weekly"},"timestamp":"{{now}}"}]}`,
-        null, 1500, 0),
+      modHttp(30, DISCORD.wins,
+        `{"embeds":[{"title":"\\ud83d\\udcca Weekly Niche Intelligence — {{1.weekEnding}}","color":5763719,"fields":[{"name":"Records This Week","value":"{{1.totalThisWeek}}","inline":true},{"name":"Active Niches","value":"{{1.nicheCount}}","inline":true},{"name":"Top Niche","value":"{{1.topNiche}}","inline":true},{"name":"Breakdown","value":"{{substring(1.summary; 0; 900)}}"}],"footer":{"text":"Niche Intelligence Engine"},"timestamp":"{{now}}"}]}`,
+        null, 900, 0),
+
+      // WebhookRespond
+      {
+        id: 90,
+        module: 'gateway:WebhookRespond',
+        version: 1,
+        mapper: { status: '200', body: '{"received":true,"processor":"niche-intelligence"}' },
+        metadata: d(1200, 0),
+      },
     ],
   };
 }
@@ -187,7 +126,7 @@ async function main() {
   console.log('');
   console.log('  ╔══════════════════════════════════════════════════╗');
   console.log('  ║   NICHE INTELLIGENCE — Scenario #29 Deployment   ║');
-  console.log('  ║   Monday 6 AM → Metrics → Email → Discord       ║');
+  console.log('  ║   Webhook → AITable + Email + Discord            ║');
   console.log('  ╚══════════════════════════════════════════════════╝');
   console.log('');
 
@@ -198,7 +137,7 @@ async function main() {
   const blueprint = buildNicheIntelligence();
   const scenarioName = 'Niche Intelligence (#29)';
 
-  const listRes = await makeApi('GET', '/scenarios?pg[limit]=100');
+  const listRes = await makeApi('GET', '/scenarios?teamId=2568&pg[limit]=100');
   await sleep(API_DELAY);
 
   let scenarioId = null;
@@ -226,8 +165,10 @@ async function main() {
 
   if (!scenarioId) {
     const createRes = await makeApi('POST', '/scenarios', {
-      teamId: 1,
+      teamId: 2568,
+      folderId: 10436,
       blueprint: JSON.stringify(blueprint),
+      scheduling: JSON.stringify({ type: 'immediately' }),
     });
     await sleep(API_DELAY);
 
@@ -241,8 +182,8 @@ async function main() {
   await writeFile(join(BACKUP_DIR, `${scenarioId}-blueprint.json`), JSON.stringify(blueprint, null, 2));
 
   log(`DEPLOYED — Niche Intelligence #${scenarioId}`);
-  console.log('\n  Schedule: Every Monday at 6:00 AM EST (11:00 UTC)');
-  console.log('  Output: AITable NICHE-INTELLIGENCE row + Email briefing + Discord digest');
+  console.log('\n  Trigger: Webhook (POST metrics from Vercel cron)');
+  console.log('  Output: AITable summary + Email briefing + Discord digest');
 }
 
 main().catch((e) => {
