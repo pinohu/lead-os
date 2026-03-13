@@ -4,12 +4,17 @@ import Footer from "@/components/Footer";
 import Contact from "@/components/Contact";
 import { getAllSlugs, getServiceBySlug } from "@/lib/services";
 
+type StoryPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
 export function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
 }
 
-export default function StoryPage({ params }: { params: { slug: string } }) {
-  const service = getServiceBySlug(params.slug);
+export default async function StoryPage({ params }: StoryPageProps) {
+  const { slug } = await params;
+  const service = getServiceBySlug(slug);
 
   if (!service) {
     notFound();
