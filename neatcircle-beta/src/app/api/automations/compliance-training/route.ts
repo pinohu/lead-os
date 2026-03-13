@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as Partial<ComplianceTrainingRequest>;
     const { companyName, employees, courses } = body;
+    const dryRun = req.headers.get("x-lead-os-dry-run") === "1";
 
     if (!companyName || !employees?.length || !courses?.length) {
       return NextResponse.json(
@@ -34,6 +35,21 @@ export async function POST(req: NextRequest) {
           { status: 400 },
         );
       }
+    }
+
+    if (dryRun) {
+      return NextResponse.json({
+        success: true,
+        dryRun: true,
+        automation: "compliance-training",
+        message: `${employees.length} employees validated for ${courses.length} compliance course(s)`,
+        preview: {
+          companyName,
+          employeeCount: employees.length,
+          courses,
+          primaryEmployee: employees[0]?.email,
+        },
+      });
     }
 
     const courseTags = courses.map((course) => `course-${course.toLowerCase().replace(/\s+/g, "-")}`);

@@ -19,6 +19,14 @@ interface ServiceAutomationConfig<T> {
   buildBackgroundInfo?: (body: Partial<T>) => Array<string | undefined | false>;
 }
 
+function isDryRun(req: NextRequest, body: unknown) {
+  if (req.headers.get("x-lead-os-dry-run") === "1") return true;
+  return typeof body === "object"
+    && body !== null
+    && "dryRun" in (body as Record<string, unknown>)
+    && (body as Record<string, unknown>).dryRun === true;
+}
+
 function normalizeTag(value: string) {
   return value
     .toLowerCase()
@@ -57,6 +65,25 @@ export function createServiceAutomationRoute<T>(config: ServiceAutomationConfig<
         );
       }
 
+      const tags = normalizeTags(config.slug, config.buildTags?.(body) ?? []);
+      const backgroundInfo = normalizeBackgroundInfo(config.buildBackgroundInfo?.(body));
+      const dryRun = isDryRun(req, body);
+
+      if (dryRun) {
+        return NextResponse.json({
+          success: true,
+          dryRun: true,
+          automation: config.slug,
+          message: `${config.successMessage} (dry run)`,
+          preview: {
+            companyName,
+            contact,
+            tags,
+            backgroundInfo,
+          },
+        });
+      }
+
       const companyResult = await createCompany({
         name: companyName,
         role: "Lead",
@@ -67,8 +94,8 @@ export function createServiceAutomationRoute<T>(config: ServiceAutomationConfig<
           create_primary_contact_if_not_exists: true,
         },
         phone: contact.phone,
-        tags: normalizeTags(config.slug, config.buildTags?.(body) ?? []),
-        background_info: normalizeBackgroundInfo(config.buildBackgroundInfo?.(body)),
+        tags,
+        background_info: backgroundInfo,
       });
 
       return NextResponse.json({

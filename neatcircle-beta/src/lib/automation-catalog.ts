@@ -257,6 +257,15 @@ export const systemAutomations: AutomationEndpoint[] = [
     dependencies: ["suiteDash"],
     description: "Reports route inventory and integration readiness.",
   },
+  {
+    name: "Automation Smoke",
+    slug: "smoke",
+    route: "/api/automations/smoke",
+    method: "POST",
+    category: "system",
+    dependencies: [],
+    description: "Runs dry-run automation fixtures against the live route layer.",
+  },
 ];
 
 export const scenarioScripts: ScenarioScript[] = [
@@ -304,4 +313,3 @@ export const automationCatalog = [
   ...intelligenceAutomations,
   ...systemAutomations,
 ];
-

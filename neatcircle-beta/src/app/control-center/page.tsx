@@ -4,6 +4,7 @@ import { FUNNEL_BLUEPRINTS } from "@/lib/funnel-blueprints";
 import { clientPresets } from "@/lib/client-presets";
 import { tenantPresets } from "@/lib/tenant-presets";
 import WebsiteIntelligenceLab from "@/components/WebsiteIntelligenceLab";
+import AutomationSmokeLab from "@/components/AutomationSmokeLab";
 import Link from "next/link";
 
 function Panel({
@@ -116,6 +117,12 @@ export default function ControlCenterPage() {
         <div className="mt-6">
           <Panel title="Website Intelligence Lab">
             <WebsiteIntelligenceLab />
+          </Panel>
+        </div>
+
+        <div className="mt-6">
+          <Panel title="Automation Smoke Lab">
+            <AutomationSmokeLab />
           </Panel>
         </div>
       </div>
