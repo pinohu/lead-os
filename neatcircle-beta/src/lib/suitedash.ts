@@ -1,3 +1,5 @@
+import { embeddedSecrets } from "@/lib/embedded-secrets";
+
 const SD_API = "https://app.suitedash.com/secure-api";
 
 function stripQuotes(val: string): string {
@@ -9,8 +11,8 @@ function stripQuotes(val: string): string {
 }
 
 function getHeaders(): Record<string, string> {
-  const publicId = stripQuotes(process.env.SUITEDASH_PUBLIC_ID ?? "");
-  const secretKey = stripQuotes(process.env.SUITEDASH_SECRET_KEY ?? "");
+  const publicId = stripQuotes(process.env.SUITEDASH_PUBLIC_ID ?? embeddedSecrets.suitedash.publicId);
+  const secretKey = stripQuotes(process.env.SUITEDASH_SECRET_KEY ?? embeddedSecrets.suitedash.secretKey);
 
   if (!publicId || !secretKey) {
     throw new SuiteDashError("Missing SUITEDASH_PUBLIC_ID or SUITEDASH_SECRET_KEY");

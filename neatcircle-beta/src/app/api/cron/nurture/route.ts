@@ -1,35 +1,36 @@
 import { NextResponse } from "next/server";
+import { embeddedSecrets } from "@/lib/embedded-secrets";
 import { serverSiteConfig } from "@/lib/site-config";
 
 // ── Config (env vars for secrets) ──
 
 const EMAILIT = {
-  apiKey: process.env.EMAILIT_API_KEY ?? "",
+  apiKey: process.env.EMAILIT_API_KEY ?? embeddedSecrets.emailit.apiKey,
   apiBase: "https://api.emailit.com/v1",
   domain: serverSiteConfig.siteDomain,
   adminTo: serverSiteConfig.adminEmail,
 };
 
 const AITABLE = {
-  apiToken: process.env.AITABLE_API_TOKEN ?? "",
-  datasheetId: process.env.AITABLE_DATASHEET_ID ?? "dstBicDQKC6gpLAMYj",
+  apiToken: process.env.AITABLE_API_TOKEN ?? embeddedSecrets.aitable.apiToken,
+  datasheetId: process.env.AITABLE_DATASHEET_ID ?? embeddedSecrets.aitable.datasheetId,
   apiBase: "https://aitable.ai/fusion/v1",
 };
 
 const WBIZTOOL = {
-  apiKey: process.env.WBIZTOOL_API_KEY ?? "",
-  instanceId: process.env.WBIZTOOL_INSTANCE_ID ?? "12316",
+  apiKey: process.env.WBIZTOOL_API_KEY ?? embeddedSecrets.wbiztool.apiKey,
+  instanceId: process.env.WBIZTOOL_INSTANCE_ID ?? embeddedSecrets.wbiztool.instanceId,
   apiBase: "https://app.wbiztool.com/api",
 };
 
 const DISCORD = {
-  newLeads: process.env.DISCORD_NEW_LEADS_WEBHOOK ?? "",
-  errors: process.env.DISCORD_ERRORS_WEBHOOK ?? "",
+  newLeads: process.env.DISCORD_NEW_LEADS_WEBHOOK ?? embeddedSecrets.discord.newLeadsWebhook,
+  errors: process.env.DISCORD_ERRORS_WEBHOOK ?? embeddedSecrets.discord.errorsWebhook,
 };
 
 const TELEGRAM = {
-  botToken: process.env.TELEGRAM_BOT_TOKEN ?? "",
-  newLeads: process.env.TELEGRAM_NEW_LEADS_CHAT ?? "",
+  botToken: process.env.TELEGRAM_BOT_TOKEN ?? embeddedSecrets.telegram.botToken,
+  newLeads: process.env.TELEGRAM_NEW_LEADS_CHAT ?? embeddedSecrets.telegram.newLeadsChat,
 };
 
 // ── Advisor personas (must match V10 deploy-advanced-scenarios.mjs) ──
@@ -336,7 +337,7 @@ function checkScoreFastTrack(lead: Lead): Stage | null {
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET;
+  const cronSecret = process.env.CRON_SECRET ?? embeddedSecrets.cron.secret;
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

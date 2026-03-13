@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { embeddedSecrets } from "@/lib/embedded-secrets";
 
 function getHostname(value: string | null) {
   if (!value) return "";
@@ -52,7 +53,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith("/api/dashboard/metrics")) {
-    const dashboardSecret = process.env.DASHBOARD_SECRET ?? "";
+    const dashboardSecret = process.env.DASHBOARD_SECRET ?? embeddedSecrets.dashboard.secret;
     if (!dashboardSecret) {
       return isTrustedBrowserRequest(request)
         ? NextResponse.next()
@@ -67,7 +68,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith("/api/cron/nurture")) {
-    const cronSecret = process.env.CRON_SECRET ?? "";
+    const cronSecret = process.env.CRON_SECRET ?? embeddedSecrets.cron.secret;
     if (!cronSecret) {
       return isLocalHost(request.nextUrl.hostname)
         ? NextResponse.next()
@@ -80,7 +81,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith("/api/automations/")) {
-    const automationSecret = process.env.AUTOMATION_API_SECRET ?? "";
+    const automationSecret = process.env.AUTOMATION_API_SECRET ?? embeddedSecrets.automation.apiSecret;
     if (!automationSecret) {
       return isLocalHost(request.nextUrl.hostname)
         ? NextResponse.next()

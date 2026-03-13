@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
+import { embeddedSecrets } from "@/lib/embedded-secrets";
 import { createCompany, updateProject, SuiteDashError } from "@/lib/suitedash";
 import { serverSiteConfig } from "@/lib/site-config";
 
 const EMAILIT = {
-  apiKey: process.env.EMAILIT_API_KEY ?? "",
+  apiKey: process.env.EMAILIT_API_KEY ?? embeddedSecrets.emailit.apiKey,
   apiBase: "https://api.emailit.com/v1",
   domain: serverSiteConfig.siteDomain,
 };
 
 const AITABLE = {
-  apiToken: process.env.AITABLE_API_TOKEN ?? "",
-  datasheetId: process.env.AITABLE_DATASHEET_ID ?? "dstBicDQKC6gpLAMYj",
+  apiToken: process.env.AITABLE_API_TOKEN ?? embeddedSecrets.aitable.apiToken,
+  datasheetId: process.env.AITABLE_DATASHEET_ID ?? embeddedSecrets.aitable.datasheetId,
   apiBase: "https://aitable.ai/fusion/v1",
 };
 

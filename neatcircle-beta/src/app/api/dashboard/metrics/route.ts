@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { embeddedSecrets } from "@/lib/embedded-secrets";
 
 const AITABLE = {
-  apiToken: process.env.AITABLE_API_TOKEN ?? "",
-  datasheetId: process.env.AITABLE_DATASHEET_ID ?? "dstBicDQKC6gpLAMYj",
+  apiToken: process.env.AITABLE_API_TOKEN ?? embeddedSecrets.aitable.apiToken,
+  datasheetId: process.env.AITABLE_DATASHEET_ID ?? embeddedSecrets.aitable.datasheetId,
   apiBase: "https://aitable.ai/fusion/v1",
 };
 
@@ -66,7 +67,7 @@ async function fetchAllRecords(): Promise<AITableRecord[]> {
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
-  const dashboardSecret = process.env.DASHBOARD_SECRET;
+  const dashboardSecret = process.env.DASHBOARD_SECRET ?? embeddedSecrets.dashboard.secret;
   if (
     dashboardSecret &&
     authHeader !== `Bearer ${dashboardSecret}` &&

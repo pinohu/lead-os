@@ -1,4 +1,5 @@
 import { createContact } from "@/lib/suitedash";
+import { embeddedSecrets } from "@/lib/embedded-secrets";
 import { serverSiteConfig } from "@/lib/site-config";
 import { clampText, isPlainObject, isValidEmail, isValidPhone } from "@/lib/request-guards";
 
@@ -47,14 +48,14 @@ interface IntakeResult {
 }
 
 const AITABLE = {
-  apiToken: process.env.AITABLE_API_TOKEN ?? "",
-  datasheetId: process.env.AITABLE_DATASHEET_ID ?? "dstBicDQKC6gpLAMYj",
+  apiToken: process.env.AITABLE_API_TOKEN ?? embeddedSecrets.aitable.apiToken,
+  datasheetId: process.env.AITABLE_DATASHEET_ID ?? embeddedSecrets.aitable.datasheetId,
   apiBase: "https://aitable.ai/fusion/v1",
 };
 
-const DISCORD_HIGH_VALUE = process.env.DISCORD_HIGH_VALUE_WEBHOOK ?? "";
-const TELEGRAM_HIGH_VALUE_CHAT = process.env.TELEGRAM_HIGH_VALUE_CHAT ?? "";
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN ?? "";
+const DISCORD_HIGH_VALUE = process.env.DISCORD_HIGH_VALUE_WEBHOOK ?? embeddedSecrets.discord.highValueWebhook;
+const TELEGRAM_HIGH_VALUE_CHAT = process.env.TELEGRAM_HIGH_VALUE_CHAT ?? embeddedSecrets.telegram.highValueChat;
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN ?? embeddedSecrets.telegram.botToken;
 const intakeReplayStore = new Map<string, number>();
 const INTAKE_REPLAY_WINDOW_MS = 5 * 60 * 1000;
 const VALID_SOURCES: IntakeSource[] = [

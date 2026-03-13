@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { embeddedSecrets } from "@/lib/embedded-secrets";
 import {
   clampText,
   enforceRateLimit,
@@ -8,8 +9,8 @@ import {
 } from "@/lib/request-guards";
 
 const AITABLE = {
-  apiToken: process.env.AITABLE_API_TOKEN ?? "",
-  datasheetId: process.env.AITABLE_DATASHEET_ID ?? "dstBicDQKC6gpLAMYj",
+  apiToken: process.env.AITABLE_API_TOKEN ?? embeddedSecrets.aitable.apiToken,
+  datasheetId: process.env.AITABLE_DATASHEET_ID ?? embeddedSecrets.aitable.datasheetId,
   apiBase: "https://aitable.ai/fusion/v1",
 };
 
