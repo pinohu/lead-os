@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 interface ProcessAutomationRequest {
   companyName: string;
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["process-automation", "neatcircle"];
+    const tags = ["process-automation", serverSiteConfig.tenantSlug];
     if (targetTools) {
       for (const t of targetTools) {
         tags.push(t.toLowerCase().replace(/\s+/g, "-"));

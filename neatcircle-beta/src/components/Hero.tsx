@@ -39,20 +39,23 @@ export default function Hero() {
         </p>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
           <a
-            href="#contact"
+            href="/assess/general"
             className="bg-cyan hover:bg-cyan-dark text-white font-semibold px-8 py-3.5 rounded-lg transition-colors text-lg w-full sm:w-auto"
           >
-            Book a Discovery Call
+            Take Free Assessment
           </a>
           <a
-            href="#process"
+            href="/calculator"
             className="border border-white/30 hover:border-white/60 text-white font-semibold px-8 py-3.5 rounded-lg transition-colors text-lg w-full sm:w-auto"
           >
-            See How It Works
+            Calculate Your ROI
           </a>
         </div>
+        <p className="text-sm text-slate-400 mb-16">
+          <a href="#contact" className="text-cyan hover:underline">Or book a discovery call</a> &mdash; takes 2 minutes
+        </p>
 
         {/* Stat cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">

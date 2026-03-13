@@ -7,6 +7,7 @@ import {
   type ServiceData,
   type PricingTier,
 } from "@/lib/services";
+import { siteConfig } from "@/lib/site-config";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -21,16 +22,16 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const service = getServiceBySlug(slug);
-  if (!service) return { title: "Service Not Found | NeatCircle" };
+  if (!service) return { title: `Service Not Found | ${siteConfig.brandName}` };
 
   return {
-    title: `${service.title} | NeatCircle`,
+    title: `${service.title} | ${siteConfig.brandName}`,
     description: service.tagline,
     openGraph: {
-      title: `${service.title} | NeatCircle`,
+      title: `${service.title} | ${siteConfig.brandName}`,
       description: service.tagline,
       type: "website",
-      url: `https://neatcircle.com/services/${service.slug}`,
+      url: `${siteConfig.siteUrl}/services/${service.slug}`,
     },
   };
 }
@@ -464,8 +465,8 @@ function FooterNav() {
           href="/"
           className="flex items-center gap-0 text-xl font-bold tracking-tight"
         >
-          <span className="text-white">Neat</span>
-          <span className="text-cyan">Circle</span>
+          <span className="text-white">{siteConfig.brandPrimary}</span>
+          <span className="text-cyan">{siteConfig.brandAccent}</span>
         </Link>
         <div className="flex items-center gap-6">
           <Link
@@ -482,7 +483,7 @@ function FooterNav() {
           </Link>
         </div>
         <p className="text-xs text-slate-500">
-          &copy; {new Date().getFullYear()} NeatCircle. All rights reserved.
+          &copy; {new Date().getFullYear()} {siteConfig.brandName}. All rights reserved.
         </p>
       </div>
     </footer>

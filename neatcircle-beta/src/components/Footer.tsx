@@ -1,3 +1,5 @@
+import { siteConfig } from "@/lib/site-config";
+
 const serviceLinks = [
   "Client Portal Automation",
   "Process Automation",
@@ -25,7 +27,7 @@ const companyLinks = [
   { label: "Pricing", href: "#pricing" },
   { label: "Process", href: "#process" },
   { label: "Contact", href: "#contact" },
-  { label: "Client Portal", href: "https://portal.yourdeputy.com", external: true },
+  { label: "Client Portal", href: siteConfig.portalUrl, external: true },
 ];
 
 export default function Footer() {
@@ -39,8 +41,8 @@ export default function Footer() {
               href="#"
               className="inline-flex items-center gap-0 text-xl font-bold tracking-tight mb-4"
             >
-              <span className="text-white">Neat</span>
-              <span className="text-cyan">Circle</span>
+              <span className="text-white">{siteConfig.brandPrimary}</span>
+              <span className="text-cyan">{siteConfig.brandAccent}</span>
             </a>
             <p className="text-slate-400 text-sm leading-relaxed mb-3">
               Systematic Business Optimization
@@ -126,7 +128,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-slate-800 pt-6 text-center">
           <p className="text-slate-500 text-sm">
-            &copy; {new Date().getFullYear()} NeatCircle LLC. All rights
+            &copy; {new Date().getFullYear()} {siteConfig.legalName}. All rights
             reserved.
           </p>
         </div>

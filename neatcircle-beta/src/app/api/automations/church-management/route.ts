@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 type ChurchNeed = "member-portal" | "volunteer" | "donations" | "events";
 
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["church-management", "neatcircle"];
+    const tags = ["church-management", serverSiteConfig.tenantSlug];
     if (needs) {
       for (const n of needs) {
         tags.push(`need-${n}`);

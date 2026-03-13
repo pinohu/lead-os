@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 interface FranchiseRequest {
   brandName: string;
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["franchise", "neatcircle"];
+    const tags = ["franchise", serverSiteConfig.tenantSlug];
     if (typeof locationCount === "number") tags.push(locationRangeTag(locationCount));
     if (trainingNeeds) {
       for (const tn of trainingNeeds) {

@@ -23,6 +23,22 @@ interface Metrics {
     conversionRate: number;
     hotLeads: number;
   }>;
+  topIntakeSources: Array<{
+    source: string;
+    count: number;
+  }>;
+  topBehavioralSignals: Array<{
+    event: string;
+    count: number;
+  }>;
+  topBlueprints: Array<{
+    name: string;
+    count: number;
+  }>;
+  topServices: Array<{
+    name: string;
+    count: number;
+  }>;
   statusBreakdown: Record<string, number>;
 }
 
@@ -68,7 +84,16 @@ export default function DashboardPage() {
     );
   }
 
-  const { summary, nurtureFunnel, topNiches, statusBreakdown } = metrics;
+  const {
+    summary,
+    nurtureFunnel,
+    topNiches,
+    topIntakeSources,
+    topBehavioralSignals,
+    topBlueprints,
+    topServices,
+    statusBreakdown,
+  } = metrics;
 
   return (
     <div style={{ minHeight: "100vh", background: "#0f0f23", color: "#fff", padding: 32, fontFamily: "system-ui, -apple-system, sans-serif" }}>
@@ -137,6 +162,74 @@ export default function DashboardPage() {
                   ))}
                 </tbody>
               </table>
+            )}
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 24 }}>
+          <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Top Intake Paths</h2>
+            {topIntakeSources.length === 0 ? (
+              <p style={{ color: "#8b8ba7" }}>No captured leads yet</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {topIntakeSources.map((item) => (
+                  <div key={item.source} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                    <span style={{ color: "#ccc", textTransform: "capitalize" }}>{item.source.replace(/_/g, " ")}</span>
+                    <strong>{item.count}</strong>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Behavioral Signals</h2>
+            {topBehavioralSignals.length === 0 ? (
+              <p style={{ color: "#8b8ba7" }}>No behavioral activity captured yet</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {topBehavioralSignals.map((item) => (
+                  <div key={item.event} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                    <span style={{ color: "#ccc", textTransform: "capitalize" }}>{item.event.replace(/_/g, " ")}</span>
+                    <strong>{item.count}</strong>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 24 }}>
+          <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Blueprint Activity</h2>
+            {topBlueprints.length === 0 ? (
+              <p style={{ color: "#8b8ba7" }}>Blueprint attribution starts showing once orchestration events accumulate.</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {topBlueprints.map((item) => (
+                  <div key={item.name} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                    <span style={{ color: "#ccc" }}>{item.name}</span>
+                    <strong>{item.count}</strong>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Top Services</h2>
+            {topServices.length === 0 ? (
+              <p style={{ color: "#8b8ba7" }}>No service activity yet</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {topServices.map((item) => (
+                  <div key={item.name} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                    <span style={{ color: "#ccc" }}>{item.name}</span>
+                    <strong>{item.count}</strong>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>

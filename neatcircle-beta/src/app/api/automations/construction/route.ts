@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 interface ConstructionRequest {
   companyName: string;
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["construction", "neatcircle"];
+    const tags = ["construction", serverSiteConfig.tenantSlug];
     if (projectTypes) {
       for (const pt of projectTypes) {
         tags.push(`project-${pt.toLowerCase().replace(/\s+/g, "-")}`);

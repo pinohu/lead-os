@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const SD_PUB = process.env.SUITEDASH_PUBLIC_ID ?? "";
-const SD_KEY = process.env.SUITEDASH_SECRET_KEY ?? "";
-const SD_API = "https://app.suitedash.com/secure-api";
+import { processLeadIntake } from "@/lib/lead-intake";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,36 +13,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const contactPayload: Record<string, unknown> = {
-      first_name: firstName || "Subscriber",
-      last_name: ".",
+    const result = await processLeadIntake({
+      source: "newsletter",
+      firstName,
+      lastName: ".",
       email,
-      role: "Lead",
-      tags: ["newsletter", "subscriber", "neatcircle"],
-      send_welcome_email: false,
-    };
-
-    const res = await fetch(`${SD_API}/contact`, {
-      method: "POST",
-      headers: {
-        "X-Public-ID": SD_PUB,
-        "X-Secret-Key": SD_KEY,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(contactPayload),
+      service: "newsletter",
     });
 
-    const data = await res.json();
-
-    if (data.success || data.message?.includes("already exists")) {
-      return NextResponse.json({ success: true });
-    }
-
-    return NextResponse.json(
-      { error: data.message || "Subscription failed" },
-      { status: 422 },
-    );
+    return NextResponse.json(result);
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },

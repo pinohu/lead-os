@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 type TargetMarket = "hr-consulting" | "peo" | "payroll" | "insurance";
 type PricingModel = "per-employee" | "flat-rate" | "tiered";
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["compliance-productized", "neatcircle"];
+    const tags = ["compliance-productized", serverSiteConfig.tenantSlug];
     if (targetMarket) tags.push(`market-${targetMarket}`);
     if (pricingModel) tags.push(`pricing-${pricingModel}`);
 

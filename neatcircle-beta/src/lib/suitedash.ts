@@ -1,8 +1,16 @@
 const SD_API = "https://app.suitedash.com/secure-api";
 
+function stripQuotes(val: string): string {
+  if ((val.startsWith("'") && val.endsWith("'")) ||
+      (val.startsWith('"') && val.endsWith('"'))) {
+    return val.slice(1, -1);
+  }
+  return val;
+}
+
 function getHeaders(): Record<string, string> {
-  const publicId = process.env.SUITEDASH_PUBLIC_ID ?? "";
-  const secretKey = process.env.SUITEDASH_SECRET_KEY ?? "";
+  const publicId = stripQuotes(process.env.SUITEDASH_PUBLIC_ID ?? "");
+  const secretKey = stripQuotes(process.env.SUITEDASH_SECRET_KEY ?? "");
 
   if (!publicId || !secretKey) {
     throw new SuiteDashError("Missing SUITEDASH_PUBLIC_ID or SUITEDASH_SECRET_KEY");
@@ -46,7 +54,6 @@ export interface SuiteDashCompanyContact {
   first_name: string;
   last_name: string;
   create_primary_contact_if_not_exists?: boolean;
-  role?: "Lead" | "Prospect" | "Client";
 }
 
 export interface SuiteDashCompanyPayload {

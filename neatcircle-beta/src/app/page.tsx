@@ -10,6 +10,7 @@ import Pricing from "@/components/Pricing";
 import Testimonials from "@/components/Testimonials";
 import About from "@/components/About";
 import Contact from "@/components/Contact";
+import ReferralBanner from "@/components/ReferralBanner";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -27,6 +28,7 @@ export default function Home() {
       <Testimonials />
       <About />
       <Contact />
+      <ReferralBanner />
       <Footer />
     </>
   );

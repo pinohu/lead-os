@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 type VisaType = "h1b" | "eb5" | "family" | "asylum" | "naturalization";
 
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["immigration-law", "neatcircle"];
+    const tags = ["immigration-law", serverSiteConfig.tenantSlug];
     if (visaTypes) {
       for (const v of visaTypes) {
         tags.push(`visa-${v}`);

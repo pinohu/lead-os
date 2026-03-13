@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 interface DigitalTransformationRequest {
   companyName: string;
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["digital-transformation", "neatcircle"];
+    const tags = ["digital-transformation", serverSiteConfig.tenantSlug];
     if (goals) {
       for (const g of goals) {
         tags.push(g.toLowerCase().replace(/\s+/g, "-"));

@@ -1,3 +1,5 @@
+import { siteConfig } from "@/lib/site-config";
+
 const points = [
   "Engineering approach to business problems",
   "$2.1M software portfolio included in every engagement",
@@ -18,7 +20,7 @@ export default function About() {
               About Us
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-navy mt-3 mb-8">
-              Why NeatCircle
+              Why {siteConfig.brandName}
             </h2>
 
             <ul className="space-y-4">
@@ -91,7 +93,7 @@ export default function About() {
                 </div>
                 <div>
                   <div className="font-semibold text-navy text-sm">
-                    NeatCircle LLC
+                    {siteConfig.legalName}
                   </div>
                   <div className="text-slate-400 text-xs">
                     Pennsylvania, USA &middot; Remote-capable nationwide

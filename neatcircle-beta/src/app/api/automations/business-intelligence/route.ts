@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 interface BusinessIntelligenceRequest {
   companyName: string;
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["bi-setup", "neatcircle"];
+    const tags = ["bi-setup", serverSiteConfig.tenantSlug];
     if (dataSources) {
       for (const ds of dataSources) {
         tags.push(`ds-${ds.toLowerCase().replace(/\s+/g, "-")}`);

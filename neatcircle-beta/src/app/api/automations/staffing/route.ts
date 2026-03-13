@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 interface StaffingRequest {
   agencyName: string;
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["staffing", "neatcircle"];
+    const tags = ["staffing", serverSiteConfig.tenantSlug];
     if (specialties) {
       for (const s of specialties) {
         tags.push(`specialty-${s.toLowerCase().replace(/\s+/g, "-")}`);

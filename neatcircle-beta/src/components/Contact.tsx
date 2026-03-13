@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { siteConfig } from "@/lib/site-config";
 
 const serviceOptions = [
   "Client Portal Automation",
@@ -25,10 +26,10 @@ export default function Contact() {
     const data = Object.fromEntries(new FormData(form));
 
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, source: "contact_form", page: window.location.pathname }),
       });
       if (res.ok) {
         setStatus("sent");
@@ -67,8 +68,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <div className="text-sm text-slate-400">Email</div>
-                  <a href="mailto:services@neatcircle.com" className="text-navy font-medium hover:text-cyan transition-colors">
-                    services@neatcircle.com
+                  <a href={`mailto:${siteConfig.supportEmail}`} className="text-navy font-medium hover:text-cyan transition-colors">
+                    {siteConfig.supportEmail}
                   </a>
                 </div>
               </div>
@@ -165,7 +166,7 @@ export default function Contact() {
 
                 {status === "error" && (
                   <p className="text-sm text-red-600 text-center">
-                    Something went wrong. Please email us at services@neatcircle.com.
+                    Something went wrong. Please email us at {siteConfig.supportEmail}.
                   </p>
                 )}
               </form>

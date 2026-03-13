@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { siteConfig } from "@/lib/site-config";
 
 const navLinks = [
   { label: "Services", href: "#services" },
   { label: "Industries", href: "#industries" },
+  { label: "Webinar", href: "/webinar" },
   { label: "Process", href: "#process" },
   { label: "Pricing", href: "#pricing" },
   { label: "About", href: "#about" },
@@ -20,8 +22,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <a href="#" className="flex items-center gap-0 text-xl font-bold tracking-tight">
-            <span className="text-white">Neat</span>
-            <span className="text-cyan">Circle</span>
+            <span className="text-white">{siteConfig.brandPrimary}</span>
+            <span className="text-cyan">{siteConfig.brandAccent}</span>
           </a>
 
           {/* Desktop nav */}

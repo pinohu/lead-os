@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 type Platform = "youtube" | "tiktok" | "instagram" | "twitch" | "podcast";
 type CreatorService = "contracts" | "revenue" | "content" | "brand-deals";
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["creator-management", "neatcircle"];
+    const tags = ["creator-management", serverSiteConfig.tenantSlug];
     if (platforms) {
       for (const p of platforms) {
         tags.push(`platform-${p}`);

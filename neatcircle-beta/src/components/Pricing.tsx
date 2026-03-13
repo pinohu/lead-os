@@ -175,8 +175,27 @@ export default function Pricing() {
           ))}
         </div>
 
+        {/* ROI CTA */}
+        <div className="mt-10 text-center">
+          <p className="text-slate-300 text-sm mb-3">Not sure which plan fits?</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href="/calculator"
+              className="inline-block bg-cyan/20 hover:bg-cyan/30 text-cyan font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm"
+            >
+              Calculate Your ROI
+            </a>
+            <a
+              href="/assess/general"
+              className="inline-block border border-white/20 hover:border-white/40 text-white font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm"
+            >
+              Take Free Assessment
+            </a>
+          </div>
+        </div>
+
         {/* Note */}
-        <p className="text-center text-slate-400 text-sm mt-8">
+        <p className="text-center text-slate-400 text-sm mt-6">
           Industry-specific packages available. Custom scoping for complex
           requirements.{" "}
           <a href="#contact" className="text-cyan hover:underline">

@@ -12,6 +12,36 @@ interface AITableRecord {
   fields?: Record<string, string>;
 }
 
+function getHostname(value: string | null) {
+  if (!value) return "";
+  try {
+    return new URL(value).hostname.toLowerCase();
+  } catch {
+    return "";
+  }
+}
+
+function isTrustedDashboardRequest(request: Request) {
+  const requestUrl = new URL(request.url);
+  const requestHost = requestUrl.hostname.toLowerCase();
+  const originHost = getHostname(request.headers.get("origin"));
+  const refererHost = getHostname(request.headers.get("referer"));
+  const fetchSite = request.headers.get("sec-fetch-site");
+
+  return (
+    originHost === requestHost ||
+    refererHost === requestHost ||
+    fetchSite === "same-origin" ||
+    fetchSite === "same-site"
+  );
+}
+
+function extractBlueprint(value?: string) {
+  if (!value) return "";
+  const match = value.match(/"blueprint":"([^"]+)"/);
+  return match?.[1] ?? "";
+}
+
 async function fetchAllRecords(): Promise<AITableRecord[]> {
   const allRecords: AITableRecord[] = [];
   let pageNum = 1;
@@ -37,7 +67,11 @@ async function fetchAllRecords(): Promise<AITableRecord[]> {
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
   const dashboardSecret = process.env.DASHBOARD_SECRET;
-  if (dashboardSecret && authHeader !== `Bearer ${dashboardSecret}`) {
+  if (
+    dashboardSecret &&
+    authHeader !== `Bearer ${dashboardSecret}` &&
+    !isTrustedDashboardRequest(request)
+  ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -57,14 +91,21 @@ export async function GET(request: Request) {
     let errors = 0;
     let nurtureActive = 0;
     const stageCounts: Record<string, number> = {};
+    const intakeSources: Record<string, number> = {};
+    const eventBreakdown: Record<string, number> = {};
+    const blueprintBreakdown: Record<string, number> = {};
+    const serviceBreakdown: Record<string, number> = {};
 
     for (const rec of records) {
       const f = rec.fields ?? {};
       const status = f["Status"] || "";
       const scenario = f["Scenario"] || "unknown";
+      const touchpoint = f["Touchpoint"] || "unknown";
+      const aiGenerated = f["AI Generated"] || "";
       const createdAt = rec.createdAt ? new Date(rec.createdAt) : null;
 
       statuses[status] = (statuses[status] || 0) + 1;
+      serviceBreakdown[scenario] = (serviceBreakdown[scenario] || 0) + 1;
 
       if (!scenarios[scenario]) {
         scenarios[scenario] = { total: 0, converted: 0, hotLeads: 0 };
@@ -82,6 +123,18 @@ export async function GET(request: Request) {
       if (status.startsWith("NURTURE-")) {
         nurtureActive++;
         stageCounts[status] = (stageCounts[status] || 0) + 1;
+      }
+
+       if (status === "LEAD-CAPTURED") {
+        intakeSources[touchpoint] = (intakeSources[touchpoint] || 0) + 1;
+      }
+
+      if (status.startsWith("EVENT-")) {
+        eventBreakdown[touchpoint] = (eventBreakdown[touchpoint] || 0) + 1;
+        const blueprint = extractBlueprint(aiGenerated);
+        if (blueprint) {
+          blueprintBreakdown[blueprint] = (blueprintBreakdown[blueprint] || 0) + 1;
+        }
       }
 
       // Approximate hot leads from status
@@ -104,6 +157,26 @@ export async function GET(request: Request) {
       .sort((a, b) => b.conversionRate - a.conversionRate)
       .slice(0, 10);
 
+    const topIntakeSources = Object.entries(intakeSources)
+      .map(([source, count]) => ({ source, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    const topBehavioralSignals = Object.entries(eventBreakdown)
+      .map(([event, count]) => ({ event, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    const topBlueprints = Object.entries(blueprintBreakdown)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    const topServices = Object.entries(serviceBreakdown)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
     return NextResponse.json({
       success: true,
       generatedAt: now.toISOString(),
@@ -119,6 +192,10 @@ export async function GET(request: Request) {
       },
       nurtureFunnel: stageCounts,
       topNiches,
+      topIntakeSources,
+      topBehavioralSignals,
+      topBlueprints,
+      topServices,
       statusBreakdown: statuses,
     });
   } catch (err) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 type DealType = "equity" | "debt" | "preferred";
 
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["re-syndication", "neatcircle"];
+    const tags = ["re-syndication", serverSiteConfig.tenantSlug];
     if (dealType) tags.push(`deal-${dealType}`);
     if (propertyType) tags.push(propertyType.toLowerCase().replace(/\s+/g, "-"));
     if (typeof targetRaise === "number") tags.push(raiseRangeTag(targetRaise));

@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { createCompany, updateProject, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 const EMAILIT = {
   apiKey: process.env.EMAILIT_API_KEY ?? "",
   apiBase: "https://api.emailit.com/v1",
-  domain: "neatcircle.com",
+  domain: serverSiteConfig.siteDomain,
 };
 
 const AITABLE = {
@@ -73,7 +74,6 @@ export async function POST(request: Request) {
           first_name: body.firstName,
           last_name: body.lastName,
           create_primary_contact_if_not_exists: true,
-          role: "Client",
         },
         phone: body.phone,
         tags: ["converted", "client", body.scenario],
@@ -116,7 +116,7 @@ export async function POST(request: Request) {
         </ol>
         <p>In the meantime, if you have any questions, just reply to this email.</p>
         <p style="color:#888;font-size:12px;margin-top:30px;border-top:1px solid #eee;padding-top:15px;">
-          NeatCircle Client Success Team
+          ${serverSiteConfig.brandName} Client Success Team
         </p>
       </div>`;
 
@@ -124,9 +124,9 @@ export async function POST(request: Request) {
       "POST",
       `${EMAILIT.apiBase}/emails`,
       {
-        from: `NeatCircle <automations@${EMAILIT.domain}>`,
+        from: `${serverSiteConfig.brandName} <${serverSiteConfig.fromEmail}>`,
         to: body.email,
-        subject: `Welcome to NeatCircle, ${body.firstName}!`,
+        subject: `Welcome to ${serverSiteConfig.brandName}, ${body.firstName}!`,
         html: kickoffHtml,
         tracking: { opens: true, clicks: true },
       },

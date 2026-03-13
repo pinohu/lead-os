@@ -1,5 +1,10 @@
-const industries = [
+import Link from "next/link";
+import { siteConfig } from "@/lib/site-config";
+import { nicheManifests } from "@/lib/niche-config";
+
+const industryCards = [
   {
+    slug: "client-portal",
     name: "Tax Preparation",
     market: "$14.8B",
     description:
@@ -11,6 +16,7 @@ const industries = [
     ),
   },
   {
+    slug: "process-automation",
     name: "Home Services",
     market: "$657B",
     description:
@@ -22,6 +28,7 @@ const industries = [
     ),
   },
   {
+    slug: "business-intelligence",
     name: "Bookkeeping",
     market: "$55B",
     description:
@@ -33,6 +40,7 @@ const industries = [
     ),
   },
   {
+    slug: "managed-services",
     name: "Business Coaching",
     market: "$20B",
     description:
@@ -44,6 +52,7 @@ const industries = [
     ),
   },
   {
+    slug: "creator-management",
     name: "Creative Agencies",
     market: "$100B",
     description:
@@ -55,6 +64,7 @@ const industries = [
     ),
   },
   {
+    slug: "re-syndication",
     name: "RE Transaction Coordination",
     market: "$400B+",
     description:
@@ -68,6 +78,10 @@ const industries = [
 ];
 
 export default function Industries() {
+  const enabledIndustries = industryCards.filter((industry) =>
+    siteConfig.featuredIndustrySlugs.includes(industry.slug),
+  );
+
   return (
     <section id="industries" className="py-20 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,8 +101,9 @@ export default function Industries() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {industries.map((ind) => (
-            <div
+          {enabledIndustries.map((ind) => (
+            <Link
+              href={`/services/${ind.slug}`}
               key={ind.name}
               className="bg-white border border-slate-200 rounded-xl p-6 hover:border-cyan/40 hover:shadow-lg transition-all"
             >
@@ -101,21 +116,20 @@ export default function Industries() {
                 </span>
               </div>
               <h3 className="text-lg font-semibold text-navy mb-2">
-                {ind.name}
+                {nicheManifests[ind.slug]?.label ?? ind.name}
               </h3>
               <p className="text-slate-500 text-sm leading-relaxed mb-4">
-                {ind.description}
+                {nicheManifests[ind.slug]?.shortDescription ?? ind.description}
               </p>
-              <a
-                href="#contact"
+              <span
                 className="text-cyan hover:text-cyan-dark text-sm font-semibold transition-colors inline-flex items-center gap-1"
               >
                 Get Started
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
-              </a>
-            </div>
+              </span>
+            </Link>
           ))}
         </div>
       </div>

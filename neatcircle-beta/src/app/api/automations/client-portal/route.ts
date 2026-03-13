@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 interface ClientPortalRequest {
   companyName: string;
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const companyTags = ["client-portal", "neatcircle"];
+    const companyTags = ["client-portal", serverSiteConfig.tenantSlug];
     if (industry) companyTags.push(industry.toLowerCase().replace(/\s+/g, "-"));
     if (features) {
       for (const f of features) {

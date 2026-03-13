@@ -1,3 +1,5 @@
+import { siteConfig } from "@/lib/site-config";
+
 export type PricingTier = {
   name: string;
   price: string;
@@ -1676,17 +1678,26 @@ export const services: ServiceData[] = [
 ];
 
 export function getServiceBySlug(slug: string): ServiceData | undefined {
+  if (!siteConfig.activeServiceSlugs.includes(slug)) {
+    return undefined;
+  }
   return services.find((s) => s.slug === slug);
 }
 
 export function getCoreServices(): ServiceData[] {
-  return services.filter((s) => s.category === "core");
+  const featured = new Set(siteConfig.featuredCoreServiceSlugs);
+  return services.filter((s) => s.category === "core" && siteConfig.activeServiceSlugs.includes(s.slug))
+    .sort((a, b) => Number(featured.has(b.slug)) - Number(featured.has(a.slug)));
 }
 
 export function getBlueOceanServices(): ServiceData[] {
-  return services.filter((s) => s.category === "blue-ocean");
+  const featured = new Set(siteConfig.featuredBlueOceanServiceSlugs);
+  return services.filter((s) => s.category === "blue-ocean" && siteConfig.activeServiceSlugs.includes(s.slug))
+    .sort((a, b) => Number(featured.has(b.slug)) - Number(featured.has(a.slug)));
 }
 
 export function getAllSlugs(): string[] {
-  return services.map((s) => s.slug);
+  return services
+    .filter((s) => siteConfig.activeServiceSlugs.includes(s.slug))
+    .map((s) => s.slug);
 }

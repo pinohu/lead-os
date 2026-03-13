@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, createContact, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 interface Employee {
   firstName: string;
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
     }
 
     const courseTags = courses.map((c) => `course-${c.toLowerCase().replace(/\s+/g, "-")}`);
-    const companyTags = ["compliance-training", "neatcircle", ...courseTags];
+    const companyTags = ["compliance-training", serverSiteConfig.tenantSlug, ...courseTags];
 
     const [primaryEmployee, ...remainingEmployees] = employees;
 
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
     for (const emp of remainingEmployees) {
       const employeeTags = [
         "compliance-training",
-        "neatcircle",
+        serverSiteConfig.tenantSlug,
         ...courseTags,
         emp.role ? `role-${emp.role.toLowerCase().replace(/\s+/g, "-")}` : "",
       ].filter(Boolean);

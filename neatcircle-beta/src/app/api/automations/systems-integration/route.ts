@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 interface IntegrationMapping {
   source: string;
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["systems-integration", "neatcircle"];
+    const tags = ["systems-integration", serverSiteConfig.tenantSlug];
     if (existingSystems) {
       for (const s of existingSystems) {
         tags.push(s.toLowerCase().replace(/\s+/g, "-"));

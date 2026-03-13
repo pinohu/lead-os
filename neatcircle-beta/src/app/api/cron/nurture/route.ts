@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
+import { serverSiteConfig } from "@/lib/site-config";
 
 // ── Config (env vars for secrets) ──
 
 const EMAILIT = {
   apiKey: process.env.EMAILIT_API_KEY ?? "",
   apiBase: "https://api.emailit.com/v1",
-  domain: "neatcircle.com",
-  adminTo: "ike@neatcircle.com",
+  domain: serverSiteConfig.siteDomain,
+  adminTo: serverSiteConfig.adminEmail,
 };
 
 const AITABLE = {
@@ -167,7 +168,7 @@ async function aitableCreate(fields: Record<string, string>) {
 // ── Send email (Emailit direct with tracking) ──
 
 async function sendEmail(to: string, subject: string, html: string, fromName: string) {
-  const from = `${fromName} <automations@${EMAILIT.domain}>`;
+  const from = `${fromName} <${serverSiteConfig.fromEmail}>`;
   return httpJson("POST", `${EMAILIT.apiBase}/emails`, { from, to, subject, html, tracking: { opens: true, clicks: true } }, {
     Authorization: `Bearer ${EMAILIT.apiKey}`,
   });
@@ -286,7 +287,7 @@ function parseLeads(records: AITableRecord[]): Lead[] {
         touchpointCount: (existing?.touchpointCount || 0) + 1,
         recordId: rec.recordId,
         advisor: ADVISORS.onboarding,
-        brand: "NeatCircle",
+        brand: serverSiteConfig.brandName,
         intentScore: 0,
       });
     }
@@ -379,7 +380,9 @@ export async function GET(request: Request) {
 
     for (const lead of leads) {
       lead.advisor = SCENARIO_ADVISOR_MAP[lead.scenario] || ADVISORS.onboarding;
-      lead.brand = lead.scenario.startsWith("yd-") ? "Your Deputy" : "NeatCircle";
+      lead.brand = lead.scenario.startsWith("yd-")
+        ? serverSiteConfig.secondaryBrandName
+        : serverSiteConfig.brandName;
 
       // Phase 4.1: Score-based fast-track overrides day-based logic
       let nextStage = checkScoreFastTrack(lead);

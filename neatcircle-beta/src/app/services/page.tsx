@@ -1,17 +1,18 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { getCoreServices, getBlueOceanServices, type ServiceData } from "@/lib/services";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
-  title: "Services | NeatCircle",
+  title: `Services | ${siteConfig.brandName}`,
   description:
-    "Explore NeatCircle's 16 business automation and optimization services. Core solutions and Blue Ocean niche opportunities for every industry.",
+    `Explore ${siteConfig.brandName}'s business automation and optimization services. Core solutions and Blue Ocean niche opportunities for every industry.`,
   openGraph: {
-    title: "Services | NeatCircle",
+    title: `Services | ${siteConfig.brandName}`,
     description:
-      "Explore NeatCircle's 16 business automation and optimization services.",
+      `Explore ${siteConfig.brandName}'s business automation and optimization services.`,
     type: "website",
-    url: "https://neatcircle.com/services",
+    url: `${siteConfig.siteUrl}/services`,
   },
 };
 
@@ -189,8 +190,8 @@ export default function ServicesIndex() {
             href="/"
             className="flex items-center gap-0 text-xl font-bold tracking-tight"
           >
-            <span className="text-white">Neat</span>
-            <span className="text-cyan">Circle</span>
+            <span className="text-white">{siteConfig.brandPrimary}</span>
+            <span className="text-cyan">{siteConfig.brandAccent}</span>
           </Link>
           <div className="flex items-center gap-6">
             <Link
@@ -207,7 +208,7 @@ export default function ServicesIndex() {
             </Link>
           </div>
           <p className="text-xs text-slate-500">
-            &copy; {new Date().getFullYear()} NeatCircle. All rights reserved.
+            &copy; {new Date().getFullYear()} {siteConfig.brandName}. All rights reserved.
           </p>
         </div>
       </footer>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, SuiteDashError } from "@/lib/suitedash";
+import { serverSiteConfig } from "@/lib/site-config";
 
 type TrainingType = "employee" | "client" | "certification" | "compliance";
 
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tags = ["training-platform", "neatcircle"];
+    const tags = ["training-platform", serverSiteConfig.tenantSlug];
     if (trainingType) tags.push(trainingType);
     if (typeof estimatedLearners === "number") {
       tags.push(learnerRangeTag(estimatedLearners));
