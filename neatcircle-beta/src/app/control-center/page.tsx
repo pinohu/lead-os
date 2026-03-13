@@ -4,6 +4,7 @@ import { FUNNEL_BLUEPRINTS } from "@/lib/funnel-blueprints";
 import { clientPresets } from "@/lib/client-presets";
 import { tenantPresets } from "@/lib/tenant-presets";
 import WebsiteIntelligenceLab from "@/components/WebsiteIntelligenceLab";
+import Link from "next/link";
 
 function Panel({
   title,
@@ -100,9 +101,13 @@ export default function ControlCenterPage() {
           <Panel title="Blueprint Families">
             <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
               {blueprintNames.map((name) => (
-                <div key={name} className="rounded-lg border border-white/10 bg-black/10 px-3 py-2">
+                <Link
+                  key={name}
+                  href={`/control-center/funnels/${name}`}
+                  className="rounded-lg border border-white/10 bg-black/10 px-3 py-2 transition hover:border-cyan/40 hover:bg-cyan/10"
+                >
                   {name}
-                </div>
+                </Link>
               ))}
             </div>
           </Panel>
