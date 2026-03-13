@@ -23,10 +23,10 @@ const industryLinks = [
 ];
 
 const companyLinks = [
-  { label: "About", href: "#about" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Process", href: "#process" },
-  { label: "Contact", href: "#contact" },
+  { label: "About", href: "/#about" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Process", href: "/#process" },
+  { label: "Contact", href: "/#contact" },
   { label: "Client Portal", href: siteConfig.portalUrl, external: true },
 ];
 
@@ -38,7 +38,7 @@ export default function Footer() {
           {/* Col 1: Brand */}
           <div>
             <a
-              href="#"
+              href="/"
               className="inline-flex items-center gap-0 text-xl font-bold tracking-tight mb-4"
             >
               <span className="text-white">{siteConfig.brandPrimary}</span>
@@ -60,7 +60,7 @@ export default function Footer() {
               {serviceLinks.map((link) => (
                 <li key={link}>
                   <a
-                    href="#services"
+                    href="/services"
                     className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
                     {link}
@@ -79,7 +79,7 @@ export default function Footer() {
               {industryLinks.map((link) => (
                 <li key={link}>
                   <a
-                    href="#industries"
+                    href="/#industries"
                     className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
                     {link}

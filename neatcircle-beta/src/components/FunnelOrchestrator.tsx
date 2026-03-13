@@ -174,8 +174,12 @@ export default function FunnelOrchestrator() {
         window.dispatchEvent(new Event("nc-open-chat"));
       }
       const el = document.querySelector(currentStep.ctaUrl);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-      setCtaVisible(false);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        setCtaVisible(false);
+      } else {
+        window.location.href = `/${currentStep.ctaUrl}`;
+      }
     } else {
       window.location.href = currentStep.ctaUrl;
     }

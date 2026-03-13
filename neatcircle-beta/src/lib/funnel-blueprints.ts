@@ -1623,6 +1623,7 @@ export function interpolateStep(step: FunnelStep, niche: string): FunnelStep {
       .replace(/^\/stories\/general$/, "/services")
       .replace(/^\/webinar\/general$/, "/webinar")
       .replace(/^\/giveaway\/general$/, "/giveaway")
+      .replace(/^\/thank-you$/, "/customer-success")
       .replace(/^\/funnels\/general$/, "/funnels/master-orchestration");
   };
 

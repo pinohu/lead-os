@@ -4,13 +4,13 @@ import { useState } from "react";
 import { siteConfig } from "@/lib/site-config";
 
 const navLinks = [
-  { label: "Services", href: "#services" },
-  { label: "Industries", href: "#industries" },
+  { label: "Services", href: "/#services" },
+  { label: "Industries", href: "/#industries" },
   { label: "Webinar", href: "/webinar" },
-  { label: "Process", href: "#process" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "Process", href: "/#process" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "About", href: "/#about" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
@@ -21,7 +21,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-0 text-xl font-bold tracking-tight">
+          <a href="/" className="flex items-center gap-0 text-xl font-bold tracking-tight">
             <span className="text-white">{siteConfig.brandPrimary}</span>
             <span className="text-cyan">{siteConfig.brandAccent}</span>
           </a>
@@ -38,7 +38,7 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href="#contact"
+              href="/#contact"
               className="bg-cyan hover:bg-cyan-dark text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors"
             >
               Book a Call
@@ -79,7 +79,7 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href="#contact"
+              href="/#contact"
               onClick={() => setOpen(false)}
               className="block bg-cyan hover:bg-cyan-dark text-white text-center font-semibold px-5 py-2.5 rounded-lg transition-colors mt-4"
             >
