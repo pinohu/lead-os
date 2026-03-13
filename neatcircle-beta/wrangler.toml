@@ -1,0 +1,14 @@
+name = "lead-os-live"
+main = ".open-next/worker.js"
+compatibility_date = "2026-03-13"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+[observability]
+enabled = true
+
+[vars]
+NEXT_TELEMETRY_DISABLED = "1"
