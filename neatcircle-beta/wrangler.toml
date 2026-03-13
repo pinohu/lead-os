@@ -12,3 +12,7 @@ enabled = true
 
 [vars]
 NEXT_TELEMETRY_DISABLED = "1"
+
+[[routes]]
+pattern = "leados.audreysplace.place"
+custom_domain = true
