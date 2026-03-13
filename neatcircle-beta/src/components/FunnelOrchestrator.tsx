@@ -167,6 +167,9 @@ export default function FunnelOrchestrator() {
     });
 
     if (currentStep.ctaUrl.startsWith("#")) {
+      if (currentStep.ctaUrl === "#chat-widget") {
+        window.dispatchEvent(new Event("nc-open-chat"));
+      }
       const el = document.querySelector(currentStep.ctaUrl);
       if (el) el.scrollIntoView({ behavior: "smooth" });
       setCtaVisible(false);

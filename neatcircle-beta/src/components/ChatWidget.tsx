@@ -117,7 +117,7 @@ export default function ChatWidget() {
     if (open) inputRef.current?.focus();
   }, [open]);
 
-  const handleOpen = useCallback(() => {
+  const openChat = useCallback(() => {
     setOpen(true);
     setShowBubble(false);
 
@@ -147,6 +147,34 @@ export default function ChatWidget() {
       });
     }
   }, [hasInteracted, messages.length]);
+
+  const handleOpen = useCallback(() => {
+    openChat();
+  }, [openChat]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleChatIntent = () => {
+      openChat();
+      document.getElementById("chat-widget")?.scrollIntoView({ behavior: "smooth", block: "end" });
+    };
+
+    const handleHashOpen = () => {
+      if (window.location.hash === "#chat-widget") {
+        handleChatIntent();
+      }
+    };
+
+    window.addEventListener("nc-open-chat", handleChatIntent as EventListener);
+    window.addEventListener("hashchange", handleHashOpen);
+    handleHashOpen();
+
+    return () => {
+      window.removeEventListener("nc-open-chat", handleChatIntent as EventListener);
+      window.removeEventListener("hashchange", handleHashOpen);
+    };
+  }, [openChat]);
 
   const handleSend = useCallback(() => {
     const trimmed = input.trim();
@@ -245,6 +273,7 @@ export default function ChatWidget() {
       )}
 
       <button
+        id="chat-widget"
         onClick={() => (open ? setOpen(false) : handleOpen())}
         className="fixed bottom-6 right-6 z-[9999] flex h-14 w-14 items-center justify-center rounded-full bg-cyan text-white shadow-lg transition hover:bg-cyan-dark"
         aria-label={open ? "Close chat" : "Open chat"}
