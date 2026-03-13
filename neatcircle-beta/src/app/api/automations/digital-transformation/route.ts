@@ -1,6 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createCompany, SuiteDashError } from "@/lib/suitedash";
-import { serverSiteConfig } from "@/lib/site-config";
+import { createServiceAutomationRoute } from "@/lib/service-automation";
 
 interface DigitalTransformationRequest {
   companyName: string;
@@ -18,71 +16,26 @@ function budgetRangeTag(range: string): string {
   return `budget-${range.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "")}`;
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = (await req.json()) as Partial<DigitalTransformationRequest>;
-
-    const {
-      companyName, firstName, lastName, email, phone,
-      currentState, goals, timeline, budgetRange,
-    } = body;
-
-    if (!companyName || !firstName || !lastName || !email) {
-      return NextResponse.json(
-        { error: "companyName, firstName, lastName, and email are required." },
-        { status: 400 },
-      );
-    }
-
-    const tags = ["digital-transformation", serverSiteConfig.tenantSlug];
-    if (goals) {
-      for (const g of goals) {
-        tags.push(g.toLowerCase().replace(/\s+/g, "-"));
-      }
-    }
-    if (timeline) {
-      tags.push(`timeline-${timeline.toLowerCase().replace(/\s+/g, "-")}`);
-    }
-    if (budgetRange) {
-      tags.push(budgetRangeTag(budgetRange));
-    }
-
-    const companyResult = await createCompany({
-      name: companyName,
-      role: "Lead",
-      primaryContact: {
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        create_primary_contact_if_not_exists: true,
-      },
-      phone,
-      tags,
-      background_info: [
-        currentState ? `Current state: ${currentState}` : "",
-        goals?.length ? `Goals: ${goals.join(", ")}` : "",
-        timeline ? `Timeline: ${timeline}` : "",
-        budgetRange ? `Budget range: ${budgetRange}` : "",
-      ].filter(Boolean).join("\n") || undefined,
-    });
-
-    return NextResponse.json({
-      success: true,
-      automation: "digital-transformation",
-      companyUid: companyResult.data?.uid,
-      message: "Digital transformation intake recorded in SuiteDash",
-    });
-  } catch (err) {
-    console.error("digital-transformation error:", err);
-    if (err instanceof SuiteDashError) {
-      return NextResponse.json(
-        { error: err.message, automation: "digital-transformation" },
-        { status: err.statusCode ?? 502 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+export const POST = createServiceAutomationRoute<DigitalTransformationRequest>({
+  slug: "digital-transformation",
+  nameFieldLabel: "companyName",
+  successMessage: "Digital transformation intake recorded in SuiteDash",
+  getCompanyName: (body) => body.companyName,
+  getContact: (body) => ({
+    firstName: body.firstName,
+    lastName: body.lastName,
+    email: body.email,
+    phone: body.phone,
+  }),
+  buildTags: (body) => [
+    ...(body.goals ?? []).map((goal) => goal.toLowerCase().replace(/\s+/g, "-")),
+    body.timeline ? `timeline-${body.timeline.toLowerCase().replace(/\s+/g, "-")}` : "",
+    body.budgetRange ? budgetRangeTag(body.budgetRange) : "",
+  ],
+  buildBackgroundInfo: (body) => [
+    body.currentState ? `Current state: ${body.currentState}` : "",
+    body.goals?.length ? `Goals: ${body.goals.join(", ")}` : "",
+    body.timeline ? `Timeline: ${body.timeline}` : "",
+    body.budgetRange ? `Budget range: ${body.budgetRange}` : "",
+  ],
+});

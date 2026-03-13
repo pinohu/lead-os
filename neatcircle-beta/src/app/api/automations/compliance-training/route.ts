@@ -18,7 +18,6 @@ interface ComplianceTrainingRequest {
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as Partial<ComplianceTrainingRequest>;
-
     const { companyName, employees, courses } = body;
 
     if (!companyName || !employees?.length || !courses?.length) {
@@ -28,8 +27,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    for (const emp of employees) {
-      if (!emp.firstName || !emp.lastName || !emp.email) {
+    for (const employee of employees) {
+      if (!employee.firstName || !employee.lastName || !employee.email) {
         return NextResponse.json(
           { error: "Each employee must have firstName, lastName, and email." },
           { status: 400 },
@@ -37,9 +36,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const courseTags = courses.map((c) => `course-${c.toLowerCase().replace(/\s+/g, "-")}`);
+    const courseTags = courses.map((course) => `course-${course.toLowerCase().replace(/\s+/g, "-")}`);
     const companyTags = ["compliance-training", serverSiteConfig.tenantSlug, ...courseTags];
-
     const [primaryEmployee, ...remainingEmployees] = employees;
 
     const companyResult = await createCompany({
@@ -55,39 +53,34 @@ export async function POST(req: NextRequest) {
       background_info: `Compliance courses: ${courses.join(", ")}\nEmployee count: ${employees.length}`,
     });
 
-    const contactResults: Array<{
-      email: string;
-      uid?: string;
-      existing?: boolean;
-    }> = [];
+    const contactResults: Array<{ email: string; uid?: string; existing?: boolean }> = [
+      {
+        email: primaryEmployee.email,
+        uid: companyResult.data?.uid as string | undefined,
+      },
+    ];
 
-    // Primary employee is auto-created via primaryContact
-    contactResults.push({
-      email: primaryEmployee.email,
-      uid: companyResult.data?.uid as string | undefined,
-    });
-
-    for (const emp of remainingEmployees) {
+    for (const employee of remainingEmployees) {
       const employeeTags = [
         "compliance-training",
         serverSiteConfig.tenantSlug,
         ...courseTags,
-        emp.role ? `role-${emp.role.toLowerCase().replace(/\s+/g, "-")}` : "",
+        employee.role ? `role-${employee.role.toLowerCase().replace(/\s+/g, "-")}` : "",
       ].filter(Boolean);
 
       const result = await createContact({
-        first_name: emp.firstName,
-        last_name: emp.lastName,
-        email: emp.email,
+        first_name: employee.firstName,
+        last_name: employee.lastName,
+        email: employee.email,
         company_name: companyName,
-        role: emp.role ?? "Employee",
+        role: employee.role ?? "Employee",
         tags: employeeTags,
         notes: [`Assigned courses: ${courses.join(", ")}`],
         send_welcome_email: false,
       });
 
       contactResults.push({
-        email: emp.email,
+        email: employee.email,
         uid: result.data?.uid as string | undefined,
         existing: result.message === "Contact already exists",
       });

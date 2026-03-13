@@ -1,6 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createCompany, SuiteDashError } from "@/lib/suitedash";
-import { serverSiteConfig } from "@/lib/site-config";
+import { createServiceAutomationRoute } from "@/lib/service-automation";
 
 interface BusinessIntelligenceRequest {
   companyName: string;
@@ -13,72 +11,27 @@ interface BusinessIntelligenceRequest {
   reportingFrequency?: string;
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = (await req.json()) as Partial<BusinessIntelligenceRequest>;
-
-    const {
-      companyName, firstName, lastName, email, phone,
-      dataSources, kpis, reportingFrequency,
-    } = body;
-
-    if (!companyName || !firstName || !lastName || !email) {
-      return NextResponse.json(
-        { error: "companyName, firstName, lastName, and email are required." },
-        { status: 400 },
-      );
-    }
-
-    const tags = ["bi-setup", serverSiteConfig.tenantSlug];
-    if (dataSources) {
-      for (const ds of dataSources) {
-        tags.push(`ds-${ds.toLowerCase().replace(/\s+/g, "-")}`);
-      }
-    }
-    if (kpis) {
-      for (const kpi of kpis) {
-        tags.push(`kpi-${kpi.toLowerCase().replace(/\s+/g, "-")}`);
-      }
-    }
-    if (reportingFrequency) {
-      tags.push(`reporting-${reportingFrequency.toLowerCase().replace(/\s+/g, "-")}`);
-    }
-
-    const companyResult = await createCompany({
-      name: companyName,
-      role: "Lead",
-      primaryContact: {
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        create_primary_contact_if_not_exists: true,
-      },
-      phone,
-      tags,
-      background_info: [
-        dataSources?.length ? `Data sources: ${dataSources.join(", ")}` : "",
-        kpis?.length ? `KPIs: ${kpis.join(", ")}` : "",
-        reportingFrequency ? `Reporting frequency: ${reportingFrequency}` : "",
-      ].filter(Boolean).join("\n") || undefined,
-    });
-
-    return NextResponse.json({
-      success: true,
-      automation: "business-intelligence",
-      companyUid: companyResult.data?.uid,
-      message: "Business intelligence setup recorded in SuiteDash",
-    });
-  } catch (err) {
-    console.error("business-intelligence error:", err);
-    if (err instanceof SuiteDashError) {
-      return NextResponse.json(
-        { error: err.message, automation: "business-intelligence" },
-        { status: err.statusCode ?? 502 },
-      );
-    }
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
+export const POST = createServiceAutomationRoute<BusinessIntelligenceRequest>({
+  slug: "business-intelligence",
+  nameFieldLabel: "companyName",
+  successMessage: "Business intelligence setup recorded in SuiteDash",
+  getCompanyName: (body) => body.companyName,
+  getContact: (body) => ({
+    firstName: body.firstName,
+    lastName: body.lastName,
+    email: body.email,
+    phone: body.phone,
+  }),
+  buildTags: (body) => [
+    ...(body.dataSources ?? []).map((dataSource) => `ds-${dataSource.toLowerCase().replace(/\s+/g, "-")}`),
+    ...(body.kpis ?? []).map((kpi) => `kpi-${kpi.toLowerCase().replace(/\s+/g, "-")}`),
+    body.reportingFrequency
+      ? `reporting-${body.reportingFrequency.toLowerCase().replace(/\s+/g, "-")}`
+      : "",
+  ],
+  buildBackgroundInfo: (body) => [
+    body.dataSources?.length ? `Data sources: ${body.dataSources.join(", ")}` : "",
+    body.kpis?.length ? `KPIs: ${body.kpis.join(", ")}` : "",
+    body.reportingFrequency ? `Reporting frequency: ${body.reportingFrequency}` : "",
+  ],
+});
