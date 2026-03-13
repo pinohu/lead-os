@@ -1,5 +1,23 @@
 export const PROFILE_EVENT_NAME = "nc-profile-updated";
 const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
+const TRACK_CACHE_KEY = "nc_track_cache";
+
+const EVENT_THROTTLE_MS: Partial<Record<TraceEventPayload["type"], number>> = {
+  page_view: 30_000,
+  return_visit: 10 * 60_000,
+  pricing_view: 5 * 60_000,
+  hero_impression: 10 * 60_000,
+  decision_generated: 60_000,
+  funnel_step_view: 60_000,
+  scroll_depth: 15_000,
+  time_on_page: 30_000,
+  assessment_start: 10 * 60_000,
+  chat_open: 60_000,
+  roi_calculator: 60_000,
+  whatsapp_optin: 5 * 60_000,
+  cta_click: 1_500,
+  hero_cta: 1_500,
+};
 
 export interface TraceContext {
   visitorId?: string;
@@ -49,6 +67,54 @@ export interface StoredProfile extends Record<string, unknown> {
 
 function isBrowser() {
   return typeof window !== "undefined";
+}
+
+function getTrackCache() {
+  if (!isBrowser()) return {};
+  try {
+    return JSON.parse(sessionStorage.getItem(TRACK_CACHE_KEY) ?? "{}") as Record<string, number>;
+  } catch {
+    return {};
+  }
+}
+
+function updateTrackCache(next: Record<string, number>) {
+  if (!isBrowser()) return;
+  sessionStorage.setItem(TRACK_CACHE_KEY, JSON.stringify(next));
+}
+
+function buildTrackSignature(payload: TraceEventPayload) {
+  return JSON.stringify({
+    type: payload.type,
+    page: payload.page,
+    source: payload.source,
+    service: payload.service,
+    niche: payload.niche,
+    blueprintId: payload.blueprintId,
+    stepId: payload.stepId,
+    experimentId: payload.experimentId,
+    variantId: payload.variantId,
+    email: payload.email,
+    data: payload.data,
+  });
+}
+
+function shouldTrackEvent(payload: TraceEventPayload) {
+  const throttleMs = EVENT_THROTTLE_MS[payload.type] ?? 0;
+  if (!throttleMs) return true;
+
+  const now = Date.now();
+  const signature = buildTrackSignature(payload);
+  const cache = getTrackCache();
+  const previous = cache[signature] ?? 0;
+
+  if (previous && now - previous < throttleMs) {
+    return false;
+  }
+
+  cache[signature] = now;
+  updateTrackCache(cache);
+  return true;
 }
 
 export function getStoredProfile(): StoredProfile {
@@ -151,6 +217,7 @@ export function getTraceContext(overrides: Partial<TraceContext> = {}): TraceCon
 
 export function trackBrowserEvent(payload: TraceEventPayload) {
   if (!isBrowser()) return;
+  if (!shouldTrackEvent(payload)) return;
 
   const profile = getStoredProfile();
   const trace = getTraceContext({

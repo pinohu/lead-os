@@ -4,6 +4,7 @@ import {
   clampText,
   enforceRateLimit,
   getRequestIdentity,
+  isLikelyBotRequest,
   isPlainObject,
   isValidEmail,
   isValidPhone,
@@ -50,4 +51,20 @@ test("rate limit blocks after the configured threshold", () => {
   assert.equal(first.allowed, true);
   assert.equal(second.allowed, true);
   assert.equal(third.allowed, false);
+});
+
+test("bot detection catches common crawler user agents", () => {
+  const botRequest = new Request("https://example.com/api/track", {
+    headers: {
+      "user-agent": "Mozilla/5.0 (compatible; GPTBot/1.0; +https://openai.com/gptbot)",
+    },
+  });
+  const humanRequest = new Request("https://example.com/api/track", {
+    headers: {
+      "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/123.0.0.0 Safari/537.36",
+    },
+  });
+
+  assert.equal(isLikelyBotRequest(botRequest), true);
+  assert.equal(isLikelyBotRequest(humanRequest), false);
 });

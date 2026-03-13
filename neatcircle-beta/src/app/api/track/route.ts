@@ -4,6 +4,7 @@ import {
   clampText,
   enforceRateLimit,
   getRequestIdentity,
+  isLikelyBotRequest,
   isPlainObject,
   isValidEmail,
 } from "@/lib/request-guards";
@@ -132,6 +133,10 @@ async function logToAITable(event: TrackEvent) {
 
 export async function POST(request: Request) {
   try {
+    if (isLikelyBotRequest(request)) {
+      return NextResponse.json({ success: true, skipped: "bot" }, { status: 202 });
+    }
+
     const identity = getRequestIdentity(request);
     const rateLimit = enforceRateLimit(`track:${identity}`, 120, 60_000);
     if (!rateLimit.allowed) {

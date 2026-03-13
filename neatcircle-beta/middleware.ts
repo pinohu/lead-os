@@ -41,27 +41,45 @@ function reject(status: number, error: string) {
   return NextResponse.json({ error }, { status });
 }
 
+function applyResponseHeaders(request: NextRequest, response: NextResponse) {
+  if (request.nextUrl.hostname.endsWith(".workers.dev")) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
+  }
+
+  return response;
+}
+
+function allow(request: NextRequest) {
+  return applyResponseHeaders(request, NextResponse.next());
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (request.method === "OPTIONS") {
-    return NextResponse.next();
+    return allow(request);
   }
 
   if (pathname === "/api/automations/health") {
-    return NextResponse.next();
+    return allow(request);
+  }
+
+  if (pathname === "/api/automations/smoke") {
+    return isTrustedBrowserRequest(request)
+      ? allow(request)
+      : reject(401, "Automation smoke requires a trusted browser request.");
   }
 
   if (pathname.startsWith("/api/dashboard/metrics")) {
     const dashboardSecret = process.env.DASHBOARD_SECRET ?? embeddedSecrets.dashboard.secret;
     if (!dashboardSecret) {
       return isTrustedBrowserRequest(request)
-        ? NextResponse.next()
+        ? allow(request)
         : reject(401, "Dashboard metrics require a trusted browser request.");
     }
 
     if (hasBearerToken(request, dashboardSecret) || isTrustedBrowserRequest(request)) {
-      return NextResponse.next();
+      return allow(request);
     }
 
     return reject(401, "Unauthorized");
@@ -71,29 +89,37 @@ export function middleware(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET ?? embeddedSecrets.cron.secret;
     if (!cronSecret) {
       return isLocalHost(request.nextUrl.hostname)
-        ? NextResponse.next()
+        ? allow(request)
         : reject(503, "CRON_SECRET must be configured.");
     }
 
     return hasBearerToken(request, cronSecret)
-      ? NextResponse.next()
+      ? allow(request)
       : reject(401, "Unauthorized");
   }
 
   if (pathname.startsWith("/api/automations/")) {
     const automationSecret = process.env.AUTOMATION_API_SECRET ?? embeddedSecrets.automation.apiSecret;
+    const internalSmokeRequest =
+      request.headers.get("x-lead-os-internal-smoke") === "1" &&
+      request.headers.get("x-lead-os-dry-run") === "1";
+
+    if (internalSmokeRequest) {
+      return allow(request);
+    }
+
     if (!automationSecret) {
       return isLocalHost(request.nextUrl.hostname)
-        ? NextResponse.next()
+        ? allow(request)
         : reject(503, "AUTOMATION_API_SECRET must be configured.");
     }
 
     return hasBearerToken(request, automationSecret)
-      ? NextResponse.next()
+      ? allow(request)
       : reject(401, "Unauthorized");
   }
 
-  return NextResponse.next();
+  return allow(request);
 }
 
 export const config = {

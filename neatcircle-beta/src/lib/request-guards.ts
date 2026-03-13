@@ -21,6 +21,41 @@ export function getRequestIdentity(request: Request | NextRequest) {
   return "unknown";
 }
 
+export function getUserAgent(request: Request | NextRequest) {
+  return request.headers.get("user-agent")?.toLowerCase() ?? "";
+}
+
+export function isLikelyBotRequest(request: Request | NextRequest) {
+  const userAgent = getUserAgent(request);
+  if (!userAgent) return false;
+
+  return [
+    "bot",
+    "spider",
+    "crawler",
+    "crawl",
+    "preview",
+    "headless",
+    "lighthouse",
+    "slurp",
+    "bingpreview",
+    "facebookexternalhit",
+    "meta-externalagent",
+    "whatsapp",
+    "telegrambot",
+    "discordbot",
+    "linkedinbot",
+    "embedly",
+    "quora link preview",
+    "google-read-aloud",
+    "bytespider",
+    "chatgpt-user",
+    "gptbot",
+    "claudebot",
+    "ccbot",
+  ].some((token) => userAgent.includes(token));
+}
+
 export function enforceRateLimit(key: string, limit: number, windowMs: number) {
   const now = Date.now();
   const existing = rateLimitStore.get(key);
