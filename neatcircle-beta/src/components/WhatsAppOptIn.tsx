@@ -1,20 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-function getProfile() {
-  try {
-    return JSON.parse(localStorage.getItem("nc_profile") ?? "{}");
-  } catch {
-    return {};
-  }
-}
-
-function updateProfile(updates: Record<string, unknown>) {
-  const current = getProfile();
-  localStorage.setItem("nc_profile", JSON.stringify({ ...current, ...updates }));
-  window.dispatchEvent(new Event("nc-profile-updated"));
-}
+import {
+  buildTraceIntakePayload,
+  ensureVisitorId,
+  getStoredProfile,
+  updateStoredProfile,
+} from "@/lib/trace";
 
 export default function WhatsAppOptIn() {
   const [visible, setVisible] = useState(false);
@@ -27,9 +19,8 @@ export default function WhatsAppOptIn() {
     let timer: ReturnType<typeof setTimeout> | undefined;
 
     const syncVisibility = () => {
-      const profile = getProfile();
-      const shouldShow =
-        !!profile.email && !profile.whatsappOptIn && !profile.whatsappDismissed;
+      const profile = getStoredProfile();
+      const shouldShow = !!profile.email && !profile.whatsappOptIn && !profile.whatsappDismissed;
 
       if (timer) {
         clearTimeout(timer);
@@ -59,25 +50,28 @@ export default function WhatsAppOptIn() {
     if (!phone) return;
     setLoading(true);
 
-    updateProfile({ phone, whatsappOptIn: true });
+    updateStoredProfile({ phone, whatsappOptIn: true, currentStepId: "whatsapp-optin" });
 
-    const profile = getProfile();
+    const profile = getStoredProfile();
 
     fetch("/api/intake", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        source: "whatsapp_optin",
-        visitorId: localStorage.getItem("nc_visitor_id") ?? "",
-        firstName: profile.email ? String(profile.email).split("@")[0] : "Lead",
-        lastName: ".",
-        email: profile.email,
-        phone,
-        service: profile.nicheInterest,
-        niche: profile.nicheInterest,
-        page: window.location.pathname,
-        metadata: { whatsappOptIn: true },
-      }),
+      body: JSON.stringify(
+        buildTraceIntakePayload({
+          source: "whatsapp_optin",
+          visitorId: ensureVisitorId(),
+          firstName: profile.email ? String(profile.email).split("@")[0] : "Lead",
+          lastName: ".",
+          email: profile.email as string | undefined,
+          phone,
+          service: profile.nicheInterest as string | undefined,
+          niche: profile.nicheInterest as string | undefined,
+          page: window.location.pathname,
+          metadata: { whatsappOptIn: true },
+          stepId: "whatsapp-optin",
+        }),
+      ),
     }).catch(() => {});
 
     setSubmitted(true);
@@ -86,7 +80,7 @@ export default function WhatsAppOptIn() {
 
   const dismiss = () => {
     setVisible(false);
-    updateProfile({ whatsappDismissed: true });
+    updateStoredProfile({ whatsappDismissed: true });
   };
 
   return (
@@ -103,7 +97,7 @@ export default function WhatsAppOptIn() {
         <div className="mb-3 flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
             </svg>
           </div>
           <span className="text-sm font-semibold text-navy">Get updates on WhatsApp</span>
@@ -118,7 +112,7 @@ export default function WhatsAppOptIn() {
             type="tel"
             required
             value={phone}
-            onChange={e => setPhone(e.target.value)}
+            onChange={(e) => setPhone(e.target.value)}
             placeholder="+1 (555) 000-0000"
             className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20"
           />

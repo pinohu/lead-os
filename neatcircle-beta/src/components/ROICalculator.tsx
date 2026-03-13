@@ -1,29 +1,21 @@
 "use client";
 
 import { useState, useMemo } from "react";
-
-function getProfile() {
-  try {
-    return JSON.parse(localStorage.getItem("nc_profile") ?? "{}");
-  } catch {
-    return {};
-  }
-}
-
-function updateProfile(updates: Record<string, unknown>) {
-  const current = getProfile();
-  localStorage.setItem("nc_profile", JSON.stringify({ ...current, ...updates }));
-  window.dispatchEvent(new Event("nc-profile-updated"));
-}
+import {
+  buildTraceIntakePayload,
+  ensureVisitorId,
+  trackBrowserEvent,
+  updateStoredProfile,
+} from "@/lib/trace";
 
 const INDUSTRY_MULTIPLIERS: Record<string, { label: string; savingsMultiplier: number }> = {
   "professional-services": { label: "Professional Services", savingsMultiplier: 1.2 },
   "real-estate": { label: "Real Estate / Syndication", savingsMultiplier: 1.3 },
-  "legal": { label: "Legal / Immigration", savingsMultiplier: 1.4 },
-  "construction": { label: "Construction / Contracting", savingsMultiplier: 1.1 },
-  "healthcare": { label: "Healthcare / Compliance", savingsMultiplier: 1.3 },
-  "franchise": { label: "Franchise / Multi-Location", savingsMultiplier: 1.5 },
-  "other": { label: "Other", savingsMultiplier: 1.0 },
+  legal: { label: "Legal / Immigration", savingsMultiplier: 1.4 },
+  construction: { label: "Construction / Contracting", savingsMultiplier: 1.1 },
+  healthcare: { label: "Healthcare / Compliance", savingsMultiplier: 1.3 },
+  franchise: { label: "Franchise / Multi-Location", savingsMultiplier: 1.5 },
+  other: { label: "Other", savingsMultiplier: 1.0 },
 };
 
 export default function ROICalculator() {
@@ -41,18 +33,14 @@ export default function ROICalculator() {
     const hourlyRate = avgSalary / 2080;
     const weeklyManualCost = employees * manualHours * hourlyRate;
     const annualManualCost = weeklyManualCost * 52;
-    const multiplier = INDUSTRY_MULTIPLIERS[industry]?.savingsMultiplier ?? 1.0;
-
+    const multiplier = INDUSTRY_MULTIPLIERS[industry]?.savingsMultiplier ?? 1;
     const automationSavingsPercent = 0.65;
     const annualSavings = annualManualCost * automationSavingsPercent * multiplier;
-
     const toolConsolidationSavings = tools * 1200;
     const totalAnnualSavings = annualSavings + toolConsolidationSavings;
-
     const implementationCost = 7500;
     const roi = ((totalAnnualSavings - implementationCost) / implementationCost) * 100;
     const paybackMonths = Math.ceil((implementationCost / totalAnnualSavings) * 12);
-
     const hoursRecovered = employees * manualHours * automationSavingsPercent * 52;
 
     return {
@@ -63,31 +51,32 @@ export default function ROICalculator() {
       hoursRecovered: Math.round(hoursRecovered),
       toolsSaved: Math.round(toolConsolidationSavings),
     };
-  }, [employees, avgSalary, manualHours, tools, industry]);
+  }, [avgSalary, employees, industry, manualHours, tools]);
 
   const handleCalculate = () => {
     setCalculated(true);
-    updateProfile({ roiCalculatorUsed: true });
+    updateStoredProfile({
+      roiCalculatorUsed: true,
+      nicheInterest: industry,
+      currentService: INDUSTRY_MULTIPLIERS[industry]?.label ?? "general",
+      currentStepId: "roi-results",
+    });
 
-    fetch("/api/track", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        visitorId: localStorage.getItem("nc_visitor_id") ?? "",
-        type: "roi_calculator",
-        page: window.location.pathname,
-        data: {
-          employees,
-          avgSalary,
-          manualHours,
-          tools,
-          industry,
-          annualSavings: results.annualSavings,
-          roi: results.roi,
-        },
-        timestamp: new Date().toISOString(),
-      }),
-    }).catch(() => {});
+    trackBrowserEvent({
+      type: "roi_calculator",
+      service: INDUSTRY_MULTIPLIERS[industry]?.label ?? "general",
+      niche: industry,
+      stepId: "roi-results",
+      data: {
+        employees,
+        avgSalary,
+        manualHours,
+        tools,
+        industry,
+        annualSavings: results.annualSavings,
+        roi: results.roi,
+      },
+    });
   };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -95,23 +84,30 @@ export default function ROICalculator() {
     if (!email) return;
     setLoading(true);
 
-    updateProfile({ email });
+    updateStoredProfile({
+      email,
+      nicheInterest: industry,
+      currentService: INDUSTRY_MULTIPLIERS[industry]?.label ?? "general",
+    });
 
     await fetch("/api/intake", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        source: "roi_calculator",
-        visitorId: localStorage.getItem("nc_visitor_id") ?? "",
-        firstName: email.split("@")[0],
-        lastName: ".",
-        email,
-        service: INDUSTRY_MULTIPLIERS[industry]?.label ?? "general",
-        niche: industry,
-        page: window.location.pathname,
-        score: results.roi,
-        message: `ROI Calculator: ${employees} employees, $${results.annualSavings.toLocaleString()} projected savings, ${results.roi}% ROI`,
-      }),
+      body: JSON.stringify(
+        buildTraceIntakePayload({
+          source: "roi_calculator",
+          visitorId: ensureVisitorId(),
+          firstName: email.split("@")[0],
+          lastName: ".",
+          email,
+          service: INDUSTRY_MULTIPLIERS[industry]?.label ?? "general",
+          niche: industry,
+          page: window.location.pathname,
+          score: results.roi,
+          message: `ROI Calculator: ${employees} employees, $${results.annualSavings.toLocaleString()} projected savings, ${results.roi}% ROI`,
+          stepId: "roi-capture",
+        }),
+      ),
     }).catch(() => {});
 
     setSubmitted(true);
@@ -132,31 +128,30 @@ export default function ROICalculator() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          {/* Inputs */}
           <div className="space-y-5">
             <div>
               <label className="mb-1 block text-sm font-medium text-navy">Industry</label>
               <select
                 value={industry}
-                onChange={e => setIndustry(e.target.value)}
+                onChange={(e) => setIndustry(e.target.value)}
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
               >
-                {Object.entries(INDUSTRY_MULTIPLIERS).map(([key, val]) => (
-                  <option key={key} value={key}>{val.label}</option>
+                {Object.entries(INDUSTRY_MULTIPLIERS).map(([key, value]) => (
+                  <option key={key} value={key}>
+                    {value.label}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">
-                Number of Employees
-              </label>
+              <label className="mb-1 block text-sm font-medium text-navy">Number of Employees</label>
               <input
                 type="range"
                 min={1}
                 max={100}
                 value={employees}
-                onChange={e => setEmployees(Number(e.target.value))}
+                onChange={(e) => setEmployees(Number(e.target.value))}
                 className="w-full accent-cyan"
               />
               <div className="text-right text-sm font-semibold text-cyan">{employees}</div>
@@ -169,7 +164,7 @@ export default function ROICalculator() {
               <input
                 type="number"
                 value={avgSalary}
-                onChange={e => setAvgSalary(Number(e.target.value))}
+                onChange={(e) => setAvgSalary(Number(e.target.value))}
                 step={5000}
                 min={20000}
                 max={250000}
@@ -186,22 +181,20 @@ export default function ROICalculator() {
                 min={1}
                 max={40}
                 value={manualHours}
-                onChange={e => setManualHours(Number(e.target.value))}
+                onChange={(e) => setManualHours(Number(e.target.value))}
                 className="w-full accent-cyan"
               />
               <div className="text-right text-sm font-semibold text-cyan">{manualHours}h</div>
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">
-                Software Tools in Use
-              </label>
+              <label className="mb-1 block text-sm font-medium text-navy">Software Tools in Use</label>
               <input
                 type="range"
                 min={1}
                 max={20}
                 value={tools}
-                onChange={e => setTools(Number(e.target.value))}
+                onChange={(e) => setTools(Number(e.target.value))}
                 className="w-full accent-cyan"
               />
               <div className="text-right text-sm font-semibold text-cyan">{tools} tools</div>
@@ -217,7 +210,6 @@ export default function ROICalculator() {
             )}
           </div>
 
-          {/* Results */}
           <div className={`space-y-4 transition-opacity duration-500 ${calculated ? "opacity-100" : "opacity-30"}`}>
             <div className="rounded-xl bg-gradient-to-br from-navy to-navy-light p-6 text-white">
               <p className="text-xs uppercase tracking-wider text-cyan-light">Projected Annual Savings</p>
@@ -245,14 +237,12 @@ export default function ROICalculator() {
 
             {calculated && !submitted && (
               <form onSubmit={handleEmailSubmit} className="space-y-2">
-                <p className="text-sm font-medium text-navy">
-                  Get your full personalized ROI report:
-                </p>
+                <p className="text-sm font-medium text-navy">Get your full personalized ROI report:</p>
                 <input
                   type="email"
                   required
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Your email address"
                   className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
                 />

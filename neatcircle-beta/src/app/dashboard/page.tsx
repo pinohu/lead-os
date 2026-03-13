@@ -23,22 +23,20 @@ interface Metrics {
     conversionRate: number;
     hotLeads: number;
   }>;
-  topIntakeSources: Array<{
-    source: string;
-    count: number;
-  }>;
-  topBehavioralSignals: Array<{
-    event: string;
-    count: number;
-  }>;
-  topBlueprints: Array<{
-    name: string;
-    count: number;
-  }>;
-  topServices: Array<{
-    name: string;
-    count: number;
-  }>;
+  topIntakeSources: Array<{ source: string; count: number }>;
+  topBehavioralSignals: Array<{ event: string; count: number }>;
+  topBlueprints: Array<{ name: string; count: number }>;
+  topServices: Array<{ name: string; count: number }>;
+  topExperiments: Array<{ name: string; count: number }>;
+  topVariants: Array<{ name: string; count: number }>;
+  topFunnelSteps: Array<{ name: string; count: number }>;
+  topSourceBlueprintPaths: Array<{ name: string; count: number }>;
+  traceCoverage: {
+    sessionRate: number;
+    leadKeyRate: number;
+    experimentRate: number;
+    blueprintRate: number;
+  };
   statusBreakdown: Record<string, number>;
 }
 
@@ -48,6 +46,38 @@ function StatCard({ label, value, sub }: { label: string; value: string | number
       <div style={{ color: "#8b8ba7", fontSize: 13, marginBottom: 4 }}>{label}</div>
       <div style={{ color: "#fff", fontSize: 32, fontWeight: 700 }}>{value}</div>
       {sub && <div style={{ color: "#5865f2", fontSize: 12, marginTop: 4 }}>{sub}</div>}
+    </div>
+  );
+}
+
+function MetricList({
+  title,
+  items,
+  empty,
+}: {
+  title: string;
+  items: Array<{ name: string; count: number }> | Array<{ source: string; count: number }> | Array<{ event: string; count: number }>;
+  empty: string;
+}) {
+  return (
+    <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
+      <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>{title}</h2>
+      {items.length === 0 ? (
+        <p style={{ color: "#8b8ba7" }}>{empty}</p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {items.map((item) => {
+            const label =
+              "name" in item ? item.name : "source" in item ? item.source : item.event;
+            return (
+              <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ color: "#ccc" }}>{label}</span>
+                <strong>{item.count}</strong>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -92,6 +122,11 @@ export default function DashboardPage() {
     topBehavioralSignals,
     topBlueprints,
     topServices,
+    topExperiments,
+    topVariants,
+    topFunnelSteps,
+    topSourceBlueprintPaths,
+    traceCoverage,
     statusBreakdown,
   } = metrics;
 
@@ -105,7 +140,6 @@ export default function DashboardPage() {
           </p>
         </header>
 
-        {/* Summary cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16, marginBottom: 32 }}>
           <StatCard label="Leads Today" value={summary.leadsToday} />
           <StatCard label="Leads This Week" value={summary.leadsThisWeek} />
@@ -114,10 +148,11 @@ export default function DashboardPage() {
           <StatCard label="Nurture Active" value={summary.nurtureActive} />
           <StatCard label="Total Records" value={summary.totalRecords} />
           <StatCard label="Errors" value={summary.errors} />
+          <StatCard label="Session Trace" value={`${traceCoverage.sessionRate}%`} />
+          <StatCard label="Lead Identity" value={`${traceCoverage.leadKeyRate}%`} />
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-          {/* Nurture funnel */}
           <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
             <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Nurture Funnel</h2>
             {Object.entries(nurtureFunnel).length === 0 ? (
@@ -136,7 +171,6 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Top niches */}
           <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
             <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Top Niches</h2>
             {topNiches.length === 0 ? (
@@ -156,7 +190,9 @@ export default function DashboardPage() {
                     <tr key={niche.name} style={{ borderTop: "1px solid #2a2a4a" }}>
                       <td style={{ padding: "6px 8px", color: "#ccc" }}>{niche.name}</td>
                       <td style={{ padding: "6px 8px" }}>{niche.total}</td>
-                      <td style={{ padding: "6px 8px", color: niche.conversionRate > 10 ? "#22c55e" : "#f59e0b" }}>{niche.conversionRate}%</td>
+                      <td style={{ padding: "6px 8px", color: niche.conversionRate > 10 ? "#22c55e" : "#f59e0b" }}>
+                        {niche.conversionRate}%
+                      </td>
                       <td style={{ padding: "6px 8px" }}>{niche.hotLeads}</td>
                     </tr>
                   ))}
@@ -167,47 +203,33 @@ export default function DashboardPage() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 24 }}>
-          <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Top Intake Paths</h2>
-            {topIntakeSources.length === 0 ? (
-              <p style={{ color: "#8b8ba7" }}>No captured leads yet</p>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {topIntakeSources.map((item) => (
-                  <div key={item.source} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                    <span style={{ color: "#ccc", textTransform: "capitalize" }}>{item.source.replace(/_/g, " ")}</span>
-                    <strong>{item.count}</strong>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <MetricList title="Top Intake Paths" items={topIntakeSources} empty="No captured leads yet" />
+          <MetricList title="Behavioral Signals" items={topBehavioralSignals} empty="No behavioral activity captured yet" />
+        </div>
 
-          <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Behavioral Signals</h2>
-            {topBehavioralSignals.length === 0 ? (
-              <p style={{ color: "#8b8ba7" }}>No behavioral activity captured yet</p>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {topBehavioralSignals.map((item) => (
-                  <div key={item.event} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                    <span style={{ color: "#ccc", textTransform: "capitalize" }}>{item.event.replace(/_/g, " ")}</span>
-                    <strong>{item.count}</strong>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 24 }}>
+          <MetricList title="Blueprint Activity" items={topBlueprints} empty="Blueprint attribution starts showing once orchestration events accumulate." />
+          <MetricList title="Top Services" items={topServices} empty="No service activity yet" />
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 24 }}>
           <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Blueprint Activity</h2>
-            {topBlueprints.length === 0 ? (
-              <p style={{ color: "#8b8ba7" }}>Blueprint attribution starts showing once orchestration events accumulate.</p>
+            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Experiment Coverage</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ color: "#ccc" }}>Experiment IDs</span>
+                <strong>{traceCoverage.experimentRate}%</strong>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ color: "#ccc" }}>Blueprint IDs</span>
+                <strong>{traceCoverage.blueprintRate}%</strong>
+              </div>
+            </div>
+            {topExperiments.length === 0 ? (
+              <p style={{ color: "#8b8ba7" }}>Experiments will appear as adaptive experiences accumulate.</p>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {topBlueprints.map((item) => (
+                {topExperiments.map((item) => (
                   <div key={item.name} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                     <span style={{ color: "#ccc" }}>{item.name}</span>
                     <strong>{item.count}</strong>
@@ -218,23 +240,36 @@ export default function DashboardPage() {
           </div>
 
           <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Top Services</h2>
-            {topServices.length === 0 ? (
-              <p style={{ color: "#8b8ba7" }}>No service activity yet</p>
+            <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Variants & Steps</h2>
+            {topVariants.length === 0 && topFunnelSteps.length === 0 ? (
+              <p style={{ color: "#8b8ba7" }}>Variant and step traces will populate after routed journeys run.</p>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {topServices.map((item) => (
-                  <div key={item.name} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                    <span style={{ color: "#ccc" }}>{item.name}</span>
-                    <strong>{item.count}</strong>
-                  </div>
-                ))}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ color: "#8b8ba7", fontSize: 12, textTransform: "uppercase" }}>Variants</div>
+                  {topVariants.slice(0, 5).map((item) => (
+                    <div key={item.name} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                      <span style={{ color: "#ccc" }}>{item.name}</span>
+                      <strong>{item.count}</strong>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ color: "#8b8ba7", fontSize: 12, textTransform: "uppercase" }}>Funnel Steps</div>
+                  {topFunnelSteps.slice(0, 5).map((item) => (
+                    <div key={item.name} style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                      <span style={{ color: "#ccc" }}>{item.name}</span>
+                      <strong>{item.count}</strong>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Status breakdown */}
+        <MetricList title="Source to Blueprint Paths" items={topSourceBlueprintPaths} empty="Path attribution appears once browser decisions and server intake share trace IDs." />
+
         <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24, marginTop: 24 }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Status Breakdown</h2>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>

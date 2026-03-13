@@ -8,19 +8,12 @@ import {
   detectNicheFromPath,
 } from "@/lib/funnel-blueprints";
 import type { FunnelStep, FunnelState } from "@/lib/funnel-blueprints";
-
-function getProfile() {
-  try {
-    return JSON.parse(localStorage.getItem("nc_profile") ?? "{}");
-  } catch {
-    return {};
-  }
-}
+import { getStoredProfile, trackBrowserEvent, updateStoredProfile } from "@/lib/trace";
 
 function getFunnelState(): FunnelState | null {
   try {
     const raw = localStorage.getItem("nc_funnel_state");
-    return raw ? JSON.parse(raw) : null;
+    return raw ? (JSON.parse(raw) as FunnelState) : null;
   } catch {
     return null;
   }
@@ -39,39 +32,35 @@ export default function FunnelOrchestrator() {
   const evaluateFunnel = useCallback(() => {
     if (typeof window === "undefined") return;
 
-    const profile = getProfile();
+    const profile = getStoredProfile();
     const path = window.location.pathname;
-    const detectedNiche = profile.nicheInterest ?? detectNicheFromPath(path);
+    const detectedNiche = (profile.nicheInterest as string | undefined) ?? detectNicheFromPath(path);
     setNiche(detectedNiche);
 
-    // Don't show funnel CTA on assessment or calculator pages (they ARE the funnel)
     if (path.startsWith("/assess") || path.startsWith("/calculator")) return;
 
-    // Don't show if just arrived (wait for some engagement)
-    const pages = profile.pagesViewed?.length ?? 0;
-    const timeOnSite = profile.totalTimeOnSite ?? 0;
+    const pages = ((profile.pagesViewed ?? []) as string[]).length;
+    const timeOnSite = (profile.totalTimeOnSite as number | undefined) ?? 0;
     if (pages < 1 && timeOnSite < 15) return;
 
-    // Select blueprint based on visitor profile
     const recommendation = recommendBlueprintForVisitor({
       scores: profile.scores ?? { engagement: 0, intent: 0, composite: 0 },
-      capturedEmail: profile.email,
-      capturedPhone: profile.phone,
-      assessmentCompleted: profile.assessmentCompleted,
-      roiCalculatorUsed: profile.roiCalculatorUsed,
-      chatEngaged: profile.chatEngaged,
-      whatsappOptIn: profile.whatsappOptIn,
+      capturedEmail: profile.email as string | undefined,
+      capturedPhone: profile.phone as string | undefined,
+      assessmentCompleted: Boolean(profile.assessmentCompleted),
+      roiCalculatorUsed: Boolean(profile.roiCalculatorUsed),
+      chatEngaged: Boolean(profile.chatEngaged),
+      whatsappOptIn: Boolean(profile.whatsappOptIn),
       sessions: parseInt(localStorage.getItem("nc_sessions") ?? "1", 10),
-      pagesViewed: profile.pagesViewed ?? [],
+      pagesViewed: (profile.pagesViewed ?? []) as string[],
       nicheInterest: detectedNiche !== "general" ? detectedNiche : undefined,
-      funnelStage: profile.funnelStage,
-      referralSource: profile.referralSource,
-      utmSource: profile.utmSource,
-      utmMedium: profile.utmMedium,
+      funnelStage: profile.funnelStage as string | undefined,
+      referralSource: profile.referralSource as string | undefined,
+      utmSource: profile.utmSource as string | undefined,
+      utmMedium: profile.utmMedium as string | undefined,
     });
     const blueprint = recommendation.blueprint;
 
-    // Get or create funnel state
     let state = getFunnelState();
     if (!state || state.activeBlueprint !== blueprint.id) {
       state = {
@@ -85,7 +74,6 @@ export default function FunnelOrchestrator() {
       saveFunnelState(state);
     }
 
-    // Mark completed steps based on profile state
     if (profile.assessmentCompleted && !state.completedSteps.includes("audit-quiz")) {
       state.completedSteps.push("audit-quiz", "audit-capture", "audit-results");
     }
@@ -97,39 +85,35 @@ export default function FunnelOrchestrator() {
     }
     saveFunnelState(state);
 
-    // Find next step
     const next = getNextFunnelStep(blueprint, state.completedSteps);
-    if (next) {
-      const interpolated = interpolateStep(next, detectedNiche);
-      setCurrentStep(interpolated);
-      setCtaVisible(true);
-    }
+    if (!next) return;
 
-    // Track blueprint selection
-    fetch("/api/track", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        visitorId: localStorage.getItem("nc_visitor_id") ?? "",
-        type: "cta_click",
-        page: path,
-        data: {
-          blueprintId: blueprint.id,
-          blueprintName: blueprint.name,
-          nextStepId: next?.id,
-          niche: detectedNiche,
-          reason: recommendation.reason,
-          temperature: recommendation.temperature,
-          objection: recommendation.objection,
-          channel: recommendation.channel,
-        },
-        timestamp: new Date().toISOString(),
-      }),
-    }).catch(() => {});
+    const interpolated = interpolateStep(next, detectedNiche);
+    setCurrentStep(interpolated);
+    setCtaVisible(true);
+    updateStoredProfile({
+      activeBlueprint: blueprint.id,
+      currentStepId: interpolated.id,
+      nicheInterest: detectedNiche,
+    });
+
+    trackBrowserEvent({
+      type: "decision_generated",
+      blueprintId: blueprint.id,
+      stepId: next.id,
+      niche: detectedNiche,
+      data: {
+        blueprintName: blueprint.name,
+        nextStepId: next.id,
+        reason: recommendation.reason,
+        temperature: recommendation.temperature,
+        objection: recommendation.objection,
+        channel: recommendation.channel,
+      },
+    });
   }, []);
 
   useEffect(() => {
-    // Evaluate after a short delay to let BehavioralTracker set profile
     const timer = setTimeout(evaluateFunnel, 3000);
     return () => clearTimeout(timer);
   }, [evaluateFunnel]);
@@ -140,12 +124,9 @@ export default function FunnelOrchestrator() {
     return () => window.removeEventListener("nc-profile-updated", handleProfileUpdate);
   }, [evaluateFunnel]);
 
-  // Re-evaluate when page visibility changes (tab switch back)
   useEffect(() => {
     const handleVisibility = () => {
-      if (document.visibilityState === "visible") {
-        evaluateFunnel();
-      }
+      if (document.visibilityState === "visible") evaluateFunnel();
     };
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
@@ -154,7 +135,6 @@ export default function FunnelOrchestrator() {
   const handleCtaClick = () => {
     if (!currentStep) return;
 
-    // Mark step as completed
     const state = getFunnelState();
     if (state && !state.completedSteps.includes(currentStep.id)) {
       state.completedSteps.push(currentStep.id);
@@ -162,25 +142,30 @@ export default function FunnelOrchestrator() {
       saveFunnelState(state);
     }
 
-    // Track the CTA click
-    fetch("/api/track", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        visitorId: localStorage.getItem("nc_visitor_id") ?? "",
-        type: "cta_click",
-        page: window.location.pathname,
-        data: {
-          stepId: currentStep.id,
-          stepType: currentStep.type,
-          ctaUrl: currentStep.ctaUrl,
-          niche,
-        },
-        timestamp: new Date().toISOString(),
-      }),
-    }).catch(() => {});
+    updateStoredProfile({
+      currentStepId: currentStep.id,
+      activeBlueprint: state?.activeBlueprint,
+    });
 
-    // Navigate
+    trackBrowserEvent({
+      type: "funnel_step_view",
+      stepId: currentStep.id,
+      niche,
+      data: {
+        stepType: currentStep.type,
+        ctaUrl: currentStep.ctaUrl,
+      },
+    });
+    trackBrowserEvent({
+      type: "cta_click",
+      stepId: currentStep.id,
+      niche,
+      data: {
+        stepType: currentStep.type,
+        ctaUrl: currentStep.ctaUrl,
+      },
+    });
+
     if (currentStep.ctaUrl.startsWith("#")) {
       const el = document.querySelector(currentStep.ctaUrl);
       if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -194,7 +179,6 @@ export default function FunnelOrchestrator() {
     setDismissed(true);
     setCtaVisible(false);
 
-    // Track abandonment
     if (currentStep) {
       const state = getFunnelState();
       if (state) {
@@ -206,7 +190,6 @@ export default function FunnelOrchestrator() {
 
   if (!ctaVisible || dismissed || !currentStep) return null;
 
-  // Determine CTA style based on step type
   const isHighUrgency = currentStep.type === "booking" || currentStep.type === "offer";
   const bgColor = isHighUrgency ? "bg-cyan" : "bg-navy";
   const position = currentStep.type === "upsell" ? "top-20" : "bottom-24";

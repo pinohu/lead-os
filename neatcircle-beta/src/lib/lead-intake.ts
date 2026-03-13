@@ -2,6 +2,7 @@ import { createContact } from "@/lib/suitedash";
 import { embeddedSecrets } from "@/lib/embedded-secrets";
 import { serverSiteConfig } from "@/lib/site-config";
 import { clampText, isPlainObject, isValidEmail, isValidPhone } from "@/lib/request-guards";
+import { buildLeadKey } from "@/lib/trace";
 
 export type IntakeSource =
   | "contact_form"
@@ -16,6 +17,8 @@ export type IntakeSource =
 export interface LeadIntakePayload {
   source: IntakeSource;
   visitorId?: string;
+  sessionId?: string;
+  leadKey?: string;
   firstName?: string;
   lastName?: string;
   email?: string;
@@ -23,6 +26,10 @@ export interface LeadIntakePayload {
   company?: string;
   service?: string;
   niche?: string;
+  blueprintId?: string;
+  stepId?: string;
+  experimentId?: string;
+  variantId?: string;
   message?: string;
   page?: string;
   score?: number;
@@ -53,9 +60,12 @@ const AITABLE = {
   apiBase: "https://aitable.ai/fusion/v1",
 };
 
-const DISCORD_HIGH_VALUE = process.env.DISCORD_HIGH_VALUE_WEBHOOK ?? embeddedSecrets.discord.highValueWebhook;
-const TELEGRAM_HIGH_VALUE_CHAT = process.env.TELEGRAM_HIGH_VALUE_CHAT ?? embeddedSecrets.telegram.highValueChat;
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN ?? embeddedSecrets.telegram.botToken;
+const DISCORD_HIGH_VALUE =
+  process.env.DISCORD_HIGH_VALUE_WEBHOOK ?? embeddedSecrets.discord.highValueWebhook;
+const TELEGRAM_HIGH_VALUE_CHAT =
+  process.env.TELEGRAM_HIGH_VALUE_CHAT ?? embeddedSecrets.telegram.highValueChat;
+const TELEGRAM_BOT_TOKEN =
+  process.env.TELEGRAM_BOT_TOKEN ?? embeddedSecrets.telegram.botToken;
 const intakeReplayStore = new Map<string, number>();
 const INTAKE_REPLAY_WINDOW_MS = 5 * 60 * 1000;
 const VALID_SOURCES: IntakeSource[] = [
@@ -95,6 +105,7 @@ function buildTags(payload: LeadIntakePayload) {
 function buildReplayKey(payload: LeadIntakePayload, normalized: IntakeResult["normalized"]) {
   return [
     payload.source,
+    payload.sessionId ?? "",
     normalized.email ?? "",
     normalized.phone ?? "",
     normalized.service ?? normalized.niche ?? "",
@@ -104,9 +115,7 @@ function buildReplayKey(payload: LeadIntakePayload, normalized: IntakeResult["no
 function isRecentReplay(key: string) {
   const now = Date.now();
   const existing = intakeReplayStore.get(key);
-  if (existing && now - existing < INTAKE_REPLAY_WINDOW_MS) {
-    return true;
-  }
+  if (existing && now - existing < INTAKE_REPLAY_WINDOW_MS) return true;
   intakeReplayStore.set(key, now);
   return false;
 }
@@ -115,25 +124,34 @@ async function logToAITable(payload: LeadIntakePayload, normalized: IntakeResult
   if (!AITABLE.apiToken) return false;
 
   const detail = {
+    kind: "intake",
     source: payload.source,
-    page: payload.page,
-    service: payload.service,
-    niche: payload.niche,
+    trace: {
+      visitorId: payload.visitorId,
+      sessionId: payload.sessionId,
+      leadKey: payload.leadKey ?? buildLeadKey(normalized.email, normalized.phone),
+      page: payload.page,
+      service: payload.service,
+      niche: payload.niche,
+      blueprintId: payload.blueprintId,
+      stepId: payload.stepId,
+      experimentId: payload.experimentId,
+      variantId: payload.variantId,
+    },
     score: payload.score,
     tier: payload.tier,
     metadata: payload.metadata ?? {},
   };
 
-  await fetch(
-    `${AITABLE.apiBase}/datasheets/${AITABLE.datasheetId}/records?fieldKey=name`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${AITABLE.apiToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        records: [{
+  await fetch(`${AITABLE.apiBase}/datasheets/${AITABLE.datasheetId}/records?fieldKey=name`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${AITABLE.apiToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      records: [
+        {
           fields: {
             Title: `INTAKE-${payload.source.toUpperCase()} - ${payload.service || payload.niche || "general"}`,
             Scenario: payload.service || payload.niche || "general",
@@ -144,11 +162,11 @@ async function logToAITable(payload: LeadIntakePayload, normalized: IntakeResult
             Touchpoint: payload.source,
             "AI Generated": JSON.stringify(detail).slice(0, 900),
           },
-        }],
-        fieldKey: "name",
-      }),
-    },
-  ).catch(() => {});
+        },
+      ],
+      fieldKey: "name",
+    }),
+  }).catch(() => {});
 
   return true;
 }
@@ -164,26 +182,38 @@ Email: ${normalized.email ?? "unknown"}
 Phone: ${normalized.phone ?? "unknown"}
 Service: ${payload.service ?? payload.niche ?? "general"}
 Score: ${payload.score ?? "n/a"}
-Page: ${payload.page ?? "/"}`;
+Page: ${payload.page ?? "/"}
+Blueprint: ${payload.blueprintId ?? "n/a"}
+Step: ${payload.stepId ?? "n/a"}`;
 
   if (DISCORD_HIGH_VALUE) {
     fetch(DISCORD_HIGH_VALUE, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        embeds: [{
-          title: "High-Value Lead Intake",
-          color: 0xff0000,
-          fields: [
-            { name: "Source", value: payload.source, inline: true },
-            { name: "Name", value: `${normalized.firstName} ${normalized.lastName}`.trim(), inline: true },
-            { name: "Service", value: payload.service ?? payload.niche ?? "general", inline: true },
-            { name: "Email", value: normalized.email ?? "unknown", inline: true },
-            { name: "Phone", value: normalized.phone ?? "unknown", inline: true },
-            { name: "Score", value: String(payload.score ?? "n/a"), inline: true },
-          ],
-          timestamp: new Date().toISOString(),
-        }],
+        embeds: [
+          {
+            title: "High-Value Lead Intake",
+            color: 0xff0000,
+            fields: [
+              { name: "Source", value: payload.source, inline: true },
+              {
+                name: "Name",
+                value: `${normalized.firstName} ${normalized.lastName}`.trim(),
+                inline: true,
+              },
+              {
+                name: "Service",
+                value: payload.service ?? payload.niche ?? "general",
+                inline: true,
+              },
+              { name: "Email", value: normalized.email ?? "unknown", inline: true },
+              { name: "Phone", value: normalized.phone ?? "unknown", inline: true },
+              { name: "Score", value: String(payload.score ?? "n/a"), inline: true },
+            ],
+            timestamp: new Date().toISOString(),
+          },
+        ],
       }),
     }).catch(() => {});
   }
@@ -203,18 +233,10 @@ Page: ${payload.page ?? "/"}`;
 }
 
 export async function processLeadIntake(payload: LeadIntakePayload): Promise<IntakeResult> {
-  if (!VALID_SOURCES.includes(payload.source)) {
-    throw new Error("Invalid intake source.");
-  }
-  if (!payload.email && !payload.phone) {
-    throw new Error("An email or phone number is required.");
-  }
-  if (payload.email && !isValidEmail(payload.email)) {
-    throw new Error("Invalid email address.");
-  }
-  if (payload.phone && !isValidPhone(payload.phone)) {
-    throw new Error("Invalid phone number.");
-  }
+  if (!VALID_SOURCES.includes(payload.source)) throw new Error("Invalid intake source.");
+  if (!payload.email && !payload.phone) throw new Error("An email or phone number is required.");
+  if (payload.email && !isValidEmail(payload.email)) throw new Error("Invalid email address.");
+  if (payload.phone && !isValidPhone(payload.phone)) throw new Error("Invalid phone number.");
 
   const normalized = {
     firstName: normalizeName(clampText(payload.firstName, 80)) || deriveFirstName(payload.email),
@@ -224,7 +246,14 @@ export async function processLeadIntake(payload: LeadIntakePayload): Promise<Int
     service: clampText(payload.service, 120) || undefined,
     niche: clampText(payload.niche, 120) || undefined,
   };
-  const replayKey = buildReplayKey(payload, normalized);
+  const sessionId = clampText(payload.sessionId, 120) || undefined;
+  const visitorId = clampText(payload.visitorId, 120) || undefined;
+  const leadKey = payload.leadKey || buildLeadKey(normalized.email, normalized.phone);
+  const blueprintId = clampText(payload.blueprintId, 120) || undefined;
+  const stepId = clampText(payload.stepId, 120) || undefined;
+  const experimentId = clampText(payload.experimentId, 120) || undefined;
+  const variantId = clampText(payload.variantId, 120) || undefined;
+  const replayKey = buildReplayKey({ ...payload, sessionId }, normalized);
   const replayed = isRecentReplay(replayKey);
   const company = clampText(payload.company, 160) || undefined;
   const message = clampText(payload.message, 1200) || undefined;
@@ -256,6 +285,8 @@ export async function processLeadIntake(payload: LeadIntakePayload): Promise<Int
         page ? `Page: ${page}` : "",
         score != null ? `Score: ${score}` : "",
         tier ? `Tier: ${tier}` : "",
+        blueprintId ? `Blueprint: ${blueprintId}` : "",
+        stepId ? `Step: ${stepId}` : "",
       ].filter(Boolean),
       send_welcome_email: false,
     });
@@ -265,11 +296,28 @@ export async function processLeadIntake(payload: LeadIntakePayload): Promise<Int
     contactCreated = true;
   }
 
+  const enrichedPayload: LeadIntakePayload = {
+    ...payload,
+    visitorId,
+    sessionId,
+    leadKey,
+    company,
+    message,
+    page,
+    tier,
+    score,
+    metadata,
+    blueprintId,
+    stepId,
+    experimentId,
+    variantId,
+  };
+
   const [logged, alerted] = replayed
     ? [false, false]
     : await Promise.all([
-        logToAITable({ ...payload, company, message, page, tier, score, metadata }, normalized),
-        alertHighValue({ ...payload, company, message, page, tier, score, metadata }, normalized),
+        logToAITable(enrichedPayload, normalized),
+        alertHighValue(enrichedPayload, normalized),
       ]);
 
   return {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { siteConfig } from "@/lib/site-config";
+import { buildTraceIntakePayload } from "@/lib/trace";
 
 const serviceOptions = [
   "Client Portal Automation",
@@ -29,7 +30,14 @@ export default function Contact() {
       const res = await fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, source: "contact_form", page: window.location.pathname }),
+        body: JSON.stringify(
+          buildTraceIntakePayload({
+            ...data,
+            source: "contact_form",
+            page: window.location.pathname,
+            stepId: "contact-form",
+          }),
+        ),
       });
       if (res.ok) {
         setStatus("sent");

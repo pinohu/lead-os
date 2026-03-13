@@ -1,35 +1,59 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import {
+  buildTraceIntakePayload,
+  ensureVisitorId,
+  getStoredProfile,
+  trackBrowserEvent,
+  updateStoredProfile,
+} from "@/lib/trace";
 
-function getProfile() {
-  try {
-    return JSON.parse(localStorage.getItem("nc_profile") ?? "{}");
-  } catch {
-    return {};
-  }
-}
-
-function updateProfile(updates: Record<string, unknown>) {
-  const current = getProfile();
-  localStorage.setItem("nc_profile", JSON.stringify({ ...current, ...updates }));
-  window.dispatchEvent(new Event("nc-profile-updated"));
-}
-
-// Per-page offers based on URL
 function getOffer(path: string): { headline: string; subtext: string; cta: string; niche?: string } {
-  if (path.includes("re-syndication"))
-    return { headline: "Before you go — free Investor Portal Assessment", subtext: "See how your investor experience compares to top syndicators", cta: "Get My Score", niche: "re-syndication" };
-  if (path.includes("immigration"))
-    return { headline: "Wait — free Case Management Audit", subtext: "Discover how much time your firm is losing to manual processes", cta: "Start My Audit", niche: "immigration-law" };
-  if (path.includes("construction"))
-    return { headline: "Before you go — free Construction Portal Assessment", subtext: "See how your client communication compares to top contractors", cta: "Get My Score", niche: "construction" };
-  if (path.includes("franchise"))
-    return { headline: "Wait — free Franchise Operations Audit", subtext: "See how your multi-location management stacks up", cta: "Start My Audit", niche: "franchise" };
-  if (path.includes("pricing") || path.includes("services"))
-    return { headline: "Not sure which plan fits?", subtext: "Get a free personalized recommendation in 2 minutes", cta: "Get My Recommendation" };
-  // Default
-  return { headline: "Before you go — free Business Automation Assessment", subtext: "Discover how much time and money you could save with automation", cta: "Get My Free Assessment" };
+  if (path.includes("re-syndication")) {
+    return {
+      headline: "Before you go - free Investor Portal Assessment",
+      subtext: "See how your investor experience compares to top syndicators",
+      cta: "Get My Score",
+      niche: "re-syndication",
+    };
+  }
+  if (path.includes("immigration")) {
+    return {
+      headline: "Wait - free Case Management Audit",
+      subtext: "Discover how much time your firm is losing to manual processes",
+      cta: "Start My Audit",
+      niche: "immigration-law",
+    };
+  }
+  if (path.includes("construction")) {
+    return {
+      headline: "Before you go - free Construction Portal Assessment",
+      subtext: "See how your client communication compares to top contractors",
+      cta: "Get My Score",
+      niche: "construction",
+    };
+  }
+  if (path.includes("franchise")) {
+    return {
+      headline: "Wait - free Franchise Operations Audit",
+      subtext: "See how your multi-location management stacks up",
+      cta: "Start My Audit",
+      niche: "franchise",
+    };
+  }
+  if (path.includes("pricing") || path.includes("services")) {
+    return {
+      headline: "Not sure which plan fits?",
+      subtext: "Get a free personalized recommendation in 2 minutes",
+      cta: "Get My Recommendation",
+    };
+  }
+  return {
+    headline: "Before you go - free Business Automation Assessment",
+    subtext: "Discover how much time and money you could save with automation",
+    cta: "Get My Free Assessment",
+  };
 }
 
 export default function ExitIntent() {
@@ -39,34 +63,36 @@ export default function ExitIntent() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleMouseLeave = useCallback((e: MouseEvent) => {
-    if (e.clientY > 10) return; // Only trigger when cursor goes toward top
-    const profile = getProfile();
-    if (profile.exitIntentShown || profile.email) return; // Don't show if already shown or captured
-    const dismissed = sessionStorage.getItem("nc_exit_dismissed");
-    if (dismissed) return;
+  const offer = typeof window !== "undefined" ? getOffer(window.location.pathname) : getOffer("");
 
-    setVisible(true);
-    updateProfile({ exitIntentShown: true });
+  const handleMouseLeave = useCallback(
+    (e: MouseEvent) => {
+      if (e.clientY > 10) return;
+      const profile = getStoredProfile();
+      if (profile.exitIntentShown || profile.email) return;
+      if (sessionStorage.getItem("nc_exit_dismissed")) return;
 
-    fetch("/api/track", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        visitorId: localStorage.getItem("nc_visitor_id") ?? "",
+      setVisible(true);
+      updateStoredProfile({
+        exitIntentShown: true,
+        nicheInterest: offer.niche ?? "general",
+        currentStepId: "exit-intent",
+      });
+
+      trackBrowserEvent({
         type: "exit_intent",
-        page: window.location.pathname,
-        timestamp: new Date().toISOString(),
-      }),
-    }).catch(() => {});
-  }, []);
+        service: offer.niche ?? "general",
+        niche: offer.niche ?? "general",
+        stepId: "exit-intent",
+        data: { offer: offer.headline },
+      });
+    },
+    [offer.headline, offer.niche],
+  );
 
   useEffect(() => {
-    // Don't show on mobile (no mouse leave event)
-    if (typeof window === "undefined") return;
-    if (window.innerWidth < 768) return;
+    if (typeof window === "undefined" || window.innerWidth < 768) return;
 
-    // Delay 5 seconds before enabling
     const timer = setTimeout(() => {
       document.addEventListener("mouseleave", handleMouseLeave);
     }, 5000);
@@ -82,23 +108,31 @@ export default function ExitIntent() {
     if (!email) return;
     setLoading(true);
 
-    updateProfile({ email, exitIntentConverted: true });
+    updateStoredProfile({
+      email,
+      exitIntentConverted: true,
+      nicheInterest: offer.niche ?? "general",
+      currentService: offer.niche ?? "general",
+    });
 
     await fetch("/api/intake", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        source: "exit_intent",
-        visitorId: localStorage.getItem("nc_visitor_id") ?? "",
-        firstName: email.split("@")[0],
-        lastName: ".",
-        email,
-        company: company || undefined,
-        service: offer.niche ?? "general",
-        niche: offer.niche ?? "general",
-        page: window.location.pathname,
-        message: `Exit-intent capture on ${window.location.pathname}. Offer: ${offer.headline}`,
-      }),
+      body: JSON.stringify(
+        buildTraceIntakePayload({
+          source: "exit_intent",
+          visitorId: ensureVisitorId(),
+          firstName: email.split("@")[0],
+          lastName: ".",
+          email,
+          company: company || undefined,
+          service: offer.niche ?? "general",
+          niche: offer.niche ?? "general",
+          page: window.location.pathname,
+          message: `Exit-intent capture on ${window.location.pathname}. Offer: ${offer.headline}`,
+          stepId: "exit-intent-capture",
+        }),
+      ),
     }).catch(() => {});
 
     setSubmitted(true);
@@ -110,17 +144,21 @@ export default function ExitIntent() {
     sessionStorage.setItem("nc_exit_dismissed", "true");
   };
 
-  const offer = typeof window !== "undefined" ? getOffer(window.location.pathname) : getOffer("");
-
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm"
-      onClick={(e) => { if (e.target === e.currentTarget) dismiss(); }}>
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) dismiss();
+      }}
+    >
       <div className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
-        <button onClick={dismiss}
+        <button
+          onClick={dismiss}
           className="absolute right-4 top-4 text-2xl text-gray-400 hover:text-gray-600"
-          aria-label="Close">
+          aria-label="Close"
+        >
           &times;
         </button>
 
@@ -133,33 +171,45 @@ export default function ExitIntent() {
             <p className="mb-6 text-gray-600">{offer.subtext}</p>
 
             <form onSubmit={handleSubmit} className="space-y-3">
-              <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20" />
-              <input type="text" value={company} onChange={e => setCompany(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
+              />
+              <input
+                type="text"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
                 placeholder="Company name (optional)"
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20" />
-              <button type="submit" disabled={loading}
-                className="w-full rounded-lg bg-cyan px-6 py-3 font-semibold text-white transition hover:bg-cyan-dark disabled:opacity-50">
+                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-lg bg-cyan px-6 py-3 font-semibold text-white transition hover:bg-cyan-dark disabled:opacity-50"
+              >
                 {loading ? "Processing..." : offer.cta}
               </button>
             </form>
 
-            <p className="mt-4 text-center text-xs text-gray-400">
-              No spam. Unsubscribe anytime.
-            </p>
+            <p className="mt-4 text-center text-xs text-gray-400">No spam. Unsubscribe anytime.</p>
           </>
         ) : (
           <div className="py-4 text-center">
             <div className="mb-4 text-5xl">&#10003;</div>
             <h3 className="mb-2 text-2xl font-bold text-navy">Check your inbox!</h3>
             <p className="text-gray-600">
-              Your personalized assessment is on its way. We&apos;ll also send you actionable insights
-              specific to your business.
+              Your personalized assessment is on its way. We&apos;ll also send you actionable
+              insights specific to your business.
             </p>
             {offer.niche && (
-              <a href={`/assess/${offer.niche}`}
-                className="mt-4 inline-block rounded-lg bg-cyan px-6 py-3 font-semibold text-white hover:bg-cyan-dark">
+              <a
+                href={`/assess/${offer.niche}`}
+                className="mt-4 inline-block rounded-lg bg-cyan px-6 py-3 font-semibold text-white hover:bg-cyan-dark"
+              >
                 Start Interactive Assessment Now
               </a>
             )}

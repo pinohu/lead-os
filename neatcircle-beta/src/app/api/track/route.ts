@@ -7,6 +7,7 @@ import {
   isPlainObject,
   isValidEmail,
 } from "@/lib/request-guards";
+import { buildLeadKey } from "@/lib/trace";
 
 const AITABLE = {
   apiToken: process.env.AITABLE_API_TOKEN ?? embeddedSecrets.aitable.apiToken,
@@ -16,11 +17,37 @@ const AITABLE = {
 
 interface TrackEvent {
   visitorId: string;
-  type: "page_view" | "scroll_depth" | "time_on_page" | "exit_intent" |
-        "assessment_start" | "assessment_complete" | "chat_open" | "chat_message" |
-        "roi_calculator" | "whatsapp_optin" | "referral_click" | "cta_click" |
-        "return_visit" | "pricing_view" | "email_captured" | "phone_captured";
+  type:
+    | "page_view"
+    | "scroll_depth"
+    | "time_on_page"
+    | "exit_intent"
+    | "assessment_start"
+    | "assessment_complete"
+    | "chat_open"
+    | "chat_message"
+    | "roi_calculator"
+    | "whatsapp_optin"
+    | "referral_click"
+    | "cta_click"
+    | "return_visit"
+    | "pricing_view"
+    | "email_captured"
+    | "phone_captured"
+    | "hero_impression"
+    | "hero_cta"
+    | "decision_generated"
+    | "funnel_step_view";
+  sessionId?: string;
+  leadKey?: string;
   page: string;
+  source?: string;
+  service?: string;
+  niche?: string;
+  blueprintId?: string;
+  stepId?: string;
+  experimentId?: string;
+  variantId?: string;
   data?: Record<string, unknown>;
   scores?: { engagement: number; intent: number; fit: number; urgency: number; composite: number };
   email?: string;
@@ -44,13 +71,36 @@ const VALID_TRACK_TYPES: TrackEvent["type"][] = [
   "pricing_view",
   "email_captured",
   "phone_captured",
+  "hero_impression",
+  "hero_cta",
+  "decision_generated",
+  "funnel_step_view",
 ];
 
 async function logToAITable(event: TrackEvent) {
   if (!AITABLE.apiToken) return;
 
-  const title = `EVENT-${event.type.toUpperCase()} — ${event.page}`;
-  const detail = event.data ? JSON.stringify(event.data).slice(0, 500) : "";
+  const title = `EVENT-${event.type.toUpperCase()} - ${event.page}`;
+  const detail = JSON.stringify({
+    kind: "event",
+    eventType: event.type,
+    trace: {
+      visitorId: event.visitorId,
+      sessionId: event.sessionId,
+      leadKey: event.leadKey,
+      page: event.page,
+      source: event.source,
+      service: event.service,
+      niche: event.niche,
+      blueprintId: event.blueprintId,
+      stepId: event.stepId,
+      experimentId: event.experimentId,
+      variantId: event.variantId,
+      timestamp: event.timestamp,
+    },
+    data: event.data ?? {},
+    scores: event.scores,
+  }).slice(0, 900);
 
   await fetch(
     `${AITABLE.apiBase}/datasheets/${AITABLE.datasheetId}/records?fieldKey=name`,
@@ -61,20 +111,22 @@ async function logToAITable(event: TrackEvent) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        records: [{
-          fields: {
-            Title: title,
-            Scenario: "behavioral-tracking",
-            Company: event.visitorId,
-            "Contact Email": event.email ?? "",
-            Status: `EVENT-${event.type.toUpperCase()}`,
-            Touchpoint: event.type,
-            "AI Generated": `Visitor ${event.visitorId} triggered ${event.type} on ${event.page}. ${detail}. Composite score: ${event.scores?.composite ?? "N/A"}`,
+        records: [
+          {
+            fields: {
+              Title: title,
+              Scenario: event.service ?? event.niche ?? "behavioral-tracking",
+              Company: event.visitorId,
+              "Contact Email": event.email ?? "",
+              Status: `EVENT-${event.type.toUpperCase()}`,
+              Touchpoint: event.type,
+              "AI Generated": detail,
+            },
           },
-        }],
+        ],
         fieldKey: "name",
       }),
-    }
+    },
   ).catch(() => {});
 }
 
@@ -87,7 +139,6 @@ export async function POST(request: Request) {
     }
 
     const event = (await request.json()) as TrackEvent;
-
     if (!isPlainObject(event)) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
@@ -108,7 +159,16 @@ export async function POST(request: Request) {
     const safeEvent: TrackEvent = {
       ...event,
       visitorId: clampText(event.visitorId, 120),
+      sessionId: clampText(event.sessionId, 120) || undefined,
+      leadKey: clampText(event.leadKey, 160) || buildLeadKey(event.email),
       page: clampText(event.page, 240),
+      source: clampText(event.source, 80) || undefined,
+      service: clampText(event.service, 120) || undefined,
+      niche: clampText(event.niche, 120) || undefined,
+      blueprintId: clampText(event.blueprintId, 120) || undefined,
+      stepId: clampText(event.stepId, 120) || undefined,
+      experimentId: clampText(event.experimentId, 120) || undefined,
+      variantId: clampText(event.variantId, 120) || undefined,
       email: event.email?.trim().toLowerCase(),
       data: isPlainObject(event.data) ? event.data : undefined,
       scores: event.scores
@@ -122,15 +182,7 @@ export async function POST(request: Request) {
         : undefined,
     };
 
-    // Log high-value events to AITable
-    const highValueEvents = [
-      "assessment_complete", "email_captured", "phone_captured",
-      "roi_calculator", "whatsapp_optin", "pricing_view",
-    ];
-
-    if (highValueEvents.includes(safeEvent.type)) {
-      await logToAITable(safeEvent);
-    }
+    await logToAITable(safeEvent);
 
     return NextResponse.json({ success: true, tracked: safeEvent.type });
   } catch {

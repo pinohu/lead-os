@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { embeddedSecrets } from "@/lib/embedded-secrets";
+import { parseStructuredDetail } from "@/lib/trace";
 
 const AITABLE = {
   apiToken: process.env.AITABLE_API_TOKEN ?? embeddedSecrets.aitable.apiToken,
@@ -35,12 +36,6 @@ function isTrustedDashboardRequest(request: Request) {
     fetchSite === "same-origin" ||
     fetchSite === "same-site"
   );
-}
-
-function extractBlueprint(value?: string) {
-  if (!value) return "";
-  const match = value.match(/"blueprint":"([^"]+)"/);
-  return match?.[1] ?? "";
 }
 
 async function fetchAllRecords(): Promise<AITableRecord[]> {
@@ -82,7 +77,6 @@ export async function GET(request: Request) {
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const weekStart = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    // Categorize records
     const statuses: Record<string, number> = {};
     const scenarios: Record<string, { total: number; converted: number; hotLeads: number }> = {};
     let leadsToday = 0;
@@ -96,17 +90,31 @@ export async function GET(request: Request) {
     const eventBreakdown: Record<string, number> = {};
     const blueprintBreakdown: Record<string, number> = {};
     const serviceBreakdown: Record<string, number> = {};
+    const experimentBreakdown: Record<string, number> = {};
+    const variantBreakdown: Record<string, number> = {};
+    const stepBreakdown: Record<string, number> = {};
+    const sourceToBlueprint: Record<string, number> = {};
+    const leadCoverage = { withSessionId: 0, withLeadKey: 0, withExperiment: 0, withBlueprint: 0 };
 
-    for (const rec of records) {
-      const f = rec.fields ?? {};
-      const status = f["Status"] || "";
-      const scenario = f["Scenario"] || "unknown";
-      const touchpoint = f["Touchpoint"] || "unknown";
-      const aiGenerated = f["AI Generated"] || "";
-      const createdAt = rec.createdAt ? new Date(rec.createdAt) : null;
+    for (const record of records) {
+      const fields = record.fields ?? {};
+      const status = fields["Status"] || "";
+      const scenario = fields["Scenario"] || "unknown";
+      const touchpoint = fields["Touchpoint"] || "unknown";
+      const aiGenerated = fields["AI Generated"] || "";
+      const createdAt = record.createdAt ? new Date(record.createdAt) : null;
+      const detail = parseStructuredDetail(aiGenerated);
+      const trace = detail?.trace as Record<string, unknown> | undefined;
+      const traceService = typeof trace?.service === "string" ? trace.service : undefined;
+      const traceBlueprint = typeof trace?.blueprintId === "string" ? trace.blueprintId : undefined;
+      const traceStep = typeof trace?.stepId === "string" ? trace.stepId : undefined;
+      const traceExperiment = typeof trace?.experimentId === "string" ? trace.experimentId : undefined;
+      const traceVariant = typeof trace?.variantId === "string" ? trace.variantId : undefined;
+      const traceSessionId = typeof trace?.sessionId === "string" ? trace.sessionId : undefined;
+      const traceLeadKey = typeof trace?.leadKey === "string" ? trace.leadKey : undefined;
 
       statuses[status] = (statuses[status] || 0) + 1;
-      serviceBreakdown[scenario] = (serviceBreakdown[scenario] || 0) + 1;
+      serviceBreakdown[traceService ?? scenario] = (serviceBreakdown[traceService ?? scenario] || 0) + 1;
 
       if (!scenarios[scenario]) {
         scenarios[scenario] = { total: 0, converted: 0, hotLeads: 0 };
@@ -125,35 +133,41 @@ export async function GET(request: Request) {
         nurtureActive++;
         stageCounts[status] = (stageCounts[status] || 0) + 1;
       }
-
-       if (status === "LEAD-CAPTURED") {
+      if (status === "LEAD-CAPTURED") {
         intakeSources[touchpoint] = (intakeSources[touchpoint] || 0) + 1;
       }
-
       if (status.startsWith("EVENT-")) {
         eventBreakdown[touchpoint] = (eventBreakdown[touchpoint] || 0) + 1;
-        const blueprint = extractBlueprint(aiGenerated);
-        if (blueprint) {
-          blueprintBreakdown[blueprint] = (blueprintBreakdown[blueprint] || 0) + 1;
-        }
       }
 
-      // Approximate hot leads from status
+      if (traceSessionId) leadCoverage.withSessionId++;
+      if (traceLeadKey) leadCoverage.withLeadKey++;
+      if (traceExperiment) leadCoverage.withExperiment++;
+      if (traceBlueprint) leadCoverage.withBlueprint++;
+
+      if (traceBlueprint) blueprintBreakdown[traceBlueprint] = (blueprintBreakdown[traceBlueprint] || 0) + 1;
+      if (traceStep) stepBreakdown[traceStep] = (stepBreakdown[traceStep] || 0) + 1;
+      if (traceExperiment) experimentBreakdown[traceExperiment] = (experimentBreakdown[traceExperiment] || 0) + 1;
+      if (traceVariant) variantBreakdown[traceVariant] = (variantBreakdown[traceVariant] || 0) + 1;
+      if (touchpoint && traceBlueprint) {
+        const key = `${touchpoint} -> ${traceBlueprint}`;
+        sourceToBlueprint[key] = (sourceToBlueprint[key] || 0) + 1;
+      }
+
       if (status === "EVENT-PHONE-CALL_RECEIVED" || status === "EVENT-WHATSAPP-REPLY") {
         hotLeads++;
         scenarios[scenario].hotLeads++;
       }
     }
 
-    // Top performing niches (by conversion rate)
     const topNiches = Object.entries(scenarios)
-      .filter(([, v]) => v.total >= 3)
-      .map(([name, v]) => ({
+      .filter(([, value]) => value.total >= 3)
+      .map(([name, value]) => ({
         name,
-        total: v.total,
-        converted: v.converted,
-        conversionRate: v.total > 0 ? Math.round((v.converted / v.total) * 100) : 0,
-        hotLeads: v.hotLeads,
+        total: value.total,
+        converted: value.converted,
+        conversionRate: value.total > 0 ? Math.round((value.converted / value.total) * 100) : 0,
+        hotLeads: value.hotLeads,
       }))
       .sort((a, b) => b.conversionRate - a.conversionRate)
       .slice(0, 10);
@@ -178,6 +192,26 @@ export async function GET(request: Request) {
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
 
+    const topExperiments = Object.entries(experimentBreakdown)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    const topVariants = Object.entries(variantBreakdown)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    const topFunnelSteps = Object.entries(stepBreakdown)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    const topSourceBlueprintPaths = Object.entries(sourceToBlueprint)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
     return NextResponse.json({
       success: true,
       generatedAt: now.toISOString(),
@@ -197,12 +231,19 @@ export async function GET(request: Request) {
       topBehavioralSignals,
       topBlueprints,
       topServices,
+      topExperiments,
+      topVariants,
+      topFunnelSteps,
+      topSourceBlueprintPaths,
+      traceCoverage: {
+        sessionRate: records.length > 0 ? Math.round((leadCoverage.withSessionId / records.length) * 100) : 0,
+        leadKeyRate: records.length > 0 ? Math.round((leadCoverage.withLeadKey / records.length) * 100) : 0,
+        experimentRate: records.length > 0 ? Math.round((leadCoverage.withExperiment / records.length) * 100) : 0,
+        blueprintRate: records.length > 0 ? Math.round((leadCoverage.withBlueprint / records.length) * 100) : 0,
+      },
       statusBreakdown: statuses,
     });
   } catch (err) {
-    return NextResponse.json(
-      { error: (err as Error).message },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
   }
 }
