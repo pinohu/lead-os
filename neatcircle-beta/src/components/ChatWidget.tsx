@@ -38,6 +38,30 @@ function formatNicheLabel(nicheSlug: string): string {
   return normalized.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function getAssessmentHref() {
+  return `/assess/${detectNicheSlug()}`;
+}
+
+function isGreeting(lower: string) {
+  return /^(hi|hey|hello|yo|good morning|good afternoon|good evening|sup|what's up)\b/.test(lower);
+}
+
+function isShortVagueMessage(lower: string) {
+  return lower.split(/\s+/).filter(Boolean).length <= 3;
+}
+
+function isAffirmation(lower: string) {
+  return /^(yes|yeah|yep|sure|ok|okay|please|sounds good|lets do it|let's do it)\b/.test(lower);
+}
+
+function isNegation(lower: string) {
+  return /^(no|nah|nope|not now)\b/.test(lower);
+}
+
+function getQuickOptions(niche: string) {
+  return `I can help with 3 fast things for ${niche}:\n\n1. Find the best solution for your business\n2. Estimate ROI and pricing\n3. Recommend the right next step\n\nReply with what you want help with, or jump straight to our [smart assessment](${getAssessmentHref()}).`;
+}
+
 function getGreeting(): string {
   const niche = formatNicheLabel(detectNicheSlug());
   const profile = getStoredProfile();
@@ -57,7 +81,21 @@ function getGreeting(): string {
 
 function generateResponse(input: string, conversationLength: number): string {
   const lower = input.toLowerCase();
+  const nicheSlug = detectNicheSlug();
   const niche = formatNicheLabel(detectNicheSlug());
+
+  if (isGreeting(lower)) {
+    return `Hi! Glad you reached out.\n\n${getQuickOptions(niche)}`;
+  }
+  if (isAffirmation(lower) && conversationLength <= 3) {
+    return `Perfect. The fastest way to give you a useful recommendation is our [smart assessment](${getAssessmentHref()}). It takes about 2 minutes and tells you the best-fit path.`;
+  }
+  if (isNegation(lower) && conversationLength <= 3) {
+    return "No problem. Tell me which of these matters most right now: lead capture, follow-up automation, pricing, ROI, or implementation timeline.";
+  }
+  if (isShortVagueMessage(lower) && !lower.includes("?")) {
+    return getQuickOptions(niche);
+  }
 
   if (lower.includes("price") || lower.includes("cost") || lower.includes("how much")) {
     return `Our ${niche} solutions start at $3,500 for Starter tier, $7,500 for Professional, and custom pricing for Enterprise. All include 209+ premium tools with zero recurring software fees.\n\nWant me to recommend the right tier for your business? [Try our ROI Calculator](/calculator) to see your projected savings.`;
@@ -69,7 +107,7 @@ function generateResponse(input: string, conversationLength: number): string {
     return "We integrate with 200+ platforms including QuickBooks, Stripe, Google Workspace, Slack, HubSpot, and many more. Our automation stack connects everything without recurring API fees. What tools are you currently using?";
   }
   if (lower.includes("assess") || lower.includes("audit") || lower.includes("ready")) {
-    return `Great question! Take our [free ${niche} assessment](/assess/general) - it's 5 quick questions and gives you a personalized readiness score with specific recommendations. Takes under 2 minutes.`;
+    return `The fastest route is our [free ${niche} assessment](${getAssessmentHref()}) - 5 quick questions, under 2 minutes, and you get a personalized readiness score with specific recommendations.`;
   }
   if (lower.includes("roi") || lower.includes("sav") || lower.includes("return")) {
     return "Our average client sees 3-5x ROI within 90 days. [Try our ROI Calculator](/calculator) to get your specific projected savings based on your team size and industry.";
@@ -86,11 +124,14 @@ function generateResponse(input: string, conversationLength: number): string {
   if (lower.includes("what do") || lower.includes("what is") || lower.includes("about") || lower.includes("who")) {
     return `${siteConfig.brandName} provides systematic process optimization for ${niche} businesses. We deploy 209+ premium business tools - client portals, CRM, automation, BI dashboards, compliance systems - all included with zero recurring software fees. Our clients typically save 20-30 hours/week.`;
   }
+  if (lower.includes("lead") || lower.includes("capture") || lower.includes("follow up") || lower.includes("follow-up")) {
+    return `For ${niche}, we usually improve 3 things first: capture quality, response speed, and follow-up consistency.\n\nIf you want, I can point you to the best-fit path now: [assessment](${getAssessmentHref()}) for diagnosis or [ROI calculator](/calculator) for economics.`;
+  }
   if (conversationLength >= 4) {
-    return `That's a great question. For the most detailed answer tailored to your specific situation, I'd recommend:\n\n1. [Take our free assessment](/assess/general) (2 min)\n2. [Calculate your ROI](/calculator)\n3. Book a free strategy call - just share your email\n\nWhich would be most helpful?`;
+    return `To give you something useful instead of generic advice, the best next step is one of these:\n\n1. [Take the ${niche} assessment](${getAssessmentHref()})\n2. [Calculate your ROI](/calculator)\n3. Book a strategy call\n\nWhich one do you want?`;
   }
 
-  return `Good question! For ${niche} specifically, we see that as a common challenge. Our approach combines automation + a dedicated client portal to address exactly that.\n\nWant me to go deeper? Or would you prefer to [take our free assessment](/assess/general) for personalized recommendations?`;
+  return `I can help with that, but I need a bit more context to avoid giving you generic fluff.\n\nTell me one of these:\n- your business type\n- your main bottleneck\n- whether you care most about leads, follow-up, ROI, or implementation\n\nOr skip that and go straight to the [smart assessment](${getAssessmentHref()}).`;
 }
 
 export default function ChatWidget() {
@@ -301,7 +342,7 @@ export default function ChatWidget() {
           <div className="bg-gradient-to-r from-navy to-navy-light px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-cyan text-sm font-bold text-white">
-                NC
+                {siteConfig.brandName.slice(0, 2).toUpperCase()}
               </div>
               <div>
                 <p className="text-sm font-semibold text-white">{siteConfig.brandName} Concierge</p>
