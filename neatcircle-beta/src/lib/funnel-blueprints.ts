@@ -1611,8 +1611,20 @@ export function getNextFunnelStep(
 export function interpolateStep(step: FunnelStep, niche: string): FunnelStep {
   const nicheSlug = normalizeNicheSlug(niche);
   const nicheLabel = nicheSlug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
-  const interpolate = (s: string) =>
-    s.replace(/{niche}/g, nicheSlug).replace(/{Niche}/g, nicheLabel);
+  const interpolate = (s: string) => {
+    const withTokens = s.replace(/{niche}/g, nicheSlug).replace(/{Niche}/g, nicheLabel);
+
+    if (nicheSlug !== "general") {
+      return withTokens;
+    }
+
+    return withTokens
+      .replace(/^\/services\/general$/, "/services")
+      .replace(/^\/stories\/general$/, "/services")
+      .replace(/^\/webinar\/general$/, "/webinar")
+      .replace(/^\/giveaway\/general$/, "/giveaway")
+      .replace(/^\/funnels\/general$/, "/funnels/master-orchestration");
+  };
 
   return {
     ...step,
