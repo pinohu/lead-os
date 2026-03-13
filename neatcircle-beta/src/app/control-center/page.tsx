@@ -3,6 +3,7 @@ import { getBlueOceanServices, getCoreServices } from "@/lib/services";
 import { FUNNEL_BLUEPRINTS } from "@/lib/funnel-blueprints";
 import { clientPresets } from "@/lib/client-presets";
 import { tenantPresets } from "@/lib/tenant-presets";
+import WebsiteIntelligenceLab from "@/components/WebsiteIntelligenceLab";
 
 function Panel({
   title,
@@ -104,6 +105,12 @@ export default function ControlCenterPage() {
                 </div>
               ))}
             </div>
+          </Panel>
+        </div>
+
+        <div className="mt-6">
+          <Panel title="Website Intelligence Lab">
+            <WebsiteIntelligenceLab />
           </Panel>
         </div>
       </div>
