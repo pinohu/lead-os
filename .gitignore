@@ -2,3 +2,5 @@ node_modules/
 .next/
 *.tsbuildinfo
 backups/
+lead-os-hosted-runtime/
+lead-os-embed-widgets/
