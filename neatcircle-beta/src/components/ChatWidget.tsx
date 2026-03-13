@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { normalizeNicheSlug } from "@/lib/funnel-blueprints";
 import { siteConfig } from "@/lib/site-config";
 import {
   buildTraceIntakePayload,
@@ -16,23 +17,29 @@ interface Message {
   timestamp: string;
 }
 
-function detectNiche(): string {
+function detectNicheSlug(): string {
   if (typeof window === "undefined") return "general";
   const path = window.location.pathname;
-  if (path.includes("syndication")) return "Real Estate Syndication";
-  if (path.includes("immigration")) return "Immigration Law";
-  if (path.includes("construction")) return "Construction";
-  if (path.includes("franchise")) return "Franchise Operations";
-  if (path.includes("compliance")) return "Compliance Training";
-  if (path.includes("church")) return "Church Management";
-  if (path.includes("creator")) return "Creator Management";
-  if (path.includes("staffing")) return "Staffing";
-  if (path.includes("pricing")) return "Pricing";
-  return "Business Automation";
+  if (path.includes("syndication")) return "re-syndication";
+  if (path.includes("immigration")) return "immigration-law";
+  if (path.includes("construction")) return "construction";
+  if (path.includes("franchise")) return "franchise";
+  if (path.includes("compliance")) return "compliance-training";
+  if (path.includes("church")) return "church-management";
+  if (path.includes("creator")) return "creator-management";
+  if (path.includes("staffing")) return "staffing";
+  if (path.includes("pricing")) return "general";
+  return "general";
+}
+
+function formatNicheLabel(nicheSlug: string): string {
+  const normalized = normalizeNicheSlug(nicheSlug);
+  if (normalized === "general") return "Business Automation";
+  return normalized.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 function getGreeting(): string {
-  const niche = detectNiche();
+  const niche = formatNicheLabel(detectNicheSlug());
   const profile = getStoredProfile();
   const pages = ((profile.pagesViewed ?? []) as string[]).length;
 
@@ -50,7 +57,7 @@ function getGreeting(): string {
 
 function generateResponse(input: string, conversationLength: number): string {
   const lower = input.toLowerCase();
-  const niche = detectNiche();
+  const niche = formatNicheLabel(detectNicheSlug());
 
   if (lower.includes("price") || lower.includes("cost") || lower.includes("how much")) {
     return `Our ${niche} solutions start at $3,500 for Starter tier, $7,500 for Professional, and custom pricing for Enterprise. All include 209+ premium tools with zero recurring software fees.\n\nWant me to recommend the right tier for your business? [Try our ROI Calculator](/calculator) to see your projected savings.`;
@@ -135,14 +142,14 @@ export default function ChatWidget() {
       setHasInteracted(true);
       updateStoredProfile({
         chatEngaged: true,
-        nicheInterest: detectNiche(),
-        currentService: detectNiche(),
+        nicheInterest: detectNicheSlug(),
+        currentService: detectNicheSlug(),
         currentStepId: "chat-open",
       });
       trackBrowserEvent({
         type: "chat_open",
-        service: detectNiche(),
-        niche: detectNiche(),
+        service: detectNicheSlug(),
+        niche: detectNicheSlug(),
         stepId: "chat-open",
       });
     }
@@ -192,8 +199,8 @@ export default function ChatWidget() {
 
     trackBrowserEvent({
       type: "chat_message",
-      service: detectNiche(),
-      niche: detectNiche(),
+      service: detectNicheSlug(),
+      niche: detectNicheSlug(),
       stepId: "chat-message",
       data: { messageCount: newMessages.filter((message) => message.role === "user").length },
     });
@@ -203,8 +210,8 @@ export default function ChatWidget() {
       const email = emailMatch[0];
       updateStoredProfile({
         email,
-        nicheInterest: detectNiche(),
-        currentService: detectNiche(),
+        nicheInterest: detectNicheSlug(),
+        currentService: detectNicheSlug(),
       });
 
       fetch("/api/intake", {
@@ -217,8 +224,8 @@ export default function ChatWidget() {
             firstName: email.split("@")[0],
             lastName: ".",
             email,
-            service: detectNiche(),
-            niche: detectNiche(),
+            service: detectNicheSlug(),
+            niche: detectNicheSlug(),
             page: window.location.pathname,
             message: `Chat capture on ${window.location.pathname}`,
             stepId: "chat-capture",

@@ -3,6 +3,7 @@ import {
   inferChannelPreference,
   inferObjectionType,
   inferVisitorTemperature,
+  normalizeNicheSlug,
   recommendBlueprintForVisitor,
 } from "./funnel-blueprints";
 
@@ -51,8 +52,9 @@ export function getExperimentBucket(seed: string, experimentId: string, variants
 }
 
 function niceNiche(value?: string) {
-  if (!value || value === "general") return "your business";
-  return value.replace(/-/g, " ");
+  const normalized = normalizeNicheSlug(value);
+  if (normalized === "general") return "your business";
+  return normalized.replace(/-/g, " ");
 }
 
 export function buildHeroExperience(profile: ExperienceProfile): HeroExperience {
@@ -62,6 +64,7 @@ export function buildHeroExperience(profile: ExperienceProfile): HeroExperience 
   const channel = inferChannelPreference(profile);
   const seed = profile.visitorId ?? profile.capturedEmail ?? "anonymous";
   const niche = niceNiche(profile.nicheInterest);
+  const nicheSlug = normalizeNicheSlug(profile.nicheInterest);
   const variantId = getExperimentBucket(seed, "hero-v1", ["roi", "proof", "speed"]);
 
   const trustBarBase = [
@@ -83,7 +86,7 @@ export function buildHeroExperience(profile: ExperienceProfile): HeroExperience 
           : `${siteConfig.brandName} adapts capture, qualification, and nurture around each visitor so the right prospects move faster and weaker traffic gets educated first.`,
       primaryCta: {
         label: objection === "price" ? "Calculate My ROI" : "See My Best Path",
-        href: objection === "price" ? "/calculator" : `/assess/${profile.nicheInterest ?? "general"}`,
+        href: objection === "price" ? "/calculator" : `/assess/${nicheSlug}`,
       },
       secondaryCta: {
         label: temperature === "hot" ? "Book Strategy Call" : "Watch On-Demand Webinar",
@@ -110,11 +113,11 @@ export function buildHeroExperience(profile: ExperienceProfile): HeroExperience 
           : `Visitors don’t all need the same CTA. ${siteConfig.brandName} changes proof, messaging, and next-best action based on behavior, objection, and channel preference.`,
       primaryCta: {
         label: "Watch the Story Version",
-        href: `/stories/${profile.nicheInterest ?? "client-portal"}`,
+        href: `/stories/${nicheSlug === "general" ? "client-portal" : nicheSlug}`,
       },
       secondaryCta: {
         label: "Take Free Assessment",
-        href: `/assess/${profile.nicheInterest ?? "general"}`,
+        href: `/assess/${nicheSlug}`,
       },
       trustBar: [...trustBarBase, "Proof before pressure"],
       urgencyNote: "The platform sequences narrative, ROI, and qualification instead of forcing every visitor into the same jump-to-call flow.",
@@ -133,7 +136,7 @@ export function buildHeroExperience(profile: ExperienceProfile): HeroExperience 
         : `${siteConfig.brandName} dynamically shifts between chat, assessment, webinar, and ROI offers so visitors get the path most likely to convert right now.`,
     primaryCta: {
       label: channel === "sales-call" ? "Book Strategy Call" : "Start Smart Assessment",
-      href: channel === "sales-call" ? "#contact" : `/assess/${profile.nicheInterest ?? "general"}`,
+      href: channel === "sales-call" ? "#contact" : `/assess/${nicheSlug}`,
     },
     secondaryCta: {
       label: "Open Concierge",

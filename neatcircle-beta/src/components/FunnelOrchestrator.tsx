@@ -6,6 +6,7 @@ import {
   getNextFunnelStep,
   interpolateStep,
   detectNicheFromPath,
+  normalizeNicheSlug,
 } from "@/lib/funnel-blueprints";
 import type { FunnelStep, FunnelState } from "@/lib/funnel-blueprints";
 import { getStoredProfile, trackBrowserEvent, updateStoredProfile } from "@/lib/trace";
@@ -34,7 +35,9 @@ export default function FunnelOrchestrator() {
 
     const profile = getStoredProfile();
     const path = window.location.pathname;
-    const detectedNiche = (profile.nicheInterest as string | undefined) ?? detectNicheFromPath(path);
+    const detectedNiche = normalizeNicheSlug(
+      (profile.nicheInterest as string | undefined) ?? detectNicheFromPath(path),
+    );
     setNiche(detectedNiche);
 
     if (path.startsWith("/assess") || path.startsWith("/calculator")) return;

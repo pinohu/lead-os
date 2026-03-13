@@ -1385,6 +1385,36 @@ export interface FunnelState {
   lastStepAt: string;
 }
 
+const NICHE_ALIAS_MAP: Record<string, string> = {
+  "business automation": "general",
+  "process automation": "process-automation",
+  "digital transformation": "digital-transformation",
+  "systems integration": "systems-integration",
+  "business intelligence": "business-intelligence",
+  "real estate syndication": "re-syndication",
+  "immigration law": "immigration-law",
+  "franchise operations": "franchise",
+  "church management": "church-management",
+  "creator management": "creator-management",
+  "compliance training": "compliance-training",
+  "managed services": "managed-services",
+};
+
+export function normalizeNicheSlug(value?: string): string {
+  if (!value) return "general";
+
+  const normalized = value.trim().toLowerCase().replace(/_/g, "-").replace(/\s+/g, " ");
+  if (NICHE_FUNNEL_CONFIG[normalized]) return normalized;
+
+  const alias = NICHE_ALIAS_MAP[normalized];
+  if (alias) return alias;
+
+  const dashed = normalized.replace(/\s+/g, "-");
+  if (NICHE_FUNNEL_CONFIG[dashed]) return dashed;
+
+  return "general";
+}
+
 export function detectNicheFromPath(path: string): string {
   for (const [niche, config] of Object.entries(NICHE_FUNNEL_CONFIG)) {
     if (path.includes(niche) || path.includes(config.servicePage)) {
@@ -1459,7 +1489,7 @@ export function recommendBlueprintForVisitor(profile: {
   utmSource?: string;
   utmMedium?: string;
 }): BlueprintRecommendation {
-  const niche = profile.nicheInterest ?? "general";
+  const niche = normalizeNicheSlug(profile.nicheInterest);
   const config = NICHE_FUNNEL_CONFIG[niche];
   const temperature = inferVisitorTemperature(profile);
   const objection = inferObjectionType(profile);
@@ -1530,7 +1560,7 @@ export function selectBlueprintForVisitor(profile: {
   utmMedium?: string;
 }): FunnelBlueprint {
   return recommendBlueprintForVisitor(profile).blueprint;
-  const niche = profile.nicheInterest ?? "general";
+  const niche = normalizeNicheSlug(profile.nicheInterest);
   const config = NICHE_FUNNEL_CONFIG[niche];
 
   // Hot lead — straight to high-ticket
@@ -1579,9 +1609,10 @@ export function getNextFunnelStep(
 }
 
 export function interpolateStep(step: FunnelStep, niche: string): FunnelStep {
-  const nicheLabel = niche.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  const nicheSlug = normalizeNicheSlug(niche);
+  const nicheLabel = nicheSlug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
   const interpolate = (s: string) =>
-    s.replace(/{niche}/g, niche).replace(/{Niche}/g, nicheLabel);
+    s.replace(/{niche}/g, nicheSlug).replace(/{Niche}/g, nicheLabel);
 
   return {
     ...step,
