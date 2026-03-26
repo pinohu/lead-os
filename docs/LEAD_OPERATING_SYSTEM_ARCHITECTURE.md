@@ -120,6 +120,10 @@ experiments:
 6. Deploy **hosted runtime** with env for that tenant; deploy **WordPress plugin** or embed snippet on site.
 7. Run **health checks**: intake → CRM row → automation fired → operator dashboard shows human traffic (not synthetic).
 
+### 4.3 Lead magnet library (capture layer)
+
+Use the **Ultimate Lead Magnet Library** as the canonical set of **100** engine-ready magnets (full funnel docs per item): [`docs/libraries/lead-magnets/README.md`](./libraries/lead-magnets/README.md) and [`catalog.v1.json`](./libraries/lead-magnets/catalog.v1.json). Reference `magnet_id` from niche config or runtime decisioning; generate copy and assets with `leadgen-ai-portal` or internal LLM workflows **without** inventing new funnel shapes ad hoc.
+
 ---
 
 ## 5. Event spine (observability and replay)

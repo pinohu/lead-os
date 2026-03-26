@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/pinohu/lead-os/blob/master/docs/libraries/lead-magnets/lead-magnet.schema.json",
+  "title": "LeadMagnet",
+  "description": "Universal lead magnet definition for Lead OS / Universal Lead Engine. Each record documents the full funnel so runtime, CRM, and automation can generate or orchestrate consistently.",
+  "type": "object",
+  "required": [
+    "id",
+    "category",
+    "niche_applicability",
+    "persona",
+    "funnel_stage",
+    "trigger_event",
+    "asset_type",
+    "value_promise",
+    "hook",
+    "landing_page_structure",
+    "capture_mechanism",
+    "delivery_method",
+    "nurture_sequence",
+    "conversion_path",
+    "automation_logic",
+    "required_tools"
+  ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^lm-cat\\d{2}-\\d{3}$" },
+    "title": { "type": "string" },
+    "category": {
+      "type": "string",
+      "enum": [
+        "quiz_assessment",
+        "calculator",
+        "template",
+        "swipe_file",
+        "mini_course",
+        "toolkit",
+        "free_tool",
+        "report_insight",
+        "personalized_service",
+        "community_access"
+      ]
+    },
+    "niche_applicability": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "persona": { "type": "string" },
+    "funnel_stage": { "type": "string", "enum": ["TOFU", "MOFU", "BOFU"] },
+    "trigger_event": { "type": "string" },
+    "asset_type": { "type": "string" },
+    "value_promise": { "type": "string" },
+    "hook": { "type": "string" },
+    "landing_page_structure": {
+      "type": "object",
+      "required": ["sections"],
+      "properties": {
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "headline"],
+            "properties": {
+              "id": { "type": "string" },
+              "headline": { "type": "string" },
+              "subhead": { "type": "string" },
+              "bullets": { "type": "array", "items": { "type": "string" } },
+              "cta_text": { "type": "string" },
+              "cta_action": { "type": "string" }
+            }
+          }
+        },
+        "thank_you_page": {
+          "type": "object",
+          "properties": {
+            "headline": { "type": "string" },
+            "next_step_cta": { "type": "string" }
+          }
+        }
+      }
+    },
+    "capture_mechanism": {
+      "type": "object",
+      "required": ["type", "fields", "gating_rule"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["email_before_results", "partial_reveal", "application", "account_signup", "progressive", "none_before_tool"]
+        },
+        "fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "gating_rule": { "type": "string" },
+        "consent": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "delivery_method": {
+      "type": "object",
+      "required": ["primary_channel", "assets"],
+      "properties": {
+        "primary_channel": { "type": "string" },
+        "assets": { "type": "array", "items": { "type": "string" } },
+        "personalization": { "type": "string" }
+      }
+    },
+    "nurture_sequence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step", "channel", "timing", "goal"],
+        "properties": {
+          "step": { "type": "integer" },
+          "channel": { "type": "string" },
+          "timing": { "type": "string" },
+          "subject": { "type": "string" },
+          "summary": { "type": "string" },
+          "goal": { "type": "string" },
+          "cta": { "type": "string" },
+          "segment_tag": { "type": "string" }
+        }
+      }
+    },
+    "conversion_path": {
+      "type": "object",
+      "required": ["primary_offer", "fallback_offer", "success_metric"],
+      "properties": {
+        "primary_offer": { "type": "string" },
+        "fallback_offer": { "type": "string" },
+        "success_metric": { "type": "string" },
+        "booking_or_call": { "type": "boolean" }
+      }
+    },
+    "automation_logic": {
+      "type": "object",
+      "required": ["context_detection", "selection_rules", "runtime_actions", "n8n_triggers", "suitedash_updates"],
+      "properties": {
+        "context_detection": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "selection_rules": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "runtime_actions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "n8n_triggers": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "suitedash_updates": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "required_tools": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "traffic_fit": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional: paid social, organic, referral, partner, retargeting"
+    },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": false
+}
