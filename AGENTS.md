@@ -1,0 +1,4 @@
+- Treat my requests as authorization to inspect, edit, and verify without routine confirmation.
+- Make reasonable assumptions and document them afterward.
+- Ask only for destructive or irreversible choices, missing secrets, external-account actions, or tool approvals.
+- Carry tasks through implementation and validation end-to-end.
