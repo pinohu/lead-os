@@ -634,6 +634,112 @@ function calculateMatchScore(rep: RepProfile, opportunity: HighValueOpportunity)
   return Math.round(score);
 }
 
+// ---------------------------------------------------------------------------
+// Early Intervention — proactive human deployment before escalation
+// ---------------------------------------------------------------------------
+
+interface EarlyInterventionLead {
+  leadKey: string;
+  compositeScore: number;
+  predictedValue: number;
+  interactionCount: number;
+  daysSinceFirstContact: number;
+  hasPhoneNumber: boolean;
+}
+
+interface EarlyInterventionConfig {
+  valueThreshold?: number;
+  scoreThreshold?: number;
+  maxDaysInFunnel?: number;
+}
+
+interface EarlyInterventionResult {
+  leadKey: string;
+  reason: string;
+  priority: "urgent" | "high" | "medium";
+  recommendedAction: string;
+  estimatedDealValue: number;
+}
+
+const PRIORITY_ORDER: Record<EarlyInterventionResult["priority"], number> = {
+  urgent: 0,
+  high: 1,
+  medium: 2,
+};
+
+export function identifyEarlyInterventionLeads(
+  leads: EarlyInterventionLead[],
+  config?: EarlyInterventionConfig,
+): EarlyInterventionResult[] {
+  const valueThreshold = config?.valueThreshold ?? 5000;
+  const scoreThreshold = config?.scoreThreshold ?? 60;
+  const maxDaysInFunnel = config?.maxDaysInFunnel ?? 7;
+
+  const results: EarlyInterventionResult[] = [];
+
+  for (const lead of leads) {
+    // Rule 2: Too valuable to automate (predictedValue > 2x threshold, regardless of score)
+    if (lead.predictedValue > valueThreshold * 2) {
+      results.push({
+        leadKey: lead.leadKey,
+        reason: `Predicted value $${lead.predictedValue} exceeds 2x threshold — too valuable to automate`,
+        priority: "urgent",
+        recommendedAction: "Assign senior rep immediately for white-glove treatment",
+        estimatedDealValue: lead.predictedValue,
+      });
+      continue;
+    }
+
+    // Rule 1: High value AND above score threshold (assign human early)
+    if (lead.predictedValue > valueThreshold && lead.compositeScore > scoreThreshold) {
+      results.push({
+        leadKey: lead.leadKey,
+        reason: `High predicted value $${lead.predictedValue} with composite score ${lead.compositeScore} — assign human early`,
+        priority: "high",
+        recommendedAction: "Assign dedicated rep before lead reaches escalation threshold",
+        estimatedDealValue: lead.predictedValue,
+      });
+      continue;
+    }
+
+    // Rule 3: Stalling in funnel (days > max AND score > 40)
+    if (lead.daysSinceFirstContact > maxDaysInFunnel && lead.compositeScore > 40) {
+      results.push({
+        leadKey: lead.leadKey,
+        reason: `In funnel ${lead.daysSinceFirstContact} days with score ${lead.compositeScore} — stalling, needs human touch`,
+        priority: "high",
+        recommendedAction: "Personal outreach to unblock — identify and address stall reason",
+        estimatedDealValue: lead.predictedValue,
+      });
+      continue;
+    }
+
+    // Rule 4: Has phone, engaged, ready for call
+    if (lead.hasPhoneNumber && lead.compositeScore > 50 && lead.interactionCount >= 3) {
+      results.push({
+        leadKey: lead.leadKey,
+        reason: `Phone available, ${lead.interactionCount} interactions, score ${lead.compositeScore} — engaged and ready for call`,
+        priority: "medium",
+        recommendedAction: "Schedule discovery call — lead is warm and reachable by phone",
+        estimatedDealValue: lead.predictedValue,
+      });
+      continue;
+    }
+  }
+
+  results.sort((a, b) => {
+    const priorityDiff = PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
+    if (priorityDiff !== 0) return priorityDiff;
+    return b.estimatedDealValue - a.estimatedDealValue;
+  });
+
+  return results;
+}
+
+// ---------------------------------------------------------------------------
+// Allocation optimization (continued)
+// ---------------------------------------------------------------------------
+
 function buildMatchReason(rep: RepProfile, opportunity: HighValueOpportunity): string {
   const reasons: string[] = [];
   const leadNiche = opportunity.leadSnapshot.niche;

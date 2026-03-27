@@ -817,6 +817,83 @@ function buildFacebookAd(
   };
 }
 
+// ---------------------------------------------------------------------------
+// Creative-Performance Feedback Coupling
+// ---------------------------------------------------------------------------
+
+interface CreativeVariantMetrics {
+  variantId: string;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  revenue: number;
+}
+
+interface CreativePerformanceResult {
+  winners: Array<{ variantId: string; rpv: number; conversionRate: number }>;
+  losers: Array<{ variantId: string; rpv: number; reason: string }>;
+  actions: Array<{ action: "scale" | "kill" | "iterate"; variantId: string; rationale: string }>;
+}
+
+function median(values: number[]): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0
+    ? (sorted[mid - 1] + sorted[mid]) / 2
+    : sorted[mid];
+}
+
+export function evaluateCreativePerformance(
+  variants: CreativeVariantMetrics[],
+): CreativePerformanceResult {
+  const winners: CreativePerformanceResult["winners"] = [];
+  const losers: CreativePerformanceResult["losers"] = [];
+  const actions: CreativePerformanceResult["actions"] = [];
+
+  if (variants.length === 0) {
+    return { winners, losers, actions };
+  }
+
+  const metrics = variants.map((v) => {
+    const rpv = v.impressions > 0 ? v.revenue / v.impressions : 0;
+    const conversionRate = v.impressions > 0 ? v.conversions / v.impressions : 0;
+    return { ...v, rpv, conversionRate };
+  });
+
+  const rpvValues = metrics.map((m) => m.rpv);
+  const crValues = metrics.map((m) => m.conversionRate);
+  const medianRpv = median(rpvValues);
+  const medianCr = median(crValues);
+
+  for (const m of metrics) {
+    const isWinner = m.rpv >= medianRpv && m.conversionRate >= medianCr
+      && medianRpv > 0 && medianCr > 0;
+    const isLoser =
+      m.rpv < medianRpv * 0.5
+      || (m.conversions === 0 && m.impressions >= 100);
+
+    if (isWinner) {
+      winners.push({ variantId: m.variantId, rpv: m.rpv, conversionRate: m.conversionRate });
+      actions.push({ action: "scale", variantId: m.variantId, rationale: `RPV ${m.rpv.toFixed(4)} and CR ${(m.conversionRate * 100).toFixed(2)}% both at or above median` });
+    } else if (isLoser) {
+      const reason = m.conversions === 0 && m.impressions >= 100
+        ? `Zero conversions after ${m.impressions} impressions`
+        : `RPV ${m.rpv.toFixed(4)} is below 50% of median RPV ${medianRpv.toFixed(4)}`;
+      losers.push({ variantId: m.variantId, rpv: m.rpv, reason });
+      actions.push({ action: "kill", variantId: m.variantId, rationale: reason });
+    } else {
+      actions.push({ action: "iterate", variantId: m.variantId, rationale: `Neither winner nor loser — RPV ${m.rpv.toFixed(4)}, CR ${(m.conversionRate * 100).toFixed(2)}%` });
+    }
+  }
+
+  return { winners, losers, actions };
+}
+
+// ---------------------------------------------------------------------------
+// Platform-specific ad generation (continued)
+// ---------------------------------------------------------------------------
+
 function buildLinkedInAd(
   psychology: PsychologyProfile,
   strategy: CreativeStrategy,
