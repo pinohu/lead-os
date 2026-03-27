@@ -161,6 +161,12 @@ Commands:
   design-spec export        Export design.md for a tenant
   design-spec apply <file>  Apply design spec from file
   video-script              Generate Remotion video script
+  generate-offer            Generate irresistible offer
+  lead-value                Calculate dynamic lead value
+  trust-score               Calculate trust score
+  niche-insights            Aggregated niche intelligence
+  seo-page                  Generate SEO-optimized page
+  deep-psych                Generate psychology triggers
   health                    Health check
 
 Global Flags:
@@ -267,6 +273,35 @@ Options:
   --title <title>       Video title override
   --color <hex>         Brand color
   --duration <seconds>  Duration in seconds (default 30)`,
+
+    "generate-offer": `Usage: lead-os generate-offer <niche> <service> [options]
+
+Options:
+  --price <amount>    Base price point
+  --urgency <level>   Urgency: low, medium, high (default: medium)`,
+
+    "lead-value": `Usage: lead-os lead-value <niche> <quality> [options]
+
+Options:
+  --score <n>         Lead score (0-100)`,
+
+    "trust-score": `Usage: lead-os trust-score <tenantId>
+
+Calculate trust score with recommendations for a tenant.`,
+
+    "niche-insights": `Usage: lead-os niche-insights <niche>
+
+Get aggregated niche intelligence and benchmarks.`,
+
+    "seo-page": `Usage: lead-os seo-page <niche> <keyword> [options]
+
+Options:
+  --template <type>   Template: standard, long-form, local (default: standard)`,
+
+    "deep-psych": `Usage: lead-os deep-psych <niche> <emotion> [options]
+
+Options:
+  --intensity <level>  Intensity: subtle, moderate, intense (default: moderate)`,
 
     health: `Usage: lead-os health
 
@@ -571,6 +606,125 @@ async function runCommand(parsed: ParsedArgs): Promise<void> {
           duration: flags.duration ? Number(flags.duration) : undefined,
         });
         output(result, json);
+      }
+      break;
+    }
+
+    case "generate-offer": {
+      const offerNiche = positional[0];
+      const offerService = positional[1];
+      if (!offerNiche || !offerService) {
+        process.stderr.write("Error: niche and service are required. Usage: lead-os generate-offer <niche> <service>\n");
+        process.exitCode = 1;
+        return;
+      }
+      try {
+        const mod = await import("../lib/offer-engine.ts");
+        const result = mod.generateOffer(
+          offerNiche as Parameters<typeof mod.generateOffer>[0],
+          offerService,
+          { averageProjectValue: flags.price ? Number(flags.price) : undefined },
+        );
+        output(result, json);
+      } catch {
+        output({ error: "offer-engine module not yet available" }, json);
+      }
+      break;
+    }
+
+    case "lead-value": {
+      const lvNiche = positional[0];
+      const lvQuality = positional[1];
+      if (!lvNiche || !lvQuality) {
+        process.stderr.write("Error: niche and quality are required. Usage: lead-os lead-value <niche> <quality>\n");
+        process.exitCode = 1;
+        return;
+      }
+      try {
+        const mod = await import("../lib/monetization-engine.ts");
+        const result = mod.calculateLeadValue(
+          { id: "cli", metadata: { quality: lvQuality } },
+          lvNiche,
+          flags.score ? Number(flags.score) : 50,
+        );
+        output(result, json);
+      } catch {
+        output({ error: "monetization-engine module not yet available" }, json);
+      }
+      break;
+    }
+
+    case "trust-score": {
+      const tsTenantId = positional[0];
+      if (!tsTenantId) {
+        process.stderr.write("Error: tenantId is required. Usage: lead-os trust-score <tenantId>\n");
+        process.exitCode = 1;
+        return;
+      }
+      try {
+        const mod = await import("../lib/trust-engine.ts");
+        const score = mod.calculateTrustScore(tsTenantId);
+        const recommendations = mod.getTrustRecommendations(tsTenantId);
+        const result = { score, recommendations };
+        output(result, json);
+      } catch {
+        output({ error: "trust-engine module not yet available" }, json);
+      }
+      break;
+    }
+
+    case "niche-insights": {
+      const niNiche = positional[0];
+      if (!niNiche) {
+        process.stderr.write("Error: niche is required. Usage: lead-os niche-insights <niche>\n");
+        process.exitCode = 1;
+        return;
+      }
+      try {
+        const mod = await import("../lib/data-moat.ts");
+        const result = await mod.getNicheInsights(niNiche);
+        output(result, json);
+      } catch {
+        output({ error: "data-moat module not yet available" }, json);
+      }
+      break;
+    }
+
+    case "seo-page": {
+      const seoNiche = positional[0];
+      const seoKeyword = positional[1];
+      if (!seoNiche || !seoKeyword) {
+        process.stderr.write("Error: niche and keyword are required. Usage: lead-os seo-page <niche> <keyword>\n");
+        process.exitCode = 1;
+        return;
+      }
+      try {
+        const mod = await import("../lib/distribution-engine.ts");
+        const result = await mod.generateSeoPage(seoNiche, seoKeyword, (flags.template as string) || "standard");
+        output(result, json);
+      } catch {
+        output({ error: "distribution-engine module not yet available" }, json);
+      }
+      break;
+    }
+
+    case "deep-psych": {
+      const dpNiche = positional[0];
+      const dpEmotion = positional[1];
+      if (!dpNiche || !dpEmotion) {
+        process.stderr.write("Error: niche and emotion are required. Usage: lead-os deep-psych <niche> <emotion>\n");
+        process.exitCode = 1;
+        return;
+      }
+      try {
+        const mod = await import("../lib/psychology-engine.ts");
+        const triggers = mod.listAllTriggers().filter(
+          (t) => t.category === dpEmotion || t.type === dpEmotion,
+        );
+        const result = { niche: dpNiche, emotion: dpEmotion, intensity: (flags.intensity as string) || "moderate", triggers };
+        output(result, json);
+      } catch {
+        output({ error: "deep-psychology module not yet available" }, json);
       }
       break;
     }

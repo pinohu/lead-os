@@ -29,7 +29,7 @@ test.beforeEach(async () => {
     widgetOrigins: [],
     accent: "#14b8a6",
     enabledFunnels: ["standard"],
-    channels: { email: true },
+    channels: { email: true, whatsapp: false, sms: false, chat: false, voice: false },
     revenueModel: "managed",
     plan: "growth",
     status: "active",

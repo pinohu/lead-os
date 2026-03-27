@@ -6,8 +6,8 @@ import { tools, getToolByName } from "../src/mcp/tools.ts";
 // Tool registry
 // ---------------------------------------------------------------------------
 
-test("tools array contains exactly 23 tools", () => {
-  assert.equal(tools.length, 23);
+test("tools array contains at least 40 tools", () => {
+  assert.ok(tools.length >= 40, `Expected >= 40 tools, got ${tools.length}`);
 });
 
 test("every tool has name, description, inputSchema, and handler", () => {

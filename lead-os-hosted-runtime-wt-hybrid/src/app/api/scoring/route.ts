@@ -1,5 +1,16 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
+import { createRateLimiter } from "@/lib/rate-limiter";
+
+const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 60 });
+
+function getClientIp(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  const real = request.headers.get("x-real-ip");
+  if (real) return real;
+  return "unknown";
+}
 
 interface ScoringContext {
   leadKey?: string;
@@ -390,6 +401,25 @@ function sanitizeScoringContext(raw: Record<string, unknown>): ScoringContext {
 
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
+
+  const ip = getClientIp(request);
+  const rateResult = rateLimiter.check(`scoring:${ip}`);
+  if (!rateResult.allowed) {
+    return NextResponse.json(
+      { data: null, error: { code: "RATE_LIMITED", message: "Too many requests. Please try again later." }, meta: null },
+      {
+        status: 429,
+        headers: {
+          ...headers,
+          "Retry-After": String(Math.ceil((rateResult.resetAt - Date.now()) / 1000)),
+          "X-RateLimit-Limit": "60",
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": String(rateResult.resetAt),
+        },
+      },
+    );
+  }
+
   try {
     const contentType = request.headers.get("content-type") ?? "";
     if (!contentType.includes("application/json")) {

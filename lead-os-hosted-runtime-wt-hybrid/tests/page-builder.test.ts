@@ -326,7 +326,7 @@ test("renderFormToHtml includes all field types", () => {
       { id: "f7", name: "priority", label: "Priority", type: "radio", required: false, options: [{ label: "Low", value: "low" }, { label: "High", value: "high" }], order: 6 },
       { id: "f8", name: "count", label: "Count", type: "number", required: false, validation: { min: 1, max: 100 }, order: 7 },
       { id: "f9", name: "date", label: "Date", type: "date", required: false, order: 8 },
-      { id: "f10", name: "source", label: "Source", type: "hidden", placeholder: "website", order: 9 },
+      { id: "f10", name: "source", label: "Source", type: "hidden", placeholder: "website", required: false, order: 9 },
     ],
     submitAction: "intake",
     successMessage: "Thanks!",

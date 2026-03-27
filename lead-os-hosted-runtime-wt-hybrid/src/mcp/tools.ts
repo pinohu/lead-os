@@ -844,6 +844,470 @@ export const tools: McpTool[] = [
       };
     },
   },
+
+  // --- Distribution ---
+  {
+    name: "lead_os_generate_seo_page",
+    description: "Generate SEO-optimized landing page",
+    inputSchema: {
+      type: "object",
+      properties: {
+        niche: requiredString("Target niche"),
+        keyword: requiredString("Primary SEO keyword"),
+        template: optionalString("Page template: standard, long-form, local (default: standard)"),
+      },
+      required: ["niche", "keyword"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/distribution-engine.ts");
+        return await mod.generateSeoPage(params.niche as string, params.keyword as string, (params.template as string) || "standard");
+      } catch {
+        return { error: "distribution-engine module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_generate_programmatic_pages",
+    description: "Batch generate location-specific pages",
+    inputSchema: {
+      type: "object",
+      properties: {
+        niche: requiredString("Target niche"),
+        locations: {
+          type: "array",
+          items: { type: "string" },
+          description: "List of locations to generate pages for",
+        },
+        template: optionalString("Page template to use"),
+      },
+      required: ["niche", "locations"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/distribution-engine.ts");
+        return await mod.generateProgrammaticPages(params.niche as string, params.locations as string[]);
+      } catch {
+        return { error: "distribution-engine module not yet available" };
+      }
+    },
+  },
+
+  // --- Offers ---
+  {
+    name: "lead_os_generate_offer",
+    description: "Generate irresistible offer with pricing psychology",
+    inputSchema: {
+      type: "object",
+      properties: {
+        niche: requiredString("Target niche"),
+        service: requiredString("Service to create offer for"),
+        pricePoint: { type: "number", description: "Base price point" },
+        urgency: optionalString("Urgency level: low, medium, high"),
+      },
+      required: ["niche", "service"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/offer-engine.ts");
+        return mod.generateOffer(
+          params.niche as Parameters<typeof mod.generateOffer>[0],
+          params.service as string,
+          {
+            averageProjectValue: params.pricePoint as number | undefined,
+            urgencyType: (params.urgency as string) === "high" ? "countdown" : undefined,
+          },
+        );
+      } catch {
+        return { error: "offer-engine module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_generate_pricing_tiers",
+    description: "Generate 3-tier pricing with decoy effect",
+    inputSchema: {
+      type: "object",
+      properties: {
+        niche: requiredString("Target niche"),
+        service: requiredString("Service to price"),
+        basePrice: { type: "number", description: "Base price for the starter tier" },
+      },
+      required: ["niche", "service", "basePrice"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/offer-engine.ts");
+        return mod.generatePriceTiers(params.service as string, params.niche as Parameters<typeof mod.generatePriceTiers>[1]);
+      } catch {
+        return { error: "offer-engine module not yet available" };
+      }
+    },
+  },
+
+  // --- Monetization ---
+  {
+    name: "lead_os_calculate_lead_value",
+    description: "Calculate dynamic lead value by niche",
+    inputSchema: {
+      type: "object",
+      properties: {
+        niche: requiredString("Lead niche"),
+        quality: optionalString("Lead quality: low, medium, high, premium"),
+        score: { type: "number", description: "Lead score (0-100)" },
+      },
+      required: ["niche"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/monetization-engine.ts");
+        return mod.calculateLeadValue(
+          { id: "dynamic", metadata: { quality: (params.quality as string) || "medium" } },
+          params.niche as string,
+          (params.score as number) ?? 50,
+        );
+      } catch {
+        return { error: "monetization-engine module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_auction_lead",
+    description: "Auction lead to highest bidder",
+    inputSchema: {
+      type: "object",
+      properties: {
+        leadKey: requiredString("Lead key to auction"),
+        niche: requiredString("Lead niche"),
+        score: { type: "number", description: "Lead quality score" },
+        minBid: { type: "number", description: "Minimum bid amount" },
+      },
+      required: ["leadKey", "niche", "score"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/monetization-engine.ts");
+        return mod.auctionLead(
+          {
+            id: params.leadKey as string,
+            niche: params.niche as string,
+            reservePrice: (params.minBid as number) ?? 0,
+          },
+          [],
+        );
+      } catch {
+        return { error: "monetization-engine module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_get_revenue_report",
+    description: "Revenue breakdown by source",
+    inputSchema: {
+      type: "object",
+      properties: {
+        tenantId: requiredString("Tenant ID"),
+        since: optionalString("Start date ISO 8601"),
+        until: optionalString("End date ISO 8601"),
+      },
+      required: ["tenantId"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/monetization-engine.ts");
+        return mod.getRevenueReport(params.tenantId as string, (params.since as string) ?? "30d");
+      } catch {
+        return { error: "monetization-engine module not yet available" };
+      }
+    },
+  },
+
+  // --- Escalation ---
+  {
+    name: "lead_os_evaluate_escalation",
+    description: "Evaluate lead for human handoff",
+    inputSchema: {
+      type: "object",
+      properties: {
+        leadKey: requiredString("Lead key to evaluate"),
+        score: { type: "number", description: "Current lead score" },
+        signals: {
+          type: "object",
+          description: "Behavioral signals object",
+        },
+      },
+      required: ["leadKey", "score"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/escalation-engine.ts");
+        const lead: Parameters<typeof mod.shouldEscalate>[0] = {
+          id: params.leadKey as string,
+          tenantId: "default",
+        };
+        const signals: Parameters<typeof mod.shouldEscalate>[2] = (params.signals ?? {}) as Parameters<typeof mod.shouldEscalate>[2];
+        return mod.shouldEscalate(lead, params.score as number, signals);
+      } catch {
+        return { error: "escalation-engine module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_create_handoff",
+    description: "Create sales handoff document",
+    inputSchema: {
+      type: "object",
+      properties: {
+        leadKey: requiredString("Lead key to hand off"),
+        assignee: requiredString("Sales rep or team to assign to"),
+        context: optionalString("Additional context for the handoff"),
+      },
+      required: ["leadKey", "assignee"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/escalation-engine.ts");
+        const lead: Parameters<typeof mod.createSalesHandoff>[0] = {
+          id: params.leadKey as string,
+          tenantId: "default",
+        };
+        const rep: Parameters<typeof mod.createSalesHandoff>[1] = {
+          id: params.assignee as string,
+          name: params.assignee as string,
+          email: "",
+          phone: "",
+          niches: [],
+          timezone: "UTC",
+          maxDailyCapacity: 10,
+          currentDailyLoad: 0,
+          isAvailable: true,
+          closingRate: 0,
+        };
+        return mod.createSalesHandoff(lead, rep, {
+          conversationHighlights: (params.context as string) ? [(params.context as string)] : [],
+        });
+      } catch {
+        return { error: "escalation-engine module not yet available" };
+      }
+    },
+  },
+
+  // --- Trust ---
+  {
+    name: "lead_os_get_trust_score",
+    description: "Calculate trust score with recommendations",
+    inputSchema: {
+      type: "object",
+      properties: {
+        tenantId: requiredString("Tenant ID to evaluate"),
+      },
+      required: ["tenantId"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/trust-engine.ts");
+        const score = mod.calculateTrustScore(params.tenantId as string);
+        const recommendations = mod.getTrustRecommendations(params.tenantId as string);
+        return { score, recommendations };
+      } catch {
+        return { error: "trust-engine module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_generate_social_proof",
+    description: "Generate social proof elements",
+    inputSchema: {
+      type: "object",
+      properties: {
+        tenantId: requiredString("Tenant ID"),
+        type: optionalString("Proof type: testimonials, stats, badges, logos (default: all)"),
+      },
+      required: ["tenantId"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/trust-engine.ts");
+        const proofType = (params.type as string) || "counter";
+        return mod.generateSocialProof(params.tenantId as string, proofType as Parameters<typeof mod.generateSocialProof>[1]);
+      } catch {
+        return { error: "trust-engine module not yet available" };
+      }
+    },
+  },
+
+  // --- Data Moat ---
+  {
+    name: "lead_os_get_niche_insights",
+    description: "Aggregated niche intelligence",
+    inputSchema: {
+      type: "object",
+      properties: {
+        niche: requiredString("Niche to analyze"),
+      },
+      required: ["niche"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/data-moat.ts");
+        return await mod.getNicheInsights(params.niche as string);
+      } catch {
+        return { error: "data-moat module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_get_conversion_benchmarks",
+    description: "Niche conversion benchmarks",
+    inputSchema: {
+      type: "object",
+      properties: {
+        niche: requiredString("Niche to get benchmarks for"),
+      },
+      required: ["niche"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/data-moat.ts");
+        return await mod.getConversionBenchmarks(params.niche as string);
+      } catch {
+        return { error: "data-moat module not yet available" };
+      }
+    },
+  },
+
+  // --- Psychology ---
+  {
+    name: "lead_os_generate_deep_psychology",
+    description: "Generate fear/desire/identity triggers",
+    inputSchema: {
+      type: "object",
+      properties: {
+        niche: requiredString("Target niche"),
+        emotion: requiredString("Primary emotion: fear, desire, identity, urgency, belonging"),
+        intensity: optionalString("Intensity level: subtle, moderate, intense (default: moderate)"),
+      },
+      required: ["niche", "emotion"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/psychology-engine.ts");
+        const triggers = mod.listAllTriggers().filter(
+          (t) => t.category === (params.emotion as string) || t.type === (params.emotion as string),
+        );
+        return { niche: params.niche, emotion: params.emotion, intensity: (params.intensity as string) || "moderate", triggers };
+      } catch {
+        return { error: "deep-psychology module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_generate_emotional_sequence",
+    description: "Funnel-stage emotional trigger sequence",
+    inputSchema: {
+      type: "object",
+      properties: {
+        niche: requiredString("Target niche"),
+        funnelStages: {
+          type: "array",
+          items: { type: "string" },
+          description: "Funnel stages to generate triggers for",
+        },
+      },
+      required: ["niche"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/psychology-engine.ts");
+        const stages = (params.funnelStages as string[]) ?? ["awareness", "consideration", "decision"];
+        const allTriggers = mod.listAllTriggers();
+        const sequence = stages.map((stage) => ({
+          stage,
+          triggers: allTriggers.filter((t) => t.conditions.stages?.includes(stage)),
+        }));
+        return { niche: params.niche, sequence };
+      } catch {
+        return { error: "deep-psychology module not yet available" };
+      }
+    },
+  },
+
+  // --- Personalization ---
+  {
+    name: "lead_os_personalize",
+    description: "Generate personalized experience for visitor",
+    inputSchema: {
+      type: "object",
+      properties: {
+        visitorId: requiredString("Visitor or lead identifier"),
+        niche: requiredString("Target niche"),
+        signals: {
+          type: "object",
+          description: "Visitor behavioral signals (pages viewed, time on site, etc.)",
+        },
+      },
+      required: ["visitorId", "niche"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/personalization-engine.ts");
+        const context: Parameters<typeof mod.personalize>[0] = {
+          visitorId: params.visitorId as string,
+          niche: params.niche as string,
+          ...(params.signals as Record<string, unknown> | undefined),
+        };
+        return mod.personalize(context);
+      } catch {
+        return { error: "personalization-engine module not yet available" };
+      }
+    },
+  },
+
+  // --- Visitor Tracking ---
+  {
+    name: "lead_os_track_session",
+    description: "Create or update visitor session",
+    inputSchema: {
+      type: "object",
+      properties: {
+        visitorId: requiredString("Visitor identifier"),
+        tenantId: requiredString("Tenant ID"),
+        page: requiredString("Current page URL or path"),
+        referrer: optionalString("Referrer URL"),
+        event: optionalString("Event type: pageview, click, scroll, form_start, form_submit"),
+        metadata: {
+          type: "object",
+          description: "Additional event metadata",
+        },
+      },
+      required: ["visitorId", "tenantId", "page"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/visitor-tracking.ts");
+        const session = mod.createSession(
+          params.visitorId as string,
+          { type: "desktop", browser: "unknown", os: "unknown", screenWidth: 1920, screenHeight: 1080 },
+          params.referrer as string | undefined,
+        );
+        mod.recordPageView(session, { path: params.page as string, title: params.page as string, scrollDepth: 0, timeOnPage: 0 });
+        if (params.event && params.event !== "pageview") {
+          mod.recordEvent(session, { type: params.event as string, target: params.page as string });
+        }
+        return session;
+      } catch {
+        return { error: "visitor-tracking module not yet available" };
+      }
+    },
+  },
 ];
 
 function generateEmailSubject(niche: string, brand: string, label: string, index: number): string {

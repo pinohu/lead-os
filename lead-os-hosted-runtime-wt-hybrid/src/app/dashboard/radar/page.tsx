@@ -1,5 +1,24 @@
 "use client";
 
+// SSE alternative: import { onLeadCaptured, onLeadScored } from "@/lib/realtime-hooks";
+// The realtime-hooks module exports event publishers (onLeadCaptured, onLeadScored,
+// onExperimentConversion, onMarketplaceLeadClaimed, onProvisioningStep) that publish
+// events via the realtime SSE system. To replace the polling fetch below with SSE:
+//
+//   import { onLeadCaptured, onLeadScored } from "@/lib/realtime-hooks";
+//
+//   // Inside useEffect, instead of setInterval polling:
+//   // const eventSource = new EventSource(`/api/realtime?tenantId=${tenantId}`);
+//   // eventSource.addEventListener("lead.captured", (e) => {
+//   //   const payload = JSON.parse(e.data);
+//   //   setData((prev) => prev ? { ...prev, hotLeads: [payload, ...prev.hotLeads] } : prev);
+//   // });
+//   // eventSource.addEventListener("lead.scored", (e) => {
+//   //   const payload = JSON.parse(e.data);
+//   //   // Update lead scores in real time
+//   // });
+//   // return () => eventSource.close();
+
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 

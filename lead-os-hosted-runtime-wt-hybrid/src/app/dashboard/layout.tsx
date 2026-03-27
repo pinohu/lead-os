@@ -18,6 +18,7 @@ const navItems = [
   { href: "/dashboard/workflows", label: "Workflows" },
   { href: "/dashboard/feedback", label: "Feedback" },
   { href: "/dashboard/creative", label: "Creative" },
+  { href: "/dashboard/distribution", label: "Distribution" },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
