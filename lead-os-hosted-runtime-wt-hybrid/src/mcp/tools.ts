@@ -1308,6 +1308,150 @@ export const tools: McpTool[] = [
       }
     },
   },
+
+  // --- Pipeline & Context ---
+  {
+    name: "lead_os_run_pipeline",
+    description: "Run the full revenue pipeline for a lead, executing all stages from intake through monetization.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        leadData: {
+          type: "object",
+          description: "Lead data object with source, email, phone, and behavioral signals",
+        },
+        tenantId: requiredString("Tenant ID"),
+        nicheSlug: requiredString("Niche slug"),
+      },
+      required: ["leadData", "tenantId", "nicheSlug"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/revenue-pipeline.ts");
+        return await mod.runRevenuePipeline(
+          params.leadData as Record<string, unknown>,
+          params.tenantId as string,
+          params.nicheSlug as string,
+        );
+      } catch {
+        return { error: "revenue-pipeline module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_get_context",
+    description: "Get the full context for a lead including scores, psychology profile, interactions, and funnel stage.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        leadKey: requiredString("Lead key identifier"),
+      },
+      required: ["leadKey"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/context-engine.ts");
+        const ctx = await mod.getContext(params.leadKey as string);
+        if (!ctx) {
+          throw new Error(`Context not found for lead: ${params.leadKey}`);
+        }
+        return ctx;
+      } catch (err) {
+        if (err instanceof Error && err.message.includes("not found")) throw err;
+        return { error: "context-engine module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_update_context",
+    description: "Update a lead's context with partial data (scores, psychology profile, funnel stage, etc.).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        leadKey: requiredString("Lead key identifier"),
+        updates: {
+          type: "object",
+          description: "Partial context update object",
+        },
+      },
+      required: ["leadKey", "updates"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/context-engine.ts");
+        const updated = mod.updateContext(
+          params.leadKey as string,
+          params.updates as Record<string, unknown>,
+        );
+        if (!updated) {
+          throw new Error(`Context not found for lead: ${params.leadKey}`);
+        }
+        return updated;
+      } catch (err) {
+        if (err instanceof Error && err.message.includes("not found")) throw err;
+        return { error: "context-engine module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_run_testbed",
+    description: "Run the vertical testbed with synthetic leads to calibrate scoring and routing for a niche.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        nicheSlug: requiredString("Niche slug to test"),
+        sampleSize: { type: "number", description: "Number of synthetic leads to generate (default 20)" },
+      },
+      required: ["nicheSlug"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/vertical-testbed.ts");
+        return await mod.runTestbed(
+          params.nicheSlug as string,
+          (params.sampleSize as number) ?? 20,
+        );
+      } catch {
+        return { error: "vertical-testbed module not yet available" };
+      }
+    },
+  },
+
+  {
+    name: "lead_os_run_agent",
+    description: "Create and run an agent task (funnel-agent, creative-agent, onboarding-agent, etc.) for a tenant.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        agentType: requiredString("Agent type (funnel-agent, creative-agent, onboarding-agent, scoring-agent, psychology-agent)"),
+        tenantId: requiredString("Tenant ID"),
+        nicheSlug: requiredString("Niche slug"),
+        input: {
+          type: "object",
+          description: "Optional input data for the agent task",
+        },
+      },
+      required: ["agentType", "tenantId", "nicheSlug"],
+    },
+    handler: async (params) => {
+      try {
+        const mod = await import("../lib/agent-orchestrator.ts");
+        const task = mod.createAgentTask(
+          params.agentType as Parameters<typeof mod.createAgentTask>[0],
+          params.tenantId as string,
+          params.nicheSlug as string,
+          (params.input as Record<string, unknown>) ?? {},
+        );
+        const result = await mod.runAgentTask(task.id);
+        return result;
+      } catch {
+        return { error: "agent-orchestrator module not yet available" };
+      }
+    },
+  },
 ];
 
 function generateEmailSubject(niche: string, brand: string, label: string, index: number): string {

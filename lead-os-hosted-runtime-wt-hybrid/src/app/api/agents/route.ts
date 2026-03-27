@@ -7,6 +7,14 @@ import {
   isValidAgentType,
   type AgentType,
 } from "@/lib/agent-orchestrator";
+import { z } from "zod";
+
+const AgentCreateSchema = z.object({
+  agentType: z.string().min(1).max(100),
+  tenantId: z.string().min(1).max(100),
+  nicheSlug: z.string().min(1).max(100),
+  input: z.record(z.string(), z.unknown()).optional(),
+});
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -57,27 +65,16 @@ export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 
   try {
-    const body = await request.json();
-    const { agentType, tenantId, nicheSlug, input } = body as {
-      agentType?: string;
-      tenantId?: string;
-      nicheSlug?: string;
-      input?: Record<string, unknown>;
-    };
+    const raw = await request.json();
 
-    if (!agentType || !tenantId || !nicheSlug) {
+    const validation = AgentCreateSchema.safeParse(raw);
+    if (!validation.success) {
       return NextResponse.json(
-        {
-          data: null,
-          error: {
-            code: "VALIDATION_ERROR",
-            message: "agentType, tenantId, and nicheSlug are required",
-          },
-          meta: null,
-        },
-        { status: 400, headers },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
       );
     }
+    const { agentType, tenantId, nicheSlug, input } = validation.data;
 
     if (!isValidAgentType(agentType)) {
       return NextResponse.json(

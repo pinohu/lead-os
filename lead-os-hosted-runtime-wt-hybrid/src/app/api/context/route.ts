@@ -7,6 +7,19 @@ import {
   type CreateContextInput,
   type ContextListFilters,
 } from "@/lib/context-engine";
+import { z } from "zod";
+
+const ContextCreateSchema = z.object({
+  leadKey: z.string().min(1).max(200),
+  tenantId: z.string().min(1).max(100),
+  niche: z.string().max(200).optional(),
+  email: z.string().max(254).optional(),
+  phone: z.string().max(30).optional(),
+  name: z.string().max(200).optional(),
+  company: z.string().max(200).optional(),
+  source: z.string().max(100).optional(),
+  designSpecId: z.string().max(200).optional(),
+});
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 60 });
 
@@ -116,30 +129,16 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
+    const raw = await request.json();
 
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
+    const validation = ContextCreateSchema.safeParse(raw);
+    if (!validation.success) {
       return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "Request body must be a JSON object" }, meta: null },
-        { status: 400, headers },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
       );
     }
-
-    const { leadKey, tenantId, ...initialData } = body as { leadKey?: string; tenantId?: string } & CreateContextInput;
-
-    if (!leadKey || typeof leadKey !== "string") {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "leadKey is required", details: [{ field: "leadKey", issue: "Required" }] }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
-    if (!tenantId || typeof tenantId !== "string") {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId is required", details: [{ field: "tenantId", issue: "Required" }] }, meta: null },
-        { status: 400, headers },
-      );
-    }
+    const { leadKey, tenantId, ...initialData } = validation.data;
 
     const ctx = createContext(leadKey, tenantId, initialData);
 

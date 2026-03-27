@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { recordReview, getReviewSummary } from "@/lib/trust-engine";
+import { z } from "zod";
+
+const ReviewSchema = z.object({
+  tenantId: z.string().min(1).max(100),
+  rating: z.number().int().min(1).max(5),
+  text: z.string().min(1).max(5000),
+  source: z.enum(["google", "yelp", "internal", "manual"]),
+  reviewerName: z.string().max(200).optional(),
+  date: z.string().max(50).optional(),
+  verified: z.boolean().optional(),
+});
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, { status: 204, headers: buildCorsHeaders(request.headers.get("origin")) });
@@ -42,48 +53,24 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "Request body must be a JSON object" }, meta: null },
-        { status: 400, headers },
-      );
-    }
+    const raw = await request.json();
 
-    const { tenantId, rating, text, source, reviewerName, date, verified } = body;
+    const validation = ReviewSchema.safeParse(raw);
+    if (!validation.success) {
+      return NextResponse.json(
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
+      );
+    }
+    const body = validation.data;
 
-    if (!tenantId || typeof tenantId !== "string") {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId is required" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-    if (!VALID_RATINGS.has(rating)) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "rating must be 1-5" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-    if (!text || typeof text !== "string") {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "text is required" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-    if (!VALID_SOURCES.has(source)) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "source must be google, yelp, internal, or manual" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
-    const review = await recordReview(tenantId, {
-      rating,
-      text,
-      source,
-      reviewerName: reviewerName ?? "Anonymous",
-      date: date ?? new Date().toISOString(),
-      verified: typeof verified === "boolean" ? verified : false,
+    const review = await recordReview(body.tenantId, {
+      rating: body.rating as 1 | 2 | 3 | 4 | 5,
+      text: body.text,
+      source: body.source,
+      reviewerName: body.reviewerName ?? "Anonymous",
+      date: body.date ?? new Date().toISOString(),
+      verified: body.verified ?? false,
     });
 
     return NextResponse.json(

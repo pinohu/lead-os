@@ -1,8 +1,41 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
+import { z } from "zod";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 60 });
+
+const ScoringContextSchema = z.object({
+  leadKey: z.string().max(128).optional(),
+  email: z.string().max(254).optional(),
+  phone: z.string().max(20).optional(),
+  source: z.string().max(200).optional(),
+  niche: z.string().max(200).optional(),
+  funnelFamily: z.string().max(200).optional(),
+  sessionCount: z.number().min(0).max(10_000).optional(),
+  totalPageViews: z.number().min(0).max(100_000).optional(),
+  totalTimeOnSite: z.number().min(0).max(86_400).optional(),
+  intentSignals: z.array(z.string().max(100)).max(50).optional(),
+  engagementScore: z.number().min(0).max(100).optional(),
+  isReturning: z.boolean().optional(),
+  hasAssessment: z.boolean().optional(),
+  hasCalculator: z.boolean().optional(),
+  hasBookingIntent: z.boolean().optional(),
+  hasPricingView: z.boolean().optional(),
+  hasContactView: z.boolean().optional(),
+  hasFormSubmission: z.boolean().optional(),
+  hasVideoEngagement: z.boolean().optional(),
+  hasChatEngagement: z.boolean().optional(),
+  daysActive: z.number().min(0).max(3_650).optional(),
+  leadMagnetsDownloaded: z.number().min(0).max(1_000).optional(),
+  emailsOpened: z.number().min(0).max(10_000).optional(),
+  emailsClicked: z.number().min(0).max(10_000).optional(),
+  deviceType: z.enum(["desktop", "mobile", "tablet"]).optional(),
+  companySize: z.enum(["1-10", "11-50", "51-200", "201-1000", "1000+"]).optional(),
+  revenue: z.enum(["Under $100K", "$100K-$500K", "$500K-$1M", "$1M-$5M", "$5M+"]).optional(),
+  role: z.string().max(200).optional(),
+  metadata: z.record(z.string().max(64), z.union([z.string().max(256), z.number(), z.boolean(), z.null()])).optional(),
+});
 
 function getClientIp(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for");
@@ -431,16 +464,17 @@ export async function POST(request: Request) {
 
     const raw = await request.json();
 
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    const validation = ScoringContextSchema.safeParse(raw);
+    if (!validation.success) {
       return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "Request body must be a JSON object" }, meta: null },
-        { status: 400, headers },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
       );
     }
 
     // Sanitize all numeric and string fields before scoring to prevent
     // inflated scores from Infinity/NaN/oversized inputs.
-    const ctx = sanitizeScoringContext(raw as Record<string, unknown>);
+    const ctx = sanitizeScoringContext(validation.data as Record<string, unknown>);
     const result = scoreContext(ctx);
 
     return NextResponse.json(

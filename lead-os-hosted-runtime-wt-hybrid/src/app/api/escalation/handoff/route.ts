@@ -2,6 +2,39 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createSalesHandoff, routeToSalesRep } from "@/lib/escalation-engine";
 import type { LeadForEscalation, SalesRep } from "@/lib/escalation-engine";
+import { z } from "zod";
+
+const SalesRepSchema = z.object({
+  id: z.string().min(1).max(200),
+  name: z.string().max(200),
+  email: z.string().max(254),
+  phone: z.string().max(30).optional().default(""),
+  niches: z.array(z.string().max(100)).optional().default([]),
+  timezone: z.string().max(50).optional().default("UTC"),
+  maxDailyCapacity: z.number().min(0).optional().default(10),
+  currentDailyLoad: z.number().min(0).optional().default(0),
+  isAvailable: z.boolean().optional().default(true),
+  closingRate: z.number().min(0).max(1).optional().default(0.5),
+});
+
+const HandoffSchema = z.object({
+  leadId: z.string().min(1).max(200),
+  tenantId: z.string().max(100).optional(),
+  niche: z.string().max(200).optional(),
+  name: z.string().max(200).optional(),
+  email: z.string().max(254).optional(),
+  phone: z.string().max(30).optional(),
+  company: z.string().max(200).optional(),
+  companySize: z.string().max(50).optional(),
+  estimatedDealValue: z.number().min(0).optional(),
+  team: z.array(SalesRepSchema).min(1).max(100),
+  scoringBreakdown: z.array(z.object({
+    category: z.string(),
+    score: z.number(),
+    factors: z.array(z.string()),
+  })).optional(),
+  conversationHighlights: z.array(z.string().max(500)).optional(),
+});
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -21,55 +54,42 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json() as Record<string, unknown>;
+    const raw = await request.json();
 
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
+    const validation = HandoffSchema.safeParse(raw);
+    if (!validation.success) {
       return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "Request body must be a JSON object" }, meta: null },
-        { status: 400, headers },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
       );
     }
+    const body = validation.data;
 
-    const leadId = body.leadId;
-    if (typeof leadId !== "string" || leadId.trim().length === 0) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "leadId is required" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
-    const tenantId = typeof body.tenantId === "string" ? body.tenantId : "default";
+    const tenantId = body.tenantId ?? "default";
 
     const lead: LeadForEscalation = {
-      id: leadId,
+      id: body.leadId,
       tenantId,
-      niche: typeof body.niche === "string" ? body.niche : undefined,
-      name: typeof body.name === "string" ? body.name : undefined,
-      email: typeof body.email === "string" ? body.email : undefined,
-      phone: typeof body.phone === "string" ? body.phone : undefined,
-      company: typeof body.company === "string" ? body.company : undefined,
-      companySize: typeof body.companySize === "string" ? body.companySize : undefined,
-      estimatedDealValue: typeof body.estimatedDealValue === "number" ? body.estimatedDealValue : undefined,
+      niche: body.niche,
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      company: body.company,
+      companySize: body.companySize,
+      estimatedDealValue: body.estimatedDealValue,
     };
 
-    if (!Array.isArray(body.team) || body.team.length === 0) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "team array is required with at least one sales rep" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
-    const team: SalesRep[] = (body.team as Record<string, unknown>[]).map((r) => ({
-      id: String(r.id ?? ""),
-      name: String(r.name ?? ""),
-      email: String(r.email ?? ""),
-      phone: String(r.phone ?? ""),
-      niches: Array.isArray(r.niches) ? (r.niches as string[]) : [],
-      timezone: String(r.timezone ?? "UTC"),
-      maxDailyCapacity: typeof r.maxDailyCapacity === "number" ? r.maxDailyCapacity : 10,
-      currentDailyLoad: typeof r.currentDailyLoad === "number" ? r.currentDailyLoad : 0,
-      isAvailable: r.isAvailable !== false,
-      closingRate: typeof r.closingRate === "number" ? r.closingRate : 0.5,
+    const team: SalesRep[] = body.team.map((r) => ({
+      id: r.id,
+      name: r.name,
+      email: r.email,
+      phone: r.phone ?? "",
+      niches: r.niches ?? [],
+      timezone: r.timezone ?? "UTC",
+      maxDailyCapacity: r.maxDailyCapacity ?? 10,
+      currentDailyLoad: r.currentDailyLoad ?? 0,
+      isAvailable: r.isAvailable ?? true,
+      closingRate: r.closingRate ?? 0.5,
     }));
 
     const rep = routeToSalesRep(lead, team);
@@ -81,9 +101,9 @@ export async function POST(request: Request) {
     }
 
     const context = {
-      scoringBreakdown: Array.isArray(body.scoringBreakdown) ? body.scoringBreakdown as { category: string; score: number; factors: string[] }[] : [],
-      conversationHighlights: Array.isArray(body.conversationHighlights) ? body.conversationHighlights as string[] : [],
-      estimatedValue: typeof body.estimatedDealValue === "number" ? body.estimatedDealValue : undefined,
+      scoringBreakdown: body.scoringBreakdown ?? [],
+      conversationHighlights: body.conversationHighlights ?? [],
+      estimatedValue: body.estimatedDealValue,
     };
 
     const handoff = createSalesHandoff(lead, rep, context);

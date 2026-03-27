@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { startOnboarding, getOnboardingState } from "@/lib/onboarding";
+import { z } from "zod";
+
+const OnboardingSchema = z.object({
+  email: z.string().min(1).max(254).email(),
+});
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -23,23 +28,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
+    const raw = await request.json();
 
-    if (!body.email || typeof body.email !== "string" || body.email.trim().length === 0) {
+    const validation = OnboardingSchema.safeParse(raw);
+    if (!validation.success) {
       return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "email is required" }, meta: null },
-        { status: 400, headers },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
       );
     }
+    const validated = validation.data;
 
-    if (body.email.length > MAX_EMAIL_LENGTH || !EMAIL_PATTERN.test(body.email.trim())) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "email must be a valid email address" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
-    const state = await startOnboarding(body.email.trim());
+    const state = await startOnboarding(validated.email.trim());
 
     return NextResponse.json(
       { data: state, error: null, meta: null },

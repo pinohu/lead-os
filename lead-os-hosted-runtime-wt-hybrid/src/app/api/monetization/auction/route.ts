@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { auctionLead } from "@/lib/monetization-engine";
+import { z } from "zod";
+
+const AuctionSchema = z.object({
+  leadId: z.string().min(1).max(200),
+  niche: z.string().max(200).optional(),
+  reservePrice: z.number().min(0).optional(),
+  buyers: z.array(z.object({
+    buyerId: z.string().min(1).max(200),
+    bidAmount: z.number().min(0),
+  })).min(1).max(100),
+});
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -20,39 +31,21 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json() as Record<string, unknown>;
+    const raw = await request.json();
 
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
+    const validation = AuctionSchema.safeParse(raw);
+    if (!validation.success) {
       return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "Request body must be a JSON object" }, meta: null },
-        { status: 400, headers },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
       );
     }
+    const body = validation.data;
 
-    const leadId = body.leadId;
-    if (typeof leadId !== "string" || leadId.trim().length === 0) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "leadId is required" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
-    const niche = typeof body.niche === "string" ? body.niche : "general";
-    const reservePrice = typeof body.reservePrice === "number" ? body.reservePrice : 0;
-
-    if (!Array.isArray(body.buyers) || body.buyers.length === 0) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "buyers array is required and must not be empty" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
-    const buyers = (body.buyers as Record<string, unknown>[]).map((b) => ({
-      buyerId: typeof b.buyerId === "string" ? b.buyerId : "",
-      bidAmount: typeof b.bidAmount === "number" ? b.bidAmount : 0,
-    })).filter((b) => b.buyerId.length > 0);
-
-    const result = auctionLead({ id: leadId, niche, reservePrice }, buyers);
+    const result = auctionLead(
+      { id: body.leadId, niche: body.niche ?? "general", reservePrice: body.reservePrice ?? 0 },
+      body.buyers,
+    );
 
     return NextResponse.json(
       { data: result, error: null, meta: null },

@@ -255,6 +255,26 @@ export async function runRevenuePipeline(
     aborted = true;
   }
 
+  // 1.5. INGRESS — detect channel and apply initial scoring boost
+  if (!aborted) {
+    const ingressStage = await runPipelineStage("ingress", async () => {
+      const ingress = await import("./ingress-engine.ts");
+      const channel = ingress.detectIngressChannel(
+        (leadData.source as string) ?? "direct",
+        leadData.referrer as string | undefined,
+        leadData.utm_source as string | undefined,
+        leadData.utm_medium as string | undefined,
+      );
+      const decision = ingress.resolveIngressDecision(channel, tenantId);
+
+      // Record the ingress event
+      await ingress.recordIngressEvent(tenantId, decision.channel, leadKey, decision.scoreBoost);
+
+      return decision as unknown as Record<string, unknown>;
+    });
+    stages.push(ingressStage);
+  }
+
   // 2. CONTEXT
   if (!aborted) {
     const contextStage = await runPipelineStage("context", async () => {
@@ -308,7 +328,8 @@ export async function runRevenuePipeline(
       const fit = computeFitScore(ctx);
       const engagement = computeEngagementScore(ctx);
       const urgency = computeUrgencyScore(ctx);
-      const composite = computeCompositeScore(ctx);
+      const scoringConfig = await import("./scoring-config.ts").then((m) => m.getScoringConfig(tenantId)).catch(() => undefined);
+      const composite = computeCompositeScore(ctx, scoringConfig);
 
       compositeScore = composite.score;
 
@@ -382,20 +403,61 @@ export async function runRevenuePipeline(
   if (!aborted) {
     const psychStage = await runPipelineStage("psychology", async () => {
       const { evaluatePsychology } = await import("./psychology-engine.ts");
-      const profile = {
-        leadScore: compositeScore,
-        trustScore: Math.min(compositeScore * 0.8, 100),
-        urgencyScore: Math.min(compositeScore * 0.7, 100),
-        stage: route === "fast-track" ? "bottom" : route === "conversion" ? "middle" : "top",
-        returning: Boolean(leadData.returning ?? (leadData.returnVisits as number ?? 0) > 0),
+      const { getContext, updateContext } = await import("./context-engine.ts");
+
+      // Get real scores from context (set in stage 3)
+      const ctx = await getContext(leadKey).catch(() => null);
+      const trustScore = ctx?.scores?.composite ? Math.min(ctx.scores.composite * 0.8, 100) : 50;
+      const urgencyScore = ctx?.scores?.urgency ?? 50;
+
+      // Surface psychology
+      const surfacePsych = evaluatePsychology({
+        leadScore: ctx?.scores?.composite ?? compositeScore,
+        trustScore,
+        urgencyScore,
+        stage: ctx?.funnelStage ?? (route === "fast-track" ? "bottom" : route === "conversion" ? "middle" : "top"),
+        returning: (ctx?.interactions?.length ?? 0) > 1 || Boolean(leadData.returning ?? (leadData.returnVisits as number ?? 0) > 0),
         device: (leadData.device as string) ?? "desktop",
         objections: (leadData.objections as string[]) ?? [],
         timeOnSite: (leadData.timeOnSite as number) ?? 0,
         pagesViewed: (leadData.pagesViewed as number) ?? 0,
-      };
-      const directive = evaluatePsychology(profile);
-      psychologyDirectives = directive as unknown as Record<string, unknown>;
-      return directive as unknown as Record<string, unknown>;
+      });
+      psychologyDirectives = surfacePsych as unknown as Record<string, unknown>;
+
+      // Deep psychology (niche-specific)
+      let deepPsych: Record<string, unknown> | null = null;
+      try {
+        const dp = await import("./deep-psychology.ts");
+        const { nicheStore } = await import("./niche-store.ts");
+        const nicheConfig = nicheStore.get(nicheSlug);
+        const niche = nicheSlug || "general";
+        const fears = dp.generateFearTrigger(niche, nicheConfig?.painPoints?.[0] ?? "problem");
+        const desires = dp.generateDesireTrigger(niche, ["growth", "security"]);
+        const identity = dp.generateIdentityMessage(niche, "decision-maker");
+        const sequence = dp.generateEmotionalSequence(niche, ctx?.funnelStage === "new" ? "top" : ctx?.funnelStage === "nurture" ? "middle" : "bottom");
+        deepPsych = { fears, desires, identity, sequence } as Record<string, unknown>;
+      } catch {
+        // Deep psychology module not available — surface psychology is sufficient
+      }
+
+      // Update context with psychology profile
+      if (ctx) {
+        const fearHeadline = (deepPsych?.fears as Record<string, unknown> | undefined)?.headline as string | undefined;
+        const desireHeadline = ((deepPsych?.desires as Array<Record<string, unknown>> | undefined)?.[0])?.headline as string | undefined;
+        const sequenceStages = (deepPsych?.sequence as Record<string, unknown> | undefined)?.stages as Array<Record<string, unknown>> | undefined;
+        updateContext(leadKey, {
+          psychologyProfile: {
+            trustLevel: trustScore,
+            fearTriggers: fearHeadline ? [fearHeadline] : [],
+            desireTriggers: desireHeadline ? [desireHeadline] : [],
+            objections: [],
+            identityType: "decision-maker",
+            emotionalStage: (sequenceStages?.[0]?.emotion as string) ?? "curiosity",
+          },
+        });
+      }
+
+      return { surface: surfacePsych, deep: deepPsych } as unknown as Record<string, unknown>;
     });
     stages.push(psychStage);
   }

@@ -484,6 +484,69 @@ export async function applyAdjustment(
   tenantId: string,
   adjustment: Adjustment,
 ): Promise<void> {
+  // Apply the actual change based on adjustment type
+  try {
+    switch (adjustment.type) {
+      case "scoring-weight": {
+        const { getScoringConfig, setScoringConfig } = await import("./scoring-config.ts");
+        const current = getScoringConfig(tenantId) ?? {
+          intentWeight: 0.3,
+          fitWeight: 0.25,
+          engagementWeight: 0.25,
+          urgencyWeight: 0.2,
+        };
+        const updated = { ...current, [adjustment.target]: adjustment.newValue as number };
+        setScoringConfig(tenantId, updated);
+        break;
+      }
+
+      case "funnel-disable":
+      case "funnel-promote": {
+        const { updateNicheConfig, resolveNicheConfig, listNicheConfigs } = await import("./niche-adapter.ts");
+        const configs = listNicheConfigs({ limit: 100 });
+        for (const cfg of configs) {
+          if (adjustment.type === "funnel-disable") {
+            const updated = updateNicheConfig(cfg.slug, {
+              funnels: { preferredFamily: cfg.funnels.preferredFamily === adjustment.target ? "default" : cfg.funnels.preferredFamily },
+            });
+            if (updated) break;
+          } else {
+            updateNicheConfig(cfg.slug, {
+              funnels: { preferredFamily: adjustment.target },
+            });
+            break;
+          }
+        }
+        break;
+      }
+
+      case "nurture-timing": {
+        const { updateNicheConfig, listNicheConfigs } = await import("./niche-adapter.ts");
+        const configs = listNicheConfigs({ limit: 100 });
+        for (const cfg of configs) {
+          updateNicheConfig(cfg.slug, {
+            funnels: {
+              touchFrequency: typeof adjustment.newValue === "number" ? adjustment.newValue : cfg.funnels.touchFrequency,
+            },
+          });
+          break;
+        }
+        break;
+      }
+
+      case "psychology-trigger": {
+        // Psychology engine reads from static triggers; log-only for now
+        break;
+      }
+
+      default:
+        break;
+    }
+  } catch (error: unknown) {
+    console.error(`Failed to apply ${adjustment.type} adjustment:`, error);
+  }
+
+  // Record the adjustment to the database
   const pool = getPool();
   if (!pool) return;
 

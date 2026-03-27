@@ -13,8 +13,24 @@ import {
   type PersonaType,
   type FunnelStage,
 } from "@/lib/deep-psychology";
+import { z } from "zod";
 
 type ActionType = "fear" | "desire" | "identity" | "objection" | "sequence";
+
+const DeepPsychologySchema = z.object({
+  action: z.enum(["fear", "desire", "identity", "objection", "sequence"]),
+  niche: z.string().max(200).optional(),
+  painPoint: z.string().max(200).optional(),
+  painPoints: z.array(z.string().max(200)).max(20).optional(),
+  aspirations: z.array(z.string().max(200)).max(20).optional(),
+  segment: z.string().max(200).optional(),
+  persona: z.enum(["decision-maker", "implementer", "researcher", "budget-holder", "innovator", "pragmatist"]).optional(),
+  offers: z.array(z.string().max(200)).max(20).optional(),
+  objection: z.string().max(200).optional(),
+  messages: z.array(z.string().max(200)).max(20).optional(),
+  signals: z.array(z.object({ type: z.string().max(100) }).passthrough()).max(20).optional(),
+  funnelStage: z.enum(["top", "middle", "bottom"]).optional(),
+});
 
 const VALID_ACTIONS = new Set<ActionType>(["fear", "desire", "identity", "objection", "sequence"]);
 const VALID_PERSONAS = new Set<PersonaType>([
@@ -61,24 +77,19 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
+    const raw = await request.json();
 
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
+    const validation = DeepPsychologySchema.safeParse(raw);
+    if (!validation.success) {
       return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "Request body must be a JSON object" }, meta: null },
-        { status: 400, headers },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
       );
     }
+    const body = validation.data;
 
-    const action = sanitizeString(body.action);
-    if (!action || !VALID_ACTIONS.has(action as ActionType)) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: `action must be one of: ${[...VALID_ACTIONS].join(", ")}` }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
-    const niche = sanitizeString(body.niche) ?? "general";
+    const action = body.action;
+    const niche = body.niche ?? "general";
 
     switch (action as ActionType) {
       case "fear": {

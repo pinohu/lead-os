@@ -64,6 +64,11 @@ export async function GET(request: Request) {
       }).catch(() => {
         // Persistence failure must not break the pixel response
       });
+
+      // Fire-and-forget rescore after email open
+      import("@/lib/rescore-engine")
+        .then((m) => m.rescoreLead(leadKey, { type: "email-open" }))
+        .catch(() => {});
     }
     // Invalid params: silently skip recording but always return the pixel so
     // email clients do not display broken images.

@@ -2,6 +2,24 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { shouldEscalate, classifyEscalationType } from "@/lib/escalation-engine";
 import type { LeadForEscalation, EscalationSignals } from "@/lib/escalation-engine";
+import { z } from "zod";
+
+const EscalationEvaluateSchema = z.object({
+  leadId: z.string().min(1).max(200),
+  tenantId: z.string().max(100).optional(),
+  score: z.number().min(0).max(100).optional(),
+  niche: z.string().max(200).optional(),
+  name: z.string().max(200).optional(),
+  email: z.string().max(254).optional(),
+  phone: z.string().max(30).optional(),
+  company: z.string().max(200).optional(),
+  companySize: z.string().max(50).optional(),
+  estimatedDealValue: z.number().min(0).optional(),
+  hasPhoneRequest: z.boolean().optional(),
+  competitorMentioned: z.boolean().optional(),
+  urgencyLevel: z.enum(["low", "medium", "high", "critical"]).optional(),
+  explicitCallRequest: z.boolean().optional(),
+});
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -21,46 +39,41 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json() as Record<string, unknown>;
+    const raw = await request.json();
 
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
+    const validation = EscalationEvaluateSchema.safeParse(raw);
+    if (!validation.success) {
       return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "Request body must be a JSON object" }, meta: null },
-        { status: 400, headers },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
       );
     }
+    const body = validation.data;
 
+    const tenantId = body.tenantId ?? "default";
+    const score = body.score ?? 0;
     const leadId = body.leadId;
-    if (typeof leadId !== "string" || leadId.trim().length === 0) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "leadId is required" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
-    const tenantId = typeof body.tenantId === "string" ? body.tenantId : "default";
-    const score = typeof body.score === "number" ? body.score : 0;
 
     const lead: LeadForEscalation = {
       id: leadId,
       tenantId,
-      niche: typeof body.niche === "string" ? body.niche : undefined,
-      name: typeof body.name === "string" ? body.name : undefined,
-      email: typeof body.email === "string" ? body.email : undefined,
-      phone: typeof body.phone === "string" ? body.phone : undefined,
-      company: typeof body.company === "string" ? body.company : undefined,
-      companySize: typeof body.companySize === "string" ? body.companySize : undefined,
-      estimatedDealValue: typeof body.estimatedDealValue === "number" ? body.estimatedDealValue : undefined,
+      niche: body.niche,
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      company: body.company,
+      companySize: body.companySize,
+      estimatedDealValue: body.estimatedDealValue,
     };
 
     const signals: EscalationSignals = {
       compositeScore: score,
-      estimatedDealValue: typeof body.estimatedDealValue === "number" ? body.estimatedDealValue : undefined,
-      hasPhoneRequest: body.hasPhoneRequest === true,
-      competitorMentioned: body.competitorMentioned === true,
-      urgencyLevel: typeof body.urgencyLevel === "string" ? body.urgencyLevel as EscalationSignals["urgencyLevel"] : undefined,
+      estimatedDealValue: body.estimatedDealValue,
+      hasPhoneRequest: body.hasPhoneRequest ?? false,
+      competitorMentioned: body.competitorMentioned ?? false,
+      urgencyLevel: body.urgencyLevel,
       companySize: lead.companySize,
-      explicitCallRequest: body.explicitCallRequest === true,
+      explicitCallRequest: body.explicitCallRequest ?? false,
     };
 
     const result = shouldEscalate(lead, score, signals);

@@ -52,6 +52,7 @@ const STEP_NAMES = [
   "generate-niche",
   "register-niche",
   "configure-funnels",
+  "setup-creative-jobs",
   "provision-workflows",
   "configure-crm",
   "generate-embed",
@@ -221,6 +222,15 @@ export async function provisionTenant(input: ProvisionTenantInput): Promise<Prov
     const funnels = input.enabledFunnels ?? nicheConfig?.recommendedFunnels ?? [];
     await updateTenant(tenantId, { enabledFunnels: funnels });
     return `Configured ${funnels.length} funnels`;
+  });
+
+  // Step 4.5: setup-creative-jobs
+  await runStep(getStep(steps, "setup-creative-jobs"), async () => {
+    const { setupDefaultCreativeJobs } = await import("./creative-auto-setup.ts");
+    const results = await setupDefaultCreativeJobs(tenantId, input.niche);
+    const created = results.filter((r) => r.status === "created").length;
+    const failed = results.filter((r) => r.status === "failed").length;
+    return `Created ${created} creative jobs${failed > 0 ? `, ${failed} failed` : ""}`;
   });
 
   // Step 5: provision-workflows (optional, skip if n8n not configured)
@@ -415,6 +425,12 @@ export async function reprovisionStep(
       const funnels = input.enabledFunnels ?? nicheConfig?.recommendedFunnels ?? [];
       await updateTenant(tenantId, { enabledFunnels: funnels });
       return `Reconfigured ${funnels.length} funnels`;
+    },
+    "setup-creative-jobs": async () => {
+      const { setupDefaultCreativeJobs } = await import("./creative-auto-setup.ts");
+      const results = await setupDefaultCreativeJobs(tenantId, input.niche);
+      const created = results.filter((r) => r.status === "created").length;
+      return `Reprovisioned ${created} creative jobs`;
     },
     "provision-workflows": async () => {
       if (!canProvisionToN8n()) {

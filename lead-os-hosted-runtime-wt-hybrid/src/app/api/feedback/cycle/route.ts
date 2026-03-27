@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { runFeedbackCycle, getFeedbackHistory } from "@/lib/feedback-engine";
 import { tenantConfig } from "@/lib/tenant";
+import { z } from "zod";
+
+const FeedbackCycleSchema = z.object({
+  tenantId: z.string().min(1).max(100).optional(),
+  type: z.enum(["daily", "weekly", "monthly"]).optional(),
+});
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -44,9 +50,19 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
-    const tenantId = typeof body.tenantId === "string" ? body.tenantId : tenantConfig.tenantId;
-    const type = VALID_CYCLE_TYPES.has(body.type) ? body.type : "daily";
+    const raw = await request.json();
+
+    const validation = FeedbackCycleSchema.safeParse(raw);
+    if (!validation.success) {
+      return NextResponse.json(
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
+      );
+    }
+    const body = validation.data;
+
+    const tenantId = body.tenantId ?? tenantConfig.tenantId;
+    const type = body.type ?? "daily";
 
     const cycle = await runFeedbackCycle(tenantId, type);
 

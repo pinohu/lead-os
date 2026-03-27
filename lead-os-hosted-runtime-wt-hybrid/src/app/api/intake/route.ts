@@ -65,6 +65,23 @@ export async function POST(request: Request) {
       );
     }
 
+    // Ingress channel detection — enrich intake data with channel intelligence
+    try {
+      const { detectIngressChannel, resolveIngressDecision } = await import("@/lib/ingress-engine");
+      const channel = detectIngressChannel(
+        body.source || "direct",
+        request.headers.get("referer") || undefined,
+        body.utm_source,
+        body.utm_medium,
+      );
+      const ingressDecision = resolveIngressDecision(channel, tenantConfig.tenantId);
+      body.ingress_channel = ingressDecision.channel;
+      body.ingress_intent = ingressDecision.intentLevel;
+      body.ingress_funnel = ingressDecision.funnelType;
+    } catch {
+      // Ingress engine not available — proceed without enrichment
+    }
+
     const result = await persistLead(body);
     return NextResponse.json(result, { headers });
   } catch (error) {

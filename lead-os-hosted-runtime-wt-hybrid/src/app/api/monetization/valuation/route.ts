@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { calculateLeadValue } from "@/lib/monetization-engine";
+import { z } from "zod";
+
+const ValuationSchema = z.object({
+  leadId: z.string().min(1).max(200),
+  niche: z.string().min(1).max(200),
+  qualityScore: z.number().min(0).max(100).optional(),
+  exclusivity: z.boolean().optional(),
+  location: z.string().max(200).optional(),
+});
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -20,37 +29,23 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json() as Record<string, unknown>;
+    const raw = await request.json();
 
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
+    const validation = ValuationSchema.safeParse(raw);
+    if (!validation.success) {
       return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "Request body must be a JSON object" }, meta: null },
-        { status: 400, headers },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
       );
     }
+    const body = validation.data;
 
-    const leadId = body.leadId;
-    if (typeof leadId !== "string" || leadId.trim().length === 0) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "leadId is required" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
-    const niche = body.niche;
-    if (typeof niche !== "string" || niche.trim().length === 0) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "niche is required" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
-    const qualityScore = typeof body.qualityScore === "number" ? body.qualityScore : 50;
-    const exclusivity = body.exclusivity === true;
+    const qualityScore = body.qualityScore ?? 50;
+    const exclusivity = body.exclusivity ?? false;
 
     const valuation = calculateLeadValue(
-      { id: leadId, exclusivity, location: typeof body.location === "string" ? body.location : undefined },
-      niche,
+      { id: body.leadId, exclusivity, location: body.location },
+      body.niche,
       qualityScore,
     );
 

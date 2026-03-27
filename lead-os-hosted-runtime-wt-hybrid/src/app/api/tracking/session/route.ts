@@ -193,6 +193,14 @@ export async function POST(request: Request) {
         timeOnPage: sanitizeNumber(body.timeOnPage, 0, 86400),
       });
 
+      // Fire-and-forget rescore on pageview if a leadKey is associated
+      const pvLeadKey = sanitizeString(body.leadKey);
+      if (pvLeadKey) {
+        import("@/lib/rescore-engine")
+          .then((m) => m.rescoreLead(pvLeadKey, { type: "page-view" }))
+          .catch(() => {});
+      }
+
       return NextResponse.json(
         { data: { sessionId, pageViews: session.pageViews.length }, error: null, meta: { action: "pageview" } },
         { headers },
@@ -213,6 +221,23 @@ export async function POST(request: Request) {
         target: sanitizeString(body.target),
         value: sanitizeString(body.value),
       });
+
+      // Fire-and-forget rescore on tracked events if a leadKey is associated
+      const evLeadKey = sanitizeString(body.leadKey);
+      if (evLeadKey) {
+        const rescoreType = type === "form_submit"
+          ? "form-submit"
+          : type === "chat_message"
+            ? "chat-message"
+            : type === "booking_made"
+              ? "booking-request"
+              : null;
+        if (rescoreType) {
+          import("@/lib/rescore-engine")
+            .then((m) => m.rescoreLead(evLeadKey, { type: rescoreType as "form-submit" | "chat-message" | "booking-request" }))
+            .catch(() => {});
+        }
+      }
 
       return NextResponse.json(
         { data: { sessionId, events: session.events.length }, error: null, meta: { action: "event" } },

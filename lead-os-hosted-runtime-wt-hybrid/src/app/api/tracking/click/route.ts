@@ -156,6 +156,11 @@ export async function GET(request: Request) {
       }).catch(() => {
         // Persistence failure must not break the redirect
       });
+
+      // Fire-and-forget rescore after email click
+      import("@/lib/rescore-engine")
+        .then((m) => m.rescoreLead(leadKey, { type: "email-click" }))
+        .catch(() => {});
     }
   }
 

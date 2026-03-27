@@ -1,8 +1,20 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { generateOffer, ALL_NICHES, type Niche, type OfferContext } from "@/lib/offer-engine";
+import { z } from "zod";
 
 const MAX_STRING_LENGTH = 500;
+
+const OfferGenerateSchema = z.object({
+  niche: z.string().min(1).max(100),
+  service: z.string().min(1).max(MAX_STRING_LENGTH),
+  brandName: z.string().max(MAX_STRING_LENGTH).optional(),
+  averageProjectValue: z.number().positive().optional(),
+  competitorPrice: z.number().positive().optional(),
+  seasonalEvent: z.string().max(MAX_STRING_LENGTH).optional(),
+  urgencyType: z.enum(["countdown", "limited-spots", "seasonal"]).optional(),
+  scarcityType: z.enum(["capacity", "waitlist", "exclusivity"]).optional(),
+});
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -22,50 +34,33 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json() as Record<string, unknown>;
+    const raw = await request.json();
 
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
+    const validation = OfferGenerateSchema.safeParse(raw);
+    if (!validation.success) {
       return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "Request body must be a JSON object" }, meta: null },
-        { status: 400, headers },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues }, meta: {} },
+        { status: 422, headers },
       );
     }
+    const body = validation.data;
 
-    if (typeof body.niche !== "string" || !ALL_NICHES.includes(body.niche as Niche)) {
+    if (!ALL_NICHES.includes(body.niche as Niche)) {
       return NextResponse.json(
         { data: null, error: { code: "VALIDATION_ERROR", message: `niche must be one of: ${ALL_NICHES.join(", ")}` }, meta: null },
         { status: 400, headers },
       );
     }
 
-    if (typeof body.service !== "string" || body.service.length === 0 || body.service.length > MAX_STRING_LENGTH) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "service is required and must be a non-empty string" }, meta: null },
-        { status: 400, headers },
-      );
-    }
-
     const context: OfferContext = {};
-    if (typeof body.brandName === "string" && body.brandName.length > 0) {
-      context.brandName = body.brandName.slice(0, MAX_STRING_LENGTH);
-    }
-    if (typeof body.averageProjectValue === "number" && isFinite(body.averageProjectValue) && body.averageProjectValue > 0) {
-      context.averageProjectValue = body.averageProjectValue;
-    }
-    if (typeof body.competitorPrice === "number" && isFinite(body.competitorPrice) && body.competitorPrice > 0) {
-      context.competitorPrice = body.competitorPrice;
-    }
-    if (typeof body.seasonalEvent === "string") {
-      context.seasonalEvent = body.seasonalEvent.slice(0, MAX_STRING_LENGTH);
-    }
-    if (typeof body.urgencyType === "string" && ["countdown", "limited-spots", "seasonal"].includes(body.urgencyType)) {
-      context.urgencyType = body.urgencyType as OfferContext["urgencyType"];
-    }
-    if (typeof body.scarcityType === "string" && ["capacity", "waitlist", "exclusivity"].includes(body.scarcityType)) {
-      context.scarcityType = body.scarcityType as OfferContext["scarcityType"];
-    }
+    if (body.brandName) context.brandName = body.brandName;
+    if (body.averageProjectValue) context.averageProjectValue = body.averageProjectValue;
+    if (body.competitorPrice) context.competitorPrice = body.competitorPrice;
+    if (body.seasonalEvent) context.seasonalEvent = body.seasonalEvent;
+    if (body.urgencyType) context.urgencyType = body.urgencyType;
+    if (body.scarcityType) context.scarcityType = body.scarcityType;
 
-    const offer = generateOffer(body.niche as Niche, body.service as string, context);
+    const offer = generateOffer(body.niche as Niche, body.service, context);
 
     return NextResponse.json(
       {

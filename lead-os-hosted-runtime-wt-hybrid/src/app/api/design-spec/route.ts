@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
 import { parseDesignSpec, validateDesignSpec } from "@/lib/design-spec.ts";
 import { createDesignSpec, listSpecs } from "@/lib/design-spec-store.ts";
+import { z } from "zod";
+
+const DesignSpecSchema = z.object({
+  tenantId: z.string().min(1).max(100),
+  markdown: z.string().min(1).max(50_000).optional(),
+  spec: z.record(z.string(), z.unknown()).optional(),
+}).refine((data) => Boolean(data.markdown || data.spec), {
+  message: "Provide either 'markdown' (string) or 'spec' (object)",
+});
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -19,24 +28,25 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const tenantId = body.tenantId as string | undefined;
+    const raw = await request.json();
 
-    if (!tenantId) {
+    const zodValidation = DesignSpecSchema.safeParse(raw);
+    if (!zodValidation.success) {
       return NextResponse.json(
-        { error: { code: "MISSING_FIELD", message: "tenantId is required in the request body" } },
-        { status: 400 },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid input", details: zodValidation.error.issues }, meta: {} },
+        { status: 422 },
       );
     }
+    const body = zodValidation.data;
 
     let spec;
-    if (typeof body.markdown === "string") {
+    if (body.markdown) {
       spec = parseDesignSpec(body.markdown);
-    } else if (body.spec && typeof body.spec === "object") {
-      const validation = validateDesignSpec(body.spec);
-      if (!validation.valid) {
+    } else if (body.spec) {
+      const specValidation = validateDesignSpec(body.spec);
+      if (!specValidation.valid) {
         return NextResponse.json(
-          { error: { code: "VALIDATION_FAILED", message: "Spec validation failed", details: validation.errors } },
+          { error: { code: "VALIDATION_FAILED", message: "Spec validation failed", details: specValidation.errors } },
           { status: 422 },
         );
       }
@@ -48,7 +58,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const stored = await createDesignSpec(tenantId, spec);
+    const stored = await createDesignSpec(body.tenantId, spec);
     return NextResponse.json({ data: stored }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
