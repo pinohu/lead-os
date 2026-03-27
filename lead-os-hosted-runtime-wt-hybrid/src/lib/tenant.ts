@@ -57,3 +57,18 @@ export function isAllowedWidgetOrigin(origin?: string | null) {
   if (tenantConfig.widgetOrigins.length === 0) return true;
   return tenantConfig.widgetOrigins.includes(origin);
 }
+
+export async function resolveTenantConfig(tenantId?: string): Promise<TenantConfig> {
+  if (!tenantId || tenantId === "default-tenant") return tenantConfig;
+
+  try {
+    const { getTenant } = await import("./tenant-store.ts");
+    const { buildTenantConfig } = await import("./tenant-context.ts");
+    const record = await getTenant(tenantId);
+    if (record) return buildTenantConfig(record);
+  } catch {
+    // Tenant store unavailable, fall back to static config
+  }
+
+  return tenantConfig;
+}

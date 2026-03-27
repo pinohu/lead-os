@@ -48,6 +48,21 @@ export default async function DashboardPage() {
             <Link href="/dashboard/experiments" className="secondary">
               Experiments
             </Link>
+            <Link href="/dashboard/analytics" className="secondary">
+              Analytics
+            </Link>
+            <Link href="/dashboard/scoring" className="secondary">
+              Scoring
+            </Link>
+            <Link href="/dashboard/attribution" className="secondary">
+              Attribution
+            </Link>
+            <Link href="/dashboard/lead-magnets" className="secondary">
+              Lead magnets
+            </Link>
+            <Link href="/dashboard/radar" className="secondary">
+              Hot lead radar
+            </Link>
             <a href="/auth/sign-out" className="secondary">
               Sign out
             </a>
@@ -143,6 +158,11 @@ export default async function DashboardPage() {
             <li><Link href="/dashboard/documents">Proposal, agreement, and onboarding document jobs</Link></li>
             <li><Link href="/dashboard/workflows">Workflow emissions and execution outcomes</Link></li>
             <li><Link href="/dashboard/experiments">Variant and milestone performance by experiment</Link></li>
+            <li><Link href="/dashboard/analytics">Full analytics with funnel, scores, and channel data</Link></li>
+            <li><Link href="/dashboard/scoring">Lead scoring with breakdown and recommendations</Link></li>
+            <li><Link href="/dashboard/attribution">Channel attribution with model comparison</Link></li>
+            <li><Link href="/dashboard/lead-magnets">Lead magnet delivery and performance tracking</Link></li>
+            <li><Link href="/dashboard/radar">Hot lead radar with real-time monitoring</Link></li>
           </ul>
         </article>
       </section>

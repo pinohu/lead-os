@@ -34,6 +34,8 @@ import {
 } from "./trace.ts";
 import { tenantConfig } from "./tenant.ts";
 import type { FunnelFamily } from "./runtime-schema.ts";
+import { incrementUsage } from "./billing-store.ts";
+import { enforcePlanLimits } from "./plan-enforcer.ts";
 
 export type IntakeSource =
   | "contact_form"
@@ -314,6 +316,12 @@ export function validateLeadPayload(payload: HostedLeadPayload) {
 
 export async function processLeadIntake(payload: HostedLeadPayload): Promise<IntakeResult> {
   validateLeadPayload(payload);
+
+  const tenantId = tenantConfig.tenantId;
+  const planCheck = await enforcePlanLimits(tenantId, "leads");
+  if (!planCheck.allowed) {
+    throw new Error(`Plan limit reached: ${planCheck.reason ?? "lead quota exceeded"}`);
+  }
 
   const normalizedEmail = payload.email?.trim().toLowerCase();
   const normalizedPhone = payload.phone?.trim();
@@ -850,6 +858,10 @@ export async function processLeadIntake(payload: HostedLeadPayload): Promise<Int
       })
     ),
   ]);
+
+  if (!existing && !replayed) {
+    incrementUsage(tenantId, "leads", 1).catch(() => {});
+  }
 
   return {
     success: true,

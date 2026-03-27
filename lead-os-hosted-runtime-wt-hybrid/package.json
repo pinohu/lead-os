@@ -3,17 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "lead-os": "./src/cli/index.ts",
+    "lead-os-mcp": "./src/mcp/index.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p ${PORT:-3000}",
+    "cli": "node --experimental-strip-types src/cli/index.ts",
+    "mcp": "node --experimental-strip-types src/mcp/index.ts",
     "test": "set LEAD_OS_USE_AITABLE_PERSISTENCE=false&& set LEAD_OS_ENABLE_LIVE_SENDS=false&& node --test --test-concurrency=1 --test-isolation=none --experimental-strip-types tests/**/*.test.ts"
   },
   "dependencies": {
     "next": "^15.5.12",
     "pg": "^8.20.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "stripe": "^21.0.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",
