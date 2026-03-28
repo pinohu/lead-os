@@ -1,0 +1,48 @@
+# =============================================================================
+# .dockerignore — files excluded from the Docker build context
+#
+# Keeping the context lean speeds up `docker build` (less data sent to daemon)
+# and prevents secrets / local state from leaking into the image.
+# =============================================================================
+
+# ---------- Version control --------------------------------------------------
+.git
+.gitignore
+.gitattributes
+
+# ---------- Node modules (rebuilt inside the image) --------------------------
+node_modules
+
+# ---------- Next.js build output (rebuilt inside the image) ------------------
+.next
+out
+
+# ---------- Secrets and environment files ------------------------------------
+# Never let these reach the image layer, even accidentally.
+.env
+.env.*
+!.env.sample
+
+# ---------- Local dev / editor artifacts -------------------------------------
+.DS_Store
+Thumbs.db
+*.log
+*.local
+
+# ---------- Test artifacts ---------------------------------------------------
+coverage
+.nyc_output
+
+# ---------- Documentation and CI config (not needed at runtime) --------------
+README.md
+docs
+*.md
+
+# ---------- Docker files themselves (no need to copy into the image) ---------
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# ---------- TypeScript build cache -------------------------------------------
+tsconfig.tsbuildinfo
+*.tsbuildinfo

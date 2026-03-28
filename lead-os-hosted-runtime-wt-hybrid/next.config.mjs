@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // standalone mode copies only the minimal server files needed to run the app,
+  // enabling the lean Docker runner stage without shipping node_modules wholesale.
+  output: "standalone",
   poweredByHeader: false,
   async headers() {
     return [

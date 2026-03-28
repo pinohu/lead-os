@@ -1,0 +1,116 @@
+# =============================================================================
+# Lead OS Hosted Runtime — Docker Compose (development / local)
+#
+# Usage:
+#   docker compose up --build        # first run or after code changes
+#   docker compose up                # subsequent runs (uses cached image)
+#   docker compose down -v           # stop and delete volumes (wipes DB data)
+#
+# Override for production:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Required secrets (set in a .env file or export to the shell before running):
+#   LEAD_OS_AUTH_SECRET   — token signing secret
+#   CRON_SECRET           — cron endpoint bearer token
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # db — PostgreSQL 16
+  # Exposes 5432 on the host for local tooling (psql, TablePlus, etc.).
+  # The app connects via the internal Docker network using the service name
+  # "db", so no host-port mapping is needed for the app itself.
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       lead_os
+      POSTGRES_USER:     lead_os
+      # Change this password in production — use a secret manager, not a
+      # hardcoded string.  The app reads it from DATABASE_URL below.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lead_os_dev_password}
+    volumes:
+      # Named volume keeps data across `docker compose down` (without -v).
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      # Expose to host for local DB clients. Remove in strict environments.
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lead_os -d lead_os"]
+      interval: 10s
+      timeout: 5s
+      retries:  5
+      start_period: 10s
+
+  # ---------------------------------------------------------------------------
+  # app — Next.js 16 application
+  # Depends on db being healthy before it starts, so the pg connection pool
+  # can succeed on the first request.
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Build-time arg lets us tag the image for traceability.
+      args:
+        BUILDKIT_INLINE_CACHE: "1"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      PORT: 3000
+
+      # ---- Database ----------------------------------------------------------
+      # The runtime checks LEAD_OS_DATABASE_URL first, then DATABASE_URL.
+      # We wire both to the db service using its Docker-internal hostname.
+      LEAD_OS_DATABASE_URL: >-
+        postgresql://lead_os:${POSTGRES_PASSWORD:-lead_os_dev_password}@db:5432/lead_os
+      DATABASE_URL: >-
+        postgresql://lead_os:${POSTGRES_PASSWORD:-lead_os_dev_password}@db:5432/lead_os
+
+      # ---- Tenant identity ---------------------------------------------------
+      LEAD_OS_TENANT_ID:          ${LEAD_OS_TENANT_ID:-local-tenant}
+      NEXT_PUBLIC_BRAND_NAME:     ${NEXT_PUBLIC_BRAND_NAME:-Lead OS}
+      NEXT_PUBLIC_SITE_URL:       ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      NEXT_PUBLIC_SUPPORT_EMAIL:  ${NEXT_PUBLIC_SUPPORT_EMAIL:-support@example.com}
+
+      # ---- Auth & security ---------------------------------------------------
+      # REQUIRED: override these with real random secrets before going live.
+      LEAD_OS_AUTH_SECRET: ${LEAD_OS_AUTH_SECRET:-CHANGE_ME_auth_secret_32_chars_min}
+      CRON_SECRET:         ${CRON_SECRET:-CHANGE_ME_cron_secret_32_chars_min}
+
+      # ---- Safety controls ---------------------------------------------------
+      # Keep "false" locally to avoid live sends to external providers.
+      LEAD_OS_ENABLE_LIVE_SENDS: ${LEAD_OS_ENABLE_LIVE_SENDS:-false}
+      LEAD_OS_ALLOW_RESET:       ${LEAD_OS_ALLOW_RESET:-false}
+
+      # ---- Optional integrations (pass through from host .env) ---------------
+      # Stripe
+      STRIPE_SECRET_KEY:            ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET:        ${STRIPE_WEBHOOK_SECRET:-}
+      NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${NEXT_PUBLIC_STRIPE_PUBLIC_KEY:-}
+
+      # BullMQ / Redis (BullMQ gracefully degrades when Redis is absent)
+      REDIS_URL: ${REDIS_URL:-}
+
+      # SuiteDash CRM
+      SUITEDASH_PUBLIC_ID:  ${SUITEDASH_PUBLIC_ID:-}
+      SUITEDASH_SECRET_KEY: ${SUITEDASH_SECRET_KEY:-}
+
+      # Email
+      EMAILIT_API_KEY: ${EMAILIT_API_KEY:-}
+
+      # Operator access
+      LEAD_OS_OPERATOR_EMAILS: ${LEAD_OS_OPERATOR_EMAILS:-}
+
+    # The app's own health check is defined in the Dockerfile; compose will
+    # surface it in `docker compose ps`.
+
+volumes:
+  # Persistent named volume for PostgreSQL data.
+  postgres_data:
+    driver: local

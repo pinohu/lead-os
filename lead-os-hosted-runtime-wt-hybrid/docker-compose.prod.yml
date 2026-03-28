@@ -1,0 +1,63 @@
+# =============================================================================
+# Lead OS Hosted Runtime — Production Compose Override
+#
+# Apply on top of docker-compose.yml:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# This file ONLY contains production-specific overrides so it stays small and
+# focused.  All shared config lives in docker-compose.yml.
+#
+# Checklist before deploying:
+#   [ ] Set POSTGRES_PASSWORD to a strong random value in the environment /
+#       secrets manager (never the default).
+#   [ ] Set LEAD_OS_AUTH_SECRET and CRON_SECRET to distinct 32-char+ secrets.
+#   [ ] Set LEAD_OS_ENABLE_LIVE_SENDS=true to activate external providers.
+#   [ ] Confirm NEXT_PUBLIC_SITE_URL matches your public domain.
+#   [ ] Remove or firewall the 5432 host port mapping if not needed externally.
+# =============================================================================
+
+services:
+
+  db:
+    # Always restart on failure or host reboot.
+    restart: always
+
+    # Do NOT expose the database port to the host network in production.
+    # The app service reaches it via the internal Docker network.
+    ports: !reset []
+
+    deploy:
+      resources:
+        limits:
+          # Tune based on your workload. 512 MB is conservative for most
+          # single-tenant deployments; increase if query plans spill to disk.
+          cpus:   "1.0"
+          memory: 512M
+        reservations:
+          cpus:   "0.25"
+          memory: 256M
+
+  app:
+    restart: always
+
+    environment:
+      NODE_ENV: production
+      # Activate live sends to external providers.
+      LEAD_OS_ENABLE_LIVE_SENDS: "true"
+      # Ensure the reset endpoint stays closed in production.
+      LEAD_OS_ALLOW_RESET: "false"
+
+    deploy:
+      resources:
+        limits:
+          # Next.js server + BullMQ workers. Increase if memory pressure appears
+          # in metrics (watch RSS in Prometheus / Docker stats).
+          cpus:   "1.0"
+          memory: 512M
+        reservations:
+          cpus:   "0.25"
+          memory: 256M
+
+      # Run two replicas behind a load balancer for zero-downtime deploys.
+      # Remove if deploying to a single host without an upstream LB.
+      replicas: 1

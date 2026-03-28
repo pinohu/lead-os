@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Script from "next/script";
 import "@/app/globals.css";
 import { tenantConfig } from "@/lib/tenant";
@@ -12,13 +13,33 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const partneroProgramId = process.env.PARTNERO_PROGRAM_ID ?? embeddedSecrets.partnero.programId;
   const partneroAssetsHost = process.env.PARTNERO_ASSETS_HOST ?? embeddedSecrets.partnero.assetsHost;
+  const brandName = tenantConfig.brandName;
 
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content={tenantConfig.accent} />
+      </head>
       <body>
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
+        <header className="site-nav" role="banner">
+          <nav aria-label="Primary navigation">
+            <Link href="/" className="site-nav__brand" aria-label={`${brandName} home`}>
+              {brandName}
+            </Link>
+            <ul className="site-nav__links" role="list">
+              <li>
+                <Link href="/dashboard">Dashboard</Link>
+              </li>
+              <li>
+                <Link href="/setup">Setup</Link>
+              </li>
+            </ul>
+          </nav>
+        </header>
         {partneroProgramId ? (
           <Script
             id="partnero-js"
