@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { runRevenuePipeline } from "@/lib/revenue-pipeline";
 import { createRateLimiter } from "@/lib/rate-limiter";
 import { z } from "zod";
+import { getClientIp } from "@/lib/request-utils";
 
 const PipelineRunSchema = z.object({
   leadData: z.record(z.string(), z.unknown()),
@@ -10,14 +11,6 @@ const PipelineRunSchema = z.object({
 });
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 30 });
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  const real = request.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
 
 export async function POST(request: Request) {
   const ip = getClientIp(request);

@@ -8,16 +8,9 @@ import {
   applyNicheToPsychology,
   applyNicheToChannels,
 } from "@/lib/niche-adapter";
+import { getClientIp } from "@/lib/request-utils";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 30 });
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  const real = request.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {

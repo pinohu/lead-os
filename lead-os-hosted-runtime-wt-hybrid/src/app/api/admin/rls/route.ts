@@ -21,7 +21,8 @@ export async function GET(request: Request) {
       { data: { sql }, error: null, meta: null },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[admin-rls]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "GENERATION_FAILED", message: "Failed to generate RLS SQL" }, meta: null },
       { status: 500, headers },

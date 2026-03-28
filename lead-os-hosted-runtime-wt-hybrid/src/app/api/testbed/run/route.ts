@@ -1,16 +1,9 @@
 import { NextResponse } from "next/server";
 import { runTestbed } from "@/lib/vertical-testbed";
 import { createRateLimiter } from "@/lib/rate-limiter";
+import { getClientIp } from "@/lib/request-utils";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 10 });
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  const real = request.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
 
 export async function POST(request: Request) {
   const ip = getClientIp(request);

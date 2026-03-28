@@ -1,4 +1,5 @@
 import { embeddedSecrets } from "./embedded-secrets.ts";
+import { getEnvValue } from "./request-utils.ts";
 import { getOperationalRuntimeConfig } from "./runtime-config.ts";
 import { TOOL_OWNERSHIP_MAP } from "./runtime-schema.ts";
 import { createContact } from "./suitedash.ts";
@@ -33,20 +34,6 @@ type TrafftRuntimeConfig = Awaited<ReturnType<typeof getOperationalRuntimeConfig
 
 const LIVE_MODE = process.env.LEAD_OS_ENABLE_LIVE_SENDS !== "false";
 let trafftTokenCache: { token: string; expiresAt: number } | null = null;
-
-function getEnvValue(...keys: string[]) {
-  for (const key of keys) {
-    const value = process.env[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-  return undefined;
-}
-
-function hasAnyEnv(...keys: string[]) {
-  return Boolean(getEnvValue(...keys));
-}
 
 function getN8nWebhookUrl() {
   return getEnvValue("N8N_WEBHOOK_URL", "N8N_LEADOS_WEBHOOK_URL", "LEAD_OS_N8N_WEBHOOK_URL", "N8N_WEBHOOK");

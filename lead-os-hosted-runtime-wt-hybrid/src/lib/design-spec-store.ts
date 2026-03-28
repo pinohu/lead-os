@@ -61,11 +61,21 @@ export async function createDesignSpec(
   const now = new Date().toISOString();
   const id = generateId();
 
-  const existing = await listSpecs(tenantId);
-  const maxVersion = existing.reduce(
-    (max, s) => Math.max(max, s.version),
-    0,
-  );
+  let maxVersion = 0;
+  const pool = getPool();
+  if (pool) {
+    const versionResult = await pool.query<{ max_version: number }>(
+      `SELECT COALESCE(MAX(version), 0) as max_version FROM lead_os_design_specs WHERE tenant_id = $1`,
+      [tenantId],
+    );
+    maxVersion = versionResult.rows[0]?.max_version ?? 0;
+  } else {
+    for (const record of specStore.values()) {
+      if (record.tenantId === tenantId && record.version > maxVersion) {
+        maxVersion = record.version;
+      }
+    }
+  }
 
   const record: StoredDesignSpec = {
     id,
@@ -77,7 +87,6 @@ export async function createDesignSpec(
     updatedAt: now,
   };
 
-  const pool = getPool();
   if (pool) {
     await pool.query(
       `INSERT INTO lead_os_design_specs (id, tenant_id, version, status, spec, created_at, updated_at)

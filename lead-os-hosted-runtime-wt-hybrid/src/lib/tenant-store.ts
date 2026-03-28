@@ -234,8 +234,14 @@ export interface ListTenantsFilters {
   revenueModel?: RevenueModel;
 }
 
-export async function listTenants(filters?: ListTenantsFilters): Promise<TenantRecord[]> {
+export async function listTenants(
+  filters?: ListTenantsFilters,
+  options?: { limit?: number; cursor?: string },
+): Promise<TenantRecord[]> {
   await ensureSchema();
+
+  const limit = Math.min(options?.limit ?? 100, 500);
+  const cursor = options?.cursor;
 
   const pool = getPool();
   if (pool) {
@@ -253,11 +259,16 @@ export async function listTenants(filters?: ListTenantsFilters): Promise<TenantR
       values.push(filters.revenueModel);
       paramIndex++;
     }
+    if (cursor) {
+      conditions.push(`id > $${paramIndex}`);
+      values.push(cursor);
+      paramIndex++;
+    }
 
     const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
     const result = await pool.query(
-      `SELECT id, slug, created_at, updated_at, payload FROM lead_os_tenants ${where} ORDER BY created_at DESC`,
-      values,
+      `SELECT id, slug, created_at, updated_at, payload FROM lead_os_tenants ${where} ORDER BY id LIMIT $${paramIndex}`,
+      [...values, limit],
     );
 
     const records = result.rows.map(rowToRecord);
@@ -275,7 +286,11 @@ export async function listTenants(filters?: ListTenantsFilters): Promise<TenantR
   if (filters?.revenueModel) {
     records = records.filter((r) => r.revenueModel === filters.revenueModel);
   }
-  return records.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  records.sort((a, b) => a.tenantId.localeCompare(b.tenantId));
+  if (cursor) {
+    records = records.filter((r) => r.tenantId > cursor);
+  }
+  return records.slice(0, limit);
 }
 
 export async function suspendTenant(tenantId: string): Promise<TenantRecord | null> {

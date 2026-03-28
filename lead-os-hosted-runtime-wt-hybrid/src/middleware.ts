@@ -38,18 +38,23 @@ function isPublicRoute(pathname: string, method: string): boolean {
 // ---------------------------------------------------------------------------
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
+  const requestId = crypto.randomUUID();
   const { pathname } = request.nextUrl;
   const method = request.method;
 
   // Passthrough for public routes without touching auth modules
   if (isPublicRoute(pathname, method)) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set("x-request-id", requestId);
+    return response;
   }
 
   // Cron secret — fast path, no DB required
   const cronSecret = request.headers.get("x-cron-secret");
   if (cronSecret && cronSecret === process.env.CRON_SECRET) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set("x-request-id", requestId);
+    return response;
   }
 
   // Authenticated paths — dynamic import keeps auth-system out of the public
@@ -64,7 +69,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     const token = authHeader.slice(7).trim();
     if (token) {
       const result = await validateApiKey(token);
-      if (result) return NextResponse.next();
+      if (result) {
+        const response = NextResponse.next();
+        response.headers.set("x-request-id", requestId);
+        return response;
+      }
     }
   }
 
@@ -72,14 +81,22 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const apiKey = request.headers.get("x-api-key");
   if (apiKey) {
     const result = await validateApiKey(apiKey);
-    if (result) return NextResponse.next();
+    if (result) {
+      const response = NextResponse.next();
+      response.headers.set("x-request-id", requestId);
+      return response;
+    }
   }
 
   // --- x-operator-session cookie ---
   const sessionToken = request.cookies.get("x-operator-session")?.value;
   if (sessionToken) {
     const session = await validateSession(sessionToken);
-    if (session) return NextResponse.next();
+    if (session) {
+      const response = NextResponse.next();
+      response.headers.set("x-request-id", requestId);
+      return response;
+    }
   }
 
   return NextResponse.json(
@@ -89,9 +106,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         code: "UNAUTHORIZED",
         message: "Authentication required",
       },
-      meta: { requestId: crypto.randomUUID() },
+      meta: { requestId },
     },
-    { status: 401 },
+    { status: 401, headers: { "x-request-id": requestId } },
   );
 }
 

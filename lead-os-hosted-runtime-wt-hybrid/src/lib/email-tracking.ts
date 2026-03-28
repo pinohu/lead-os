@@ -34,6 +34,8 @@ export interface EmailMetrics {
   clickRate: number;
 }
 
+const MAX_STORE_SIZE = 10_000;
+
 const emailEventStore: EmailTrackingEvent[] = [];
 
 let schemaReady: Promise<void> | null = null;
@@ -126,6 +128,7 @@ export async function recordEmailEvent(
   };
 
   emailEventStore.push(record);
+  if (emailEventStore.length > MAX_STORE_SIZE) { emailEventStore.splice(0, emailEventStore.length - MAX_STORE_SIZE); }
 
   const activePool = getPool();
   if (activePool) {
@@ -184,8 +187,6 @@ export async function getEmailEvents(leadKey: string): Promise<EmailTrackingEven
 }
 
 export async function getEmailMetrics(leadKey: string): Promise<EmailMetrics> {
-  const events = await getEmailEvents(leadKey);
-
   const counts = {
     sent: 0,
     delivered: 0,
@@ -195,8 +196,27 @@ export async function getEmailMetrics(leadKey: string): Promise<EmailMetrics> {
     unsubscribed: 0,
   };
 
-  for (const event of events) {
-    counts[event.eventType]++;
+  const activePool = getPool();
+  if (activePool) {
+    const result = await queryPostgres<{ event_type: string; count: number }>(
+      `SELECT event_type, COUNT(*)::int AS count
+       FROM lead_os_email_tracking
+       WHERE lead_key = $1
+       GROUP BY event_type`,
+      [leadKey],
+    );
+
+    for (const row of result.rows) {
+      const eventType = row.event_type as keyof typeof counts;
+      if (eventType in counts) {
+        counts[eventType] = row.count;
+      }
+    }
+  } else {
+    const events = emailEventStore.filter((e) => e.leadKey === leadKey);
+    for (const event of events) {
+      counts[event.eventType]++;
+    }
   }
 
   const deliveredOrSent = counts.delivered > 0 ? counts.delivered : counts.sent;

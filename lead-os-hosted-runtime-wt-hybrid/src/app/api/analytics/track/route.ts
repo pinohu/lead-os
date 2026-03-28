@@ -61,7 +61,8 @@ export async function POST(request: Request) {
       { data: event, error: null, meta: null },
       { status: 201, headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[analytics-track]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "TRACK_FAILED", message: "Failed to track event" }, meta: null },
       { status: 500, headers },

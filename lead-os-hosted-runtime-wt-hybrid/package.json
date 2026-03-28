@@ -16,7 +16,8 @@
     "test": "set LEAD_OS_USE_AITABLE_PERSISTENCE=false&& set LEAD_OS_ENABLE_LIVE_SENDS=false&& node --test --test-concurrency=1 --test-isolation=none --experimental-strip-types tests/**/*.test.ts"
   },
   "dependencies": {
-    "next": "^15.5.12",
+    "bullmq": "^5.71.1",
+    "next": "^16.2.1",
     "pg": "^8.20.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -28,7 +29,6 @@
     "@types/pg": "^8.18.0",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
-    "bullmq": "^5.71.1",
     "typescript": "^5.9.3"
   }
 }

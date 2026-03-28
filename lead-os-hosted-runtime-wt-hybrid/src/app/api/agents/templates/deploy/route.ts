@@ -57,7 +57,8 @@ export async function POST(request: Request) {
       { data: team, error: null, meta: null },
       { status: 201, headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[agents-templates-deploy]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "DEPLOY_FAILED", message: "Failed to deploy template" }, meta: null },
       { status: 500, headers },

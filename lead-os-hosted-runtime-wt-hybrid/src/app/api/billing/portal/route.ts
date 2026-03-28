@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { createBillingPortalSession } from "@/lib/billing";
 
 export async function OPTIONS(request: Request) {
@@ -11,6 +12,9 @@ export async function OPTIONS(request: Request) {
 
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
+  const auth = await requireOperatorApiSession(request);
+  if (auth.response) return auth.response;
+
   try {
     const contentType = request.headers.get("content-type") ?? "";
     if (!contentType.includes("application/json")) {

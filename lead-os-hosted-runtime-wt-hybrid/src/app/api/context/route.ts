@@ -8,6 +8,7 @@ import {
   type ContextListFilters,
 } from "@/lib/context-engine";
 import { z } from "zod";
+import { getClientIp } from "@/lib/request-utils";
 
 const ContextCreateSchema = z.object({
   leadKey: z.string().min(1).max(200),
@@ -22,14 +23,6 @@ const ContextCreateSchema = z.object({
 });
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 60 });
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  const real = request.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -100,7 +93,8 @@ export async function GET(request: Request) {
       },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[context]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "INTERNAL_ERROR", message: "Failed to list contexts" }, meta: null },
       { status: 500, headers },
@@ -146,7 +140,8 @@ export async function POST(request: Request) {
       { data: ctx, error: null, meta: { createdAt: ctx.firstSeen } },
       { status: 201, headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[context]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "INTERNAL_ERROR", message: "Failed to create context" }, meta: null },
       { status: 500, headers },

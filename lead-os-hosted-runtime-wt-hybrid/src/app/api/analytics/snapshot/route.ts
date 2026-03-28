@@ -49,7 +49,8 @@ export async function GET(request: Request) {
       { data: snapshots, error: null, meta: { count: snapshots.length, since, until, granularity } },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[analytics-snapshot]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch analytics snapshots" }, meta: null },
       { status: 500, headers },

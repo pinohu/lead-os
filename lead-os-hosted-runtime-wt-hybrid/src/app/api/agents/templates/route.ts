@@ -18,7 +18,8 @@ export async function GET(request: Request) {
       { data: templates, error: null, meta: { count: templates.length } },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[agents-templates]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to list templates" }, meta: null },
       { status: 500, headers },

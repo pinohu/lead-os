@@ -26,7 +26,6 @@ export function getAllowedOperatorEmails() {
   return resolveAllowedOperatorEmails(process.env.LEAD_OS_OPERATOR_EMAILS, [
     process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
     tenantConfig.supportEmail,
-    "polycarpohu@gmail.com",
   ]);
 }
 
@@ -116,7 +115,7 @@ export function applyOperatorSession(response: NextResponse, token: string) {
     value: token,
     httpOnly: true,
     secure: true,
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
     maxAge: 7 * 24 * 60 * 60,
   });
@@ -128,7 +127,7 @@ export function clearOperatorSession(response: NextResponse) {
     value: "",
     httpOnly: true,
     secure: true,
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
     maxAge: 0,
   });

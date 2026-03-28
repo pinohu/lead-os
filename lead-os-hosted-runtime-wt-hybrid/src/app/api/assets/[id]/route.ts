@@ -30,7 +30,8 @@ export async function GET(
     }
 
     return NextResponse.json({ data: asset, error: null, meta: null }, { headers });
-  } catch {
+  } catch (err) {
+    console.error("[assets-id]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch asset" }, meta: null },
       { status: 500, headers },
@@ -58,7 +59,8 @@ export async function DELETE(
     }
 
     return new NextResponse(null, { status: 204, headers });
-  } catch {
+  } catch (err) {
+    console.error("[assets-id]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "DELETE_FAILED", message: "Failed to delete asset" }, meta: null },
       { status: 500, headers },

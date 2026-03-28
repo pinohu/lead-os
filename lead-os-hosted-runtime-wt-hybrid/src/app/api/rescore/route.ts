@@ -3,6 +3,7 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
 import { rescoreLead } from "@/lib/rescore-engine";
 import { z } from "zod";
+import { getClientIp } from "@/lib/request-utils";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 60 });
 
@@ -20,14 +21,6 @@ const RescoreSchema = z.object({
   ]),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  const real = request.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -81,7 +74,8 @@ export async function POST(request: Request) {
       { data: result, error: null, meta: { rescoredAt: new Date().toISOString() } },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[rescore]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "RESCORE_FAILED", message: "Failed to rescore lead" }, meta: null },
       { status: 500, headers },

@@ -40,6 +40,8 @@ export interface ProductMetrics {
   avgHealthScore: number;
 }
 
+const MAX_STORE_SIZE = 10_000;
+
 const eventStore: ProductEvent[] = [];
 const healthScoreCache = new Map<string, TenantHealthScore>();
 
@@ -87,6 +89,7 @@ export async function trackProductEvent(
   };
 
   eventStore.push(record);
+  if (eventStore.length > MAX_STORE_SIZE) { eventStore.splice(0, eventStore.length - MAX_STORE_SIZE); }
 
   const pool = getPool();
   if (pool) {
@@ -182,50 +185,53 @@ export async function calculateHealthScore(tenantId: string): Promise<TenantHeal
 
   const pool = getPool();
   if (pool) {
-    const loginResult = await pool.query<QueryResultRow>(
-      `SELECT COUNT(DISTINCT DATE(timestamp))::int AS login_days
-       FROM lead_os_product_events
-       WHERE tenant_id = $1 AND event = 'dashboard.viewed' AND timestamp >= $2::timestamptz`,
-      [tenantId, thirtyDaysAgo],
-    );
+    const [loginResult, featureResult, leadResult, configResult, integrationResult] = await Promise.all([
+      pool.query<QueryResultRow>(
+        `SELECT COUNT(DISTINCT DATE(timestamp))::int AS login_days
+         FROM lead_os_product_events
+         WHERE tenant_id = $1 AND event = 'dashboard.viewed' AND timestamp >= $2::timestamptz`,
+        [tenantId, thirtyDaysAgo],
+      ),
+      pool.query<QueryResultRow>(
+        `SELECT COUNT(DISTINCT event)::int AS feature_count
+         FROM lead_os_product_events
+         WHERE tenant_id = $1 AND timestamp >= $2::timestamptz`,
+        [tenantId, thirtyDaysAgo],
+      ),
+      pool.query<QueryResultRow>(
+        `SELECT COUNT(*)::int AS lead_count
+         FROM lead_os_leads
+         WHERE tenant_id = $1 AND created_at >= $2::timestamptz`,
+        [tenantId, sevenDaysAgo],
+      ),
+      pool.query<QueryResultRow>(
+        `SELECT COUNT(DISTINCT event)::int AS config_count
+         FROM lead_os_product_events
+         WHERE tenant_id = $1 AND event LIKE '%.configured'`,
+        [tenantId],
+      ),
+      pool.query<QueryResultRow>(
+        `SELECT COUNT(DISTINCT event)::int AS integration_count
+         FROM lead_os_product_events
+         WHERE tenant_id = $1
+           AND event IN ('webhook.configured', 'automation.configured', 'email.sent')`,
+        [tenantId],
+      ),
+    ]);
+
     const loginDays = (loginResult.rows[0]?.login_days as number) ?? 0;
     loginFrequency = Math.min(100, Math.round((loginDays / 30) * 100));
 
-    const featureResult = await pool.query<QueryResultRow>(
-      `SELECT COUNT(DISTINCT event)::int AS feature_count
-       FROM lead_os_product_events
-       WHERE tenant_id = $1 AND timestamp >= $2::timestamptz`,
-      [tenantId, thirtyDaysAgo],
-    );
     const featureCount = (featureResult.rows[0]?.feature_count as number) ?? 0;
     featureAdoption = Math.min(100, Math.round((featureCount / KNOWN_FEATURES.length) * 100));
 
-    const leadResult = await pool.query<QueryResultRow>(
-      `SELECT COUNT(*)::int AS lead_count
-       FROM lead_os_leads
-       WHERE tenant_id = $1 AND created_at >= $2::timestamptz`,
-      [tenantId, sevenDaysAgo],
-    );
     const leadCount = (leadResult.rows[0]?.lead_count as number) ?? 0;
     leadVolume = Math.min(100, Math.round(Math.min(leadCount / 10, 1) * 100));
 
-    const configResult = await pool.query<QueryResultRow>(
-      `SELECT COUNT(DISTINCT event)::int AS config_count
-       FROM lead_os_product_events
-       WHERE tenant_id = $1 AND event LIKE '%.configured'`,
-      [tenantId],
-    );
     const configCount = (configResult.rows[0]?.config_count as number) ?? 0;
     const totalConfigurables = 5;
     configCompleteness = Math.min(100, Math.round((configCount / totalConfigurables) * 100));
 
-    const integrationResult = await pool.query<QueryResultRow>(
-      `SELECT COUNT(DISTINCT event)::int AS integration_count
-       FROM lead_os_product_events
-       WHERE tenant_id = $1
-         AND event IN ('webhook.configured', 'automation.configured', 'email.sent')`,
-      [tenantId],
-    );
     integrationCount = Math.min(100, Math.round(((integrationResult.rows[0]?.integration_count as number) ?? 0) / 3 * 100));
   } else {
     const tenantEvents = eventStore.filter((e) => e.tenantId === tenantId);
@@ -294,15 +300,57 @@ export async function getAtRiskTenants(): Promise<TenantHealthScore[]> {
 
   const pool = getPool();
   if (pool) {
-    const result = await pool.query<QueryResultRow>(
-      `SELECT DISTINCT tenant_id FROM lead_os_product_events`,
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 86_400_000).toISOString();
+    const sevenDaysAgo = new Date(Date.now() - 7 * 86_400_000).toISOString();
+
+    const bulkResult = await pool.query<QueryResultRow>(
+      `SELECT
+         pe.tenant_id,
+         COUNT(DISTINCT CASE WHEN pe.event = 'dashboard.viewed' AND pe.timestamp >= $1::timestamptz THEN DATE(pe.timestamp) END)::int AS login_days,
+         COUNT(DISTINCT CASE WHEN pe.timestamp >= $1::timestamptz THEN pe.event END)::int AS feature_count,
+         COUNT(DISTINCT CASE WHEN pe.event LIKE '%.configured' THEN pe.event END)::int AS config_count,
+         COUNT(DISTINCT CASE WHEN pe.event IN ('webhook.configured', 'automation.configured', 'email.sent') THEN pe.event END)::int AS integration_count,
+         COALESCE(leads.lead_count, 0)::int AS lead_count
+       FROM lead_os_product_events pe
+       LEFT JOIN LATERAL (
+         SELECT COUNT(*)::int AS lead_count
+         FROM lead_os_leads
+         WHERE tenant_id = pe.tenant_id AND created_at >= $2::timestamptz
+       ) leads ON true
+       GROUP BY pe.tenant_id, leads.lead_count`,
+      [thirtyDaysAgo, sevenDaysAgo],
     );
 
     const scores: TenantHealthScore[] = [];
-    for (const row of result.rows) {
-      const score = await calculateHealthScore(row.tenant_id as string);
-      if (score.score < 40) {
-        scores.push(score);
+    for (const row of bulkResult.rows) {
+      const tenantId = row.tenant_id as string;
+      const loginDays = (row.login_days as number) ?? 0;
+      const featureCount = (row.feature_count as number) ?? 0;
+      const leadCount = (row.lead_count as number) ?? 0;
+      const configCount = (row.config_count as number) ?? 0;
+      const integrationRaw = (row.integration_count as number) ?? 0;
+
+      const lf = Math.min(100, Math.round((loginDays / 30) * 100));
+      const fa = Math.min(100, Math.round((featureCount / KNOWN_FEATURES.length) * 100));
+      const lv = Math.min(100, Math.round(Math.min(leadCount / 10, 1) * 100));
+      const cc = Math.min(100, Math.round((configCount / 5) * 100));
+      const ic = Math.min(100, Math.round((integrationRaw / 3) * 100));
+
+      const score = Math.max(0, Math.min(100, Math.round(
+        lf * 0.25 + fa * 0.25 + lv * 0.2 + cc * 0.15 + ic * 0.15,
+      )));
+
+      if (score < 40) {
+        const riskLevel: TenantHealthScore["riskLevel"] = score >= 40 ? "at-risk" : "churning";
+        const healthScore: TenantHealthScore = {
+          tenantId,
+          score,
+          factors: { loginFrequency: lf, featureAdoption: fa, leadVolume: lv, configCompleteness: cc, integrationCount: ic },
+          riskLevel,
+          lastCalculatedAt: new Date().toISOString(),
+        };
+        healthScoreCache.set(tenantId, healthScore);
+        scores.push(healthScore);
       }
     }
 

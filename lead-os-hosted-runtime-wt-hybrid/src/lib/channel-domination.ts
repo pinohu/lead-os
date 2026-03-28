@@ -75,6 +75,8 @@ export interface UnexploitedChannel {
 // In-memory stores
 // ---------------------------------------------------------------------------
 
+const MAX_STORE_SIZE = 10_000;
+
 const channelMetricStore: ChannelMetric[] = [];
 
 let metricIdCounter = 0;
@@ -175,6 +177,7 @@ const CHANNEL_TACTICS: Record<string, string[]> = {
 
 export function recordChannelMetric(metric: ChannelMetric): void {
   channelMetricStore.push(metric);
+  if (channelMetricStore.length > MAX_STORE_SIZE) { channelMetricStore.splice(0, channelMetricStore.length - MAX_STORE_SIZE); }
   metricIdCounter += 1;
 }
 

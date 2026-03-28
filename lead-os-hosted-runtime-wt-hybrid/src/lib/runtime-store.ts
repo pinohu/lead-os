@@ -1,4 +1,5 @@
-import { Pool, type QueryResultRow } from "pg";
+import type { QueryResultRow } from "pg";
+import { getPool as getDbPool } from "./db.ts";
 import { embeddedSecrets } from "./embedded-secrets.ts";
 import type { CustomerMilestoneId, LeadMilestoneId, LeadStage } from "./runtime-schema.ts";
 import type { CanonicalEvent, TraceContext } from "./trace.ts";
@@ -106,6 +107,8 @@ export interface RuntimeConfigRecord {
   updatedBy?: string;
 }
 
+const MAX_STORE_SIZE = 10000;
+
 const leadStore = new Map<string, StoredLeadRecord>();
 const eventStore: CanonicalEvent[] = [];
 const providerExecutionStore: ProviderExecutionRecord[] = [];
@@ -115,7 +118,6 @@ const documentJobStore = new Map<string, DocumentJobRecord>();
 const workflowRegistryStore = new Map<string, WorkflowRegistryRecord>();
 const runtimeConfigStore = new Map<string, RuntimeConfigRecord>();
 
-let pool: Pool | null = null;
 let schemaReady: Promise<void> | null = null;
 let aitableCache: { fetchedAt: number; entries: AitableRuntimeEntry[] } | null = null;
 
@@ -145,10 +147,6 @@ type AitableRuntimeEntry = {
     | RuntimeConfigRecord;
 };
 
-function getDatabaseUrl() {
-  return process.env.LEAD_OS_DATABASE_URL ?? process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
-}
-
 function getAitableApiToken() {
   return process.env.AITABLE_API_TOKEN ?? embeddedSecrets.aitable.apiToken;
 }
@@ -167,20 +165,7 @@ function buildAitableRecordsUrl(pageNum = 1, pageSize = 1000) {
 }
 
 function getPool() {
-  if (pool) return pool;
-
-  const connectionString = getDatabaseUrl();
-  if (!connectionString) {
-    return null;
-  }
-
-  pool = new Pool({
-    connectionString,
-    ssl: connectionString.includes("sslmode=disable") ? false : { rejectUnauthorized: false },
-    max: 4,
-  });
-
-  return pool;
+  return getDbPool();
 }
 
 async function ensureSchema() {
@@ -254,6 +239,14 @@ async function ensureSchema() {
 
         CREATE INDEX IF NOT EXISTS lead_os_events_lead_idx
           ON lead_os_events (lead_key, timestamp DESC);
+        CREATE INDEX IF NOT EXISTS idx_lead_os_leads_tenant
+          ON lead_os_leads ((payload->>'tenantId'));
+        CREATE INDEX IF NOT EXISTS idx_lead_os_events_lead_key
+          ON lead_os_events (lead_key);
+        CREATE INDEX IF NOT EXISTS idx_lead_os_events_type
+          ON lead_os_events (event_type);
+        CREATE INDEX IF NOT EXISTS idx_lead_os_events_timestamp
+          ON lead_os_events (timestamp DESC);
         CREATE INDEX IF NOT EXISTS lead_os_provider_exec_lead_idx
           ON lead_os_provider_executions (lead_key, created_at DESC);
         CREATE INDEX IF NOT EXISTS lead_os_workflow_runs_lead_idx
@@ -495,7 +488,7 @@ export async function getLeadRecord(leadKey: string) {
   return record;
 }
 
-export async function getLeadRecords() {
+export async function getLeadRecords(limit: number = 1000) {
   if (!getPool() && runtimeMode() === "aitable") {
     const records = getAitableRuntimeEntries();
     const latestByLead = new Map<string, StoredLeadRecord>();
@@ -520,7 +513,8 @@ export async function getLeadRecords() {
 
   await ensureSchema();
   const result = await queryPostgres<{ payload: StoredLeadRecord }>(
-    "SELECT payload FROM lead_os_leads ORDER BY updated_at DESC",
+    "SELECT payload FROM lead_os_leads ORDER BY updated_at DESC LIMIT $1",
+    [limit],
   );
   const records = result.rows.map((row) => row.payload);
   leadStore.clear();
@@ -532,6 +526,7 @@ export async function getLeadRecords() {
 
 export async function appendEvents(events: CanonicalEvent[]) {
   eventStore.push(...events);
+  if (eventStore.length > MAX_STORE_SIZE) eventStore.splice(0, eventStore.length - MAX_STORE_SIZE);
 
   const activePool = getPool();
   if (!activePool && runtimeMode() === "aitable") {
@@ -543,19 +538,22 @@ export async function appendEvents(events: CanonicalEvent[]) {
   }
 
   await ensureSchema();
-  for (const event of events) {
+  if (events.length > 0) {
+    const values: unknown[] = [];
+    const placeholders: string[] = [];
+    events.forEach((event, i) => {
+      const offset = i * 5;
+      placeholders.push(`($${offset+1}, $${offset+2}, $${offset+3}, $${offset+4}::timestamptz, $${offset+5}::jsonb)`);
+      values.push(event.id, event.leadKey, event.eventType, event.timestamp, JSON.stringify(event));
+    });
     await queryPostgres(
-      `
-        INSERT INTO lead_os_events (id, lead_key, event_type, timestamp, payload)
-        VALUES ($1, $2, $3, $4::timestamptz, $5::jsonb)
-        ON CONFLICT (id) DO NOTHING
-      `,
-      [event.id, event.leadKey, event.eventType, event.timestamp, JSON.stringify(event)],
+      `INSERT INTO lead_os_events (id, lead_key, event_type, timestamp, payload) VALUES ${placeholders.join(", ")} ON CONFLICT (id) DO NOTHING`,
+      values,
     );
   }
 }
 
-export async function getCanonicalEvents() {
+export async function getCanonicalEvents(limit: number = 1000) {
   if (!getPool() && runtimeMode() === "aitable") {
     const entries = await getAitableRuntimeEntries();
     const events = entries
@@ -564,6 +562,7 @@ export async function getCanonicalEvents() {
       .sort((left, right) => new Date(right.timestamp).getTime() - new Date(left.timestamp).getTime());
     eventStore.length = 0;
     eventStore.push(...events);
+    if (eventStore.length > MAX_STORE_SIZE) eventStore.splice(0, eventStore.length - MAX_STORE_SIZE);
     return events;
   }
   if (!getPool()) {
@@ -574,11 +573,13 @@ export async function getCanonicalEvents() {
 
   await ensureSchema();
   const result = await queryPostgres<{ payload: CanonicalEvent }>(
-    "SELECT payload FROM lead_os_events ORDER BY timestamp DESC",
+    "SELECT payload FROM lead_os_events ORDER BY timestamp DESC LIMIT $1",
+    [limit],
   );
   const events = result.rows.map((row) => row.payload);
   eventStore.length = 0;
   eventStore.push(...events);
+  if (eventStore.length > MAX_STORE_SIZE) eventStore.splice(0, eventStore.length - MAX_STORE_SIZE);
   return events;
 }
 
@@ -602,6 +603,7 @@ export async function recordProviderExecution(record: Omit<ProviderExecutionReco
     ...record,
   };
   providerExecutionStore.unshift(normalizedRecord);
+  if (providerExecutionStore.length > MAX_STORE_SIZE) providerExecutionStore.splice(MAX_STORE_SIZE);
 
   const activePool = getPool();
   if (!activePool && runtimeMode() === "aitable") {
@@ -673,6 +675,7 @@ export async function recordWorkflowRun(record: Omit<WorkflowRunRecord, "id" | "
     ...record,
   };
   workflowRunStore.unshift(normalizedRecord);
+  if (workflowRunStore.length > MAX_STORE_SIZE) workflowRunStore.splice(MAX_STORE_SIZE);
 
   const activePool = getPool();
   if (!activePool && runtimeMode() === "aitable") {

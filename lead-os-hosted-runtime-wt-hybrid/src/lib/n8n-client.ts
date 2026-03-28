@@ -1,4 +1,5 @@
 import { embeddedSecrets } from "./embedded-secrets.ts";
+import { getEnvValue } from "./request-utils.ts";
 import {
   getN8nStarterManifestVersion,
   getN8nStarterWorkflow,
@@ -46,16 +47,6 @@ type WorkflowRegistrySummary = {
   status?: string;
   detail?: string;
 };
-
-function getEnvValue(...keys: string[]) {
-  for (const key of keys) {
-    const value = process.env[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-  return undefined;
-}
 
 export function getN8nApiBaseUrl() {
   const envUrl = getEnvValue("N8N_BASE_URL", "N8N_API_URL", "N8N_URL");

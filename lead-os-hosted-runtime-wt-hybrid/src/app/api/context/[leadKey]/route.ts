@@ -7,16 +7,9 @@ import {
   deleteContext,
   type LeadContextUpdate,
 } from "@/lib/context-engine";
+import { getClientIp } from "@/lib/request-utils";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 60 });
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  const real = request.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -54,7 +47,8 @@ export async function GET(
       { data: ctx, error: null, meta: null },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[context-leadKey]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "INTERNAL_ERROR", message: "Failed to retrieve context" }, meta: null },
       { status: 500, headers },
@@ -107,7 +101,8 @@ export async function PATCH(
       { data: updated, error: null, meta: { updatedAt: updated.updatedAt } },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[context-leadKey]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "INTERNAL_ERROR", message: "Failed to update context" }, meta: null },
       { status: 500, headers },

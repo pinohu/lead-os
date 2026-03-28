@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { claimLeadForBuyer } from "@/lib/marketplace";
 
 export async function OPTIONS(request: Request) {
@@ -14,6 +15,8 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
+  const auth = await requireOperatorApiSession(request);
+  if (auth.response) return auth.response;
 
   try {
     const { id } = await params;

@@ -367,9 +367,24 @@ export async function retryFailedDeliveries(): Promise<WebhookDelivery[]> {
       [now.toISOString()],
     );
 
-    for (const row of result.rows) {
-      const delivery = rowToDelivery(row);
-      const endpoint = await getWebhook(delivery.endpointId);
+    const deliveries = result.rows.map(rowToDelivery);
+    const endpointIds = [...new Set(deliveries.map((d) => d.endpointId))];
+    const endpointMap = new Map<string, WebhookEndpoint>();
+    if (endpointIds.length > 0) {
+      const epResult = await pool.query<QueryResultRow>(
+        `SELECT id, tenant_id, url, events, secret, status, failure_count, last_delivery_at, created_at, updated_at
+         FROM lead_os_webhook_endpoints WHERE id = ANY($1::text[])`,
+        [endpointIds],
+      );
+      for (const row of epResult.rows) {
+        const ep = rowToEndpoint(row);
+        endpointMap.set(ep.id, ep);
+        endpointStore.set(ep.id, ep);
+      }
+    }
+
+    for (const delivery of deliveries) {
+      const endpoint = endpointMap.get(delivery.endpointId);
       if (!endpoint || endpoint.status !== "active") {
         delivery.status = "failed";
         delivery.completedAt = now.toISOString();
@@ -381,8 +396,8 @@ export async function retryFailedDeliveries(): Promise<WebhookDelivery[]> {
         continue;
       }
 
-      const result = await attemptDelivery(delivery, endpoint);
-      retried.push(result);
+      const retryResult = await attemptDelivery(delivery, endpoint);
+      retried.push(retryResult);
     }
   } else {
     for (const delivery of deliveryStore.values()) {

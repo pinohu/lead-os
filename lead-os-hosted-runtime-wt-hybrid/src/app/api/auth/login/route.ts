@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAllowedOperatorEmail, sendOperatorMagicLink } from "@/lib/operator-auth";
-import { getUserByEmail, createUser, createSession } from "@/lib/auth-system";
+import { getUserByEmail, createUser } from "@/lib/auth-system";
 import { tenantConfig } from "@/lib/tenant";
 
 export async function POST(request: Request) {
@@ -49,12 +49,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const sessionResult = await createSession(user.id);
-
   return NextResponse.json({
     data: {
       message: "Magic link sent. Check your email.",
-      sessionToken: sessionResult?.token,
     },
     error: null,
     meta: null,

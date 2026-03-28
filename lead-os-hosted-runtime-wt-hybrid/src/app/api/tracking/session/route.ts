@@ -10,6 +10,7 @@ import {
   type UtmParams,
 } from "@/lib/visitor-tracking";
 import { createRateLimiter } from "@/lib/rate-limiter";
+import { getClientIp } from "@/lib/request-utils";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 120 });
 
@@ -20,14 +21,6 @@ const MAX_STRING_LENGTH = 200;
 const MAX_SESSIONS_PER_VISITOR = 100;
 const VALID_DEVICE_TYPES = new Set(["desktop", "mobile", "tablet"]);
 const VALID_ACTIONS = new Set(["create", "pageview", "event"]);
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  const real = request.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
 
 function sanitizeString(value: unknown, maxLen: number = MAX_STRING_LENGTH): string | undefined {
   if (typeof value !== "string") return undefined;
@@ -249,7 +242,8 @@ export async function POST(request: Request) {
       { data: null, error: { code: "VALIDATION_ERROR", message: "Unknown action" }, meta: null },
       { status: 400, headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[tracking-session]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "TRACKING_FAILED", message: "Failed to process tracking request" }, meta: null },
       { status: 400, headers },
@@ -298,7 +292,8 @@ export async function GET(request: Request) {
       { data: { profile }, error: null, meta: { visitorId, sessionCount: sessions.length } },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[tracking-session]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "TRACKING_FAILED", message: "Failed to get visitor profile" }, meta: null },
       { status: 400, headers },

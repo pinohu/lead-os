@@ -4,7 +4,7 @@ import { createBuyer, getBuyerByEmail, listBuyers } from "@/lib/marketplace-stor
 import type { BuyerAccount } from "@/lib/marketplace-store";
 
 function generateBuyerId(): string {
-  return `buyer_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  return `buyer_${crypto.randomUUID()}`;
 }
 
 export async function GET(request: Request) {

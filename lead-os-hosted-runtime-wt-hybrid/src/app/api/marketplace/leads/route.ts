@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { listMarketplaceLeads } from "@/lib/marketplace-store";
 import { publishLeadToMarketplace } from "@/lib/marketplace";
 import type { Temperature } from "@/lib/marketplace-store";
@@ -73,6 +74,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
+  const auth = await requireOperatorApiSession(request);
+  if (auth.response) return auth.response;
 
   try {
     const body = await request.json();

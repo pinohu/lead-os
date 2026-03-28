@@ -7,16 +7,9 @@ import {
   type NicheConfig,
   type NicheListFilters,
 } from "@/lib/niche-adapter";
+import { getClientIp } from "@/lib/request-utils";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 60 });
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  const real = request.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -113,7 +106,8 @@ export async function POST(request: Request) {
       { data: created, error: null, meta: null },
       { status: 201, headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[niche-config]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "INTERNAL_ERROR", message: "Failed to create niche config" }, meta: null },
       { status: 500, headers },

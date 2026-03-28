@@ -5,16 +5,9 @@ import { IntakePayloadSchema, validateSafe } from "@/lib/canonical-schema";
 import { createRateLimiter } from "@/lib/rate-limiter";
 import { enforcePlanLimits } from "@/lib/plan-enforcer";
 import { resolveTenantFromRequest } from "@/lib/tenant-context";
+import { getClientIp } from "@/lib/request-utils";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 30 });
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  const real = request.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -78,8 +71,8 @@ export async function POST(request: Request) {
       body.ingress_channel = ingressDecision.channel;
       body.ingress_intent = ingressDecision.intentLevel;
       body.ingress_funnel = ingressDecision.funnelType;
-    } catch {
-      // Ingress engine not available — proceed without enrichment
+    } catch (err) {
+      console.error("[intake] ingress enrichment skipped:", err instanceof Error ? err.message : err);
     }
 
     const result = await persistLead(body);

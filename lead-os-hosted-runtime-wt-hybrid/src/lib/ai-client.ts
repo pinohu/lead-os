@@ -27,6 +27,27 @@ const DEFAULT_TEMPERATURE = 0.7;
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
+const ALLOWED_AI_HOSTS = [
+  "api.anthropic.com",
+  "api.openai.com",
+  "api.groq.com",
+  "api.together.xyz",
+  "api.mistral.ai",
+  "generativelanguage.googleapis.com",
+];
+
+function validateAiBaseUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:") return false;
+    return ALLOWED_AI_HOSTS.some(
+      (h) => parsed.hostname === h || parsed.hostname.endsWith(`.${h}`),
+    );
+  } catch {
+    return false;
+  }
+}
+
 const DRY_RUN_RESPONSE: LLMResponse = {
   content: "[AI not configured]",
   model: "dry-run",
@@ -46,7 +67,13 @@ export function getAIConfig(): LLMConfig | null {
 
   const maxTokens = parseFiniteInt(process.env.AI_MAX_TOKENS, DEFAULT_MAX_TOKENS);
   const temperature = parseFiniteFloat(process.env.AI_TEMPERATURE, DEFAULT_TEMPERATURE);
-  const baseUrl = process.env.AI_BASE_URL ?? undefined;
+  let baseUrl: string | undefined = process.env.AI_BASE_URL ?? undefined;
+  if (baseUrl && !validateAiBaseUrl(baseUrl)) {
+    console.warn(
+      `[ai-client] AI_BASE_URL "${baseUrl}" is not an allowed HTTPS AI host. Falling back to default.`,
+    );
+    baseUrl = undefined;
+  }
 
   return { provider, apiKey, model, maxTokens, temperature, baseUrl };
 }

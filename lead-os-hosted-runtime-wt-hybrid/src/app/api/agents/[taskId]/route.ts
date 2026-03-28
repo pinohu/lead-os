@@ -29,7 +29,8 @@ export async function GET(
       { data: task, error: null, meta: null },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[agents-taskId]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch agent task" }, meta: null },
       { status: 500, headers },
@@ -57,7 +58,8 @@ export async function DELETE(
       { data: task, error: null, meta: null },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[agents-taskId]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "CANCEL_FAILED", message: "Failed to cancel agent task" }, meta: null },
       { status: 500, headers },

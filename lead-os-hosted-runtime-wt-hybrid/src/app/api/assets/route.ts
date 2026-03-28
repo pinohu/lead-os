@@ -46,7 +46,8 @@ export async function GET(request: Request) {
       { data: assets, error: null, meta: { count: assets.length } },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[assets]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "LIST_FAILED", message: "Failed to list assets" }, meta: null },
       { status: 500, headers },
@@ -141,7 +142,8 @@ export async function POST(request: Request) {
       { data: asset, error: null, meta: null },
       { status: 201, headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[assets]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "CREATE_FAILED", message: "Failed to create asset" }, meta: null },
       { status: 500, headers },

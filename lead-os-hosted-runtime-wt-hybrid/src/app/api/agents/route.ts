@@ -53,7 +53,8 @@ export async function GET(request: Request) {
       { data: tasks, error: null, meta: { count: tasks.length } },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[agents]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to list agent tasks" }, meta: null },
       { status: 500, headers },
@@ -100,7 +101,8 @@ export async function POST(request: Request) {
       { data: task, error: null, meta: null },
       { status: 201, headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[agents]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "CREATE_FAILED", message: "Failed to create agent task" }, meta: null },
       { status: 500, headers },

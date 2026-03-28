@@ -40,6 +40,8 @@ export interface ChannelPerformance {
   roi: number;
 }
 
+const MAX_STORE_SIZE = 10_000;
+
 const touchStore: AttributionTouch[] = [];
 
 let schemaReady: Promise<void> | null = null;
@@ -105,6 +107,7 @@ export async function recordTouch(
   };
 
   touchStore.push(record);
+  if (touchStore.length > MAX_STORE_SIZE) { touchStore.splice(0, touchStore.length - MAX_STORE_SIZE); }
 
   const activePool = getPool();
   if (activePool) {

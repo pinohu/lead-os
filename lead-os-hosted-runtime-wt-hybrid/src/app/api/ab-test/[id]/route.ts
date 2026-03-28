@@ -46,7 +46,8 @@ export async function GET(
       { data: { experiment, results }, error: null, meta: null },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[ab-test-id]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch experiment" }, meta: null },
       { status: 500, headers },

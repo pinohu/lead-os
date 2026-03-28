@@ -5,6 +5,7 @@ import { createRateLimiter } from "@/lib/rate-limiter";
 import { validateSafe } from "@/lib/canonical-schema";
 import { createDeployment, listDeployments } from "@/lib/auto-deploy";
 import type { DeploymentTarget, DeploymentPlatform, PageDefinition } from "@/lib/auto-deploy";
+import { getClientIp } from "@/lib/request-utils";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 10 });
 
@@ -49,12 +50,6 @@ const CreateDeploymentSchema = z.object({
     config: z.record(z.string(), z.string()).optional(),
   }).optional(),
 });
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return request.headers.get("x-real-ip") || "unknown";
-}
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {

@@ -43,7 +43,8 @@ export async function GET(request: Request) {
       { data: experiments, error: null, meta: { count: experiments.length } },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[ab-test]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to list experiments" }, meta: null },
       { status: 500, headers },
@@ -81,7 +82,8 @@ export async function POST(request: Request) {
       { data: experiment, error: null, meta: null },
       { status: 201, headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[ab-test]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "CREATE_FAILED", message: "Failed to create experiment" }, meta: null },
       { status: 500, headers },

@@ -5,6 +5,7 @@ import {
   type PersonalizationContext,
 } from "@/lib/personalization-engine";
 import { createRateLimiter } from "@/lib/rate-limiter";
+import { getClientIp } from "@/lib/request-utils";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 60 });
 
@@ -13,14 +14,6 @@ const MAX_ARRAY_LENGTH = 20;
 const VALID_DEVICES = new Set(["desktop", "mobile", "tablet"]);
 const VALID_ENGAGEMENT_LEVELS = new Set(["low", "medium", "high"]);
 const VALID_TEMPERATURES = new Set(["cold", "warm", "hot", "burning"]);
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  const real = request.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
 
 function sanitizeString(value: unknown, maxLen: number = MAX_STRING_LENGTH): string | undefined {
   if (typeof value !== "string") return undefined;
@@ -114,7 +107,8 @@ export async function POST(request: Request) {
       { data: experience, error: null, meta: { personalizedAt: new Date().toISOString() } },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[personalization]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "PERSONALIZATION_FAILED", message: "Failed to generate personalized experience" }, meta: null },
       { status: 400, headers },

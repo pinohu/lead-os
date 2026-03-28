@@ -47,6 +47,8 @@ export interface AuditSummary {
 // In-memory store
 // ---------------------------------------------------------------------------
 
+const MAX_STORE_SIZE = 10_000;
+
 const auditStore: AuditEntry[] = [];
 
 // ---------------------------------------------------------------------------
@@ -99,6 +101,7 @@ export async function logAgentAction(
     timestamp: new Date().toISOString(),
   };
   auditStore.push(full);
+  if (auditStore.length > MAX_STORE_SIZE) { auditStore.splice(0, auditStore.length - MAX_STORE_SIZE); }
 }
 
 export async function getAuditLog(

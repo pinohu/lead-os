@@ -371,15 +371,18 @@ export async function updateBuyer(buyer: BuyerAccount): Promise<BuyerAccount> {
   return buyer;
 }
 
-export async function listBuyers(): Promise<BuyerAccount[]> {
+export async function listBuyers(limit: number = 100): Promise<BuyerAccount[]> {
+  const effectiveLimit = Math.min(limit, 500);
+
   if (!hasPostgres()) {
-    return Array.from(buyerStore.values()).sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
+    return Array.from(buyerStore.values())
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, effectiveLimit);
   }
 
   const result = await queryMarketplace<{ payload: BuyerAccount }>(
-    `SELECT payload FROM lead_os_marketplace_buyers ORDER BY created_at DESC`,
+    `SELECT payload FROM lead_os_marketplace_buyers ORDER BY created_at DESC LIMIT $1`,
+    [effectiveLimit],
   );
 
   return result.rows.map((r) => r.payload);

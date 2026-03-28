@@ -95,7 +95,38 @@ export interface ContextListFilters {
 // In-memory store
 // ---------------------------------------------------------------------------
 
+const MAX_CACHE_SIZE = 5000;
+
 const store = new Map<string, LeadContext>();
+const tenantIndex = new Map<string, Set<string>>();
+
+function cacheSet(leadKey: string, ctx: LeadContext): void {
+  store.set(leadKey, ctx);
+  let keys = tenantIndex.get(ctx.tenantId);
+  if (!keys) {
+    keys = new Set<string>();
+    tenantIndex.set(ctx.tenantId, keys);
+  }
+  keys.add(leadKey);
+
+  if (store.size > MAX_CACHE_SIZE) {
+    const iter = store.keys();
+    for (let i = 0; i < 1000; i++) {
+      const next = iter.next();
+      if (next.done) break;
+      const evictKey = next.value;
+      const evictCtx = store.get(evictKey);
+      store.delete(evictKey);
+      if (evictCtx) {
+        const tKeys = tenantIndex.get(evictCtx.tenantId);
+        if (tKeys) {
+          tKeys.delete(evictKey);
+          if (tKeys.size === 0) tenantIndex.delete(evictCtx.tenantId);
+        }
+      }
+    }
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Defaults
@@ -314,8 +345,8 @@ export function createContext(
     updatedAt: now,
   };
 
-  store.set(leadKey, ctx);
-  persistToPostgres(ctx).catch(() => {});
+  cacheSet(leadKey, ctx);
+  persistToPostgres(ctx).catch((err: unknown) => { console.error("[context-engine] Postgres write failed:", err instanceof Error ? err.message : err); });
   return ctx;
 }
 
@@ -325,7 +356,7 @@ export async function getContext(leadKey: string): Promise<LeadContext | null> {
 
   const persisted = await loadFromPostgres(leadKey);
   if (persisted) {
-    store.set(leadKey, persisted);
+    cacheSet(leadKey, persisted);
     return persisted;
   }
   return null;
@@ -343,8 +374,8 @@ export function updateContext(leadKey: string, partial: LeadContextUpdate): Lead
   merged.updatedAt = new Date().toISOString();
   merged.lastSeen = merged.updatedAt;
 
-  store.set(leadKey, merged);
-  persistToPostgres(merged).catch(() => {});
+  cacheSet(leadKey, merged);
+  persistToPostgres(merged).catch((err: unknown) => { console.error("[context-engine] Postgres write failed:", err instanceof Error ? err.message : err); });
   return merged;
 }
 
@@ -356,8 +387,8 @@ export function addInteraction(leadKey: string, interaction: Interaction): LeadC
   existing.lastSeen = new Date().toISOString();
   existing.updatedAt = existing.lastSeen;
 
-  store.set(leadKey, existing);
-  persistToPostgres(existing).catch(() => {});
+  cacheSet(leadKey, existing);
+  persistToPostgres(existing).catch((err: unknown) => { console.error("[context-engine] Postgres write failed:", err instanceof Error ? err.message : err); });
   return existing;
 }
 
@@ -369,8 +400,8 @@ export function addTouchpoint(leadKey: string, touchpoint: Touchpoint): LeadCont
   existing.lastSeen = new Date().toISOString();
   existing.updatedAt = existing.lastSeen;
 
-  store.set(leadKey, existing);
-  persistToPostgres(existing).catch(() => {});
+  cacheSet(leadKey, existing);
+  persistToPostgres(existing).catch((err: unknown) => { console.error("[context-engine] Postgres write failed:", err instanceof Error ? err.message : err); });
   return existing;
 }
 
@@ -386,18 +417,22 @@ export async function getContextsByTenant(
 ): Promise<LeadContext[]> {
   const limit = Math.min(filters.limit ?? 20, 100);
 
-  // Try in-memory first
+  // Try in-memory first using the tenant index for fast lookup
   const inMemory: LeadContext[] = [];
-  for (const ctx of store.values()) {
-    if (ctx.tenantId !== tenantId) continue;
-    if (filters.funnelStage && ctx.funnelStage !== filters.funnelStage) continue;
-    if (filters.currentRoute && ctx.currentRoute !== filters.currentRoute) continue;
-    if (filters.temperature && ctx.scores.temperature !== filters.temperature) continue;
-    if (typeof filters.escalated === "boolean" && ctx.escalated !== filters.escalated) continue;
-    if (typeof filters.minCompositeScore === "number" && ctx.scores.composite < filters.minCompositeScore) continue;
-    if (typeof filters.maxCompositeScore === "number" && ctx.scores.composite > filters.maxCompositeScore) continue;
-    if (filters.cursor && ctx.leadKey <= filters.cursor) continue;
-    inMemory.push(ctx);
+  const tenantLeadKeys = tenantIndex.get(tenantId);
+  if (tenantLeadKeys) {
+    for (const leadKey of tenantLeadKeys) {
+      const ctx = store.get(leadKey);
+      if (!ctx) continue;
+      if (filters.funnelStage && ctx.funnelStage !== filters.funnelStage) continue;
+      if (filters.currentRoute && ctx.currentRoute !== filters.currentRoute) continue;
+      if (filters.temperature && ctx.scores.temperature !== filters.temperature) continue;
+      if (typeof filters.escalated === "boolean" && ctx.escalated !== filters.escalated) continue;
+      if (typeof filters.minCompositeScore === "number" && ctx.scores.composite < filters.minCompositeScore) continue;
+      if (typeof filters.maxCompositeScore === "number" && ctx.scores.composite > filters.maxCompositeScore) continue;
+      if (filters.cursor && ctx.leadKey <= filters.cursor) continue;
+      inMemory.push(ctx);
+    }
   }
 
   if (inMemory.length > 0) {
@@ -409,13 +444,22 @@ export async function getContextsByTenant(
 }
 
 export function deleteContext(leadKey: string): boolean {
+  const ctx = store.get(leadKey);
   const existed = store.delete(leadKey);
-  deleteFromPostgres(leadKey).catch(() => {});
+  if (ctx) {
+    const tKeys = tenantIndex.get(ctx.tenantId);
+    if (tKeys) {
+      tKeys.delete(leadKey);
+      if (tKeys.size === 0) tenantIndex.delete(ctx.tenantId);
+    }
+  }
+  deleteFromPostgres(leadKey).catch((err: unknown) => { console.error("[context-engine] Postgres write failed:", err instanceof Error ? err.message : err); });
   return existed;
 }
 
 export function resetContextStore(): void {
   store.clear();
+  tenantIndex.clear();
 }
 
 export function getContextStoreSize(): number {

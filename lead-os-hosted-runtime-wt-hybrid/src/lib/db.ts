@@ -12,7 +12,10 @@ export function getPool(): Pool | null {
   if (!connectionString) return null;
   pool = new Pool({
     connectionString,
-    ssl: connectionString.includes("sslmode=disable") ? false : { rejectUnauthorized: false },
+    ssl: connectionString.includes("sslmode=disable") ? false : {
+      rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== "false",
+      ...(process.env.DB_SSL_CA_CERT ? { ca: process.env.DB_SSL_CA_CERT } : {}),
+    },
     max: 10,
   });
   return pool;

@@ -36,7 +36,8 @@ export async function GET(request: Request) {
       { data: { atRiskTenants }, error: null, meta: { count: atRiskTenants.length } },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[analytics-health]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch health scores" }, meta: null },
       { status: 500, headers },

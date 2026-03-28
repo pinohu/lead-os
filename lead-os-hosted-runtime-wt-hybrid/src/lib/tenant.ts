@@ -1,4 +1,5 @@
 import { embeddedSecrets } from "./embedded-secrets.ts";
+import { hasAnyEnv } from "./request-utils.ts";
 
 export type TenantConfig = {
   tenantId: string;
@@ -24,12 +25,7 @@ function splitCsv(value?: string) {
   return value.split(",").map((item) => item.trim()).filter(Boolean);
 }
 
-function hasAnyEnv(...keys: string[]) {
-  return keys.some((key) => {
-    const value = process.env[key];
-    return typeof value === "string" && value.trim().length > 0;
-  });
-}
+const parsedFunnels = splitCsv(process.env.LEAD_OS_ENABLED_FUNNELS);
 
 export const tenantConfig: TenantConfig = {
   tenantId: process.env.LEAD_OS_TENANT_ID ?? "default-tenant",
@@ -40,8 +36,8 @@ export const tenantConfig: TenantConfig = {
   defaultNiche: process.env.LEAD_OS_DEFAULT_NICHE ?? "general",
   widgetOrigins: splitCsv(process.env.LEAD_OS_WIDGET_ORIGINS),
   accent: process.env.NEXT_PUBLIC_BRAND_ACCENT ?? "#14b8a6",
-  enabledFunnels: splitCsv(process.env.LEAD_OS_ENABLED_FUNNELS).length > 0
-    ? splitCsv(process.env.LEAD_OS_ENABLED_FUNNELS)
+  enabledFunnels: parsedFunnels.length > 0
+    ? parsedFunnels
     : ["lead-magnet", "qualification", "chat", "webinar", "authority", "checkout", "retention", "rescue", "referral", "continuity"],
   channels: {
     email: true,

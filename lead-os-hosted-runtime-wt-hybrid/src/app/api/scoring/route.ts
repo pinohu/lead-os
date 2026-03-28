@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
 import { z } from "zod";
+import { getClientIp } from "@/lib/request-utils";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 60 });
 
@@ -36,14 +37,6 @@ const ScoringContextSchema = z.object({
   role: z.string().max(200).optional(),
   metadata: z.record(z.string().max(64), z.union([z.string().max(256), z.number(), z.boolean(), z.null()])).optional(),
 });
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  const real = request.headers.get("x-real-ip");
-  if (real) return real;
-  return "unknown";
-}
 
 interface ScoringContext {
   leadKey?: string;
@@ -481,7 +474,8 @@ export async function POST(request: Request) {
       { data: result, error: null, meta: { scoredAt: new Date().toISOString() } },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[scoring]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       {
         data: null,

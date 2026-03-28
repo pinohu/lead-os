@@ -57,7 +57,8 @@ export async function GET(request: Request) {
       { data: result, error: null, meta: null },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[attribution]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       {
         data: null,
@@ -242,7 +243,8 @@ export async function POST(request: Request) {
       { data: touch, error: null, meta: null },
       { status: 201, headers },
     );
-  } catch {
+  } catch (err) {
+    console.error("[attribution]", err instanceof Error ? err.message : err);
     return NextResponse.json(
       {
         data: null,

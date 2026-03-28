@@ -57,6 +57,8 @@ export interface ExperimentAnalysis {
   recommendation: string;
 }
 
+const MAX_STORE_SIZE = 10_000;
+
 const experimentStore = new Map<string, Experiment>();
 const assignmentStore: ExperimentAssignment[] = [];
 const conversionStore: ExperimentConversion[] = [];
@@ -243,6 +245,7 @@ export async function assignVariant(
         createdAt: new Date(row.created_at).toISOString(),
       };
       assignmentStore.push(assignment);
+      if (assignmentStore.length > MAX_STORE_SIZE) { assignmentStore.splice(0, assignmentStore.length - MAX_STORE_SIZE); }
       return assignment;
     }
   }
@@ -265,6 +268,7 @@ export async function assignVariant(
   };
 
   assignmentStore.push(assignment);
+  if (assignmentStore.length > MAX_STORE_SIZE) { assignmentStore.splice(0, assignmentStore.length - MAX_STORE_SIZE); }
 
   if (activePool) {
     await queryPostgres(
@@ -287,6 +291,7 @@ export async function recordConversion(
   };
 
   conversionStore.push(record);
+  if (conversionStore.length > MAX_STORE_SIZE) { conversionStore.splice(0, conversionStore.length - MAX_STORE_SIZE); }
 
   const activePool = getPool();
   if (activePool) {
