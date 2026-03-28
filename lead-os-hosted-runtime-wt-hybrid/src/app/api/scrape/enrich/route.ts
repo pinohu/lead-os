@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
-import { enrichLeadFromWebsite } from "@/lib/integrations/web-scraper";
+import { enrichLeadFromWebsite } from "@/lib/integrations/firecrawl-adapter";
 
 const EnrichSchema = z.object({
   domain: z.string().min(1).max(500),

@@ -1,0 +1,44 @@
+import { NextResponse } from "next/server";
+import { buildCorsHeaders } from "@/lib/cors";
+import { createLeadNurtureWorkflow } from "@/lib/integrations/activepieces-adapter";
+
+export async function OPTIONS(request: Request) {
+  return new NextResponse(null, {
+    status: 204,
+    headers: buildCorsHeaders(request.headers.get("origin")),
+  });
+}
+
+export async function POST(request: Request) {
+  const headers = buildCorsHeaders(request.headers.get("origin"));
+
+  try {
+    const body = await request.json();
+
+    if (!body.tenantId || typeof body.tenantId !== "string") {
+      return NextResponse.json(
+        { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId is required" }, meta: null },
+        { status: 400, headers },
+      );
+    }
+
+    if (!Array.isArray(body.stages) || body.stages.length === 0) {
+      return NextResponse.json(
+        { data: null, error: { code: "VALIDATION_ERROR", message: "stages array is required" }, meta: null },
+        { status: 400, headers },
+      );
+    }
+
+    const flow = await createLeadNurtureWorkflow(body.tenantId, { stages: body.stages });
+
+    return NextResponse.json(
+      { data: flow, error: null, meta: null },
+      { status: 201, headers },
+    );
+  } catch {
+    return NextResponse.json(
+      { data: null, error: { code: "CREATE_FAILED", message: "Failed to create nurture workflow" }, meta: null },
+      { status: 500, headers },
+    );
+  }
+}
