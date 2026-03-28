@@ -125,7 +125,7 @@ function isRedisConfigured(): boolean {
 async function getBullQueue(queue: string): Promise<BullMQQueue> {
   if (bullQueues.has(queue)) return bullQueues.get(queue)!;
 
-  const { Queue } = await import("bullmq");
+  const { Queue } = await import(/* webpackIgnore: true */ "bullmq");
   const connection = { url: process.env.REDIS_URL! };
   const q = new Queue(queue, { connection }) as unknown as BullMQQueue;
   bullQueues.set(queue, q);
@@ -265,13 +265,14 @@ export function registerWorker(
       const existingWorker = bullWorkers.get(queue);
       if (existingWorker) await existingWorker.close();
 
-      const { Worker } = await import("bullmq");
+      const { Worker } = await import(/* webpackIgnore: true */ "bullmq");
       const connection = { url: process.env.REDIS_URL! };
+      const processor = async (job: BullMQJobInstance) => {
+          await handler({ name: job.name, data: job.data });
+        };
       const worker = new Worker(
         queue,
-        async (job: BullMQJobInstance) => {
-          await handler({ name: job.name, data: job.data });
-        },
+        processor as unknown as never,
         { connection },
       ) as unknown as BullMQWorkerInstance;
       bullWorkers.set(queue, worker);

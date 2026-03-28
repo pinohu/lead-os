@@ -8,7 +8,7 @@ const UsageEventSchema = z.object({
   eventType: z.string().min(1),
   units: z.number().positive(),
   timestamp: z.string().optional(),
-  metadata: z.record(z.string()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 const RecordUsageSchema = z.union([

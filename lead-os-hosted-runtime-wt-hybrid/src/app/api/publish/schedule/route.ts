@@ -11,7 +11,7 @@ const SchedulePostSchema = z.object({
     mediaUrls: z.array(z.string().url()).optional(),
     hashtags: z.array(z.string()).optional(),
     scheduledAt: z.string().datetime(),
-    metadata: z.record(z.string()).optional(),
+    metadata: z.record(z.string(), z.unknown()).optional(),
   }),
 });
 

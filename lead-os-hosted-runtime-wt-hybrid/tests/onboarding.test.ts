@@ -7,11 +7,10 @@ import {
   completeOnboarding,
   resetOnboardingStore,
 } from "../src/lib/onboarding.ts";
-import { resetTenantStore } from "../src/lib/tenant-store.ts";
+
 
 function resetStores() {
   resetOnboardingStore();
-  resetTenantStore();
 }
 
 test("startOnboarding creates state with email", async () => {

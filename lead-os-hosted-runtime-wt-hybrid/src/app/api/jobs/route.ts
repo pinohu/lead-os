@@ -7,7 +7,7 @@ import { addJob, getQueueStats } from "@/lib/integrations/job-queue";
 const AddJobSchema = z.object({
   queue: z.string().min(1).max(100),
   name: z.string().min(1).max(200),
-  data: z.record(z.unknown()).default({}),
+  data: z.record(z.string(), z.unknown()).default({}),
   options: z
     .object({
       delay: z.number().int().nonnegative().optional(),

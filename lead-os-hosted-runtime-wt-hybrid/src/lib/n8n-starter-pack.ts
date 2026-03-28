@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash } from "crypto";
 import { embeddedSecrets } from "./embedded-secrets.ts";
 
 function getStraicoApiKey() {

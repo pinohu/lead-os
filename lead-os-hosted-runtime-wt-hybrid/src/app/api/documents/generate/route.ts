@@ -10,7 +10,7 @@ import {
 const GenerateDocSchema = z.object({
   tenantId: z.string().min(1),
   templateId: z.string().optional(),
-  data: z.record(z.string()).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
   type: z.enum(["proposal", "invoice"]).optional(),
   leadData: z
     .object({
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const doc = await generateDocument(tenantId, templateId, data);
+    const doc = await generateDocument(tenantId, templateId, data as Record<string, string>);
     return NextResponse.json(
       { data: { document: doc }, error: null, meta: null },
       { status: 201, headers },

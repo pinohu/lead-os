@@ -18,7 +18,7 @@ export interface Notification {
   recipientPhone?: string;
   channel: NotificationChannel;
   template: string;
-  data: Record<string, string>;
+  data: Record<string, unknown>;
   priority?: "low" | "medium" | "high" | "urgent";
 }
 
@@ -130,8 +130,8 @@ function resolveTemplate(name: string): TemplateDefinition | undefined {
   return customTemplates.get(name) ?? LEAD_OS_TEMPLATES[name];
 }
 
-function renderTemplate(template: string, data: Record<string, string>): string {
-  return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => data[key] ?? `{{${key}}}`);
+function renderTemplate(template: string, data: Record<string, unknown>): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => String(data[key] ?? `{{${key}}}`));
 }
 
 // ---------------------------------------------------------------------------
@@ -198,14 +198,23 @@ async function dispatchEmail(notification: Notification, tmpl: TemplateDefinitio
       id: notification.template,
       name: subject,
       subject,
-      html,
-      text: renderTemplate(tmpl.body, notification.data),
+      category: "notification" as const,
+      htmlTemplate: html,
+      textTemplate: renderTemplate(tmpl.body, notification.data),
+      variables: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
     context: {
+      brandName: "",
+      siteUrl: "",
+      supportEmail: "",
+      unsubscribeUrl: "",
+      currentYear: new Date().getFullYear().toString(),
       recipientEmail: notification.recipientEmail,
       previewText: subject,
       ...notification.data,
-    },
+    } as import("../email-templates.ts").EmailContext,
     tenantId: notification.tenantId,
     leadKey: notification.recipientId,
   });
@@ -243,7 +252,7 @@ async function dispatchWebhook(url: string, notification: Notification, tmpl: Te
 }
 
 async function dispatchSlack(notification: Notification, tmpl: TemplateDefinition): Promise<NotificationResult> {
-  const webhookUrl = process.env.SLACK_WEBHOOK_URL ?? notification.data.webhookUrl;
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL ?? (notification.data.webhookUrl as string | undefined);
   if (!webhookUrl) return { id: generateNotificationId(), channel: "slack", status: "failed", timestamp: new Date().toISOString() };
 
   const text = `*${renderTemplate(tmpl.subject, notification.data)}*\n${renderTemplate(tmpl.body, notification.data)}`;
@@ -251,7 +260,7 @@ async function dispatchSlack(notification: Notification, tmpl: TemplateDefinitio
 }
 
 async function dispatchDiscord(notification: Notification, tmpl: TemplateDefinition): Promise<NotificationResult> {
-  const webhookUrl = process.env.DISCORD_WEBHOOK_URL ?? notification.data.webhookUrl;
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL ?? (notification.data.webhookUrl as string | undefined);
   if (!webhookUrl) return { id: generateNotificationId(), channel: "discord", status: "failed", timestamp: new Date().toISOString() };
 
   const id = generateNotificationId();
@@ -271,8 +280,8 @@ async function dispatchDiscord(notification: Notification, tmpl: TemplateDefinit
 }
 
 async function dispatchTelegram(notification: Notification, tmpl: TemplateDefinition): Promise<NotificationResult> {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN ?? notification.data.botToken;
-  const chatId = process.env.TELEGRAM_CHAT_ID ?? notification.data.chatId;
+  const botToken = process.env.TELEGRAM_BOT_TOKEN ?? (notification.data.botToken as string | undefined);
+  const chatId = process.env.TELEGRAM_CHAT_ID ?? (notification.data.chatId as string | undefined);
 
   const id = generateNotificationId();
   const timestamp = new Date().toISOString();
@@ -326,7 +335,7 @@ async function dispatchDirect(notification: Notification, tmpl: TemplateDefiniti
     case "telegram":
       return dispatchTelegram(notification, tmpl);
     case "webhook": {
-      const url = notification.data.webhookUrl;
+      const url = notification.data.webhookUrl as string | undefined;
       if (!url) return { id: generateNotificationId(), channel: "webhook", status: "failed", timestamp: new Date().toISOString() };
       return dispatchWebhook(url, notification, tmpl);
     }

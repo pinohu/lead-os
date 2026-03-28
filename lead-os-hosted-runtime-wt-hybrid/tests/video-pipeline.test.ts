@@ -8,14 +8,13 @@ import {
   generateLaunchVideoScript,
   VIDEO_TEMPLATES,
 } from "../src/lib/video-pipeline.ts";
-import { createTenant, resetTenantStore } from "../src/lib/tenant-store.ts";
+import { createTenant } from "../src/lib/tenant-store.ts";
 
 let testTenantId: string;
 
 test.beforeEach(async () => {
-  resetTenantStore();
   const tenant = await createTenant({
-    slug: "video-test",
+    slug: `video-test-${Date.now()}`,
     brandName: "Video Brand",
     siteUrl: "https://video.example.com",
     supportEmail: "video@example.com",

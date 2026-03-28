@@ -7,7 +7,7 @@ export interface UsageEvent {
   eventType: string;
   units: number;
   timestamp?: string;
-  metadata?: Record<string, string>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface UsageSummary {

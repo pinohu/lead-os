@@ -339,7 +339,7 @@ export async function trackConversion(
 ): Promise<void> {
   const assignmentKey = `${experimentId}:${userId}`;
   const variationId = assignmentStore.get(assignmentKey)
-    ?? localAssignmentStore.get(assignmentKey)?.variationId
+    ?? localAssignmentStore.get(assignmentKey)?.variantId
     ?? "control";
 
   const existing = conversionStore.get(experimentId) ?? [];

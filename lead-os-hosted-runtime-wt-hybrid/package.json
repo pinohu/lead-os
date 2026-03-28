@@ -28,6 +28,7 @@
     "@types/pg": "^8.18.0",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
+    "bullmq": "^5.71.1",
     "typescript": "^5.9.3"
   }
 }

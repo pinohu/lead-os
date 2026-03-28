@@ -20,7 +20,7 @@ export interface SocialPost {
   mediaUrls?: string[];
   hashtags?: string[];
   scheduledAt?: string;
-  metadata?: Record<string, string>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface PublishResult {

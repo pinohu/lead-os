@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash } from "crypto";
 import { getPool } from "./db.ts";
 
 export type UserRole = "owner" | "admin" | "operator" | "viewer" | "billing-admin";

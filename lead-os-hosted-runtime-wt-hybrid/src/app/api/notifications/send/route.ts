@@ -15,7 +15,7 @@ const NotificationSchema = z.object({
   recipientPhone: z.string().optional(),
   channel: z.enum(CHANNELS),
   template: z.string().min(1),
-  data: z.record(z.string()).default({}),
+  data: z.record(z.string(), z.unknown()).default({}),
   priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
 });
 

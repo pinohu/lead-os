@@ -7,15 +7,15 @@ import {
   mergeDesignSystems,
   getDesignForTenant,
 } from "../src/lib/design-md.ts";
-import { createTenant, resetTenantStore } from "../src/lib/tenant-store.ts";
+import { createTenant } from "../src/lib/tenant-store.ts";
 import type { DesignMarkdown } from "../src/lib/design-md.ts";
 
 let testTenantId: string;
+let _testCounter = 0;
 
 test.beforeEach(async () => {
-  resetTenantStore();
   const tenant = await createTenant({
-    slug: "test-brand",
+    slug: `test-brand-${++_testCounter}-${Date.now()}`,
     brandName: "Test Brand",
     siteUrl: "https://test.example.com",
     supportEmail: "support@test.example.com",

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { resetTenantStore, getTenant } from "../src/lib/tenant-store.ts";
+import { getTenant } from "../src/lib/tenant-store.ts";
 import {
   provisionTenant,
   getProvisioningStatus,
@@ -26,7 +26,6 @@ function makeInput(overrides?: Partial<ProvisionTenantInput>): ProvisionTenantIn
 }
 
 function resetAll() {
-  resetTenantStore();
   resetProvisioningStore();
 }
 

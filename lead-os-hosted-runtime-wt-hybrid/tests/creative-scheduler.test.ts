@@ -12,15 +12,15 @@ import {
   resetCreativeSchedulerStore,
   CREATIVE_JOB_TYPES,
 } from "../src/lib/creative-scheduler.ts";
-import { createTenant, resetTenantStore } from "../src/lib/tenant-store.ts";
+import { createTenant } from "../src/lib/tenant-store.ts";
 
 let testTenantId: string;
+let _testCounter = 0;
 
 test.beforeEach(async () => {
   resetCreativeSchedulerStore();
-  resetTenantStore();
   const tenant = await createTenant({
-    slug: "creative-test",
+    slug: `creative-test-${++_testCounter}-${Date.now()}`,
     brandName: "Creative Brand",
     siteUrl: "https://creative.example.com",
     supportEmail: "creative@example.com",
