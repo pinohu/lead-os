@@ -1,18 +1,24 @@
 # Lead Operating System — Replicable Architecture
 
-This document is the **canonical reference** for how NeatCircle / Lead OS is structured so you can **replicate deployments**, **add niches as config**, and **avoid architectural drift** across repositories.
+This document is the **canonical reference** for how Lead OS is structured so you can **replicate deployments**, **add niches as config**, and **avoid architectural drift**.
 
-**Related repositories**
+> **Note:** As of March 2026, Lead OS is a unified monorepo. The kernel runtime (`lead-os-hosted-runtime-wt-hybrid`) contains all 488 source files, 278 API endpoints, 35 integration adapters, and 23 dashboard pages. See [LEAD-OS-COMPLETE-GUIDE.md](../LEAD-OS-COMPLETE-GUIDE.md) for the full platform documentation including the AppSumo integration roadmap.
+
+**Repository**
 
 | Repository | Role |
 |------------|------|
-| [pinohu/lead-os](https://github.com/pinohu/lead-os) | Umbrella: blueprints, scenarios, edge app (`neatcircle-beta`), **this doc** |
-| [pinohu/lead-os-hosted-runtime](https://github.com/pinohu/lead-os-hosted-runtime) | **Kernel**: intake, decisioning, execution queues, operator dashboard, experiments |
-| [pinohu/lead-os-embed-widgets](https://github.com/pinohu/lead-os-embed-widgets) | **Edge client**: embed script, forms/chat/assessment boot, WordPress plugin |
-| [pinohu/SuiteDash](https://github.com/pinohu/SuiteDash) | **CRM layer**: SuiteDash deployment kit, n8n packs, agents, runbooks (not vendor source) |
-| [pinohu/leadnest-flow-forge](https://github.com/pinohu/leadnest-flow-forge) | Optional **marketing / demo** UI (Lovable / Vite) |
-| [pinohu/leadgen-ai-portal](https://github.com/pinohu/leadgen-ai-portal) | Optional **marketing / portal** UI (Lovable / Vite) |
-| [pinohu/Lead-Acquisition-Retention-Conversion](https://github.com/pinohu/Lead-Acquisition-Retention-Conversion) | Reserved for **LARC framework** specs and examples (populate as needed) |
+| [pinohu/lead-os](https://github.com/pinohu/lead-os) | Monorepo: kernel runtime (`lead-os-hosted-runtime-wt-hybrid`), edge layer (`neatcircle-beta`), blueprints, scenarios, **this doc** |
+
+**Legacy repositories** (functionality merged into lead-os monorepo):
+
+| Repository | Status |
+|------------|--------|
+| pinohu/lead-os-hosted-runtime | Merged into `lead-os-hosted-runtime-wt-hybrid` |
+| pinohu/lead-os-embed-widgets | Merged — embed system now in `src/lib/integrations/embed-widgets-adapter.ts` |
+| pinohu/SuiteDash | CRM adapter now in `src/lib/integrations/` (SuiteDash + SalesNexus) |
+| pinohu/leadnest-flow-forge | Flow Forge adapter now in `src/lib/integrations/flow-forge-adapter.ts` |
+| pinohu/leadgen-ai-portal | Functionality absorbed into operator dashboard |
 
 ---
 
