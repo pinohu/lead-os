@@ -2,13 +2,6 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { advanceOnboarding, completeOnboarding, getOnboardingState } from "@/lib/onboarding";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const MAX_ID_LENGTH = 200;
 const VALID_ID_PATTERN = /^onb_[a-f0-9-]{36}$/;
 

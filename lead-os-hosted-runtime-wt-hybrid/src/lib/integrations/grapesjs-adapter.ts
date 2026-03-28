@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -83,13 +84,16 @@ export interface LeadWidgetConfig {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("GrapesJS", "GRAPESJS", "https://api.grapesjs.com/v1");
 
 const pageStore = new Map<string, Page>();
 
 export function resetGrapesJSStore(): void {
   pageStore.clear();
+  adapter.resetStore();
 }
 
 export function _getPageStoreForTesting(): Map<string, Page> {
@@ -162,36 +166,11 @@ const TEMPLATE_HTML: Record<string, { html: string; css: string }> = {
 };
 
 // ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: GrapesJSConfig): GrapesJSConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.GRAPESJS_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.GRAPESJS_BASE_URL ?? "https://api.grapesjs.com/v1",
-  };
-}
-
-// ---------------------------------------------------------------------------
 // Health check
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: GrapesJSConfig): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
-  if (!cfg.apiKey) {
-    return { ok: false, message: "GrapesJS API key not configured" };
-  }
-
-  try {
-    const res = await fetch(`${cfg.baseUrl}/account`, {
-      headers: { Authorization: `Bearer ${cfg.apiKey}` },
-    });
-    return res.ok
-      ? { ok: true, message: "GrapesJS connection verified" }
-      : { ok: false, message: `GrapesJS returned ${res.status}` };
-  } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Connection failed" };
-  }
+  return adapter.healthCheck(config);
 }
 
 // ---------------------------------------------------------------------------

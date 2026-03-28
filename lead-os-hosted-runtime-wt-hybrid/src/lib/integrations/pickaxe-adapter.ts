@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -47,8 +48,10 @@ export interface KnowledgeBase {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Pickaxe", "PICKAXE", "https://api.pickaxeproject.com/v1");
 
 const chatbotStore = new Map<string, Chatbot>();
 const sessionStore = new Map<string, ChatSession>();
@@ -58,17 +61,7 @@ export function resetPickaxeStore(): void {
   chatbotStore.clear();
   sessionStore.clear();
   knowledgeBaseStore.clear();
-}
-
-// ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: PickaxeConfig): PickaxeConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.PICKAXE_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.PICKAXE_BASE_URL ?? "https://api.pickaxeproject.com/v1",
-  };
+  adapter.resetStore();
 }
 
 // ---------------------------------------------------------------------------
@@ -76,21 +69,7 @@ function resolveConfig(config?: PickaxeConfig): PickaxeConfig {
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: PickaxeConfig): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
-  if (!cfg.apiKey) {
-    return { ok: false, message: "Pickaxe API key not configured" };
-  }
-
-  try {
-    const res = await fetch(`${cfg.baseUrl}/account`, {
-      headers: { Authorization: `Bearer ${cfg.apiKey}` },
-    });
-    return res.ok
-      ? { ok: true, message: "Pickaxe connection verified" }
-      : { ok: false, message: `Pickaxe returned ${res.status}` };
-  } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Connection failed" };
-  }
+  return adapter.healthCheck(config);
 }
 
 // ---------------------------------------------------------------------------
@@ -160,7 +139,7 @@ export async function deleteChatbot(chatbotId: string): Promise<boolean> {
 // ---------------------------------------------------------------------------
 
 export function generateEmbedScript(chatbotId: string, config?: PickaxeConfig): string {
-  const cfg = resolveConfig(config);
+  const cfg = adapter.resolveConfig(config);
   return `<script src="${cfg.baseUrl}/embed/${chatbotId}.js" data-pickaxe-key="${cfg.apiKey}" async></script>`;
 }
 

@@ -2,13 +2,6 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { getCreativeJob, updateCreativeJob, deleteCreativeJob } from "@/lib/creative-scheduler";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const MAX_ID_LENGTH = 64;
 
 export async function GET(

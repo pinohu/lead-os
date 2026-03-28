@@ -10,6 +10,30 @@ import {
 import { getOperatorSessionFromCookieHeader, OPERATOR_SESSION_COOKIE } from "./operator-auth.ts";
 import { tenantConfig } from "./tenant.ts";
 
+export interface AuthFromHeaders {
+  userId: string;
+  role: string;
+  tenantId?: string;
+  method: string;
+}
+
+/**
+ * Reads identity headers set by the Next.js middleware after successful
+ * authentication. Returns null when the middleware did not authenticate the
+ * request (e.g. public routes or cron-secret paths).
+ */
+export function getAuthFromHeaders(request: Request): AuthFromHeaders | null {
+  const userId = request.headers.get("x-authenticated-user-id");
+  const role = request.headers.get("x-authenticated-role");
+  if (!userId || !role) return null;
+  return {
+    userId,
+    role,
+    tenantId: request.headers.get("x-authenticated-tenant-id") ?? undefined,
+    method: request.headers.get("x-authenticated-method") ?? "unknown",
+  };
+}
+
 export interface AuthContext {
   userId: string;
   tenantId: string;
@@ -23,6 +47,52 @@ export type AuthResult =
   | { authenticated: false; error: string };
 
 export async function authenticateRequest(request: Request): Promise<AuthResult> {
+  // Fast path: trust identity headers set by the Next.js middleware to avoid
+  // redundant token validation. The middleware already verified the credential
+  // and attached user/role/tenant info to the forwarded request headers.
+  const headerAuth = getAuthFromHeaders(request);
+  if (headerAuth) {
+    const role = headerAuth.role as UserRole;
+    if (headerAuth.method === "operator-cookie") {
+      return {
+        authenticated: true,
+        context: {
+          userId: headerAuth.userId,
+          tenantId: headerAuth.tenantId ?? tenantConfig.tenantId,
+          role,
+          permissions: [],
+          user: {
+            id: headerAuth.userId,
+            email: headerAuth.userId,
+            name: headerAuth.userId,
+            tenantId: headerAuth.tenantId ?? tenantConfig.tenantId,
+            role,
+            apiKeys: [],
+            status: "active",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        },
+      };
+    }
+
+    const user = await getUserById(headerAuth.userId);
+    if (user && user.status === "active") {
+      return {
+        authenticated: true,
+        context: {
+          userId: user.id,
+          tenantId: user.tenantId,
+          role: user.role,
+          permissions: [],
+          user,
+        },
+      };
+    }
+  }
+
+  // Fallback: full credential validation for requests that bypass middleware
+  // (e.g. direct server-side calls or test harnesses).
   const authHeader = request.headers.get("authorization");
 
   if (authHeader?.startsWith("Bearer los_")) {

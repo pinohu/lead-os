@@ -4,13 +4,6 @@ import { generateLinkedInMessage, type LeadContext } from "@/lib/integrations/la
 
 const VALID_STATUSES = new Set(["none", "pending", "connected"]);
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 

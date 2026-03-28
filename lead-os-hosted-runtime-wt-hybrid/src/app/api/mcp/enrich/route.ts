@@ -7,13 +7,6 @@ const EnrichSchema = z.object({
   domain: z.string().min(1).max(500),
 });
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 

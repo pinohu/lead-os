@@ -6,13 +6,6 @@ import { trackProductEvent } from "@/lib/product-analytics";
 const MAX_EVENT_LENGTH = 200;
 const MAX_PROPERTIES_SIZE = 10_000;
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
   const auth = await requireOperatorApiSession(request);

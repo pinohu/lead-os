@@ -134,6 +134,19 @@ export function clearOperatorSession(response: NextResponse) {
 }
 
 export async function requireOperatorApiSession(request: Request) {
+  // Fast path: trust identity headers set by the Next.js middleware.
+  // When middleware already validated the operator cookie it attaches the
+  // identity as request headers, so we can skip re-parsing the JWT.
+  const userId = request.headers.get("x-authenticated-user-id");
+  const method = request.headers.get("x-authenticated-method");
+  if (userId && method) {
+    return {
+      session: { email: userId, type: "session" as const, exp: 0 },
+      response: null,
+    };
+  }
+
+  // Fallback: full cookie validation for requests that bypass middleware.
   const session = await getOperatorSessionFromCookieHeader(request.headers.get("cookie"));
   if (!session) {
     return {

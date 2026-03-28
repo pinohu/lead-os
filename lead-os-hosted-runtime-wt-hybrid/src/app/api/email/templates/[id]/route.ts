@@ -14,13 +14,6 @@ const MAX_NAME_LENGTH = 200;
 const MAX_SUBJECT_LENGTH = 500;
 const MAX_TEMPLATE_BODY_LENGTH = 100_000;
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

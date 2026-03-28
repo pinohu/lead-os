@@ -23,13 +23,6 @@ const CreateExperimentSchema = z.object({
   metrics: z.array(z.string().min(1)).min(1).max(20),
 });
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 

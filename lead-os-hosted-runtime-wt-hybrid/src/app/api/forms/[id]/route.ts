@@ -6,13 +6,6 @@ import { deleteForm, getForm, updateForm } from "@/lib/page-builder";
 const MAX_NAME_LENGTH = 200;
 const MAX_FIELDS = 50;
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

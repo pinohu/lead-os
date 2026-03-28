@@ -15,13 +15,6 @@ const StoreCredentialSchema = z.object({
   credentials: z.record(z.string(), z.string()),
 });
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 

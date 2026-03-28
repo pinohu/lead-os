@@ -2,13 +2,6 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { getMagnetBySlug } from "@/lib/lead-magnet-engine";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const MAX_SLUG_LENGTH = 200;
 // Slug characters: lowercase alphanumeric and hyphens only.
 const VALID_SLUG_PATTERN = /^[a-z0-9-]{1,200}$/;

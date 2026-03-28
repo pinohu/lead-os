@@ -5,10 +5,6 @@ import type { SocialProofElement } from "@/lib/trust-engine";
 
 const VALID_PROOF_TYPES = new Set<SocialProofElement["type"]>(["counter", "live-activity", "recommendation", "recent-activity"]);
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, { status: 204, headers: buildCorsHeaders(request.headers.get("origin")) });
-}
-
 export async function GET(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
   try {

@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { withEnv } from "./test-helpers.ts";
 import {
   getAIConfig,
   isAIEnabled,
@@ -12,35 +13,31 @@ import {
 // ---------------------------------------------------------------------------
 
 test("getAIConfig returns null when AI_API_KEY is not set", () => {
-  const original = process.env.AI_API_KEY;
-  delete process.env.AI_API_KEY;
+  const restore = withEnv({ AI_API_KEY: undefined });
   try {
     const config = getAIConfig();
     assert.equal(config, null);
   } finally {
-    if (original !== undefined) process.env.AI_API_KEY = original;
+    restore();
   }
 });
 
 test("getAIConfig returns null when AI_API_KEY is empty", () => {
-  const original = process.env.AI_API_KEY;
-  process.env.AI_API_KEY = "   ";
+  const restore = withEnv({ AI_API_KEY: "   " });
   try {
     const config = getAIConfig();
     assert.equal(config, null);
   } finally {
-    if (original !== undefined) process.env.AI_API_KEY = original;
-    else delete process.env.AI_API_KEY;
+    restore();
   }
 });
 
 test("getAIConfig returns config when AI_API_KEY is set", () => {
-  const origKey = process.env.AI_API_KEY;
-  const origProvider = process.env.AI_PROVIDER;
-  const origModel = process.env.AI_MODEL;
-  process.env.AI_API_KEY = "test-key-123";
-  delete process.env.AI_PROVIDER;
-  delete process.env.AI_MODEL;
+  const restore = withEnv({
+    AI_API_KEY: "test-key-123",
+    AI_PROVIDER: undefined,
+    AI_MODEL: undefined,
+  });
   try {
     const config = getAIConfig();
     assert.ok(config !== null);
@@ -50,31 +47,23 @@ test("getAIConfig returns config when AI_API_KEY is set", () => {
     assert.equal(config.maxTokens, 1024);
     assert.equal(config.temperature, 0.7);
   } finally {
-    if (origKey !== undefined) process.env.AI_API_KEY = origKey;
-    else delete process.env.AI_API_KEY;
-    if (origProvider !== undefined) process.env.AI_PROVIDER = origProvider;
-    if (origModel !== undefined) process.env.AI_MODEL = origModel;
+    restore();
   }
 });
 
 test("getAIConfig respects openai provider setting", () => {
-  const origKey = process.env.AI_API_KEY;
-  const origProvider = process.env.AI_PROVIDER;
-  const origModel = process.env.AI_MODEL;
-  process.env.AI_API_KEY = "sk-openai-test";
-  process.env.AI_PROVIDER = "openai";
-  delete process.env.AI_MODEL;
+  const restore = withEnv({
+    AI_API_KEY: "sk-openai-test",
+    AI_PROVIDER: "openai",
+    AI_MODEL: undefined,
+  });
   try {
     const config = getAIConfig();
     assert.ok(config !== null);
     assert.equal(config.provider, "openai");
     assert.equal(config.model, "gpt-4o");
   } finally {
-    if (origKey !== undefined) process.env.AI_API_KEY = origKey;
-    else delete process.env.AI_API_KEY;
-    if (origProvider !== undefined) process.env.AI_PROVIDER = origProvider;
-    else delete process.env.AI_PROVIDER;
-    if (origModel !== undefined) process.env.AI_MODEL = origModel;
+    restore();
   }
 });
 
@@ -83,23 +72,20 @@ test("getAIConfig respects openai provider setting", () => {
 // ---------------------------------------------------------------------------
 
 test("isAIEnabled returns false when no API key is set", () => {
-  const original = process.env.AI_API_KEY;
-  delete process.env.AI_API_KEY;
+  const restore = withEnv({ AI_API_KEY: undefined });
   try {
     assert.equal(isAIEnabled(), false);
   } finally {
-    if (original !== undefined) process.env.AI_API_KEY = original;
+    restore();
   }
 });
 
 test("isAIEnabled returns true when API key is set", () => {
-  const origKey = process.env.AI_API_KEY;
-  process.env.AI_API_KEY = "test-key";
+  const restore = withEnv({ AI_API_KEY: "test-key" });
   try {
     assert.equal(isAIEnabled(), true);
   } finally {
-    if (origKey !== undefined) process.env.AI_API_KEY = origKey;
-    else delete process.env.AI_API_KEY;
+    restore();
   }
 });
 
@@ -108,8 +94,7 @@ test("isAIEnabled returns true when API key is set", () => {
 // ---------------------------------------------------------------------------
 
 test("callLLM returns dry-run response when AI is not configured", async () => {
-  const original = process.env.AI_API_KEY;
-  delete process.env.AI_API_KEY;
+  const restore = withEnv({ AI_API_KEY: undefined });
   try {
     const messages: LLMMessage[] = [
       { role: "system", content: "You are a test assistant." },
@@ -122,7 +107,7 @@ test("callLLM returns dry-run response when AI is not configured", async () => {
     assert.equal(result.usage.outputTokens, 0);
     assert.equal(result.durationMs, 0);
   } finally {
-    if (original !== undefined) process.env.AI_API_KEY = original;
+    restore();
   }
 });
 

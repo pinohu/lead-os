@@ -2,13 +2,6 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { generateDesignMd, exportDesignMdForStitch, exportDesignMdForAgent } from "@/lib/design-md";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const VALID_FORMATS = new Set(["stitch", "agent", "raw"]);
 
 export async function GET(request: Request) {

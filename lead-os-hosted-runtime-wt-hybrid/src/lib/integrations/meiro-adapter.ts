@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,8 +41,10 @@ export interface BatchJob {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Meiro", "MEIRO", "https://api.meiro.io/v1");
 
 const videoStore = new Map<string, AvatarVideo>();
 const batchStore = new Map<string, BatchJob>();
@@ -49,17 +52,7 @@ const batchStore = new Map<string, BatchJob>();
 export function resetMeiroStore(): void {
   videoStore.clear();
   batchStore.clear();
-}
-
-// ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: MeiroConfig): MeiroConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.MEIRO_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.MEIRO_BASE_URL ?? "https://api.meiro.io/v1",
-  };
+  adapter.resetStore();
 }
 
 // ---------------------------------------------------------------------------
@@ -80,21 +73,7 @@ export const AVAILABLE_AVATARS: Avatar[] = [
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: MeiroConfig): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
-  if (!cfg.apiKey) {
-    return { ok: false, message: "Meiro API key not configured" };
-  }
-
-  try {
-    const res = await fetch(`${cfg.baseUrl}/account`, {
-      headers: { Authorization: `Bearer ${cfg.apiKey}` },
-    });
-    return res.ok
-      ? { ok: true, message: "Meiro connection verified" }
-      : { ok: false, message: `Meiro returned ${res.status}` };
-  } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Connection failed" };
-  }
+  return adapter.healthCheck(config);
 }
 
 // ---------------------------------------------------------------------------

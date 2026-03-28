@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { withEnv } from "./test-helpers.ts";
 import {
   createIndex,
   deleteIndex,
@@ -12,8 +13,7 @@ import {
 } from "../src/lib/integrations/search-engine.ts";
 
 // Ensure Meilisearch is not used during tests
-delete process.env.MEILI_URL;
-delete process.env.MEILI_MASTER_KEY;
+const restoreMeiliEnv = withEnv({ MEILI_URL: undefined, MEILI_MASTER_KEY: undefined });
 
 function makeLeadDocs(count: number, tenantId = "tenant-a"): Record<string, unknown>[] {
   return Array.from({ length: count }, (_, i) => ({

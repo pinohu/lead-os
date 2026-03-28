@@ -2,13 +2,6 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { updateIngressRule, deleteIngressRule } from "@/lib/ingress-engine";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const MAX_ID_LENGTH = 64;
 const MAX_FUNNEL_TYPE_LENGTH = 100;
 const MAX_SCORE_BOOST = 30;

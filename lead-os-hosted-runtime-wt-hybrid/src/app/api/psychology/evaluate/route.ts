@@ -2,13 +2,6 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { evaluatePsychology, type PsychologyProfile } from "@/lib/psychology-engine";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const MAX_STAGE_LENGTH = 100;
 const MAX_DEVICE_LENGTH = 50;
 const MAX_OBJECTIONS_COUNT = 20;

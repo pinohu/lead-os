@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { withEnv } from "./test-helpers.ts";
 
 type FetchCall = {
   url: string;
@@ -18,27 +19,18 @@ function jsonResponse(body: unknown, status = 200) {
 
 test("createBookingAction submits a live Trafft public booking when an available slot exists", async () => {
   const originalFetch = globalThis.fetch;
-  const originalEnv = {
-    LEAD_OS_ENABLE_LIVE_SENDS: process.env.LEAD_OS_ENABLE_LIVE_SENDS,
-    LEAD_OS_ALLOW_EMBEDDED_SECRETS: process.env.LEAD_OS_ALLOW_EMBEDDED_SECRETS,
-    TRAFFT_API_URL: process.env.TRAFFT_API_URL,
-    TRAFFT_PUBLIC_BOOKING_URL: process.env.TRAFFT_PUBLIC_BOOKING_URL,
-    TRAFFT_DEFAULT_SERVICE_ID: process.env.TRAFFT_DEFAULT_SERVICE_ID,
-    TRAFFT_CLIENT_ID: process.env.TRAFFT_CLIENT_ID,
-    TRAFFT_CLIENT_SECRET: process.env.TRAFFT_CLIENT_SECRET,
-    TRAFFT_BEARER_TOKEN: process.env.TRAFFT_BEARER_TOKEN,
-  };
+  const restoreEnv = withEnv({
+    LEAD_OS_ENABLE_LIVE_SENDS: "true",
+    LEAD_OS_ALLOW_EMBEDDED_SECRETS: "false",
+    TRAFFT_API_URL: "https://yourdeputy.admin.wlbookings.com",
+    TRAFFT_PUBLIC_BOOKING_URL: "https://yourdeputy.wlbookings.com/book/demo",
+    TRAFFT_DEFAULT_SERVICE_ID: "service_123",
+    TRAFFT_CLIENT_ID: "",
+    TRAFFT_CLIENT_SECRET: "",
+    TRAFFT_BEARER_TOKEN: "",
+  });
 
   const calls: FetchCall[] = [];
-
-  process.env.LEAD_OS_ENABLE_LIVE_SENDS = "true";
-  process.env.LEAD_OS_ALLOW_EMBEDDED_SECRETS = "false";
-  process.env.TRAFFT_API_URL = "https://yourdeputy.admin.wlbookings.com";
-  process.env.TRAFFT_PUBLIC_BOOKING_URL = "https://yourdeputy.wlbookings.com/book/demo";
-  process.env.TRAFFT_DEFAULT_SERVICE_ID = "service_123";
-  process.env.TRAFFT_CLIENT_ID = "";
-  process.env.TRAFFT_CLIENT_SECRET = "";
-  process.env.TRAFFT_BEARER_TOKEN = "";
 
   globalThis.fetch = async (input, init) => {
     const url = String(input);
@@ -111,13 +103,6 @@ test("createBookingAction submits a live Trafft public booking when an available
     assert.equal(((submitCall?.body as Record<string, unknown>)?.customer as Record<string, unknown>)?.phoneCountryCode, "US");
   } finally {
     globalThis.fetch = originalFetch;
-
-    for (const [key, value] of Object.entries(originalEnv)) {
-      if (typeof value === "undefined") {
-        delete process.env[key];
-      } else {
-        process.env[key] = value;
-      }
-    }
+    restoreEnv();
   }
 });

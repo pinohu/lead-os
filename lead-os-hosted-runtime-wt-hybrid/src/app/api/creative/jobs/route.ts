@@ -3,13 +3,6 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { createCreativeJob, listCreativeJobs, CREATIVE_JOB_TYPES } from "@/lib/creative-scheduler";
 import type { CreativeJobType } from "@/lib/creative-scheduler";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const VALID_TYPES = new Set<CreativeJobType>(CREATIVE_JOB_TYPES.map((t) => t.type));
 const VALID_SCHEDULES = new Set(["daily", "weekly", "monthly"]);
 

@@ -3,13 +3,6 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { applyPendingAdjustments } from "@/lib/feedback-engine";
 import { tenantConfig } from "@/lib/tenant";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const MAX_ID_LENGTH = 64;
 
 export async function POST(

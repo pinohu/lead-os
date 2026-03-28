@@ -6,13 +6,6 @@ import { registerWebhook, listWebhooks } from "@/lib/webhook-registry";
 const MAX_URL_LENGTH = 2048;
 const MAX_EVENTS = 50;
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
   const auth = await requireOperatorApiSession(request);

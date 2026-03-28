@@ -3,13 +3,6 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { createTenant, listTenants, type CreateTenantInput } from "@/lib/tenant-store";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
   const auth = await requireOperatorApiSession(request);

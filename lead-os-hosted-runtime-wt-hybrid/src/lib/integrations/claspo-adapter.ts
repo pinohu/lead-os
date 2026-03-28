@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -50,8 +51,10 @@ export interface AbTestVariant {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Claspo", "CLASPO", "https://api.claspo.io/v1");
 
 const widgetStore = new Map<string, ClaspoWidget>();
 const capturedLeadStore = new Map<string, CapturedLead[]>();
@@ -61,17 +64,7 @@ export function resetClaspoStore(): void {
   widgetStore.clear();
   capturedLeadStore.clear();
   abTestStore.clear();
-}
-
-// ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: ClaspoConfig): ClaspoConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.CLASPO_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.CLASPO_BASE_URL ?? "https://api.claspo.io/v1",
-  };
+  adapter.resetStore();
 }
 
 // ---------------------------------------------------------------------------
@@ -79,21 +72,7 @@ function resolveConfig(config?: ClaspoConfig): ClaspoConfig {
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: ClaspoConfig): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
-  if (!cfg.apiKey) {
-    return { ok: false, message: "Claspo API key not configured" };
-  }
-
-  try {
-    const res = await fetch(`${cfg.baseUrl}/account`, {
-      headers: { Authorization: `Bearer ${cfg.apiKey}` },
-    });
-    return res.ok
-      ? { ok: true, message: "Claspo connection verified" }
-      : { ok: false, message: `Claspo returned ${res.status}` };
-  } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Connection failed" };
-  }
+  return adapter.healthCheck(config);
 }
 
 // ---------------------------------------------------------------------------
@@ -140,7 +119,7 @@ export async function deleteWidget(widgetId: string): Promise<boolean> {
 // ---------------------------------------------------------------------------
 
 export function generateEmbedScript(widgetId: string, config?: ClaspoConfig): string {
-  const cfg = resolveConfig(config);
+  const cfg = adapter.resolveConfig(config);
   return `<script src="${cfg.baseUrl}/embed/${widgetId}.js" data-claspo-key="${cfg.apiKey}" async></script>`;
 }
 

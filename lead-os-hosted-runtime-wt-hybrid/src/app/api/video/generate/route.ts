@@ -10,13 +10,6 @@ import {
 } from "@/lib/video-pipeline";
 import type { VideoType } from "@/lib/video-pipeline";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const VALID_TYPES = new Set<VideoType>([
   "product-demo",
   "data-report",

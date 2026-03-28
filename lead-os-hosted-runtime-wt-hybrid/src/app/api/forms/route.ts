@@ -9,13 +9,6 @@ const MAX_SUCCESS_MESSAGE_LENGTH = 1000;
 const VALID_SUBMIT_ACTIONS = new Set(["intake", "subscribe", "custom-webhook"]);
 const VALID_FIELD_TYPES = new Set<FormField["type"]>(["text", "email", "phone", "select", "textarea", "checkbox", "radio", "number", "date", "file", "hidden"]);
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
   const auth = await requireOperatorApiSession(request);

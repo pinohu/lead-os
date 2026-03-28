@@ -3,13 +3,6 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { detectIngressChannel, resolveIngressDecision } from "@/lib/ingress-engine";
 import { tenantConfig } from "@/lib/tenant";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const MAX_STRING_LENGTH = 500;
 
 export async function POST(request: Request) {

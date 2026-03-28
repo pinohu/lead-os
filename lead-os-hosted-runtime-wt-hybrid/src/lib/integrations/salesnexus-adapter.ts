@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -54,8 +55,10 @@ export interface SyncResult {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter<SalesNexusConfig>("SalesNexus", "SALESNEXUS", "https://api.salesnexus.com/v1");
 
 const contactStore = new Map<string, Contact>();
 const pipelineStore = new Map<string, Pipeline>();
@@ -65,17 +68,7 @@ export function resetSalesNexusStore(): void {
   contactStore.clear();
   pipelineStore.clear();
   dealStore.clear();
-}
-
-// ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: Partial<SalesNexusConfig>): SalesNexusConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.SALESNEXUS_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.SALESNEXUS_BASE_URL ?? "https://api.salesnexus.com/v1",
-  };
+  adapter.resetStore();
 }
 
 // ---------------------------------------------------------------------------
@@ -83,21 +76,7 @@ function resolveConfig(config?: Partial<SalesNexusConfig>): SalesNexusConfig {
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: Partial<SalesNexusConfig>): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
-  if (!cfg.apiKey) {
-    return { ok: false, message: "SalesNexus API key not configured" };
-  }
-
-  try {
-    const res = await fetch(`${cfg.baseUrl}/account`, {
-      headers: { Authorization: `Bearer ${cfg.apiKey}` },
-    });
-    return res.ok
-      ? { ok: true, message: "SalesNexus connection verified" }
-      : { ok: false, message: `SalesNexus returned ${res.status}` };
-  } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Connection failed" };
-  }
+  return adapter.healthCheck(config);
 }
 
 // ---------------------------------------------------------------------------

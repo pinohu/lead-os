@@ -3,13 +3,6 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { getExportJob } from "@/lib/data-pipeline";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ jobId: string }> },

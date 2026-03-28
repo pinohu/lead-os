@@ -7,13 +7,6 @@ import {
   type AttributionModel,
 } from "@/lib/attribution";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const MAX_LEAD_KEY_LENGTH = 128;
 const SAFE_LEAD_KEY_PATTERN = /^[\w-]{1,128}$/;
 

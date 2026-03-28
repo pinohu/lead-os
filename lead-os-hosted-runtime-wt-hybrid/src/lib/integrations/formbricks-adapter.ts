@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -67,8 +68,10 @@ export interface QualificationScore {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Formbricks", "FORMBRICKS", "https://app.formbricks.com/api/v1");
 
 const surveyStore = new Map<string, Survey>();
 const responseStore = new Map<string, SurveyResponse[]>();
@@ -76,6 +79,7 @@ const responseStore = new Map<string, SurveyResponse[]>();
 export function resetFormbricksStore(): void {
   surveyStore.clear();
   responseStore.clear();
+  adapter.resetStore();
 }
 
 export function _getSurveyStoreForTesting(): Map<string, Survey> {
@@ -87,22 +91,11 @@ export function _getResponseStoreForTesting(): Map<string, SurveyResponse[]> {
 }
 
 // ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: FormbricksConfig): FormbricksConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.FORMBRICKS_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.FORMBRICKS_BASE_URL ?? "https://app.formbricks.com/api/v1",
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Health check
+// Health check (custom: uses /management/me with x-api-key header)
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: FormbricksConfig): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
+  const cfg = adapter.resolveConfig(config);
   if (!cfg.apiKey) {
     return { ok: false, message: "Formbricks API key not configured" };
   }

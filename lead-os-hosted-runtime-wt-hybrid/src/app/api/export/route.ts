@@ -6,13 +6,6 @@ import { createExportJob, processExportJob, listExportJobs } from "@/lib/data-pi
 const VALID_TYPES = new Set(["leads", "events", "analytics", "attribution"]);
 const VALID_FORMATS = new Set(["csv", "json", "jsonl"]);
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
   const auth = await requireOperatorApiSession(request);

@@ -8,13 +8,6 @@ import type { Temperature } from "@/lib/marketplace-store";
 const VALID_TEMPERATURES = new Set<string>(["cold", "warm", "hot", "burning"]);
 const VALID_STATUSES = new Set<string>(["available", "claimed", "sold", "expired"]);
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 

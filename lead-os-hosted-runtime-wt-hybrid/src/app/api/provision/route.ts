@@ -6,13 +6,6 @@ import {
   type ProvisionTenantInput,
 } from "@/lib/tenant-provisioner";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const SLUG_PATTERN = /^[a-z][a-z0-9-]{1,48}[a-z0-9]$/;
 const MAX_BRAND_NAME_LENGTH = 200;
 const MAX_URL_LENGTH = 500;

@@ -3,13 +3,6 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { nicheStore } from "@/lib/niche-store";
 import type { GeneratedNicheConfig } from "@/lib/niche-generator";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ slug: string }> },

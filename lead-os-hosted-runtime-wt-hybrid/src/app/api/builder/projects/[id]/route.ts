@@ -14,13 +14,6 @@ const UpdateProjectSchema = z.object({
   styles: z.unknown().optional(),
 });
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

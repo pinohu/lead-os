@@ -8,13 +8,6 @@ import {
   type OfferVariant,
 } from "@/lib/offer-competition";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const MAX_NICHE_LENGTH = 100;
 const MAX_HEADLINE_LENGTH = 300;
 const MAX_GUARANTEE_LENGTH = 200;

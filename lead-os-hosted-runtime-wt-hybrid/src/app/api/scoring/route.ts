@@ -300,13 +300,6 @@ function scoreContext(ctx: ScoringContext): ScoringResult {
   };
 }
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 // Field length and range constants for scoring context validation.
 const MAX_LEAD_KEY_LENGTH = 128;
 const MAX_EMAIL_LENGTH = 254; // RFC 5321 maximum

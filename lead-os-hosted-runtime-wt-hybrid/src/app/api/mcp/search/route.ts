@@ -10,13 +10,6 @@ const SearchSchema = z.object({
   language: z.string().max(10).optional(),
 });
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 

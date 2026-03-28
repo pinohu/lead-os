@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -77,8 +78,10 @@ export interface LeadEnrichment {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory stores
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Firecrawl", "FIRECRAWL", "https://api.firecrawl.dev");
 
 const crawlJobStore = new Map<string, CrawlJob>();
 const scrapeCache = new Map<string, ScrapedPage>();
@@ -86,6 +89,7 @@ const scrapeCache = new Map<string, ScrapedPage>();
 export function resetFirecrawlStore(): void {
   crawlJobStore.clear();
   scrapeCache.clear();
+  adapter.resetStore();
 }
 
 export function _getCrawlJobStoreForTesting(): Map<string, CrawlJob> {

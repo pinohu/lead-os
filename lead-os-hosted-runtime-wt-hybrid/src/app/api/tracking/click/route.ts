@@ -91,13 +91,6 @@ function isAllowedRedirectTarget(url: string): boolean {
   return allowedHosts.has(parsed.hostname.toLowerCase());
 }
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
   const reqUrl = new URL(request.url);

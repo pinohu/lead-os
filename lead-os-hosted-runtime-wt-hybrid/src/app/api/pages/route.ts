@@ -9,13 +9,6 @@ const MAX_DESCRIPTION_LENGTH = 1000;
 const MAX_BLOCKS = 100;
 const VALID_STATUSES = new Set<LandingPage["status"]>(["draft", "published", "archived"]);
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
   const auth = await requireOperatorApiSession(request);

@@ -2,13 +2,6 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { removeAgent } from "@/lib/paperclip-orchestrator";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ teamId: string; agentId: string }> },

@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { withEnv } from "./test-helpers.ts";
 import {
   addJob,
   addBulkJobs,
@@ -14,7 +15,7 @@ import {
 } from "../src/lib/integrations/job-queue.ts";
 
 // Ensure Redis is not used during tests
-delete process.env.REDIS_URL;
+const restoreRedisEnv = withEnv({ REDIS_URL: undefined });
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

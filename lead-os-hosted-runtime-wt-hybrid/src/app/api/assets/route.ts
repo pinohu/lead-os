@@ -9,13 +9,6 @@ const MAX_ALT_LENGTH = 500;
 const MAX_TAGS = 20;
 const VALID_TYPES = new Set<Asset["type"]>(["image", "pdf", "video", "document", "other"]);
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
   const auth = await requireOperatorApiSession(request);

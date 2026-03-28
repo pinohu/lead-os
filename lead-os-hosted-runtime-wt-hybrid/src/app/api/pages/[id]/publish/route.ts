@@ -3,13 +3,6 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { publishPage } from "@/lib/page-builder";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

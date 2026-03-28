@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { buildCorsHeaders } from "@/lib/cors";
 
 // ---------------------------------------------------------------------------
 // Public route patterns — no authentication required
@@ -34,6 +35,35 @@ function isPublicRoute(pathname: string, method: string): boolean {
 }
 
 // ---------------------------------------------------------------------------
+// Identity header helpers
+// ---------------------------------------------------------------------------
+
+interface IdentityHeaders {
+  "x-authenticated-user-id": string;
+  "x-authenticated-role": string;
+  "x-authenticated-tenant-id": string;
+  "x-authenticated-method": string;
+}
+
+function forwardWithIdentity(
+  request: NextRequest,
+  requestId: string,
+  identity: IdentityHeaders,
+): NextResponse {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-authenticated-user-id", identity["x-authenticated-user-id"]);
+  requestHeaders.set("x-authenticated-role", identity["x-authenticated-role"]);
+  requestHeaders.set("x-authenticated-tenant-id", identity["x-authenticated-tenant-id"]);
+  requestHeaders.set("x-authenticated-method", identity["x-authenticated-method"]);
+
+  const response = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+  response.headers.set("x-request-id", requestId);
+  return response;
+}
+
+// ---------------------------------------------------------------------------
 // Middleware
 // ---------------------------------------------------------------------------
 
@@ -41,6 +71,15 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const requestId = crypto.randomUUID();
   const { pathname } = request.nextUrl;
   const method = request.method;
+
+  // Handle CORS preflight requests globally
+  if (method === "OPTIONS" && pathname.startsWith("/api/")) {
+    const headers = buildCorsHeaders(request.headers.get("origin"));
+    return new NextResponse(null, {
+      status: 204,
+      headers: { ...headers, "x-request-id": requestId },
+    });
+  }
 
   // Passthrough for public routes without touching auth modules
   if (isPublicRoute(pathname, method)) {
@@ -59,20 +98,42 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   // Authenticated paths — dynamic import keeps auth-system out of the public
   // route bundle
-  const { validateApiKey, validateSession } = await import(
+  const { validateApiKey, validateSession, getUserById } = await import(
     "@/lib/auth-system"
   );
 
-  // --- Bearer token ---
+  // --- Bearer token (API key: los_*) ---
   const authHeader = request.headers.get("authorization");
-  if (authHeader?.startsWith("Bearer ")) {
+  if (authHeader?.startsWith("Bearer los_")) {
+    const rawKey = authHeader.slice(7).trim();
+    if (rawKey) {
+      const result = await validateApiKey(rawKey);
+      if (result) {
+        return forwardWithIdentity(request, requestId, {
+          "x-authenticated-user-id": result.user.id,
+          "x-authenticated-role": result.user.role,
+          "x-authenticated-tenant-id": result.user.tenantId,
+          "x-authenticated-method": "api-key",
+        });
+      }
+    }
+  }
+
+  // --- Bearer token (session: sess_*) ---
+  if (authHeader?.startsWith("Bearer sess_")) {
     const token = authHeader.slice(7).trim();
     if (token) {
-      const result = await validateApiKey(token);
-      if (result) {
-        const response = NextResponse.next();
-        response.headers.set("x-request-id", requestId);
-        return response;
+      const session = await validateSession(token);
+      if (session) {
+        const user = await getUserById(session.userId);
+        if (user && user.status === "active") {
+          return forwardWithIdentity(request, requestId, {
+            "x-authenticated-user-id": user.id,
+            "x-authenticated-role": user.role,
+            "x-authenticated-tenant-id": user.tenantId,
+            "x-authenticated-method": "session",
+          });
+        }
       }
     }
   }
@@ -82,21 +143,46 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   if (apiKey) {
     const result = await validateApiKey(apiKey);
     if (result) {
-      const response = NextResponse.next();
-      response.headers.set("x-request-id", requestId);
-      return response;
+      return forwardWithIdentity(request, requestId, {
+        "x-authenticated-user-id": result.user.id,
+        "x-authenticated-role": result.user.role,
+        "x-authenticated-tenant-id": result.user.tenantId,
+        "x-authenticated-method": "api-key",
+      });
     }
   }
 
-  // --- x-operator-session cookie ---
-  const sessionToken = request.cookies.get("x-operator-session")?.value;
-  if (sessionToken) {
-    const session = await validateSession(sessionToken);
+  // --- leados_session cookie (sess_*) ---
+  const sessionCookieValue = request.cookies.get("leados_session")?.value;
+  if (sessionCookieValue?.startsWith("sess_")) {
+    const session = await validateSession(sessionCookieValue);
     if (session) {
-      const response = NextResponse.next();
-      response.headers.set("x-request-id", requestId);
-      return response;
+      const user = await getUserById(session.userId);
+      if (user && user.status === "active") {
+        return forwardWithIdentity(request, requestId, {
+          "x-authenticated-user-id": user.id,
+          "x-authenticated-role": user.role,
+          "x-authenticated-tenant-id": user.tenantId,
+          "x-authenticated-method": "session",
+        });
+      }
     }
+  }
+
+  // --- leados_operator_session cookie (operator JWT) ---
+  const { getOperatorSessionFromCookieHeader } = await import(
+    "@/lib/operator-auth"
+  );
+  const { tenantConfig } = await import("@/lib/tenant");
+  const cookieHeader = request.headers.get("cookie");
+  const operatorSession = await getOperatorSessionFromCookieHeader(cookieHeader);
+  if (operatorSession) {
+    return forwardWithIdentity(request, requestId, {
+      "x-authenticated-user-id": operatorSession.email,
+      "x-authenticated-role": "owner",
+      "x-authenticated-tenant-id": tenantConfig.tenantId,
+      "x-authenticated-method": "operator-cookie",
+    });
   }
 
   return NextResponse.json(

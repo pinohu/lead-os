@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -62,8 +63,10 @@ export interface SequenceEnrollment {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Sinosend", "SINOSEND", "https://api.sinosend.com/v1");
 
 const campaignStore = new Map<string, EmailCampaign>();
 const sequenceStore = new Map<string, EmailSequence>();
@@ -73,17 +76,7 @@ export function resetSinosendStore(): void {
   campaignStore.clear();
   sequenceStore.clear();
   enrollmentStore.clear();
-}
-
-// ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: SinosendConfig): SinosendConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.SINOSEND_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.SINOSEND_BASE_URL ?? "https://api.sinosend.com/v1",
-  };
+  adapter.resetStore();
 }
 
 // ---------------------------------------------------------------------------
@@ -91,21 +84,7 @@ function resolveConfig(config?: SinosendConfig): SinosendConfig {
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: SinosendConfig): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
-  if (!cfg.apiKey) {
-    return { ok: false, message: "Sinosend API key not configured" };
-  }
-
-  try {
-    const res = await fetch(`${cfg.baseUrl}/account`, {
-      headers: { Authorization: `Bearer ${cfg.apiKey}` },
-    });
-    return res.ok
-      ? { ok: true, message: "Sinosend connection verified" }
-      : { ok: false, message: `Sinosend returned ${res.status}` };
-  } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Connection failed" };
-  }
+  return adapter.healthCheck(config);
 }
 
 // ---------------------------------------------------------------------------

@@ -4,13 +4,6 @@ import { generateAdCopy } from "@/lib/integrations/langchain-adapter";
 
 const VALID_PLATFORMS = new Set(["google", "facebook", "linkedin"]);
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 

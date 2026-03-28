@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { withEnv } from "./test-helpers.ts";
 import {
   generateStaticSite,
   createDeployment,
@@ -232,50 +233,38 @@ test("generated HTML includes custom schema type", () => {
 // ---------------------------------------------------------------------------
 
 function withoutGithubToken<T>(fn: () => T): T {
-  const saved = process.env.GITHUB_TOKEN;
-  delete process.env.GITHUB_TOKEN;
+  const restore = withEnv({ GITHUB_TOKEN: undefined });
   try {
     return fn();
   } finally {
-    if (saved !== undefined) process.env.GITHUB_TOKEN = saved;
-    else delete process.env.GITHUB_TOKEN;
+    restore();
   }
 }
 
 async function withoutGithubTokenAsync<T>(fn: () => Promise<T>): Promise<T> {
-  const saved = process.env.GITHUB_TOKEN;
-  delete process.env.GITHUB_TOKEN;
+  const restore = withEnv({ GITHUB_TOKEN: undefined });
   try {
     return await fn();
   } finally {
-    if (saved !== undefined) process.env.GITHUB_TOKEN = saved;
-    else delete process.env.GITHUB_TOKEN;
+    restore();
   }
 }
 
 async function withoutVercelTokenAsync<T>(fn: () => Promise<T>): Promise<T> {
-  const saved = process.env.VERCEL_TOKEN;
-  delete process.env.VERCEL_TOKEN;
+  const restore = withEnv({ VERCEL_TOKEN: undefined });
   try {
     return await fn();
   } finally {
-    if (saved !== undefined) process.env.VERCEL_TOKEN = saved;
-    else delete process.env.VERCEL_TOKEN;
+    restore();
   }
 }
 
 async function withoutCloudflareTokenAsync<T>(fn: () => Promise<T>): Promise<T> {
-  const savedToken = process.env.CLOUDFLARE_API_TOKEN;
-  const savedAccount = process.env.CLOUDFLARE_ACCOUNT_ID;
-  delete process.env.CLOUDFLARE_API_TOKEN;
-  delete process.env.CLOUDFLARE_ACCOUNT_ID;
+  const restore = withEnv({ CLOUDFLARE_API_TOKEN: undefined, CLOUDFLARE_ACCOUNT_ID: undefined });
   try {
     return await fn();
   } finally {
-    if (savedToken !== undefined) process.env.CLOUDFLARE_API_TOKEN = savedToken;
-    else delete process.env.CLOUDFLARE_API_TOKEN;
-    if (savedAccount !== undefined) process.env.CLOUDFLARE_ACCOUNT_ID = savedAccount;
-    else delete process.env.CLOUDFLARE_ACCOUNT_ID;
+    restore();
   }
 }
 
@@ -283,8 +272,7 @@ test("createDeployment creates a job in dry-run mode", async () => {
   const store = _getDeploymentStoreForTesting();
   store.clear();
 
-  const saved = process.env.VERCEL_TOKEN;
-  delete process.env.VERCEL_TOKEN;
+  const restore = withEnv({ VERCEL_TOKEN: undefined });
   try {
     const job = await createDeployment("tenant1", "plumbing", [makePage()], makeTarget());
     assert.ok(job.id.startsWith("deploy-"));
@@ -294,7 +282,7 @@ test("createDeployment creates a job in dry-run mode", async () => {
     assert.ok(job.liveUrl?.includes("dry-run"));
     assert.ok(job.assets.length > 0);
   } finally {
-    if (saved) process.env.VERCEL_TOKEN = saved;
+    restore();
   }
 });
 

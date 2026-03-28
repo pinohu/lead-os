@@ -6,13 +6,6 @@ import {
   selectVariant,
 } from "@/lib/experiment-store";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const MAX_EXPERIMENT_ID_LENGTH = 64;
 const MAX_VISITOR_ID_LENGTH = 128;
 // Alphanumeric + hyphens/underscores only to keep the compound map key safe.

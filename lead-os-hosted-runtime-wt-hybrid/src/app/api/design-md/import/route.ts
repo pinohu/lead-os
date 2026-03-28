@@ -3,13 +3,6 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { parseExternalDesignMd, mergeDesignSystems, getDesignForTenant } from "@/lib/design-md";
 import { getTenant } from "@/lib/tenant-store";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 

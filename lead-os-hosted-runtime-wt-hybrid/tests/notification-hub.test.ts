@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { withEnv } from "./test-helpers.ts";
 import {
   sendNotification,
   sendBulk,
@@ -12,9 +13,10 @@ import {
 } from "../src/lib/integrations/notification-hub.ts";
 
 // Ensure Novu is not used during tests
-delete process.env.NOVU_API_KEY;
-delete process.env.LEAD_OS_ENABLE_LIVE_SENDS;
-process.env.LEAD_OS_ENABLE_LIVE_SENDS = "false";
+const restoreNotificationEnv = withEnv({
+  NOVU_API_KEY: undefined,
+  LEAD_OS_ENABLE_LIVE_SENDS: "false",
+});
 
 function makeNotification(overrides: Partial<Notification> = {}): Notification {
   return {
@@ -107,13 +109,15 @@ test("sendNotification email channel without recipientEmail returns failed", asy
 });
 
 test("sendNotification sms channel falls back to dry-run when unconfigured", async () => {
-  delete process.env.TWILIO_ACCOUNT_SID;
-  delete process.env.TWILIO_AUTH_TOKEN;
-
-  const result = await sendNotification(
-    makeNotification({ channel: "sms", recipientPhone: "+15551234567" }),
-  );
-  assert.equal(result.status, "dry-run");
+  const restore = withEnv({ TWILIO_ACCOUNT_SID: undefined, TWILIO_AUTH_TOKEN: undefined });
+  try {
+    const result = await sendNotification(
+      makeNotification({ channel: "sms", recipientPhone: "+15551234567" }),
+    );
+    assert.equal(result.status, "dry-run");
+  } finally {
+    restore();
+  }
 });
 
 test("sendNotification push channel falls back to dry-run when unconfigured", async () => {

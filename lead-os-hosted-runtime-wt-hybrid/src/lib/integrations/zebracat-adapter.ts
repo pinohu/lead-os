@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -33,13 +34,16 @@ export interface VideoTemplate {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Zebracat", "ZEBRACAT", "https://api.zebracat.ai/v1");
 
 const projectStore = new Map<string, VideoProject>();
 
 export function resetZebracatStore(): void {
   projectStore.clear();
+  adapter.resetStore();
 }
 
 // ---------------------------------------------------------------------------
@@ -55,36 +59,11 @@ export const VIDEO_TEMPLATES: VideoTemplate[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: ZebracatConfig): ZebracatConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.ZEBRACAT_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.ZEBRACAT_BASE_URL ?? "https://api.zebracat.ai/v1",
-  };
-}
-
-// ---------------------------------------------------------------------------
 // Health check
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: ZebracatConfig): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
-  if (!cfg.apiKey) {
-    return { ok: false, message: "Zebracat API key not configured" };
-  }
-
-  try {
-    const res = await fetch(`${cfg.baseUrl}/account`, {
-      headers: { Authorization: `Bearer ${cfg.apiKey}` },
-    });
-    return res.ok
-      ? { ok: true, message: "Zebracat connection verified" }
-      : { ok: false, message: `Zebracat returned ${res.status}` };
-  } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Connection failed" };
-  }
+  return adapter.healthCheck(config);
 }
 
 // ---------------------------------------------------------------------------

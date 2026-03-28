@@ -7,13 +7,6 @@ const NAME_PATTERN = /^[a-zA-Z0-9\s\-]+$/;
 const NAME_MIN_LENGTH = 2;
 const NAME_MAX_LENGTH = 100;
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 

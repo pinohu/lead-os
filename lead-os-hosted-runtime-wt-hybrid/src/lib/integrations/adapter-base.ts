@@ -30,10 +30,13 @@ export interface HealthCheckResult {
  *
  * @typeParam TConfig - Adapter-specific config shape extending `AdapterConfig`.
  */
-export abstract class BaseAdapter<
+export class BaseAdapter<
   TConfig extends AdapterConfig = AdapterConfig,
 > {
   protected store = new Map<string, unknown>();
+  protected readonly name: string;
+  protected readonly envPrefix: string;
+  protected readonly defaultBaseUrl: string;
 
   /**
    * @param name - Human-readable adapter name used in error messages.
@@ -42,11 +45,11 @@ export abstract class BaseAdapter<
    *   `ACTIVEPIECES_BASE_URL`).
    * @param defaultBaseUrl - Fallback base URL when the env var is absent.
    */
-  constructor(
-    protected readonly name: string,
-    protected readonly envPrefix: string,
-    protected readonly defaultBaseUrl: string,
-  ) {}
+  constructor(name: string, envPrefix: string, defaultBaseUrl: string) {
+    this.name = name;
+    this.envPrefix = envPrefix;
+    this.defaultBaseUrl = defaultBaseUrl;
+  }
 
   /**
    * Merges caller-supplied overrides with environment-variable defaults.

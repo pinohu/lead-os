@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -38,8 +39,10 @@ export interface EmbedWidget {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Brizy", "BRIZY", "https://api.brizy.io/v1");
 
 const pageStore = new Map<string, BrizyPage>();
 const widgetStore = new Map<string, EmbedWidget[]>();
@@ -47,6 +50,7 @@ const widgetStore = new Map<string, EmbedWidget[]>();
 export function resetBrizyStore(): void {
   pageStore.clear();
   widgetStore.clear();
+  adapter.resetStore();
 }
 
 // ---------------------------------------------------------------------------
@@ -62,36 +66,11 @@ export const BRIZY_TEMPLATES: BrizyTemplate[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: BrizyConfig): BrizyConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.BRIZY_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.BRIZY_BASE_URL ?? "https://api.brizy.io/v1",
-  };
-}
-
-// ---------------------------------------------------------------------------
 // Health check
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: BrizyConfig): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
-  if (!cfg.apiKey) {
-    return { ok: false, message: "Brizy API key not configured" };
-  }
-
-  try {
-    const res = await fetch(`${cfg.baseUrl}/account`, {
-      headers: { Authorization: `Bearer ${cfg.apiKey}` },
-    });
-    return res.ok
-      ? { ok: true, message: "Brizy connection verified" }
-      : { ok: false, message: `Brizy returned ${res.status}` };
-  } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Connection failed" };
-  }
+  return adapter.healthCheck(config);
 }
 
 // ---------------------------------------------------------------------------

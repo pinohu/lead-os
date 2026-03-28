@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -42,13 +43,16 @@ export interface TranscodeProfile {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Gumlet", "GUMLET", "https://api.gumlet.com/v1");
 
 const videoStore = new Map<string, HostedVideo>();
 
 export function resetGumletStore(): void {
   videoStore.clear();
+  adapter.resetStore();
 }
 
 // ---------------------------------------------------------------------------
@@ -63,36 +67,11 @@ export const TRANSCODE_PROFILES: TranscodeProfile[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: GumletConfig): GumletConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.GUMLET_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.GUMLET_BASE_URL ?? "https://api.gumlet.com/v1",
-  };
-}
-
-// ---------------------------------------------------------------------------
 // Health check
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: GumletConfig): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
-  if (!cfg.apiKey) {
-    return { ok: false, message: "Gumlet API key not configured" };
-  }
-
-  try {
-    const res = await fetch(`${cfg.baseUrl}/account`, {
-      headers: { Authorization: `Bearer ${cfg.apiKey}` },
-    });
-    return res.ok
-      ? { ok: true, message: "Gumlet connection verified" }
-      : { ok: false, message: `Gumlet returned ${res.status}` };
-  } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Connection failed" };
-  }
+  return adapter.healthCheck(config);
 }
 
 // ---------------------------------------------------------------------------

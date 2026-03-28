@@ -6,13 +6,6 @@ export const dynamic = "force-dynamic";
 
 const VALID_FORMATS = new Set(["script", "iframe", "react", "wordpress"]);
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ widgetId: string }> },

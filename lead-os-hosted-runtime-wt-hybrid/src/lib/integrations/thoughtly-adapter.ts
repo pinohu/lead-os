@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -44,8 +45,10 @@ export interface CallSummary {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Thoughtly", "THOUGHTLY", "https://api.thoughtly.com/v1");
 
 const agentStore = new Map<string, VoiceAgent>();
 const callStore = new Map<string, OutboundCall>();
@@ -53,17 +56,7 @@ const callStore = new Map<string, OutboundCall>();
 export function resetThoughtlyStore(): void {
   agentStore.clear();
   callStore.clear();
-}
-
-// ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: ThoughtlyConfig): ThoughtlyConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.THOUGHTLY_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.THOUGHTLY_BASE_URL ?? "https://api.thoughtly.com/v1",
-  };
+  adapter.resetStore();
 }
 
 // ---------------------------------------------------------------------------
@@ -71,21 +64,7 @@ function resolveConfig(config?: ThoughtlyConfig): ThoughtlyConfig {
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: ThoughtlyConfig): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
-  if (!cfg.apiKey) {
-    return { ok: false, message: "Thoughtly API key not configured" };
-  }
-
-  try {
-    const res = await fetch(`${cfg.baseUrl}/account`, {
-      headers: { Authorization: `Bearer ${cfg.apiKey}` },
-    });
-    return res.ok
-      ? { ok: true, message: "Thoughtly connection verified" }
-      : { ok: false, message: `Thoughtly returned ${res.status}` };
-  } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Connection failed" };
-  }
+  return adapter.healthCheck(config);
 }
 
 // ---------------------------------------------------------------------------

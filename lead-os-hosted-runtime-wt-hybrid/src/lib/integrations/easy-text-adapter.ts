@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -56,8 +57,10 @@ export interface SmsSequenceStep {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory store
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Easy Text Marketing", "EASY_TEXT", "https://api.easytextmarketing.com/v1");
 
 const messageStore = new Map<string, SmsMessage>();
 const campaignStore = new Map<string, SmsCampaign>();
@@ -67,17 +70,7 @@ export function resetEasyTextStore(): void {
   messageStore.clear();
   campaignStore.clear();
   sequenceStore.clear();
-}
-
-// ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
-function resolveConfig(config?: EasyTextConfig): EasyTextConfig {
-  return {
-    apiKey: config?.apiKey ?? process.env.EASY_TEXT_API_KEY ?? "",
-    baseUrl: config?.baseUrl ?? process.env.EASY_TEXT_BASE_URL ?? "https://api.easytextmarketing.com/v1",
-  };
+  adapter.resetStore();
 }
 
 // ---------------------------------------------------------------------------
@@ -85,21 +78,7 @@ function resolveConfig(config?: EasyTextConfig): EasyTextConfig {
 // ---------------------------------------------------------------------------
 
 export async function healthCheck(config?: EasyTextConfig): Promise<{ ok: boolean; message: string }> {
-  const cfg = resolveConfig(config);
-  if (!cfg.apiKey) {
-    return { ok: false, message: "Easy Text Marketing API key not configured" };
-  }
-
-  try {
-    const res = await fetch(`${cfg.baseUrl}/account`, {
-      headers: { Authorization: `Bearer ${cfg.apiKey}` },
-    });
-    return res.ok
-      ? { ok: true, message: "Easy Text Marketing connection verified" }
-      : { ok: false, message: `Easy Text Marketing returned ${res.status}` };
-  } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : "Connection failed" };
-  }
+  return adapter.healthCheck(config);
 }
 
 // ---------------------------------------------------------------------------

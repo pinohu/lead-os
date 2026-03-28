@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { BaseAdapter } from "./adapter-base.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -60,8 +61,10 @@ export interface EmailSequence {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory stores
+// Shared adapter instance & in-memory stores
 // ---------------------------------------------------------------------------
+
+const adapter = new BaseAdapter("Activepieces", "ACTIVEPIECES", "https://cloud.activepieces.com/api");
 
 const flowStore = new Map<string, Flow>();
 const flowRunStore = new Map<string, FlowRun[]>();
@@ -69,6 +72,7 @@ const flowRunStore = new Map<string, FlowRun[]>();
 export function resetActivepiecesStore(): void {
   flowStore.clear();
   flowRunStore.clear();
+  adapter.resetStore();
 }
 
 export function _getFlowStoreForTesting(): Map<string, Flow> {

@@ -3,13 +3,6 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { getTenant, updateTenant } from "@/lib/tenant-store";
 
-export async function OPTIONS(request: Request) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: buildCorsHeaders(request.headers.get("origin")),
-  });
-}
-
 const MAX_TENANT_ID_LENGTH = 64;
 
 export async function GET(
