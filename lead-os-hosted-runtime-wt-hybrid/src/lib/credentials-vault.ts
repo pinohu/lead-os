@@ -100,6 +100,13 @@ export const PROVIDER_CATALOG: ProviderDefinition[] = [
   { provider: "umami", category: "analytics", fields: ["api_key"], enables: ["privacy-analytics", "lead-tracking"] },
   { provider: "langchain", category: "ai-content", fields: ["api_key"], enables: ["ai-email-generation", "ai-content-generation", "ai-chat", "lead-qualification"] },
   { provider: "skyvern", category: "browser-automation", fields: ["api_key"], enables: ["browser-automation", "linkedin-scraping", "form-filling", "directory-scraping"] },
+  { provider: "hosted_runtime", category: "hosting", fields: ["api_key", "base_url"], enables: ["subdomain-hosting", "site-deployment", "cdn"] },
+  { provider: "embed_widgets", category: "widgets", fields: ["api_key"], enables: ["chat-widget", "form-widget", "popup-widget", "wordpress-plugin"] },
+  { provider: "flow_forge", category: "workflow", fields: ["api_key", "base_url"], enables: ["lead-workflows", "lead-routing", "lead-nurture"] },
+  { provider: "n8n_enhanced", category: "automation", fields: ["api_key", "base_url"], enables: ["enhanced-n8n", "workflow-automation", "workflow-import"] },
+  { provider: "authority_blueprint", category: "content", fields: ["api_key"], enables: ["authority-sites", "seo-pages", "niche-templates"] },
+  { provider: "firecrawl-mcp", category: "mcp-tools", fields: ["api_key"], enables: ["mcp-scrape", "mcp-crawl", "mcp-search", "mcp-map", "mcp-interact", "mcp-agent", "prospect-discovery", "deep-enrichment"] },
+  { provider: "paperclip", category: "agent-orchestration", fields: ["api_key"], enables: ["agent-management", "task-execution", "budget-control", "org-chart"] },
 ];
 
 // ---------------------------------------------------------------------------
