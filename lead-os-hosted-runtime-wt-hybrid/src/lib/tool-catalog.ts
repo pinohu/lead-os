@@ -1443,6 +1443,50 @@ const TOOLS: ToolEntry[] = [
       "custom-domain",
     ],
   },
+
+  // ─── AI CONTENT ─────────────────────────────────────────────────────────────
+  {
+    slug: "langchain",
+    name: "LangChain.js",
+    category: "content",
+    description:
+      "TypeScript LLM framework powering AI-generated cold emails, LinkedIn messages, landing page copy, ad copy, blog outlines, and conversational lead qualification.",
+    integrationMethod: "api",
+    requiredCredentials: ["apiKey"],
+    leadOsMapping: "creative",
+    priority: "high",
+    capabilities: [
+      "ai-email-generation",
+      "ai-linkedin-messages",
+      "ai-landing-copy",
+      "ai-ad-copy",
+      "ai-blog-outlines",
+      "lead-qualification",
+      "ai-chat",
+      "company-analysis",
+    ],
+  },
+
+  // ─── BROWSER AUTOMATION ─────────────────────────────────────────────────────
+  {
+    slug: "skyvern",
+    name: "Skyvern",
+    category: "data",
+    description:
+      "AI-powered browser automation that uses LLMs and computer vision to scrape LinkedIn profiles, fill contact forms, monitor competitor pricing, and extract reviews from hard-to-scrape sites.",
+    integrationMethod: "api",
+    requiredCredentials: ["apiKey"],
+    leadOsMapping: "ingress",
+    priority: "high",
+    capabilities: [
+      "linkedin-scraping",
+      "form-filling",
+      "directory-scraping",
+      "competitor-monitoring",
+      "review-extraction",
+      "browser-automation",
+    ],
+  },
 ];
 
 // ─── Niche-to-tool recommendation maps ────────────────────────────────────────

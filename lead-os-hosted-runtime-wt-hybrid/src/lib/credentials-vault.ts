@@ -95,6 +95,11 @@ export const PROVIDER_CATALOG: ProviderDefinition[] = [
   { provider: "zebracat", category: "ai-video", fields: ["api_key"], enables: ["ai-video-creation"] },
   { provider: "gumlet", category: "video-hosting", fields: ["api_key"], enables: ["video-hosting", "video-analytics"] },
   { provider: "firecrawl", category: "web-scraping", fields: ["api_key"], enables: ["web-scraping", "lead-enrichment"] },
+  { provider: "grapesjs", category: "page-builder", fields: ["api_key"], enables: ["page-builder", "landing-pages"] },
+  { provider: "formbricks", category: "forms", fields: ["api_key"], enables: ["surveys", "lead-qualification"] },
+  { provider: "umami", category: "analytics", fields: ["api_key"], enables: ["privacy-analytics", "lead-tracking"] },
+  { provider: "langchain", category: "ai-content", fields: ["api_key"], enables: ["ai-email-generation", "ai-content-generation", "ai-chat", "lead-qualification"] },
+  { provider: "skyvern", category: "browser-automation", fields: ["api_key"], enables: ["browser-automation", "linkedin-scraping", "form-filling", "directory-scraping"] },
 ];
 
 // ---------------------------------------------------------------------------
