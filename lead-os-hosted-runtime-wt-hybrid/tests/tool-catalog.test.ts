@@ -108,7 +108,7 @@ test("getToolsByPriority('critical') returns only critical tools", () => {
 
 test("getToolsByPriority('critical') includes known critical tools", () => {
   const slugs = getToolsByPriority("critical").map((t) => t.slug);
-  const expectedCritical = ["suitedash", "emailit", "thoughtly", "trafft", "activepieces", "aitableai"];
+  const expectedCritical = ["suitedash", "emailit", "thoughtly", "trafft", "activepieces", "aitableai", "n8n-oss"];
   for (const slug of expectedCritical) {
     assert.ok(slugs.includes(slug), `Expected ${slug} to be critical`);
   }
@@ -234,6 +234,6 @@ test("tools with integrationMethod 'manual' may have empty requiredCredentials",
 
 test("total tool count covers all specified high-priority and content tools", () => {
   const { tools } = getToolCatalog();
-  // We defined 60+ tools; verify we have a substantial catalog
-  assert.ok(tools.length >= 50, `Expected 50+ tools, got ${tools.length}`);
+  // 65 paid AppSumo tools + 14 open-source tools = 79 total
+  assert.ok(tools.length >= 79, `Expected 79+ tools, got ${tools.length}`);
 });

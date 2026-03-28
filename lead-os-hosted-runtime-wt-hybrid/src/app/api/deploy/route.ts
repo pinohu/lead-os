@@ -4,7 +4,7 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
 import { validateSafe } from "@/lib/canonical-schema";
 import { createDeployment, listDeployments } from "@/lib/auto-deploy";
-import type { DeploymentTarget, PageDefinition } from "@/lib/auto-deploy";
+import type { DeploymentTarget, DeploymentPlatform, PageDefinition } from "@/lib/auto-deploy";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 10 });
 
@@ -43,10 +43,11 @@ const CreateDeploymentSchema = z.object({
   tenantId: z.string().min(1).max(100),
   nicheSlug: z.string().min(1).max(100),
   pages: z.array(PageDefinitionSchema).min(1).max(50),
+  platform: z.enum(["vercel", "cloudflare", "github-pages"]).default("vercel"),
   target: z.object({
     type: z.enum(["github-pages", "vercel", "cloudflare-pages", "static-export"]),
     config: z.record(z.string(), z.string()).optional(),
-  }),
+  }).optional(),
 });
 
 function getClientIp(request: Request): string {
@@ -93,9 +94,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const { tenantId, nicheSlug, pages, target } = validation.data!;
-    const deployTarget: DeploymentTarget = { type: target.type, config: target.config || {} };
-    const job = await createDeployment(tenantId, nicheSlug, pages as PageDefinition[], deployTarget);
+    const { tenantId, nicheSlug, pages, platform, target } = validation.data!;
+    const platformTyped = platform as DeploymentPlatform;
+    const deployTarget: DeploymentTarget = target
+      ? { type: target.type, config: target.config || {} }
+      : { type: platform === "github-pages" ? "github-pages" : platform === "cloudflare" ? "cloudflare-pages" : "vercel", config: {} };
+    const job = await createDeployment(tenantId, nicheSlug, pages as PageDefinition[], deployTarget, platformTyped);
 
     return NextResponse.json(
       { data: job, error: null, meta: null },

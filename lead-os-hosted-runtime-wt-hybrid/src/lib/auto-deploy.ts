@@ -1,7 +1,8 @@
 // ---------------------------------------------------------------------------
 // Auto-Deploy Engine
 // Creates GitHub repos, pushes generated assets, deploys static sites.
-// Works in dry-run mode when GITHUB_TOKEN is not set.
+// Supports Vercel, Cloudflare Pages, and GitHub Pages.
+// Works in dry-run mode when the relevant platform token is not set.
 // ---------------------------------------------------------------------------
 
 export interface DeploymentTarget {
@@ -15,13 +16,17 @@ export interface DeployedAsset {
   title: string;
 }
 
+export type DeploymentPlatform = "vercel" | "cloudflare" | "github-pages";
+
 export interface DeploymentJob {
   id: string;
   tenantId: string;
   nicheSlug: string;
   status: "pending" | "creating-repo" | "pushing-assets" | "deploying" | "live" | "failed";
+  platform: DeploymentPlatform;
   repoUrl?: string;
   liveUrl?: string;
+  deploymentUrl?: string;
   assets: DeployedAsset[];
   target: DeploymentTarget;
   createdAt: string;
@@ -85,11 +90,25 @@ function getGitHubToken(): string | undefined {
   return process.env.GITHUB_TOKEN;
 }
 
+function getVercelToken(): string | undefined {
+  return process.env.VERCEL_TOKEN;
+}
+
+function getCloudflareApiToken(): string | undefined {
+  return process.env.CLOUDFLARE_API_TOKEN;
+}
+
+function getCloudflareAccountId(): string | undefined {
+  return process.env.CLOUDFLARE_ACCOUNT_ID;
+}
+
 function getLeadOsApiUrl(): string {
   return process.env.LEAD_OS_API_URL || "https://app.leados.com/api/intake";
 }
 
-function isDryRun(): boolean {
+function isDryRunForPlatform(platform: DeploymentPlatform): boolean {
+  if (platform === "vercel") return !getVercelToken();
+  if (platform === "cloudflare") return !getCloudflareApiToken() || !getCloudflareAccountId();
   return !getGitHubToken();
 }
 
@@ -378,8 +397,9 @@ export function generateStaticSite(
   tenantId: string,
   nicheSlug: string,
   pages: PageDefinition[],
+  baseUrl?: string,
 ): StaticFile[] {
-  const baseUrl = `https://${tenantId}.github.io/${nicheSlug}-site`;
+  const resolvedBaseUrl = baseUrl ?? `https://${tenantId}.github.io/${nicheSlug}-site`;
   const files: StaticFile[] = [];
 
   for (const page of pages) {
@@ -396,15 +416,136 @@ export function generateStaticSite(
 
   files.push({
     path: "sitemap.xml",
-    content: generateSitemapXml(pages, baseUrl),
+    content: generateSitemapXml(pages, resolvedBaseUrl),
   });
 
   files.push({
     path: "robots.txt",
-    content: generateRobotsTxt(baseUrl),
+    content: generateRobotsTxt(resolvedBaseUrl),
   });
 
   return files;
+}
+
+// ---------------------------------------------------------------------------
+// Vercel deployment
+// ---------------------------------------------------------------------------
+
+interface VercelFile {
+  file: string;
+  data: string;
+  encoding: "utf-8" | "base64";
+}
+
+interface VercelDeploymentResponse {
+  url: string;
+  id: string;
+}
+
+export async function deployToVercel(
+  files: StaticFile[],
+  projectName: string,
+): Promise<string> {
+  const token = getVercelToken();
+
+  if (!token) {
+    return `https://${projectName}.vercel.app (dry-run)`;
+  }
+
+  const vercelFiles: VercelFile[] = files.map((f) => ({
+    file: f.path,
+    data: f.content,
+    encoding: "utf-8",
+  }));
+
+  const resp = await fetch("https://api.vercel.com/v13/deployments", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: projectName,
+      files: vercelFiles,
+      projectSettings: {
+        framework: null,
+        outputDirectory: ".",
+      },
+      target: "production",
+    }),
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`Vercel deployment failed: ${resp.status} ${text}`);
+  }
+
+  const data = await resp.json() as VercelDeploymentResponse;
+  return `https://${data.url}`;
+}
+
+// ---------------------------------------------------------------------------
+// Cloudflare Pages deployment
+// ---------------------------------------------------------------------------
+
+interface CloudflareUploadResponse {
+  result: {
+    url: string;
+    id: string;
+  };
+  success: boolean;
+  errors: Array<{ message: string }>;
+}
+
+export async function deployToCloudflare(
+  files: StaticFile[],
+  projectName: string,
+): Promise<string> {
+  const token = getCloudflareApiToken();
+  const accountId = getCloudflareAccountId();
+
+  if (!token || !accountId) {
+    return `https://${projectName}.pages.dev (dry-run)`;
+  }
+
+  // Cloudflare Pages Direct Upload: create a deployment with multipart form data
+  const formData = new FormData();
+
+  const manifest: Record<string, string> = {};
+  for (const file of files) {
+    const encoded = typeof btoa === "function"
+      ? btoa(unescape(encodeURIComponent(file.content)))
+      : Buffer.from(file.content, "utf-8").toString("base64");
+    const hash = encoded.slice(0, 32);
+    manifest[`/${file.path}`] = hash;
+    formData.append(hash, new Blob([file.content], { type: "text/plain" }), file.path);
+  }
+  formData.append("manifest", JSON.stringify(manifest));
+
+  const resp = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}/deployments`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    },
+  );
+
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`Cloudflare Pages deployment failed: ${resp.status} ${text}`);
+  }
+
+  const data = await resp.json() as CloudflareUploadResponse;
+
+  if (!data.success) {
+    const messages = data.errors.map((e) => e.message).join(", ");
+    throw new Error(`Cloudflare Pages deployment error: ${messages}`);
+  }
+
+  return `https://${projectName}.pages.dev`;
 }
 
 // ---------------------------------------------------------------------------
@@ -515,6 +656,7 @@ export async function createDeployment(
   nicheSlug: string,
   pages: PageDefinition[],
   target: DeploymentTarget,
+  platform: DeploymentPlatform = "vercel",
 ): Promise<DeploymentJob> {
   const now = new Date().toISOString();
   const job: DeploymentJob = {
@@ -522,6 +664,7 @@ export async function createDeployment(
     tenantId,
     nicheSlug,
     status: "pending",
+    platform,
     assets: [],
     target,
     createdAt: now,
@@ -529,6 +672,7 @@ export async function createDeployment(
   };
   deploymentStore.set(job.id, job);
 
+  const projectName = `${nicheSlug}-site`;
   const files = generateStaticSite(tenantId, nicheSlug, pages);
 
   const assets: DeployedAsset[] = files.map((f) => {
@@ -544,19 +688,37 @@ export async function createDeployment(
   });
   updateJob(job, { assets });
 
-  if (isDryRun()) {
+  if (isDryRunForPlatform(platform)) {
+    const dryRunUrl = buildDryRunUrl(platform, tenantId, projectName);
     updateJob(job, {
       status: "live",
-      repoUrl: `https://github.com/${tenantId}/${nicheSlug}-site (dry-run)`,
-      liveUrl: `https://${tenantId}.github.io/${nicheSlug}-site (dry-run)`,
+      repoUrl: platform === "github-pages"
+        ? `https://github.com/${tenantId}/${projectName} (dry-run)`
+        : undefined,
+      liveUrl: dryRunUrl,
+      deploymentUrl: dryRunUrl,
     });
     return job;
   }
 
   try {
+    if (platform === "vercel") {
+      updateJob(job, { status: "deploying" });
+      const deploymentUrl = await deployToVercel(files, projectName);
+      updateJob(job, { status: "live", liveUrl: deploymentUrl, deploymentUrl });
+      return job;
+    }
+
+    if (platform === "cloudflare") {
+      updateJob(job, { status: "deploying" });
+      const deploymentUrl = await deployToCloudflare(files, projectName);
+      updateJob(job, { status: "live", liveUrl: deploymentUrl, deploymentUrl });
+      return job;
+    }
+
+    // github-pages: create repo, push files, enable Pages
     updateJob(job, { status: "creating-repo" });
-    const repoName = `${nicheSlug}-site`;
-    const { url: repoUrl, fullName } = await createRepo(repoName);
+    const { url: repoUrl, fullName } = await createRepo(projectName);
     updateJob(job, { repoUrl });
 
     updateJob(job, { status: "pushing-assets" });
@@ -565,17 +727,8 @@ export async function createDeployment(
     }
 
     updateJob(job, { status: "deploying" });
-    let liveUrl: string | undefined;
-
-    if (target.type === "github-pages") {
-      liveUrl = await enableGitHubPages(fullName);
-    } else if (target.type === "vercel" && target.config.token) {
-      liveUrl = `https://${repoName}.vercel.app`;
-    } else if (target.type === "static-export") {
-      liveUrl = repoUrl;
-    }
-
-    updateJob(job, { status: "live", liveUrl });
+    const liveUrl = await enableGitHubPages(fullName);
+    updateJob(job, { status: "live", liveUrl, deploymentUrl: liveUrl });
     return job;
   } catch (err) {
     updateJob(job, {
@@ -584,6 +737,12 @@ export async function createDeployment(
     });
     return job;
   }
+}
+
+function buildDryRunUrl(platform: DeploymentPlatform, tenantId: string, projectName: string): string {
+  if (platform === "vercel") return `https://${projectName}.vercel.app (dry-run)`;
+  if (platform === "cloudflare") return `https://${projectName}.pages.dev (dry-run)`;
+  return `https://${tenantId}.github.io/${projectName} (dry-run)`;
 }
 
 export function getDeployment(jobId: string): DeploymentJob | undefined {
@@ -619,7 +778,7 @@ export async function redeployAssets(
 
   updateJob(job, { assets });
 
-  if (isDryRun()) {
+  if (isDryRunForPlatform(job.platform)) {
     updateJob(job, { status: "live" });
     return job;
   }
@@ -627,7 +786,7 @@ export async function redeployAssets(
   try {
     updateJob(job, { status: "pushing-assets" });
 
-    if (job.repoUrl) {
+    if (job.platform === "github-pages" && job.repoUrl) {
       const owner = await getGitHubUser();
       const repoName = `${job.nicheSlug}-site`;
       const fullName = `${owner}/${repoName}`;
@@ -635,6 +794,16 @@ export async function redeployAssets(
       for (const file of files) {
         await pushFile(fullName, file.path, file.content, `Redeploy ${file.path}`);
       }
+    }
+
+    if (job.platform === "vercel") {
+      const deploymentUrl = await deployToVercel(files, `${job.nicheSlug}-site`);
+      updateJob(job, { liveUrl: deploymentUrl, deploymentUrl });
+    }
+
+    if (job.platform === "cloudflare") {
+      const deploymentUrl = await deployToCloudflare(files, `${job.nicheSlug}-site`);
+      updateJob(job, { liveUrl: deploymentUrl, deploymentUrl });
     }
 
     updateJob(job, { status: "live" });

@@ -3,11 +3,14 @@ import assert from "node:assert/strict";
 import {
   generateStaticSite,
   createDeployment,
+  deployToVercel,
+  deployToCloudflare,
   getDeployment,
   listDeployments,
   redeployAssets,
   _getDeploymentStoreForTesting,
   type PageDefinition,
+  type DeploymentPlatform,
   type DeploymentTarget,
 } from "../src/lib/auto-deploy.ts";
 
@@ -225,7 +228,7 @@ test("generated HTML includes custom schema type", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Deployment job management (dry-run mode — force by unsetting GITHUB_TOKEN)
+// Deployment job management (dry-run mode — force by unsetting tokens)
 // ---------------------------------------------------------------------------
 
 function withoutGithubToken<T>(fn: () => T): T {
@@ -250,20 +253,49 @@ async function withoutGithubTokenAsync<T>(fn: () => Promise<T>): Promise<T> {
   }
 }
 
+async function withoutVercelTokenAsync<T>(fn: () => Promise<T>): Promise<T> {
+  const saved = process.env.VERCEL_TOKEN;
+  delete process.env.VERCEL_TOKEN;
+  try {
+    return await fn();
+  } finally {
+    if (saved !== undefined) process.env.VERCEL_TOKEN = saved;
+    else delete process.env.VERCEL_TOKEN;
+  }
+}
+
+async function withoutCloudflareTokenAsync<T>(fn: () => Promise<T>): Promise<T> {
+  const savedToken = process.env.CLOUDFLARE_API_TOKEN;
+  const savedAccount = process.env.CLOUDFLARE_ACCOUNT_ID;
+  delete process.env.CLOUDFLARE_API_TOKEN;
+  delete process.env.CLOUDFLARE_ACCOUNT_ID;
+  try {
+    return await fn();
+  } finally {
+    if (savedToken !== undefined) process.env.CLOUDFLARE_API_TOKEN = savedToken;
+    else delete process.env.CLOUDFLARE_API_TOKEN;
+    if (savedAccount !== undefined) process.env.CLOUDFLARE_ACCOUNT_ID = savedAccount;
+    else delete process.env.CLOUDFLARE_ACCOUNT_ID;
+  }
+}
+
 test("createDeployment creates a job in dry-run mode", async () => {
   const store = _getDeploymentStoreForTesting();
   store.clear();
 
-  const job = await withoutGithubTokenAsync(() =>
-    createDeployment("tenant1", "plumbing", [makePage()], makeTarget()),
-  );
-  assert.ok(job.id.startsWith("deploy-"));
-  assert.equal(job.tenantId, "tenant1");
-  assert.equal(job.nicheSlug, "plumbing");
-  assert.equal(job.status, "live");
-  assert.ok(job.repoUrl?.includes("dry-run"));
-  assert.ok(job.liveUrl?.includes("dry-run"));
-  assert.ok(job.assets.length > 0);
+  const saved = process.env.VERCEL_TOKEN;
+  delete process.env.VERCEL_TOKEN;
+  try {
+    const job = await createDeployment("tenant1", "plumbing", [makePage()], makeTarget());
+    assert.ok(job.id.startsWith("deploy-"));
+    assert.equal(job.tenantId, "tenant1");
+    assert.equal(job.nicheSlug, "plumbing");
+    assert.equal(job.status, "live");
+    assert.ok(job.liveUrl?.includes("dry-run"));
+    assert.ok(job.assets.length > 0);
+  } finally {
+    if (saved) process.env.VERCEL_TOKEN = saved;
+  }
 });
 
 test("getDeployment retrieves existing job", async () => {
@@ -346,4 +378,124 @@ test("generated HTML escapes HTML entities in user input", () => {
   assert.ok(!html.includes("<script>alert"));
   assert.ok(html.includes("&lt;script&gt;"));
   assert.ok(html.includes("&amp;"));
+});
+
+// ---------------------------------------------------------------------------
+// Platform selection
+// ---------------------------------------------------------------------------
+
+test("createDeployment defaults to vercel platform", async () => {
+  const store = _getDeploymentStoreForTesting();
+  store.clear();
+
+  const job = await withoutVercelTokenAsync(() =>
+    createDeployment("tenant1", "plumbing", [makePage()], makeTarget()),
+  );
+  assert.equal(job.platform, "vercel");
+});
+
+test("createDeployment accepts github-pages platform", async () => {
+  const store = _getDeploymentStoreForTesting();
+  store.clear();
+
+  const job = await withoutGithubTokenAsync(() =>
+    createDeployment("tenant1", "plumbing", [makePage()], makeTarget(), "github-pages"),
+  );
+  assert.equal(job.platform, "github-pages");
+});
+
+test("createDeployment accepts cloudflare platform", async () => {
+  const store = _getDeploymentStoreForTesting();
+  store.clear();
+
+  const job = await withoutCloudflareTokenAsync(() =>
+    createDeployment("tenant1", "plumbing", [makePage()], makeTarget(), "cloudflare"),
+  );
+  assert.equal(job.platform, "cloudflare");
+});
+
+// ---------------------------------------------------------------------------
+// Vercel dry-run
+// ---------------------------------------------------------------------------
+
+test("deployToVercel returns dry-run URL when VERCEL_TOKEN is not set", async () => {
+  const url = await withoutVercelTokenAsync(() =>
+    deployToVercel(
+      [{ path: "index.html", content: "<html></html>" }],
+      "test-project",
+    ),
+  );
+  assert.ok(url.includes("vercel.app"));
+  assert.ok(url.includes("dry-run"));
+});
+
+test("createDeployment with vercel platform produces vercel.app dry-run URL", async () => {
+  const store = _getDeploymentStoreForTesting();
+  store.clear();
+
+  const job = await withoutVercelTokenAsync(() =>
+    createDeployment("tenant1", "solar", [makePage()], makeTarget(), "vercel"),
+  );
+  assert.equal(job.status, "live");
+  assert.ok(job.liveUrl?.includes("vercel.app"));
+  assert.ok(job.liveUrl?.includes("dry-run"));
+  assert.ok(job.deploymentUrl?.includes("vercel.app"));
+});
+
+// ---------------------------------------------------------------------------
+// Cloudflare dry-run
+// ---------------------------------------------------------------------------
+
+test("deployToCloudflare returns dry-run URL when CLOUDFLARE_API_TOKEN is not set", async () => {
+  const url = await withoutCloudflareTokenAsync(() =>
+    deployToCloudflare(
+      [{ path: "index.html", content: "<html></html>" }],
+      "test-project",
+    ),
+  );
+  assert.ok(url.includes("pages.dev"));
+  assert.ok(url.includes("dry-run"));
+});
+
+test("createDeployment with cloudflare platform produces pages.dev dry-run URL", async () => {
+  const store = _getDeploymentStoreForTesting();
+  store.clear();
+
+  const job = await withoutCloudflareTokenAsync(() =>
+    createDeployment("tenant1", "roofing", [makePage()], makeTarget(), "cloudflare"),
+  );
+  assert.equal(job.status, "live");
+  assert.ok(job.liveUrl?.includes("pages.dev"));
+  assert.ok(job.liveUrl?.includes("dry-run"));
+  assert.ok(job.deploymentUrl?.includes("pages.dev"));
+});
+
+test("createDeployment with github-pages platform produces github.io dry-run URL", async () => {
+  const store = _getDeploymentStoreForTesting();
+  store.clear();
+
+  const job = await withoutGithubTokenAsync(() =>
+    createDeployment("tenant1", "hvac", [makePage()], makeTarget(), "github-pages"),
+  );
+  assert.equal(job.status, "live");
+  assert.ok(job.liveUrl?.includes("github.io"));
+  assert.ok(job.liveUrl?.includes("dry-run"));
+});
+
+test("platform is stored on DeploymentJob and survives getDeployment lookup", async () => {
+  const store = _getDeploymentStoreForTesting();
+  store.clear();
+
+  const platforms: DeploymentPlatform[] = ["vercel", "cloudflare", "github-pages"];
+  for (const platform of platforms) {
+    const job = await (platform === "vercel"
+      ? withoutVercelTokenAsync(() => createDeployment("t-lookup", platform, [makePage()], makeTarget(), platform))
+      : platform === "cloudflare"
+        ? withoutCloudflareTokenAsync(() => createDeployment("t-lookup", platform, [makePage()], makeTarget(), platform))
+        : withoutGithubTokenAsync(() => createDeployment("t-lookup", platform, [makePage()], makeTarget(), platform)));
+
+    const retrieved = getDeployment(job.id);
+    assert.ok(retrieved, `should find job for platform ${platform}`);
+    assert.equal(retrieved.platform, platform);
+  }
 });
