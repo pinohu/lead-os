@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         error: {
           code: "VALIDATION_FAILED",
           message: "Request body failed validation.",
-          details: parsed.error.errors.map((e) => ({
+          details: parsed.error.issues.map((e) => ({
             field: e.path.join("."),
             issue: e.message,
           })),

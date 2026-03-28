@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
         error: {
           code: "INVALID_QUERY",
           message: "One or more query parameters are invalid.",
-          details: parsed.error.errors.map((e) => ({
+          details: parsed.error.issues.map((e) => ({
             field: e.path.join("."),
             issue: e.message,
           })),

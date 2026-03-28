@@ -171,7 +171,7 @@ test("getProvisioningStatus returns step details after provisioning", async () =
   const steps = await getProvisioningStatus(result.tenantId);
 
   assert.ok(steps.length > 0, "should have steps");
-  assert.equal(steps.length, 9, "should have all 9 steps");
+  assert.equal(steps.length, 10, "should have all 10 steps");
 
   const stepNames = steps.map((s) => s.name);
   assert.ok(stepNames.includes("create-tenant"), "should include create-tenant");

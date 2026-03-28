@@ -1731,15 +1731,13 @@ export function getToolsByMapping(engine: LeadOsEngine): ToolEntry[] {
  * Uses a dynamic import to avoid circular dependencies with the vault module.
  */
 export async function getEnabledTools(tenantId: string): Promise<ToolEntry[]> {
-  const { getCredentialsForTenant } = await import("./credentials-vault");
-  const credentials = await getCredentialsForTenant(tenantId);
-  const configuredSlugs = new Set(Object.keys(credentials));
+  const { listCredentials } = await import("./credentials-vault");
+  const credentials = listCredentials(tenantId);
+  const configuredProviders = new Set(credentials.map((c) => c.provider));
 
   return buildCatalog().tools.filter((tool) => {
     if (tool.requiredCredentials.length === 0) return true;
-    return tool.requiredCredentials.every((cred) =>
-      configuredSlugs.has(`${tool.slug}:${cred}`)
-    );
+    return configuredProviders.has(tool.slug);
   });
 }
 
