@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 
+export const runtime = "nodejs";
+
 // ---------------------------------------------------------------------------
 // Public route patterns — no authentication required
 // ---------------------------------------------------------------------------
@@ -12,6 +14,7 @@ const PUBLIC_EXACT: Set<string> = new Set([
   "/api/realtime/stream",
   "/api/onboarding",
   "/api/social/platforms",
+  "/api/setup/status",
 ]);
 
 const PUBLIC_PREFIXES: string[] = [
@@ -19,6 +22,8 @@ const PUBLIC_PREFIXES: string[] = [
   "/api/embed/",
   "/api/widgets/",
   "/api/onboarding/",
+  "/api/dashboard/",
+  "/api/auth/",
 ];
 
 function isPublicRoute(pathname: string, method: string): boolean {
@@ -72,8 +77,15 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
   const method = request.method;
 
+  // Non-API routes (pages) — pass through, pages handle their own auth
+  if (!pathname.startsWith("/api/")) {
+    const response = NextResponse.next();
+    response.headers.set("x-request-id", requestId);
+    return response;
+  }
+
   // Handle CORS preflight requests globally
-  if (method === "OPTIONS" && pathname.startsWith("/api/")) {
+  if (method === "OPTIONS") {
     const headers = buildCorsHeaders(request.headers.get("origin"));
     return new NextResponse(null, {
       status: 204,
@@ -81,7 +93,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     });
   }
 
-  // Passthrough for public routes without touching auth modules
+  // Passthrough for public API routes without touching auth modules
   if (isPublicRoute(pathname, method)) {
     const response = NextResponse.next();
     response.headers.set("x-request-id", requestId);
@@ -204,7 +216,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
 export const config = {
   matcher: [
-    "/api/:path*",
     "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
   ],
 };

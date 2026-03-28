@@ -13,6 +13,7 @@
 10. [API Reference](#10-api-reference)
 11. [Integration Catalog](#11-integration-catalog)
 12. [Economic Analysis](#12-economic-analysis)
+13. [AppSumo Integration Roadmap](#13-appsumo-integration-roadmap)
 
 ---
 
@@ -33,14 +34,16 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 
 | Metric | Count |
 |--------|-------|
-| Total source files | 485 |
-| Lines of code | 95,890 |
-| API endpoints | 277 |
-| UI pages | 37 |
+| Total source files | 488 |
+| Lines of code | 96,265 |
+| API endpoints | 278 |
+| UI pages | 36 |
+| Dashboard pages | 23 |
 | Provider integrations | 110 |
+| Integration adapters | 35 |
 | Funnel node types | 78 |
 | Industry templates | 13 |
-| Test cases | 1,994 |
+| Test cases | 3,964 |
 | Test pass rate | 100% |
 
 ---
@@ -373,10 +376,12 @@ Widgets support: lead capture forms, assessments, calculators, chat interfaces, 
 
 ### 4.8 Operator Dashboard
 
-19 dashboard pages for client operators:
+23 dashboard pages for client operators:
 
 | Page | Function |
 |------|----------|
+| Dashboard (home) | Overview with KPIs, three-visit framework, automation health |
+| Agents | AI agent team management, orchestration, audit logs |
 | Analytics | Traffic, conversion rates, channel performance |
 | Attribution | Multi-touch attribution reports |
 | Billing | Subscription status, usage meters, invoice history |
@@ -390,6 +395,7 @@ Widgets support: lead capture forms, assessments, calculators, chat interfaces, 
 | Health | System health and integration status |
 | Lead Magnets | Content offer management |
 | Leads | Individual lead profiles with full history |
+| Leads Detail | Single lead deep-dive with timeline and scoring history |
 | Marketplace | Lead marketplace management |
 | Pipeline | Sales pipeline visualization |
 | Providers | Integration status and configuration |
@@ -616,11 +622,20 @@ Place behind Nginx or Caddy with TLS termination.
 |-----|---------|
 | `/` | Public-facing landing page |
 | `/onboard` | Client self-service signup wizard |
+| `/setup` | First-run setup wizard |
 | `/auth/sign-in` | Operator login (magic link) |
-| `/dashboard` | Operator dashboard |
+| `/auth/check-email` | Magic link confirmation page |
+| `/dashboard` | Operator dashboard (falls back to demo mode without auth) |
 | `/marketplace` | Public lead marketplace |
+| `/assess/:slug` | Dynamic assessment forms per niche |
+| `/calculator` | ROI/savings calculator |
+| `/offers/:slug` | Dynamic offer pages |
+| `/funnel/:family` | Funnel visualization by family |
+| `/p/:tenantSlug/:pageSlug` | Tenant-specific published pages |
+| `/sites/:deploymentId` | Deployed site preview |
 | `/api/health` | System health check |
 | `/api/intake` | Lead intake endpoint |
+| `/api/setup/status` | First-run setup status check |
 
 ---
 
@@ -978,6 +993,123 @@ In every model, break-even occurs within the first month with minimal client acq
 
 ---
 
+## 13. AppSumo Integration Roadmap
+
+An audit of 247 AppSumo lifetime-deal products identified 31 Tier 1 tools and 57 Tier 2 tools that map directly to Lead OS modules. These represent expansion opportunities where a single API integration unlocks permanent, zero-marginal-cost capability.
+
+### Lead OS Module Map
+
+```
+CAPTURE ──→ Lead capture, forms, popups, chatbots, widgets
+ENRICH  ──→ Data enrichment, verification, company/contact intel
+SCORE   ──→ Lead scoring, visitor tracking, behavioral analytics
+ROUTE   ──→ Lead routing, CRM, pipeline management
+NURTURE ──→ Email, SMS, multi-channel sequences, drip campaigns
+CONVERT ──→ Sales outreach, personalized video, voice agents
+CREATE  ──→ Creative asset generation (video, image, copy)
+MONETIZE ─→ Billing, subscriptions, affiliate/referral, marketplace
+ORCHESTRATE → Workflow automation, iPaaS, data sync
+ANALYZE ──→ Attribution, analytics, reporting, tracking
+```
+
+### Tier 1: High-Impact Integrations (31 products)
+
+#### P0 — Critical Path (integrate first)
+
+| Product | Module | What It Replaces | Why It's P0 |
+|---------|--------|-----------------|-------------|
+| **Activepieces** | ORCHESTRATE | Zapier/Make.com | Backbone of Lead OS. Self-hostable workflow automation with 280+ connectors. No per-task limits. MCP support for AI-native orchestration |
+| **Salespanel** | SCORE | Clearbit Reveal + Madkudu | Core scoring engine. Real-time client-side API for visitor identification, scoring, and page personalization |
+| **Happierleads** | CAPTURE + ENRICH | RB2B/Clearbit | Turns anonymous traffic into named leads with emails. 180M contact database. Personal-level identification across 173+ countries |
+| **Reoon Email Verifier** | ENRICH | ZeroBounce/NeverBounce | Every lead email must be verified before nurture sequences. Quick mode (<0.5s) enables real-time form validation |
+| **Databar** | ENRICH | Clay/ZoomInfo | Central enrichment engine. Waterfall logic across 120+ data providers maximizes coverage. Webhook-triggered auto-enrichment |
+| **Autobound** | CONVERT | 6sense + Copy.ai | AI SDR brain. Generates hyper-personalized outreach from 400+ real-time buyer signals across 29 sources |
+| **Chargebee** | MONETIZE | Stripe Billing/Recurly | Monetization engine. Usage-based billing enables pay-per-lead pricing. Webhook events trigger lead delivery on payment |
+| **Insighto.ai** | CAPTURE + CONVERT | Intercom/Drift + Aircall | Dual chat+voice AI agents. 24/7 lead qualification across chat and phone. White-label with rebilling |
+
+#### P1 — High Value (integrate second)
+
+| Product | Module | What It Replaces |
+|---------|--------|-----------------|
+| **Chatbase** | CAPTURE | Basic web chat widgets — AI-powered lead qualification with conditional capture |
+| **Thoughtly** | CONVERT | Human SDR cold-calling — AI voice agents at $0.09/min, books meetings in <90s |
+| **VBOUT** | NURTURE + SCORE | ActiveCampaign/HubSpot — native lead scoring + multi-channel nurture |
+| **Emailit** | NURTURE | SendGrid/Mailgun — transactional email with webhook events for scoring feedback |
+| **Clodura.AI** | ENRICH + CAPTURE | Apollo.io/Lusha — 600M+ contacts, form enrichment API, trigger data |
+| **Partnero** | MONETIZE | PartnerStack/Rewardful — affiliate program management with full API |
+| **Claspo** | CAPTURE | OptinMonster/Sumo — gamified popups (spin-wheel, scratch cards) with 3x opt-in rates |
+| **Formaloo** | CAPTURE | Typeform/JotForm — multi-step smart forms with AI analytics |
+| **SMS-iT CRM** | NURTURE + ROUTE | Twilio + HubSpot CRM — 30+ channel messaging, no A2P/10DLC required |
+| **Markopolo.ai** | ANALYZE | TripleWhale/Hyros — server-side attribution recovering 25-45% more tracking accuracy |
+| **Hexomatic** | CAPTURE + ENRICH | Phantombuster/Apify — no-code scraping with built-in AI enrichment workflows |
+| **Boost.space** | ORCHESTRATE | Airtable + data warehouse — single source of truth with 2,600+ app sync |
+| **Fliki** | CREATE | Synthesia/Loom — AI text-to-video with 2,000+ voices in 80+ languages |
+| **Duply** | CREATE | Canva bulk creation — API-driven personalized image generation at scale |
+| **Nexweave** | CONVERT | Vidyard/BombBomb — personalized video/image outreach via dynamic URLs |
+| **RepliQ** | CONVERT | Loom/Vidyard — AI-personalized video prospecting with website screenshot integration |
+| **AgenticFlow** | ORCHESTRATE | CrewAI/AutoGen — visual AI agent builder with 100+ tools, MCP client support |
+| **Brilliant Directories** | CAPTURE + MONETIZE | Directory theme + membership plugin — turnkey directory business |
+| **CallScaler** | ANALYZE + CAPTURE | CallRail/CallTrackingMetrics — call tracking with dynamic number insertion |
+
+#### P2 — Supplementary
+
+| Product | Module | Rationale |
+|---------|--------|-----------|
+| **LeadRocks** | ENRICH | Backup contact database for prospecting |
+| **KonnectzIT** | ORCHESTRATE | Secondary iPaaS, visual builder for non-technical users |
+| **Switchboard Canvas** | CREATE | API-first image automation with auto-translation in 70+ languages |
+| **SuiteDash** | ROUTE + MONETIZE | All-in-one CRM with white-label client portal |
+
+### Tier 2: Valuable Additions (57 products)
+
+Tier 2 products fill niche gaps or provide redundancy. Key categories:
+
+| Category | Count | Notable Products |
+|----------|-------|-----------------|
+| Automation/iPaaS | 4 | Albato, PROCESIO, Robomotion RPA, TaskMagic |
+| CRM/Pipeline | 3 | Flowlu, SalesNexus, Consolto |
+| Email Marketing | 5 | tinyEmail, Acumbamail, EmailDelivery.com, SendFox, Easy Text |
+| Analytics/Tracking | 3 | Plerdy, TruConversion, Adscook |
+| Creative/Video | 4 | Quickads, Storykit, Vidu, ContentBot |
+| Community/Engagement | 2 | Heartbeat, Novocall |
+| WhatsApp/Messaging | 1 | WBizTool |
+
+### Integration Priority Matrix
+
+```
+                    HIGH IMPACT
+                        │
+         P0 ────────────┤──────────── P1
+    (8 products)        │        (19 products)
+    Critical path       │        High value
+    Integrate now       │        Integrate next
+                        │
+   ─────────────────────┼───────────────────────
+                        │
+         P2 ────────────┤──────────── Tier 2
+    (4 products)        │        (57 products)
+    Supplementary       │        Nice-to-have
+    As needed           │        Evaluate quarterly
+                        │
+                    LOW IMPACT
+```
+
+### Implementation Approach
+
+Each AppSumo integration follows the established adapter pattern:
+
+1. **Create adapter** in `src/lib/integrations/<product>-adapter.ts` extending `adapter-base.ts`
+2. **Add env var** for API key (e.g., `SALESPANEL_API_KEY`)
+3. **Dry-run mode** — adapter returns realistic mock data when no API key is configured
+4. **Add API routes** for adapter operations under `/api/integrations/<product>/`
+5. **Register provider** in `providers.ts` with health check
+6. **Add dashboard config** in Credentials page for operator API key entry
+7. **Wire automation** — connect to Activepieces/n8n for workflow triggers
+
+Estimated effort per adapter: 200-400 lines, following the pattern established by the existing 35 adapters.
+
+---
+
 ## Summary
 
-Lead OS is a 95,890-line, 485-file production platform that unifies lead generation, scoring, nurturing, AI content creation, billing, and marketplace operations into a single deployable runtime. It serves any industry through automated niche configuration, supports four simultaneous revenue models, integrates with 110 external services, and reaches break-even with a single client. It is deployed, tested (1,994 passing tests), security-audited, and performance-optimized. The system is live at https://github.com/pinohu/lead-os and can be deployed to Vercel, Railway, or any Node.js host in under 10 minutes.
+Lead OS is a 96,265-line, 488-file production platform that unifies lead generation, scoring, nurturing, AI content creation, billing, and marketplace operations into a single deployable runtime. It serves any industry through automated niche configuration, supports four simultaneous revenue models, integrates with 110 external services (with a validated roadmap to 141+ via AppSumo lifetime deals), and reaches break-even with a single client. It is deployed, tested (3,964 passing test cases), security-audited, and performance-optimized. The system is live at https://github.com/pinohu/lead-os and can be deployed to Vercel, Railway, or any Node.js host in under 10 minutes.
