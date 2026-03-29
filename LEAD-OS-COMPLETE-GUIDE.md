@@ -34,16 +34,18 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 
 | Metric | Count |
 |--------|-------|
-| Total source files | 488 |
-| Lines of code | 96,265 |
-| API endpoints | 278 |
-| UI pages | 36 |
-| Dashboard pages | 23 |
+| Total source files | 668 |
+| Lines of code | 139,331 |
+| API endpoints | 295 |
+| UI pages | 40+ |
+| Dashboard pages | 27 |
 | Provider integrations | 110 |
+| Lib modules | 138 |
 | Integration adapters | 35 |
 | Funnel node types | 78 |
 | Industry templates | 13 |
-| Test cases | 3,964 |
+| Test files | 125 |
+| Test cases | 2,179 |
 | Test pass rate | 100% |
 
 ---
@@ -71,6 +73,34 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 | Experience Engine | `experience.ts` | Multi-step user experience orchestration |
 | Escalation Engine | `escalation-engine.ts` | Stale lead re-engagement and handoff triggers |
 | Rescore Engine | `rescore-engine.ts` | Periodic lead score recalculation |
+
+### Automated Prospecting
+
+| Engine | File | Purpose |
+|--------|------|---------|
+| Discovery Scout | `discovery-scout.ts` | Business discovery via web scraping, digital presence gap scoring, complementary niche mapping |
+| Opportunity Classifier | `opportunity-classifier.ts` | 4-way classification (managed-service, white-label, affiliate, referral-partner) with confidence scoring and outreach templates |
+| Prospect Store | `prospect-store.ts` | Full CRUD persistence for prospects (memory + Postgres JSONB) with filters and aggregation |
+| Prospect Pipeline | `prospect-pipeline.ts` | End-to-end pipeline: scout > classify > create prospect > auto-ingest into lead system |
+
+### Experiment & Optimization
+
+| Engine | File | Purpose |
+|--------|------|---------|
+| Experiment Engine | `experiment-engine.ts` | A/B testing with variant assignment, conversion tracking, z-test analysis, and winner promotion |
+| Experiment Evaluator | `experiment-evaluator.ts` | Autoresearch loop: evaluate running experiments, early-stop degradation, auto-promote winners at 95% confidence |
+| Experiment Store | `experiment-store.ts` | Lightweight experiment store bridging API routes to engine types |
+
+### Competitive Analysis
+
+| Engine | File | Purpose |
+|--------|------|---------|
+| Competitor Store | `competitor-store.ts` | Track and manage competitor profiles with analysis history |
+| Design Ingestion | `design-ingestion.ts` | Scrape competitor sites, extract layout, copy, funnel, and design token signals |
+| Design-to-Spec | `design-ingestion-to-spec.ts` | Convert raw design ingestion into actionable creative specs |
+| Marketing Ingestion | `marketing-ingestion.ts` | Pipeline for processing marketing artifacts into competitive intelligence |
+| Marketing Artifact Store | `marketing-artifact-store.ts` | Persistence for ingested marketing artifacts |
+| Artifact-to-Ingestion | `marketing-artifact-to-ingestion.ts` | Transform stored artifacts into ingestion-ready formats |
 
 ### Revenue & Monetization
 
@@ -217,9 +247,9 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 ```
 Middleware (authentication gate, CORS, requestId)
     |
-API Routes (277 endpoints - validation + orchestration)
+API Routes (295 endpoints - validation + orchestration)
     |
-Library Modules (124 files - business logic, engines, stores)
+Library Modules (138 files - business logic, engines, stores)
     |
 Persistence (PostgreSQL + in-memory + AITable)
 ```
@@ -376,28 +406,31 @@ Widgets support: lead capture forms, assessments, calculators, chat interfaces, 
 
 ### 4.8 Operator Dashboard
 
-23 dashboard pages for client operators:
+27 dashboard pages for client operators:
 
 | Page | Function |
 |------|----------|
-| Dashboard (home) | Overview with KPIs, three-visit framework, automation health |
+| Dashboard (home) | Overview with KPIs, three-visit framework, automation health, getting-started checklist |
 | Agents | AI agent team management, orchestration, audit logs |
 | Analytics | Traffic, conversion rates, channel performance |
 | Attribution | Multi-touch attribution reports |
 | Billing | Subscription status, usage meters, invoice history |
 | Bookings | Appointment management and calendar view |
+| **Competitors** | Competitor tracking, website analysis, design token extraction |
 | Creative | AI content generation and performance tracking |
-| Credentials | Provider API key management |
+| Credentials | Provider API key management with verification flow |
 | Distribution | Lead routing rules and assignments |
 | Documents | Contract and proposal generation |
-| Experiments | A/B test management and results |
+| Experiments | A/B test management with statistical analysis and autoresearch |
 | Feedback | Customer feedback and NPS tracking |
 | Health | System health and integration status |
 | Lead Magnets | Content offer management |
 | Leads | Individual lead profiles with full history |
 | Leads Detail | Single lead deep-dive with timeline and scoring history |
 | Marketplace | Lead marketplace management |
+| **Marketing Ingestion** | Marketing artifact pipeline and competitive intelligence |
 | Pipeline | Sales pipeline visualization |
+| **Prospects** | Automated prospect discovery, quality scoring, outreach management |
 | Providers | Integration status and configuration |
 | Radar | Real-time lead activity monitoring |
 | Revenue | Revenue tracking and forecasting |
@@ -721,7 +754,11 @@ This renders the configured widgets (lead forms, assessments, chat) with the cli
 
 **Provider Credentials**: Dashboard > Credentials lets operators enter their own API keys for email, SMS, CRM, and other integrations. Keys are encrypted at rest.
 
-**Experiments**: Dashboard > Experiments manages A/B tests. Test different landing pages, email sequences, or scoring thresholds and see statistical significance.
+**Experiments**: Dashboard > Experiments manages A/B tests with autoresearch. The system auto-evaluates running experiments using z-test for proportions, early-stops when a variant severely degrades performance, and auto-promotes winners at 95% confidence. Five optimization surfaces: email-subject (48hr cycles), CTA copy (72hr), lead-magnet offers (1wk), scoring weights (2wk), funnel-step order (3wk).
+
+**Prospect Discovery**: Dashboard > Prospects runs the automated prospecting engine. Scout niches to discover businesses, score their digital presence gaps, classify opportunities (managed-service, white-label, affiliate, referral-partner), and auto-ingest into the lead pipeline with personalized outreach templates.
+
+**Competitive Analysis**: Dashboard > Competitors tracks competitor websites, extracts design tokens, funnel patterns, and copy signals. Dashboard > Marketing Ingestion processes artifacts into actionable competitive intelligence for creative differentiation.
 
 ### Billing Management
 
@@ -806,6 +843,48 @@ Dashboard > Settings includes a GDPR configuration section.
 | POST | `/api/ai/generate/ad-copy` | Generate ad copy |
 | POST | `/api/ai/analyze/company` | Analyze a company from URL |
 | POST | `/api/ai/chat/extract` | Extract lead data from chat |
+
+### Prospecting
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| POST | `/api/discovery` | Scout a niche for businesses with quality scoring |
+| GET | `/api/prospects` | List prospects with filters (status, type, priority, niche, confidence) |
+| POST | `/api/prospects` | Run prospect pipeline (scout > classify > ingest) |
+| GET | `/api/prospects/:id` | Get prospect detail |
+| PATCH | `/api/prospects/:id` | Update prospect status, notes, contact info |
+| DELETE | `/api/prospects/:id` | Remove a prospect |
+| POST | `/api/cron/discovery` | Automated multi-niche scouting (cron-triggered) |
+
+### Experiments
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/api/experiments` | List experiments (filterable by status) |
+| POST | `/api/experiments` | Create A/B experiment with variants and surface |
+| GET | `/api/experiments/:id` | Get experiment with analysis |
+| PATCH | `/api/experiments/:id` | Update experiment status, hypothesis, winner |
+| POST | `/api/cron/experiments` | Evaluate all running experiments (autoresearch loop) |
+
+### Competitors
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/api/competitors` | List tracked competitors |
+| POST | `/api/competitors` | Add a competitor |
+| GET | `/api/competitors/:id` | Get competitor detail |
+| PATCH | `/api/competitors/:id` | Update competitor |
+| DELETE | `/api/competitors/:id` | Remove competitor |
+| POST | `/api/competitors/:id/analyze` | Analyze competitor website |
+| POST | `/api/creative/ingest-competitor` | Ingest competitor design/marketing artifacts |
+
+### GDPR & Preferences
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/api/gdpr/self-service` | Self-service data management page |
+| GET | `/api/preferences` | Get user preferences |
+| POST | `/api/preferences` | Update user preferences |
 
 ### Webhooks
 
@@ -1112,4 +1191,12 @@ Estimated effort per adapter: 200-400 lines, following the pattern established b
 
 ## Summary
 
-Lead OS is a 96,265-line, 488-file production platform that unifies lead generation, scoring, nurturing, AI content creation, billing, and marketplace operations into a single deployable runtime. It serves any industry through automated niche configuration, supports four simultaneous revenue models, integrates with 110 external services (with a validated roadmap to 141+ via AppSumo lifetime deals), and reaches break-even with a single client. It is deployed, tested (3,964 passing test cases), security-audited, and performance-optimized. The system is live at https://github.com/pinohu/lead-os and can be deployed to Vercel, Railway, or any Node.js host in under 10 minutes.
+Lead OS is a 139,331-line, 668-file production platform that unifies lead generation, scoring, nurturing, AI content creation, automated prospecting, A/B experiment optimization, competitive analysis, billing, and marketplace operations into a single deployable runtime. It serves any industry through automated niche configuration, supports four simultaneous revenue models, integrates with 110 external services (with a validated roadmap to 141+ via AppSumo lifetime deals), and reaches break-even with a single client.
+
+Key additions since initial release:
+- **Automated Prospecting Engine**: Discovery scout finds businesses, scores digital presence gaps, classifies opportunities (managed-service, white-label, affiliate, partner), generates personalized outreach, and auto-ingests into the lead pipeline
+- **Autoresearch Experiment Engine**: Z-test evaluation of running A/B tests with early stopping, auto-rollback, and auto-promotion across 5 optimization surfaces
+- **Competitive Analysis Pipeline**: Scrape competitor websites, extract design tokens and funnel patterns, process marketing artifacts into actionable intelligence
+- **Enhanced Dashboard**: 27 pages including prospects, competitors, marketing ingestion, leads, and expanded credentials with verification
+
+The system is deployed, tested (2,179 passing test cases, 0 TypeScript errors), security-audited, and performance-optimized. It is live at https://github.com/pinohu/lead-os and can be deployed to Vercel, Railway, or any Node.js host in under 10 minutes.
