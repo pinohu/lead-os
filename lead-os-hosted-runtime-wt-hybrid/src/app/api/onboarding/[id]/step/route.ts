@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
-import { advanceOnboarding, completeOnboarding, getOnboardingState } from "@/lib/onboarding";
+import { advanceOnboarding, completeOnboarding, getOnboardingState, goBackOnboarding } from "@/lib/onboarding";
 
 const MAX_ID_LENGTH = 200;
 const VALID_ID_PATTERN = /^onb_[a-f0-9-]{36}$/;
@@ -100,6 +100,54 @@ export async function POST(
     return NextResponse.json(
       { data: null, error: { code: isValidation ? "VALIDATION_ERROR" : "STEP_FAILED", message }, meta: null },
       { status: isValidation ? 400 : 500, headers },
+    );
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const headers = buildCorsHeaders(request.headers.get("origin"));
+  try {
+    const { id } = await params;
+
+    if (!id || id.length > MAX_ID_LENGTH || !VALID_ID_PATTERN.test(id)) {
+      return NextResponse.json(
+        { data: null, error: { code: "NOT_FOUND", message: "Onboarding session not found" }, meta: null },
+        { status: 404, headers },
+      );
+    }
+
+    const state = await goBackOnboarding(id);
+
+    return NextResponse.json(
+      { data: state, error: null, meta: null },
+      { status: 200, headers },
+    );
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to go back in onboarding";
+    const isNotFound = message.includes("not found");
+    const isFirstStep = message.includes("first step");
+    const isComplete = message.includes("completed onboarding");
+
+    if (isNotFound) {
+      return NextResponse.json(
+        { data: null, error: { code: "NOT_FOUND", message }, meta: null },
+        { status: 404, headers },
+      );
+    }
+
+    if (isFirstStep || isComplete) {
+      return NextResponse.json(
+        { data: null, error: { code: "INVALID_OPERATION", message }, meta: null },
+        { status: 400, headers },
+      );
+    }
+
+    return NextResponse.json(
+      { data: null, error: { code: "STEP_BACK_FAILED", message }, meta: null },
+      { status: 500, headers },
     );
   }
 }

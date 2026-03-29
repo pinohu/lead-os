@@ -1,3 +1,4 @@
+import { getPool } from "./db.ts";
 import { getPlanById } from "./plan-catalog.ts";
 import { createTenant, type CreateTenantInput } from "./tenant-store.ts";
 
@@ -26,9 +27,18 @@ export interface OnboardingState {
   updatedAt: string;
 }
 
+export interface ListOnboardingFilters {
+  status?: "active" | "complete";
+  email?: string;
+  limit?: number;
+  offset?: number;
+}
+
 const STEP_ORDER: OnboardingStep[] = ["niche", "plan", "branding", "integrations", "review", "complete"];
 
 const onboardingStore = new Map<string, OnboardingState>();
+
+let schemaReady: Promise<void> | null = null;
 
 function generateId(): string {
   return `onb_${crypto.randomUUID()}`;
@@ -48,27 +58,85 @@ function nextStep(current: OnboardingStep): OnboardingStep {
   return STEP_ORDER[idx + 1];
 }
 
-export async function startOnboarding(email: string): Promise<OnboardingState> {
-  if (!email || typeof email !== "string" || email.trim().length === 0) {
-    throw new Error("email is required");
-  }
-
-  const now = new Date().toISOString();
-  const state: OnboardingState = {
-    id: generateId(),
-    email: email.trim().toLowerCase(),
-    currentStep: "niche",
-    completedSteps: [],
-    createdAt: now,
-    updatedAt: now,
-  };
-
-  onboardingStore.set(state.id, state);
-  return state;
+function prevStep(current: OnboardingStep): OnboardingStep | null {
+  const idx = STEP_ORDER.indexOf(current);
+  if (idx <= 0) return null;
+  return STEP_ORDER[idx - 1];
 }
 
-export async function getOnboardingState(id: string): Promise<OnboardingState | undefined> {
-  return onboardingStore.get(id);
+function rowToState(row: Record<string, unknown>): OnboardingState {
+  const payload = row.payload as OnboardingState;
+  return {
+    ...payload,
+    id: row.id as string,
+    email: row.email as string,
+    createdAt: new Date(row.created_at as string).toISOString(),
+    updatedAt: new Date(row.updated_at as string).toISOString(),
+  };
+}
+
+async function ensureOnboardingTable(): Promise<void> {
+  const pool = getPool();
+  if (!pool) return;
+  if (schemaReady) return schemaReady;
+
+  schemaReady = (async () => {
+    try {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS lead_os_onboarding_sessions (
+          id TEXT PRIMARY KEY,
+          email TEXT NOT NULL,
+          payload JSONB NOT NULL,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_onboarding_email ON lead_os_onboarding_sessions (email);
+      `);
+    } catch (err) {
+      schemaReady = null;
+      throw err;
+    }
+  })();
+
+  return schemaReady;
+}
+
+async function persistState(state: OnboardingState): Promise<void> {
+  const pool = getPool();
+  if (!pool) return;
+
+  try {
+    await ensureOnboardingTable();
+    await pool.query(
+      `INSERT INTO lead_os_onboarding_sessions (id, email, payload, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (id) DO UPDATE SET
+         email = EXCLUDED.email,
+         payload = EXCLUDED.payload,
+         updated_at = EXCLUDED.updated_at`,
+      [state.id, state.email, JSON.stringify(state), state.createdAt, state.updatedAt],
+    );
+  } catch {
+    // silently fail — memory store is the source of truth
+  }
+}
+
+async function loadFromDb(id: string): Promise<OnboardingState | undefined> {
+  const pool = getPool();
+  if (!pool) return undefined;
+
+  try {
+    await ensureOnboardingTable();
+    const result = await pool.query(
+      `SELECT id, email, payload, created_at, updated_at
+       FROM lead_os_onboarding_sessions WHERE id = $1`,
+      [id],
+    );
+    if (result.rows.length === 0) return undefined;
+    return rowToState(result.rows[0]);
+  } catch {
+    return undefined;
+  }
 }
 
 function validateNicheStep(data: Record<string, unknown>): { name: string; industry?: string; keywords?: string[] } {
@@ -122,8 +190,83 @@ function validateIntegrationsStep(data: Record<string, unknown>): string[] {
   return ["email"];
 }
 
+export async function startOnboarding(email: string): Promise<OnboardingState> {
+  if (!email || typeof email !== "string" || email.trim().length === 0) {
+    throw new Error("email is required");
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // Return existing active session if one exists (idempotency)
+  const existing = await getOnboardingByEmail(normalizedEmail);
+  if (existing) return existing;
+
+  const now = new Date().toISOString();
+  const state: OnboardingState = {
+    id: generateId(),
+    email: normalizedEmail,
+    currentStep: "niche",
+    completedSteps: [],
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  onboardingStore.set(state.id, state);
+  await persistState(state);
+  return state;
+}
+
+export async function getOnboardingState(id: string): Promise<OnboardingState | undefined> {
+  // Memory-first, fall back to DB
+  const inMemory = onboardingStore.get(id);
+  if (inMemory) return inMemory;
+
+  const fromDb = await loadFromDb(id);
+  if (fromDb) {
+    onboardingStore.set(fromDb.id, fromDb);
+    return fromDb;
+  }
+
+  return undefined;
+}
+
+export async function getOnboardingByEmail(email: string): Promise<OnboardingState | undefined> {
+  if (!email || typeof email !== "string") return undefined;
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // Check memory first
+  for (const state of onboardingStore.values()) {
+    if (state.email === normalizedEmail && state.currentStep !== "complete") {
+      return state;
+    }
+  }
+
+  // Fall back to DB
+  const pool = getPool();
+  if (!pool) return undefined;
+
+  try {
+    await ensureOnboardingTable();
+    const result = await pool.query(
+      `SELECT id, email, payload, created_at, updated_at
+       FROM lead_os_onboarding_sessions
+       WHERE email = $1
+         AND (payload->>'currentStep') != 'complete'
+       ORDER BY updated_at DESC
+       LIMIT 1`,
+      [normalizedEmail],
+    );
+    if (result.rows.length === 0) return undefined;
+    const state = rowToState(result.rows[0]);
+    onboardingStore.set(state.id, state);
+    return state;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function advanceOnboarding(id: string, stepData: Record<string, unknown>): Promise<OnboardingState> {
-  const state = onboardingStore.get(id);
+  const state = await getOnboardingState(id);
   if (!state) {
     throw new Error("Onboarding session not found");
   }
@@ -168,11 +311,41 @@ export async function advanceOnboarding(id: string, stepData: Record<string, unk
   state.updatedAt = now;
 
   onboardingStore.set(id, state);
+  await persistState(state);
+  return state;
+}
+
+export async function goBackOnboarding(id: string): Promise<OnboardingState> {
+  const state = await getOnboardingState(id);
+  if (!state) {
+    throw new Error("Onboarding session not found");
+  }
+
+  if (state.currentStep === "complete") {
+    throw new Error("Cannot go back from a completed onboarding session");
+  }
+
+  const previous = prevStep(state.currentStep);
+  if (previous === null) {
+    throw new Error("Already at the first step, cannot go back");
+  }
+
+  // Remove the last completed step entry matching previous step
+  const lastCompletedIdx = state.completedSteps.lastIndexOf(previous);
+  if (lastCompletedIdx !== -1) {
+    state.completedSteps.splice(lastCompletedIdx, 1);
+  }
+
+  state.currentStep = previous;
+  state.updatedAt = new Date().toISOString();
+
+  onboardingStore.set(id, state);
+  await persistState(state);
   return state;
 }
 
 export async function completeOnboarding(id: string): Promise<OnboardingState> {
-  const state = onboardingStore.get(id);
+  const state = await getOnboardingState(id);
   if (!state) {
     throw new Error("Onboarding session not found");
   }
@@ -255,9 +428,75 @@ export async function completeOnboarding(id: string): Promise<OnboardingState> {
   state.updatedAt = new Date().toISOString();
 
   onboardingStore.set(id, state);
+  await persistState(state);
   return state;
+}
+
+export async function listOnboardingSessions(filters?: ListOnboardingFilters): Promise<OnboardingState[]> {
+  const pool = getPool();
+  const limit = filters?.limit ?? 100;
+  const offset = filters?.offset ?? 0;
+
+  if (pool) {
+    try {
+      await ensureOnboardingTable();
+
+      const conditions: string[] = [];
+      const values: unknown[] = [];
+      let paramIdx = 1;
+
+      if (filters?.status === "complete") {
+        conditions.push(`payload->>'currentStep' = 'complete'`);
+      } else if (filters?.status === "active") {
+        conditions.push(`payload->>'currentStep' != 'complete'`);
+      }
+
+      if (filters?.email) {
+        conditions.push(`email = $${paramIdx++}`);
+        values.push(filters.email.trim().toLowerCase());
+      }
+
+      const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+      values.push(limit, offset);
+
+      const result = await pool.query(
+        `SELECT id, email, payload, created_at, updated_at
+         FROM lead_os_onboarding_sessions
+         ${where}
+         ORDER BY updated_at DESC
+         LIMIT $${paramIdx++} OFFSET $${paramIdx}`,
+        values,
+      );
+
+      const sessions = result.rows.map(rowToState);
+      for (const s of sessions) {
+        onboardingStore.set(s.id, s);
+      }
+      return sessions;
+    } catch {
+      // fall through to memory
+    }
+  }
+
+  // Memory fallback
+  let sessions = Array.from(onboardingStore.values());
+
+  if (filters?.status === "complete") {
+    sessions = sessions.filter((s) => s.currentStep === "complete");
+  } else if (filters?.status === "active") {
+    sessions = sessions.filter((s) => s.currentStep !== "complete");
+  }
+
+  if (filters?.email) {
+    const normalizedEmail = filters.email.trim().toLowerCase();
+    sessions = sessions.filter((s) => s.email === normalizedEmail);
+  }
+
+  sessions.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  return sessions.slice(offset, offset + limit);
 }
 
 export function resetOnboardingStore(): void {
   onboardingStore.clear();
+  schemaReady = null;
 }
