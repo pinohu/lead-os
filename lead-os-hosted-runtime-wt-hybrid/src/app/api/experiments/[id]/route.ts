@@ -87,7 +87,7 @@ export async function PATCH(
 
     const body = await request.json();
     const now = new Date().toISOString();
-    const validStatuses = ["draft", "running", "paused", "completed"];
+    const validStatuses = ["draft", "running", "paused", "completed", "stopped"];
 
     if (body.status !== undefined && body.status !== null) {
       if (!validStatuses.includes(body.status)) {
@@ -137,6 +137,18 @@ export async function PATCH(
         );
       }
       experiment.description = body.description.trim();
+    }
+
+    if (body.hypothesis !== undefined && typeof body.hypothesis === "string") {
+      experiment.hypothesis = body.hypothesis.trim();
+    }
+
+    if (body.winnerId !== undefined && typeof body.winnerId === "string") {
+      experiment.winnerId = body.winnerId;
+    }
+
+    if (body.winnerLift !== undefined && typeof body.winnerLift === "number") {
+      experiment.winnerLift = body.winnerLift;
     }
 
     experiment.updatedAt = now;

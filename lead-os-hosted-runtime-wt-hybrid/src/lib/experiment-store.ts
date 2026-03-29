@@ -1,18 +1,32 @@
+import { randomUUID } from "crypto";
+import type { ExperimentSurface } from "./experiment-engine.ts";
+
+export type { ExperimentSurface } from "./experiment-engine.ts";
+
 export interface ExperimentVariant {
   id: string;
   name: string;
   weight: number;
   assignments: number;
   conversions: number;
+  isControl?: boolean;
+  config?: Record<string, unknown>;
 }
 
 export interface Experiment {
   id: string;
+  tenantId?: string;
   name: string;
   description: string;
-  status: "draft" | "running" | "paused" | "completed";
+  hypothesis?: string;
+  surface?: ExperimentSurface;
+  status: "draft" | "running" | "paused" | "completed" | "stopped";
   variants: ExperimentVariant[];
   targetMetric: string;
+  minimumSampleSize?: number;
+  rollbackThreshold?: number;
+  winnerId?: string;
+  winnerLift?: number;
   startedAt?: string;
   completedAt?: string;
   createdAt: string;
@@ -51,6 +65,7 @@ export function analyzeExperiment(experiment: Experiment): {
 } {
   const totalAssignments = experiment.variants.reduce((sum, v) => sum + v.assignments, 0);
   const totalConversions = experiment.variants.reduce((sum, v) => sum + v.conversions, 0);
+  const minSample = experiment.minimumSampleSize ?? 100;
 
   const variantAnalysis = experiment.variants.map((v) => {
     const conversionRate = v.assignments > 0 ? v.conversions / v.assignments : 0;
@@ -65,7 +80,8 @@ export function analyzeExperiment(experiment: Experiment): {
 
   const sorted = [...variantAnalysis].sort((a, b) => b.conversionRate - a.conversionRate);
   const leader = sorted[0] ?? null;
-  const isSignificant = totalAssignments >= 100 && leader !== null;
+  const sampleSizeReached = totalAssignments >= minSample;
+  const isSignificant = sampleSizeReached && leader !== null;
 
   return {
     totalAssignments,
@@ -76,7 +92,7 @@ export function analyzeExperiment(experiment: Experiment): {
     variants: variantAnalysis,
     leader: leader ? { id: leader.id, name: leader.name, conversionRate: leader.conversionRate } : null,
     isStatisticallySignificant: isSignificant,
-    sampleSizeReached: totalAssignments >= 100,
+    sampleSizeReached,
   };
 }
 
@@ -93,3 +109,11 @@ export function selectVariant(weights: { id: string; weight: number }[]): string
 
   return weights[weights.length - 1].id;
 }
+
+export function resetExperimentStore(): void {
+  experimentStore.clear();
+  assignmentStore.clear();
+  conversionStore.length = 0;
+}
+
+export { randomUUID as _randomUUID };

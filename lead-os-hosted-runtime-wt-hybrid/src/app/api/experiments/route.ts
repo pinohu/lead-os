@@ -4,7 +4,17 @@ import {
   experimentStore,
   generateExperimentId,
   type Experiment,
+  type ExperimentSurface,
 } from "@/lib/experiment-store";
+import { tenantConfig } from "@/lib/tenant";
+
+const VALID_SURFACES: ExperimentSurface[] = [
+  "email-subject",
+  "cta-copy",
+  "lead-magnet-offer",
+  "scoring-weights",
+  "funnel-step-order",
+];
 
 export async function GET(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
@@ -164,20 +174,36 @@ export async function POST(request: Request) {
       );
     }
 
+    if (body.surface !== undefined && body.surface !== null) {
+      if (!VALID_SURFACES.includes(body.surface)) {
+        return NextResponse.json(
+          { data: null, error: { code: "VALIDATION_ERROR", message: `surface must be one of: ${VALID_SURFACES.join(", ")}` }, meta: null },
+          { status: 400, headers },
+        );
+      }
+    }
+
     const now = new Date().toISOString();
     const experiment: Experiment = {
       id: generateExperimentId(),
+      tenantId: typeof body.tenantId === "string" ? body.tenantId : tenantConfig.tenantId,
       name: body.name.trim(),
       description: (body.description as string | undefined)?.trim() ?? "",
+      hypothesis: (body.hypothesis as string | undefined)?.trim() ?? "",
+      surface: (body.surface as ExperimentSurface | undefined) ?? "email-subject",
       status: body.status === "running" ? "running" : "draft",
-      variants: body.variants.map((v: { id?: string; name: string; weight?: number }, i: number) => ({
+      variants: body.variants.map((v: { id?: string; name: string; weight?: number; isControl?: boolean; config?: Record<string, unknown> }, i: number) => ({
         id: v.id ?? `var_${i}`,
         name: v.name.trim(),
         weight: (v.weight ?? 1) / totalWeight,
         assignments: 0,
         conversions: 0,
+        isControl: v.isControl ?? (i === 0),
+        config: v.config ?? {},
       })),
       targetMetric: body.targetMetric ?? "conversion",
+      minimumSampleSize: typeof body.minimumSampleSize === "number" ? body.minimumSampleSize : 200,
+      rollbackThreshold: typeof body.rollbackThreshold === "number" ? body.rollbackThreshold : 0.2,
       startedAt: body.status === "running" ? now : undefined,
       createdAt: now,
       updatedAt: now,

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 
 interface ExperimentVariant {
   variantId: string;
@@ -62,6 +62,27 @@ export default function ExperimentsPage() {
   const [error, setError] = useState<string | null>(null);
   const [expandedExperiment, setExpandedExperiment] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<ExperimentStatus | "all">("all");
+  const [promoteStatus, setPromoteStatus] = useState<Record<string, string>>({});
+
+  const handlePromoteWinner = useCallback(async (experimentId: string, variantId: string) => {
+    setPromoteStatus((prev) => ({ ...prev, [experimentId]: "pending" }));
+    try {
+      const res = await fetch(`/api/experiments/${experimentId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          status: "completed",
+          winner: variantId,
+        }),
+      });
+      if (!res.ok) throw new Error(`Failed: ${res.status}`);
+      setPromoteStatus((prev) => ({ ...prev, [experimentId]: "done" }));
+    } catch {
+      setPromoteStatus((prev) => ({ ...prev, [experimentId]: "error" }));
+      setTimeout(() => setPromoteStatus((prev) => { const next = { ...prev }; delete next[experimentId]; return next; }), 5000);
+    }
+  }, []);
 
   useEffect(() => {
     fetch("/api/dashboard", { credentials: "include" })
@@ -258,11 +279,16 @@ export default function ExperimentsPage() {
                       type="button"
                       className="primary"
                       style={{ minHeight: 36, padding: "6px 14px", fontSize: "0.82rem" }}
-                      onClick={() => {
-                        /* Promote winner - would call API in production */
-                      }}
+                      disabled={promoteStatus[experiment.experimentId] === "pending"}
+                      onClick={() => handlePromoteWinner(experiment.experimentId, bestVariant.variantId)}
                     >
-                      Promote winner: {bestVariant.variantId}
+                      {promoteStatus[experiment.experimentId] === "pending"
+                        ? "Promoting..."
+                        : promoteStatus[experiment.experimentId] === "done"
+                          ? "Promoted"
+                          : promoteStatus[experiment.experimentId] === "error"
+                            ? "Failed — retry?"
+                            : `Promote winner: ${bestVariant.variantId}`}
                     </button>
                   )}
                 </div>

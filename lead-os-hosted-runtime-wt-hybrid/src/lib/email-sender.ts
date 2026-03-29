@@ -7,6 +7,11 @@ import {
 } from "./email-templates.ts";
 import { sendEmailAction } from "./providers.ts";
 import { ensureTraceContext, type TraceContext } from "./trace.ts";
+import {
+  getRunningExperimentForSurface,
+  assignVariant,
+  recordConversion,
+} from "./experiment-engine.ts";
 
 export interface SendEmailInput {
   to: string;
@@ -202,16 +207,47 @@ export async function sendEmail(input: SendEmailInput): Promise<SendResult> {
 
   const rendered = renderEmail(template, input.context);
 
+  let finalSubject = rendered.subject;
+  let experimentId: string | undefined;
+  let variantId: string | undefined;
+
+  try {
+    const experiment = await getRunningExperimentForSurface(input.tenantId, "email-subject");
+    if (experiment && input.leadKey) {
+      const assignment = await assignVariant(experiment.id, input.leadKey);
+      experimentId = experiment.id;
+      variantId = assignment.variantId;
+
+      const variant = experiment.variants.find((v) => v.id === assignment.variantId);
+      const altSubject = variant?.config?.["subject"] as string | undefined;
+      if (altSubject) {
+        finalSubject = altSubject;
+      }
+
+      await recordConversion({
+        experimentId: experiment.id,
+        visitorId: input.leadKey,
+        variantId: assignment.variantId,
+        conversionType: "impression",
+        value: 0,
+      });
+    }
+  } catch {
+    // Experiment integration is non-critical — send with original subject
+  }
+
   const trace: TraceContext = ensureTraceContext({
     tenant: input.tenantId,
     leadKey: input.leadKey,
     blueprintId: `email-${template.id}`,
     source: "email-sender",
+    experimentId,
+    variantId,
   });
 
   const providerResult = await sendEmailAction({
     to: input.to,
-    subject: rendered.subject,
+    subject: finalSubject,
     html: rendered.html,
     trace,
   });

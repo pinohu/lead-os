@@ -2,21 +2,37 @@ import { randomUUID } from "crypto";
 import { getPool } from "./db.ts";
 import type { QueryResultRow } from "pg";
 
+export type ExperimentSurface =
+  | "email-subject"
+  | "cta-copy"
+  | "lead-magnet-offer"
+  | "scoring-weights"
+  | "funnel-step-order";
+
 export interface ExperimentVariant {
   id: string;
   name: string;
   weight: number;
   isControl: boolean;
+  config?: Record<string, unknown>;
 }
 
 export interface Experiment {
   id: string;
+  tenantId: string;
   name: string;
   description: string;
-  status: "draft" | "running" | "paused" | "completed";
+  hypothesis: string;
+  surface: ExperimentSurface;
+  status: "draft" | "running" | "paused" | "completed" | "stopped";
   variants: ExperimentVariant[];
   targetMetric: string;
   minimumSampleSize: number;
+  rollbackThreshold: number;
+  winnerId?: string;
+  winnerLift?: number;
+  startedAt?: string;
+  completedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -78,10 +94,20 @@ async function ensureSchema(): Promise<void> {
       await activePool.query(`
         CREATE TABLE IF NOT EXISTS lead_os_experiments (
           id TEXT PRIMARY KEY,
+          tenant_id TEXT NOT NULL DEFAULT 'default-tenant',
           name TEXT NOT NULL,
           description TEXT NOT NULL DEFAULT '',
+          hypothesis TEXT NOT NULL DEFAULT '',
+          surface TEXT NOT NULL DEFAULT 'email-subject',
           status TEXT NOT NULL DEFAULT 'running',
+          target_metric TEXT NOT NULL DEFAULT 'conversion',
+          minimum_sample_size INTEGER NOT NULL DEFAULT 100,
+          rollback_threshold DOUBLE PRECISION NOT NULL DEFAULT 0.2,
+          winner_id TEXT,
+          winner_lift DOUBLE PRECISION,
           variants JSONB NOT NULL DEFAULT '[]'::jsonb,
+          started_at TIMESTAMPTZ,
+          completed_at TIMESTAMPTZ,
           created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
           updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
         );
@@ -105,6 +131,8 @@ async function ensureSchema(): Promise<void> {
         );
         CREATE INDEX IF NOT EXISTS idx_lead_os_experiment_conversions_experiment
           ON lead_os_experiment_conversions (experiment_id);
+        CREATE INDEX IF NOT EXISTS idx_lead_os_experiments_tenant_surface
+          ON lead_os_experiments (tenant_id, surface, status);
       `);
     } catch (error: unknown) {
       console.error("Failed to create experiment schema:", error);
@@ -129,12 +157,22 @@ async function queryPostgres<T extends QueryResultRow>(
 }
 
 export async function createExperiment(
-  input: Omit<Experiment, "id" | "createdAt" | "updatedAt">,
+  input: Omit<Experiment, "id" | "createdAt" | "updatedAt" | "tenantId" | "hypothesis" | "surface" | "rollbackThreshold"> & {
+    tenantId?: string;
+    hypothesis?: string;
+    surface?: ExperimentSurface;
+    rollbackThreshold?: number;
+  },
 ): Promise<Experiment> {
   const now = new Date().toISOString();
   const experiment: Experiment = {
+    tenantId: "default-tenant",
+    hypothesis: "",
+    surface: "email-subject",
+    rollbackThreshold: 0.2,
     ...input,
     id: randomUUID(),
+    startedAt: input.status === "running" ? now : input.startedAt,
     createdAt: now,
     updatedAt: now,
   };
@@ -144,14 +182,24 @@ export async function createExperiment(
   const activePool = getPool();
   if (activePool) {
     await queryPostgres(
-      `INSERT INTO lead_os_experiments (id, name, description, status, variants, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5::jsonb, $6::timestamptz, $7::timestamptz)`,
+      `INSERT INTO lead_os_experiments (id, tenant_id, name, description, hypothesis, surface, status, target_metric, minimum_sample_size, rollback_threshold, winner_id, winner_lift, variants, started_at, completed_at, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::jsonb, $14::timestamptz, $15::timestamptz, $16::timestamptz, $17::timestamptz)`,
       [
         experiment.id,
+        experiment.tenantId,
         experiment.name,
         experiment.description,
+        experiment.hypothesis,
+        experiment.surface,
         experiment.status,
+        experiment.targetMetric,
+        experiment.minimumSampleSize,
+        experiment.rollbackThreshold,
+        experiment.winnerId ?? null,
+        experiment.winnerLift ?? null,
         JSON.stringify(experiment.variants),
+        experiment.startedAt ?? null,
+        experiment.completedAt ?? null,
         experiment.createdAt,
         experiment.updatedAt,
       ],
@@ -161,7 +209,7 @@ export async function createExperiment(
   return experiment;
 }
 
-async function getExperiment(experimentId: string): Promise<Experiment | null> {
+export async function getExperiment(experimentId: string): Promise<Experiment | null> {
   const cached = experimentStore.get(experimentId);
   if (cached) return cached;
 
@@ -170,14 +218,26 @@ async function getExperiment(experimentId: string): Promise<Experiment | null> {
 
   const result = await queryPostgres<{
     id: string;
+    tenant_id: string;
     name: string;
     description: string;
+    hypothesis: string;
+    surface: string;
     status: string;
+    target_metric: string;
+    minimum_sample_size: number;
+    rollback_threshold: number;
+    winner_id: string | null;
+    winner_lift: number | null;
     variants: ExperimentVariant[];
+    started_at: string | null;
+    completed_at: string | null;
     created_at: string;
     updated_at: string;
   }>(
-    `SELECT id, name, description, status, variants, created_at, updated_at
+    `SELECT id, tenant_id, name, description, hypothesis, surface, status, target_metric,
+            minimum_sample_size, rollback_threshold, winner_id, winner_lift, variants,
+            started_at, completed_at, created_at, updated_at
      FROM lead_os_experiments WHERE id = $1`,
     [experimentId],
   );
@@ -187,18 +247,70 @@ async function getExperiment(experimentId: string): Promise<Experiment | null> {
   const row = result.rows[0];
   const experiment: Experiment = {
     id: row.id,
+    tenantId: row.tenant_id,
     name: row.name,
     description: row.description,
+    hypothesis: row.hypothesis ?? "",
+    surface: (row.surface ?? "email-subject") as ExperimentSurface,
     status: row.status as Experiment["status"],
     variants: row.variants,
-    targetMetric: "",
-    minimumSampleSize: MINIMUM_VISITORS_PER_VARIANT,
+    targetMetric: row.target_metric ?? "conversion",
+    minimumSampleSize: row.minimum_sample_size ?? MINIMUM_VISITORS_PER_VARIANT,
+    rollbackThreshold: row.rollback_threshold ?? 0.2,
+    winnerId: row.winner_id ?? undefined,
+    winnerLift: row.winner_lift ?? undefined,
+    startedAt: row.started_at ? new Date(row.started_at).toISOString() : undefined,
+    completedAt: row.completed_at ? new Date(row.completed_at).toISOString() : undefined,
     createdAt: new Date(row.created_at).toISOString(),
     updatedAt: new Date(row.updated_at).toISOString(),
   };
 
   experimentStore.set(experiment.id, experiment);
   return experiment;
+}
+
+export async function listRunningExperiments(tenantId?: string): Promise<Experiment[]> {
+  const fromMemory = [...experimentStore.values()].filter(
+    (e) => e.status === "running" && (!tenantId || e.tenantId === tenantId),
+  );
+
+  const activePool = getPool();
+  if (!activePool) return fromMemory;
+
+  const query = tenantId
+    ? `SELECT id FROM lead_os_experiments WHERE status = 'running' AND tenant_id = $1`
+    : `SELECT id FROM lead_os_experiments WHERE status = 'running'`;
+  const values = tenantId ? [tenantId] : [];
+
+  const result = await queryPostgres<{ id: string }>(query, values);
+
+  const experiments: Experiment[] = [];
+  for (const row of result.rows) {
+    const exp = await getExperiment(row.id);
+    if (exp) experiments.push(exp);
+  }
+  return experiments;
+}
+
+export async function listExperimentsByTenant(tenantId: string): Promise<Experiment[]> {
+  const fromMemory = [...experimentStore.values()]
+    .filter((e) => e.tenantId === tenantId)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  const activePool = getPool();
+  if (!activePool) return fromMemory;
+
+  const result = await queryPostgres<{ id: string }>(
+    `SELECT id FROM lead_os_experiments WHERE tenant_id = $1 ORDER BY created_at DESC`,
+    [tenantId],
+  );
+
+  const experiments: Experiment[] = [];
+  for (const row of result.rows) {
+    const exp = await getExperiment(row.id);
+    if (exp) experiments.push(exp);
+  }
+  return experiments;
 }
 
 function selectVariantByWeight(variants: ExperimentVariant[]): ExperimentVariant {
@@ -506,7 +618,7 @@ export async function analyzeExperiment(experimentId: string): Promise<Experimen
   };
 }
 
-export async function promoteWinner(experimentId: string, variantId: string): Promise<void> {
+export async function promoteWinner(experimentId: string, variantId: string, lift?: number): Promise<void> {
   const experiment = await getExperiment(experimentId);
   if (!experiment) {
     throw new Error(`Experiment ${experimentId} not found`);
@@ -517,10 +629,14 @@ export async function promoteWinner(experimentId: string, variantId: string): Pr
     throw new Error(`Variant ${variantId} not found in experiment ${experimentId}`);
   }
 
+  const now = new Date().toISOString();
   const updatedExperiment: Experiment = {
     ...experiment,
     status: "completed",
-    updatedAt: new Date().toISOString(),
+    winnerId: variantId,
+    winnerLift: lift,
+    completedAt: now,
+    updatedAt: now,
   };
 
   experimentStore.set(experimentId, updatedExperiment);
@@ -529,9 +645,65 @@ export async function promoteWinner(experimentId: string, variantId: string): Pr
   if (activePool) {
     await queryPostgres(
       `UPDATE lead_os_experiments
-       SET status = 'completed', updated_at = $2::timestamptz
+       SET status = 'completed', winner_id = $2, winner_lift = $3, completed_at = $4::timestamptz, updated_at = $4::timestamptz
        WHERE id = $1`,
-      [experimentId, updatedExperiment.updatedAt],
+      [experimentId, variantId, lift ?? null, now],
     );
   }
+}
+
+export async function stopExperiment(experimentId: string, reason: string): Promise<void> {
+  const experiment = await getExperiment(experimentId);
+  if (!experiment) {
+    throw new Error(`Experiment ${experimentId} not found`);
+  }
+
+  const now = new Date().toISOString();
+  const updatedExperiment: Experiment = {
+    ...experiment,
+    status: "stopped",
+    description: `${experiment.description}\n[AUTO-STOPPED] ${reason}`,
+    completedAt: now,
+    updatedAt: now,
+  };
+
+  experimentStore.set(experimentId, updatedExperiment);
+
+  const activePool = getPool();
+  if (activePool) {
+    await queryPostgres(
+      `UPDATE lead_os_experiments
+       SET status = 'stopped', description = $2, completed_at = $3::timestamptz, updated_at = $3::timestamptz
+       WHERE id = $1`,
+      [experimentId, updatedExperiment.description, now],
+    );
+  }
+}
+
+export async function getRunningExperimentForSurface(
+  tenantId: string,
+  surface: ExperimentSurface,
+): Promise<Experiment | null> {
+  const running = [...experimentStore.values()].find(
+    (e) => e.tenantId === tenantId && e.surface === surface && e.status === "running",
+  );
+  if (running) return running;
+
+  const activePool = getPool();
+  if (!activePool) return null;
+
+  const result = await queryPostgres<{ id: string }>(
+    `SELECT id FROM lead_os_experiments WHERE tenant_id = $1 AND surface = $2 AND status = 'running' LIMIT 1`,
+    [tenantId, surface],
+  );
+
+  if (result.rows.length === 0) return null;
+  return getExperiment(result.rows[0].id);
+}
+
+export function resetExperimentEngine(): void {
+  experimentStore.clear();
+  assignmentStore.length = 0;
+  conversionStore.length = 0;
+  schemaReady = null;
 }
