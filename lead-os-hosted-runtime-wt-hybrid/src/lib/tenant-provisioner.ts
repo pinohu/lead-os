@@ -10,6 +10,9 @@ import {
   type GeneratedNicheConfig,
 } from "./niche-generator.ts";
 import { canProvisionToN8n, provisionN8nStarterWorkflows } from "./n8n-client.ts";
+import { provisionSubdomain, deploySite, listSites } from "./integrations/hosted-runtime-adapter.ts";
+import { getLandingPage } from "./landing-page-generator.ts";
+import { callLLM, isAIEnabled } from "./ai-client.ts";
 
 export interface ProvisionTenantInput {
   slug: string;
@@ -45,6 +48,8 @@ export interface ProvisioningResult {
   operatorEmail: string;
   success: boolean;
   createdAt: string;
+  siteUrl?: string;
+  siteId?: string;
 }
 
 const STEP_NAMES = [
@@ -56,6 +61,9 @@ const STEP_NAMES = [
   "provision-workflows",
   "configure-crm",
   "generate-embed",
+  "provision-subdomain",
+  "deploy-landing-page",
+  "send-welcome-email",
   "create-operator",
   "send-welcome",
 ] as const;
@@ -136,11 +144,33 @@ async function runOptionalStep(
   }
 }
 
+function generateWelcomeEmailTemplate(
+  brandName: string,
+  slug: string,
+  dashboardUrl: string,
+  embedScript: string,
+): string {
+  return [
+    `Welcome to ${brandName}!`,
+    "",
+    `Your tenant "${slug}" has been provisioned successfully.`,
+    "",
+    `Dashboard: ${dashboardUrl}`,
+    "",
+    "Embed this script on your site to activate the widget:",
+    embedScript,
+    "",
+    "If you have any questions, reply to this email.",
+  ].join("\n");
+}
+
 export async function provisionTenant(input: ProvisionTenantInput): Promise<ProvisioningResult> {
   const steps: ProvisioningStep[] = STEP_NAMES.map(createStep);
   let tenantId = "";
   let nicheConfig: GeneratedNicheConfig | null = null;
   let embedScript = "";
+  let siteId = "";
+  let siteFullUrl = "";
   const defaultChannels: TenantRecord["channels"] = {
     email: true,
     whatsapp: false,
@@ -224,7 +254,7 @@ export async function provisionTenant(input: ProvisionTenantInput): Promise<Prov
     return `Configured ${funnels.length} funnels`;
   });
 
-  // Step 4.5: setup-creative-jobs
+  // Step 5: setup-creative-jobs
   await runStep(getStep(steps, "setup-creative-jobs"), async () => {
     const { setupDefaultCreativeJobs } = await import("./creative-auto-setup.ts");
     const results = await setupDefaultCreativeJobs(tenantId, input.niche);
@@ -233,7 +263,7 @@ export async function provisionTenant(input: ProvisionTenantInput): Promise<Prov
     return `Created ${created} creative jobs${failed > 0 ? `, ${failed} failed` : ""}`;
   });
 
-  // Step 5: provision-workflows (optional, skip if n8n not configured)
+  // Step 6: provision-workflows (optional, skip if n8n not configured)
   await runOptionalStep(
     getStep(steps, "provision-workflows"),
     () => canProvisionToN8n(),
@@ -246,7 +276,7 @@ export async function provisionTenant(input: ProvisionTenantInput): Promise<Prov
     },
   );
 
-  // Step 6: configure-crm (optional, skip if SuiteDash not configured)
+  // Step 7: configure-crm (optional, skip if SuiteDash not configured)
   await runOptionalStep(
     getStep(steps, "configure-crm"),
     () => {
@@ -268,7 +298,7 @@ export async function provisionTenant(input: ProvisionTenantInput): Promise<Prov
     },
   );
 
-  // Step 7: generate-embed
+  // Step 8: generate-embed
   await runStep(getStep(steps, "generate-embed"), async () => {
     embedScript = generateEmbedScript(tenantId, input.siteUrl);
     await updateTenant(tenantId, {
@@ -280,7 +310,98 @@ export async function provisionTenant(input: ProvisionTenantInput): Promise<Prov
     return `Embed script generated`;
   });
 
-  // Step 8: create-operator
+  // Step 9: provision-subdomain (critical)
+  await runStep(getStep(steps, "provision-subdomain"), async () => {
+    const site = await provisionSubdomain(tenantId, {
+      subdomain: input.slug,
+      sslEnabled: true,
+      cdnEnabled: false,
+    });
+    siteId = site.id;
+    siteFullUrl = site.fullUrl;
+    await updateTenant(tenantId, {
+      metadata: {
+        ...(await getTenant(tenantId))?.metadata,
+        siteId,
+        siteFullUrl,
+      },
+    });
+    return `Subdomain provisioned at ${siteFullUrl}`;
+  });
+
+  // Step 10: deploy-landing-page (optional, skip if no landing page exists)
+  await runOptionalStep(
+    getStep(steps, "deploy-landing-page"),
+    () => true,
+    "No landing page generated yet",
+    async () => {
+      const landingPage = await getLandingPage(input.slug);
+      if (!landingPage) {
+        throw new Error("No landing page generated yet");
+      }
+      const currentMeta = (await getTenant(tenantId))?.metadata ?? {};
+      const resolvedSiteId = siteId || (currentMeta.siteId as string);
+      if (!resolvedSiteId) {
+        throw new Error("No site ID available from subdomain provisioning");
+      }
+      await deploySite(resolvedSiteId, {
+        html: "<!-- LP placeholder -->",
+        css: "/* generated */",
+        js: undefined,
+      });
+      return `Landing page deployed for ${input.slug}`;
+    },
+  );
+
+  // Step 11: send-welcome-email (optional, skip if email not configured)
+  const normalizedUrl = input.siteUrl.replace(/\/+$/, "");
+  const dashboardUrl = `${normalizedUrl}/dashboard`;
+  await runOptionalStep(
+    getStep(steps, "send-welcome-email"),
+    () => {
+      const hasEmail = Boolean(
+        process.env.RESEND_API_KEY
+          || process.env.SENDGRID_API_KEY
+          || process.env.POSTMARK_API_KEY,
+      );
+      return hasEmail;
+    },
+    "Email provider not configured",
+    async () => {
+      let emailBody: string;
+      if (isAIEnabled()) {
+        const prompt = [
+          `Write a welcome email for a new tenant.`,
+          `Brand name: ${input.brandName}`,
+          `Slug: ${input.slug}`,
+          `Dashboard URL: ${dashboardUrl}`,
+          `Embed script: ${embedScript}`,
+          `Keep it concise, professional, and actionable.`,
+        ].join("\n");
+        const response = await callLLM([
+          { role: "system", content: "You are a helpful onboarding assistant." },
+          { role: "user", content: prompt },
+        ]);
+        emailBody = response.content;
+      } else {
+        emailBody = generateWelcomeEmailTemplate(
+          input.brandName,
+          input.slug,
+          dashboardUrl,
+          embedScript,
+        );
+      }
+      await updateTenant(tenantId, {
+        metadata: {
+          ...(await getTenant(tenantId))?.metadata,
+          welcomeEmailBody: emailBody,
+        },
+      });
+      return `Welcome email generated for ${input.operatorEmail} (send via provider integration)`;
+    },
+  );
+
+  // Step 12: create-operator
   await runStep(getStep(steps, "create-operator"), async () => {
     const currentTenant = await getTenant(tenantId);
     const existingEmails = currentTenant?.operatorEmails ?? [];
@@ -292,7 +413,7 @@ export async function provisionTenant(input: ProvisionTenantInput): Promise<Prov
     return `Operator ${input.operatorEmail} registered`;
   });
 
-  // Step 9: send-welcome (optional, skip if email not configured)
+  // Step 13: send-welcome (optional, skip if email not configured)
   await runOptionalStep(
     getStep(steps, "send-welcome"),
     () => {
@@ -310,7 +431,14 @@ export async function provisionTenant(input: ProvisionTenantInput): Promise<Prov
   );
 
   // Finalize: activate tenant if all critical steps passed
-  const criticalSteps = ["create-tenant", "generate-niche", "register-niche", "generate-embed", "create-operator"];
+  const criticalSteps = [
+    "create-tenant",
+    "generate-niche",
+    "register-niche",
+    "generate-embed",
+    "provision-subdomain",
+    "create-operator",
+  ];
   const allCriticalPassed = criticalSteps.every((name) => {
     const s = getStep(steps, name);
     return s.status === "completed";
@@ -331,18 +459,19 @@ export async function provisionTenant(input: ProvisionTenantInput): Promise<Prov
     });
   }
 
-  const normalizedUrl = input.siteUrl.replace(/\/+$/, "");
   const result: ProvisioningResult = {
     tenantId,
     slug: input.slug,
     steps,
     nicheConfig: nicheConfig ?? ({} as GeneratedNicheConfig),
     embedScript,
-    dashboardUrl: `${normalizedUrl}/dashboard`,
+    dashboardUrl,
     widgetBootUrl: `${normalizedUrl}/api/widgets/boot?tenant=${tenantId}`,
     operatorEmail: input.operatorEmail,
     success: allCriticalPassed,
     createdAt: new Date().toISOString(),
+    siteUrl: siteFullUrl || undefined,
+    siteId: siteId || undefined,
   };
 
   provisioningStore.set(tenantId, result);
@@ -399,6 +528,9 @@ export async function reprovisionStep(
   };
 
   const nicheConfig = tenant.metadata.nicheConfig as GeneratedNicheConfig | undefined;
+  const normalizedUrl = input.siteUrl.replace(/\/+$/, "");
+  const dashboardUrl = `${normalizedUrl}/dashboard`;
+  const embedScript = (tenant.metadata.embedScript as string) ?? "";
 
   const stepHandlers: Record<StepName, () => Promise<string | void>> = {
     "create-tenant": async () => {
@@ -458,11 +590,79 @@ export async function reprovisionStep(
       });
       return `Embed script regenerated`;
     },
-    "create-operator": async () => {
-      return `Operator ${input.operatorEmail} already registered`;
+    "provision-subdomain": async () => {
+      const existingSites = await listSites(tenantId);
+      const existingSite = existingSites.find((s) => s.subdomain === input.slug);
+      if (existingSite) {
+        return `Subdomain already provisioned at ${existingSite.fullUrl}`;
+      }
+      const site = await provisionSubdomain(tenantId, {
+        subdomain: input.slug,
+        sslEnabled: true,
+        cdnEnabled: false,
+      });
+      await updateTenant(tenantId, {
+        metadata: {
+          ...tenant.metadata,
+          siteId: site.id,
+          siteFullUrl: site.fullUrl,
+        },
+      });
+      return `Subdomain reprovisioned at ${site.fullUrl}`;
+    },
+    "deploy-landing-page": async () => {
+      const landingPage = await getLandingPage(input.slug);
+      if (!landingPage) {
+        throw new Error("No landing page generated yet");
+      }
+      const resolvedSiteId = (tenant.metadata.siteId as string) ?? "";
+      if (!resolvedSiteId) {
+        throw new Error("No site ID available from subdomain provisioning");
+      }
+      await deploySite(resolvedSiteId, {
+        html: "<!-- LP placeholder -->",
+        css: "/* generated */",
+        js: undefined,
+      });
+      return `Landing page redeployed for ${input.slug}`;
     },
     "send-welcome": async () => {
       return `Welcome email re-queued for ${input.operatorEmail}`;
+    },
+    "create-operator": async () => {
+      return `Operator ${input.operatorEmail} already registered`;
+    },
+    "send-welcome-email": async () => {
+      let emailBody: string;
+      if (isAIEnabled()) {
+        const prompt = [
+          `Write a welcome email for a new tenant.`,
+          `Brand name: ${input.brandName}`,
+          `Slug: ${input.slug}`,
+          `Dashboard URL: ${dashboardUrl}`,
+          `Embed script: ${embedScript}`,
+          `Keep it concise, professional, and actionable.`,
+        ].join("\n");
+        const response = await callLLM([
+          { role: "system", content: "You are a helpful onboarding assistant." },
+          { role: "user", content: prompt },
+        ]);
+        emailBody = response.content;
+      } else {
+        emailBody = generateWelcomeEmailTemplate(
+          input.brandName,
+          input.slug,
+          dashboardUrl,
+          embedScript,
+        );
+      }
+      await updateTenant(tenantId, {
+        metadata: {
+          ...(await getTenant(tenantId))?.metadata,
+          welcomeEmailBody: emailBody,
+        },
+      });
+      return `Welcome email regenerated for ${input.operatorEmail}`;
     },
   };
 

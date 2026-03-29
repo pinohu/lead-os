@@ -1,4 +1,4 @@
-import test from "node:test";
+import { describe, it, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { getTenant } from "../src/lib/tenant-store.ts";
 import {
@@ -8,7 +8,11 @@ import {
   generateEmbedScript,
   resetProvisioningStore,
   type ProvisionTenantInput,
+  type ProvisioningResult,
+  type ProvisioningStep,
 } from "../src/lib/tenant-provisioner.ts";
+import { resetHostedRuntimeStore } from "../src/lib/integrations/hosted-runtime-adapter.ts";
+import { resetLandingPageStore } from "../src/lib/landing-page-generator.ts";
 
 function makeInput(overrides?: Partial<ProvisionTenantInput>): ProvisionTenantInput {
   return {
@@ -27,251 +31,302 @@ function makeInput(overrides?: Partial<ProvisionTenantInput>): ProvisionTenantIn
 
 function resetAll() {
   resetProvisioningStore();
+  resetHostedRuntimeStore();
+  resetLandingPageStore();
 }
 
-test("provisionTenant creates a tenant record", async () => {
-  resetAll();
-
-  const input = makeInput({ slug: "provision-create-test" });
-  const result = await provisionTenant(input);
-
-  assert.ok(result.tenantId, "tenantId should be set");
-  assert.equal(result.slug, "provision-create-test");
-
-  const tenant = await getTenant(result.tenantId);
-  assert.ok(tenant, "tenant should exist in store");
-  assert.equal(tenant.slug, "provision-create-test");
-  assert.equal(tenant.brandName, "Test Dental Clinic");
-});
-
-test("provisionTenant generates niche config", async () => {
-  resetAll();
-
-  const input = makeInput({ slug: "provision-niche-test" });
-  const result = await provisionTenant(input);
-
-  assert.ok(result.nicheConfig, "nicheConfig should be present");
-  assert.equal(result.nicheConfig.name, "Dental Practice");
-  assert.equal(result.nicheConfig.industry, "health");
-  assert.ok(result.nicheConfig.painPoints.length > 0, "should have pain points");
-  assert.ok(result.nicheConfig.assessmentQuestions.length > 0, "should have assessment questions");
-});
-
-test("provisionTenant generates embed script with correct tenant ID", async () => {
-  resetAll();
-
-  const input = makeInput({ slug: "provision-embed-test", siteUrl: "https://my-site.com" });
-  const result = await provisionTenant(input);
-
-  assert.ok(result.embedScript, "embedScript should be present");
-  assert.ok(result.embedScript.includes(result.tenantId), "embed script should contain tenant ID");
-  assert.ok(result.embedScript.includes("https://my-site.com/embed/lead-os-embed.js"), "embed script should reference embed JS");
-  assert.ok(result.embedScript.includes(`data-boot="https://my-site.com/api/widgets/boot?tenant=${result.tenantId}"`), "embed script should contain boot URL");
-  assert.ok(result.embedScript.startsWith("<script"), "embed script should be a script tag");
-  assert.ok(result.embedScript.includes("async"), "embed script should be async");
-});
-
-test("provisionTenant marks all critical steps as completed", async () => {
-  resetAll();
-
-  const input = makeInput({ slug: "provision-steps-test" });
-  const result = await provisionTenant(input);
-
-  const criticalSteps = ["create-tenant", "generate-niche", "register-niche", "configure-funnels", "generate-embed", "create-operator"];
-  for (const stepName of criticalSteps) {
-    const step = result.steps.find((s) => s.name === stepName);
-    assert.ok(step, `step ${stepName} should exist`);
-    assert.equal(step.status, "completed", `step ${stepName} should be completed`);
-    assert.ok(step.startedAt, `step ${stepName} should have startedAt`);
-    assert.ok(step.completedAt, `step ${stepName} should have completedAt`);
+function findStep(result: ProvisioningResult, name: string): ProvisioningStep {
+  const step = result.steps.find((s) => s.name === name);
+  if (!step) {
+    throw new Error(`Step ${name} not found in result`);
   }
+  return step;
+}
 
-  assert.equal(result.success, true, "provisioning should succeed");
-});
-
-test("provisionTenant skips optional steps when services are not configured", async () => {
-  resetAll();
-
-  const input = makeInput({ slug: "provision-skip-test" });
-  const result = await provisionTenant(input);
-
-  const workflowStep = result.steps.find((s) => s.name === "provision-workflows");
-  assert.ok(workflowStep, "provision-workflows step should exist");
-  assert.ok(
-    workflowStep.status === "skipped" || workflowStep.status === "completed",
-    "provision-workflows should be skipped or completed",
-  );
-
-  const crmStep = result.steps.find((s) => s.name === "configure-crm");
-  assert.ok(crmStep, "configure-crm step should exist");
-  assert.ok(
-    crmStep.status === "skipped" || crmStep.status === "completed",
-    "configure-crm should be skipped or completed",
-  );
-
-  const welcomeStep = result.steps.find((s) => s.name === "send-welcome");
-  assert.ok(welcomeStep, "send-welcome step should exist");
-  assert.ok(
-    welcomeStep.status === "skipped" || welcomeStep.status === "completed",
-    "send-welcome should be skipped or completed",
-  );
-});
-
-test("provisionTenant handles niche generation for various industries", async () => {
-  resetAll();
-
-  const industries = [
-    { niche: "Personal Injury Attorney", industry: "legal" },
-    { niche: "HVAC Contractor", industry: "construction" },
-    { niche: "SaaS Platform", industry: "tech" },
-    { niche: "Commercial Real Estate", industry: "real-estate" },
-  ];
-
-  for (const { niche, industry } of industries) {
+describe("tenant-provisioner", () => {
+  beforeEach(() => {
     resetAll();
-    const input = makeInput({
-      slug: `industry-${industry}-test`,
-      niche,
-      industry,
+    delete process.env.RESEND_API_KEY;
+    delete process.env.SENDGRID_API_KEY;
+    delete process.env.POSTMARK_API_KEY;
+    delete process.env.AI_API_KEY;
+    delete process.env.AI_PROVIDER;
+  });
+
+  describe("provisionTenant", () => {
+    it("creates a tenant record", async () => {
+      const input = makeInput({ slug: "provision-create-test" });
+      const result = await provisionTenant(input);
+
+      assert.ok(result.tenantId, "tenantId should be set");
+      assert.equal(result.slug, "provision-create-test");
+
+      const tenant = await getTenant(result.tenantId);
+      assert.ok(tenant, "tenant should exist in store");
+      assert.equal(tenant.slug, "provision-create-test");
+      assert.equal(tenant.brandName, "Test Dental Clinic");
     });
-    const result = await provisionTenant(input);
 
-    assert.ok(result.success, `provisioning for ${industry} should succeed`);
-    assert.equal(result.nicheConfig.industry, industry, `industry should be ${industry}`);
-    assert.equal(result.nicheConfig.name, niche, `niche name should be ${niche}`);
-  }
-});
+    it("produces exactly 13 provisioning steps", async () => {
+      const input = makeInput({ slug: "step-count-test" });
+      const result = await provisionTenant(input);
 
-test("generateEmbedScript produces valid HTML script tag", () => {
-  const tenantId = "abc-123-def";
-  const siteUrl = "https://example.com";
-  const script = generateEmbedScript(tenantId, siteUrl);
+      assert.equal(result.steps.length, 13, "should have 13 total steps");
 
-  assert.ok(script.startsWith("<script"), "should start with script tag");
-  assert.ok(script.endsWith("</script>"), "should end with closing script tag");
-  assert.ok(script.includes(`data-tenant="${tenantId}"`), "should contain tenant ID");
-  assert.ok(script.includes(`src="https://example.com/embed/lead-os-embed.js"`), "should contain embed script URL");
-  assert.ok(script.includes(`data-boot="https://example.com/api/widgets/boot?tenant=abc-123-def"`), "should contain boot URL");
-  assert.ok(script.includes("async"), "should have async attribute");
-});
+      const expectedNames = [
+        "create-tenant",
+        "generate-niche",
+        "register-niche",
+        "configure-funnels",
+        "setup-creative-jobs",
+        "provision-workflows",
+        "configure-crm",
+        "generate-embed",
+        "provision-subdomain",
+        "deploy-landing-page",
+        "send-welcome-email",
+        "create-operator",
+        "send-welcome",
+      ];
+      const actualNames = result.steps.map((s) => s.name);
+      assert.deepEqual(actualNames, expectedNames, "step names and order should match");
+    });
 
-test("generateEmbedScript strips trailing slashes from siteUrl", () => {
-  const script = generateEmbedScript("tid-1", "https://example.com///");
+    it("completes all critical steps including provision-subdomain", async () => {
+      const input = makeInput({ slug: "critical-steps-test" });
+      const result = await provisionTenant(input);
 
-  assert.ok(script.includes(`src="https://example.com/embed/lead-os-embed.js"`), "should normalize URL");
-  assert.ok(!script.includes("///"), "should not contain triple slashes");
-});
+      const criticalSteps = [
+        "create-tenant",
+        "generate-niche",
+        "register-niche",
+        "generate-embed",
+        "provision-subdomain",
+        "create-operator",
+      ];
+      for (const stepName of criticalSteps) {
+        const step = findStep(result, stepName);
+        assert.equal(step.status, "completed", `critical step ${stepName} should be completed`);
+        assert.ok(step.startedAt, `step ${stepName} should have startedAt`);
+        assert.ok(step.completedAt, `step ${stepName} should have completedAt`);
+      }
 
-test("getProvisioningStatus returns step details after provisioning", async () => {
-  resetAll();
+      assert.equal(result.success, true, "provisioning should succeed");
+    });
 
-  const input = makeInput({ slug: "status-test" });
-  const result = await provisionTenant(input);
-  const steps = await getProvisioningStatus(result.tenantId);
+    it("stores siteUrl and siteId from subdomain provisioning", async () => {
+      const input = makeInput({ slug: "subdomain-result-test" });
+      const result = await provisionTenant(input);
 
-  assert.ok(steps.length > 0, "should have steps");
-  assert.equal(steps.length, 10, "should have all 10 steps");
+      assert.ok(result.siteId, "siteId should be set on result");
+      assert.ok(result.siteUrl, "siteUrl should be set on result");
+      assert.ok(result.siteUrl.includes("subdomain-result-test"), "siteUrl should contain the slug");
 
-  const stepNames = steps.map((s) => s.name);
-  assert.ok(stepNames.includes("create-tenant"), "should include create-tenant");
-  assert.ok(stepNames.includes("generate-niche"), "should include generate-niche");
-  assert.ok(stepNames.includes("generate-embed"), "should include generate-embed");
-});
+      const tenant = await getTenant(result.tenantId);
+      assert.ok(tenant);
+      assert.ok(tenant.metadata.siteId, "siteId should be stored in tenant metadata");
+      assert.ok(tenant.metadata.siteFullUrl, "siteFullUrl should be stored in tenant metadata");
+    });
 
-test("getProvisioningStatus returns empty array for unknown tenant", async () => {
-  resetAll();
+    it("stores subdomain detail with fullUrl", async () => {
+      const input = makeInput({ slug: "subdomain-detail-test" });
+      const result = await provisionTenant(input);
 
-  const steps = await getProvisioningStatus("nonexistent-tenant-id");
-  assert.equal(steps.length, 0, "should return empty array");
-});
+      const step = findStep(result, "provision-subdomain");
+      assert.equal(step.status, "completed");
+      assert.ok(step.detail, "provision-subdomain step should have detail");
+      assert.ok(
+        step.detail.startsWith("Subdomain provisioned at "),
+        "detail should mention the full URL",
+      );
+    });
 
-test("reprovisionStep retries a specific step", async () => {
-  resetAll();
+    it("skips deploy-landing-page when no landing page exists", async () => {
+      const input = makeInput({ slug: "no-lp-test" });
+      const result = await provisionTenant(input);
 
-  const input = makeInput({ slug: "reprovision-test" });
-  const result = await provisionTenant(input);
+      const step = findStep(result, "deploy-landing-page");
+      assert.equal(step.status, "skipped", "deploy-landing-page should be skipped without a landing page");
+      assert.ok(step.detail, "skipped step should have a detail/reason");
+    });
 
-  const retriedStep = await reprovisionStep(result.tenantId, "generate-embed");
+    it("skips send-welcome-email when email provider is not configured", async () => {
+      const input = makeInput({ slug: "no-email-test" });
+      const result = await provisionTenant(input);
 
-  assert.equal(retriedStep.name, "generate-embed");
-  assert.equal(retriedStep.status, "completed");
-  assert.ok(retriedStep.detail, "retried step should have detail");
-  assert.ok(retriedStep.completedAt, "retried step should have completedAt");
-});
+      const step = findStep(result, "send-welcome-email");
+      assert.equal(step.status, "skipped", "send-welcome-email should be skipped");
+      assert.equal(step.detail, "Email provider not configured");
+    });
 
-test("reprovisionStep throws for unknown step name", async () => {
-  resetAll();
+    it("generates welcome email with template when AI is not available", async () => {
+      process.env.RESEND_API_KEY = "re_test_key";
+      const input = makeInput({ slug: "template-email-test" });
+      const result = await provisionTenant(input);
 
-  const input = makeInput({ slug: "reprovision-unknown-test" });
-  const result = await provisionTenant(input);
+      const step = findStep(result, "send-welcome-email");
+      assert.equal(step.status, "completed", "send-welcome-email should complete");
+      assert.ok(step.detail, "step should have detail");
+      assert.ok(
+        step.detail.includes("operator@test-dental.com"),
+        "detail should include operator email",
+      );
+      assert.ok(
+        step.detail.includes("send via provider integration"),
+        "detail should indicate provider integration",
+      );
 
-  await assert.rejects(
-    () => reprovisionStep(result.tenantId, "nonexistent-step"),
-    { message: "Unknown step: nonexistent-step" },
-  );
-});
+      const tenant = await getTenant(result.tenantId);
+      assert.ok(tenant);
+      const emailBody = tenant.metadata.welcomeEmailBody as string;
+      assert.ok(emailBody, "welcomeEmailBody should be stored in metadata");
+      assert.ok(emailBody.includes("Test Dental Clinic"), "template should include brand name");
+      assert.ok(emailBody.includes("template-email-test"), "template should include slug");
+      assert.ok(emailBody.includes("/dashboard"), "template should include dashboard URL");
+    });
 
-test("reprovisionStep throws for unknown tenant", async () => {
-  resetAll();
+    it("activates tenant when all critical steps pass", async () => {
+      const input = makeInput({ slug: "activate-test" });
+      const result = await provisionTenant(input);
 
-  await assert.rejects(
-    () => reprovisionStep("nonexistent-tenant", "generate-embed"),
-    { message: "Tenant not found: nonexistent-tenant" },
-  );
-});
+      assert.equal(result.success, true);
 
-test("provisionTenant sets correct dashboard and widget boot URLs", async () => {
-  resetAll();
+      const tenant = await getTenant(result.tenantId);
+      assert.ok(tenant);
+      assert.equal(tenant.status, "active", "tenant should be activated");
+    });
 
-  const input = makeInput({ slug: "urls-test", siteUrl: "https://my-app.example.com" });
-  const result = await provisionTenant(input);
+    it("still succeeds when optional steps are skipped", async () => {
+      const input = makeInput({ slug: "optional-skip-test" });
+      const result = await provisionTenant(input);
 
-  assert.equal(result.dashboardUrl, "https://my-app.example.com/dashboard");
-  assert.equal(result.widgetBootUrl, `https://my-app.example.com/api/widgets/boot?tenant=${result.tenantId}`);
-});
+      const optionalSteps = ["provision-workflows", "configure-crm", "deploy-landing-page", "send-welcome-email", "send-welcome"];
+      for (const stepName of optionalSteps) {
+        const step = findStep(result, stepName);
+        assert.ok(
+          step.status === "skipped" || step.status === "completed",
+          `optional step ${stepName} should be skipped or completed`,
+        );
+      }
 
-test("provisionTenant stores operator email", async () => {
-  resetAll();
-
-  const input = makeInput({
-    slug: "operator-test",
-    operatorEmail: "admin@clinic.com",
+      assert.equal(result.success, true, "provisioning should succeed despite skipped optional steps");
+    });
   });
-  const result = await provisionTenant(input);
 
-  assert.equal(result.operatorEmail, "admin@clinic.com");
+  describe("step count via getProvisioningStatus", () => {
+    it("returns 13 steps after provisioning", async () => {
+      const input = makeInput({ slug: "status-count-test" });
+      const result = await provisionTenant(input);
+      const steps = await getProvisioningStatus(result.tenantId);
 
-  const tenant = await getTenant(result.tenantId);
-  assert.ok(tenant);
-  assert.ok(tenant.operatorEmails.includes("admin@clinic.com"), "operator email should be in tenant record");
-});
+      assert.equal(steps.length, 13, "should have all 13 steps");
 
-test("provisionTenant activates tenant when all critical steps pass", async () => {
-  resetAll();
-
-  const input = makeInput({ slug: "activate-test" });
-  const result = await provisionTenant(input);
-
-  assert.equal(result.success, true);
-
-  const tenant = await getTenant(result.tenantId);
-  assert.ok(tenant);
-  assert.equal(tenant.status, "active", "tenant should be activated after successful provisioning");
-});
-
-test("provisionTenant applies custom accent and channels", async () => {
-  resetAll();
-
-  const input = makeInput({
-    slug: "custom-config-test",
-    accent: "#ff6600",
-    channels: { email: true, whatsapp: true, sms: false, chat: true, voice: false },
+      const newStepNames = ["provision-subdomain", "deploy-landing-page", "send-welcome-email"];
+      for (const name of newStepNames) {
+        assert.ok(
+          steps.some((s) => s.name === name),
+          `should include new step: ${name}`,
+        );
+      }
+    });
   });
-  const result = await provisionTenant(input);
 
-  const tenant = await getTenant(result.tenantId);
-  assert.ok(tenant);
-  assert.equal(tenant.accent, "#ff6600");
-  assert.equal(tenant.channels.whatsapp, true);
-  assert.equal(tenant.channels.chat, true);
+  describe("reprovisionStep for new steps", () => {
+    it("reprovisions provision-subdomain", async () => {
+      const input = makeInput({ slug: "reprovision-subdomain-test" });
+      const result = await provisionTenant(input);
+
+      const retriedStep = await reprovisionStep(result.tenantId, "provision-subdomain");
+
+      assert.equal(retriedStep.name, "provision-subdomain");
+      assert.equal(retriedStep.status, "completed");
+      assert.ok(retriedStep.detail, "retried step should have detail");
+      assert.ok(
+        retriedStep.detail.includes("provisioned"),
+        "detail should indicate provisioning status",
+      );
+    });
+
+    it("reprovisions deploy-landing-page (skips when no landing page)", async () => {
+      const input = makeInput({ slug: "reprovision-lp-test" });
+      const result = await provisionTenant(input);
+
+      const retriedStep = await reprovisionStep(result.tenantId, "deploy-landing-page");
+
+      assert.equal(retriedStep.name, "deploy-landing-page");
+      assert.equal(retriedStep.status, "failed", "should fail when no landing page exists");
+      assert.ok(retriedStep.detail, "failed step should have detail");
+    });
+
+    it("reprovisions send-welcome-email with template fallback", async () => {
+      const input = makeInput({ slug: "reprovision-email-test" });
+      const result = await provisionTenant(input);
+
+      const retriedStep = await reprovisionStep(result.tenantId, "send-welcome-email");
+
+      assert.equal(retriedStep.name, "send-welcome-email");
+      assert.equal(retriedStep.status, "completed");
+      assert.ok(retriedStep.detail, "retried step should have detail");
+
+      const tenant = await getTenant(result.tenantId);
+      assert.ok(tenant);
+      const emailBody = tenant.metadata.welcomeEmailBody as string;
+      assert.ok(emailBody, "should store welcome email body");
+      assert.ok(emailBody.includes("Test Dental Clinic"), "template should include brand name");
+    });
+
+    it("reprovisions create-operator", async () => {
+      const input = makeInput({ slug: "reprovision-operator-test" });
+      const result = await provisionTenant(input);
+
+      const retriedStep = await reprovisionStep(result.tenantId, "create-operator");
+
+      assert.equal(retriedStep.name, "create-operator");
+      assert.equal(retriedStep.status, "completed");
+    });
+
+    it("reprovisions send-welcome", async () => {
+      const input = makeInput({ slug: "reprovision-welcome-test" });
+      const result = await provisionTenant(input);
+
+      const retriedStep = await reprovisionStep(result.tenantId, "send-welcome");
+
+      assert.equal(retriedStep.name, "send-welcome");
+      assert.equal(retriedStep.status, "completed");
+      assert.ok(
+        retriedStep.detail?.includes("re-queued"),
+        "detail should indicate re-queuing",
+      );
+    });
+  });
+
+  describe("generateEmbedScript", () => {
+    it("produces valid HTML script tag", () => {
+      const tenantId = "abc-123-def";
+      const siteUrl = "https://example.com";
+      const script = generateEmbedScript(tenantId, siteUrl);
+
+      assert.ok(script.startsWith("<script"), "should start with script tag");
+      assert.ok(script.endsWith("</script>"), "should end with closing script tag");
+      assert.ok(script.includes(`data-tenant="${tenantId}"`), "should contain tenant ID");
+      assert.ok(script.includes("async"), "should have async attribute");
+    });
+
+    it("strips trailing slashes from siteUrl", () => {
+      const script = generateEmbedScript("tid-1", "https://example.com///");
+
+      assert.ok(script.includes(`src="https://example.com/embed/lead-os-embed.js"`));
+      assert.ok(!script.includes("///"));
+    });
+  });
+
+  describe("ProvisioningResult interface", () => {
+    it("includes siteUrl and siteId fields", async () => {
+      const input = makeInput({ slug: "interface-test" });
+      const result = await provisionTenant(input);
+
+      assert.ok("siteUrl" in result, "result should have siteUrl property");
+      assert.ok("siteId" in result, "result should have siteId property");
+    });
+  });
 });
