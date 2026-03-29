@@ -185,5 +185,64 @@ Dual-write: in-memory `Map` + PostgreSQL JSONB. Memory store capped at 10,000 en
 | `src/app/api/gmb/ingest/[slug]/route.ts` | GET/PATCH/DELETE single page |
 | `src/app/lp/[slug]/page.tsx` | Public landing page renderer (SSG) |
 | `src/components/LPLeadCaptureForm.tsx` | Client-side lead capture form |
+| `src/lib/content-quality-scorer.ts` | Per-section quality scoring, SEO scoring |
+| `src/lib/ai-content-enricher.ts` | LLM-powered content improvement |
+| `src/lib/gbp-sync-scheduler.ts` | Scheduled GBP re-ingestion with change detection |
+| `src/app/api/gmb/ingest/[slug]/quality/route.ts` | GET quality score for a landing page |
+| `src/app/api/gmb/ingest/[slug]/enrich/route.ts` | POST AI enrichment for a landing page |
+| `src/app/api/gbp-sync/route.ts` | POST/GET sync job management |
+| `src/app/api/gbp-sync/[jobId]/route.ts` | GET/PATCH/DELETE/POST single sync job |
+| `src/app/api/gbp-sync/due/route.ts` | GET due jobs (cron-secret auth) |
 | `tests/gmb-ingestor.test.ts` | 51 tests |
 | `tests/landing-page-generator.test.ts` | 44 tests |
+| `tests/content-quality-scorer.test.ts` | 57 tests |
+| `tests/ai-content-enricher.test.ts` | 16 tests |
+| `tests/gbp-sync-scheduler.test.ts` | 29 tests |
+
+## Content Quality Scoring
+
+`GET /api/gmb/ingest/[slug]/quality` returns a `ContentQualityReport` with:
+
+- **Per-section scores** (0-100): hero, trust-bar, services, social-proof, about, hours, FAQ, lead-magnet, cta-banner
+- **SEO score** (0-100): meta title length, meta description, JSON-LD, canonical URL, OG image
+- **Overall grade**: excellent (85+), good (70+), fair (50+), poor (<50)
+- **Recommendations**: prioritized suggestions for sections scoring below 60
+
+## AI Content Enrichment
+
+`POST /api/gmb/ingest/[slug]/enrich` improves content using LLM:
+
+- Hero headlines rewritten for SEO and conversion
+- Short about descriptions expanded to 2-3 sentences
+- FAQ answers under 50 chars improved with niche-relevant detail
+- Safe JSON parsing from LLM output with markdown code block fallback
+- Graceful dry-run when AI is not configured (returns originals unchanged)
+- Token usage tracking and confidence scoring per section
+
+## Scheduled GBP Sync
+
+Automated re-ingestion via `/api/gbp-sync/`:
+
+- Create sync jobs with cron expressions (e.g. `0 */6 * * *` for every 6 hours)
+- `GET /api/gbp-sync/due` returns jobs ready to execute (cron-secret auth)
+- Change detection: compares new vs existing landing page to flag updates
+- Consecutive failure tracking with automatic status management
+- External cron (e.g. Railway cron, n8n) polls due endpoint and triggers execution
+
+## Tenant Provisioning (Phase 3)
+
+The tenant provisioner now runs 13 steps:
+
+1. create-tenant
+2. generate-niche
+3. register-niche
+4. configure-funnels
+5. setup-creative-jobs
+6. provision-workflows (optional)
+7. configure-crm (optional)
+8. generate-embed
+9. **provision-subdomain** (new) — auto-provisions `{slug}.leados.io` with SSL
+10. **deploy-landing-page** (new, optional) — deploys generated LP to subdomain
+11. **send-welcome-email** (new, optional) — LLM-generated or template welcome email
+12. create-operator
+13. send-welcome
