@@ -1,5 +1,7 @@
+import { createHmac } from "crypto";
 import { sendEmail } from "../email-sender.ts";
 import { getTemplate } from "../email-templates.ts";
+import { resolveTenantConfig } from "../tenant.ts";
 
 export type NotificationChannel =
   | "email"
@@ -179,6 +181,15 @@ async function sendViaNovu(notification: Notification): Promise<NotificationResu
 // Direct dispatch fallbacks
 // ---------------------------------------------------------------------------
 
+function buildNotificationUnsubscribeUrl(siteUrl: string, email: string, tenantId: string): string {
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "unsubscribe-token-secret";
+  const token = createHmac("sha256", secret)
+    .update(`${email.toLowerCase().trim()}::${tenantId}`)
+    .digest("hex")
+    .slice(0, 24);
+  return `${siteUrl}/api/unsubscribe?email=${encodeURIComponent(email)}&tenant=${encodeURIComponent(tenantId)}&token=${token}`;
+}
+
 async function dispatchEmail(notification: Notification, tmpl: TemplateDefinition): Promise<NotificationResult> {
   const id = generateNotificationId();
   const timestamp = new Date().toISOString();
@@ -187,6 +198,7 @@ async function dispatchEmail(notification: Notification, tmpl: TemplateDefinitio
     return { id, channel: "email", status: "failed", timestamp };
   }
 
+  const tenant = await resolveTenantConfig(notification.tenantId);
   const subject = renderTemplate(tmpl.subject, notification.data);
   const html = `<p>${renderTemplate(tmpl.body, notification.data).replace(/\n/g, "<br>")}</p>`;
 
@@ -206,10 +218,10 @@ async function dispatchEmail(notification: Notification, tmpl: TemplateDefinitio
       updatedAt: new Date().toISOString(),
     },
     context: {
-      brandName: "",
-      siteUrl: "",
-      supportEmail: "",
-      unsubscribeUrl: "",
+      brandName: tenant.brandName,
+      siteUrl: tenant.siteUrl,
+      supportEmail: tenant.supportEmail,
+      unsubscribeUrl: buildNotificationUnsubscribeUrl(tenant.siteUrl, notification.recipientEmail, notification.tenantId),
       currentYear: new Date().getFullYear().toString(),
       recipientEmail: notification.recipientEmail,
       previewText: subject,

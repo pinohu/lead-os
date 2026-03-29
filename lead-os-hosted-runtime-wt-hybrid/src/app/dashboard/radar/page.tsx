@@ -109,6 +109,30 @@ export default function RadarPage() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"hot" | "events" | "feed">("hot");
   const [alertThreshold, setAlertThreshold] = useState(75);
+  const [actionStatus, setActionStatus] = useState<Record<string, string>>({});
+
+  const handleAction = useCallback(async (leadKey: string, action: "schedule" | "email" | "assign", label: string) => {
+    const statusKey = `${leadKey}:${action}`;
+    setActionStatus((prev) => ({ ...prev, [statusKey]: "pending" }));
+    try {
+      const res = await fetch("/api/workflows/forge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          leadKey,
+          trigger: `radar.${action}`,
+          metadata: { action, source: "radar-dashboard" },
+        }),
+      });
+      if (!res.ok) throw new Error(`Failed: ${res.status}`);
+      setActionStatus((prev) => ({ ...prev, [statusKey]: "done" }));
+      setTimeout(() => setActionStatus((prev) => { const next = { ...prev }; delete next[statusKey]; return next; }), 3000);
+    } catch {
+      setActionStatus((prev) => ({ ...prev, [statusKey]: "error" }));
+      setTimeout(() => setActionStatus((prev) => { const next = { ...prev }; delete next[statusKey]; return next; }), 5000);
+    }
+  }, []);
 
   const fetchData = useCallback(() => {
     fetch("/api/dashboard/radar", { credentials: "include" })
@@ -329,24 +353,30 @@ export default function RadarPage() {
                           className="secondary"
                           style={{ minHeight: 32, padding: "4px 10px", fontSize: "0.76rem" }}
                           aria-label={`Schedule call with ${lead.firstName} ${lead.lastName}`}
+                          disabled={actionStatus[`${lead.leadKey}:schedule`] === "pending"}
+                          onClick={() => handleAction(lead.leadKey, "schedule", `${lead.firstName} ${lead.lastName}`)}
                         >
-                          Schedule call
+                          {actionStatus[`${lead.leadKey}:schedule`] === "pending" ? "Scheduling..." : actionStatus[`${lead.leadKey}:schedule`] === "done" ? "Scheduled" : actionStatus[`${lead.leadKey}:schedule`] === "error" ? "Failed" : "Schedule call"}
                         </button>
                         <button
                           type="button"
                           className="secondary"
                           style={{ minHeight: 32, padding: "4px 10px", fontSize: "0.76rem" }}
                           aria-label={`Send email to ${lead.firstName} ${lead.lastName}`}
+                          disabled={actionStatus[`${lead.leadKey}:email`] === "pending"}
+                          onClick={() => handleAction(lead.leadKey, "email", `${lead.firstName} ${lead.lastName}`)}
                         >
-                          Send email
+                          {actionStatus[`${lead.leadKey}:email`] === "pending" ? "Sending..." : actionStatus[`${lead.leadKey}:email`] === "done" ? "Sent" : actionStatus[`${lead.leadKey}:email`] === "error" ? "Failed" : "Send email"}
                         </button>
                         <button
                           type="button"
                           className="secondary"
                           style={{ minHeight: 32, padding: "4px 10px", fontSize: "0.76rem" }}
                           aria-label={`Assign ${lead.firstName} ${lead.lastName} to sales`}
+                          disabled={actionStatus[`${lead.leadKey}:assign`] === "pending"}
+                          onClick={() => handleAction(lead.leadKey, "assign", `${lead.firstName} ${lead.lastName}`)}
                         >
-                          Assign
+                          {actionStatus[`${lead.leadKey}:assign`] === "pending" ? "Assigning..." : actionStatus[`${lead.leadKey}:assign`] === "done" ? "Assigned" : actionStatus[`${lead.leadKey}:assign`] === "error" ? "Failed" : "Assign"}
                         </button>
                       </div>
                     </article>

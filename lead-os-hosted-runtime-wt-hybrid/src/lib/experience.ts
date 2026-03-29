@@ -319,12 +319,12 @@ export function resolveExperienceProfile(input: ExperienceInput): ExperienceProf
     primaryActionHref: destination,
     secondaryActionLabel: "Talk to a human",
     secondaryActionHref: `mailto:${input.supportEmail ?? "support@example.com"}`,
-    trustPromise: "No generic bait-and-switch. The next step adapts to niche, intent, return state, and contact preference.",
+    trustPromise: "Every next step is personalized to your industry and goals. No generic templates.",
     progressLabel:
       input.returning
-        ? "You are on visit two or beyond. The goal is momentum, not re-explaining yourself."
-        : "The first interaction should feel clear, light, and immediately useful.",
-    anxietyReducer: "You can stop at any point, ask for a human path, or take the lighter next step instead of the heavier one.",
+        ? "Welcome back. We remember where you left off."
+        : "This takes less than 2 minutes. We only ask what we need.",
+    anxietyReducer: "No commitment required. You can pause anytime or speak to a real person instead.",
     proofSignals: buildProofSignals(input.niche, family, mode),
     objectionBlocks: buildObjections(input.niche, mode),
     discoveryPrompt:

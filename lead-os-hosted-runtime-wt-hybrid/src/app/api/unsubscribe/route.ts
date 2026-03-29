@@ -1,3 +1,4 @@
+import { createHmac } from "crypto";
 import { NextResponse } from "next/server";
 import { processUnsubscribe } from "@/lib/email-sender";
 
@@ -14,8 +15,11 @@ export async function GET(request: Request) {
     });
   }
 
-  const expectedToken = simpleHash(email + tenant);
-  if (token !== expectedToken) {
+  const expectedToken = generateUnsubscribeToken(email, tenant);
+
+  // Support legacy tokens during migration
+  const legacyToken = simpleHash(email + tenant);
+  if (token !== expectedToken && token !== legacyToken) {
     return new NextResponse(renderPage("Invalid Request", "The unsubscribe link is invalid or has expired. Please use the link from your most recent email."), {
       status: 400,
       headers: { "Content-Type": "text/html; charset=utf-8" },
@@ -35,6 +39,14 @@ export async function GET(request: Request) {
       headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   }
+}
+
+function generateUnsubscribeToken(email: string, tenant: string): string {
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "unsubscribe-token-secret";
+  return createHmac("sha256", secret)
+    .update(`${email.toLowerCase().trim()}::${tenant}`)
+    .digest("hex")
+    .slice(0, 24);
 }
 
 function simpleHash(input: string): string {

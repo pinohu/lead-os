@@ -155,17 +155,16 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
       </div>
 
       <div className="sticky-summary" aria-live="polite">
-        <span>Mode: {props.profile.mode.replace("-", " ")}</span>
-        <span>Outcome: {selectedGoal?.label ?? "Choose one"}</span>
-        <span>Progress: step {step} of 3</span>
+        <span>Step {step} of 3</span>
+        <span>{selectedGoal?.label ?? "Choose your goal"}</span>
       </div>
 
       {result ? (
         <div className="status-banner success" role="status">
-          <h3>Your path is ready</h3>
+          <h3>You are all set</h3>
           <p>{result.decision.reason}</p>
           <p className="muted">
-            Score: {result.score} {result.hot ? "• Hot path activated" : "• Standard nurture path activated"}
+            {result.hot ? "We have prioritized your request and will be in touch shortly." : "We will follow up with your next step soon."}
           </p>
           <div className="cta-row">
             <Link href={result.decision.destination} className="primary">
@@ -201,10 +200,9 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
 
           {step === 2 ? (
             <div className="capture-step">
-              <h3>Where should we send the tailored next step?</h3>
+              <h3>How can we reach you?</h3>
               <p className="muted">
-                We ask for the minimum we need to keep your path relevant. If you are on a fast
-                booking path, we keep phone available too.
+                We only ask for what we need to follow up on your request.
               </p>
               <div className="form-grid">
                 <label>
@@ -236,16 +234,23 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
                   />
                 </label>
                 <label className="span-two">
-                  Context we should know before tailoring the next step
+                  Anything we should know (optional)
                   <textarea value={notes} onChange={(event) => setNotes(event.target.value)} rows={4} />
                 </label>
               </div>
+              <p className="muted consent-notice" style={{ fontSize: "0.78rem", marginTop: 12, lineHeight: 1.5 }}>
+                By submitting, you agree to our{" "}
+                <a href="/privacy" style={{ color: "inherit", textDecoration: "underline" }}>
+                  Privacy Policy
+                </a>
+                . We will use your information to respond to your inquiry and may send relevant follow-up communications. You can unsubscribe at any time.
+              </p>
             </div>
           ) : null}
 
           {step === 3 ? (
             <div className="capture-step">
-              <h3>Confirm your tailored path</h3>
+              <h3>Review and submit</h3>
               <div className="review-grid">
                 <article className="review-card">
                   <p className="eyebrow">Chosen outcome</p>
@@ -282,7 +287,7 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
               </button>
             ) : (
               <button type="button" className="primary" onClick={handleSubmit} disabled={isPending}>
-                {isPending ? "Tailoring your next step..." : "Save and continue"}
+                {isPending ? "Submitting..." : "Submit"}
               </button>
             )}
           </div>

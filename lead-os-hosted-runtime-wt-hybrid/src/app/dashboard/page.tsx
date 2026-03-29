@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { THREE_VISIT_FRAMEWORK } from "@/lib/automation";
+import { GettingStartedChecklist } from "@/components/getting-started-checklist";
 import { buildDashboardSnapshot } from "@/lib/dashboard";
 import { getOperatorSession } from "@/lib/operator-auth";
 import { getAutomationHealth } from "@/lib/providers";
@@ -20,6 +21,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="experience-page">
+      <GettingStartedChecklist />
       <section className="experience-hero">
         <div className="hero-copy">
           <p className="eyebrow">Operator command center</p>

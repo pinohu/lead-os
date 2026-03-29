@@ -14,11 +14,11 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   return (
     <main>
       <section className="hero">
-        <p className="eyebrow">Operator Access</p>
-        <h1>Sign in to the LeadOS command center</h1>
+        <p className="eyebrow">Welcome back</p>
+        <h1>Sign in to your Lead OS dashboard</h1>
         <p className="lede">
-          Use your approved operator email and we will send you a secure magic link. No password is
-          required.
+          Enter your email to receive a secure sign-in link. No password needed — just click the
+          link in your inbox.
         </p>
       </section>
 
@@ -42,12 +42,21 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             placeholder="you@yourdomain.com"
           />
           <p className="muted form-help">
-            The runtime only sends links to approved operator addresses.
+            Enter your email and we will send a secure sign-in link. No password needed.
           </p>
           <button type="submit" className="primary">
             Send magic link
           </button>
         </form>
+
+        <div style={{ marginTop: "2rem", paddingTop: "1.5rem", borderTop: "1px solid rgba(148, 163, 184, 0.15)", textAlign: "center" }}>
+          <p className="muted" style={{ marginBottom: "0.75rem" }}>
+            New to Lead OS?
+          </p>
+          <a href="/onboard" className="secondary" style={{ display: "inline-block" }}>
+            Create your account
+          </a>
+        </div>
       </section>
     </main>
   );

@@ -1,82 +1,80 @@
-import { NextResponse } from "next/server";
-import { z } from "zod";
-import { buildCorsHeaders } from "@/lib/cors";
-import { createRateLimiter } from "@/lib/rate-limiter";
-import { validateSafe } from "@/lib/canonical-schema";
-import { storeCredential, listCredentials } from "@/lib/credentials-vault";
-import { getClientIp } from "@/lib/request-utils";
+import { NextRequest, NextResponse } from "next/server";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
+import {
+  storeCredential,
+  deleteCredential,
+  listCredentials,
+  getAvailableProviders,
+  type CredentialEntry,
+} from "@/lib/credentials-vault";
+import { tenantConfig } from "@/lib/tenant";
 
-const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 30 });
+// GET — list credentials for tenant
+export async function GET(request: NextRequest) {
+  const { session, response } = await requireOperatorApiSession(request);
+  if (response) return response;
 
-const StoreCredentialSchema = z.object({
-  tenantId: z.string().min(1).max(100),
-  provider: z.string().min(1).max(100),
-  credentialType: z.enum(["api-key", "oauth-token", "webhook-url", "login"]),
-  credentials: z.record(z.string(), z.string()),
-});
+  const tenantId = tenantConfig.tenantId || "default";
+  const credentials = listCredentials(tenantId);
+  const providers = getAvailableProviders();
 
-export async function POST(request: Request) {
-  const headers = buildCorsHeaders(request.headers.get("origin"));
+  return NextResponse.json({ data: { credentials, providers } });
+}
 
-  const ip = getClientIp(request);
-  const rateResult = rateLimiter.check(`credentials:${ip}`);
-  if (!rateResult.allowed) {
-    return NextResponse.json(
-      { data: null, error: { code: "RATE_LIMITED", message: "Too many requests" }, meta: null },
-      {
-        status: 429,
-        headers: {
-          ...headers,
-          "Retry-After": String(Math.ceil((rateResult.resetAt - Date.now()) / 1000)),
-          "X-RateLimit-Limit": "30",
-          "X-RateLimit-Remaining": "0",
-          "X-RateLimit-Reset": String(rateResult.resetAt),
-        },
-      },
-    );
+// POST — store or update a credential
+export async function POST(request: NextRequest) {
+  const { session, response } = await requireOperatorApiSession(request);
+  if (response) return response;
+
+  const tenantId = tenantConfig.tenantId || "default";
+
+  let body: { provider?: string; credentialType?: string; credentials?: Record<string, string> };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: { code: "INVALID_JSON", message: "Invalid request body" } }, { status: 400 });
+  }
+
+  const { provider, credentialType, credentials } = body;
+
+  if (!provider || typeof provider !== "string") {
+    return NextResponse.json({ error: { code: "MISSING_PROVIDER", message: "provider is required" } }, { status: 400 });
+  }
+  if (!credentials || typeof credentials !== "object") {
+    return NextResponse.json({ error: { code: "MISSING_CREDENTIALS", message: "credentials object is required" } }, { status: 400 });
   }
 
   try {
-    const body = await request.json();
-    const validation = validateSafe(StoreCredentialSchema, body);
-    if (!validation.valid) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "Validation failed", details: validation.errors }, meta: null },
-        { status: 422, headers },
-      );
-    }
-
-    const { tenantId, provider, credentialType, credentials } = validation.data!;
-    const result = storeCredential(tenantId, provider, credentialType, credentials);
-
-    return NextResponse.json(
-      { data: result, error: null, meta: null },
-      { status: 201, headers },
+    const result = storeCredential(
+      tenantId,
+      provider,
+      (credentialType as CredentialEntry["credentialType"]) || "api-key",
+      credentials,
     );
+    return NextResponse.json({ data: result }, { status: 201 });
   } catch (err) {
-    const status = err instanceof Error && err.message.includes("Unknown provider") ? 400 : 500;
-    return NextResponse.json(
-      { data: null, error: { code: "STORE_FAILED", message: err instanceof Error ? err.message : "Failed to store credential" }, meta: null },
-      { status, headers },
-    );
+    const message = err instanceof Error ? err.message : "Failed to store credential";
+    return NextResponse.json({ error: { code: "STORE_FAILED", message } }, { status: 400 });
   }
 }
 
-export async function GET(request: Request) {
-  const headers = buildCorsHeaders(request.headers.get("origin"));
-  const { searchParams } = new URL(request.url);
-  const tenantId = searchParams.get("tenantId");
+// DELETE — remove a credential
+export async function DELETE(request: NextRequest) {
+  const { session, response } = await requireOperatorApiSession(request);
+  if (response) return response;
 
-  if (!tenantId) {
-    return NextResponse.json(
-      { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId query parameter is required" }, meta: null },
-      { status: 400, headers },
-    );
+  const tenantId = tenantConfig.tenantId || "default";
+  const { searchParams } = new URL(request.url);
+  const provider = searchParams.get("provider");
+
+  if (!provider) {
+    return NextResponse.json({ error: { code: "MISSING_PROVIDER", message: "provider query param required" } }, { status: 400 });
   }
 
-  const credentials = listCredentials(tenantId);
-  return NextResponse.json(
-    { data: credentials, error: null, meta: { total: credentials.length } },
-    { headers },
-  );
+  const deleted = deleteCredential(tenantId, provider);
+  if (!deleted) {
+    return NextResponse.json({ error: { code: "NOT_FOUND", message: "Credential not found" } }, { status: 404 });
+  }
+
+  return NextResponse.json({ data: { deleted: true } });
 }

@@ -9,6 +9,7 @@ import {
   getRevenueByNiche,
   getMarketplaceStats,
 } from "../src/lib/marketplace.ts";
+import { upsertLeadRecord } from "../src/lib/runtime-store.ts";
 import {
   createBuyer,
   getMarketplaceLead,
@@ -140,6 +141,31 @@ test("publishLeadToMarketplace creates listing with correct price", async () => 
 // ---------------------------------------------------------------------------
 
 test("claimLeadForBuyer marks lead as claimed", async () => {
+  await upsertLeadRecord({
+    leadKey: "claim-test-lead",
+    trace: { visitorId: "v1", sessionId: "s1", leadKey: "claim-test-lead", tenant: "tenant-2", source: "test", service: "staffing", niche: "staffing", blueprintId: "test", stepId: "step-1" },
+    firstName: "Jane",
+    lastName: "Doe",
+    email: "jane@example.com",
+    phone: "555-0101",
+    service: "staffing",
+    niche: "staffing",
+    source: "test",
+    score: 60,
+    family: "lead-magnet",
+    blueprintId: "test",
+    destination: "/",
+    ctaLabel: "Go",
+    stage: "captured",
+    hot: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: "active",
+    sentNurtureStages: [],
+    milestones: { visitCount: 0, leadMilestones: [], customerMilestones: [] },
+    metadata: {},
+  });
+
   const lead = await publishLeadToMarketplace("claim-test-lead", "tenant-2", {
     niche: "staffing",
     score: 60,
@@ -165,7 +191,7 @@ test("claimLeadForBuyer marks lead as claimed", async () => {
   const result = await claimLeadForBuyer(lead.id, "buyer-claim-test");
   assert.equal(result.lead.status, "claimed");
   assert.equal(result.lead.claimedBy, "buyer-claim-test");
-  assert.ok(result.revealedContact.email);
+  assert.equal(result.revealedContact.email, "jane@example.com");
 });
 
 test("claimLeadForBuyer rejects if lead already claimed", async () => {

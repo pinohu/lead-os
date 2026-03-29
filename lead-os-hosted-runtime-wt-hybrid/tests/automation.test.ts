@@ -42,10 +42,10 @@ test("nurture resolution picks the next unsent stage", async () => {
     ctaLabel: "Continue",
     stage: "captured",
     hot: false,
-    createdAt: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+    createdAt: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString(),
     updatedAt: now.toISOString(),
     status: "LEAD-CAPTURED",
-    sentNurtureStages: ["day-0", "day-2"],
+    sentNurtureStages: ["day-0", "day-3"],
     milestones: {
       visitCount: 1,
       leadMilestones: ["lead-m1-captured"],
@@ -56,5 +56,5 @@ test("nurture resolution picks the next unsent stage", async () => {
 
   const stage = resolveNextNurtureStage(lead);
 
-  assert.equal(stage?.id, "day-5");
+  assert.equal(stage?.id, "day-7");
 });

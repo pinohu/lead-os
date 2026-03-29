@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import Link from "next/link";
 import { AdaptiveLeadCaptureForm } from "@/components/AdaptiveLeadCaptureForm";
 import { ExperienceScaffold } from "@/components/ExperienceScaffold";
 import { EXPERIENCE_HEURISTICS, resolveExperienceProfile } from "@/lib/experience";
@@ -70,32 +71,32 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <ExperienceScaffold
-      eyebrow="LeadOS Adaptive Runtime"
-      title={`${tenantConfig.brandName} turns first visits into milestone-two and milestone-three momentum`}
-      summary={`${profile.heroSummary} The runtime already knows how to capture, score, route, follow up, and recover the next step across ${Object.keys(graphs).length} funnel families.`}
+      eyebrow={`${tenantConfig.brandName}`}
+      title="Turn every visitor into a qualified lead — automatically"
+      summary={`Capture leads, score them in real time, and nurture them across ${Object.keys(graphs).length} proven funnel types — all on autopilot. ${profile.heroSummary}`}
       profile={profile}
       metrics={[
         {
-          label: "Lead M2 progression",
+          label: "Engaged leads",
           value: `${snapshot.milestones.lead.returnEngaged}`,
-          detail: "Returning leads already tracked in the live runtime.",
+          detail: "Leads who returned and engaged with your content.",
         },
         {
-          label: "Lead M3 progression",
+          label: "Qualified leads",
           value: `${snapshot.milestones.lead.bookedOrOffered}`,
-          detail: "Qualified next-step completions captured so far.",
+          detail: "Leads who completed a booking or accepted an offer.",
         },
         {
-          label: "Automation mode",
-          value: health.liveMode ? "Live" : "Dry run",
-          detail: "Channels and workflows already connected to the runtime.",
+          label: "System status",
+          value: health.liveMode ? "Live" : "Demo mode",
+          detail: "All channels and automations are active and ready.",
         },
       ]}
     >
       <section className="grid two">
         <article className="panel">
-          <p className="eyebrow">Usability heuristics</p>
-          <h2>Every surface now aims to remove confusion before it appears</h2>
+          <p className="eyebrow">Built for conversion</p>
+          <h2>Every touchpoint designed to move leads forward</h2>
           <ul className="check-list">
             {EXPERIENCE_HEURISTICS.map((item) => (
               <li key={item}>{item}</li>
@@ -103,12 +104,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </ul>
         </article>
         <article className="panel">
-          <p className="eyebrow">Operational footprint</p>
-          <h2>Adaptive journeys, not static landing pages</h2>
+          <p className="eyebrow">Proven funnels</p>
+          <h2>Pre-built journeys that adapt to each visitor</h2>
           <ul className="check-list">
             {Object.values(graphs).slice(0, 5).map((graph) => (
               <li key={graph.id}>
-                <strong>{graph.name}</strong>: {graph.nodes.length} canonical nodes, {graph.goal} goal
+                <strong>{graph.name}</strong>: {graph.nodes.length} steps designed to {graph.goal}
               </li>
             ))}
           </ul>
@@ -124,6 +125,18 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         returning={asBoolean(params.returning)}
         profile={profile}
       />
+
+      <section className="panel" style={{ textAlign: "center", marginTop: 32 }}>
+        <p className="eyebrow">Ready to automate your pipeline?</p>
+        <h2>Start capturing leads in minutes</h2>
+        <p className="muted" style={{ maxWidth: 480, margin: "8px auto 20px" }}>
+          Choose a plan that fits your business. Set up your first funnel in under 10 minutes.
+        </p>
+        <div className="cta-row" style={{ justifyContent: "center" }}>
+          <Link href="/pricing" className="secondary">View pricing</Link>
+          <Link href="/onboard" className="primary">Get started free</Link>
+        </div>
+      </section>
     </ExperienceScaffold>
   );
 }

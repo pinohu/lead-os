@@ -5,6 +5,43 @@ import { advanceOnboarding, completeOnboarding, getOnboardingState } from "@/lib
 const MAX_ID_LENGTH = 200;
 const VALID_ID_PATTERN = /^onb_[a-f0-9-]{36}$/;
 
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const headers = buildCorsHeaders(request.headers.get("origin"));
+  try {
+    const { id } = await params;
+
+    if (!id || id.length > MAX_ID_LENGTH || !VALID_ID_PATTERN.test(id)) {
+      return NextResponse.json(
+        { data: null, error: { code: "NOT_FOUND", message: "Onboarding session not found" }, meta: null },
+        { status: 404, headers },
+      );
+    }
+
+    const state = await getOnboardingState(id);
+
+    if (!state) {
+      return NextResponse.json(
+        { data: null, error: { code: "NOT_FOUND", message: "Onboarding session not found" }, meta: null },
+        { status: 404, headers },
+      );
+    }
+
+    return NextResponse.json(
+      { data: state, error: null, meta: null },
+      { status: 200, headers },
+    );
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to retrieve onboarding state";
+    return NextResponse.json(
+      { data: null, error: { code: "FETCH_FAILED", message }, meta: null },
+      { status: 500, headers },
+    );
+  }
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

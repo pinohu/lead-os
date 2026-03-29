@@ -48,6 +48,7 @@ const PUBLIC_PREFIXES: string[] = [
   "/api/widgets/boot",
   "/api/auth/",
   "/api/gdpr/",
+  "/api/preferences",
   "/api/webhooks/stripe",
 ];
 

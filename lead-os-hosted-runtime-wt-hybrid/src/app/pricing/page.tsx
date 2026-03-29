@@ -14,7 +14,7 @@ const plans = [
     period: "/mo",
     description: "For solo operators getting started with lead generation.",
     features: [
-      "500 leads/month",
+      "100 leads/month",
       "5 funnel configurations",
       "3 integrations",
       "Email nurturing",
@@ -28,11 +28,11 @@ const plans = [
   },
   {
     name: "Growth",
-    price: "$299",
+    price: "$249",
     period: "/mo",
     description: "For growing agencies managing multiple niches.",
     features: [
-      "2,500 leads/month",
+      "500 leads/month",
       "15 funnel configurations",
       "10 integrations",
       "Multi-channel nurturing",
@@ -51,7 +51,7 @@ const plans = [
     period: "/mo",
     description: "For established agencies and white-label SaaS operators.",
     features: [
-      "10,000 leads/month",
+      "2,000 leads/month",
       "Unlimited funnels",
       "All 110+ integrations",
       "Multi-tenant management",
@@ -186,6 +186,98 @@ export default function PricingPage() {
           </div>
         ))}
       </div>
+
+      <section style={{ textAlign: "center", marginBottom: "4rem" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "2rem" }}>
+          Trusted by Growing Businesses
+        </h2>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(18rem, 1fr))",
+            gap: "1.5rem",
+            maxWidth: "56rem",
+            margin: "0 auto 2rem",
+          }}
+        >
+          {[
+            {
+              quote: "We went from manually tracking leads in spreadsheets to a fully automated pipeline in under a week. Our conversion rate is up 40%.",
+              author: "Sarah M.",
+              role: "Owner, SM Digital Marketing",
+            },
+            {
+              quote: "The niche auto-configuration is brilliant. We onboard new verticals in hours instead of weeks. Our team manages 12 niches from one dashboard.",
+              author: "James R.",
+              role: "Director, LeadFlow Agency",
+            },
+            {
+              quote: "The AI scoring alone is worth the price. We stopped wasting time on cold leads and focus only on prospects ready to buy.",
+              author: "Maria L.",
+              role: "Founder, BuildRight Consulting",
+            },
+          ].map((testimonial) => (
+            <figure
+              key={testimonial.author}
+              style={{
+                border: "1px solid #e5e7eb",
+                borderRadius: "0.75rem",
+                padding: "1.5rem",
+                margin: 0,
+                textAlign: "left",
+                background: "#fff",
+              }}
+            >
+              <blockquote style={{ margin: "0 0 1rem", fontSize: "0.875rem", color: "#374151", lineHeight: 1.6, fontStyle: "italic" }}>
+                &ldquo;{testimonial.quote}&rdquo;
+              </blockquote>
+              <figcaption style={{ fontSize: "0.8125rem" }}>
+                <strong style={{ color: "#111827" }}>{testimonial.author}</strong>
+                <br />
+                <span style={{ color: "#6b7280" }}>{testimonial.role}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "center", gap: "2rem", flexWrap: "wrap", marginBottom: "2rem" }}>
+          {[
+            { metric: "10K+", label: "Leads captured monthly" },
+            { metric: "110+", label: "Integrations available" },
+            { metric: "16", label: "Industry niches" },
+            { metric: "99.9%", label: "Uptime SLA" },
+          ].map((stat) => (
+            <div key={stat.label} style={{ textAlign: "center" }}>
+              <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#4f46e5" }}>{stat.metric}</div>
+              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ textAlign: "center", marginBottom: "4rem" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "2rem" }}>
+          Frequently Asked Questions
+        </h2>
+        <div style={{ maxWidth: "40rem", margin: "0 auto", textAlign: "left" }}>
+          {[
+            { q: "Can I try Lead OS before committing?", a: "Yes. Every plan starts with a 14-day free trial. You also get full dry-run mode for testing your setup with no real data sent." },
+            { q: "Can I change plans later?", a: "Absolutely. Upgrade or downgrade at any time from your dashboard. Changes take effect at the start of your next billing cycle." },
+            { q: "What happens if I exceed my lead limit?", a: "We will notify you when you reach 80% of your limit. If you go over, new leads are queued (not lost) until you upgrade or the next billing cycle starts." },
+            { q: "Do you offer annual billing?", a: "Yes. Annual plans save 20%. Contact us or select annual billing during checkout." },
+            { q: "Is my data secure?", a: "All data is encrypted at rest (AES-256) and in transit (TLS 1.3). We are GDPR and CCPA compliant. You own your data." },
+          ].map((faq) => (
+            <details key={faq.q} style={{ borderBottom: "1px solid #e5e7eb", padding: "1rem 0" }}>
+              <summary style={{ fontSize: "0.9375rem", fontWeight: 600, color: "#111827", cursor: "pointer" }}>
+                {faq.q}
+              </summary>
+              <p style={{ fontSize: "0.875rem", color: "#6b7280", lineHeight: 1.6, marginTop: "0.5rem" }}>
+                {faq.a}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
 
       <section style={{ textAlign: "center" }}>
         <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1rem" }}>

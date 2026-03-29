@@ -1,11 +1,29 @@
+import { createHash, createHmac } from "crypto";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { getDefaultTemplates } from "@/lib/email-templates";
 import { sendEmail, type SendEmailInput } from "@/lib/email-sender";
+import { resolveTenantConfig } from "@/lib/tenant";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_TO_LENGTH = 254;
+
+function generateUnsubscribeToken(email: string, tenant: string): string {
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "unsubscribe-token-secret";
+  return createHmac("sha256", secret)
+    .update(`${email.toLowerCase().trim()}::${tenant}`)
+    .digest("hex")
+    .slice(0, 24);
+}
+
+function generatePreferencesToken(email: string, tenantId: string): string {
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "preferences-service";
+  return createHash("sha256")
+    .update(`${email.toLowerCase().trim()}::${tenantId}::${secret}`)
+    .digest("hex")
+    .slice(0, 32);
+}
 
 export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
@@ -53,11 +71,32 @@ export async function POST(request: Request) {
 
     getDefaultTemplates();
 
+    const recipientEmail = body.to.trim();
+    const tenantId = body.tenantId;
+    const context = { ...body.context };
+
+    if (!context.unsubscribeUrl || !context.brandName || !context.siteUrl) {
+      const tenant = await resolveTenantConfig(tenantId);
+      if (!context.brandName) context.brandName = tenant.brandName;
+      if (!context.siteUrl) context.siteUrl = tenant.siteUrl;
+      if (!context.supportEmail) context.supportEmail = tenant.supportEmail;
+      if (!context.currentYear) context.currentYear = new Date().getFullYear().toString();
+
+      if (!context.unsubscribeUrl) {
+        const unsubToken = generateUnsubscribeToken(recipientEmail, tenantId);
+        context.unsubscribeUrl = `${tenant.siteUrl}/api/unsubscribe?email=${encodeURIComponent(recipientEmail)}&tenant=${encodeURIComponent(tenantId)}&token=${unsubToken}`;
+      }
+      if (!context.preferencesUrl) {
+        const prefToken = generatePreferencesToken(recipientEmail, tenantId);
+        context.preferencesUrl = `${tenant.siteUrl}/preferences?email=${encodeURIComponent(recipientEmail)}&tenant=${encodeURIComponent(tenantId)}&token=${prefToken}`;
+      }
+    }
+
     const input: SendEmailInput = {
-      to: body.to.trim(),
+      to: recipientEmail,
       templateId: body.templateId,
-      context: body.context,
-      tenantId: body.tenantId,
+      context,
+      tenantId,
       leadKey: body.leadKey,
       emailId: body.emailId,
       tags: Array.isArray(body.tags) ? body.tags : undefined,

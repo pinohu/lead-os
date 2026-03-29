@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 type WizardStep = "email" | "niche" | "plan" | "branding" | "integrations" | "review" | "complete";
 
@@ -383,6 +383,54 @@ export default function OnboardPage() {
   const [selectedPlan, setSelectedPlan] = useState("whitelabel-growth");
   const [branding, setBranding] = useState<BrandingData>({ name: "", accent: "#14b8a6", logoUrl: "", siteUrl: "", supportEmail: "" });
   const [enabledProviders, setEnabledProviders] = useState<Set<string>>(new Set(["email"]));
+  const [paymentPending, setPaymentPending] = useState(false);
+  const [stripeSessionId, setStripeSessionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    const stepParam = params.get("step");
+    const onboardingId = params.get("onboarding_id");
+
+    if (sessionId && stepParam === "complete" && onboardingId) {
+      setStripeSessionId(sessionId);
+      setStep("complete");
+      setLoading(true);
+
+      fetch(`/api/onboarding/${encodeURIComponent(onboardingId)}/step`)
+        .then((res) => res.json())
+        .then((json) => {
+          if (json.data) {
+            setSession(json.data);
+          } else {
+            setError("Could not load your onboarding session. Please contact support.");
+          }
+        })
+        .catch(() => {
+          setError("Failed to verify payment status. Please contact support.");
+        })
+        .finally(() => setLoading(false));
+
+      window.history.replaceState({}, "", "/onboard");
+    } else if (stepParam === "plan" && onboardingId) {
+      setStep("plan");
+      window.history.replaceState({}, "", "/onboard");
+    }
+
+    const planParam = params.get("plan");
+    if (planParam) {
+      const planMap: Record<string, string> = {
+        starter: "whitelabel-starter",
+        growth: "whitelabel-growth",
+        professional: "whitelabel-enterprise",
+        enterprise: "whitelabel-enterprise",
+      };
+      const mappedPlan = planMap[planParam] ?? planParam;
+      if (PLANS.some((p) => p.id === mappedPlan)) {
+        setSelectedPlan(mappedPlan);
+      }
+    }
+  }, []);
 
   const handleStartOnboarding = useCallback(async () => {
     if (!email.trim()) {
@@ -411,6 +459,39 @@ export default function OnboardPage() {
     }
   }, [email]);
 
+  const redirectToStripeCheckout = useCallback(async (onboardingId: string) => {
+    setPaymentPending(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/onboarding/${onboardingId}/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error?.message ?? "Failed to start checkout");
+        setPaymentPending(false);
+        return;
+      }
+
+      if (json.data.free) {
+        setStep("complete");
+        setPaymentPending(false);
+        return;
+      }
+
+      if (json.data.checkoutUrl) {
+        window.location.href = json.data.checkoutUrl;
+      } else {
+        setError("Could not generate checkout URL. Please try again.");
+        setPaymentPending(false);
+      }
+    } catch {
+      setError("Network error. Please try again.");
+      setPaymentPending(false);
+    }
+  }, []);
+
   const handleAdvanceStep = useCallback(async (stepData: Record<string, unknown>) => {
     if (!session) return;
     setLoading(true);
@@ -429,6 +510,14 @@ export default function OnboardPage() {
       setSession(json.data);
 
       if (json.data.currentStep === "complete") {
+        const currentPlan = PLANS.find((p) => p.id === selectedPlan);
+        const isPaidPlan = currentPlan && currentPlan.priceValue > 0;
+
+        if (isPaidPlan) {
+          await redirectToStripeCheckout(session.id);
+          return;
+        }
+
         setStep("complete");
       } else {
         const stepMap: Record<string, WizardStep> = {
@@ -446,7 +535,7 @@ export default function OnboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [session]);
+  }, [session, selectedPlan, redirectToStripeCheckout]);
 
   const handleBack = useCallback(() => {
     setError(null);
@@ -865,35 +954,62 @@ export default function OnboardPage() {
                 <span style={styles.summaryLabel}>Integrations</span>
                 <span style={styles.summaryValue}>{[...enabledProviders].join(", ")}</span>
               </div>
+              {(() => {
+                const currentPlan = PLANS.find((p) => p.id === selectedPlan);
+                const isPaidPlan = currentPlan && currentPlan.priceValue > 0;
+                return isPaidPlan ? (
+                  <div style={styles.hint} role="status">
+                    You will be redirected to Stripe to complete payment for the {currentPlan.name} plan ({currentPlan.price}).
+                  </div>
+                ) : null;
+              })()}
               <div style={styles.buttonRow}>
                 <button type="button" onClick={handleBack} style={styles.secondaryButton}>Back</button>
                 <button
                   type="button"
                   onClick={() => handleAdvanceStep({})}
-                  disabled={loading}
+                  disabled={loading || paymentPending}
                   style={{
                     ...styles.primaryButton,
-                    opacity: loading ? 0.6 : 1,
+                    opacity: loading || paymentPending ? 0.6 : 1,
                     padding: "14px 36px",
                     fontSize: "1rem",
                   }}
-                  aria-busy={loading}
+                  aria-busy={loading || paymentPending}
                 >
-                  {loading ? "Launching..." : "Launch My Lead System"}
+                  {loading ? "Launching..." : paymentPending ? "Redirecting to payment..." : (() => {
+                    const currentPlan = PLANS.find((p) => p.id === selectedPlan);
+                    return currentPlan && currentPlan.priceValue > 0 ? "Continue to Payment" : "Launch My Lead System";
+                  })()}
                 </button>
               </div>
             </div>
           </main>
         )}
 
-        {step === "complete" && session?.provisioningResult && (
+        {step === "complete" && loading && (
+          <main>
+            <div style={styles.successCard}>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#14b8a6", margin: "0 0 8px" }}>
+                Verifying Payment
+              </h2>
+              <p style={{ color: "#94a3b8", margin: 0 }}>
+                Please wait while we confirm your subscription...
+              </p>
+            </div>
+          </main>
+        )}
+
+        {step === "complete" && !loading && session?.provisioningResult && (
           <main>
             <div style={styles.successCard}>
               <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#14b8a6", margin: "0 0 8px" }}>
                 Your Lead System is Live
               </h2>
               <p style={{ color: "#94a3b8", margin: 0 }}>
-                Your platform has been provisioned and is ready to capture leads.
+                {stripeSessionId
+                  ? "Payment confirmed. Your platform has been provisioned and is ready to capture leads."
+                  : "Your platform has been provisioned and is ready to capture leads."}
               </p>
             </div>
 
@@ -943,6 +1059,48 @@ export default function OnboardPage() {
               <p style={{ fontSize: "0.85rem", color: "#94a3b8", margin: 0 }}>
                 We sent a login link to <strong style={{ color: "#f1f5f9" }}>{session.email}</strong>. Use it to access your dashboard.
               </p>
+            </div>
+          </main>
+        )}
+
+        {step === "complete" && !loading && session && !session.provisioningResult && !stripeSessionId && (
+          <main>
+            <div style={styles.card}>
+              <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 16px" }}>
+                Complete Payment
+              </h2>
+              <p style={{ fontSize: "0.9rem", color: "#94a3b8", margin: "0 0 24px" }}>
+                Your system is ready to launch. Complete payment to activate your subscription.
+              </p>
+              <button
+                type="button"
+                onClick={() => session.id && redirectToStripeCheckout(session.id)}
+                disabled={paymentPending}
+                style={{ ...styles.primaryButton, opacity: paymentPending ? 0.6 : 1, padding: "14px 36px", fontSize: "1rem" }}
+                aria-busy={paymentPending}
+              >
+                {paymentPending ? "Redirecting to payment..." : "Complete Payment"}
+              </button>
+            </div>
+          </main>
+        )}
+
+        {step === "complete" && !loading && !session && (
+          <main>
+            <div style={styles.card}>
+              <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 16px" }}>
+                Session Expired
+              </h2>
+              <p style={{ fontSize: "0.9rem", color: "#94a3b8", margin: "0 0 24px" }}>
+                Your onboarding session could not be found. This may happen if the session expired. Please start a new onboarding session or contact support if you already completed payment.
+              </p>
+              <button
+                type="button"
+                onClick={() => { setStep("email"); setError(null); }}
+                style={styles.primaryButton}
+              >
+                Start Over
+              </button>
             </div>
           </main>
         )}

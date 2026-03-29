@@ -24,17 +24,18 @@ export interface NurtureStage {
   id: string;
   day: number;
   label: string;
+  templateId: string;
   channels: Array<"email" | "whatsapp" | "sms">;
 }
 
 export const NURTURE_SEQUENCE: NurtureStage[] = [
-  { id: "day-0", day: 0, label: "Immediate Value Delivery", channels: ["email"] },
-  { id: "day-2", day: 2, label: "Quick Win", channels: ["email"] },
-  { id: "day-5", day: 5, label: "Proof and Positioning", channels: ["email", "whatsapp"] },
-  { id: "day-10", day: 10, label: "Authority Follow-Up", channels: ["email"] },
-  { id: "day-14", day: 14, label: "Consultation Offer", channels: ["email", "sms"] },
-  { id: "day-21", day: 21, label: "Reactivation", channels: ["email"] },
-  { id: "day-30", day: 30, label: "Long-Term Nurture", channels: ["email"] },
+  { id: "day-0", day: 0, label: "Confirmation", templateId: "nurture-day-0", channels: ["email"] },
+  { id: "day-3", day: 3, label: "Helpful Tips", templateId: "nurture-day-3", channels: ["email"] },
+  { id: "day-7", day: 7, label: "Social Proof", templateId: "nurture-day-7", channels: ["email", "whatsapp"] },
+  { id: "day-10", day: 10, label: "Common Questions", templateId: "nurture-day-10", channels: ["email"] },
+  { id: "day-14", day: 14, label: "Value Reminder", templateId: "nurture-day-14", channels: ["email", "sms"] },
+  { id: "day-21", day: 21, label: "Special Offer", templateId: "nurture-day-21", channels: ["email"] },
+  { id: "day-30", day: 30, label: "Final Follow-up", templateId: "nurture-day-30", channels: ["email"] },
 ];
 
 export const AUTOMATION_RECIPES: Record<FunnelFamily, AutomationRecipe> = {

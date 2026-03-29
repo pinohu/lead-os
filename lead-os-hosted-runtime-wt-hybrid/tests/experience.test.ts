@@ -11,7 +11,7 @@ test("returning visitors get lighter form-first momentum by default", () => {
   });
 
   assert.equal(profile.mode, "form-first");
-  assert.match(profile.progressLabel, /visit two/i);
+  assert.match(profile.progressLabel, /welcome back/i);
 });
 
 test("high-intent qualification paths bias toward booking-first", () => {

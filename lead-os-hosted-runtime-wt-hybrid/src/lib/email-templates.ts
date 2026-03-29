@@ -27,6 +27,8 @@ export interface EmailContext {
   supportEmail: string;
   nicheName?: string;
   unsubscribeUrl: string;
+  preferencesUrl?: string;
+  manageDataUrl?: string;
   trackingPixelUrl?: string;
   currentYear: string;
   [key: string]: unknown;
@@ -128,7 +130,9 @@ ${bodyHtml}
 <a href="mailto:${supportEmail}" style="color:${brandColor};">Contact Support</a>
 </p>
 <p style="margin:0 0 8px;">
-<a href="${unsubscribeUrl}" style="color:#9ca3af;text-decoration:underline;">Unsubscribe</a> from these emails.
+<a href="${unsubscribeUrl}" style="color:#9ca3af;text-decoration:underline;">Unsubscribe</a> &bull;
+<a href="${escapeHtml(String(context.preferencesUrl ?? "#"))}" style="color:#9ca3af;text-decoration:underline;">Manage Preferences</a> &bull;
+<a href="${escapeHtml(String(context.manageDataUrl ?? "#"))}" style="color:#9ca3af;text-decoration:underline;">Manage My Data</a>
 </p>
 <p style="margin:0;color:#9ca3af;font-size:11px;">
 This email was sent to you because you opted in at ${brandName}.
@@ -274,240 +278,229 @@ If you did not request this link, you can safely ignore this email.`,
     },
     {
       id: "nurture-day-0",
-      name: "Nurture: Day 0 - Quick Win",
-      subject: "{{firstName}}, here is your first quick win",
+      name: "Nurture: Day 0 - Confirmation",
+      subject: "{{firstName}}, we received your request",
       category: "nurture",
       variables: ["firstName", "brandName", "siteUrl", "nicheName", "supportEmail", "unsubscribeUrl"],
-      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Your first quick win, {{firstName}}</h1>
-<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">Thanks for signing up with {{brandName}}. Most {{nicheName}} businesses leave 30-40% of their leads on the table simply because they do not follow up fast enough.</p>
-<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">Here is something you can do right now that takes less than 5 minutes:</p>
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Thanks for reaching out, {{firstName}}</h1>
+<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">We have received your inquiry and a {{nicheName}} specialist from {{brandName}} will be in touch shortly.</p>
 <div style="margin:0 0 24px;padding:20px;background-color:#f0fdfa;border-left:4px solid #14b8a6;border-radius:4px;">
-<p style="margin:0;font-size:16px;line-height:24px;color:#111827;font-weight:600;">Set up an auto-response for new inquiries.</p>
-<p style="margin:8px 0 0;font-size:14px;line-height:22px;color:#374151;">Responding within 5 minutes increases conversion by 8x compared to waiting an hour.</p>
+<p style="margin:0;font-size:16px;line-height:24px;color:#111827;font-weight:600;">What happens next</p>
+<p style="margin:8px 0 0;font-size:14px;line-height:22px;color:#374151;">A member of our team will review your request and reach out within 1 business day. In the meantime, here are a few things you can do to prepare.</p>
 </div>
-${ctaButton("Set Up Auto-Response", "{{siteUrl}}/dashboard")}
-<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Tomorrow, we will share the second biggest leak in most lead pipelines.</p>`,
-      textTemplate: `Your first quick win, {{firstName}}
+<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">While you wait, take a look at our resources to help you make the best decision:</p>
+${ctaButton("Browse Our Resources", "{{siteUrl}}")}
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Questions? Reply to this email or contact us at {{supportEmail}}.</p>`,
+      textTemplate: `Thanks for reaching out, {{firstName}}
 
-Thanks for signing up with {{brandName}}. Most {{nicheName}} businesses leave 30-40% of their leads on the table simply because they do not follow up fast enough.
+We have received your inquiry and a {{nicheName}} specialist from {{brandName}} will be in touch shortly.
 
-Here is something you can do right now:
+What happens next: A member of our team will review your request and reach out within 1 business day.
 
-Set up an auto-response for new inquiries. Responding within 5 minutes increases conversion by 8x compared to waiting an hour.
+Browse our resources: {{siteUrl}}
 
-Set it up: {{siteUrl}}/dashboard
-
-Tomorrow, we will share the second biggest leak in most lead pipelines.`,
+Questions? Reply to this email or contact us at {{supportEmail}}.`,
       createdAt: now,
       updatedAt: now,
     },
     {
       id: "nurture-day-3",
-      name: "Nurture: Day 3 - Pain Agitation",
-      subject: "The hidden cost of manual follow-up",
+      name: "Nurture: Day 3 - Helpful Tips",
+      subject: "{{firstName}}, 3 things to know before choosing a {{nicheName}} provider",
       category: "nurture",
       variables: ["firstName", "brandName", "siteUrl", "nicheName", "supportEmail", "unsubscribeUrl"],
-      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">{{firstName}}, let us talk about what manual follow-up really costs</h1>
-<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">Most {{nicheName}} businesses spend 6-10 hours per week chasing leads manually. That is 300+ hours per year.</p>
-<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">But the real cost is not the time. It is the leads you miss while you are busy with the ones you have.</p>
-<div style="margin:0 0 24px;padding:20px;background-color:#fefce8;border-left:4px solid #eab308;border-radius:4px;">
-<p style="margin:0 0 8px;font-size:20px;font-weight:700;color:#111827;">78%</p>
-<p style="margin:0;font-size:14px;line-height:22px;color:#374151;">of customers buy from the first business that responds to their inquiry.</p>
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Making the right choice, {{firstName}}</h1>
+<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">Choosing the right {{nicheName}} provider can feel overwhelming. Here are three things we recommend every customer consider:</p>
+<div style="margin:0 0 16px;padding:16px;background-color:#f9fafb;border-radius:8px;">
+<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#111827;">1. Check credentials and reviews</p>
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Look for licensed, insured providers with verified customer reviews. Ask for references from recent projects similar to yours.</p>
 </div>
-<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">Your competitors who automate this are responding in seconds. You do not need to hire more people. You need a better system.</p>
-${ctaButton("See How Automation Works", "{{siteUrl}}/dashboard")}`,
-      textTemplate: `{{firstName}}, let us talk about what manual follow-up really costs
+<div style="margin:0 0 16px;padding:16px;background-color:#f9fafb;border-radius:8px;">
+<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#111827;">2. Get multiple quotes</p>
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Compare at least 2-3 providers. The lowest price is not always the best value. Look at scope, timeline, and warranty terms.</p>
+</div>
+<div style="margin:0 0 24px;padding:16px;background-color:#f9fafb;border-radius:8px;">
+<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#111827;">3. Ask about the process</p>
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">A good provider will walk you through their process, timeline, and what to expect. Clear communication from the start is a strong signal.</p>
+</div>
+${ctaButton("Learn More About Our Process", "{{siteUrl}}")}`,
+      textTemplate: `Making the right choice, {{firstName}}
 
-Most {{nicheName}} businesses spend 6-10 hours per week chasing leads manually. That is 300+ hours per year.
+Choosing the right {{nicheName}} provider can feel overwhelming. Here are three things to consider:
 
-But the real cost is not the time. It is the leads you miss while you are busy with the ones you have.
+1. Check credentials and reviews - Look for licensed, insured providers with verified reviews.
 
-78% of customers buy from the first business that responds to their inquiry.
+2. Get multiple quotes - Compare 2-3 providers on scope, timeline, and warranty terms.
 
-Your competitors who automate this are responding in seconds.
+3. Ask about the process - Clear communication from the start is a strong signal.
 
-See how automation works: {{siteUrl}}/dashboard`,
+Learn more: {{siteUrl}}`,
       createdAt: now,
       updatedAt: now,
     },
     {
       id: "nurture-day-7",
       name: "Nurture: Day 7 - Social Proof",
-      subject: "How {{nicheName}} businesses are growing 3x faster",
+      subject: "See what other {{nicheName}} customers are saying",
       category: "nurture",
       variables: ["firstName", "brandName", "siteUrl", "nicheName", "supportEmail", "unsubscribeUrl"],
-      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Real results from businesses like yours</h1>
-<p style="margin:0 0 24px;font-size:16px;line-height:24px;color:#374151;">{{firstName}}, here is what {{nicheName}} businesses are achieving with automated lead capture:</p>
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">What our customers say</h1>
+<p style="margin:0 0 24px;font-size:16px;line-height:24px;color:#374151;">{{firstName}}, here is what people in your area are saying about working with {{brandName}}:</p>
+<div style="margin:0 0 16px;padding:24px;background-color:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;">
+<p style="margin:0 0 12px;font-size:16px;line-height:24px;color:#374151;font-style:italic;">"They were responsive, professional, and completed the work on time. I would recommend them to anyone looking for quality {{nicheName}} services."</p>
+<p style="margin:0;font-size:14px;font-weight:600;color:#111827;">- Verified Customer</p>
+</div>
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 24px;">
 <tr>
 <td style="padding:16px;text-align:center;background-color:#f0fdfa;border-radius:8px;width:33%;">
-<p style="margin:0 0 4px;font-size:28px;font-weight:700;color:#14b8a6;">47%</p>
-<p style="margin:0;font-size:12px;color:#6b7280;">More qualified leads</p>
+<p style="margin:0 0 4px;font-size:28px;font-weight:700;color:#14b8a6;">4.8/5</p>
+<p style="margin:0;font-size:12px;color:#6b7280;">Customer rating</p>
 </td>
 <td style="width:8px;"></td>
 <td style="padding:16px;text-align:center;background-color:#f0fdfa;border-radius:8px;width:33%;">
-<p style="margin:0 0 4px;font-size:28px;font-weight:700;color:#14b8a6;">3.2x</p>
-<p style="margin:0;font-size:12px;color:#6b7280;">Faster response time</p>
+<p style="margin:0 0 4px;font-size:28px;font-weight:700;color:#14b8a6;">24hr</p>
+<p style="margin:0;font-size:12px;color:#6b7280;">Average response time</p>
 </td>
 <td style="width:8px;"></td>
 <td style="padding:16px;text-align:center;background-color:#f0fdfa;border-radius:8px;width:33%;">
-<p style="margin:0 0 4px;font-size:28px;font-weight:700;color:#14b8a6;">12hrs</p>
-<p style="margin:0;font-size:12px;color:#6b7280;">Saved per week</p>
+<p style="margin:0 0 4px;font-size:28px;font-weight:700;color:#14b8a6;">98%</p>
+<p style="margin:0;font-size:12px;color:#6b7280;">Would recommend</p>
 </td>
 </tr>
 </table>
-${ctaButton("Start Your Growth Plan", "{{siteUrl}}/dashboard")}
-<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Results vary by business. These are averages from our client base over 90 days.</p>`,
-      textTemplate: `Real results from businesses like yours
+${ctaButton("See More Reviews", "{{siteUrl}}")}`,
+      textTemplate: `What our customers say
 
-{{firstName}}, here is what {{nicheName}} businesses are achieving with automated lead capture:
+{{firstName}}, here is what people are saying about {{brandName}}:
 
-- 47% more qualified leads
-- 3.2x faster response time
-- 12 hours saved per week
+"They were responsive, professional, and completed the work on time. I would recommend them to anyone looking for quality {{nicheName}} services." - Verified Customer
 
-Start your growth plan: {{siteUrl}}/dashboard
+- 4.8/5 customer rating
+- 24hr average response time
+- 98% would recommend
 
-Results vary by business. These are averages from our client base over 90 days.`,
+See more reviews: {{siteUrl}}`,
       createdAt: now,
       updatedAt: now,
     },
     {
       id: "nurture-day-10",
-      name: "Nurture: Day 10 - Objection Handling",
-      subject: "{{firstName}}, is this what is holding you back?",
+      name: "Nurture: Day 10 - Common Questions",
+      subject: "{{firstName}}, answers to common {{nicheName}} questions",
       category: "nurture",
       variables: ["firstName", "brandName", "siteUrl", "nicheName", "supportEmail", "unsubscribeUrl"],
-      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">We hear this a lot, {{firstName}}</h1>
-<p style="margin:0 0 24px;font-size:16px;line-height:24px;color:#374151;">Most {{nicheName}} business owners hesitate for one of these reasons. Let us address them head-on:</p>
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Common questions we get, {{firstName}}</h1>
+<p style="margin:0 0 24px;font-size:16px;line-height:24px;color:#374151;">We know that hiring a {{nicheName}} provider comes with questions. Here are the ones we hear most often:</p>
 <div style="margin:0 0 16px;padding:16px;background-color:#f9fafb;border-radius:8px;">
-<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#111827;">"I do not have time to set up another tool."</p>
-<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Setup takes under 30 minutes. We handle the heavy lifting. You will save that time back in the first day.</p>
+<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#111827;">"How much does it typically cost?"</p>
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Costs vary based on your specific needs. We provide free, no-obligation quotes so you know exactly what to expect before committing.</p>
 </div>
 <div style="margin:0 0 16px;padding:16px;background-color:#f9fafb;border-radius:8px;">
-<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#111827;">"My business is different."</p>
-<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Our system adapts to your specific niche. We have templates built for {{nicheName}} businesses specifically.</p>
+<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#111827;">"How long will it take?"</p>
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">We provide a clear timeline upfront. Most projects have well-defined milestones so you always know where things stand.</p>
 </div>
 <div style="margin:0 0 24px;padding:16px;background-color:#f9fafb;border-radius:8px;">
-<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#111827;">"I am not sure it will work for me."</p>
-<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">That is why we offer a free diagnostic. No commitment, just a clear picture of what is possible.</p>
+<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#111827;">"What if I am not satisfied?"</p>
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Your satisfaction matters. We stand behind our work and will make it right. Ask us about our satisfaction guarantee.</p>
 </div>
-${ctaButton("Get Your Free Diagnostic", "{{siteUrl}}/assess")}`,
-      textTemplate: `We hear this a lot, {{firstName}}
+${ctaButton("Get a Free Quote", "{{siteUrl}}")}`,
+      textTemplate: `Common questions we get, {{firstName}}
 
-Most {{nicheName}} business owners hesitate for one of these reasons:
+"How much does it typically cost?"
+We provide free, no-obligation quotes so you know what to expect.
 
-"I do not have time to set up another tool."
-Setup takes under 30 minutes. We handle the heavy lifting.
+"How long will it take?"
+We provide a clear timeline upfront with well-defined milestones.
 
-"My business is different."
-Our system adapts to your niche. We have templates for {{nicheName}} businesses.
+"What if I am not satisfied?"
+We stand behind our work and will make it right.
 
-"I am not sure it will work for me."
-That is why we offer a free diagnostic. No commitment.
-
-Get your free diagnostic: {{siteUrl}}/assess`,
+Get a free quote: {{siteUrl}}`,
       createdAt: now,
       updatedAt: now,
     },
     {
       id: "nurture-day-14",
-      name: "Nurture: Day 14 - Authority",
-      subject: "The 3-visit framework that converts cold leads",
+      name: "Nurture: Day 14 - Value Reminder",
+      subject: "Still thinking about your {{nicheName}} project, {{firstName}}?",
       category: "nurture",
       variables: ["firstName", "brandName", "siteUrl", "nicheName", "supportEmail", "unsubscribeUrl"],
-      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">The framework behind our best results</h1>
-<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">{{firstName}}, after working with hundreds of {{nicheName}} businesses, we have identified a pattern that consistently converts cold visitors into paying customers.</p>
-<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">We call it the <strong>3-Visit Framework</strong>:</p>
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">We are still here for you, {{firstName}}</h1>
+<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">We understand that choosing the right {{nicheName}} provider is an important decision, and we want you to feel confident.</p>
+<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">Here is why clients choose {{brandName}}:</p>
 <div style="margin:0 0 12px;padding:16px;border:1px solid #e5e7eb;border-radius:8px;">
-<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#14b8a6;">Visit 1: Capture</p>
-<p style="margin:0;font-size:14px;line-height:22px;color:#374151;">Offer a valuable lead magnet that addresses their primary pain point. Capture their information.</p>
+<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#14b8a6;">Transparent pricing</p>
+<p style="margin:0;font-size:14px;line-height:22px;color:#374151;">No hidden fees. We provide detailed quotes so you understand exactly what you are paying for.</p>
 </div>
 <div style="margin:0 0 12px;padding:16px;border:1px solid #e5e7eb;border-radius:8px;">
-<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#14b8a6;">Visit 2: Qualify</p>
-<p style="margin:0;font-size:14px;line-height:22px;color:#374151;">Use an interactive assessment to understand their needs and score their readiness to buy.</p>
+<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#14b8a6;">Proven track record</p>
+<p style="margin:0;font-size:14px;line-height:22px;color:#374151;">Hundreds of satisfied customers in the {{nicheName}} space trust us with their projects.</p>
 </div>
 <div style="margin:0 0 24px;padding:16px;border:1px solid #e5e7eb;border-radius:8px;">
-<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#14b8a6;">Visit 3: Convert</p>
-<p style="margin:0;font-size:14px;line-height:22px;color:#374151;">Present a tailored offer with social proof and urgency. Book a call or close the deal.</p>
+<p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#14b8a6;">Dedicated support</p>
+<p style="margin:0;font-size:14px;line-height:22px;color:#374151;">A real person is always available to answer your questions and guide you through the process.</p>
 </div>
-${ctaButton("See the Framework in Action", "{{siteUrl}}/dashboard")}`,
-      textTemplate: `The framework behind our best results
+${ctaButton("Schedule a Free Consultation", "{{siteUrl}}")}`,
+      textTemplate: `We are still here for you, {{firstName}}
 
-{{firstName}}, after working with hundreds of {{nicheName}} businesses, we identified a pattern that converts cold visitors into paying customers.
+Choosing the right {{nicheName}} provider is important. Here is why clients choose {{brandName}}:
 
-The 3-Visit Framework:
+- Transparent pricing: No hidden fees.
+- Proven track record: Hundreds of satisfied customers.
+- Dedicated support: A real person always available.
 
-Visit 1: Capture - Offer a valuable lead magnet. Capture their information.
-Visit 2: Qualify - Use an assessment to score their readiness.
-Visit 3: Convert - Present a tailored offer with social proof.
-
-See the framework in action: {{siteUrl}}/dashboard`,
+Schedule a free consultation: {{siteUrl}}`,
       createdAt: now,
       updatedAt: now,
     },
     {
       id: "nurture-day-21",
-      name: "Nurture: Day 21 - Case Study",
-      subject: "From 5 leads/month to 47: a {{nicheName}} success story",
+      name: "Nurture: Day 21 - Special Offer",
+      subject: "A special offer for you, {{firstName}}",
       category: "nurture",
       variables: ["firstName", "brandName", "siteUrl", "nicheName", "supportEmail", "unsubscribeUrl"],
-      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">From struggling to thriving in 60 days</h1>
-<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">{{firstName}}, meet Sarah. She runs a {{nicheName}} business and was spending 15 hours a week on manual lead follow-up.</p>
-<div style="margin:0 0 24px;padding:24px;background-color:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;">
-<p style="margin:0 0 12px;font-size:16px;line-height:24px;color:#374151;font-style:italic;">"I was drowning in sticky notes and spreadsheets. I knew I was losing leads but could not keep up. Within two weeks of setting up automated follow-up, my booking rate tripled."</p>
-<p style="margin:0;font-size:14px;font-weight:600;color:#111827;">- Sarah K., {{nicheName}} Business Owner</p>
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Something special for you, {{firstName}}</h1>
+<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">Since you inquired about {{nicheName}} services a few weeks ago, we wanted to offer you something to make your decision easier.</p>
+<div style="margin:0 0 24px;padding:24px;background-color:#f0fdfa;border-radius:8px;border:2px solid #14b8a6;text-align:center;">
+<p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#14b8a6;text-transform:uppercase;letter-spacing:1px;">Limited Time Offer</p>
+<p style="margin:0 0 8px;font-size:20px;font-weight:700;color:#111827;">Free consultation + priority scheduling</p>
+<p style="margin:0;font-size:14px;line-height:22px;color:#374151;">Book this week and we will prioritize your project in our schedule.</p>
 </div>
-<p style="margin:0 0 8px;font-size:16px;font-weight:600;color:#111827;">Her results after 60 days:</p>
-<ul style="margin:0 0 24px;padding-left:20px;font-size:16px;line-height:28px;color:#374151;">
-<li>Lead volume: 5/month to 47/month</li>
-<li>Response time: 4 hours to under 2 minutes</li>
-<li>Weekly hours on follow-up: 15 to 2</li>
-<li>Revenue increase: 340%</li>
-</ul>
-${ctaButton("Get Results Like Sarah", "{{siteUrl}}/assess")}`,
-      textTemplate: `From struggling to thriving in 60 days
+<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">There is no obligation. We will assess your needs, answer your questions, and give you a clear recommendation — whether you choose to work with us or not.</p>
+${ctaButton("Claim Your Free Consultation", "{{siteUrl}}")}`,
+      textTemplate: `Something special for you, {{firstName}}
 
-{{firstName}}, meet Sarah. She runs a {{nicheName}} business and was spending 15 hours a week on manual lead follow-up.
+Since you inquired about {{nicheName}} services, we wanted to make your decision easier.
 
-"I was drowning in sticky notes and spreadsheets. Within two weeks of setting up automated follow-up, my booking rate tripled." - Sarah K.
+Limited Time Offer: Free consultation + priority scheduling. Book this week and we will prioritize your project.
 
-Her results after 60 days:
-- Lead volume: 5/month to 47/month
-- Response time: 4 hours to under 2 minutes
-- Weekly hours on follow-up: 15 to 2
-- Revenue increase: 340%
+No obligation. We will assess your needs and give you a clear recommendation.
 
-Get results like Sarah: {{siteUrl}}/assess`,
+Claim your free consultation: {{siteUrl}}`,
       createdAt: now,
       updatedAt: now,
     },
     {
       id: "nurture-day-30",
-      name: "Nurture: Day 30 - Final CTA",
-      subject: "{{firstName}}, your growth window is closing",
+      name: "Nurture: Day 30 - Final Follow-up",
+      subject: "{{firstName}}, just checking in",
       category: "nurture",
       variables: ["firstName", "brandName", "siteUrl", "nicheName", "supportEmail", "unsubscribeUrl"],
-      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">One last thing, {{firstName}}</h1>
-<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">Over the past month, we have shared how {{nicheName}} businesses are using automated lead capture to grow faster with less effort.</p>
-<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">You have seen the data, the framework, and the results. The question is: are you ready to stop leaving money on the table?</p>
-<div style="margin:0 0 24px;padding:20px;background-color:#fef2f2;border-left:4px solid #ef4444;border-radius:4px;">
-<p style="margin:0;font-size:16px;line-height:24px;color:#111827;font-weight:600;">Every week you wait, you lose an average of 12 qualified leads to competitors who respond faster.</p>
-</div>
-<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">Book a 15-minute strategy session. No pitch, just a clear action plan for your business.</p>
-${ctaButton("Book Your Strategy Session", "{{siteUrl}}/assess")}
-<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">This is the last email in this series. If the timing is not right, no worries. We are here when you are ready.</p>`,
-      textTemplate: `One last thing, {{firstName}}
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Checking in, {{firstName}}</h1>
+<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">A while back you reached out about {{nicheName}} services. We wanted to see if you still need help or if there is anything else we can do for you.</p>
+<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">If your situation has changed or you found another provider, no worries at all. We just want to make sure we did not leave you hanging.</p>
+<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#374151;">If you are still looking, we would love to help. Just reply to this email or give us a call — we are happy to pick up where we left off.</p>
+${ctaButton("Get in Touch", "{{siteUrl}}")}
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">This is the last follow-up we will send about your inquiry. You can always reach us at {{supportEmail}} if you need anything in the future.</p>`,
+      textTemplate: `Checking in, {{firstName}}
 
-Over the past month, we shared how {{nicheName}} businesses use automated lead capture to grow faster.
+A while back you reached out about {{nicheName}} services. We wanted to see if you still need help.
 
-You have seen the data, the framework, and the results. Are you ready to stop leaving money on the table?
+If your situation has changed, no worries. If you are still looking, just reply to this email or contact us at {{supportEmail}}.
 
-Every week you wait, you lose an average of 12 qualified leads to competitors who respond faster.
+Get in touch: {{siteUrl}}
 
-Book a 15-minute strategy session: {{siteUrl}}/assess
-
-This is the last email in this series. We are here when you are ready.`,
+This is the last follow-up about your inquiry. We are here whenever you need us.`,
       createdAt: now,
       updatedAt: now,
     },

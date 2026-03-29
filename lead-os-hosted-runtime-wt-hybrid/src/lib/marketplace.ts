@@ -14,6 +14,7 @@ import {
   getBuyer,
   updateBuyer,
 } from "./marketplace-store.ts";
+import { getLeadRecord } from "./runtime-store.ts";
 
 export interface LeadPricing {
   niche: string;
@@ -138,8 +139,18 @@ export async function claimLeadForBuyer(
   await updateBuyer(buyer);
 
   const revealedContact: Record<string, string> = {};
-  for (const field of lead.contactFields) {
-    revealedContact[field] = `[revealed-${field}]`;
+  const sourceRecord = claimed.leadKey ? await getLeadRecord(claimed.leadKey) : undefined;
+  if (sourceRecord) {
+    const fieldMap: Record<string, string | undefined> = {
+      email: sourceRecord.email,
+      phone: sourceRecord.phone,
+      firstName: sourceRecord.firstName,
+      lastName: sourceRecord.lastName,
+      company: sourceRecord.company,
+    };
+    for (const field of lead.contactFields) {
+      revealedContact[field] = fieldMap[field] ?? "";
+    }
   }
 
   return { lead: claimed, revealedContact };

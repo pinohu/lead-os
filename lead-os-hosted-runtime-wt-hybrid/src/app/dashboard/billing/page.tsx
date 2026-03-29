@@ -225,8 +225,7 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
-
-  const plan = DEFAULT_PLAN;
+  const [plan, setPlan] = useState(DEFAULT_PLAN);
 
   useEffect(() => {
     fetch(`/api/billing/usage?tenantId=${TENANT_ID}`, { credentials: "include" })
@@ -236,6 +235,11 @@ export default function BillingPage() {
       })
       .then((json) => {
         setUsage(json.data);
+        // Detect actual plan from usage response or tenant config
+        const detectedPlanId = json.data?.planId ?? json.meta?.planId;
+        if (detectedPlanId && PLAN_INFO[detectedPlanId as keyof typeof PLAN_INFO]) {
+          setPlan(PLAN_INFO[detectedPlanId as keyof typeof PLAN_INFO]);
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -412,9 +416,30 @@ export default function BillingPage() {
           >
             {portalLoading ? "Opening..." : "Manage Billing"}
           </button>
-          <Link href="/api/billing/checkout" style={styles.primaryButton}>
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                const res = await fetch("/api/billing/checkout", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  credentials: "include",
+                  body: JSON.stringify({ tenantId: TENANT_ID, planId: "whitelabel-growth" }),
+                });
+                const json = await res.json();
+                if (json.data?.url) {
+                  window.location.href = json.data.url;
+                } else if (json.data?.free) {
+                  window.location.reload();
+                }
+              } catch {
+                setError("Failed to start checkout");
+              }
+            }}
+            style={styles.primaryButton}
+          >
             Upgrade Plan
-          </Link>
+          </button>
         </div>
       </div>
     </main>

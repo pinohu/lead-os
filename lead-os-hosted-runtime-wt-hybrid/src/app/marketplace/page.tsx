@@ -53,6 +53,8 @@ export default function PublicMarketplacePage() {
   const [maxPrice, setMaxPrice] = useState("");
   const [claimingId, setClaimingId] = useState<string | null>(null);
   const [claimResult, setClaimResult] = useState<string | null>(null);
+  const [buyerEmail, setBuyerEmail] = useState("");
+  const [claimTargetId, setClaimTargetId] = useState<string | null>(null);
 
   const fetchLeads = useCallback(() => {
     setLoading(true);
@@ -83,24 +85,36 @@ export default function PublicMarketplacePage() {
     fetchLeads();
   }, [fetchLeads]);
 
-  function handleClaim(leadId: string) {
-    const buyerId = prompt("Enter your buyer ID to claim this lead:");
-    if (!buyerId) return;
+  function handleClaimStart(leadId: string) {
+    setClaimTargetId(leadId);
+    setClaimResult(null);
+  }
 
-    setClaimingId(leadId);
+  function handleClaimConfirm() {
+    if (!claimTargetId || !buyerEmail.trim()) return;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(buyerEmail.trim())) {
+      setClaimResult("Please enter a valid email address.");
+      return;
+    }
+
+    setClaimingId(claimTargetId);
     setClaimResult(null);
 
-    fetch(`/api/marketplace/leads/${leadId}/claim`, {
+    fetch(`/api/marketplace/leads/${claimTargetId}/claim`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ buyerId }),
+      body: JSON.stringify({ buyerId: buyerEmail.trim() }),
     })
       .then((r) => r.json())
       .then((json) => {
         if (json.error) {
           setClaimResult(`Error: ${json.error.message}`);
         } else {
-          setClaimResult("Lead claimed successfully! Contact details have been revealed.");
+          setClaimResult("Lead claimed successfully! Contact details have been sent to your email.");
+          setClaimTargetId(null);
+          setBuyerEmail("");
           fetchLeads();
         }
         setClaimingId(null);
@@ -337,27 +351,89 @@ export default function PublicMarketplacePage() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => handleClaim(lead.id)}
-                disabled={claimingId === lead.id}
-                style={{
-                  width: "100%",
-                  padding: "10px 16px",
-                  borderRadius: 8,
-                  border: "none",
-                  background: "var(--accent, #225f54)",
-                  color: "#fff",
-                  fontSize: "0.88rem",
-                  fontWeight: 700,
-                  cursor: claimingId === lead.id ? "wait" : "pointer",
-                  opacity: claimingId === lead.id ? 0.6 : 1,
-                  minHeight: 44,
-                }}
-                aria-busy={claimingId === lead.id}
-              >
-                {claimingId === lead.id ? "Claiming..." : "Claim lead"}
-              </button>
+              {claimTargetId === lead.id ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <label htmlFor={`buyer-email-${lead.id}`} style={{ fontSize: "0.82rem", fontWeight: 600 }}>
+                    Your email to claim this lead
+                  </label>
+                  <input
+                    id={`buyer-email-${lead.id}`}
+                    type="email"
+                    value={buyerEmail}
+                    onChange={(e) => setBuyerEmail(e.target.value)}
+                    placeholder="you@company.com"
+                    autoComplete="email"
+                    style={{
+                      padding: "10px 12px",
+                      borderRadius: 8,
+                      border: "1px solid rgba(34, 95, 84, 0.2)",
+                      fontSize: "0.88rem",
+                      minHeight: 44,
+                    }}
+                  />
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button
+                      type="button"
+                      onClick={handleClaimConfirm}
+                      disabled={claimingId === lead.id || !buyerEmail.trim()}
+                      style={{
+                        flex: 1,
+                        padding: "10px 16px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: "var(--accent, #225f54)",
+                        color: "#fff",
+                        fontSize: "0.88rem",
+                        fontWeight: 700,
+                        cursor: claimingId === lead.id ? "wait" : "pointer",
+                        opacity: claimingId === lead.id || !buyerEmail.trim() ? 0.6 : 1,
+                        minHeight: 44,
+                      }}
+                      aria-busy={claimingId === lead.id}
+                    >
+                      {claimingId === lead.id ? "Claiming..." : "Confirm claim"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setClaimTargetId(null); setBuyerEmail(""); }}
+                      style={{
+                        padding: "10px 16px",
+                        borderRadius: 8,
+                        border: "1px solid rgba(34, 95, 84, 0.2)",
+                        background: "transparent",
+                        fontSize: "0.88rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        minHeight: 44,
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => handleClaimStart(lead.id)}
+                  disabled={claimingId === lead.id}
+                  style={{
+                    width: "100%",
+                    padding: "10px 16px",
+                    borderRadius: 8,
+                    border: "none",
+                    background: "var(--accent, #225f54)",
+                    color: "#fff",
+                    fontSize: "0.88rem",
+                    fontWeight: 700,
+                    cursor: claimingId === lead.id ? "wait" : "pointer",
+                    opacity: claimingId === lead.id ? 0.6 : 1,
+                    minHeight: 44,
+                  }}
+                  aria-busy={claimingId === lead.id}
+                >
+                  Claim lead
+                </button>
+              )}
             </article>
           ))}
         </div>
