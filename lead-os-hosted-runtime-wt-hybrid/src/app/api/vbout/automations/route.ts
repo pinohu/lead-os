@@ -1,0 +1,101 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { buildCorsHeaders } from "@/lib/cors";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
+import {
+  createAutomation,
+  listAutomations,
+} from "@/lib/integrations/vbout-adapter";
+
+const AutomationTriggerSchema = z.object({
+  type: z.enum([
+    "contact_added",
+    "tag_added",
+    "form_submitted",
+    "email_opened",
+    "link_clicked",
+    "score_reached",
+  ]),
+  value: z.string().optional(),
+});
+
+const AutomationActionSchema = z.object({
+  type: z.enum([
+    "send_email",
+    "add_tag",
+    "remove_tag",
+    "add_to_list",
+    "update_field",
+    "notify",
+    "delay",
+  ]),
+  config: z.record(z.string(), z.string()),
+});
+
+const CreateAutomationSchema = z.object({
+  name: z.string().min(1).max(200),
+  trigger: AutomationTriggerSchema,
+  actions: z.array(AutomationActionSchema),
+  tenantId: z.string().min(1).optional(),
+});
+
+export async function GET(request: Request) {
+  const headers = buildCorsHeaders(request.headers.get("origin"));
+
+  const { session, response: authError } = await requireOperatorApiSession(request);
+  if (authError) return authError;
+
+  try {
+    const url = new URL(request.url);
+    const tenantId = url.searchParams.get("tenantId") ?? undefined;
+
+    const automations = await listAutomations(tenantId);
+
+    return NextResponse.json(
+      { data: automations, error: null, meta: { count: automations.length } },
+      { headers },
+    );
+  } catch (err) {
+    console.error("[vbout/automations GET]", err instanceof Error ? err.message : err);
+    return NextResponse.json(
+      { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch automations" }, meta: null },
+      { status: 500, headers },
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  const headers = buildCorsHeaders(request.headers.get("origin"));
+
+  const { response: authError } = await requireOperatorApiSession(request);
+  if (authError) return authError;
+
+  try {
+    const raw = await request.json();
+    const validation = CreateAutomationSchema.safeParse(raw);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          data: null,
+          error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues },
+          meta: null,
+        },
+        { status: 422, headers },
+      );
+    }
+
+    const automation = await createAutomation(validation.data);
+
+    return NextResponse.json(
+      { data: automation, error: null, meta: null },
+      { status: 201, headers },
+    );
+  } catch (err) {
+    console.error("[vbout/automations POST]", err instanceof Error ? err.message : err);
+    return NextResponse.json(
+      { data: null, error: { code: "CREATE_FAILED", message: "Failed to create automation" }, meta: null },
+      { status: 500, headers },
+    );
+  }
+}

@@ -1,0 +1,87 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { buildCorsHeaders } from "@/lib/cors";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
+import {
+  createContact,
+  getContactByEmail,
+} from "@/lib/integrations/vbout-adapter";
+
+const CreateContactSchema = z.object({
+  email: z.string().email(),
+  firstName: z.string().max(200).optional(),
+  lastName: z.string().max(200).optional(),
+  phone: z.string().max(50).optional(),
+  company: z.string().max(200).optional(),
+  tags: z.array(z.string()).optional(),
+  listIds: z.array(z.string()).optional(),
+  tenantId: z.string().min(1).optional(),
+});
+
+export async function GET(request: Request) {
+  const headers = buildCorsHeaders(request.headers.get("origin"));
+
+  const { session, response: authError } = await requireOperatorApiSession(request);
+  if (authError) return authError;
+
+  try {
+    const url = new URL(request.url);
+    const tenantId = url.searchParams.get("tenantId") ?? undefined;
+    const email = url.searchParams.get("email");
+
+    if (email) {
+      const contact = await getContactByEmail(email);
+      return NextResponse.json(
+        { data: contact, error: null, meta: null },
+        { headers },
+      );
+    }
+
+    return NextResponse.json(
+      { data: [], error: null, meta: { tenantId: tenantId ?? session.email } },
+      { headers },
+    );
+  } catch (err) {
+    console.error("[vbout/contacts GET]", err instanceof Error ? err.message : err);
+    return NextResponse.json(
+      { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch contacts" }, meta: null },
+      { status: 500, headers },
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  const headers = buildCorsHeaders(request.headers.get("origin"));
+
+  const { response: authError } = await requireOperatorApiSession(request);
+  if (authError) return authError;
+
+  try {
+    const raw = await request.json();
+    const validation = CreateContactSchema.safeParse(raw);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          data: null,
+          error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues },
+          meta: null,
+        },
+        { status: 422, headers },
+      );
+    }
+
+    const contact = await createContact(validation.data);
+
+    return NextResponse.json(
+      { data: contact, error: null, meta: null },
+      { status: 201, headers },
+    );
+  } catch (err) {
+    console.error("[vbout/contacts POST]", err instanceof Error ? err.message : err);
+    return NextResponse.json(
+      { data: null, error: { code: "CREATE_FAILED", message: "Failed to create contact" }, meta: null },
+      { status: 500, headers },
+    );
+  }
+}

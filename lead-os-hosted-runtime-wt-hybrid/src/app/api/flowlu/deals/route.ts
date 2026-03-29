@@ -1,0 +1,81 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { buildCorsHeaders } from "@/lib/cors";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
+import { createDeal, listDeals } from "@/lib/integrations/flowlu-adapter";
+
+const CreateDealSchema = z.object({
+  title: z.string().min(1),
+  contactId: z.string().min(1),
+  stageId: z.string().min(1),
+  stageName: z.string().min(1),
+  amount: z.number().min(0).optional(),
+  currency: z.string().optional(),
+  probability: z.number().min(0).max(100).optional(),
+  expectedCloseDate: z.string().optional(),
+  tenantId: z.string().optional(),
+});
+
+export async function POST(request: Request) {
+  const headers = buildCorsHeaders(request.headers.get("origin"));
+
+  const { response: authError } = await requireOperatorApiSession(request);
+  if (authError) return authError;
+
+  try {
+    const raw = await request.json();
+    const validation = CreateDealSchema.safeParse(raw);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          data: null,
+          error: { code: "VALIDATION_ERROR", message: "Invalid input", details: validation.error.issues },
+          meta: null,
+        },
+        { status: 422, headers },
+      );
+    }
+
+    const deal = await createDeal(validation.data);
+
+    return NextResponse.json(
+      { data: deal, error: null, meta: null },
+      { status: 201, headers },
+    );
+  } catch (err) {
+    console.error("[flowlu/deals POST]", err instanceof Error ? err.message : err);
+    return NextResponse.json(
+      { data: null, error: { code: "CREATE_FAILED", message: "Failed to create deal" }, meta: null },
+      { status: 500, headers },
+    );
+  }
+}
+
+export async function GET(request: Request) {
+  const headers = buildCorsHeaders(request.headers.get("origin"));
+
+  const { response: authError } = await requireOperatorApiSession(request);
+  if (authError) return authError;
+
+  try {
+    const url = new URL(request.url);
+    const stageId = url.searchParams.get("stageId") ?? undefined;
+    const status = url.searchParams.get("status") ?? undefined;
+    const contactId = url.searchParams.get("contactId") ?? undefined;
+    const tenantId = url.searchParams.get("tenantId") ?? undefined;
+
+    const deals = await listDeals({ stageId, status, contactId, tenantId });
+
+    return NextResponse.json(
+      { data: deals, error: null, meta: { count: deals.length } },
+      { headers },
+    );
+  } catch (err) {
+    console.error("[flowlu/deals GET]", err instanceof Error ? err.message : err);
+    return NextResponse.json(
+      { data: null, error: { code: "LIST_FAILED", message: "Failed to list deals" }, meta: null },
+      { status: 500, headers },
+    );
+  }
+}
