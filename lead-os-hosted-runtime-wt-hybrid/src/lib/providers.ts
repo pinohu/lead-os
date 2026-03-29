@@ -1,5 +1,6 @@
 import { embeddedSecrets } from "./embedded-secrets.ts";
 import { getEnvValue } from "./request-utils.ts";
+import { sendEmailViaGroove } from "./integrations/groove-adapter.ts";
 import { getOperationalRuntimeConfig } from "./runtime-config.ts";
 import { TOOL_OWNERSHIP_MAP } from "./runtime-schema.ts";
 import { createContact } from "./suitedash.ts";
@@ -346,6 +347,8 @@ export const integrationMap = {
   partnero: integration(Boolean(getPartneroApiKey() || getPartneroWebhookUrl() || getPartneroProgramId()), "referral"),
   activepieces: integration(Boolean(getActivepiecesWebhookUrl()), "fallbackAutomation"),
   electroneek: integration(Boolean(getElectroneekWebhookUrl() || getElectroneekApiKey()), "fallbackAutomation"),
+  groove: integration(Boolean(process.env.GROOVE_API_KEY), "email"),
+  grooveAffiliate: integration(Boolean(process.env.GROOVE_AFFILIATE_API_KEY || process.env.GROOVE_API_KEY), "referral"),
 };
 
 function parseJson(text: string) {
@@ -1028,6 +1031,10 @@ export async function sendEmailAction(payload: {
 }) {
   const provider = integrationMap.emailit;
   if (!provider.configured || !provider.live) {
+    // Fallback: try Groove if configured
+    if (integrationMap.groove.configured && integrationMap.groove.live) {
+      return sendEmailViaGroove({ email: payload.to, subject: payload.subject, htmlBody: payload.html });
+    }
     return dryRunResult("Emailit", "Email prepared", { to: payload.to, subject: payload.subject });
   }
 
