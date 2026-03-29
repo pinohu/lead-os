@@ -631,6 +631,180 @@ If you have trouble downloading, reply to this email.`,
       createdAt: now,
       updatedAt: now,
     },
+    {
+      id: "subscription-confirmed",
+      name: "Subscription Confirmed",
+      subject: "Your {{planName}} subscription is active",
+      category: "transactional",
+      variables: ["firstName", "brandName", "siteUrl", "planName", "planPrice", "leadsLimit", "supportEmail", "unsubscribeUrl"],
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Welcome to {{planName}}, {{firstName}}!</h1>
+<p style="margin:0 0 24px;font-size:16px;line-height:24px;color:#374151;">Your {{brandName}} subscription is now active. Here is what you get:</p>
+<div style="margin:0 0 24px;padding:20px;background-color:#f0fdfa;border:1px solid #14b8a6;border-radius:8px;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+<tr><td style="padding:8px 0;font-size:14px;color:#6b7280;">Plan</td><td style="padding:8px 0;font-size:16px;font-weight:600;color:#111827;text-align:right;">{{planName}}</td></tr>
+<tr><td style="padding:8px 0;font-size:14px;color:#6b7280;">Price</td><td style="padding:8px 0;font-size:16px;font-weight:600;color:#111827;text-align:right;">{{planPrice}}</td></tr>
+<tr><td style="padding:8px 0;font-size:14px;color:#6b7280;">Leads/month</td><td style="padding:8px 0;font-size:16px;font-weight:600;color:#111827;text-align:right;">{{leadsLimit}}</td></tr>
+</table>
+</div>
+${ctaButton("Go to Dashboard", "{{siteUrl}}/dashboard")}
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Questions? Contact us at <a href="mailto:{{supportEmail}}" style="color:#14b8a6;">{{supportEmail}}</a>.</p>`,
+      textTemplate: `Welcome to {{planName}}, {{firstName}}!
+
+Your {{brandName}} subscription is now active.
+
+Plan: {{planName}}
+Price: {{planPrice}}
+Leads/month: {{leadsLimit}}
+
+Go to your dashboard: {{siteUrl}}/dashboard
+
+Questions? Contact {{supportEmail}}.`,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: "plan-changed",
+      name: "Plan Changed",
+      subject: "Your plan has been updated to {{newPlanName}}",
+      category: "transactional",
+      variables: ["firstName", "brandName", "siteUrl", "oldPlanName", "newPlanName", "newPlanPrice", "effectiveDate", "supportEmail", "unsubscribeUrl"],
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Plan Updated</h1>
+<p style="margin:0 0 24px;font-size:16px;line-height:24px;color:#374151;">Hi {{firstName}}, your {{brandName}} plan has been changed.</p>
+<div style="margin:0 0 24px;padding:20px;background-color:#f9fafb;border-radius:8px;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+<tr><td style="padding:8px 0;font-size:14px;color:#6b7280;">Previous plan</td><td style="padding:8px 0;font-size:14px;color:#111827;text-align:right;">{{oldPlanName}}</td></tr>
+<tr><td style="padding:8px 0;font-size:14px;color:#6b7280;">New plan</td><td style="padding:8px 0;font-size:16px;font-weight:600;color:#14b8a6;text-align:right;">{{newPlanName}}</td></tr>
+<tr><td style="padding:8px 0;font-size:14px;color:#6b7280;">New price</td><td style="padding:8px 0;font-size:14px;color:#111827;text-align:right;">{{newPlanPrice}}</td></tr>
+<tr><td style="padding:8px 0;font-size:14px;color:#6b7280;">Effective</td><td style="padding:8px 0;font-size:14px;color:#111827;text-align:right;">{{effectiveDate}}</td></tr>
+</table>
+</div>
+${ctaButton("View Billing", "{{siteUrl}}/dashboard/billing")}`,
+      textTemplate: `Hi {{firstName}}, your {{brandName}} plan has been changed.
+
+Previous plan: {{oldPlanName}}
+New plan: {{newPlanName}}
+New price: {{newPlanPrice}}
+Effective: {{effectiveDate}}
+
+View billing: {{siteUrl}}/dashboard/billing`,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: "provisioning-complete",
+      name: "Provisioning Complete",
+      subject: "Your {{brandName}} instance is ready!",
+      category: "transactional",
+      variables: ["firstName", "brandName", "siteUrl", "dashboardUrl", "embedCode", "supportEmail", "unsubscribeUrl"],
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Your instance is live!</h1>
+<p style="margin:0 0 24px;font-size:16px;line-height:24px;color:#374151;">Hi {{firstName}}, your {{brandName}} instance has been provisioned and is ready to capture leads.</p>
+<h2 style="margin:0 0 8px;font-size:16px;font-weight:600;color:#111827;">Next steps:</h2>
+<ol style="margin:0 0 24px;padding-left:20px;font-size:14px;line-height:28px;color:#374151;">
+<li>Add the embed code to your website</li>
+<li>Configure your integrations in the dashboard</li>
+<li>Customize your funnel and scoring weights</li>
+<li>Send your first test lead</li>
+</ol>
+${ctaButton("Open Dashboard", "{{dashboardUrl}}")}
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Need help getting started? Contact <a href="mailto:{{supportEmail}}" style="color:#14b8a6;">{{supportEmail}}</a>.</p>`,
+      textTemplate: `Your instance is live!
+
+Hi {{firstName}}, your {{brandName}} instance has been provisioned.
+
+Next steps:
+1. Add the embed code to your website
+2. Configure your integrations in the dashboard
+3. Customize your funnel and scoring weights
+4. Send your first test lead
+
+Open dashboard: {{dashboardUrl}}
+
+Need help? Contact {{supportEmail}}.`,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: "trial-expiring",
+      name: "Trial Expiring",
+      subject: "Your {{brandName}} trial expires in {{daysLeft}} days",
+      category: "transactional",
+      variables: ["firstName", "brandName", "siteUrl", "daysLeft", "supportEmail", "unsubscribeUrl"],
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Your trial is ending soon</h1>
+<p style="margin:0 0 24px;font-size:16px;line-height:24px;color:#374151;">Hi {{firstName}}, your {{brandName}} trial expires in <strong>{{daysLeft}} days</strong>. Upgrade now to keep your leads, funnels, and configurations.</p>
+<div style="margin:0 0 24px;padding:20px;background-color:#fffbeb;border:1px solid #f59e0b;border-radius:8px;">
+<p style="margin:0;font-size:14px;font-weight:600;color:#92400e;">What happens when your trial ends:</p>
+<ul style="margin:8px 0 0;padding-left:20px;font-size:14px;line-height:24px;color:#78350f;">
+<li>New lead capture will be paused</li>
+<li>Your data will be preserved for 30 days</li>
+<li>Integrations will stop processing</li>
+</ul>
+</div>
+${ctaButton("Upgrade Now", "{{siteUrl}}/dashboard/billing")}
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">Plans start at $99/month. <a href="{{siteUrl}}/pricing" style="color:#14b8a6;">View all plans</a>.</p>`,
+      textTemplate: `Your trial is ending soon
+
+Hi {{firstName}}, your {{brandName}} trial expires in {{daysLeft}} days.
+
+What happens when your trial ends:
+- New lead capture will be paused
+- Your data will be preserved for 30 days
+- Integrations will stop processing
+
+Upgrade now: {{siteUrl}}/dashboard/billing
+
+Plans start at $99/month. View all plans: {{siteUrl}}/pricing`,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: "usage-warning",
+      name: "Usage Warning",
+      subject: "You have used {{usagePercent}}% of your monthly lead quota",
+      category: "notification",
+      variables: ["firstName", "brandName", "siteUrl", "usagePercent", "usedLeads", "totalLeads", "supportEmail", "unsubscribeUrl"],
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Usage Alert</h1>
+<p style="margin:0 0 24px;font-size:16px;line-height:24px;color:#374151;">Hi {{firstName}}, you have used <strong>{{usagePercent}}%</strong> of your monthly lead quota ({{usedLeads}} of {{totalLeads}} leads).</p>
+<div style="margin:0 0 8px;height:8px;background-color:#e5e7eb;border-radius:4px;overflow:hidden;">
+<div style="height:100%;width:{{usagePercent}}%;background-color:#f59e0b;border-radius:4px;"></div>
+</div>
+<p style="margin:0 0 24px;font-size:12px;color:#6b7280;text-align:right;">{{usedLeads}} / {{totalLeads}} leads</p>
+<p style="margin:0 0 24px;font-size:14px;line-height:22px;color:#374151;">To avoid lead capture being paused, consider upgrading your plan.</p>
+${ctaButton("Upgrade Plan", "{{siteUrl}}/dashboard/billing")}`,
+      textTemplate: `Usage Alert
+
+Hi {{firstName}}, you have used {{usagePercent}}% of your monthly lead quota ({{usedLeads}} of {{totalLeads}} leads).
+
+To avoid lead capture being paused, consider upgrading your plan.
+
+Upgrade: {{siteUrl}}/dashboard/billing`,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: "payment-failed",
+      name: "Payment Failed",
+      subject: "Action required: Payment failed for {{brandName}}",
+      category: "transactional",
+      variables: ["firstName", "brandName", "siteUrl", "supportEmail", "unsubscribeUrl"],
+      htmlTemplate: `<h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#111827;">Payment Failed</h1>
+<p style="margin:0 0 24px;font-size:16px;line-height:24px;color:#374151;">Hi {{firstName}}, we were unable to process your latest payment for {{brandName}}. Please update your billing information to avoid service interruption.</p>
+<div style="margin:0 0 24px;padding:20px;background-color:#fef2f2;border:1px solid #ef4444;border-radius:8px;">
+<p style="margin:0;font-size:14px;color:#991b1b;">Your account will be suspended if payment is not updated within 7 days.</p>
+</div>
+${ctaButton("Update Billing", "{{siteUrl}}/dashboard/billing")}
+<p style="margin:0;font-size:14px;line-height:22px;color:#6b7280;">If you believe this is an error, contact us at <a href="mailto:{{supportEmail}}" style="color:#14b8a6;">{{supportEmail}}</a>.</p>`,
+      textTemplate: `Payment Failed
+
+Hi {{firstName}}, we were unable to process your latest payment for {{brandName}}.
+
+Your account will be suspended if payment is not updated within 7 days.
+
+Update billing: {{siteUrl}}/dashboard/billing
+
+If you believe this is an error, contact {{supportEmail}}.`,
+      createdAt: now,
+      updatedAt: now,
+    },
   ];
 
   for (const template of defaults) {

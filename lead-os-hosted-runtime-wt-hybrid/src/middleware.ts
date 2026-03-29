@@ -1,29 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
+import { createRateLimiter } from "@/lib/rate-limiter";
 
 export const runtime = "nodejs";
 
 // ---------------------------------------------------------------------------
+// Rate limiter for auth endpoints — 10 requests per minute per IP
+// ---------------------------------------------------------------------------
+
+const authRateLimiter = createRateLimiter({
+  windowMs: 60_000,
+  maxRequests: 10,
+});
+
+// ---------------------------------------------------------------------------
+// Content Security Policy
+// ---------------------------------------------------------------------------
+
+const CSP_DIRECTIVES = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: https:",
+  "connect-src 'self' https:",
+  "font-src 'self' https: data:",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join("; ");
+
+// ---------------------------------------------------------------------------
 // Public route patterns — no authentication required
+// All /api/* routes require auth by default. Only routes listed here are exempt.
 // ---------------------------------------------------------------------------
 
 const PUBLIC_EXACT: Set<string> = new Set([
   "/api/health",
   "/api/intake",
   "/api/unsubscribe",
-  "/api/realtime/stream",
-  "/api/onboarding",
-  "/api/social/platforms",
   "/api/setup/status",
+  "/api/contact",
 ]);
 
 const PUBLIC_PREFIXES: string[] = [
   "/api/tracking/",
   "/api/embed/",
-  "/api/widgets/",
-  "/api/onboarding/",
-  "/api/dashboard/",
+  "/api/widgets/boot",
   "/api/auth/",
+  "/api/gdpr/",
+  "/api/webhooks/stripe",
 ];
 
 function isPublicRoute(pathname: string, method: string): boolean {
@@ -64,13 +89,26 @@ function forwardWithIdentity(
   const response = NextResponse.next({
     request: { headers: requestHeaders },
   });
-  response.headers.set("x-request-id", requestId);
-  return response;
+  return applySecurityHeaders(response, requestId);
 }
 
 // ---------------------------------------------------------------------------
 // Middleware
 // ---------------------------------------------------------------------------
+
+function applySecurityHeaders(response: NextResponse, requestId: string): NextResponse {
+  response.headers.set("x-request-id", requestId);
+  response.headers.set("Content-Security-Policy", CSP_DIRECTIVES);
+  return response;
+}
+
+function getClientIp(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    return forwarded.split(",")[0].trim();
+  }
+  return request.headers.get("x-real-ip") ?? "unknown";
+}
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const requestId = crypto.randomUUID();
@@ -80,32 +118,62 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // Non-API routes (pages) — pass through, pages handle their own auth
   if (!pathname.startsWith("/api/")) {
     const response = NextResponse.next();
-    response.headers.set("x-request-id", requestId);
-    return response;
+    return applySecurityHeaders(response, requestId);
   }
 
   // Handle CORS preflight requests globally
   if (method === "OPTIONS") {
     const headers = buildCorsHeaders(request.headers.get("origin"));
-    return new NextResponse(null, {
+    const response = new NextResponse(null, {
       status: 204,
       headers: { ...headers, "x-request-id": requestId },
     });
+    response.headers.set("Content-Security-Policy", CSP_DIRECTIVES);
+    return response;
+  }
+
+  // Rate limit auth endpoints: 10 requests per minute per IP
+  if (pathname.startsWith("/api/auth/")) {
+    const clientIp = getClientIp(request);
+    const rateLimitKey = `auth:${clientIp}`;
+    const result = authRateLimiter.check(rateLimitKey);
+
+    if (!result.allowed) {
+      const retryAfterSeconds = Math.ceil((result.resetAt - Date.now()) / 1000);
+      return NextResponse.json(
+        {
+          data: null,
+          error: {
+            code: "RATE_LIMITED",
+            message: "Too many authentication requests. Please try again later.",
+          },
+          meta: { requestId },
+        },
+        {
+          status: 429,
+          headers: {
+            "x-request-id": requestId,
+            "Retry-After": String(retryAfterSeconds),
+            "X-RateLimit-Limit": "10",
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": String(Math.ceil(result.resetAt / 1000)),
+          },
+        },
+      );
+    }
   }
 
   // Passthrough for public API routes without touching auth modules
   if (isPublicRoute(pathname, method)) {
     const response = NextResponse.next();
-    response.headers.set("x-request-id", requestId);
-    return response;
+    return applySecurityHeaders(response, requestId);
   }
 
   // Cron secret — fast path, no DB required
   const cronSecret = request.headers.get("x-cron-secret");
   if (cronSecret && cronSecret === process.env.CRON_SECRET) {
     const response = NextResponse.next();
-    response.headers.set("x-request-id", requestId);
-    return response;
+    return applySecurityHeaders(response, requestId);
   }
 
   // Authenticated paths — dynamic import keeps auth-system out of the public

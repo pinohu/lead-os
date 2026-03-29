@@ -1,21 +1,55 @@
 import { isAllowedWidgetOrigin } from "@/lib/tenant";
 
-export function buildCorsHeaders(origin?: string | null) {
-  const allowed = isAllowedWidgetOrigin(origin);
-  const allowedOrigin = allowed && origin ? origin : "*";
+function getAllowedOrigins(): string[] {
+  const envOrigins = process.env.ALLOWED_ORIGINS;
+  if (envOrigins) {
+    return envOrigins.split(",").map((o) => o.trim()).filter(Boolean);
+  }
+  return [];
+}
 
-  return {
-    "Access-Control-Allow-Origin": allowedOrigin,
+function isOriginPermitted(origin: string): boolean {
+  // Widget origins configured in tenant config
+  if (isAllowedWidgetOrigin(origin)) return true;
+
+  // Explicitly configured CORS origins
+  const allowedOrigins = getAllowedOrigins();
+  if (allowedOrigins.length > 0) {
+    return allowedOrigins.includes(origin);
+  }
+
+  // In development, allow localhost origins
+  if (process.env.NODE_ENV !== "production") {
+    try {
+      const url = new URL(origin);
+      return url.hostname === "localhost" || url.hostname === "127.0.0.1";
+    } catch {
+      return false;
+    }
+  }
+
+  // Production with no ALLOWED_ORIGINS set: same-origin only (no wildcard)
+  return false;
+}
+
+export function buildCorsHeaders(origin?: string | null) {
+  const permitted = origin ? isOriginPermitted(origin) : false;
+  const effectiveOrigin = permitted && origin ? origin : "";
+
+  // When no origin is permitted, omit Access-Control-Allow-Origin entirely
+  // to enforce same-origin policy. Returning an empty string or wildcard in
+  // production would weaken security.
+  const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-    // Only advertise the Authorization header when the response is scoped to a
-    // specific origin. Sending it with a wildcard origin is a CORS
-    // misconfiguration that browsers reject for credentialed requests and that
-    // signals to clients that auth tokens should be forwarded to public
-    // endpoints.
-    "Access-Control-Allow-Headers":
-      allowedOrigin !== "*" ? "Content-Type, Authorization" : "Content-Type",
-    // Inform caches that the response varies by Origin so that a cached
-    // wildcard response is never served to a credentialed origin request.
     Vary: "Origin",
   };
+
+  if (effectiveOrigin) {
+    headers["Access-Control-Allow-Origin"] = effectiveOrigin;
+    headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
+  } else {
+    headers["Access-Control-Allow-Headers"] = "Content-Type";
+  }
+
+  return headers;
 }

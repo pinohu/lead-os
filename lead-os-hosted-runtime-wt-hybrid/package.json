@@ -13,7 +13,8 @@
     "start": "next start -H 0.0.0.0 -p ${PORT:-3000}",
     "cli": "node --experimental-strip-types src/cli/index.ts",
     "mcp": "node --experimental-strip-types src/mcp/index.ts",
-    "test": "set LEAD_OS_USE_AITABLE_PERSISTENCE=false&& set LEAD_OS_ENABLE_LIVE_SENDS=false&& node --test --test-concurrency=1 --test-isolation=none --experimental-strip-types tests/**/*.test.ts"
+    "test": "cross-env LEAD_OS_USE_AITABLE_PERSISTENCE=false LEAD_OS_ENABLE_LIVE_SENDS=false node --test --test-concurrency=1 --test-isolation=none --experimental-strip-types tests/**/*.test.ts",
+    "test:ci": "cross-env LEAD_OS_USE_AITABLE_PERSISTENCE=false LEAD_OS_ENABLE_LIVE_SENDS=false node --test --test-concurrency=1 --test-isolation=none --experimental-strip-types tests/**/*.test.ts"
   },
   "dependencies": {
     "bullmq": "^5.71.1",
@@ -29,6 +30,19 @@
     "@types/pg": "^8.18.0",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
+    "cross-env": "^7.0.3",
     "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pinohu/lead-os.git"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/pinohu/lead-os#readme",
+  "bugs": {
+    "url": "https://github.com/pinohu/lead-os/issues"
   }
 }

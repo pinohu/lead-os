@@ -173,10 +173,10 @@ test("renderEmail replaces missing variables with empty string", () => {
 // getDefaultTemplates
 // ---------------------------------------------------------------------------
 
-test("getDefaultTemplates returns 12 built-in templates", () => {
+test("getDefaultTemplates returns 18 built-in templates", () => {
   const defaults = getDefaultTemplates();
 
-  assert.equal(defaults.length, 12);
+  assert.equal(defaults.length, 18);
 
   const ids = defaults.map((t) => t.id);
   assert.ok(ids.includes("welcome"));

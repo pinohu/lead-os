@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from "crypto";
+import { createCipheriv, createDecipheriv, createHash, randomBytes, scryptSync } from "crypto";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -116,7 +116,6 @@ export const PROVIDER_CATALOG: ProviderDefinition[] = [
 const ALGORITHM = "aes-256-gcm";
 const KEY_LENGTH = 32;
 const IV_LENGTH = 16;
-const DEFAULT_DEV_KEY = "lead-os-dev-credentials-key-0000";
 
 function deriveKey(passphrase: string): Buffer {
   return scryptSync(passphrase, "lead-os-vault-salt", KEY_LENGTH);
@@ -124,7 +123,23 @@ function deriveKey(passphrase: string): Buffer {
 
 function getEncryptionKey(): Buffer {
   const envKey = process.env.CREDENTIALS_ENCRYPTION_KEY;
-  return deriveKey(envKey || DEFAULT_DEV_KEY);
+
+  if (envKey) {
+    return deriveKey(envKey);
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "CREDENTIALS_ENCRYPTION_KEY environment variable is required in production. " +
+      "Generate one with: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
+    );
+  }
+
+  // Development only: derive a key from a hash so no static secret sits in source
+  const devKey = createHash("sha256")
+    .update("lead-os-dev-only-credential-vault-derivation-input")
+    .digest("hex");
+  return deriveKey(devKey);
 }
 
 export function encryptValue(plaintext: string): { encrypted: string; iv: string; authTag: string } {

@@ -6,8 +6,28 @@ import { tenantConfig } from "@/lib/tenant";
 import { embeddedSecrets } from "@/lib/embedded-secrets";
 
 export const metadata: Metadata = {
-  title: `${tenantConfig.brandName} Hosted Runtime`,
-  description: "Hosted lead capture runtime for WordPress and external sites.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com"),
+  title: {
+    default: `${tenantConfig.brandName} — Programmable Lead Generation Platform`,
+    template: `%s | ${tenantConfig.brandName}`,
+  },
+  description:
+    "Multi-tenant lead generation infrastructure. Capture, score, route, nurture, and convert leads with configurable funnel graphs, AI-powered content, and 110+ integrations.",
+  openGraph: {
+    title: `${tenantConfig.brandName} — Programmable Lead Generation Platform`,
+    description:
+      "One runtime, many niches. Deploy a complete lead-gen platform for any industry in minutes.",
+    type: "website",
+    siteName: tenantConfig.brandName,
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: `${tenantConfig.brandName} platform` }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${tenantConfig.brandName} — Programmable Lead Generation Platform`,
+    description:
+      "One runtime, many niches. Deploy a complete lead-gen platform for any industry in minutes.",
+  },
+  icons: { icon: "/icon.svg" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -50,6 +70,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           />
         ) : null}
         <div id="main-content">{children}</div>
+        <footer className="site-footer" role="contentinfo" style={{ borderTop: "1px solid #e5e7eb", padding: "2rem 1rem", marginTop: "4rem", textAlign: "center", fontSize: "0.875rem", color: "#6b7280" }}>
+          <nav aria-label="Footer navigation" style={{ display: "flex", gap: "1.5rem", justifyContent: "center", flexWrap: "wrap", marginBottom: "0.75rem" }}>
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/terms">Terms of Service</Link>
+            <Link href="/help">Help Center</Link>
+            <Link href="/changelog">Changelog</Link>
+            <Link href="/roadmap">Roadmap</Link>
+            <Link href="/contact">Contact</Link>
+          </nav>
+          <p>&copy; {new Date().getFullYear()} {brandName}. All rights reserved.</p>
+        </footer>
+        {process.env.NEXT_PUBLIC_UMAMI_URL && process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID ? (
+          <Script
+            src={process.env.NEXT_PUBLIC_UMAMI_URL}
+            data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+            strategy="afterInteractive"
+          />
+        ) : null}
       </body>
     </html>
   );

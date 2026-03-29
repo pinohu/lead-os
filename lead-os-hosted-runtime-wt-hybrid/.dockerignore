@@ -16,9 +16,9 @@ node_modules
 # ---------- Next.js build output (rebuilt inside the image) ------------------
 .next
 out
+dist
 
 # ---------- Secrets and environment files ------------------------------------
-# Never let these reach the image layer, even accidentally.
 .env
 .env.*
 !.env.sample
@@ -28,15 +28,19 @@ out
 Thumbs.db
 *.log
 *.local
+.vscode
+.idea
 
 # ---------- Test artifacts ---------------------------------------------------
+tests
 coverage
 .nyc_output
 
 # ---------- Documentation and CI config (not needed at runtime) --------------
-README.md
-docs
 *.md
+docs
+.github
+logs
 
 # ---------- Docker files themselves (no need to copy into the image) ---------
 Dockerfile
@@ -46,3 +50,9 @@ docker-compose*.yml
 # ---------- TypeScript build cache -------------------------------------------
 tsconfig.tsbuildinfo
 *.tsbuildinfo
+
+# ---------- Project-specific exclusions --------------------------------------
+_n8n_sources
+make-scenarios
+neatcircle-beta
+Funnel Blueprints
