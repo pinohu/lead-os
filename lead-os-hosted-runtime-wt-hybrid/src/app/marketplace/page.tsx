@@ -1,6 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 interface MarketplaceLead {
   id: string;
@@ -16,6 +20,47 @@ interface MarketplaceLead {
   status: string;
   createdAt: string;
 }
+
+interface ClaimedLead extends MarketplaceLead {
+  claimedAt: string;
+  outcome?: OutcomeKey;
+}
+
+type SortKey = "newest" | "price_asc" | "price_desc" | "quality" | "temperature";
+type OutcomeKey = "contacted" | "booked" | "converted" | "no_response";
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const PAGE_SIZE = 12;
+const TEMPERATURES = ["", "cold", "warm", "hot", "burning"] as const;
+
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: "newest", label: "Newest first" },
+  { value: "price_asc", label: "Price: Low to High" },
+  { value: "price_desc", label: "Price: High to Low" },
+  { value: "quality", label: "Quality Score" },
+  { value: "temperature", label: "Temperature" },
+];
+
+const OUTCOME_OPTIONS: { value: OutcomeKey; label: string; color: string }[] = [
+  { value: "contacted", label: "Contacted", color: "#3b82f6" },
+  { value: "booked", label: "Booked", color: "#f97316" },
+  { value: "converted", label: "Converted", color: "#22c55e" },
+  { value: "no_response", label: "No Response", color: "#6b7280" },
+];
+
+const TEMPERATURE_RANK: Record<string, number> = {
+  burning: 4,
+  hot: 3,
+  warm: 2,
+  cold: 1,
+};
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 function formatCents(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
@@ -41,10 +86,696 @@ function temperatureBg(temp: string): string {
   }
 }
 
-const TEMPERATURES = ["", "cold", "warm", "hot", "burning"] as const;
+function temperatureExplanation(temp: string): string {
+  switch (temp) {
+    case "burning": return "Extremely high intent — responded to outreach and ready to buy now.";
+    case "hot": return "Strong interest shown — multiple engagement signals detected.";
+    case "warm": return "Has indicated interest — early-stage buying signals present.";
+    case "cold": return "Profile match only — no direct engagement signals yet.";
+    default: return "Temperature not assessed.";
+  }
+}
+
+function qualityColor(score: number): string {
+  if (score >= 80) return "#22c55e";
+  if (score >= 60) return "#eab308";
+  if (score >= 40) return "#f97316";
+  return "#ef4444";
+}
+
+function formatRelativeTime(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const diffMins = Math.floor(diffMs / 60_000);
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 30) return `${diffDays}d ago`;
+  return new Date(iso).toLocaleDateString();
+}
+
+function sortLeads(leads: MarketplaceLead[], sort: SortKey): MarketplaceLead[] {
+  const copy = [...leads];
+  switch (sort) {
+    case "newest":
+      return copy.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    case "price_asc":
+      return copy.sort((a, b) => a.price - b.price);
+    case "price_desc":
+      return copy.sort((a, b) => b.price - a.price);
+    case "quality":
+      return copy.sort((a, b) => b.qualityScore - a.qualityScore);
+    case "temperature":
+      return copy.sort((a, b) => (TEMPERATURE_RANK[b.temperature] ?? 0) - (TEMPERATURE_RANK[a.temperature] ?? 0));
+  }
+}
+
+function filterBySearch(leads: MarketplaceLead[], query: string): MarketplaceLead[] {
+  const q = query.toLowerCase().trim();
+  if (!q) return leads;
+  return leads.filter(
+    (l) =>
+      l.summary.toLowerCase().includes(q) ||
+      l.niche.toLowerCase().includes(q) ||
+      (l.city ?? "").toLowerCase().includes(q) ||
+      (l.state ?? "").toLowerCase().includes(q),
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
+
+interface QualityBarProps {
+  score: number;
+  height?: number;
+}
+
+function QualityBar({ score, height = 6 }: QualityBarProps) {
+  return (
+    <div
+      role="img"
+      aria-label={`Quality score: ${score} out of 100`}
+      style={{
+        width: "100%",
+        height,
+        borderRadius: 999,
+        background: "rgba(34, 95, 84, 0.1)",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          width: `${score}%`,
+          height: "100%",
+          background: qualityColor(score),
+          borderRadius: 999,
+          transition: "width 0.4s ease",
+        }}
+      />
+    </div>
+  );
+}
+
+interface FieldControlProps {
+  id: string;
+  label: string;
+  children: React.ReactNode;
+}
+
+function FieldControl({ id, label, children }: FieldControlProps) {
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: 4 }}
+      >
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+const SELECT_STYLE: React.CSSProperties = {
+  padding: "8px 12px",
+  borderRadius: 6,
+  border: "1px solid rgba(34, 95, 84, 0.2)",
+  background: "rgba(255, 255, 255, 0.8)",
+  fontSize: "0.85rem",
+  minWidth: 160,
+  minHeight: 38,
+};
+
+const INPUT_STYLE: React.CSSProperties = {
+  padding: "8px 12px",
+  borderRadius: 6,
+  border: "1px solid rgba(34, 95, 84, 0.2)",
+  background: "rgba(255, 255, 255, 0.8)",
+  fontSize: "0.85rem",
+};
+
+// ---------------------------------------------------------------------------
+// Lead Preview Modal
+// ---------------------------------------------------------------------------
+
+interface LeadPreviewModalProps {
+  lead: MarketplaceLead | null;
+  onClose: () => void;
+  onClaimStart: (leadId: string) => void;
+}
+
+function LeadPreviewModal({ lead, onClose, onClaimStart }: LeadPreviewModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (lead) {
+      dialog.showModal();
+    } else {
+      dialog.close();
+    }
+  }, [lead]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    function handleClose() {
+      onClose();
+    }
+
+    dialog.addEventListener("close", handleClose);
+    return () => dialog.removeEventListener("close", handleClose);
+  }, [onClose]);
+
+  function handleBackdropClick(e: React.MouseEvent<HTMLDialogElement>) {
+    const rect = dialogRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const isOutside =
+      e.clientX < rect.left ||
+      e.clientX > rect.right ||
+      e.clientY < rect.top ||
+      e.clientY > rect.bottom;
+    if (isOutside) onClose();
+  }
+
+  return (
+    <dialog
+      ref={dialogRef}
+      onClick={handleBackdropClick}
+      aria-labelledby="modal-title"
+      aria-modal="true"
+      style={{
+        padding: 0,
+        border: "none",
+        borderRadius: 16,
+        maxWidth: 560,
+        width: "calc(100vw - 48px)",
+        boxShadow: "0 24px 64px rgba(0,0,0,0.18)",
+        background: "#fff",
+      }}
+    >
+      {lead && (
+        <div style={{ padding: 28 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+            <div>
+              <span
+                style={{
+                  display: "inline-block",
+                  padding: "2px 10px",
+                  borderRadius: 999,
+                  background: temperatureBg(lead.temperature),
+                  color: temperatureColor(lead.temperature),
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  textTransform: "capitalize",
+                  marginBottom: 6,
+                }}
+              >
+                {lead.temperature}
+              </span>
+              <h2
+                id="modal-title"
+                style={{ fontSize: "1.1rem", fontWeight: 800, margin: 0, color: "var(--accent, #225f54)" }}
+              >
+                {lead.niche}
+                {lead.city && lead.state ? ` — ${lead.city}, ${lead.state}` : ""}
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close lead preview"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "1.4rem",
+                lineHeight: 1,
+                color: "rgba(34, 95, 84, 0.5)",
+                padding: 4,
+                minWidth: 32,
+                minHeight: 32,
+              }}
+            >
+              ×
+            </button>
+          </div>
+
+          <p style={{ fontSize: "0.9rem", lineHeight: 1.55, marginBottom: 20 }}>{lead.summary}</p>
+
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+              <span style={{ fontSize: "0.82rem", fontWeight: 700 }}>Quality Score</span>
+              <span style={{ fontSize: "0.82rem", fontWeight: 800, color: qualityColor(lead.qualityScore) }}>
+                {lead.qualityScore}/100
+              </span>
+            </div>
+            <QualityBar score={lead.qualityScore} height={10} />
+          </div>
+
+          <div
+            style={{
+              padding: "12px 14px",
+              borderRadius: 8,
+              background: temperatureBg(lead.temperature),
+              border: `1px solid ${temperatureColor(lead.temperature)}33`,
+              marginBottom: 20,
+            }}
+          >
+            <p
+              style={{
+                fontSize: "0.78rem",
+                fontWeight: 700,
+                color: temperatureColor(lead.temperature),
+                marginBottom: 4,
+                textTransform: "uppercase",
+                letterSpacing: "0.04em",
+              }}
+            >
+              Temperature: {lead.temperature}
+            </p>
+            <p style={{ fontSize: "0.85rem", margin: 0, lineHeight: 1.4 }}>
+              {temperatureExplanation(lead.temperature)}
+            </p>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <p style={{ fontSize: "0.78rem", fontWeight: 700, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.04em", color: "rgba(34,95,84,0.6)" }}>
+              Available contact fields
+            </p>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {lead.contactFields.map((field) => (
+                <span
+                  key={field}
+                  style={{
+                    padding: "3px 10px",
+                    borderRadius: 999,
+                    background: "rgba(34, 95, 84, 0.08)",
+                    color: "var(--accent, #225f54)",
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
+                  }}
+                >
+                  {field}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingTop: 16,
+              borderTop: "1px solid rgba(34,95,84,0.1)",
+            }}
+          >
+            <div>
+              <p style={{ fontSize: "0.78rem", color: "rgba(34,95,84,0.5)", margin: 0, marginBottom: 2 }}>
+                {lead.niche} · Quality {lead.qualityScore}/100
+              </p>
+              <p style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--accent, #225f54)", margin: 0 }}>
+                {formatCents(lead.price)}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onClaimStart(lead.id);
+              }}
+              style={{
+                padding: "12px 24px",
+                borderRadius: 8,
+                border: "none",
+                background: "var(--accent, #225f54)",
+                color: "#fff",
+                fontSize: "0.9rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                minHeight: 44,
+              }}
+            >
+              Claim this lead
+            </button>
+          </div>
+        </div>
+      )}
+    </dialog>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Lead Card
+// ---------------------------------------------------------------------------
+
+interface LeadCardProps {
+  lead: MarketplaceLead;
+  claimingId: string | null;
+  claimTargetId: string | null;
+  buyerEmail: string;
+  onBuyerEmailChange: (val: string) => void;
+  onClaimStart: (id: string) => void;
+  onClaimConfirm: () => void;
+  onClaimCancel: () => void;
+  onPreview: (lead: MarketplaceLead) => void;
+}
+
+function LeadCard({
+  lead,
+  claimingId,
+  claimTargetId,
+  buyerEmail,
+  onBuyerEmailChange,
+  onClaimStart,
+  onClaimConfirm,
+  onClaimCancel,
+  onPreview,
+}: LeadCardProps) {
+  const [hovered, setHovered] = useState(false);
+  const isClaiming = claimingId === lead.id;
+  const isClaimTarget = claimTargetId === lead.id;
+
+  return (
+    <article
+      style={{
+        padding: 20,
+        borderRadius: 12,
+        border: `1px solid ${hovered ? "rgba(34, 95, 84, 0.28)" : "rgba(34, 95, 84, 0.12)"}`,
+        background: hovered ? "rgba(255, 255, 255, 0.95)" : "rgba(255, 255, 255, 0.7)",
+        transition: "border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease",
+        boxShadow: hovered ? "0 4px 20px rgba(34, 95, 84, 0.1)" : "none",
+        display: "flex",
+        flexDirection: "column",
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <button
+        type="button"
+        onClick={() => onPreview(lead)}
+        aria-label={`Preview lead: ${lead.niche}${lead.city ? ` in ${lead.city}` : ""}`}
+        style={{
+          background: "none",
+          border: "none",
+          padding: 0,
+          textAlign: "left",
+          cursor: "pointer",
+          flex: 1,
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+          <span
+            style={{
+              display: "inline-block",
+              padding: "2px 10px",
+              borderRadius: 999,
+              background: temperatureBg(lead.temperature),
+              color: temperatureColor(lead.temperature),
+              fontSize: "0.75rem",
+              fontWeight: 700,
+              textTransform: "capitalize",
+            }}
+          >
+            {lead.temperature}
+          </span>
+          <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--accent, #225f54)" }}>
+            {formatCents(lead.price)}
+          </span>
+        </div>
+
+        <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(34, 95, 84, 0.6)", marginBottom: 4 }}>
+          {lead.niche}
+          {lead.city && lead.state ? ` — ${lead.city}, ${lead.state}` : ""}
+        </p>
+
+        <p style={{ fontSize: "0.88rem", lineHeight: 1.4, marginBottom: 12, color: "#1a1a1a" }}>
+          {lead.summary}
+        </p>
+
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+            <span style={{ fontSize: "0.78rem", fontWeight: 700 }}>
+              Quality: {lead.qualityScore}/100
+            </span>
+            <span style={{ fontSize: "0.75rem", color: "rgba(34, 95, 84, 0.5)" }}>
+              {formatRelativeTime(lead.createdAt)}
+            </span>
+          </div>
+          <QualityBar score={lead.qualityScore} />
+        </div>
+
+        <div style={{ fontSize: "0.75rem", color: "rgba(34, 95, 84, 0.5)", marginBottom: 12 }}>
+          Contact: {lead.contactFields.join(", ")}
+        </div>
+      </button>
+
+      {isClaimTarget ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <label htmlFor={`buyer-email-${lead.id}`} style={{ fontSize: "0.82rem", fontWeight: 600 }}>
+            Your email to claim this lead
+          </label>
+          <input
+            id={`buyer-email-${lead.id}`}
+            type="email"
+            value={buyerEmail}
+            onChange={(e) => onBuyerEmailChange(e.target.value)}
+            placeholder="you@company.com"
+            autoComplete="email"
+            style={{
+              padding: "10px 12px",
+              borderRadius: 8,
+              border: "1px solid rgba(34, 95, 84, 0.2)",
+              fontSize: "0.88rem",
+              minHeight: 44,
+            }}
+          />
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              type="button"
+              onClick={onClaimConfirm}
+              disabled={isClaiming || !buyerEmail.trim()}
+              style={{
+                flex: 1,
+                padding: "10px 16px",
+                borderRadius: 8,
+                border: "none",
+                background: "var(--accent, #225f54)",
+                color: "#fff",
+                fontSize: "0.88rem",
+                fontWeight: 700,
+                cursor: isClaiming ? "wait" : "pointer",
+                opacity: isClaiming || !buyerEmail.trim() ? 0.6 : 1,
+                minHeight: 44,
+              }}
+              aria-busy={isClaiming}
+            >
+              {isClaiming ? "Claiming..." : "Confirm claim"}
+            </button>
+            <button
+              type="button"
+              onClick={onClaimCancel}
+              style={{
+                padding: "10px 16px",
+                borderRadius: 8,
+                border: "1px solid rgba(34, 95, 84, 0.2)",
+                background: "transparent",
+                fontSize: "0.88rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                minHeight: 44,
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => onClaimStart(lead.id)}
+          disabled={isClaiming}
+          style={{
+            width: "100%",
+            padding: "10px 16px",
+            borderRadius: 8,
+            border: "none",
+            background: "var(--accent, #225f54)",
+            color: "#fff",
+            fontSize: "0.88rem",
+            fontWeight: 700,
+            cursor: isClaiming ? "wait" : "pointer",
+            opacity: isClaiming ? 0.6 : 1,
+            minHeight: 44,
+          }}
+          aria-busy={isClaiming}
+        >
+          Claim lead
+        </button>
+      )}
+    </article>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Claimed Leads Section
+// ---------------------------------------------------------------------------
+
+interface ClaimedLeadsSectionProps {
+  claimedLeads: ClaimedLead[];
+  onOutcome: (leadId: string, outcome: OutcomeKey) => void;
+  submittingOutcome: string | null;
+}
+
+function ClaimedLeadsSection({ claimedLeads, onOutcome, submittingOutcome }: ClaimedLeadsSectionProps) {
+  const [expanded, setExpanded] = useState(true);
+
+  if (claimedLeads.length === 0) return null;
+
+  return (
+    <section
+      style={{
+        marginTop: 48,
+        borderTop: "2px solid rgba(34, 95, 84, 0.15)",
+        paddingTop: 32,
+      }}
+      aria-labelledby="claimed-leads-heading"
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <h2 id="claimed-leads-heading" style={{ fontSize: "1.1rem", fontWeight: 800, margin: 0 }}>
+          Your Claimed Leads
+          <span
+            style={{
+              marginLeft: 10,
+              padding: "2px 10px",
+              borderRadius: 999,
+              background: "rgba(34, 95, 84, 0.1)",
+              color: "var(--accent, #225f54)",
+              fontSize: "0.78rem",
+              fontWeight: 700,
+            }}
+          >
+            {claimedLeads.length}
+          </span>
+        </h2>
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          aria-expanded={expanded}
+          aria-controls="claimed-leads-list"
+          style={{
+            background: "none",
+            border: "1px solid rgba(34, 95, 84, 0.2)",
+            borderRadius: 6,
+            padding: "6px 14px",
+            fontSize: "0.82rem",
+            fontWeight: 600,
+            cursor: "pointer",
+            color: "var(--accent, #225f54)",
+          }}
+        >
+          {expanded ? "Collapse" : "Expand"}
+        </button>
+      </div>
+
+      <div
+        id="claimed-leads-list"
+        hidden={!expanded}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+          gap: 14,
+        }}
+      >
+        {claimedLeads.map((lead) => (
+          <div
+            key={lead.id}
+            style={{
+              padding: 16,
+              borderRadius: 10,
+              border: "1px solid rgba(34, 95, 84, 0.12)",
+              background: "rgba(34, 95, 84, 0.03)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+              <p style={{ fontSize: "0.82rem", fontWeight: 700, margin: 0 }}>
+                {lead.niche}
+                {lead.city && lead.state ? ` — ${lead.city}, ${lead.state}` : ""}
+              </p>
+              <span style={{ fontSize: "0.75rem", color: "rgba(34,95,84,0.5)" }}>
+                Claimed {formatRelativeTime(lead.claimedAt)}
+              </span>
+            </div>
+
+            <p style={{ fontSize: "0.82rem", color: "rgba(0,0,0,0.6)", marginBottom: 12, lineHeight: 1.4 }}>
+              {lead.summary.length > 100 ? `${lead.summary.slice(0, 100)}…` : lead.summary}
+            </p>
+
+            {lead.outcome ? (
+              <div
+                style={{
+                  padding: "6px 12px",
+                  borderRadius: 6,
+                  background: `${OUTCOME_OPTIONS.find((o) => o.value === lead.outcome)?.color ?? "#6b7280"}18`,
+                  display: "inline-block",
+                  fontSize: "0.78rem",
+                  fontWeight: 700,
+                  color: OUTCOME_OPTIONS.find((o) => o.value === lead.outcome)?.color ?? "#6b7280",
+                }}
+              >
+                {OUTCOME_OPTIONS.find((o) => o.value === lead.outcome)?.label ?? lead.outcome}
+              </div>
+            ) : (
+              <div>
+                <p style={{ fontSize: "0.75rem", fontWeight: 600, marginBottom: 6, color: "rgba(34,95,84,0.6)" }}>
+                  Report outcome:
+                </p>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {OUTCOME_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      disabled={submittingOutcome === lead.id}
+                      onClick={() => onOutcome(lead.id, opt.value)}
+                      aria-label={`Mark lead as ${opt.label}`}
+                      style={{
+                        padding: "5px 11px",
+                        borderRadius: 6,
+                        border: `1px solid ${opt.color}44`,
+                        background: `${opt.color}12`,
+                        color: opt.color,
+                        fontSize: "0.75rem",
+                        fontWeight: 700,
+                        cursor: submittingOutcome === lead.id ? "wait" : "pointer",
+                        opacity: submittingOutcome === lead.id ? 0.5 : 1,
+                        minHeight: 32,
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
 
 export default function PublicMarketplacePage() {
+  // -- Original state --
   const [leads, setLeads] = useState<MarketplaceLead[]>([]);
+  const [totalLeads, setTotalLeads] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [nicheFilter, setNicheFilter] = useState("");
@@ -56,34 +787,110 @@ export default function PublicMarketplacePage() {
   const [buyerEmail, setBuyerEmail] = useState("");
   const [claimTargetId, setClaimTargetId] = useState<string | null>(null);
 
-  const fetchLeads = useCallback(() => {
-    setLoading(true);
-    const params = new URLSearchParams();
-    params.set("status", "available");
-    params.set("limit", "50");
-    if (nicheFilter) params.set("niche", nicheFilter);
-    if (tempFilter) params.set("temperature", tempFilter);
-    if (minPrice) params.set("minPrice", String(Math.round(parseFloat(minPrice) * 100)));
-    if (maxPrice) params.set("maxPrice", String(Math.round(parseFloat(maxPrice) * 100)));
+  // -- New state --
+  const [sortKey, setSortKey] = useState<SortKey>("newest");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [claimedLeads, setClaimedLeads] = useState<ClaimedLead[]>([]);
+  const [previewLead, setPreviewLead] = useState<MarketplaceLead | null>(null);
+  const [submittingOutcome, setSubmittingOutcome] = useState<string | null>(null);
 
-    fetch(`/api/marketplace/leads?${params.toString()}`)
-      .then((r) => {
-        if (!r.ok) throw new Error(`Failed to load leads: ${r.status}`);
-        return r.json();
-      })
-      .then((json) => {
-        setLeads(json.data ?? []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
-        setLoading(false);
-      });
-  }, [nicheFilter, tempFilter, minPrice, maxPrice]);
+  // Unique niches derived from all loaded leads
+  const uniqueNiches = useMemo(
+    () => Array.from(new Set(leads.map((l) => l.niche))).sort(),
+    [leads],
+  );
 
+  // Client-side filtered + sorted view
+  const processedLeads = useMemo(() => {
+    const filtered = filterBySearch(leads, searchQuery);
+    return sortLeads(filtered, sortKey);
+  }, [leads, searchQuery, sortKey]);
+
+  // Paginated slice for display
+  const displayedLeads = useMemo(
+    () => processedLeads.slice(0, page * PAGE_SIZE),
+    [processedLeads, page],
+  );
+
+  const hasMore = displayedLeads.length < processedLeads.length;
+  const serverHasMore = leads.length < totalLeads;
+
+  // -----------------------------------------------------------------------
+  // Fetch leads (initial + filter changes reset to first page)
+  // -----------------------------------------------------------------------
+
+  const fetchLeads = useCallback(
+    (offset: number, append: boolean) => {
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+        setPage(1);
+      }
+
+      const params = new URLSearchParams();
+      params.set("status", "available");
+      params.set("limit", String(PAGE_SIZE * 3)); // fetch 3 client pages per server request
+      params.set("offset", String(offset));
+      if (nicheFilter) params.set("niche", nicheFilter);
+      if (tempFilter) params.set("temperature", tempFilter);
+      if (minPrice) params.set("minPrice", String(Math.round(parseFloat(minPrice) * 100)));
+      if (maxPrice) params.set("maxPrice", String(Math.round(parseFloat(maxPrice) * 100)));
+
+      fetch(`/api/marketplace/leads?${params.toString()}`)
+        .then((r) => {
+          if (!r.ok) throw new Error(`Failed to load leads: ${r.status}`);
+          return r.json();
+        })
+        .then((json) => {
+          const incoming: MarketplaceLead[] = json.data ?? [];
+          const total: number = json.meta?.total ?? incoming.length;
+          setTotalLeads(total);
+          if (append) {
+            setLeads((prev) => [...prev, ...incoming]);
+          } else {
+            setLeads(incoming);
+          }
+          setLoading(false);
+          setLoadingMore(false);
+        })
+        .catch((err: unknown) => {
+          setError(err instanceof Error ? err.message : "Unknown error");
+          setLoading(false);
+          setLoadingMore(false);
+        });
+    },
+    [nicheFilter, tempFilter, minPrice, maxPrice],
+  );
+
+  // Re-fetch from scratch when filters change
   useEffect(() => {
-    fetchLeads();
+    fetchLeads(0, false);
   }, [fetchLeads]);
+
+  // -----------------------------------------------------------------------
+  // Load more: try client-side pagination first; fetch from server if needed
+  // -----------------------------------------------------------------------
+
+  function handleLoadMore() {
+    const nextPage = page + 1;
+    const clientHasData = nextPage * PAGE_SIZE <= processedLeads.length;
+
+    if (clientHasData) {
+      setPage(nextPage);
+    } else if (serverHasMore) {
+      fetchLeads(leads.length, true);
+      setPage(nextPage);
+    } else {
+      setPage(nextPage);
+    }
+  }
+
+  // -----------------------------------------------------------------------
+  // Claim workflow (unchanged logic, same API)
+  // -----------------------------------------------------------------------
 
   function handleClaimStart(leadId: string) {
     setClaimTargetId(leadId);
@@ -113,9 +920,17 @@ export default function PublicMarketplacePage() {
           setClaimResult(`Error: ${json.error.message}`);
         } else {
           setClaimResult("Lead claimed successfully! Contact details have been sent to your email.");
+          // Track claimed lead for outcome reporting
+          const claimedLead = leads.find((l) => l.id === claimTargetId);
+          if (claimedLead) {
+            setClaimedLeads((prev) => [
+              ...prev,
+              { ...claimedLead, claimedAt: new Date().toISOString() },
+            ]);
+          }
           setClaimTargetId(null);
           setBuyerEmail("");
-          fetchLeads();
+          fetchLeads(0, false);
         }
         setClaimingId(null);
       })
@@ -125,11 +940,41 @@ export default function PublicMarketplacePage() {
       });
   }
 
-  const uniqueNiches = Array.from(new Set(leads.map((l) => l.niche))).sort();
+  function handleClaimCancel() {
+    setClaimTargetId(null);
+    setBuyerEmail("");
+  }
+
+  // -----------------------------------------------------------------------
+  // Outcome reporting
+  // -----------------------------------------------------------------------
+
+  function handleOutcome(leadId: string, outcome: OutcomeKey) {
+    setSubmittingOutcome(leadId);
+
+    fetch(`/api/marketplace/leads/${leadId}/outcome`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ outcome, buyerId: buyerEmail }),
+    })
+      .then((r) => r.json())
+      .then(() => {
+        setClaimedLeads((prev) =>
+          prev.map((l) => (l.id === leadId ? { ...l, outcome } : l)),
+        );
+        setSubmittingOutcome(null);
+      })
+      .catch(() => {
+        setSubmittingOutcome(null);
+      });
+  }
+
+  // -----------------------------------------------------------------------
+  // Render
+  // -----------------------------------------------------------------------
 
   return (
     <main
-      className="experience-page"
       style={{
         maxWidth: 1180,
         margin: "0 auto",
@@ -147,74 +992,65 @@ export default function PublicMarketplacePage() {
         </div>
       </section>
 
+      {/* Filters + Sort + Search */}
       <section
         className="panel"
         style={{ marginTop: 24 }}
         role="search"
-        aria-label="Filter marketplace leads"
+        aria-label="Filter and sort marketplace leads"
       >
         <p className="eyebrow">Filters</p>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 8 }}>
-          <div>
-            <label
-              htmlFor="niche-filter"
-              style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: 4 }}
-            >
-              Niche
-            </label>
+
+        {/* Search */}
+        <div style={{ marginBottom: 14 }}>
+          <FieldControl id="lead-search" label="Search">
+            <input
+              id="lead-search"
+              type="search"
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+              placeholder="Search by summary, niche, or location…"
+              aria-label="Search leads by summary, niche, or location"
+              style={{
+                ...INPUT_STYLE,
+                width: "100%",
+                maxWidth: 440,
+                minHeight: 38,
+                boxSizing: "border-box",
+              }}
+            />
+          </FieldControl>
+        </div>
+
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <FieldControl id="niche-filter" label="Niche">
             <select
               id="niche-filter"
               value={nicheFilter}
               onChange={(e) => setNicheFilter(e.target.value)}
-              style={{
-                padding: "8px 12px",
-                borderRadius: 6,
-                border: "1px solid rgba(34, 95, 84, 0.2)",
-                background: "rgba(255, 255, 255, 0.8)",
-                fontSize: "0.85rem",
-                minWidth: 160,
-              }}
+              style={SELECT_STYLE}
             >
               <option value="">All niches</option>
               {uniqueNiches.map((n) => (
                 <option key={n} value={n}>{n}</option>
               ))}
             </select>
-          </div>
+          </FieldControl>
 
-          <div>
-            <label
-              htmlFor="temp-filter"
-              style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: 4 }}
-            >
-              Temperature
-            </label>
+          <FieldControl id="temp-filter" label="Temperature">
             <select
               id="temp-filter"
               value={tempFilter}
               onChange={(e) => setTempFilter(e.target.value)}
-              style={{
-                padding: "8px 12px",
-                borderRadius: 6,
-                border: "1px solid rgba(34, 95, 84, 0.2)",
-                background: "rgba(255, 255, 255, 0.8)",
-                fontSize: "0.85rem",
-                minWidth: 140,
-              }}
+              style={{ ...SELECT_STYLE, minWidth: 140 }}
             >
               {TEMPERATURES.map((t) => (
                 <option key={t} value={t}>{t || "All temperatures"}</option>
               ))}
             </select>
-          </div>
+          </FieldControl>
 
-          <div>
-            <label
-              htmlFor="min-price"
-              style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: 4 }}
-            >
-              Min price ($)
-            </label>
+          <FieldControl id="min-price" label="Min price ($)">
             <input
               id="min-price"
               type="number"
@@ -223,24 +1059,11 @@ export default function PublicMarketplacePage() {
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
               placeholder="0"
-              style={{
-                padding: "8px 12px",
-                borderRadius: 6,
-                border: "1px solid rgba(34, 95, 84, 0.2)",
-                background: "rgba(255, 255, 255, 0.8)",
-                fontSize: "0.85rem",
-                width: 100,
-              }}
+              style={{ ...INPUT_STYLE, width: 100, minHeight: 38 }}
             />
-          </div>
+          </FieldControl>
 
-          <div>
-            <label
-              htmlFor="max-price"
-              style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: 4 }}
-            >
-              Max price ($)
-            </label>
+          <FieldControl id="max-price" label="Max price ($)">
             <input
               id="max-price"
               type="number"
@@ -249,19 +1072,26 @@ export default function PublicMarketplacePage() {
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
               placeholder="No limit"
-              style={{
-                padding: "8px 12px",
-                borderRadius: 6,
-                border: "1px solid rgba(34, 95, 84, 0.2)",
-                background: "rgba(255, 255, 255, 0.8)",
-                fontSize: "0.85rem",
-                width: 100,
-              }}
+              style={{ ...INPUT_STYLE, width: 100, minHeight: 38 }}
             />
-          </div>
+          </FieldControl>
+
+          <FieldControl id="sort-leads" label="Sort by">
+            <select
+              id="sort-leads"
+              value={sortKey}
+              onChange={(e) => setSortKey(e.target.value as SortKey)}
+              style={SELECT_STYLE}
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </FieldControl>
         </div>
       </section>
 
+      {/* Claim result status */}
       {claimResult && (
         <div
           role="status"
@@ -282,162 +1112,114 @@ export default function PublicMarketplacePage() {
         </div>
       )}
 
+      {/* Lead grid */}
       {loading ? (
         <section className="panel" style={{ marginTop: 24 }}>
-          <p className="muted">Loading available leads...</p>
+          <p className="muted">Loading available leads…</p>
         </section>
       ) : error ? (
         <section className="panel" style={{ marginTop: 24 }}>
           <p className="eyebrow">Error</p>
           <p className="muted">{error}</p>
         </section>
-      ) : leads.length === 0 ? (
+      ) : processedLeads.length === 0 ? (
         <section className="panel" style={{ marginTop: 24 }}>
           <p className="muted">No leads match your filters. Try adjusting your criteria.</p>
         </section>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-            gap: 16,
-            marginTop: 24,
-          }}
-        >
-          {leads.map((lead) => (
-            <article
-              key={lead.id}
+        <>
+          {/* Counter */}
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            style={{
+              marginTop: 20,
+              marginBottom: 4,
+              fontSize: "0.82rem",
+              color: "rgba(34, 95, 84, 0.6)",
+              fontWeight: 600,
+            }}
+          >
+            Showing {Math.min(displayedLeads.length, processedLeads.length)} of {processedLeads.length} lead{processedLeads.length !== 1 ? "s" : ""}
+            {searchQuery && ` matching "${searchQuery}"`}
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+              gap: 16,
+              marginTop: 8,
+            }}
+          >
+            {displayedLeads.map((lead) => (
+              <LeadCard
+                key={lead.id}
+                lead={lead}
+                claimingId={claimingId}
+                claimTargetId={claimTargetId}
+                buyerEmail={buyerEmail}
+                onBuyerEmailChange={setBuyerEmail}
+                onClaimStart={handleClaimStart}
+                onClaimConfirm={handleClaimConfirm}
+                onClaimCancel={handleClaimCancel}
+                onPreview={setPreviewLead}
+              />
+            ))}
+          </div>
+
+          {/* Load more */}
+          {(hasMore || serverHasMore) && (
+            <div
               style={{
-                padding: 20,
-                borderRadius: 12,
-                border: "1px solid rgba(34, 95, 84, 0.12)",
-                background: "rgba(255, 255, 255, 0.7)",
+                marginTop: 32,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 8,
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                <span
-                  style={{
-                    display: "inline-block",
-                    padding: "2px 10px",
-                    borderRadius: 999,
-                    background: temperatureBg(lead.temperature),
-                    color: temperatureColor(lead.temperature),
-                    fontSize: "0.75rem",
-                    fontWeight: 700,
-                    textTransform: "capitalize",
-                  }}
-                >
-                  {lead.temperature}
-                </span>
-                <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--accent, #225f54)" }}>
-                  {formatCents(lead.price)}
-                </span>
-              </div>
-
-              <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(34, 95, 84, 0.6)", marginBottom: 4 }}>
-                {lead.niche} {lead.city && lead.state ? `- ${lead.city}, ${lead.state}` : ""}
-              </p>
-
-              <p style={{ fontSize: "0.88rem", lineHeight: 1.4, marginBottom: 12 }}>
-                {lead.summary}
-              </p>
-
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                <div style={{ fontSize: "0.82rem" }}>
-                  <strong>Score:</strong> {lead.qualityScore}/100
-                </div>
-                <div style={{ fontSize: "0.78rem", color: "rgba(34, 95, 84, 0.5)" }}>
-                  Contact: {lead.contactFields.join(", ")}
-                </div>
-              </div>
-
-              {claimTargetId === lead.id ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <label htmlFor={`buyer-email-${lead.id}`} style={{ fontSize: "0.82rem", fontWeight: 600 }}>
-                    Your email to claim this lead
-                  </label>
-                  <input
-                    id={`buyer-email-${lead.id}`}
-                    type="email"
-                    value={buyerEmail}
-                    onChange={(e) => setBuyerEmail(e.target.value)}
-                    placeholder="you@company.com"
-                    autoComplete="email"
-                    style={{
-                      padding: "10px 12px",
-                      borderRadius: 8,
-                      border: "1px solid rgba(34, 95, 84, 0.2)",
-                      fontSize: "0.88rem",
-                      minHeight: 44,
-                    }}
-                  />
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <button
-                      type="button"
-                      onClick={handleClaimConfirm}
-                      disabled={claimingId === lead.id || !buyerEmail.trim()}
-                      style={{
-                        flex: 1,
-                        padding: "10px 16px",
-                        borderRadius: 8,
-                        border: "none",
-                        background: "var(--accent, #225f54)",
-                        color: "#fff",
-                        fontSize: "0.88rem",
-                        fontWeight: 700,
-                        cursor: claimingId === lead.id ? "wait" : "pointer",
-                        opacity: claimingId === lead.id || !buyerEmail.trim() ? 0.6 : 1,
-                        minHeight: 44,
-                      }}
-                      aria-busy={claimingId === lead.id}
-                    >
-                      {claimingId === lead.id ? "Claiming..." : "Confirm claim"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setClaimTargetId(null); setBuyerEmail(""); }}
-                      style={{
-                        padding: "10px 16px",
-                        borderRadius: 8,
-                        border: "1px solid rgba(34, 95, 84, 0.2)",
-                        background: "transparent",
-                        fontSize: "0.88rem",
-                        fontWeight: 600,
-                        cursor: "pointer",
-                        minHeight: 44,
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => handleClaimStart(lead.id)}
-                  disabled={claimingId === lead.id}
-                  style={{
-                    width: "100%",
-                    padding: "10px 16px",
-                    borderRadius: 8,
-                    border: "none",
-                    background: "var(--accent, #225f54)",
-                    color: "#fff",
-                    fontSize: "0.88rem",
-                    fontWeight: 700,
-                    cursor: claimingId === lead.id ? "wait" : "pointer",
-                    opacity: claimingId === lead.id ? 0.6 : 1,
-                    minHeight: 44,
-                  }}
-                  aria-busy={claimingId === lead.id}
-                >
-                  Claim lead
-                </button>
-              )}
-            </article>
-          ))}
-        </div>
+              <button
+                type="button"
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                aria-busy={loadingMore}
+                style={{
+                  padding: "12px 32px",
+                  borderRadius: 8,
+                  border: "1px solid rgba(34, 95, 84, 0.25)",
+                  background: "transparent",
+                  color: "var(--accent, #225f54)",
+                  fontSize: "0.9rem",
+                  fontWeight: 700,
+                  cursor: loadingMore ? "wait" : "pointer",
+                  opacity: loadingMore ? 0.6 : 1,
+                  minHeight: 44,
+                }}
+              >
+                {loadingMore ? "Loading…" : "Load more leads"}
+              </button>
+              <span style={{ fontSize: "0.78rem", color: "rgba(34, 95, 84, 0.5)" }}>
+                {displayedLeads.length} of {processedLeads.length} shown
+              </span>
+            </div>
+          )}
+        </>
       )}
+
+      {/* Claimed leads with outcome reporting */}
+      <ClaimedLeadsSection
+        claimedLeads={claimedLeads}
+        onOutcome={handleOutcome}
+        submittingOutcome={submittingOutcome}
+      />
+
+      {/* Lead preview modal */}
+      <LeadPreviewModal
+        lead={previewLead}
+        onClose={() => setPreviewLead(null)}
+        onClaimStart={handleClaimStart}
+      />
     </main>
   );
 }
