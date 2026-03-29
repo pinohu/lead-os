@@ -6,15 +6,15 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 
 | Metric | Count |
 |--------|-------|
-| Total source files | 668 |
-| Lines of code | 139,331 |
-| API endpoints | 295 |
-| UI pages | 40+ |
+| Total source files | 678 |
+| Lines of code | 143,500+ |
+| API endpoints | 298 |
+| UI pages | 42+ |
 | Dashboard pages | 27 |
 | Provider integrations | 110 |
-| Lib modules | 138 |
-| Test files | 125 |
-| Test cases | 2,179 |
+| Lib modules | 140 |
+| Test files | 127 |
+| Test cases | 2,274 |
 | Test pass rate | 100% |
 
 ## Architecture
@@ -33,6 +33,8 @@ Hosted runtime (Next.js 16.2 + PostgreSQL)
   -> /api/prospects            # Prospect pipeline
   -> /api/experiments          # A/B experiment engine
   -> /api/competitors          # Competitive analysis
+  -> /api/gmb/ingest           # GMB listing ingestion
+  -> /lp/[slug]                # Auto-generated landing pages
   -> /assess/[slug]            # Dynamic assessments
   -> /calculator               # ROI calculators
   -> /dashboard/*              # 27-page operator dashboard
@@ -54,7 +56,8 @@ Hosted runtime (Next.js 16.2 + PostgreSQL)
 ## Core Capabilities
 
 ### Lead Capture & Scoring
-- Multi-source capture: embedded widgets, landing pages, assessments, calculators, chat, voice, API, web scraping
+- Multi-source capture: embedded widgets, GMB landing pages, assessments, calculators, chat, voice, API, web scraping
+- **GMB-to-Landing-Page pipeline**: Ingest any Google Business Profile → auto-generate SEO-optimized landing page with JSON-LD, reviews, hours, FAQ, and lead capture
 - 4D scoring: intent, fit, engagement, urgency with niche-specific weights
 - Temperature classification: cold/warm/hot/burning with auto-escalation
 
@@ -108,7 +111,7 @@ npm run dev
 
 # Run tests
 npm test
-# 2,179 tests, 100% pass rate
+# 2,274 tests, 100% pass rate
 
 # Type check
 npx tsc --noEmit
@@ -182,9 +185,12 @@ docker build -t lead-os . && docker run -p 3000:3000 lead-os
 | `/dashboard/prospects` | Prospect discovery and management |
 | `/dashboard/experiments` | A/B experiment management |
 | `/dashboard/competitors` | Competitive analysis |
+| `/lp/[slug]` | Auto-generated GMB landing pages |
 | `/marketplace` | Public lead marketplace |
 | `/api/health` | System health check |
 | `/api/intake` | Lead intake endpoint |
+| `/api/gmb/ingest` | GMB listing ingestion & LP generation |
+| `/api/gmb/ingest/[slug]` | Landing page CRUD (GET/PATCH/DELETE) |
 
 ## Operator Dashboard Pages (27)
 
