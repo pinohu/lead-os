@@ -10,6 +10,7 @@ import { tenantConfig } from "@/lib/tenant";
 import { INDUSTRY_TEMPLATES, type IndustryCategory } from "@/lib/niche-templates";
 import { NICHE_TESTIMONIALS } from "@/lib/niche-testimonials";
 import { buildOgImageUrl } from "@/lib/og-url";
+import { getCustomerIntelligenceOrDefault } from "@/lib/customer-intelligence";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -248,6 +249,58 @@ export default async function IndustryPage({ params, searchParams }: Props) {
                 ))}
               </div>
             </section>
+          );
+        })()}
+
+        {/* ---------- Customer Intelligence: Buying Triggers ---------- */}
+        {(() => {
+          const intel = getCustomerIntelligenceOrDefault(category);
+          return (
+            <>
+              <section>
+                <p className="eyebrow">What triggers {niche.label.toLowerCase()} buyers to act</p>
+                <div className="grid two">
+                  {intel.buyingTriggers.slice(0, 4).map((trigger) => (
+                    <article key={trigger.event} className="panel" style={{ borderLeft: `4px solid ${trigger.urgency === "immediate" ? "var(--danger)" : "var(--accent)"}` }}>
+                      <h3 style={{ margin: "0 0 6px", fontSize: "0.94rem" }}>{trigger.event}</h3>
+                      <p className="muted" style={{ fontSize: "0.82rem", margin: "0 0 4px" }}>{trigger.searchBehavior}</p>
+                      <span style={{ fontSize: "0.76rem", fontStyle: "italic", color: "var(--text-soft)" }}>{trigger.emotionalState}</span>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              <section>
+                <p className="eyebrow">Common objections — and how we address them</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {intel.objections.map((obj) => (
+                    <details key={obj.objection} className="panel" style={{ cursor: "pointer" }}>
+                      <summary style={{ fontWeight: 700, fontSize: "0.94rem" }}>&ldquo;{obj.objection}&rdquo;</summary>
+                      <div style={{ marginTop: 12, paddingLeft: 16, borderLeft: "3px solid var(--accent-soft)" }}>
+                        <p style={{ margin: "0 0 6px", fontSize: "0.88rem" }}><strong>The real concern:</strong> {obj.underlyingFear}</p>
+                        <p style={{ margin: 0, fontSize: "0.88rem" }}><strong>Our response:</strong> {obj.evidenceBasedResponse}</p>
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </section>
+
+              <section className="panel" style={{ background: "var(--secondary-soft)" }}>
+                <p className="eyebrow">Decision journey for {niche.label.toLowerCase()} buyers</p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16 }}>
+                  {intel.decisionJourney.stages.map((stage, i) => (
+                    <div key={stage.name} style={{ textAlign: "center" }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 36, height: 36, borderRadius: "50%", background: "var(--accent)", color: "white", fontWeight: 800, fontSize: "0.88rem", marginBottom: 8 }}>{i + 1}</span>
+                      <h4 style={{ margin: "0 0 4px", fontSize: "0.88rem" }}>{stage.name}</h4>
+                      <p className="muted" style={{ fontSize: "0.76rem", margin: 0 }}>{stage.primaryAction}</p>
+                    </div>
+                  ))}
+                </div>
+                <p style={{ textAlign: "center", marginTop: 16, fontSize: "0.84rem" }}>
+                  <strong>Average timeline:</strong> {intel.decisionJourney.totalDays} days &middot; <strong>Touchpoints:</strong> {intel.decisionJourney.touchpointsNeeded} &middot; <strong>Decision-makers:</strong> {intel.decisionJourney.stakeholders}
+                </p>
+              </section>
+            </>
           );
         })()}
 
