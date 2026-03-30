@@ -193,6 +193,41 @@ export default async function ResourcePage({ params, searchParams }: Props) {
           </div>
         </section>
 
+        {/* ---------- Cross-Links ---------- */}
+        <section className="panel">
+          <p className="eyebrow">Keep exploring</p>
+          <h2>More {niche.label} resources</h2>
+          <div className="grid two">
+            <article className="panel">
+              <h3>Industry Solutions</h3>
+              <p>
+                See how Lead OS is configured specifically for{" "}
+                {niche.label.toLowerCase()} businesses.
+              </p>
+              <div className="cta-row">
+                <Link
+                  href={`/industries/${niche.slug}`}
+                  className="secondary"
+                >
+                  Explore the industry page
+                </Link>
+              </div>
+            </article>
+            <article className="panel">
+              <h3>Growth Assessment</h3>
+              <p>
+                Benchmark your {niche.label.toLowerCase()} operations in two
+                minutes and get a prioritized action plan.
+              </p>
+              <div className="cta-row">
+                <Link href={`/assess/${niche.slug}`} className="secondary">
+                  Take the assessment
+                </Link>
+              </div>
+            </article>
+          </div>
+        </section>
+
         {/* ---------- Lead Capture ---------- */}
         <AdaptiveLeadCaptureForm
           source="contact_form"

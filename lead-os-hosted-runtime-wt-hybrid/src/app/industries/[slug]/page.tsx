@@ -8,6 +8,7 @@ import { getNiche, nicheCatalog } from "@/lib/catalog";
 import { resolveExperienceProfile } from "@/lib/experience";
 import { tenantConfig } from "@/lib/tenant";
 import { INDUSTRY_TEMPLATES, type IndustryCategory } from "@/lib/niche-templates";
+import { NICHE_TESTIMONIALS } from "@/lib/niche-testimonials";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -207,6 +208,42 @@ export default async function IndustryPage({ params, searchParams }: Props) {
             </article>
           </div>
         </section>
+
+        {/* ---------- Testimonials ---------- */}
+        {(() => {
+          const testimonials = NICHE_TESTIMONIALS[category] ?? NICHE_TESTIMONIALS.general ?? [];
+          if (testimonials.length === 0) return null;
+          return (
+            <section>
+              <p className="eyebrow">What {niche.label.toLowerCase()} leaders are saying</p>
+              <div className="grid three">
+                {testimonials.map((t) => (
+                  <article key={t.author} className="panel" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    <p style={{ fontStyle: "italic", fontSize: "0.92rem", lineHeight: 1.6, flex: 1 }}>
+                      &ldquo;{t.quote}&rdquo;
+                    </p>
+                    <div>
+                      <strong style={{ display: "block", fontSize: "0.88rem" }}>{t.author}</strong>
+                      <span className="muted" style={{ fontSize: "0.78rem" }}>{t.role}, {t.company}</span>
+                    </div>
+                    <span style={{
+                      display: "inline-block",
+                      padding: "4px 10px",
+                      borderRadius: 999,
+                      background: "var(--accent-soft)",
+                      color: "var(--accent-strong)",
+                      fontSize: "0.76rem",
+                      fontWeight: 700,
+                      width: "fit-content",
+                    }}>
+                      {t.metric}
+                    </span>
+                  </article>
+                ))}
+              </div>
+            </section>
+          );
+        })()}
 
         {/* ---------- Lead Capture ---------- */}
         <AdaptiveLeadCaptureForm

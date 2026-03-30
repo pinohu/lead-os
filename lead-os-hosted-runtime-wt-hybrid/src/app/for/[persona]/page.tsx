@@ -277,6 +277,58 @@ export default async function PersonaPage({ params, searchParams }: Props) {
           </div>
         </section>
 
+        {/* ---------- Cross-Links ---------- */}
+        <section className="panel">
+          <p className="eyebrow">Go deeper</p>
+          <h2>Resources for {bp.label}</h2>
+          <div className="grid three">
+            <article className="panel">
+              <h3>Industry Page</h3>
+              <p>
+                Explore solutions built for{" "}
+                {niche.label.toLowerCase()} businesses.
+              </p>
+              <div className="cta-row">
+                <Link
+                  href={`/industries/${bp.recommendedNiche}`}
+                  className="secondary"
+                >
+                  See the industry
+                </Link>
+              </div>
+            </article>
+            <article className="panel">
+              <h3>Growth Assessment</h3>
+              <p>
+                Score your readiness in two minutes and get an action plan.
+              </p>
+              <div className="cta-row">
+                <Link
+                  href={`/assess/${bp.recommendedNiche}`}
+                  className="secondary"
+                >
+                  Take the assessment
+                </Link>
+              </div>
+            </article>
+            <article className="panel">
+              <h3>Resource Guide</h3>
+              <p>
+                Read the complete {niche.label.toLowerCase()} playbook
+                with pain points, solutions, and FAQs.
+              </p>
+              <div className="cta-row">
+                <Link
+                  href={`/resources/${bp.recommendedNiche}`}
+                  className="secondary"
+                >
+                  Read the guide
+                </Link>
+              </div>
+            </article>
+          </div>
+        </section>
+
         {/* ---------- Lead Capture ---------- */}
         <AdaptiveLeadCaptureForm
           source="contact_form"
