@@ -25,7 +25,7 @@ export async function GET(
       return new Response(csv, {
         status: 200,
         headers: {
-          ...Object.fromEntries(headers.entries()),
+          ...headers,
           "Content-Type": "text/csv",
           "Content-Disposition": `attachment; filename="results-${id}.csv"`,
         },

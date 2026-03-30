@@ -10,7 +10,7 @@ const CreateCampaignSchema = z.object({
   name: z.string().min(1),
   subject: z.string().min(1),
   body: z.string().min(1),
-  recipientFilter: z.record(z.string()).optional(),
+  recipientFilter: z.record(z.string(), z.string()).optional(),
   tenantId: z.string().optional(),
 });
 

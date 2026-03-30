@@ -544,3 +544,84 @@ export function resetSNStore(): void {
   enrollmentStore.clear();
   schemaEnsured = false;
 }
+
+// ---------------------------------------------------------------------------
+// Compatibility aliases (used by tests and legacy callers)
+// ---------------------------------------------------------------------------
+
+export async function deleteContact(id: string): Promise<void> {
+  contactStore.delete(id);
+}
+
+export interface SNPipeline {
+  id: string;
+  name: string;
+  stages: string[];
+  tenantId?: string;
+}
+
+const pipelineStore = new Map<string, SNPipeline>();
+
+export async function createPipeline(
+  tenantId: string,
+  name: string,
+  stages: string[],
+): Promise<SNPipeline> {
+  const pipeline: SNPipeline = {
+    id: `snp-${randomUUID()}`,
+    name,
+    stages,
+    tenantId,
+  };
+  pipelineStore.set(pipeline.id, pipeline);
+  return pipeline;
+}
+
+export async function syncLeadsToSalesNexus(
+  tenantId: string,
+  leads: Array<{ email: string; firstName?: string; lastName?: string; phone?: string; company?: string; source?: string; score?: number }>,
+): Promise<{ created: number; updated: number; errors: string[] }> {
+  let created = 0;
+  let updated = 0;
+  const errors: string[] = [];
+
+  for (const lead of leads) {
+    try {
+      const existing = await getContactByEmail(lead.email);
+      if (existing) {
+        await updateContact(existing.id, {
+          firstName: lead.firstName,
+          lastName: lead.lastName,
+          phone: lead.phone,
+          company: lead.company,
+          source: lead.source,
+          score: lead.score,
+        });
+        updated++;
+      } else {
+        await createContact({ ...lead, source: lead.source ?? "lead-os", tenantId });
+        created++;
+      }
+    } catch (err) {
+      errors.push(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  return { created, updated, errors };
+}
+
+export async function healthCheck(): Promise<{ ok: boolean; store: { contacts: number; deals: number; campaigns: number } }> {
+  return {
+    ok: true,
+    store: {
+      contacts: contactStore.size,
+      deals: dealStore.size,
+      campaigns: campaignStore.size,
+    },
+  };
+}
+
+export function resetSalesNexusStore(): void {
+  resetSNStore();
+  pipelineStore.clear();
+}

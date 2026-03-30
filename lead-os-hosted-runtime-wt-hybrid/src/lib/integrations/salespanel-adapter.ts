@@ -374,7 +374,7 @@ export async function createSegment(input: {
 }
 
 function matchCondition(lead: SalespanelLead, condition: SegmentCondition): boolean {
-  const fieldValue = (lead as Record<string, unknown>)[condition.field];
+  const fieldValue = (lead as unknown as Record<string, unknown>)[condition.field];
 
   switch (condition.operator) {
     case "equals":

@@ -271,16 +271,16 @@ test("Meiro: available avatars list", () => {
 // ---------------------------------------------------------------------------
 
 test("SalesNexus: create and list contacts", async () => {
-  await createContact(T, { email: "john@example.com", firstName: "John", lastName: "Doe", score: 85 });
-  await createContact(T, { email: "jane@example.com", firstName: "Jane", lastName: "Smith" });
+  await createContact({ email: "john@example.com", firstName: "John", lastName: "Doe", score: 85, tenantId: T });
+  await createContact({ email: "jane@example.com", firstName: "Jane", lastName: "Smith", tenantId: T });
 
-  const contacts = await listContacts(T);
+  const contacts = await listContacts({ tenantId: T });
   assert.equal(contacts.length, 2);
-  assert.equal(contacts[0].stage, "lead");
+  assert.equal(contacts[0].status, "lead");
 });
 
 test("SalesNexus: sync leads with create and update", async () => {
-  await createContact(T, { email: "existing@example.com", firstName: "Old", lastName: "Name" });
+  await createContact({ email: "existing@example.com", firstName: "Old", lastName: "Name", tenantId: T });
 
   const result = await syncLeadsToSalesNexus(T, [
     { email: "existing@example.com", firstName: "Updated", lastName: "Name", score: 90 },
@@ -293,14 +293,14 @@ test("SalesNexus: sync leads with create and update", async () => {
 });
 
 test("SalesNexus: create pipeline and deal", async () => {
-  const contact = await createContact(T, { email: "deal@example.com", firstName: "Deal", lastName: "Person" });
+  const contact = await createContact({ email: "deal@example.com", firstName: "Deal", lastName: "Person", tenantId: T });
   const pipeline = await createPipeline(T, "Sales Pipeline", ["prospect", "negotiation", "closed"]);
-  const deal = await createDeal(T, contact.id, pipeline.id, "prospect", 5000);
+  const deal = await createDeal({ contactId: contact.id, title: pipeline.id, stage: "prospect", value: 5000, tenantId: T });
 
   assert.equal(deal.status, "open");
   assert.equal(deal.value, 5000);
 
-  const deals = await listDeals(T);
+  const deals = await listDeals({ tenantId: T });
   assert.equal(deals.length, 1);
 });
 

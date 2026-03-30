@@ -12,7 +12,7 @@ const CreateSubscriberSchema = z.object({
   name: z.string().max(200).optional(),
   phone: z.string().max(50).optional(),
   listId: z.string().min(1),
-  customFields: z.record(z.string()).optional(),
+  customFields: z.record(z.string(), z.string()).optional(),
   tenantId: z.string().min(1).optional(),
 });
 

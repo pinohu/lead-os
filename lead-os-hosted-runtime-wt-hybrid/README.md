@@ -6,15 +6,15 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 
 | Metric | Count |
 |--------|-------|
-| Total source files | 688 |
-| Lines of code | 147,800+ |
-| API endpoints | 303 |
-| UI pages | 42+ |
-| Dashboard pages | 27 |
-| Provider integrations | 110 |
-| Lib modules | 143 |
-| Test files | 130 |
-| Test cases | 2,378 |
+| Total source files | 763 |
+| Lines of code | 189,500+ |
+| API endpoints | 474 |
+| UI pages | 51 |
+| Dashboard pages | 28 |
+| Provider integrations | 137 |
+| Lib modules | 212 |
+| Test files | 165 |
+| Test cases | 3,663 |
 | Test pass rate | 100% |
 
 ## Architecture
@@ -85,9 +85,37 @@ Hosted runtime (Next.js 16.2 + PostgreSQL)
 - Competitor tracking dashboard
 
 ### Multi-Channel Nurturing
-- Email (Sinosend, SMTP), SMS (EasyText), WhatsApp (WBizTool), Voice (Thoughtly), Chat (Pickaxe)
+- Email (Sinosend, Groove, SendFox, tinyEmail, Acumbamail, VBOUT, SalesNexus, SMTP)
+- SMS (EasyText, SMS-iT, Acumbamail), WhatsApp (WBizTool, SMS-iT), Voice (Thoughtly, Novocall)
+- Chat (Pickaxe, Insighto, Chatbase), Social (Vista Social)
+- AI-personalized outreach (Autobound), Marketing automation (VBOUT)
 - Temperature-aware content sequencing
 - AI-powered content generation (10+ angles per topic, 12 platform variants)
+
+### Data Enrichment & Verification
+- Email verification (Reoon) — deliverability scoring, bulk verification, bounce prevention
+- Contact/company enrichment (Databar) — firmographic, technographic, and social data
+- B2B contact search (LeadRocks, Clodura.AI) — LinkedIn enrichment, org charts
+- Visitor de-anonymization (Happierleads) — identify anonymous website visitors
+- Behavioral scoring (Salespanel) — visitor tracking, lead scoring, segmentation
+
+### Business Intelligence & Attribution
+- Marketing attribution (OWOX BI) — multi-touch attribution, ROAS, cohort analysis
+- Call tracking (CallScaler) — number provisioning, source attribution, call-to-lead conversion
+- Conversion optimization (Plerdy) — heatmaps, session recordings, SEO audits, funnel analysis
+- AI ad targeting (Markopolo.ai) — audience sync, campaign optimization, retargeting
+- Customer data platform (Meiro) — identity resolution, event ingestion, segment building
+
+### Web Scraping & Automation
+- Google Maps scraping (Google Maps Scraper) — business data extraction, GMB ingestion pipeline
+- Web scraping automation (Hexomatic) — templates, scheduled automations, data export
+
+### Additional Integrations
+- CRM (SuiteDash, Flowlu, SalesNexus) — contacts, deals, pipelines, drip sequences
+- Subscription billing (Chargebee) — customers, subscriptions, invoicing, usage metering
+- Review management (More Good Reviews) — review solicitation, response, widgets
+- Form-based capture (Formaloo) — form builder, submissions, analytics, embed codes
+- Callback widgets (Novocall) — click-to-call, scheduling, lead conversion
 
 ### Revenue & Monetization
 - 4 revenue models: managed service, white-label SaaS, implementation + retainer, lead marketplace
@@ -97,8 +125,8 @@ Hosted runtime (Next.js 16.2 + PostgreSQL)
 ### Multi-Tenant Infrastructure
 - Tenant isolation with per-plan quotas and RLS policies
 - Self-service onboarding wizard (6 steps)
-- 9-step automated provisioning
-- 110 provider integrations (all with dry-run fallback)
+- 13-step automated provisioning with subdomain + landing page deployment
+- 137 provider integrations (all with dry-run fallback)
 
 ## Quick Start
 

@@ -13,7 +13,7 @@ const CreateContactSchema = z.object({
   position: z.string().optional(),
   source: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  customFields: z.record(z.string()).optional(),
+  customFields: z.record(z.string(), z.string()).optional(),
   tenantId: z.string().optional(),
 });
 
