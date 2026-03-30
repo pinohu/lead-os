@@ -8,6 +8,7 @@ import { getNiche, nicheCatalog } from "@/lib/catalog";
 import { resolveExperienceProfile } from "@/lib/experience";
 import { tenantConfig } from "@/lib/tenant";
 import { INDUSTRY_TEMPLATES, type IndustryCategory } from "@/lib/niche-templates";
+import { buildOgImageUrl } from "@/lib/og-url";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -57,6 +58,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `The Complete Guide to ${niche.label} | Lead OS Resources`,
     description: `Everything ${niche.label.toLowerCase()} businesses need to know about lead capture, scoring, automation, and growth. Actionable insights backed by real data.`,
+    openGraph: {
+      title: `The Complete Guide to ${niche.label}`,
+      description: niche.summary,
+      images: [{ url: buildOgImageUrl(`The Complete Guide to ${niche.label}`, niche.summary, niche.slug), width: 1200, height: 630 }],
+    },
   };
 }
 

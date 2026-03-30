@@ -163,6 +163,21 @@ export default async function LocationPage({ params }: PageProps) {
         </div>
       </section>
 
+      {/* Cross-links */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-xl font-bold text-navy mb-6">Explore More Resources</h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/services" className="bg-white border border-slate-200 rounded-lg px-6 py-3 text-sm font-semibold text-navy hover:border-cyan/40 hover:shadow transition-all">
+              View All Services →
+            </Link>
+            <Link href="/#contact" className="bg-cyan hover:bg-cyan-dark text-white rounded-lg px-6 py-3 text-sm font-semibold transition-colors">
+              Get a Free Assessment →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white text-center">
         <div className="max-w-2xl mx-auto">

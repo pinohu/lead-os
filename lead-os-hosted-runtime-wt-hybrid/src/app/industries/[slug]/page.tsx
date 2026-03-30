@@ -9,6 +9,7 @@ import { resolveExperienceProfile } from "@/lib/experience";
 import { tenantConfig } from "@/lib/tenant";
 import { INDUSTRY_TEMPLATES, type IndustryCategory } from "@/lib/niche-templates";
 import { NICHE_TESTIMONIALS } from "@/lib/niche-testimonials";
+import { buildOgImageUrl } from "@/lib/og-url";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -58,6 +59,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Growth System | Lead OS`,
     description: `${niche.summary} Discover purpose-built funnels, scoring, and automation for ${niche.label.toLowerCase()} businesses.`,
+    openGraph: {
+      title: `${niche.label} | Lead OS`,
+      description: niche.summary,
+      images: [{ url: buildOgImageUrl(niche.label, niche.summary, niche.slug), width: 1200, height: 630 }],
+    },
   };
 }
 

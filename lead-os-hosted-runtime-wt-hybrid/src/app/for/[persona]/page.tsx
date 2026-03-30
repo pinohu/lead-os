@@ -7,6 +7,7 @@ import { ExperienceScaffold } from "@/components/ExperienceScaffold";
 import { getNiche } from "@/lib/catalog";
 import { resolveExperienceProfile } from "@/lib/experience";
 import { tenantConfig } from "@/lib/tenant";
+import { buildOgImageUrl } from "@/lib/og-url";
 
 /* ------------------------------------------------------------------ */
 /*  Persona Blueprints                                                 */
@@ -179,6 +180,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `Lead OS for ${bp.label} | Lead OS`,
     description: `${bp.tagline} Discover growth systems designed specifically for ${bp.label.toLowerCase()}.`,
+    openGraph: {
+      title: `Lead OS for ${bp.label}`,
+      description: bp.tagline,
+      images: [{ url: buildOgImageUrl(bp.label, bp.tagline, bp.recommendedNiche), width: 1200, height: 630 }],
+    },
   };
 }
 

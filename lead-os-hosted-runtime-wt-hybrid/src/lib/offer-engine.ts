@@ -105,7 +105,7 @@ export interface OfferContext {
 // Niche-specific offer templates
 // ---------------------------------------------------------------------------
 
-const OFFER_TEMPLATES: Record<Niche, OfferTemplate> = {
+export const OFFER_TEMPLATES: Record<Niche, OfferTemplate> = {
   construction: {
     niche: "construction",
     services: ["General Contracting", "Commercial Build-Out", "Renovation", "Project Management"],

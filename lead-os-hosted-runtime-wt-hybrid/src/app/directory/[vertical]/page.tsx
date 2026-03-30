@@ -7,6 +7,7 @@ import { getNiche, nicheCatalog } from "@/lib/catalog";
 import { resolveExperienceProfile } from "@/lib/experience";
 import { tenantConfig } from "@/lib/tenant";
 import { INDUSTRY_TEMPLATES, type IndustryCategory } from "@/lib/niche-templates";
+import { buildOgImageUrl } from "@/lib/og-url";
 import { NICHE_TESTIMONIALS } from "@/lib/niche-testimonials";
 import { CALCULATOR_PRESETS } from "@/lib/calculator-presets";
 
@@ -45,6 +46,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Directory | Lead OS`,
     description: `Complete directory of ${niche.label.toLowerCase()} growth resources: industry overview, assessments, authority guides, ROI calculators, testimonials, and funnel blueprints.`,
+    openGraph: {
+      title: `${niche.label} Directory`,
+      description: `Complete directory of ${niche.label.toLowerCase()} growth resources.`,
+      images: [{ url: buildOgImageUrl(`${niche.label} Directory`, `Complete directory of ${niche.label.toLowerCase()} growth resources.`, vertical), width: 1200, height: 630 }],
+    },
   };
 }
 
