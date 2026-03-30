@@ -11,8 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  WORKING_DIR: lead-os-hosted-runtime-wt-hybrid
-  NODE_VERSION: "20"
+  NODE_VERSION: "22"
 
 jobs:
   typecheck:
@@ -20,14 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: lead-os-hosted-runtime-wt-hybrid
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+          cache-dependency-path: lead-os-hosted-runtime-wt-hybrid/package-lock.json
       - run: npm ci
       - run: npx tsc --noEmit
 
@@ -36,29 +35,45 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: lead-os-hosted-runtime-wt-hybrid
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+          cache-dependency-path: lead-os-hosted-runtime-wt-hybrid/package-lock.json
       - run: npm ci
       - run: npm run test:ci
 
-  build:
-    name: Build
+  build-hybrid:
+    name: Build Hybrid Runtime
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: lead-os-hosted-runtime-wt-hybrid
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+          cache-dependency-path: lead-os-hosted-runtime-wt-hybrid/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  build-edge:
+    name: Build Edge Layer
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: neatcircle-beta
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: neatcircle-beta/package-lock.json
       - run: npm ci
       - run: npm run build

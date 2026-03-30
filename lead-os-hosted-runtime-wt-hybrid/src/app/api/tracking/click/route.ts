@@ -82,9 +82,12 @@ function isAllowedRedirectTarget(url: string): boolean {
   ]);
 
   if (allowedHosts.size === 0) {
-    // No allowlist configured — permit all http/https targets so the feature
-    // works out of the box, but log a warning.
-    // TODO: Set LEAD_OS_ALLOWED_REDIRECT_HOSTS in production to restrict targets.
+    if (process.env.NODE_ENV === "production") {
+      console.warn(
+        "[security] LEAD_OS_ALLOWED_REDIRECT_HOSTS is not set — click tracking allows open redirects. " +
+        "Set this env var to a comma-separated list of trusted hostnames.",
+      );
+    }
     return true;
   }
 

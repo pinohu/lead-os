@@ -1,26 +1,7 @@
 "use client";
 
-// SSE alternative: import { onLeadCaptured, onLeadScored } from "@/lib/realtime-hooks";
-// The realtime-hooks module exports event publishers (onLeadCaptured, onLeadScored,
-// onExperimentConversion, onMarketplaceLeadClaimed, onProvisioningStep) that publish
-// events via the realtime SSE system. To replace the polling fetch below with SSE:
-//
-//   import { onLeadCaptured, onLeadScored } from "@/lib/realtime-hooks";
-//
-//   // Inside useEffect, instead of setInterval polling:
-//   // const eventSource = new EventSource(`/api/realtime?tenantId=${tenantId}`);
-//   // eventSource.addEventListener("lead.captured", (e) => {
-//   //   const payload = JSON.parse(e.data);
-//   //   setData((prev) => prev ? { ...prev, hotLeads: [payload, ...prev.hotLeads] } : prev);
-//   // });
-//   // eventSource.addEventListener("lead.scored", (e) => {
-//   //   const payload = JSON.parse(e.data);
-//   //   // Update lead scores in real time
-//   // });
-//   // return () => eventSource.close();
-
 import Link from "next/link";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 interface HotLead {
   leadKey: string;
@@ -150,10 +131,42 @@ export default function RadarPage() {
       });
   }, []);
 
+  const sseRef = useRef<EventSource | null>(null);
+
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
+
+    // Try SSE for real-time updates; fall back to 30s polling on error
+    let fallbackInterval: ReturnType<typeof setInterval> | null = null;
+
+    const sse = new EventSource("/api/realtime/stream");
+    sseRef.current = sse;
+
+    const handleRealtimeEvent = () => {
+      // Re-fetch full radar state on any realtime event so all panels stay in sync
+      fetchData();
+    };
+
+    sse.addEventListener("lead.captured", handleRealtimeEvent);
+    sse.addEventListener("lead.scored", handleRealtimeEvent);
+    sse.addEventListener("lead.hot", handleRealtimeEvent);
+    sse.addEventListener("experiment.conversion", handleRealtimeEvent);
+    sse.addEventListener("marketplace.claimed", handleRealtimeEvent);
+
+    sse.onerror = () => {
+      // SSE failed — close and fall back to polling
+      sse.close();
+      sseRef.current = null;
+      if (!fallbackInterval) {
+        fallbackInterval = setInterval(fetchData, 30000);
+      }
+    };
+
+    return () => {
+      sse.close();
+      sseRef.current = null;
+      if (fallbackInterval) clearInterval(fallbackInterval);
+    };
   }, [fetchData]);
 
   if (loading) {
@@ -191,7 +204,7 @@ export default function RadarPage() {
           <h1>Real-time monitoring</h1>
           <p className="lede">
             Live view of hot leads, high-intent events, and the full activity feed.
-            Data refreshes every 30 seconds.
+            Updates in real time via SSE.
           </p>
           <div className="cta-row">
             <Link href="/dashboard" className="secondary">Back to dashboard</Link>
