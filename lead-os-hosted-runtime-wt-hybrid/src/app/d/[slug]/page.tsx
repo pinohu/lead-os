@@ -10,8 +10,6 @@ import {
 } from "../../../lib/dynasty-landing-engine.ts";
 import { DynastyLandingPage } from "../../../components/DynastyLandingPage.tsx";
 
-export const dynamicParams = false;
-
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
   const presets = seedAllPresetConfigs();
   for (const config of presets) {
