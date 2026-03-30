@@ -50,50 +50,55 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   return (
     <main className="experience-page" data-theme="light" style={{ colorScheme: "light" }}>
       {/* ── Hero ────────────────────────────────────────────────────── */}
-      <section style={{ textAlign: "center", padding: "80px 24px 60px", background: "linear-gradient(180deg, #f0f4ff 0%, #fafafa 100%)" }}>
-        <div style={{ maxWidth: 760, margin: "0 auto" }}>
-          <p style={{ display: "inline-block", padding: "6px 16px", borderRadius: 999, background: "#eff6ff", color: "#2563eb", fontSize: "0.82rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 20 }}>The lead generation operating system</p>
-          <h1 style={{ fontSize: "clamp(2.2rem, 5vw, 3.2rem)", lineHeight: 1.15, color: "#09090b", fontWeight: 800 }}>
-            Stop managing 8 tools.<br />
-            Run your entire lead pipeline from one platform.
-          </h1>
-          <p className="lede" style={{ maxWidth: 600, margin: "16px auto 0" }}>
-            AI-powered scoring, multi-channel nurture, 16 industry presets, and a lead
-            marketplace — deployed in minutes, not months.
-          </p>
-          <div className="cta-row" style={{ justifyContent: "center", marginTop: 28 }}>
-            <Link href="/onboard" className="primary">Start free</Link>
-            <Link href="/pricing" className="secondary">View pricing</Link>
+      <section style={{
+        textAlign: "center",
+        padding: "100px 24px 80px",
+        background: "radial-gradient(ellipse 80% 60% at 50% -20%, rgba(79, 70, 229, 0.08) 0%, transparent 70%)",
+      }}>
+        <div style={{ maxWidth: 680, margin: "0 auto" }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "5px 14px 5px 6px", borderRadius: 999,
+            background: "var(--accent-soft)", border: "1px solid var(--accent-glow)",
+            fontSize: "0.8rem", fontWeight: 600, color: "var(--accent)",
+            marginBottom: 28,
+          }}>
+            <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "var(--accent)" }} />
+            Now with AI-powered customer intelligence
           </div>
-          <p className="muted" style={{ fontSize: "0.82rem", marginTop: 12 }}>
-            No credit card required. Set up your first funnel in under 10 minutes.
+          <h1 style={{ color: "var(--text)" }}>
+            Your lead pipeline,<br />
+            on autopilot.
+          </h1>
+          <p style={{ fontSize: "1.12rem", color: "var(--text-soft)", maxWidth: 520, margin: "16px auto 0", lineHeight: 1.7 }}>
+            Replace 8+ tools with one platform. AI scoring, multi-channel nurture,
+            and a lead marketplace — for agencies, SaaS builders, and lead gen teams.
+          </p>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 36 }}>
+            <Link href="/onboard" className="primary" style={{ padding: "12px 28px", fontSize: "0.95rem" }}>Get started free</Link>
+            <Link href="/pricing" className="secondary" style={{ padding: "12px 28px", fontSize: "0.95rem" }}>See pricing</Link>
+          </div>
+          <p style={{ fontSize: "0.78rem", color: "var(--text-soft)", marginTop: 14, letterSpacing: "0.01em" }}>
+            No credit card required &middot; Set up in under 10 minutes &middot; Cancel anytime
           </p>
         </div>
       </section>
 
-      {/* ── Social Proof Bar ────────────────────────────────────────── */}
-      <section
-        aria-label="Platform numbers"
-        className="panel"
-        style={{ display: "flex", flexWrap: "wrap", gap: 0, padding: 0, overflow: "hidden" }}
-      >
+      {/* ── Trusted Numbers ─────────────────────────────────────────── */}
+      <section style={{
+        display: "flex", flexWrap: "wrap", justifyContent: "center",
+        gap: "48px", padding: "40px 24px",
+        borderBottom: "1px solid var(--surface-border)",
+      }}>
         {[
-          { stat: "16", label: "industry verticals" },
-          { stat: "110+", label: "integrations included" },
-          { stat: "691", label: "pages generated" },
-          { stat: "4,151", label: "tests passing" },
-        ].map(({ stat, label }, i, arr) => (
-          <div key={label} style={{
-            flex: "1 1 160px", display: "flex", flexDirection: "column", alignItems: "center",
-            justifyContent: "center", gap: 4, padding: "22px 24px", textAlign: "center",
-            borderRight: i < arr.length - 1 ? "1px solid var(--surface-border)" : "none",
-          }}>
-            <span style={{
-              fontFamily: "inherit",
-              fontSize: "clamp(1.7rem, 2.5vw, 2.4rem)", fontWeight: 700, lineHeight: 1,
-              letterSpacing: "-0.02em", color: "var(--accent)",
-            }}>{stat}</span>
-            <span className="muted" style={{ fontSize: "0.88rem", fontWeight: 600 }}>{label}</span>
+          { stat: "16", label: "Industries" },
+          { stat: "110+", label: "Integrations" },
+          { stat: "5", label: "Revenue models" },
+          { stat: "84", label: "AI personas" },
+        ].map(({ stat, label }) => (
+          <div key={label} style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "1.8rem", fontWeight: 700, letterSpacing: "-0.03em", color: "var(--text)" }}>{stat}</div>
+            <div style={{ fontSize: "0.82rem", color: "var(--text-soft)", fontWeight: 500, marginTop: 2 }}>{label}</div>
           </div>
         ))}
       </section>

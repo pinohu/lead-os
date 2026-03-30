@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
+import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { tenantConfig } from "@/lib/tenant";
 import { embeddedSecrets } from "@/lib/embedded-secrets";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com"),
@@ -36,12 +43,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const brandName = tenantConfig.brandName;
 
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content={tenantConfig.accent} />
+        <meta name="theme-color" content="#4f46e5" />
       </head>
-      <body>
+      <body className={inter.className}>
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
@@ -64,7 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link href="/auth/sign-in" style={{ padding: "6px 16px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)" }}>Sign in</Link>
               </li>
               <li>
-                <Link href="/onboard" style={{ padding: "6px 16px", borderRadius: 6, background: "#2563eb", color: "#fff", fontWeight: 600 }}>Get started</Link>
+                <Link href="/onboard" style={{ padding: "6px 16px", borderRadius: 8, background: "var(--accent)", color: "#fff", fontWeight: 600, fontSize: "0.88rem" }}>Get started</Link>
               </li>
             </ul>
           </nav>
