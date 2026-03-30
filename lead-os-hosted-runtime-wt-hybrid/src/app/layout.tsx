@@ -52,6 +52,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Link>
             <ul className="site-nav__links" role="list">
               <li>
+                <Link href="/industries">Industries</Link>
+              </li>
+              <li>
+                <Link href="/pricing">Pricing</Link>
+              </li>
+              <li>
                 <Link href="/dashboard">Dashboard</Link>
               </li>
               <li>
@@ -72,6 +78,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div id="main-content">{children}</div>
         <footer className="site-footer" role="contentinfo" style={{ borderTop: "1px solid #e5e7eb", padding: "2rem 1rem", marginTop: "4rem", textAlign: "center", fontSize: "0.875rem", color: "#6b7280" }}>
           <nav aria-label="Footer navigation" style={{ display: "flex", gap: "1.5rem", justifyContent: "center", flexWrap: "wrap", marginBottom: "0.75rem" }}>
+            <Link href="/industries">Industries</Link>
+            <Link href="/pricing">Pricing</Link>
+            <Link href="/marketplace">Marketplace</Link>
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms of Service</Link>
             <Link href="/help">Help Center</Link>

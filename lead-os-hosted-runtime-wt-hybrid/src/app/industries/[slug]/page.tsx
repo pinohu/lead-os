@@ -160,6 +160,54 @@ export default async function IndustryPage({ params, searchParams }: Props) {
           </div>
         </section>
 
+        {/* ---------- Cross-Links ---------- */}
+        <section>
+          <h2>Explore more for {niche.label}</h2>
+          <div className="grid three">
+            <article className="panel">
+              <p className="eyebrow">Assessment</p>
+              <h3>Score your {niche.label} funnel</h3>
+              <p>
+                Take a two-minute diagnostic and get a prioritized action plan
+                built for {niche.label.toLowerCase()} businesses.
+              </p>
+              <div className="cta-row">
+                <Link href={`/assess/${niche.slug}`} className="primary">
+                  Take the assessment
+                </Link>
+              </div>
+            </article>
+
+            <article className="panel">
+              <p className="eyebrow">Resources</p>
+              <h3>The complete {niche.label} guide</h3>
+              <p>
+                Strategies, benchmarks, and playbooks written specifically for
+                the {niche.label.toLowerCase()} industry.
+              </p>
+              <div className="cta-row">
+                <Link href={`/resources/${niche.slug}`} className="secondary">
+                  Read the complete guide
+                </Link>
+              </div>
+            </article>
+
+            <article className="panel">
+              <p className="eyebrow">For your role</p>
+              <h3>Built for agencies &amp; operators</h3>
+              <p>
+                See how Lead&nbsp;OS fits your workflow — whether you run an
+                agency, a franchise, or an in-house growth team.
+              </p>
+              <div className="cta-row">
+                <Link href="/for/agencies" className="secondary">
+                  Built for your role
+                </Link>
+              </div>
+            </article>
+          </div>
+        </section>
+
         {/* ---------- Lead Capture ---------- */}
         <AdaptiveLeadCaptureForm
           source="contact_form"
