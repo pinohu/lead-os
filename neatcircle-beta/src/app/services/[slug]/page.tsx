@@ -33,6 +33,31 @@ export async function generateMetadata({
       type: "website",
       url: `${siteConfig.siteUrl}/services/${service.slug}`,
     },
+    other: {
+      "script:ld+json": JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: service.title,
+        description: service.overview,
+        provider: {
+          "@type": "Organization",
+          name: siteConfig.brandName,
+          url: siteConfig.siteUrl,
+        },
+        url: `${siteConfig.siteUrl}/services/${service.slug}`,
+        ...(service.pricingTiers.length > 0
+          ? {
+              offers: service.pricingTiers.map((tier: PricingTier) => ({
+                "@type": "Offer",
+                name: tier.name,
+                price: tier.price,
+                priceCurrency: "USD",
+                description: tier.features.join(", "),
+              })),
+            }
+          : {}),
+      }),
+    },
   };
 }
 
@@ -497,6 +522,24 @@ export default async function ServicePage({ params }: PageProps) {
   const service = getServiceBySlug(slug);
   if (!service) notFound();
 
+  const faqItems = [
+    { q: `What is ${service.title}?`, a: service.overview },
+    { q: `Who is ${service.title} for?`, a: service.idealClient },
+    { q: `How long does ${service.title} take?`, a: `Typical timeline is ${service.timelineRange}. ${service.timeline.map((t) => `${t.phase}: ${t.title}`).join(". ")}.` },
+    { q: `What is included in ${service.title}?`, a: service.deliverables.join(". ") + "." },
+    ...(service.pricingTiers.length > 0 ? [{ q: `How much does ${service.title} cost?`, a: `We offer ${service.pricingTiers.length} tiers: ${service.pricingTiers.map((t) => `${t.name} (${t.price})`).join(", ")}. Each tier includes progressively more features and support.` }] : []),
+  ];
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
+  };
+
   return (
     <main>
       <HeroSection service={service} />
@@ -505,9 +548,34 @@ export default async function ServicePage({ params }: PageProps) {
       <FeaturesSection service={service} />
       <TimelineSection service={service} />
       <IdealClientSection service={service} />
+
+      {/* ─── FAQ Section ──────────────────────────────────── */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white border-t border-slate-100">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-navy mb-8">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {faqItems.map((item) => (
+              <details key={item.q} className="group border border-slate-200 rounded-lg">
+                <summary className="flex items-center justify-between cursor-pointer px-6 py-4 font-semibold text-navy hover:bg-slate-50 transition-colors">
+                  {item.q}
+                  <span className="ml-2 text-slate-400 group-open:rotate-180 transition-transform">&#9662;</span>
+                </summary>
+                <div className="px-6 pb-4 text-slate-600 text-sm leading-relaxed">{item.a}</div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <PricingSection service={service} />
       <CtaSection />
       <FooterNav />
+
+      {/* Schema.org FAQPage */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
     </main>
   );
 }

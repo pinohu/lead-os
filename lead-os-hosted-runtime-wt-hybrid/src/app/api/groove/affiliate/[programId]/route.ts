@@ -16,7 +16,7 @@ const RegisterAffiliateSchema = z.object({
 
 export async function GET(
   request: Request,
-  { params }: { params: { programId: string } },
+  { params }: { params: Promise<{ programId: string }> },
 ) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 
@@ -24,7 +24,7 @@ export async function GET(
   if (authError) return authError;
 
   try {
-    const { programId } = params;
+    const { programId } = await params;
     const program = await getAffiliateProgram(programId);
 
     if (!program) {
@@ -52,7 +52,7 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { programId: string } },
+  { params }: { params: Promise<{ programId: string }> },
 ) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 
@@ -60,7 +60,7 @@ export async function POST(
   if (authError) return authError;
 
   try {
-    const { programId } = params;
+    const { programId } = await params;
     const raw = await request.json();
     const validation = RegisterAffiliateSchema.safeParse(raw);
 
