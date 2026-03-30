@@ -93,7 +93,11 @@ export default function FunnelOrchestrator() {
 
     const interpolated = interpolateStep(next, detectedNiche);
     setCurrentStep(interpolated);
-    setCtaVisible(true);
+
+    // Don't show the CTA immediately on first visit — wait 15 seconds
+    const sessions = parseInt(localStorage.getItem("nc_sessions") ?? "1", 10);
+    const delay = sessions <= 1 ? 15000 : 3000;
+    setTimeout(() => setCtaVisible(true), delay);
     updateStoredProfile({
       activeBlueprint: blueprint.id,
       currentStepId: interpolated.id,

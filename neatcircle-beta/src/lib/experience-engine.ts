@@ -58,6 +58,28 @@ function niceNiche(value?: string) {
 }
 
 export function buildHeroExperience(profile: ExperienceProfile): HeroExperience {
+  // If the preset provides a marketing headline, use it as the primary hero
+  // This allows persona-specific presets to override the adaptive experience
+  if (siteConfig.marketingHeadline && siteConfig.marketingDescription) {
+    const parts = siteConfig.marketingHeadline.split(". ");
+    return {
+      experimentId: "preset-override",
+      variantId: "preset",
+      eyebrow: siteConfig.brandName,
+      headline: parts[0] ?? siteConfig.marketingHeadline,
+      highlight: parts[1] ?? "",
+      subheadline: siteConfig.marketingDescription,
+      primaryCta: { label: "Get Started Free", href: "/assess/general" },
+      secondaryCta: { label: "See How It Works", href: "#process" },
+      trustBar: [
+        "White-label ready",
+        "16 industries pre-configured",
+        "Set up in under 15 minutes",
+      ],
+      urgencyNote: "No credit card required. Cancel anytime.",
+    };
+  }
+
   const recommendation = recommendBlueprintForVisitor(profile);
   const temperature = inferVisitorTemperature(profile);
   const objection = inferObjectionType(profile);

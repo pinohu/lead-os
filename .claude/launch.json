@@ -7,6 +7,13 @@
       "runtimeArgs": ["run", "dev"],
       "port": 3000,
       "cwd": "lead-os-hosted-runtime-wt-hybrid"
+    },
+    {
+      "name": "neatcircle-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3001,
+      "cwd": "neatcircle-beta"
     }
   ]
 }
