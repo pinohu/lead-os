@@ -89,7 +89,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             borderRight: i < arr.length - 1 ? "1px solid var(--surface-border)" : "none",
           }}>
             <span style={{
-              fontFamily: "'Palatino Linotype', 'Book Antiqua', Georgia, serif",
+              fontFamily: "inherit",
               fontSize: "clamp(1.7rem, 2.5vw, 2.4rem)", fontWeight: 700, lineHeight: 1,
               letterSpacing: "-0.02em", color: "var(--accent)",
             }}>{stat}</span>
