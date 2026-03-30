@@ -58,10 +58,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link href="/pricing">Pricing</Link>
               </li>
               <li>
-                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/directory">Directory</Link>
               </li>
               <li>
-                <Link href="/setup">Setup</Link>
+                <Link href="/auth/sign-in" style={{ padding: "6px 16px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)" }}>Sign in</Link>
+              </li>
+              <li>
+                <Link href="/onboard" style={{ padding: "6px 16px", borderRadius: 6, background: "#2563eb", color: "#fff", fontWeight: 600 }}>Get started</Link>
               </li>
             </ul>
           </nav>

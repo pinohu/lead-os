@@ -48,12 +48,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   });
 
   return (
-    <main className="experience-page">
+    <main className="experience-page" data-theme="light" style={{ colorScheme: "light" }}>
       {/* ── Hero ────────────────────────────────────────────────────── */}
-      <section className="experience-hero" style={{ textAlign: "center" }}>
-        <div className="hero-copy" style={{ maxWidth: 760, margin: "0 auto" }}>
-          <p className="eyebrow">The lead generation operating system</p>
-          <h1 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", lineHeight: 1.15 }}>
+      <section style={{ textAlign: "center", padding: "80px 24px 60px", background: "linear-gradient(180deg, #f0f4ff 0%, #fafafa 100%)" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto" }}>
+          <p style={{ display: "inline-block", padding: "6px 16px", borderRadius: 999, background: "#eff6ff", color: "#2563eb", fontSize: "0.82rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 20 }}>The lead generation operating system</p>
+          <h1 style={{ fontSize: "clamp(2.2rem, 5vw, 3.2rem)", lineHeight: 1.15, color: "#09090b", fontWeight: 800 }}>
             Stop managing 8 tools.<br />
             Run your entire lead pipeline from one platform.
           </h1>
