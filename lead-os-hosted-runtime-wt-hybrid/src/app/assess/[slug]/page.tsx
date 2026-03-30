@@ -63,6 +63,7 @@ export default async function AssessmentPage({ params, searchParams }: Assessmen
   });
 
   return (
+    <div data-theme="light" style={{ colorScheme: "light" }}>
     <ExperienceScaffold
       eyebrow="Hosted assessment"
       title={niche.assessmentTitle}
@@ -106,5 +107,6 @@ export default async function AssessmentPage({ params, searchParams }: Assessmen
         profile={profile}
       />
     </ExperienceScaffold>
+    </div>
   );
 }

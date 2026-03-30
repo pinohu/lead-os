@@ -1,52 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AdaptiveLeadCaptureForm } from "@/components/AdaptiveLeadCaptureForm";
-import { resolveExperienceProfile } from "@/lib/experience";
-import { getNiche } from "@/lib/catalog";
 import { tenantConfig } from "@/lib/tenant";
 import { buildOgImageUrl } from "@/lib/og-url";
-import { headers } from "next/headers";
-import type { FunnelFamily } from "@/lib/runtime-schema";
 
 const brandName = tenantConfig.brandName || "Lead OS";
 
 export const metadata: Metadata = {
-  title: `${brandName} | Replace 15 Tools With One Lead Generation Platform`,
-  description: "Stop paying for 8+ SaaS tools that don't talk to each other. One platform for lead capture, AI scoring, multi-channel nurture, and marketplace — for agencies, SaaS builders, and lead gen companies.",
+  title: `${brandName} | Run All Your Clients From One Dashboard`,
+  description: "White-label lead capture, AI scoring, and multi-channel nurture for every client. One platform, one login, one bill. Built for digital marketing agencies.",
   openGraph: {
-    title: `${brandName} — The Lead Generation Operating System`,
-    description: "One platform replaces your CRM, email marketing, landing pages, A/B testing, analytics, and 7 more tools.",
-    images: [{ url: buildOgImageUrl(brandName, "Replace 15 tools with one lead generation platform"), width: 1200, height: 630 }],
+    title: `${brandName} — Built for Agencies Managing Multiple Clients`,
+    description: "Replace 8+ SaaS tools per client. White-label lead capture, AI scoring, and multi-channel nurture from one dashboard.",
+    images: [{ url: buildOgImageUrl(brandName, "Run all your clients from one dashboard"), width: 1200, height: 630 }],
   },
 };
 
-type HomePageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-};
-
-function asString(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-function asBoolean(value: string | string[] | undefined) {
-  const normalized = asString(value)?.toLowerCase();
-  return normalized === "1" || normalized === "true" || normalized === "yes";
-}
-
-export default async function HomePage({ searchParams }: HomePageProps) {
-  const params = (await searchParams) ?? {};
-  const niche = getNiche(asString(params.niche) ?? tenantConfig.defaultNiche);
-  const headerStore = await headers();
-  const profile = resolveExperienceProfile({
-    niche,
-    supportEmail: tenantConfig.supportEmail,
-    source: asString(params.source),
-    returning: asBoolean(params.returning),
-    preferredMode: asString(params.mode),
-    userAgent: headerStore.get("user-agent") ?? undefined,
-    referrer: headerStore.get("referer") ?? undefined,
-  });
-
+export default function HomePage() {
   return (
     <main className="experience-page" data-theme="light" style={{ colorScheme: "light" }}>
       {/* ── Hero ────────────────────────────────────────────────────── */}
@@ -55,7 +24,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         padding: "100px 24px 80px",
         background: "radial-gradient(ellipse 80% 60% at 50% -20%, rgba(79, 70, 229, 0.08) 0%, transparent 70%)",
       }}>
-        <div style={{ maxWidth: 680, margin: "0 auto" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto" }}>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "5px 14px 5px 6px", borderRadius: 999,
@@ -64,51 +33,36 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             marginBottom: 28,
           }}>
             <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "var(--accent)" }} />
-            Now with AI-powered customer intelligence
+            Built for agencies managing multiple clients
           </div>
           <h1 style={{ color: "var(--text)" }}>
-            Your lead pipeline,<br />
-            on autopilot.
+            Run all your clients from one dashboard.<br />
+            Cancel the other 8 tools.
           </h1>
-          <p style={{ fontSize: "1.12rem", color: "var(--text-soft)", maxWidth: 520, margin: "16px auto 0", lineHeight: 1.7 }}>
-            Replace 8+ tools with one platform. AI scoring, multi-channel nurture,
-            and a lead marketplace — for agencies, SaaS builders, and lead gen teams.
+          <p style={{ fontSize: "1.12rem", color: "var(--text-soft)", maxWidth: 580, margin: "16px auto 0", lineHeight: 1.7 }}>
+            White-label lead capture, AI scoring, and multi-channel nurture for every client.
+            One platform, one login, one bill.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 36 }}>
-            <Link href="/onboard" className="primary" style={{ padding: "12px 28px", fontSize: "0.95rem" }}>Get started free</Link>
-            <Link href="/pricing" className="secondary" style={{ padding: "12px 28px", fontSize: "0.95rem" }}>See pricing</Link>
+            <Link href="/onboard" className="primary" style={{ padding: "12px 28px", fontSize: "0.95rem" }}>Start your free agency account</Link>
+            <Link href="#how-it-works" className="secondary" style={{ padding: "12px 28px", fontSize: "0.95rem" }}>See how it works</Link>
           </div>
           <p style={{ fontSize: "0.78rem", color: "var(--text-soft)", marginTop: 14, letterSpacing: "0.01em" }}>
-            No credit card required &middot; Set up in under 10 minutes &middot; Cancel anytime
+            No credit card &middot; 15-minute setup &middot; White-label ready
           </p>
         </div>
       </section>
 
-      {/* ── Trusted Numbers ─────────────────────────────────────────── */}
-      <section style={{
-        display: "flex", flexWrap: "wrap", justifyContent: "center",
-        gap: "48px", padding: "40px 24px",
-        borderBottom: "1px solid var(--surface-border)",
-      }}>
-        {[
-          { stat: "16", label: "Industries" },
-          { stat: "110+", label: "Integrations" },
-          { stat: "5", label: "Revenue models" },
-          { stat: "84", label: "AI personas" },
-        ].map(({ stat, label }) => (
-          <div key={label} style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "1.8rem", fontWeight: 700, letterSpacing: "-0.03em", color: "var(--text)" }}>{stat}</div>
-            <div style={{ fontSize: "0.82rem", color: "var(--text-soft)", fontWeight: 500, marginTop: 2 }}>{label}</div>
-          </div>
-        ))}
-      </section>
-
-      {/* ── What You Replace ────────────────────────────────────────── */}
-      <section className="panel" aria-labelledby="replaces-heading">
-        <p className="eyebrow">One platform replaces your entire stack</p>
-        <h2 id="replaces-heading" style={{ maxWidth: 500 }}>
-          Stop paying for twelve tools that don&apos;t talk to each other
+      {/* ── The Agency Problem ──────────────────────────────────────── */}
+      <section className="panel" aria-labelledby="problem-heading">
+        <p className="eyebrow">The agency problem</p>
+        <h2 id="problem-heading" style={{ maxWidth: 600 }}>
+          You&apos;re paying $630&ndash;$4,550/month in SaaS fees per client
         </h2>
+        <p className="muted" style={{ maxWidth: 600, marginBottom: 20, fontSize: "0.95rem", lineHeight: 1.7 }}>
+          You&apos;re spending 20+ hours a week on manual reporting. And your clients
+          are still asking &ldquo;what are we getting for this?&rdquo;
+        </p>
         <ul style={{
           display: "flex", flexWrap: "wrap", gap: 10, paddingLeft: 0, listStyle: "none", marginTop: 20, marginBottom: 24,
         }}>
@@ -129,23 +83,23 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8,
         }}>
           <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--success)" }}>Total saved:</span>
-          <span style={{ fontSize: "1.1rem", fontWeight: 700 }}>$630–4,550/month per client</span>
+          <span style={{ fontSize: "1.1rem", fontWeight: 700 }}>$630&ndash;4,550/month per client</span>
         </div>
       </section>
 
       {/* ── How It Works ────────────────────────────────────────────── */}
-      <section className="panel">
+      <section className="panel" id="how-it-works">
         <p className="eyebrow">How it works</p>
-        <h2>Four steps from zero to automated pipeline</h2>
+        <h2>Four steps from zero to automated agency</h2>
         <ol style={{
           display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
           gap: 16, paddingLeft: 0, listStyle: "none", marginTop: 24,
         }}>
           {[
-            { n: "1", title: "Pick your niche", desc: "Type any industry. The system auto-generates scoring weights, assessment questions, nurture sequences, and landing pages." },
-            { n: "2", title: "Capture leads", desc: "Embed one script tag or use our pages. Leads flow in from forms, chat, assessments, calculators, and WhatsApp." },
-            { n: "3", title: "Score and nurture", desc: "4D scoring (intent + fit + engagement + urgency) classifies every lead. Intelligence-driven emails send on autopilot." },
-            { n: "4", title: "Convert and scale", desc: "Hot leads get routed to booking. A/B testing optimizes continuously. The Joy Dashboard shows your time saved." },
+            { n: "1", title: "Add a client", desc: "Type their niche. The system generates scoring weights, assessment questions, nurture sequences, and landing pages automatically." },
+            { n: "2", title: "Launch their funnel", desc: "Embed one script tag or use our white-label landing pages. Leads flow in from forms, chat, assessments, and calculators." },
+            { n: "3", title: "Leads score automatically", desc: "4D scoring (intent + fit + engagement + urgency) classifies every lead. You focus on client calls, not spreadsheets." },
+            { n: "4", title: "Report and scale", desc: "Automated client reports prove your value. Add niches. Grow your book of business without adding headcount." },
           ].map(({ n, title, desc }) => (
             <li key={n} style={{
               display: "grid", gap: 12, padding: 22, borderRadius: "var(--radius-md)",
@@ -165,64 +119,24 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         </ol>
       </section>
 
-      {/* ── Who It's For ────────────────────────────────────────────── */}
-      <section>
-        <p className="eyebrow">Built for operators who deliver results</p>
-        <h2>Choose your path</h2>
-        <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", marginTop: 20 }}>
-          {[
-            { title: "Marketing Agencies", href: "/for/agencies",
-              desc: "Run lead gen as a managed service for your clients. White-label the platform, own the relationship, charge $200–2,000/mo per client.",
-              cta: "Built for agencies" },
-            { title: "SaaS Entrepreneurs", href: "/for/saas-founders",
-              desc: "Launch your own white-label lead generation SaaS. Custom branding, Stripe billing built in. Deploy in hours, not months.",
-              cta: "Built for SaaS" },
-            { title: "Lead Gen Companies", href: "/for/lead-gen",
-              desc: "Capture high-intent leads, score them with AI, and sell through the marketplace. Temperature-based pricing: $25–500 per lead.",
-              cta: "Built for lead gen" },
-            { title: "Consultants", href: "/for/consultants",
-              desc: "Implement the system for clients and charge $5K–25K setup + monthly retainer. Your clients get a portal; you get recurring revenue.",
-              cta: "Built for consultants" },
-            { title: "Franchise Operators", href: "/for/franchises",
-              desc: "One dashboard for every location. Centralized lead routing, brand compliance, and performance benchmarking across 50+ territories.",
-              cta: "Built for franchises" },
-          ].map(({ title, href, desc, cta }) => (
-            <article key={title} className="panel" style={{ display: "grid", gap: 12, alignContent: "start" }}>
-              <h3 style={{ margin: 0 }}>{title}</h3>
-              <p className="muted" style={{ fontSize: "0.92rem" }}>{desc}</p>
-              <Link href={href} className="secondary" style={{ width: "fit-content", minHeight: 40, padding: "8px 16px" }}>
-                {cta} &rarr;
-              </Link>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Industries ──────────────────────────────────────────────── */}
-      <section className="panel" style={{ textAlign: "center" }}>
-        <p className="eyebrow">Works for any niche</p>
-        <h2>16 industries pre-configured. Any niche auto-generated.</h2>
-        <p className="muted" style={{ maxWidth: 520, margin: "8px auto 20px" }}>
-          Type &ldquo;plumbing&rdquo; or &ldquo;immigration law&rdquo; or &ldquo;mobile dog grooming&rdquo; — the system
-          generates scoring, assessments, nurture emails, and landing pages automatically.
-        </p>
-        <div style={{
-          display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginBottom: 20,
-        }}>
-          {["Legal", "Healthcare", "Construction", "Real Estate", "Technology", "Education",
-            "Finance", "Franchise", "Staffing", "Home Services", "Creative", "Church",
-          ].map((ind) => (
-            <span key={ind} style={{
-              padding: "6px 14px", borderRadius: 999, background: "var(--secondary-soft)",
-              fontSize: "0.84rem", fontWeight: 600, color: "var(--secondary)",
-            }}>{ind}</span>
-          ))}
-          <span style={{
-            padding: "6px 14px", borderRadius: 999, background: "var(--accent-soft)",
-            fontSize: "0.84rem", fontWeight: 700, color: "var(--accent)",
-          }}>+ any custom niche</span>
-        </div>
-        <Link href="/industries" className="secondary">Browse all industries &rarr;</Link>
+      {/* ── Social Proof (Agency-Focused) ──────────────────────────── */}
+      <section style={{
+        display: "flex", flexWrap: "wrap", justifyContent: "center",
+        gap: "48px", padding: "40px 24px",
+        borderBottom: "1px solid var(--surface-border)",
+      }}>
+        {[
+          { stat: "16", label: "Niches pre-configured", detail: "Deploy for plumbers, lawyers, dentists — any niche" },
+          { stat: "84", label: "AI personas", detail: "Every client gets a unique brand voice" },
+          { stat: "91", label: "Nurture emails", detail: "7-stage sequences for every industry, written and ready" },
+          { stat: "4", label: "Revenue models", detail: "Managed, white-label, marketplace, or retainer" },
+        ].map(({ stat, label, detail }) => (
+          <div key={label} style={{ textAlign: "center", maxWidth: 200 }}>
+            <div style={{ fontSize: "1.8rem", fontWeight: 700, letterSpacing: "-0.03em", color: "var(--text)" }}>{stat}</div>
+            <div style={{ fontSize: "0.82rem", color: "var(--text-soft)", fontWeight: 500, marginTop: 2 }}>{label}</div>
+            <div style={{ fontSize: "0.76rem", color: "var(--text-soft)", marginTop: 4, lineHeight: 1.4 }}>{detail}</div>
+          </div>
+        ))}
       </section>
 
       {/* ── Enterprise Grade ────────────────────────────────────────── */}
@@ -249,54 +163,105 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       {/* ── Joy Layer ───────────────────────────────────────────────── */}
       <section className="panel" style={{ borderLeft: "4px solid var(--accent)", background: "var(--accent-soft)" }}>
         <p className="eyebrow">The Joy Layer</p>
-        <h2>The system works while you sleep</h2>
+        <h2>Your morning briefing tells you which clients need attention</h2>
         <p className="muted" style={{ maxWidth: 560, marginBottom: 16 }}>
-          Morning briefings, autonomous lead recovery, milestone celebrations, and a dashboard
-          that tells you exactly how many hours you got back this week.
+          Wake up to a dashboard that shows which clients are on autopilot
+          and which need a nudge. No more logging into 8 tools to figure out
+          what happened overnight.
         </p>
         <div className="grid two">
           <div>
             <h3 style={{ fontSize: "0.94rem", margin: "0 0 8px" }}>What happens overnight</h3>
             <ul className="check-list" style={{ fontSize: "0.88rem" }}>
-              <li>Churn prevention — disengaged leads auto re-engaged</li>
-              <li>Warm leads going cold — next nurture step sent</li>
-              <li>Pipeline thin — prospecting activated</li>
-              <li>Scope overrun detected — change order drafted</li>
+              <li>Churn prevention — disengaged leads auto re-engaged across all clients</li>
+              <li>Warm leads going cold — next nurture step sent per client playbook</li>
+              <li>Pipeline thin for a client — prospecting activated</li>
+              <li>Client report auto-generated with key metrics</li>
             </ul>
           </div>
           <div>
             <h3 style={{ fontSize: "0.94rem", margin: "0 0 8px" }}>What you see in the morning</h3>
             <ul className="check-list" style={{ fontSize: "0.88rem" }}>
-              <li>&ldquo;3 new leads came in while you slept&rdquo;</li>
+              <li>&ldquo;12 new leads came in across 6 clients while you slept&rdquo;</li>
               <li>&ldquo;23.4 hours saved this month — worth $3,510&rdquo;</li>
-              <li>&ldquo;Nothing needs your attention. Go enjoy your coffee.&rdquo;</li>
-              <li>One recommended action for the day</li>
+              <li>&ldquo;2 clients need attention. 13 are on autopilot.&rdquo;</li>
+              <li>One recommended action per client for the day</li>
             </ul>
           </div>
         </div>
       </section>
 
-      {/* ── Lead Capture ────────────────────────────────────────────── */}
-      <AdaptiveLeadCaptureForm
-        source="contact_form"
-        family={profile.family}
-        niche={niche.slug}
-        service={tenantConfig.defaultService}
-        pagePath="/"
-        returning={asBoolean(params.returning)}
-        profile={profile}
-      />
+      {/* ── Simple Email Capture ─────────────────────────────────────── */}
+      <section className="panel" style={{ textAlign: "center", padding: "40px 28px" }}>
+        <p className="eyebrow">Get early access</p>
+        <h2>See it in action with your first client</h2>
+        <p className="muted" style={{ maxWidth: 480, margin: "8px auto 24px" }}>
+          Enter your email and we&apos;ll set up a demo workspace
+          pre-loaded with your niche.
+        </p>
+        <form
+          action="/api/capture"
+          method="POST"
+          style={{
+            display: "flex", gap: 10, justifyContent: "center",
+            flexWrap: "wrap", maxWidth: 480, margin: "0 auto",
+          }}
+        >
+          <input type="hidden" name="source" value="homepage" />
+          <input
+            type="email"
+            name="email"
+            required
+            placeholder="you@agency.com"
+            aria-label="Email address"
+            style={{
+              flex: "1 1 240px", minHeight: 48, padding: "12px 16px",
+              borderRadius: "var(--radius-sm)",
+              border: "1px solid rgba(0,0,0,0.12)", background: "#fff",
+              fontSize: "0.95rem",
+            }}
+          />
+          <button type="submit" className="primary" style={{ minHeight: 48, padding: "12px 24px" }}>
+            Start free
+          </button>
+        </form>
+      </section>
+
+      {/* ── Not an Agency? ──────────────────────────────────────────── */}
+      <section style={{ padding: "32px 0" }}>
+        <p className="muted" style={{ textAlign: "center", marginBottom: 16, fontSize: "0.88rem" }}>Not an agency?</p>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: 12,
+        }}>
+          {[
+            { label: "SaaS Founders", href: "/for/saas-founders" },
+            { label: "Lead Gen Companies", href: "/for/lead-gen" },
+            { label: "Consultants", href: "/for/consultants" },
+            { label: "Franchise Operators", href: "/for/franchises" },
+          ].map(({ label, href }) => (
+            <Link key={label} href={href} style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "14px 18px", borderRadius: "var(--radius-sm)",
+              border: "1px solid var(--surface-border)", fontSize: "0.88rem",
+              fontWeight: 600, color: "var(--text)",
+            }}>
+              {label} <span style={{ color: "var(--accent)" }}>&rarr;</span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* ── Final CTA ───────────────────────────────────────────────── */}
       <section className="panel" style={{ textAlign: "center", marginTop: 32 }}>
-        <p className="eyebrow">Ready to replace your tool stack?</p>
-        <h2>Start capturing leads in minutes</h2>
+        <h2>Start your free agency account</h2>
         <p className="muted" style={{ maxWidth: 480, margin: "8px auto 20px" }}>
-          No credit card. No sales call. Pick a plan that fits your business and
-          set up your first funnel in under 10 minutes.
+          No credit card. No sales call. Add your first client in 15 minutes
+          and see why agencies are consolidating their entire stack into one platform.
         </p>
         <div className="cta-row" style={{ justifyContent: "center" }}>
-          <Link href="/onboard" className="primary">Get started free</Link>
+          <Link href="/onboard" className="primary">Start your free agency account</Link>
           <Link href="/pricing" className="secondary">View pricing</Link>
         </div>
       </section>

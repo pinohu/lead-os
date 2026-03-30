@@ -150,7 +150,7 @@ ol {
 
 main > * + *,
 .experience-page > * + * {
-  margin-top: 24px;
+  margin-top: 48px;
 }
 
 .hero,
@@ -189,11 +189,10 @@ main > * + *,
   align-items: center;
   gap: 8px;
   margin-bottom: 14px;
-  color: var(--accent-strong);
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }
 
 .lede {
@@ -201,7 +200,7 @@ main > * + *,
 }
 
 .muted {
-  color: var(--text-soft);
+  color: #4b5563;
 }
 
 .hero-support {
@@ -783,6 +782,13 @@ button[disabled] {
   border-color: rgba(0, 0, 0, 0.1);
   background: #ffffff;
   color: #111827;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #ffffff;
 }
 
 .grid.three {

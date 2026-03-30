@@ -63,6 +63,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
   });
 
   return (
+    <div data-theme="light" style={{ colorScheme: "light" }}>
     <ExperienceScaffold
       eyebrow="Offer path"
       title={`${niche.label} offer path built for high-intent visitors`}
@@ -218,5 +219,6 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
         profile={profile}
       />
     </ExperienceScaffold>
+    </div>
   );
 }

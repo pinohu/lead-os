@@ -12,6 +12,7 @@ export default function DirectoryIndexPage() {
   const niches = Object.values(nicheCatalog);
 
   return (
+    <div data-theme="light" style={{ colorScheme: "light" }}>
     <main className="experience-page">
       <section className="experience-hero">
         <div className="hero-copy">
@@ -81,5 +82,6 @@ export default function DirectoryIndexPage() {
         </div>
       </section>
     </main>
+    </div>
   );
 }

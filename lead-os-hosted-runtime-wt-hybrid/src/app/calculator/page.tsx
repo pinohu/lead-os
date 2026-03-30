@@ -50,6 +50,7 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
   });
 
   return (
+    <div data-theme="light" style={{ colorScheme: "light" }}>
     <ExperienceScaffold
       niche={niche.slug}
       eyebrow="Hosted calculator path"
@@ -125,5 +126,6 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
         profile={profile}
       />
     </ExperienceScaffold>
+    </div>
   );
 }

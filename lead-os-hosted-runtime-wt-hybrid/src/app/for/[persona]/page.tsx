@@ -217,7 +217,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
   });
 
   return (
-    <>
+    <div data-theme="light" style={{ colorScheme: "light" }}>
       <ExperienceScaffold
         niche={bp.recommendedNiche}
         eyebrow={`Built for ${bp.label}`}
@@ -369,6 +369,6 @@ export default async function PersonaPage({ params, searchParams }: Props) {
           }),
         }}
       />
-    </>
+    </div>
   );
 }
