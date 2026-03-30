@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
+import { startTrace } from "@/lib/request-tracer";
 
 export const runtime = "nodejs";
 
@@ -36,6 +37,8 @@ const CSP_DIRECTIVES = [
 
 const PUBLIC_EXACT: Set<string> = new Set([
   "/api/health",
+  "/api/health/deep",
+  "/api/status",
   "/api/intake",
   "/api/unsubscribe",
   "/api/setup/status",
@@ -99,6 +102,7 @@ function forwardWithIdentity(
 
 function applySecurityHeaders(response: NextResponse, requestId: string): NextResponse {
   response.headers.set("x-request-id", requestId);
+  response.headers.set("x-api-version", "2026-03-30");
   response.headers.set("Content-Security-Policy", CSP_DIRECTIVES);
   return response;
 }
@@ -116,6 +120,8 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
   const method = request.method;
 
+  startTrace(requestId, method, pathname, request.headers.get("user-agent"));
+
   // Non-API routes (pages) — pass through, pages handle their own auth
   if (!pathname.startsWith("/api/")) {
     const response = NextResponse.next();
@@ -129,6 +135,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       status: 204,
       headers: { ...headers, "x-request-id": requestId },
     });
+    response.headers.set("x-api-version", "2026-03-30");
     response.headers.set("Content-Security-Policy", CSP_DIRECTIVES);
     return response;
   }
@@ -154,6 +161,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
           status: 429,
           headers: {
             "x-request-id": requestId,
+            "x-api-version": "2026-03-30",
             "Retry-After": String(retryAfterSeconds),
             "X-RateLimit-Limit": "10",
             "X-RateLimit-Remaining": "0",
@@ -275,7 +283,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       },
       meta: { requestId },
     },
-    { status: 401, headers: { "x-request-id": requestId } },
+    { status: 401, headers: { "x-request-id": requestId, "x-api-version": "2026-03-30" } },
   );
 }
 

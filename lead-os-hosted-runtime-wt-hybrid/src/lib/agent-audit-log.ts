@@ -215,3 +215,69 @@ export async function getAuditSummary(
 export function resetAuditStore(): void {
   auditStore.length = 0;
 }
+
+// ---------------------------------------------------------------------------
+// Synchronous entry creator (returns the entry for downstream use)
+// ---------------------------------------------------------------------------
+
+export function logAuditEntry(
+  entry: Omit<AuditEntry, "id" | "timestamp">,
+): AuditEntry {
+  const full: AuditEntry = {
+    ...entry,
+    id: randomUUID(),
+    timestamp: new Date().toISOString(),
+  };
+  auditStore.push(full);
+  if (auditStore.length > MAX_STORE_SIZE) {
+    auditStore.splice(0, auditStore.length - MAX_STORE_SIZE);
+  }
+  return full;
+}
+
+// ── Persistent audit trail ──────────────────────────────────
+export async function persistAuditEntry(entry: AuditEntry): Promise<void> {
+  try {
+    const { getPool } = await import("./db.ts");
+    const pool = getPool();
+    if (!pool) return;
+    await pool.query(
+      `INSERT INTO lead_os_audit_log (id, tenant_id, user_id, action, resource_type, resource_id, status, metadata, ip_address, user_agent, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       ON CONFLICT (id) DO NOTHING`,
+      [
+        entry.id,
+        entry.tenantId,
+        entry.metadata?.userId ?? null,
+        entry.action,
+        entry.metadata?.resourceType ?? null,
+        entry.metadata?.resourceId ?? null,
+        entry.status,
+        JSON.stringify(entry.metadata ?? {}),
+        entry.metadata?.ipAddress ?? null,
+        entry.metadata?.userAgent ?? null,
+        entry.timestamp,
+      ],
+    );
+  } catch {
+    // DB persistence failure must not break the audit pipeline
+  }
+}
+
+export function logAuthEvent(
+  action: string,
+  tenantId: string,
+  metadata: Record<string, unknown> = {},
+): void {
+  const entry = logAuditEntry({
+    tenantId,
+    teamId: tenantId,
+    agentId: "auth-system",
+    action,
+    status: "success",
+    tokensUsed: 0,
+    costUsd: 0,
+    metadata,
+  });
+  persistAuditEntry(entry).catch(() => {});
+}
