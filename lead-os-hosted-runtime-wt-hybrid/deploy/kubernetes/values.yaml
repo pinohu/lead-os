@@ -1,0 +1,183 @@
+# ---------------------------------------------------------------------------
+# Lead OS Helm Chart — default values
+# ---------------------------------------------------------------------------
+
+replicaCount: 3
+
+image:
+  repository: ghcr.io/pinohu/lead-os
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "3000"
+  prometheus.io/path: "/api/metrics"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 3000
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+  hosts:
+    - host: app.leadgen-os.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: lead-os-tls
+      hosts:
+        - app.leadgen-os.com
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# ---------------------------------------------------------------------------
+# Health-check paths
+# ---------------------------------------------------------------------------
+livenessProbe:
+  httpGet:
+    path: /api/health
+    port: 3000
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /api/health/deep
+    port: 3000
+  periodSeconds: 15
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+startupProbe:
+  httpGet:
+    path: /api/health
+    port: 3000
+  initialDelaySeconds: 15
+  periodSeconds: 5
+  failureThreshold: 30
+
+# ---------------------------------------------------------------------------
+# PostgreSQL (Bitnami sub-chart)
+# ---------------------------------------------------------------------------
+postgresql:
+  enabled: true
+  auth:
+    username: leados
+    password: ""
+    database: leados
+    existingSecret: lead-os-db-credentials
+  primary:
+    persistence:
+      enabled: true
+      size: 20Gi
+
+# ---------------------------------------------------------------------------
+# Redis (Bitnami sub-chart)
+# ---------------------------------------------------------------------------
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: true
+    existingSecret: lead-os-redis-credentials
+  master:
+    persistence:
+      enabled: true
+      size: 8Gi
+
+# ---------------------------------------------------------------------------
+# Application environment variables (non-secret — stored in ConfigMap)
+# ---------------------------------------------------------------------------
+env:
+  LEAD_OS_TENANT_ID: "default"
+  LEAD_OS_BRAND_NAME: "Lead OS"
+  LEAD_OS_LOG_LEVEL: "info"
+  LEAD_OS_RATE_LIMIT_RPM: "60"
+  LEAD_OS_ENABLE_AGENTS: "true"
+  LEAD_OS_ENABLE_WEBHOOKS: "true"
+  LEAD_OS_MAX_CONCURRENT_AGENTS: "5"
+  LEAD_OS_BUDGET_LIMIT_USD: "100"
+  LEAD_OS_CACHE_TTL_SECONDS: "300"
+  NEXT_PUBLIC_SITE_URL: "https://app.leadgen-os.com"
+  NEXT_PUBLIC_SUPPORT_EMAIL: "support@leadgen-os.com"
+  NODE_ENV: "production"
+  PORT: "3000"
+
+# ---------------------------------------------------------------------------
+# Secret environment variables (reference a K8s Secret)
+# ---------------------------------------------------------------------------
+secretEnv:
+  existingSecret: lead-os-app-secrets
+  # Keys expected in the secret:
+  #   LEAD_OS_AUTH_SECRET
+  #   CRON_SECRET
+  #   DATABASE_URL
+  #   REDIS_URL
+  #   LEAD_OS_OPENAI_API_KEY
+  #   LEAD_OS_SMTP_HOST
+  #   LEAD_OS_SMTP_PORT
+  #   LEAD_OS_SMTP_USER
+  #   LEAD_OS_SMTP_PASS
+  #   LEAD_OS_SSO_OIDC_CLIENT_ID
+  #   LEAD_OS_SSO_OIDC_CLIENT_SECRET
+  #   LEAD_OS_SSO_OIDC_ISSUER_URL
+  #   LEAD_OS_SSO_SAML_IDP_CERT
