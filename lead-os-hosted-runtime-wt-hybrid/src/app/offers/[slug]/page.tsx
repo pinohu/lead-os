@@ -8,6 +8,7 @@ import { tenantConfig } from "@/lib/tenant";
 import { OFFER_TEMPLATES, type Niche as OfferNiche } from "@/lib/offer-engine";
 import { NICHE_TESTIMONIALS } from "@/lib/niche-testimonials";
 import { buildOgImageUrl } from "@/lib/og-url";
+import { getCustomerIntelligenceOrDefault } from "@/lib/customer-intelligence";
 import { nicheCatalog } from "@/lib/catalog";
 
 type OfferPageProps = {
@@ -176,6 +177,32 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
                   </span>
                 </article>
               ))}
+            </div>
+          </section>
+        );
+      })()}
+
+      {(() => {
+        const intel = getCustomerIntelligenceOrDefault(niche.slug);
+        return (
+          <section>
+            <p className="eyebrow">Addressing your concerns</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {intel.objections.map((obj) => (
+                <article key={obj.objection} className="panel" style={{ borderLeft: "4px solid var(--success)" }}>
+                  <p style={{ margin: "0 0 6px", fontWeight: 700, fontSize: "0.94rem" }}>&ldquo;{obj.objection}&rdquo;</p>
+                  <p style={{ margin: 0, fontSize: "0.88rem" }}>{obj.evidenceBasedResponse}</p>
+                </article>
+              ))}
+            </div>
+            <div className="panel" style={{ marginTop: 16, background: "var(--accent-soft)" }}>
+              <p className="eyebrow">Our guarantee</p>
+              <p style={{ margin: 0, fontSize: "0.94rem", fontWeight: 600 }}>
+                {intel.conversionPsychology.guaranteePreference === "money-back" ? "Full money-back guarantee if you don't see results." :
+                 intel.conversionPsychology.guaranteePreference === "results-based" ? "Results guaranteed — or you don't pay." :
+                 intel.conversionPsychology.guaranteePreference === "trial-period" ? "Free trial period — no commitment, cancel anytime." :
+                 "100% satisfaction guaranteed."}
+              </p>
             </div>
           </section>
         );

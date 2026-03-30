@@ -10,6 +10,7 @@ import { INDUSTRY_TEMPLATES, type IndustryCategory } from "@/lib/niche-templates
 import { buildOgImageUrl } from "@/lib/og-url";
 import { NICHE_TESTIMONIALS } from "@/lib/niche-testimonials";
 import { CALCULATOR_PRESETS } from "@/lib/calculator-presets";
+import { getCustomerIntelligenceOrDefault } from "@/lib/customer-intelligence";
 
 type Props = {
   params: Promise<{ vertical: string }>;
@@ -201,6 +202,37 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
           ))}
         </div>
       </section>
+
+      {/* ── Competitor Awareness ── */}
+      {(() => {
+        const intel = getCustomerIntelligenceOrDefault(niche.slug);
+        return (
+          <section>
+            <p className="eyebrow">How we compare</p>
+            <div className="grid two">
+              <article className="panel">
+                <h3 style={{ margin: "0 0 8px", fontSize: "0.94rem" }}>Alternatives you may be considering</h3>
+                <ul style={{ margin: 0, padding: "0 0 0 18px", fontSize: "0.84rem", lineHeight: 1.8 }}>
+                  {intel.competitors.alternatives.map((alt) => (
+                    <li key={alt}>{alt}</li>
+                  ))}
+                </ul>
+              </article>
+              <article className="panel">
+                <h3 style={{ margin: "0 0 8px", fontSize: "0.94rem" }}>What makes Lead OS different</h3>
+                <ul style={{ margin: 0, padding: "0 0 0 18px", fontSize: "0.84rem", lineHeight: 1.8 }}>
+                  {intel.competitors.differentiators.map((diff) => (
+                    <li key={diff}>{diff}</li>
+                  ))}
+                </ul>
+              </article>
+            </div>
+            <p className="muted" style={{ textAlign: "center", marginTop: 12, fontSize: "0.82rem" }}>
+              Switching costs: {intel.competitors.switchingCosts}
+            </p>
+          </section>
+        );
+      })()}
 
       {/* ── Schema.org ── */}
       <script

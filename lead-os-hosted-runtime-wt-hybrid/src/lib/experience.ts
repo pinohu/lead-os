@@ -1,5 +1,6 @@
 import type { NicheDefinition } from "./catalog.ts";
 import type { FunnelFamily } from "./runtime-schema.ts";
+import { getCustomerIntelligenceOrDefault } from "./customer-intelligence.ts";
 
 export type ExperienceMode =
   | "chat-first"
@@ -154,11 +155,14 @@ function buildDestination(family: FunnelFamily, niche: NicheDefinition) {
 }
 
 function buildProofSignals(niche: NicheDefinition, family: FunnelFamily, mode: ExperienceMode) {
+  const intel = getCustomerIntelligenceOrDefault(niche.slug);
+  const trustPrimary = intel.trustSignals.primary[0] ?? `${niche.label} copy and next-step logic`;
+  const trustSecondary = intel.trustSignals.primary[1] ?? "Milestone-two and milestone-three return automation";
   return [
-    `${niche.label} copy and next-step logic`,
-    "Milestone-two and milestone-three return automation",
+    trustPrimary,
+    trustSecondary,
     family === "qualification" ? "Booking, proposal, and follow-up already wired" : "Multi-channel follow-up already wired",
-    mode === "chat-first" ? "Low-friction conversational path" : "Adaptive form and content path",
+    mode === "chat-first" ? "Low-friction conversational path" : `${intel.decisionJourney.touchpointsNeeded}-touchpoint adaptive path`,
   ];
 }
 
@@ -399,9 +403,19 @@ export function resolveExperienceProfile(input: ExperienceInput): ExperienceProf
   const family = buildDefaultFamily(input);
   const device = inferDeviceClass(input.userAgent);
   const destination = buildDestination(family, input.niche);
+  const intel = getCustomerIntelligenceOrDefault(input.niche.slug);
+  const journey = intel.decisionJourney;
+  const psychology = intel.conversionPsychology;
   const returnOffer = input.returning
     ? "You are not starting over. We will resume with a lighter second-touch ask and skip repeated context."
     : "If you come back, LeadOS shifts from first-touch clarity into milestone-two trust building automatically.";
+
+  const motivationCopy =
+    psychology.primaryMotivation === "fear-of-loss" ? "Stop losing opportunities to competitors who move faster." :
+    psychology.primaryMotivation === "competitive-pressure" ? "Stay ahead of the competition with systems that adapt to your market." :
+    psychology.primaryMotivation === "compliance" ? "Stay compliant while growing — no shortcuts, no risk." :
+    psychology.primaryMotivation === "efficiency" ? "Get hours back every week with automation that actually works." :
+    "Build the growth engine your business deserves.";
 
   return {
     family,
@@ -415,24 +429,24 @@ export function resolveExperienceProfile(input: ExperienceInput): ExperienceProf
         : `${input.niche.label} growth paths that adapt to visitor intent`,
     heroSummary:
       mode === "booking-first"
-        ? "For ready-to-move buyers, we keep the path short, credible, and qualification-aware."
+        ? `For ready-to-move buyers, we keep the path short and credible. Average decision: ${journey.totalDays} days, ${journey.touchpointsNeeded} touchpoints.`
         : mode === "chat-first"
         ? "For lower-form-tolerance visitors, we lead with a conversation and still capture real buying signals."
         : mode === "webinar-first"
         ? "For skeptical or education-driven visitors, we build trust before the heavier ask."
         : mode === "calculator-first"
-        ? "For outcome-focused visitors, we quantify upside first so the next step feels earned."
-        : "For most qualified visitors, the fastest win is a tailored plan that explains exactly what happens next.",
+        ? `For outcome-focused visitors, we quantify upside first. ${psychology.priceAnchor}`
+        : `${motivationCopy} We tailor the next step around your intent and readiness.`,
     primaryActionLabel: MODE_LABELS[mode],
     primaryActionHref: destination,
     secondaryActionLabel: "Talk to a human",
     secondaryActionHref: `mailto:${input.supportEmail ?? "support@example.com"}`,
-    trustPromise: "Every next step is personalized to your industry and goals. No generic templates.",
+    trustPromise: intel.trustSignals.primary.slice(0, 2).join(". ") + ".",
     progressLabel:
       input.returning
         ? "Welcome back. We remember where you left off."
-        : "This takes less than 2 minutes. We only ask what we need.",
-    anxietyReducer: "No commitment required. You can pause anytime or speak to a real person instead.",
+        : `This takes less than 2 minutes. ${psychology.guaranteePreference === "money-back" ? "Money-back guarantee included." : psychology.guaranteePreference === "trial-period" ? "Free trial, no commitment." : "No commitment required."}`,
+    anxietyReducer: `${intel.trustSignals.dealbreakers.length > 0 ? `No ${intel.trustSignals.dealbreakers[0]?.toLowerCase()}.` : "No commitment required."} You can pause anytime or speak to a real person instead.`,
     proofSignals: buildProofSignals(input.niche, family, mode),
     objectionBlocks: buildObjections(input.niche, mode),
     discoveryPrompt:
