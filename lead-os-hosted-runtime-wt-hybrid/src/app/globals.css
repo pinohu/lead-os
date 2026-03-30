@@ -817,3 +817,99 @@ button[disabled] {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Niche Design Tokens ────────────────────────────────────── */
+
+[data-niche="legal"] {
+  --accent: #14213d;
+  --accent-strong: #0f1a30;
+  --accent-soft: rgba(20, 33, 61, 0.12);
+  --secondary: #264653;
+}
+
+[data-niche="health"] {
+  --accent: #2a9d8f;
+  --accent-strong: #1f7a6e;
+  --accent-soft: rgba(42, 157, 143, 0.12);
+  --secondary: #264653;
+}
+
+[data-niche="tech"],
+[data-niche="ecommerce"] {
+  --accent: #00d4aa;
+  --accent-strong: #00a886;
+  --accent-soft: rgba(0, 212, 170, 0.12);
+  --secondary: #1e3a5f;
+  --bg: #0a1628;
+  --bg-deep: #060e1a;
+  --surface: rgba(14, 26, 46, 0.92);
+  --surface-strong: #101d34;
+  --text: #e8e8e8;
+  --text-soft: #a0b0c4;
+  --text-inverse: #0a1628;
+}
+
+[data-niche="construction"],
+[data-niche="home-services"] {
+  --accent: #e76f51;
+  --accent-strong: #c45a3c;
+  --accent-soft: rgba(231, 111, 81, 0.12);
+  --secondary: #264653;
+}
+
+[data-niche="real-estate"] {
+  --accent: #c4632d;
+  --accent-strong: #9e4616;
+  --accent-soft: rgba(196, 99, 45, 0.12);
+  --secondary: #1b4332;
+}
+
+[data-niche="education"] {
+  --accent: #457b9d;
+  --accent-strong: #345e78;
+  --accent-soft: rgba(69, 123, 157, 0.12);
+  --secondary: #1d3557;
+}
+
+[data-niche="finance"] {
+  --accent: #415a77;
+  --accent-strong: #2f4259;
+  --accent-soft: rgba(65, 90, 119, 0.12);
+  --secondary: #1b263b;
+}
+
+[data-niche="franchise"] {
+  --accent: #d62828;
+  --accent-strong: #a91e1e;
+  --accent-soft: rgba(214, 40, 40, 0.12);
+  --secondary: #003049;
+}
+
+[data-niche="staffing"] {
+  --accent: #0077b6;
+  --accent-strong: #005a8a;
+  --accent-soft: rgba(0, 119, 182, 0.12);
+  --secondary: #023e8a;
+}
+
+[data-niche="faith"] {
+  --accent: #7b2d8e;
+  --accent-strong: #5e1f6d;
+  --accent-soft: rgba(123, 45, 142, 0.12);
+  --secondary: #4a0e5c;
+}
+
+[data-niche="creative"],
+[data-niche="fitness"] {
+  --accent: #e63946;
+  --accent-strong: #c12e39;
+  --accent-soft: rgba(230, 57, 70, 0.12);
+  --secondary: #1d3557;
+}
+
+[data-niche="coaching"] {
+  --accent: #264653;
+  --accent-strong: #1a3240;
+  --accent-soft: rgba(38, 70, 83, 0.12);
+  --secondary: #2a9d8f;
+}

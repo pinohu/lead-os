@@ -1,0 +1,315 @@
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { AdaptiveLeadCaptureForm } from "@/components/AdaptiveLeadCaptureForm";
+import { ExperienceScaffold } from "@/components/ExperienceScaffold";
+import { getNiche } from "@/lib/catalog";
+import { resolveExperienceProfile } from "@/lib/experience";
+import { tenantConfig } from "@/lib/tenant";
+
+/* ------------------------------------------------------------------ */
+/*  Persona Blueprints                                                 */
+/* ------------------------------------------------------------------ */
+
+type PersonaBlueprint = {
+  label: string;
+  tagline: string;
+  painPoints: string[];
+  idealServices: string[];
+  recommendedNiche: string;
+  ctaText: string;
+  approachSteps: string[];
+};
+
+const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
+  agencies: {
+    label: "Digital Marketing Agencies",
+    tagline:
+      "Stop managing 8 tools. Run all your clients from one dashboard.",
+    painPoints: [
+      "Client onboarding takes days instead of minutes",
+      "Reporting across platforms eats your team alive every month",
+      "No unified view of pipeline health across all client accounts",
+      "Scaling past 20 clients means hiring, not automating",
+      "White-label limitations force awkward brand compromises",
+    ],
+    idealServices: [
+      "client-portal",
+      "process-automation",
+      "managed-services",
+    ],
+    recommendedNiche: "general",
+    ctaText: "Book a Strategy Session",
+    approachSteps: [
+      "Consolidate client accounts into a single command center",
+      "Automate reporting, lead routing, and follow-up sequences",
+      "Deploy white-label funnels your clients think you built from scratch",
+      "Scale to 50+ accounts without adding headcount",
+    ],
+  },
+  "saas-founders": {
+    label: "SaaS Founders",
+    tagline:
+      "Convert free trials into paying customers without adding sales reps.",
+    painPoints: [
+      "Trial-to-paid conversion hovers below industry benchmarks",
+      "Onboarding drop-off kills activation before users see value",
+      "Churn outpaces new revenue every quarter",
+      "Product-led growth sounds great but nobody owns the funnel",
+      "Attribution across touchpoints is a spreadsheet nightmare",
+    ],
+    idealServices: [
+      "onboarding-automation",
+      "churn-prevention",
+      "product-led-growth",
+    ],
+    recommendedNiche: "tech",
+    ctaText: "See Your Growth Roadmap",
+    approachSteps: [
+      "Map trial activation milestones to automated nudge sequences",
+      "Score users by engagement depth and trigger human outreach at the right moment",
+      "Build retention loops that turn power users into advocates",
+      "Attribute every dollar to a source so you double down on what works",
+    ],
+  },
+  "lead-gen": {
+    label: "Lead Generation Professionals",
+    tagline:
+      "Deliver higher-quality leads to your clients and prove the ROI in real time.",
+    painPoints: [
+      "Clients question lead quality because there is no closed-loop reporting",
+      "Manual qualification wastes hours every week on dead-end prospects",
+      "Multi-channel campaigns are impossible to track in one place",
+      "Scaling a new vertical means building everything from scratch",
+      "Speed-to-lead gaps let competitors steal deals you generated",
+    ],
+    idealServices: [
+      "lead-scoring",
+      "multi-channel-capture",
+      "performance-dashboards",
+    ],
+    recommendedNiche: "general",
+    ctaText: "Get Your Lead Gen Audit",
+    approachSteps: [
+      "Deploy AI-scored intake forms that route only qualified leads",
+      "Unify capture across web, social, phone, and chat into one pipeline",
+      "Give clients a live dashboard that proves your value without a monthly deck",
+      "Clone winning funnels into new verticals in under an hour",
+    ],
+  },
+  consultants: {
+    label: "Independent Consultants",
+    tagline:
+      "Fill your calendar with qualified prospects without cold outreach.",
+    painPoints: [
+      "Feast-or-famine pipeline makes revenue unpredictable",
+      "Spending more time marketing than delivering billable work",
+      "No system to nurture prospects who are not ready to buy today",
+      "Proposals go into a black hole with zero follow-up automation",
+      "Referrals dry up between engagements leaving dangerous gaps",
+    ],
+    idealServices: [
+      "authority-funnel",
+      "booking-automation",
+      "nurture-sequences",
+    ],
+    recommendedNiche: "coaching",
+    ctaText: "Build Your Pipeline",
+    approachSteps: [
+      "Publish authority content that attracts inbound inquiries on autopilot",
+      "Qualify prospects before they hit your calendar so every call counts",
+      "Automate proposal follow-up so nothing falls through the cracks",
+      "Build a nurture engine that keeps cold leads warm until they are ready",
+    ],
+  },
+  franchises: {
+    label: "Franchise Operators",
+    tagline:
+      "Give every location the same growth engine without the same overhead.",
+    painPoints: [
+      "Inconsistent lead handling across locations damages the brand",
+      "Corporate marketing spend is impossible to attribute at the unit level",
+      "Franchisees resist new tools because onboarding is painful",
+      "Compliance and brand guidelines are enforced manually if at all",
+      "Top-performing locations hoard best practices instead of sharing them",
+    ],
+    idealServices: [
+      "multi-location-routing",
+      "brand-compliance",
+      "franchisee-dashboards",
+    ],
+    recommendedNiche: "franchise",
+    ctaText: "Schedule a Demo",
+    approachSteps: [
+      "Roll out a unified lead routing system that respects territory rules",
+      "Enforce brand-compliant funnels while letting locations personalize within guardrails",
+      "Give franchisees a simple dashboard that shows their pipeline without IT support",
+      "Surface cross-location benchmarks so every unit learns from the best",
+    ],
+  },
+};
+
+/* ------------------------------------------------------------------ */
+/*  Static Generation + Metadata                                       */
+/* ------------------------------------------------------------------ */
+
+type Props = {
+  params: Promise<{ persona: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function asString(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function asBoolean(value: string | string[] | undefined) {
+  const normalized = asString(value)?.toLowerCase();
+  return normalized === "1" || normalized === "true" || normalized === "yes";
+}
+
+export function generateStaticParams() {
+  return Object.keys(PERSONA_BLUEPRINTS).map((persona) => ({ persona }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { persona } = await params;
+  const bp = PERSONA_BLUEPRINTS[persona];
+  if (!bp) return {};
+  return {
+    title: `Lead OS for ${bp.label} | Lead OS`,
+    description: `${bp.tagline} Discover growth systems designed specifically for ${bp.label.toLowerCase()}.`,
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Page Component                                                     */
+/* ------------------------------------------------------------------ */
+
+export default async function PersonaPage({ params, searchParams }: Props) {
+  const { persona } = await params;
+  const query = await searchParams;
+  const bp = PERSONA_BLUEPRINTS[persona];
+
+  if (!bp) notFound();
+
+  const niche = getNiche(bp.recommendedNiche);
+
+  const headerStore = await headers();
+  const profile = resolveExperienceProfile({
+    family: "lead-magnet",
+    niche,
+    supportEmail: tenantConfig.supportEmail,
+    source: asString(query.source) ?? "persona-page",
+    intent: "discover",
+    returning: asBoolean(query.returning),
+    milestone: asString(query.milestone),
+    preferredMode: asString(query.mode) ?? "form-first",
+    score: Number(asString(query.score) ?? 50),
+    userAgent: headerStore.get("user-agent") ?? undefined,
+    referrer: headerStore.get("referer") ?? undefined,
+  });
+
+  return (
+    <>
+      <ExperienceScaffold
+        eyebrow={`Built for ${bp.label}`}
+        title={bp.tagline}
+        summary={`Lead OS gives ${bp.label.toLowerCase()} a turnkey growth system that replaces patchwork tools with one platform tuned to the way you sell.`}
+        profile={profile}
+        metrics={[
+          {
+            label: "Persona",
+            value: bp.label,
+            detail: "This experience is tuned specifically for your role.",
+          },
+          {
+            label: "Recommended vertical",
+            value: niche.label,
+            detail: `Based on typical ${bp.label.toLowerCase()} client profiles.`,
+          },
+          {
+            label: "Core services",
+            value: `${bp.idealServices.length} pillars`,
+            detail: bp.idealServices.join(", ").replace(/-/g, " "),
+          },
+        ]}
+      >
+        {/* ---------- Built for You ---------- */}
+        <section>
+          <p className="eyebrow">Built for you</p>
+          <h2>Core capabilities for {bp.label}</h2>
+          <ul className="check-list">
+            {bp.idealServices.map((svc) => (
+              <li key={svc}>{svc.replace(/-/g, " ")}</li>
+            ))}
+          </ul>
+        </section>
+
+        {/* ---------- Pain Points ---------- */}
+        <section>
+          <h2>Problems you are probably solving manually</h2>
+          <div className="grid two">
+            {bp.painPoints.map((point, i) => (
+              <article key={i} className="panel">
+                <p>{point}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* ---------- Recommended Approach ---------- */}
+        <section className="panel">
+          <p className="eyebrow">Your growth path</p>
+          <h2>How {bp.label} succeed with Lead OS</h2>
+          <ol className="journey-rail">
+            {bp.approachSteps.map((step, i) => (
+              <li key={i}>{step}</li>
+            ))}
+          </ol>
+          <div className="cta-row">
+            <Link href={`/assess/${niche.slug}`} className="primary">
+              {bp.ctaText}
+            </Link>
+            <Link href={`/industries/${niche.slug}`} className="secondary">
+              Explore {niche.label} Solutions
+            </Link>
+          </div>
+        </section>
+
+        {/* ---------- Lead Capture ---------- */}
+        <AdaptiveLeadCaptureForm
+          source="contact_form"
+          family="lead-magnet"
+          niche={niche.slug}
+          service={tenantConfig.defaultService}
+          pagePath={`/for/${persona}`}
+          returning={asBoolean(query.returning)}
+          profile={profile}
+        />
+      </ExperienceScaffold>
+
+      {/* ---------- Schema.org JSON-LD ---------- */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: `Lead OS for ${bp.label}`,
+            description: bp.tagline,
+            provider: {
+              "@type": "Organization",
+              name: tenantConfig.brandName,
+              url: tenantConfig.siteUrl,
+            },
+            audience: {
+              "@type": "Audience",
+              audienceType: bp.label,
+            },
+          }),
+        }}
+      />
+    </>
+  );
+}

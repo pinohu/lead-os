@@ -167,6 +167,18 @@ function buildObjections(niche: NicheDefinition, mode: ExperienceMode) {
     niche.slug === "legal" ? "You will not get a generic intake script. The questions adapt to risk, urgency, and case-fit." :
     niche.slug === "home-services" ? "We bias for fast-response booking and quote recovery so good jobs do not cool off." :
     niche.slug === "coaching" ? "The flow is built to protect show rate and fit, not just inflate call volume." :
+    niche.slug === "construction" ? "Every step is designed around bid timelines, crew capacity, and project scope — not generic sales funnels." :
+    niche.slug === "real-estate" ? "The system prioritizes speed-to-response and long-term nurture for leads who are not ready to transact today." :
+    niche.slug === "tech" ? "We optimize for trial activation and product-led signals, not just demo bookings." :
+    niche.slug === "education" ? "Enrollment journeys adapt to cohort timing, financial aid windows, and student readiness." :
+    niche.slug === "finance" ? "Compliance-aware flows that protect your fiduciary obligations while still moving prospects forward." :
+    niche.slug === "franchise" ? "Lead routing adapts to territory, location capacity, and brand compliance rules automatically." :
+    niche.slug === "staffing" ? "Candidate and client pipelines run in parallel so placements do not stall waiting for either side." :
+    niche.slug === "faith" ? "Every touchpoint is warm, community-centered, and respectful of the ministry relationship." :
+    niche.slug === "creative" ? "The flow protects your creative process — qualifying on budget and scope before you invest time." :
+    niche.slug === "health" ? "Patient journeys are HIPAA-conscious with scheduling, reminders, and reactivation built in." :
+    niche.slug === "ecommerce" ? "We focus on cart recovery, lifetime value, and repeat purchase — not just first-click conversions." :
+    niche.slug === "fitness" ? "Member journeys balance acquisition with retention so you are not always chasing new signups." :
     "The system adapts the next step so people do not get pushed into the wrong funnel.";
 
   const modeSpecific =
@@ -250,6 +262,102 @@ function buildDiscoveryOptions(niche: NicheDefinition, family: FunnelFamily, mod
         description: "Lead with insight, proof, and selective friction.",
         signals: { contentEngaged: true },
       },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "construction") {
+    return [
+      { id: "bids", label: "Win more bids", description: "Automated follow-up so no profitable project goes cold.", signals: { wantsBooking: true } },
+      { id: "scheduling", label: "Eliminate scheduling conflicts", description: "Crew coordination that prevents project overruns.", signals: { contentEngaged: true } },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "real-estate") {
+    return [
+      { id: "response", label: "Respond in under 5 minutes", description: "Speed-to-lead automation that beats every competitor.", signals: { wantsBooking: true } },
+      { id: "nurture", label: "Nurture long-term leads", description: "Drip campaigns for buyers who are 6-12 months out.", signals: { contentEngaged: true } },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "tech") {
+    return [
+      { id: "activation", label: "Increase trial activation", description: "Automated onboarding that gets users to their aha moment.", signals: { contentEngaged: true } },
+      { id: "churn", label: "Reduce churn", description: "Health scoring and engagement triggers before users leave.", signals: { wantsBooking: true } },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "education") {
+    return [
+      { id: "enrollment", label: "Enroll more students", description: "Admissions nurture that converts inquiries into enrolled students.", signals: { wantsBooking: true } },
+      { id: "completion", label: "Improve completion rates", description: "Automated check-ins and intervention triggers.", signals: { contentEngaged: true } },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "finance") {
+    return [
+      { id: "onboarding", label: "Onboard clients faster", description: "Automated KYC and document collection that respects compliance.", signals: { wantsBooking: true } },
+      { id: "retention", label: "Deepen client relationships", description: "Proactive touchpoints between review meetings.", signals: { contentEngaged: true } },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "franchise") {
+    return [
+      { id: "territory", label: "Unify lead routing", description: "Centralized distribution across every franchise territory.", signals: { wantsBooking: true } },
+      { id: "compliance", label: "Enforce brand consistency", description: "Marketing compliance that scales with every new location.", signals: { contentEngaged: true } },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "staffing") {
+    return [
+      { id: "fill-rate", label: "Fill roles faster", description: "Automated sourcing and screening that cuts time-to-submittal.", signals: { wantsBooking: true } },
+      { id: "reactivate", label: "Re-engage past candidates", description: "Talent pool nurture for new openings.", signals: { contentEngaged: true } },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "faith") {
+    return [
+      { id: "engagement", label: "Deepen congregation engagement", description: "Digital tools that strengthen community, not replace it.", signals: { contentEngaged: true } },
+      { id: "giving", label: "Grow online giving", description: "Frictionless donation experience with transparent tracking.", signals: { wantsBooking: true } },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "creative") {
+    return [
+      { id: "intake", label: "Streamline project intake", description: "Creative brief automation that qualifies on budget and scope.", signals: { wantsBooking: true } },
+      { id: "approvals", label: "Speed up client approvals", description: "Review workflows that eliminate bottlenecks.", signals: { contentEngaged: true } },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "health") {
+    return [
+      { id: "no-shows", label: "Reduce no-shows", description: "Multi-channel reminders that cut missed appointments by 40%.", signals: { wantsBooking: true } },
+      { id: "reactivation", label: "Reactivate dormant patients", description: "Automated recall campaigns for patients overdue for care.", signals: { contentEngaged: true } },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "ecommerce") {
+    return [
+      { id: "conversion", label: "Increase store conversion", description: "Checkout optimization and cart recovery sequences.", signals: { wantsCheckout: true } },
+      { id: "ltv", label: "Grow customer lifetime value", description: "Post-purchase nurture and repeat buyer automation.", signals: { contentEngaged: true } },
+      commonOptions[2],
+    ];
+  }
+
+  if (niche.slug === "fitness") {
+    return [
+      { id: "members", label: "Acquire more members", description: "Lead magnets and trial offers that convert prospects.", signals: { wantsBooking: true } },
+      { id: "retention", label: "Keep members engaged", description: "Automated check-ins and community challenges.", signals: { contentEngaged: true } },
       commonOptions[2],
     ];
   }

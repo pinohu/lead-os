@@ -19,6 +19,7 @@ type ExperienceScaffoldProps = {
   primaryActionLabel?: string;
   secondaryActionHref?: string;
   secondaryActionLabel?: string;
+  niche?: string;
 };
 
 export function ExperienceScaffold({
@@ -32,9 +33,10 @@ export function ExperienceScaffold({
   primaryActionLabel,
   secondaryActionHref,
   secondaryActionLabel,
+  niche,
 }: ExperienceScaffoldProps) {
   return (
-    <main className="experience-page">
+    <main className="experience-page" data-niche={niche ?? undefined}>
       <section className="experience-hero">
         <div className="hero-copy">
           <p className="eyebrow">{eyebrow}</p>
