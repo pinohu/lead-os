@@ -51,6 +51,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     })),
 
+    // ─── Directory pages ──────────────────────────────────
+    { url: `${baseUrl}/directory`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 },
+    ...nicheSlugs.map((slug) => ({
+      url: `${baseUrl}/directory/${slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+
     // ─── Persona landing pages ────────────────────────────
     ...PERSONA_SLUGS.map((slug) => ({
       url: `${baseUrl}/for/${slug}`,
