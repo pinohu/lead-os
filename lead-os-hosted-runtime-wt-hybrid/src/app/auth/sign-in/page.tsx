@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import { tenantConfig } from "@/lib/tenant";
+
+export const metadata: Metadata = {
+  title: "Sign In | Lead OS",
+  description: "Sign in to your Lead OS operator dashboard with a secure magic link.",
+};
 
 type SignInPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;

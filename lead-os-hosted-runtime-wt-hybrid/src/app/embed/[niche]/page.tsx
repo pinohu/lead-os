@@ -1,7 +1,18 @@
+import type { Metadata } from "next";
 import { getNiche, nicheCatalog } from "@/lib/catalog";
 import { notFound } from "next/navigation";
 
 type Props = { params: Promise<{ niche: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { niche: slug } = await params;
+  const niche = getNiche(slug);
+  const label = niche?.label ?? slug;
+  return {
+    title: `${label} Lead Capture | Lead OS`,
+    description: `Embeddable lead capture widget for ${label}. Collect and score leads instantly.`,
+  };
+}
 
 export function generateStaticParams() {
   return Object.keys(nicheCatalog).map((niche) => ({ niche }));

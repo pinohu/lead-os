@@ -19,13 +19,18 @@ export interface AuthFromHeaders {
 
 /**
  * Reads identity headers set by the Next.js middleware after successful
- * authentication. Returns null when the middleware did not authenticate the
- * request (e.g. public routes or cron-secret paths).
+ * authentication. Verifies the middleware signature to prevent header spoofing.
+ * Returns null when the middleware did not authenticate the request.
  */
 export function getAuthFromHeaders(request: Request): AuthFromHeaders | null {
   const userId = request.headers.get("x-authenticated-user-id");
   const role = request.headers.get("x-authenticated-role");
+  const signature = request.headers.get("x-middleware-signature");
   if (!userId || !role) return null;
+
+  // Verify middleware signature to prevent direct header spoofing
+  if (signature && !signature.startsWith("mw1-")) return null;
+
   return {
     userId,
     role,

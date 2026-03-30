@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { AdaptiveLeadCaptureForm } from "@/components/AdaptiveLeadCaptureForm";
@@ -8,6 +9,15 @@ import { resolveExperienceProfile } from "@/lib/experience";
 import { buildDefaultFunnelGraphs } from "@/lib/funnel-library";
 import type { FunnelFamily } from "@/lib/runtime-schema";
 import { tenantConfig } from "@/lib/tenant";
+
+export async function generateMetadata({ params }: FunnelFamilyPageProps): Promise<Metadata> {
+  const { family } = await params;
+  const label = family.charAt(0).toUpperCase() + family.slice(1).replace(/-/g, " ");
+  return {
+    title: `${label} Funnel | Lead OS`,
+    description: `Explore the ${label} funnel family — adaptive lead capture, scoring, and nurture automation.`,
+  };
+}
 
 type FunnelFamilyPageProps = {
   params: Promise<{ family: string }>;

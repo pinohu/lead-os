@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Check Your Email | Lead OS",
+  description: "A secure sign-in link has been sent to your email. Check your inbox to continue.",
+};
+
 type CheckEmailPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };

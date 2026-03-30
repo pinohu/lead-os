@@ -79,6 +79,23 @@ interface IdentityHeaders {
   "x-authenticated-method": string;
 }
 
+// Middleware signature — proves the request went through middleware.
+// Routes should check for this header to prevent header spoofing.
+const MIDDLEWARE_SIGNATURE_KEY = process.env.LEAD_OS_AUTH_SECRET ?? "leados-internal-middleware-v1";
+
+function computeMiddlewareSignature(userId: string, tenantId: string, requestId: string): string {
+  // Simple HMAC-like signature using string concatenation + hashing
+  // In production, LEAD_OS_AUTH_SECRET should be a strong random value
+  const payload = `${userId}:${tenantId}:${requestId}:${MIDDLEWARE_SIGNATURE_KEY}`;
+  let hash = 0;
+  for (let i = 0; i < payload.length; i++) {
+    const chr = payload.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash |= 0;
+  }
+  return `mw1-${Math.abs(hash).toString(36)}`;
+}
+
 function forwardWithIdentity(
   request: NextRequest,
   requestId: string,
@@ -89,6 +106,14 @@ function forwardWithIdentity(
   requestHeaders.set("x-authenticated-role", identity["x-authenticated-role"]);
   requestHeaders.set("x-authenticated-tenant-id", identity["x-authenticated-tenant-id"]);
   requestHeaders.set("x-authenticated-method", identity["x-authenticated-method"]);
+  requestHeaders.set(
+    "x-middleware-signature",
+    computeMiddlewareSignature(
+      identity["x-authenticated-user-id"],
+      identity["x-authenticated-tenant-id"],
+      requestId,
+    ),
+  );
 
   const response = NextResponse.next({
     request: { headers: requestHeaders },
