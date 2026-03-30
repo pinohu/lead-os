@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Contact from "@/components/Contact";
 import { getAllSlugs, getServiceBySlug } from "@/lib/services";
+import { siteConfig } from "@/lib/site-config";
 
 type StoryPageProps = {
   params: Promise<{ slug: string }>;
@@ -10,6 +12,22 @@ type StoryPageProps = {
 
 export function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: StoryPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const service = getServiceBySlug(slug);
+  if (!service) return { title: "Story Not Found" };
+  return {
+    title: `${service.title} Success Story | ${siteConfig.brandName}`,
+    description: `How ${service.title.toLowerCase()} transforms businesses. Real results, real impact.`,
+    openGraph: {
+      title: `${service.title} Success Story | ${siteConfig.brandName}`,
+      description: service.tagline,
+      type: "article",
+      url: `${siteConfig.siteUrl}/stories/${service.slug}`,
+    },
+  };
 }
 
 export default async function StoryPage({ params }: StoryPageProps) {
@@ -69,6 +87,23 @@ export default async function StoryPage({ params }: StoryPageProps) {
         <Contact />
       </main>
       <Footer />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: `${service.title} Success Story`,
+            description: service.tagline,
+            url: `${siteConfig.siteUrl}/stories/${service.slug}`,
+            publisher: {
+              "@type": "Organization",
+              name: siteConfig.brandName,
+              url: siteConfig.siteUrl,
+            },
+          }),
+        }}
+      />
     </>
   );
 }

@@ -1,10 +1,12 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { AdaptiveLeadCaptureForm } from "@/components/AdaptiveLeadCaptureForm";
 import { ExperienceScaffold } from "@/components/ExperienceScaffold";
 import { getNiche, nicheCatalog } from "@/lib/catalog";
 import { resolveExperienceProfile } from "@/lib/experience";
 import { tenantConfig } from "@/lib/tenant";
+import { buildOgImageUrl } from "@/lib/og-url";
 
 type AssessmentPageProps = {
   params: Promise<{ slug: string }>;
@@ -22,6 +24,20 @@ function asBoolean(value: string | string[] | undefined) {
 
 export function generateStaticParams() {
   return Object.keys(nicheCatalog).map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: AssessmentPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const niche = getNiche(slug);
+  return {
+    title: `${niche.assessmentTitle} | Lead OS`,
+    description: `${niche.summary} Take a 2-minute diagnostic and get a tailored action plan.`,
+    openGraph: {
+      title: niche.assessmentTitle,
+      description: niche.summary,
+      images: [{ url: buildOgImageUrl(niche.assessmentTitle, niche.summary, niche.slug), width: 1200, height: 630 }],
+    },
+  };
 }
 
 export default async function AssessmentPage({ params, searchParams }: AssessmentPageProps) {
@@ -52,6 +68,7 @@ export default async function AssessmentPage({ params, searchParams }: Assessmen
       title={niche.assessmentTitle}
       summary={`${niche.summary} This assessment path is now designed to feel like guided diagnosis instead of a long form. Each answer should earn the next question and move the visitor closer to a credible next step.`}
       profile={profile}
+      niche={niche.slug}
       metrics={[
         { label: "Assessment style", value: "Progressive", detail: "Only the next useful question should appear." },
         { label: "Return logic", value: "Milestone-aware", detail: "Visit two and three get lighter, smarter asks." },

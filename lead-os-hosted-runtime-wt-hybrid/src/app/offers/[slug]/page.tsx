@@ -8,6 +8,7 @@ import { tenantConfig } from "@/lib/tenant";
 import { OFFER_TEMPLATES, type Niche as OfferNiche } from "@/lib/offer-engine";
 import { NICHE_TESTIMONIALS } from "@/lib/niche-testimonials";
 import { buildOgImageUrl } from "@/lib/og-url";
+import { nicheCatalog } from "@/lib/catalog";
 
 type OfferPageProps = {
   params: Promise<{ slug: string }>;
@@ -21,6 +22,10 @@ function asString(value: string | string[] | undefined) {
 function asBoolean(value: string | string[] | undefined) {
   const normalized = asString(value)?.toLowerCase();
   return normalized === "1" || normalized === "true" || normalized === "yes";
+}
+
+export function generateStaticParams() {
+  return Object.keys(nicheCatalog).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: OfferPageProps): Promise<Metadata> {
