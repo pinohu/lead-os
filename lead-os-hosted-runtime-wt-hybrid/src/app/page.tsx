@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { AdaptiveLeadCaptureForm } from "@/components/AdaptiveLeadCaptureForm";
 import { ExperienceScaffold } from "@/components/ExperienceScaffold";
@@ -12,6 +13,17 @@ import { VALID_REVENUE_MODELS } from "@/lib/constants";
 import type { FunnelFamily } from "@/lib/runtime-schema";
 import { getCanonicalEvents, getLeadRecords } from "@/lib/runtime-store";
 import { tenantConfig } from "@/lib/tenant";
+import { buildOgImageUrl } from "@/lib/og-url";
+
+export const metadata: Metadata = {
+  title: `${tenantConfig.brandName} | Autonomous Lead Acquisition & Conversion`,
+  description: "Replace 15+ SaaS tools with one lead operating system. AI-powered scoring, multi-channel nurture, and a marketplace — for every industry.",
+  openGraph: {
+    title: `${tenantConfig.brandName} | Lead OS`,
+    description: "Replace 15+ SaaS tools with one lead operating system.",
+    images: [{ url: buildOgImageUrl(tenantConfig.brandName, "Autonomous lead acquisition & conversion"), width: 1200, height: 630 }],
+  },
+};
 
 type HomePageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
