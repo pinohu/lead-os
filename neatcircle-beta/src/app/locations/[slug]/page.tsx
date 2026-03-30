@@ -42,7 +42,7 @@ export default async function LocationPage({ params }: PageProps) {
   const profile = getGmbProfile(slug);
   if (!profile) notFound();
 
-  const schema = {
+  const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": profile.schemaType,
     name: profile.businessName,
@@ -53,6 +53,18 @@ export default async function LocationPage({ params }: PageProps) {
     areaServed: profile.serviceArea,
     openingHours: profile.hours,
     category: profile.gmbCategory,
+    ...(profile.address
+      ? {
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: profile.address.street,
+            addressLocality: profile.address.city,
+            addressRegion: profile.address.state,
+            postalCode: profile.address.zip,
+            addressCountry: profile.address.country,
+          },
+        }
+      : {}),
     hasOfferCatalog: {
       "@type": "OfferCatalog",
       name: "Services",

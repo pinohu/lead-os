@@ -213,6 +213,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
   return (
     <>
       <ExperienceScaffold
+        niche={bp.recommendedNiche}
         eyebrow={`Built for ${bp.label}`}
         title={bp.tagline}
         summary={`Lead OS gives ${bp.label.toLowerCase()} a turnkey growth system that replaces patchwork tools with one platform tuned to the way you sell.`}

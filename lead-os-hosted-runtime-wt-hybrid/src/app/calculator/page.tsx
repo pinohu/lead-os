@@ -4,6 +4,7 @@ import { ExperienceScaffold } from "@/components/ExperienceScaffold";
 import { getNiche } from "@/lib/catalog";
 import { resolveExperienceProfile } from "@/lib/experience";
 import { tenantConfig } from "@/lib/tenant";
+import { CALCULATOR_PRESETS } from "@/lib/calculator-presets";
 
 type CalculatorPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -38,6 +39,7 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
 
   return (
     <ExperienceScaffold
+      niche={niche.slug}
       eyebrow="Hosted calculator path"
       title={`${niche.label} upside estimator`}
       summary={`This path uses quantified value to earn the next ask. For visitors who need proof before commitment, the calculator should create clarity, not just curiosity.`}
@@ -68,6 +70,38 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
           </ul>
         </article>
       </section>
+
+      {(() => {
+        const preset = CALCULATOR_PRESETS[niche.slug] ?? CALCULATOR_PRESETS.general;
+        if (!preset) return null;
+        return (
+          <section className="panel">
+            <p className="eyebrow">Your {niche.label} ROI estimator</p>
+            <h2>{preset.resultLabel}</h2>
+            <p className="muted">{preset.formula}</p>
+            <div className="grid two">
+              {preset.inputs.map((input) => (
+                <div key={input.id} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <label style={{ fontWeight: 700, fontSize: "0.88rem" }}>{input.label}</label>
+                  <input
+                    type="number"
+                    defaultValue={input.defaultValue}
+                    min={input.min}
+                    max={input.max}
+                    step={input.step}
+                    aria-label={input.label}
+                    readOnly
+                  />
+                  <span className="muted" style={{ fontSize: "0.76rem" }}>{input.helpText}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ marginTop: 16, padding: "12px 16px", borderRadius: "var(--radius-sm)", background: "var(--accent-soft)", fontWeight: 700, fontSize: "0.88rem" }}>
+              {preset.proofPoint}
+            </p>
+          </section>
+        );
+      })()}
 
       <AdaptiveLeadCaptureForm
         source="roi_calculator"

@@ -13,6 +13,13 @@ export interface GmbProfile {
   primaryNiche: string;
   schemaType: string;
   citationSources: string[];
+  address?: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    country: string;
+  };
 }
 
 export const gmbProfiles: GmbProfile[] = [
@@ -37,6 +44,13 @@ export const gmbProfiles: GmbProfile[] = [
     primaryNiche: "general",
     schemaType: "ProfessionalService",
     citationSources: ["Yelp", "BBB", "Clutch", "UpCity", "G2", "Expertise.com"],
+    address: {
+      street: "1401 Elm Street, Suite 4200",
+      city: "Dallas",
+      state: "TX",
+      zip: "75202",
+      country: "US",
+    },
   },
   {
     slug: "saas-platform",
@@ -59,6 +73,13 @@ export const gmbProfiles: GmbProfile[] = [
     primaryNiche: "tech",
     schemaType: "SoftwareApplication",
     citationSources: ["G2", "Capterra", "ProductHunt", "Crunchbase", "TrustPilot", "Software Advice"],
+    address: {
+      street: "525 Market Street, Suite 3600",
+      city: "San Francisco",
+      state: "CA",
+      zip: "94105",
+      country: "US",
+    },
   },
   {
     slug: "lead-generation",
@@ -80,6 +101,13 @@ export const gmbProfiles: GmbProfile[] = [
     primaryNiche: "general",
     schemaType: "ProfessionalService",
     citationSources: ["Clutch", "UpCity", "G2", "BBB", "Local Chamber"],
+    address: {
+      street: "200 Park Avenue South, Suite 1400",
+      city: "New York",
+      state: "NY",
+      zip: "10003",
+      country: "US",
+    },
   },
   {
     slug: "technology-consultant",
@@ -101,6 +129,13 @@ export const gmbProfiles: GmbProfile[] = [
     primaryNiche: "coaching",
     schemaType: "ProfessionalService",
     citationSources: ["Clutch", "UpCity", "LinkedIn", "BBB", "Local Chamber", "GoodFirms"],
+    address: {
+      street: "1500 Walnut Street, Suite 900",
+      city: "Philadelphia",
+      state: "PA",
+      zip: "19102",
+      country: "US",
+    },
   },
   {
     slug: "franchise-operations",
@@ -123,6 +158,13 @@ export const gmbProfiles: GmbProfile[] = [
     primaryNiche: "franchise",
     schemaType: "ProfessionalService",
     citationSources: ["IFA", "Franchise.org", "LinkedIn", "Entrepreneur Franchise 500"],
+    address: {
+      street: "303 Peachtree Street NE, Suite 2500",
+      city: "Atlanta",
+      state: "GA",
+      zip: "30308",
+      country: "US",
+    },
   },
 ];
 

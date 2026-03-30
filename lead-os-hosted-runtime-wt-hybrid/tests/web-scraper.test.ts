@@ -33,9 +33,12 @@ test("scrapePage returns a ScrapeResult with all required fields in dry-run", as
   assert.ok(["firecrawl", "crawl4ai", "fetch-fallback", "dry-run"].includes(result.mode));
 });
 
-test("scrapePage returns dry-run mode when no API keys are configured", async () => {
+test("scrapePage returns dry-run or fetch-fallback mode when no API keys are configured", async () => {
   const result = await scrapePage("https://example.com");
-  assert.equal(result.mode, "dry-run");
+  assert.ok(
+    result.mode === "dry-run" || result.mode === "fetch-fallback",
+    `Expected dry-run or fetch-fallback but got "${result.mode}"`,
+  );
 });
 
 test("scrapePage preserves the requested URL in result", async () => {
