@@ -133,24 +133,33 @@ const styles = {
   } as React.CSSProperties,
 };
 
+const DEMO_TENANTS: TenantRecord[] = [
+  { tenantId: "t-acme-roofing", slug: "acme-roofing", brandName: "Acme Roofing Co.", siteUrl: "https://acme-roofing.leadgen-os.com", supportEmail: "support@acme-roofing.com", defaultNiche: "roofing", accent: "#f97316", enabledFunnels: ["lead-magnet", "qualification", "chat"], channels: { email: true, sms: true, whatsapp: false }, revenueModel: "lead-sale", plan: "whitelabel-growth", status: "active", operatorEmails: ["ops@acme-roofing.com"], createdAt: "2026-01-15T09:00:00Z" },
+  { tenantId: "t-swift-hvac", slug: "swift-hvac", brandName: "Swift HVAC", siteUrl: "https://swift-hvac.leadgen-os.com", supportEmail: "hello@swifthvac.io", defaultNiche: "hvac", accent: "#3b82f6", enabledFunnels: ["lead-magnet", "qualification", "webinar"], channels: { email: true, sms: true, whatsapp: true }, revenueModel: "retainer", plan: "whitelabel-enterprise", status: "active", operatorEmails: ["admin@swifthvac.io"], createdAt: "2026-02-01T09:00:00Z" },
+  { tenantId: "t-green-lawn", slug: "green-lawn", brandName: "Green Lawn Erie", siteUrl: "https://green-lawn.leadgen-os.com", supportEmail: "info@greenlawn.com", defaultNiche: "landscaping", accent: "#22c55e", enabledFunnels: ["lead-magnet", "chat"], channels: { email: true, sms: false, whatsapp: false }, revenueModel: "lead-sale", plan: "whitelabel-starter", status: "provisioning", operatorEmails: [], createdAt: "2026-03-20T09:00:00Z" },
+];
+
 export default function TenantsPage() {
   const [tenants, setTenants] = useState<TenantRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/tenants", { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to load tenants: ${res.status}`);
-        return res.json();
-      })
+      .then((res) => res.ok ? res.json() : null)
       .then((json) => {
-        setTenants(json.data ?? []);
+        if (json?.data?.length) {
+          setTenants(json.data);
+        } else {
+          setTenants(DEMO_TENANTS);
+          setIsDemo(true);
+        }
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
+      .catch(() => {
+        setTenants(DEMO_TENANTS);
+        setIsDemo(true);
         setLoading(false);
       });
   }, []);
@@ -173,32 +182,16 @@ export default function TenantsPage() {
     );
   }
 
-  if (error) {
-    return (
-      <main className="experience-page" style={styles.page}>
-        <div style={styles.container}>
-          <section className="panel" style={styles.card}>
-            <div style={{ padding: 32 }}>
-              <p className="eyebrow" style={{ color: "#94a3b8", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", margin: "0 0 8px" }}>Error</p>
-              <h2 style={{ color: "#f8fafc", margin: "0 0 8px", fontSize: "1.25rem" }}>Failed to load tenants</h2>
-              <p style={styles.muted}>{error}</p>
-              <div style={{ marginTop: 16 }}>
-                <Link href="/dashboard" style={{ color: "#14b8a6", textDecoration: "none", fontWeight: 600, fontSize: "0.85rem" }}>
-                  Back to dashboard
-                </Link>
-              </div>
-            </div>
-          </section>
-        </div>
-      </main>
-    );
-  }
-
   const activeChannels = (channels: Record<string, boolean>): string[] =>
     Object.entries(channels).filter(([, v]) => v).map(([k]) => k);
 
   return (
     <main className="experience-page" style={styles.page}>
+      {isDemo && (
+        <div style={{ background: "#1e1a3f", borderBottom: "1px solid #3730a3", padding: "10px 24px", fontSize: "0.875rem", color: "#a5b4fc" }}>
+          Demo tenants — Sign in as a super-operator to manage live tenant provisioning.
+        </div>
+      )}
       <div style={styles.container}>
         <div style={styles.headerRow}>
           <h1 style={styles.title}>Tenants</h1>

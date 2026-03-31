@@ -47,8 +47,45 @@ export default function RootLayout({
   const topNiches = niches.slice(0, 6)
   const moreNiches = niches.slice(6)
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "@id": `https://${cityConfig.domain}/#organization`,
+        name: cityConfig.domain,
+        url: `https://${cityConfig.domain}`,
+        description: `Find the best local service providers in ${cityConfig.name}, ${cityConfig.state}. Verified businesses, free quotes, no obligation.`,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: cityConfig.name,
+          addressRegion: cityConfig.stateCode,
+          addressCountry: "US",
+        },
+        areaServed: cityConfig.serviceArea.map((area) => ({
+          "@type": "City",
+          name: area,
+        })),
+        serviceType: niches.map((n) => n.label),
+      },
+      {
+        "@type": "WebSite",
+        "@id": `https://${cityConfig.domain}/#website`,
+        url: `https://${cityConfig.domain}`,
+        name: `Find Local Services in ${cityConfig.name} | ${cityConfig.domain}`,
+        publisher: { "@id": `https://${cityConfig.domain}/#organization` },
+      },
+    ],
+  }
+
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className={`${inter.className} antialiased`}>
         <ThemeProvider
           attribute="class"
