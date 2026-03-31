@@ -6,15 +6,15 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 
 | Metric | Count |
 |--------|-------|
-| Total source files | 763 |
-| Lines of code | 189,500+ |
-| API endpoints | 474 |
-| UI pages | 51 |
-| Dashboard pages | 28 |
+| Total source files | 1,004 |
+| Lines of code | 210,000+ |
+| API endpoints | 498 |
+| UI pages | 60 |
+| Dashboard pages | 29 |
 | Provider integrations | 137 |
-| Lib modules | 212 |
-| Test files | 165 |
-| Test cases | 3,663 |
+| Lib modules | 233 |
+| Test files | 333 |
+| Test cases | 4,151 |
 | Test pass rate | 100% |
 
 ## Architecture
@@ -142,7 +142,7 @@ npm run dev
 
 # Run tests
 npm test
-# 2,378 tests, 100% pass rate
+# 4,151 tests, 100% pass rate
 
 # Type check
 npx tsc --noEmit
@@ -212,7 +212,7 @@ docker build -t lead-os . && docker run -p 3000:3000 lead-os
 | `/` | Public landing page |
 | `/onboard` | Client self-service signup |
 | `/auth/sign-in` | Operator login (magic link) |
-| `/dashboard` | Operator dashboard (27 pages) |
+| `/dashboard` | Operator dashboard (29 pages) |
 | `/dashboard/prospects` | Prospect discovery and management |
 | `/dashboard/experiments` | A/B experiment management |
 | `/dashboard/competitors` | Competitive analysis |
@@ -229,7 +229,7 @@ docker build -t lead-os . && docker run -p 3000:3000 lead-os
 
 ## Operator Dashboard Pages (27)
 
-Dashboard, Agents, Analytics, Attribution, Billing, Bookings, Competitors, Creative, Credentials, Distribution, Documents, Experiments, Feedback, Health, Lead Magnets, Leads, Leads Detail, Marketing Ingestion, Marketplace, Pipeline, Prospects, Providers, Radar, Revenue, Scoring, Settings, Tenants, Workflows
+Dashboard, Agents, Analytics, Attribution, Billing, Bookings, Competitors, Creative, Credentials, Distribution, Documents, Experiments, Feedback, Health, Joy, Lead Magnets, Leads, Leads Detail, Marketing Ingestion, Marketplace, Pipeline, Prospects, Providers, Radar, Revenue, Scoring, Settings, Tenants, Workflows
 
 ## WordPress Pairing
 
