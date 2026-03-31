@@ -40,6 +40,7 @@ const PUBLIC_EXACT: Set<string> = new Set([
   "/api/health/deep",
   "/api/status",
   "/api/intake",
+  "/api/capture",
   "/api/unsubscribe",
   "/api/setup/status",
   "/api/contact",
