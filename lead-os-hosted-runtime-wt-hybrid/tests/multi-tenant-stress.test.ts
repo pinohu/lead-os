@@ -49,17 +49,27 @@ describe("Multi-Tenant Stress Test", () => {
         const leadKey = `${tenantId}-lead-${l}`;
         await upsertLeadRecord({
           leadKey,
-          tenantId,
-          payload: {
-            firstName: `Tenant${t}Lead${l}`,
-            lastName: "Stress",
-            email: generateLeadEmail(t, l),
-            niche: NICHES[t % NICHES.length]!,
-            source: "stress-test",
-          },
+          trace: { tenantId, visitorId: `visitor-${t}-${l}`, sessionId: `sess-${t}-${l}`, requestId: `req-${t}-${l}` },
+          firstName: `Tenant${t}Lead${l}`,
+          lastName: "Stress",
+          email: generateLeadEmail(t, l),
+          niche: NICHES[t % NICHES.length]!,
+          source: "stress-test",
+          service: "general",
+          score: 50,
+          family: "lead-magnet",
+          blueprintId: "default",
+          destination: "/assess/general",
+          ctaLabel: "Get assessment",
+          stage: "captured",
+          hot: false,
+          status: "active",
+          sentNurtureStages: [],
+          milestones: { firstTouch: true, returnEngaged: false, bookedOrOffered: false },
+          metadata: { tenantId },
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        });
+        } as any);
         tenantLeadKeys[tenantId]!.push(leadKey);
       }
     }
@@ -73,9 +83,9 @@ describe("Multi-Tenant Stress Test", () => {
         const lead = await getLeadRecord(key);
         if (lead) {
           assert.equal(
-            lead.tenantId,
+            lead.metadata?.tenantId,
             tenantId,
-            `Lead ${key} should belong to ${tenantId}, got ${lead.tenantId}`,
+            `Lead ${key} should belong to ${tenantId}`,
           );
         }
       }
@@ -281,8 +291,7 @@ describe("Multi-Tenant Stress Test", () => {
         lastName: "StressTest",
         email: `concurrent-${t}@stress.test.example.com`,
         niche: NICHES[t % NICHES.length],
-        tenantId: generateTenantId(t),
-      }),
+      } as any),
     );
 
     const results = await Promise.all(promises);
@@ -344,6 +353,19 @@ describe("Multi-Tenant Stress Test", () => {
         totalHoursSaved: t * 20,
         consecutiveLeadDays: t % 8,
         overnightConversions: t % 3,
+        overnightRevenue: t * 100,
+        overnightBookings: t % 2,
+        warmLeadsNoFollowUp: t % 3,
+        hotLeadsNoBooking: t % 2,
+        pipelineCount: t * 3,
+        emailFollowUpsSent: t * 10,
+        leadsScored: t * 50,
+        reportsGenerated: t,
+        intakesProcessed: t * 5,
+        nurtureSequencesActive: t * 2,
+        bookingsScheduled: t,
+        daysSinceLastLogin: t % 5,
+        leadVelocityTrend: t > 5 ? 1 : -1,
       };
       const previous = {
         ...current,
