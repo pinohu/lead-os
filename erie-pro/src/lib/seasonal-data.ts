@@ -676,6 +676,546 @@ export const SEASONAL_DATA: Record<string, SeasonalGuide> = {
       { task: "Keep the chimney cap clear", details: "After heavy snowfall, verify the chimney cap is not blocked by snow or ice. A blocked flue can cause deadly carbon monoxide buildup indoors.", urgency: "essential" },
     ],
   },
+
+  "pool-spa": {
+    spring: [
+      { task: "Schedule pool opening", details: "Contact your pool service to schedule opening for mid-May to early June. Early booking ensures you get on the schedule before the rush.", urgency: "essential" },
+      { task: "Inspect pool cover for damage", details: "Before removal, check the winter cover for tears or excessive water accumulation. Pump off standing water and remove debris before folding.", urgency: "recommended" },
+      { task: "Check pool equipment", details: "Inspect pump, filter, heater, and plumbing for winter damage. Look for cracks, leaks, and corrosion. Replace any worn seals or gaskets.", urgency: "essential" },
+      { task: "Test and balance water chemistry", details: "After filling, test pH, alkalinity, calcium hardness, and sanitizer levels. Erie's source water may need significant adjustment after sitting all winter.", urgency: "essential" },
+    ],
+    summer: [
+      { task: "Maintain consistent chemical levels", details: "Test water 2-3 times per week during swimming season. Erie's warm, humid summers promote algae growth if chemicals are not maintained.", urgency: "essential" },
+      { task: "Run pump 8-12 hours daily", details: "Proper circulation prevents algae and distributes chemicals evenly. Run the pump during the hottest part of the day for maximum effectiveness.", urgency: "essential" },
+      { task: "Clean skimmer and pump baskets weekly", details: "Remove leaves, bugs, and debris from baskets to maintain proper water flow. Clogged baskets strain the pump and reduce filtration.", urgency: "recommended" },
+      { task: "Inspect hot tub for biofilm", details: "Flush hot tub plumbing with a line cleaner every 3-4 months. Biofilm builds up in pipes and can cause foamy or cloudy water.", urgency: "recommended" },
+    ],
+    fall: [
+      { task: "Schedule pool closing before first freeze", details: "Erie's first hard freeze typically arrives in late October. Schedule your pool closing for mid-October to be safe.", urgency: "essential" },
+      { task: "Winterize all plumbing lines", details: "Blow out all pool plumbing with compressed air to prevent freeze damage. One cracked pipe can cost hundreds to repair.", urgency: "essential" },
+      { task: "Add winter chemicals", details: "Add winterizing chemical kit after balancing water. This protects against algae and staining during Erie's 5-6 month off-season.", urgency: "essential" },
+      { task: "Install winter cover securely", details: "Ensure the winter cover is tight and secure with water bags or anchors. Erie's wind and snow can displace loose covers.", urgency: "essential" },
+    ],
+    winter: [
+      { task: "Monitor winter cover", details: "Check the pool cover monthly for snow accumulation, standing water, and wind damage. Remove excess snow with a soft broom to prevent cover damage.", urgency: "recommended" },
+      { task: "Maintain hot tub if winterized for use", details: "If running your hot tub through winter, check water chemistry weekly. Keep the cover on when not in use to conserve heat and prevent freezing.", urgency: "essential" },
+      { task: "Plan spring improvements", details: "Winter is the ideal time to plan pool upgrades, liner replacements, or new equipment. Schedule early for spring installation.", urgency: "optional" },
+      { task: "Check equipment storage", details: "Ensure stored pool equipment (ladders, hoses, accessories) is kept in a dry location away from freezing temperatures.", urgency: "optional" },
+    ],
+  },
+
+  locksmith: {
+    spring: [
+      { task: "Inspect all exterior locks", details: "Check for stiffness, corrosion, and damage from winter moisture and ice. Lubricate with graphite or silicone-based lubricant.", urgency: "recommended" },
+      { task: "Test all security systems", details: "Verify smart locks, keypad entries, and alarm systems are functioning properly after winter temperature fluctuations.", urgency: "recommended" },
+      { task: "Replace worn weatherstripping on doors", details: "Winter weather degrades door seals. Replace weatherstripping to improve security and energy efficiency.", urgency: "optional" },
+      { task: "Check garage door locks", details: "Ensure garage side-door and manual locks are operating smoothly after winter disuse.", urgency: "optional" },
+    ],
+    summer: [
+      { task: "Upgrade to smart locks for vacation security", details: "Smart locks allow you to grant temporary access to pet sitters and house checkers while you travel. Monitor entry remotely.", urgency: "recommended" },
+      { task: "Install or upgrade deadbolts", details: "Summer is ideal for security upgrades. Replace Grade 3 deadbolts with Grade 2 or Grade 1 for improved protection.", urgency: "optional" },
+      { task: "Duplicate keys for family members", details: "Ensure all family members have copies of house and car keys. Store a spare set with a trusted neighbor.", urgency: "recommended" },
+      { task: "Service commercial locks", details: "Schedule annual commercial lock maintenance during summer when building access is more flexible.", urgency: "optional" },
+    ],
+    fall: [
+      { task: "Lubricate all locks before winter", details: "Apply graphite lubricant to all exterior lock cylinders before freezing temperatures arrive. This prevents frozen locks during Erie winters.", urgency: "essential" },
+      { task: "Check and replace batteries in smart locks", details: "Cold temperatures drain batteries faster. Replace batteries in all electronic locks and keypads before winter.", urgency: "essential" },
+      { task: "Inspect door frames and strike plates", details: "Ensure strike plates are securely fastened with 3-inch screws. Check door frames for warping that could affect lock function.", urgency: "recommended" },
+      { task: "Prepare a winter lockout kit", details: "Keep a lock de-icer in your car and purse. Store a spare key in a secure lock box. Know your locksmith's emergency number.", urgency: "recommended" },
+    ],
+    winter: [
+      { task: "Prevent frozen locks", details: "Cover exposed lock cylinders when possible. If a lock freezes, use a commercial lock de-icer — never force the key or use hot water.", urgency: "essential" },
+      { task: "Check for key breakage risk", details: "Cold makes metal brittle. If a key feels stiff in a lock, do not force it. Apply de-icer and wait. A broken key extraction costs more than prevention.", urgency: "essential" },
+      { task: "Verify emergency locksmith availability", details: "Confirm your locksmith offers 24/7 winter emergency service. Response times can be longer during storms.", urgency: "recommended" },
+      { task: "Monitor smart lock performance in cold", details: "Extreme cold can affect smart lock electronics and battery life. Check battery levels frequently during sub-zero stretches.", urgency: "recommended" },
+    ],
+  },
+
+  towing: {
+    spring: [
+      { task: "Check battery health after winter", details: "Winter is hard on car batteries. Have your battery tested; replace if it is more than 3-4 years old. Preventive replacement avoids roadside breakdowns.", urgency: "essential" },
+      { task: "Inspect tires for winter damage", details: "Check for pothole damage, uneven wear, and low tread depth. Erie's spring potholes cause tire and wheel damage. Consider alignment check.", urgency: "essential" },
+      { task: "Restock your emergency kit", details: "Replenish supplies used during winter: jumper cables, flashlight batteries, blankets, and first aid items.", urgency: "recommended" },
+      { task: "Check fluids and belts", details: "Winter takes a toll on fluids and rubber components. Check coolant, oil, power steering, and transmission fluid. Replace worn belts and hoses.", urgency: "recommended" },
+    ],
+    summer: [
+      { task: "Monitor coolant and prevent overheating", details: "Ensure coolant is at proper level and concentration. Overheating is a top cause of summer breakdowns. Check the radiator cap and hoses.", urgency: "essential" },
+      { task: "Check tire pressure regularly", details: "Hot pavement increases tire pressure and blowout risk. Check pressure when tires are cold. Under-inflated tires overheat faster.", urgency: "recommended" },
+      { task: "Maintain roadside assistance membership", details: "Keep AAA or similar roadside assistance current. Summer road trips increase breakdown risk away from home.", urgency: "recommended" },
+      { task: "Check spare tire condition", details: "Verify your spare tire is properly inflated and the jack is present and functional. Spare tires degrade over time even without use.", urgency: "optional" },
+    ],
+    fall: [
+      { task: "Prepare your vehicle for winter", details: "Install winter tires, check antifreeze, replace wiper blades, and verify all lights work. Erie's first snow can arrive in October.", urgency: "essential" },
+      { task: "Assemble a winter emergency kit", details: "Pack blankets, flashlight, jumper cables, ice scraper, traction mats, snacks, water, phone charger, and a first aid kit in your trunk.", urgency: "essential" },
+      { task: "Save a reliable towing company number", details: "Program a trusted Erie towing company's 24/7 number into your phone before you need it. Do not rely on searching during an emergency.", urgency: "recommended" },
+      { task: "Check battery and charging system", details: "Have your battery and alternator tested before winter. Cold starts demand maximum battery performance during Erie's sub-zero mornings.", urgency: "essential" },
+    ],
+    winter: [
+      { task: "Keep fuel tank at least half full", details: "A fuller tank prevents fuel line freeze-up and ensures you can keep the engine running for heat if stranded during a lake effect storm.", urgency: "essential" },
+      { task: "Drive carefully during lake effect storms", details: "Reduce speed, increase following distance, and avoid unnecessary travel during heavy snow events. If stranded, stay in your vehicle with hazards on.", urgency: "essential" },
+      { task: "Know what to do if stuck in snow", details: "Do not spin tires. Rock the vehicle gently between forward and reverse. Use traction mats, sand, or cat litter under wheels. Call for a tow if stuck.", urgency: "essential" },
+      { task: "Monitor weather before driving", details: "Check the NWS Erie forecast before heading out. Lake effect snow bands are narrow but intense. A clear road can become impassable within minutes.", urgency: "recommended" },
+    ],
+  },
+
+  "carpet-cleaning": {
+    spring: [
+      { task: "Schedule deep cleaning after winter", details: "Winter deposits road salt, sand, mud, and moisture into Erie carpets. Spring is the most important time for professional carpet cleaning.", urgency: "essential" },
+      { task: "Treat salt stains at entryways", details: "Road salt creates white residue that damages carpet fibers. Professional cleaning removes salt before it causes permanent discoloration.", urgency: "essential" },
+      { task: "Clean area rugs used as winter mats", details: "Entry rugs that caught winter grime should be professionally cleaned or replaced. They have trapped salt and dirt all season.", urgency: "recommended" },
+      { task: "Address musty odors from winter moisture", details: "Homes sealed tight for winter can develop musty carpet odors. Professional cleaning with deodorizer treatment eliminates them.", urgency: "recommended" },
+    ],
+    summer: [
+      { task: "Clean before peak humidity", details: "Schedule cleaning early in summer. High humidity slows drying times and can promote mold growth in freshly cleaned carpet if not properly dried.", urgency: "recommended" },
+      { task: "Treat pet stains and odors", details: "Summer heat amplifies pet odors. Enzyme-based treatments break down organic matter at the source. Professional pet stain treatment is most effective.", urgency: "recommended" },
+      { task: "Apply carpet protector", details: "After professional cleaning, apply carpet protector (Scotchgard-type) to create a barrier against new stains through the fall and winter.", urgency: "optional" },
+      { task: "Vacuum high-traffic areas twice weekly", details: "Summer's open windows bring in pollen and dust. More frequent vacuuming extends the results of professional cleaning.", urgency: "recommended" },
+    ],
+    fall: [
+      { task: "Pre-treat entryways before winter", details: "Apply carpet protector to entry areas and hallways before boot season begins. This creates a barrier against salt, mud, and moisture.", urgency: "recommended" },
+      { task: "Place entry mats and boot trays", details: "Position absorbent mats at every exterior door. Boot trays catch melting snow and prevent puddles from soaking into carpet.", urgency: "essential" },
+      { task: "Address any existing stains", details: "Treat stains before winter seals the house. Stains left through heating season with low humidity can set permanently.", urgency: "recommended" },
+      { task: "Clean upholstery before holiday season", details: "Freshen couches and chairs before holiday gatherings. Professional upholstery cleaning removes built-up body oils and dirt.", urgency: "optional" },
+    ],
+    winter: [
+      { task: "Implement a shoe-removal policy", details: "The single most effective way to protect carpets during Erie winters. Provide a boot tray and house slippers at the door.", urgency: "essential" },
+      { task: "Blot salt stains promptly", details: "When salt is tracked in, blot with a mixture of warm water and white vinegar. Do not rub — rubbing spreads the stain and damages fibers.", urgency: "essential" },
+      { task: "Vacuum entryways frequently", details: "Vacuum high-traffic areas every 2-3 days during winter to prevent salt and sand from grinding into carpet fibers.", urgency: "recommended" },
+      { task: "Address wet spots immediately", details: "Melting snow tracked onto carpet creates damp spots. Blot thoroughly and use fans to dry. Persistent dampness leads to mold growth.", urgency: "essential" },
+    ],
+  },
+
+  "pressure-washing": {
+    spring: [
+      { task: "Schedule house and driveway washing", details: "Spring is the ideal time to remove winter grime, mold, and mildew from Erie home exteriors. Wait until temperatures consistently exceed 40°F.", urgency: "essential" },
+      { task: "Clean decks and patios", details: "Remove winter grime and mildew before outdoor entertaining season. Deck cleaning prepares surfaces for staining or sealing.", urgency: "recommended" },
+      { task: "Clean fences and retaining walls", details: "Winter moisture promotes algae and mildew on fences. Pressure washing restores appearance and extends material life.", urgency: "optional" },
+      { task: "Check for winter damage to surfaces", details: "Freeze-thaw cycles can crack concrete and loosen pavers. Identify damage before pressure washing to avoid making it worse.", urgency: "recommended" },
+    ],
+    summer: [
+      { task: "Clean outdoor living spaces", details: "Pressure wash patios, outdoor kitchens, and entertainment areas for peak summer use. Remove food stains, mold, and algae.", urgency: "recommended" },
+      { task: "Wash commercial building exteriors", details: "Summer's warm temperatures and long days are ideal for commercial pressure washing. Schedule to maintain business curb appeal.", urgency: "recommended" },
+      { task: "Clean garage floors and driveways", details: "Remove oil stains, tire marks, and accumulated dirt from garage floors and driveways. Apply sealant after cleaning for lasting protection.", urgency: "optional" },
+      { task: "Prepare surfaces for painting or staining", details: "Pressure washing is essential prep before applying exterior paint or deck stain. Allow 24-48 hours of drying before coating.", urgency: "recommended" },
+    ],
+    fall: [
+      { task: "Final cleaning before winter", details: "Remove mildew, algae, and organic matter before winter freeze locks it in. Clean surfaces resist staining from trapped moisture better.", urgency: "recommended" },
+      { task: "Clean and seal concrete", details: "After pressure washing driveways and sidewalks, apply a concrete sealer to protect against freeze-thaw damage and road salt.", urgency: "recommended" },
+      { task: "Clean gutters exterior", details: "Pressure wash gutter exteriors to remove black streaks and oxidation before winter. Interior gutter cleaning should be done separately.", urgency: "optional" },
+      { task: "Store equipment properly", details: "If you own a pressure washer, winterize it: run antifreeze through the pump and store indoors. Frozen pumps crack and require replacement.", urgency: "essential" },
+    ],
+    winter: [
+      { task: "Do not pressure wash in freezing temperatures", details: "Water freezes on surfaces, creating dangerous ice and potentially damaging equipment. Wait until spring for exterior cleaning.", urgency: "essential" },
+      { task: "Plan spring projects", details: "Use winter to identify surfaces that need cleaning and get quotes from professional pressure washing companies for spring service.", urgency: "optional" },
+      { task: "Maintain equipment in storage", details: "Check stored pressure washer hoses, wands, and connections for damage. Order replacement parts for spring.", urgency: "optional" },
+      { task: "Address indoor surfaces if needed", details: "Garage floors and enclosed areas can be pressure washed in winter if drainage is available and temperatures are above freezing.", urgency: "optional" },
+    ],
+  },
+
+  drywall: {
+    spring: [
+      { task: "Inspect for winter water damage", details: "Check ceilings and walls near the roof for water stains from ice dams. Inspect basement walls for moisture damage from spring thaw.", urgency: "essential" },
+      { task: "Address frozen pipe damage", details: "Burst pipes during Erie winters often damage drywall. Spring is the time to repair or replace water-damaged sections before mold develops.", urgency: "essential" },
+      { task: "Check for nail pops", details: "Temperature fluctuations cause nail pops — raised bumps where drywall nails push through the surface. Re-fasten and patch as needed.", urgency: "recommended" },
+      { task: "Inspect for mold behind damaged drywall", details: "Any drywall that was wet during winter should be inspected for mold. Cut a small inspection hole if you suspect hidden mold.", urgency: "essential" },
+    ],
+    summer: [
+      { task: "Complete large drywall projects", details: "Summer's warm, dry conditions are ideal for drywall installation and finishing. Joint compound dries faster and more evenly.", urgency: "recommended" },
+      { task: "Address humidity-related issues", details: "Erie's summer humidity can cause drywall tape to bubble and joint compound to remain tacky. Use fans and dehumidifiers during finishing.", urgency: "recommended" },
+      { task: "Paint after drywall repairs", details: "Warm, dry weather provides optimal painting conditions after drywall finishing. Allow joint compound to cure fully before priming.", urgency: "optional" },
+      { task: "Plan fall renovation projects", details: "Schedule contractors for fall drywall work during quieter periods. Material costs may be lower outside peak construction season.", urgency: "optional" },
+    ],
+    fall: [
+      { task: "Repair before heating season", details: "Complete all drywall repairs before sealing the house for winter. Gaps and holes in drywall reduce insulation effectiveness and allow drafts.", urgency: "recommended" },
+      { task: "Check bathroom drywall", details: "Inspect drywall around tubs, showers, and behind toilets for soft spots. Replace damaged sections with moisture-resistant drywall before winter's increased indoor humidity.", urgency: "recommended" },
+      { task: "Seal any wall penetrations", details: "Caulk around electrical outlets, pipes, and fixtures on exterior walls. These gaps allow cold air infiltration during Erie's winter.", urgency: "recommended" },
+      { task: "Address cracks from settling", details: "Seasonal temperature changes cause homes to shift. Repair drywall cracks before they are hidden by furniture rearranged for winter.", urgency: "optional" },
+    ],
+    winter: [
+      { task: "Monitor for condensation damage", details: "Cold exterior walls can cause condensation behind furniture, damaging drywall. Keep furniture slightly away from exterior walls for air circulation.", urgency: "recommended" },
+      { task: "Address emergency pipe burst damage", details: "Frozen pipe bursts require immediate drywall removal to prevent mold. Cut away wet drywall at least 12 inches beyond the visible damage.", urgency: "essential" },
+      { task: "Maintain indoor humidity levels", details: "Keep indoor humidity between 30-50% to prevent drywall from drying out and cracking. Erie's heated winter air can drop to 15% humidity.", urgency: "recommended" },
+      { task: "Plan spring repairs", details: "Document any water stains or damage discovered during winter for spring repair scheduling. Take photos for insurance if applicable.", urgency: "optional" },
+    ],
+  },
+
+  insulation: {
+    spring: [
+      { task: "Inspect attic insulation for moisture", details: "Ice dams and roof leaks can saturate attic insulation during Erie winters. Wet insulation loses effectiveness and promotes mold growth.", urgency: "essential" },
+      { task: "Schedule an energy audit", details: "Spring is ideal for identifying insulation gaps before summer cooling and next winter's heating. An audit reveals where your Erie home loses the most energy.", urgency: "recommended" },
+      { task: "Check for ice dam damage", details: "Ice dams can push water under shingles and into attic insulation. Look for water stains and compressed or displaced insulation.", urgency: "essential" },
+      { task: "Replace damaged insulation", details: "Remove and replace any insulation that got wet during winter. Do not simply add new insulation over wet material — mold will develop.", urgency: "essential" },
+    ],
+    summer: [
+      { task: "Install attic insulation", details: "Summer is the best season for attic insulation work. Warm temperatures help blown-in insulation settle properly and spray foam cure completely.", urgency: "recommended" },
+      { task: "Air seal the attic floor", details: "Seal gaps around plumbing pipes, electrical wires, recessed lights, and the attic hatch. Air sealing often matters more than adding insulation.", urgency: "recommended" },
+      { task: "Insulate crawl spaces", details: "If your Erie home has a crawl space, summer is ideal for encapsulation and insulation. This reduces moisture, improves comfort, and cuts energy costs.", urgency: "optional" },
+      { task: "Evaluate wall insulation", details: "If your home is uncomfortably hot despite AC, walls may be under-insulated. Blown-in insulation can be added to existing walls through small holes.", urgency: "optional" },
+    ],
+    fall: [
+      { task: "Complete insulation upgrades before winter", details: "Any insulation work should be finished before Erie's heating season begins. The energy savings start immediately with the first cold night.", urgency: "essential" },
+      { task: "Seal air leaks around the building envelope", details: "Caulk and weatherstrip around windows, doors, and foundation sill plates. These small gaps account for significant heat loss in Erie homes.", urgency: "essential" },
+      { task: "Insulate rim joists", details: "The rim joist (where floor meets foundation wall) is one of the biggest heat loss points. Spray foam here provides immediate comfort improvement.", urgency: "recommended" },
+      { task: "Check attic access insulation", details: "The attic hatch or pull-down stairs is often a major heat loss point. Add insulation and weatherstripping to the access panel.", urgency: "recommended" },
+    ],
+    winter: [
+      { task: "Identify cold spots and drafts", details: "Winter is when insulation problems reveal themselves. Note cold walls, drafty rooms, and ice dams for spring improvement planning.", urgency: "recommended" },
+      { task: "Monitor energy bills for spikes", details: "Unusually high heating bills indicate insulation or air sealing problems. Compare bills year-over-year and with similar-sized Erie homes.", urgency: "recommended" },
+      { task: "Check for ice dams", details: "Ice dams along roof edges indicate heat loss through the attic — a sign of insufficient attic insulation. Plan upgrades for spring.", urgency: "recommended" },
+      { task: "Keep attic access closed", details: "Ensure the attic hatch or door is sealed tightly. An open or poorly sealed attic access dumps heat into the cold attic all winter.", urgency: "essential" },
+    ],
+  },
+
+  solar: {
+    spring: [
+      { task: "Clean solar panels after winter", details: "Remove pollen, dust, and residue from winter. Clean panels produce 5-10% more electricity. Use a soft brush and water — no harsh chemicals.", urgency: "recommended" },
+      { task: "Inspect for storm damage", details: "Check panels, racking, and wiring for damage from winter storms. Look for cracked glass, loose connections, and displaced panels.", urgency: "essential" },
+      { task: "Check system monitoring data", details: "Review winter production data. Compare to expected output. Significant underperformance may indicate a failing panel or inverter issue.", urgency: "recommended" },
+      { task: "Trim trees that grew over winter", details: "New growth may now shade panels that were clear in fall. Even partial shading significantly reduces output.", urgency: "recommended" },
+    ],
+    summer: [
+      { task: "Monitor peak production", details: "Summer is your highest production season. Check that the system is performing at or near its rated capacity during sunny days.", urgency: "recommended" },
+      { task: "Verify net metering credits", details: "Review your Penelec bill to ensure net metering credits are being applied correctly. Summer overproduction should build credits for winter.", urgency: "recommended" },
+      { task: "Keep panels unshaded", details: "Maintain vegetation clearance around panels. Summer foliage can shade panels that were clear in spring.", urgency: "recommended" },
+      { task: "Check inverter display and alerts", details: "Verify the inverter is operating normally with no error codes. Inverter failures are the most common solar system issue.", urgency: "optional" },
+    ],
+    fall: [
+      { task: "Clean panels before winter", details: "Remove fallen leaves and debris. Clean panels capture more of the weaker fall and winter sunlight.", urgency: "recommended" },
+      { task: "Schedule professional inspection", details: "Annual professional inspection checks electrical connections, racking integrity, and system performance before winter.", urgency: "recommended" },
+      { task: "Review annual production", details: "Compare your system's actual production to the projected annual output. Discuss any shortfall with your installer.", urgency: "optional" },
+      { task: "Check battery storage before winter", details: "If you have battery storage, verify it is fully operational before winter storms. Batteries provide backup power during outages.", urgency: "essential" },
+    ],
+    winter: [
+      { task: "Clear heavy snow when safe", details: "If panels are accessible, gently clear heavy snow with a soft roof rake. Most snow slides off naturally due to panel angle and heat.", urgency: "optional" },
+      { task: "Monitor production during short days", details: "Winter production is 30-50% of summer levels. This is normal for Erie. Net metering credits from summer should offset the difference.", urgency: "recommended" },
+      { task: "Check for ice damage after storms", details: "After major ice storms, visually inspect panels for cracked glass or dislodged racking. Report damage to your installer promptly.", urgency: "recommended" },
+      { task: "Verify battery maintains charge", details: "Cold temperatures reduce battery capacity. Ensure your battery storage system maintains adequate charge for backup power needs.", urgency: "recommended" },
+    ],
+  },
+
+  gutters: {
+    spring: [
+      { task: "Clean gutters after spring debris", details: "Remove seeds, pollen pods, and small branches that accumulated. Spring cleaning ensures gutters are ready for April showers.", urgency: "essential" },
+      { task: "Inspect for winter damage", details: "Check for ice damage: bent gutters, pulled-away sections, damaged hangers, and cracked downspouts from frozen water.", urgency: "essential" },
+      { task: "Flush downspouts", details: "Run water through all downspouts to verify they are clear. Winter ice can compact debris into solid clogs.", urgency: "recommended" },
+      { task: "Check gutter slope", details: "Verify gutters still slope properly toward downspouts. Heavy snow and ice can pull gutters out of alignment.", urgency: "recommended" },
+    ],
+    summer: [
+      { task: "Inspect for sagging sections", details: "Heat expansion and accumulated weight can cause gutters to sag. Re-secure with new hangers as needed.", urgency: "recommended" },
+      { task: "Clean after spring pollen season", details: "Tree pollen, seed pods, and catkins can clog gutters and downspouts. Clean after major pollen events.", urgency: "recommended" },
+      { task: "Install gutter guards if not present", details: "Summer is ideal for gutter guard installation. Reduced maintenance saves time and prevents fall clog emergencies.", urgency: "optional" },
+      { task: "Check downspout extensions", details: "Ensure downspouts direct water at least 4-6 feet from the foundation. Add extensions if water is pooling near the house.", urgency: "recommended" },
+    ],
+    fall: [
+      { task: "Major gutter cleaning after leaf drop", details: "The most critical gutter cleaning of the year. Remove all leaves and debris before Erie's first freeze. Clogged gutters cause ice dams.", urgency: "essential" },
+      { task: "Install gutter screens if not present", details: "If gutter guards are not installed, at minimum add leaf screens to prevent large debris from clogging downspouts.", urgency: "recommended" },
+      { task: "Inspect and repair before winter", details: "Fix any loose sections, replace damaged hangers, and seal leaking joints before freezing temperatures make repairs difficult.", urgency: "essential" },
+      { task: "Extend downspouts for winter drainage", details: "Add downspout extensions to direct snowmelt water well away from the foundation. Frozen ground does not absorb water.", urgency: "recommended" },
+    ],
+    winter: [
+      { task: "Do not remove ice from gutters", details: "Attempting to chip ice from gutters damages them. If ice dams form, address the root cause (attic insulation and ventilation) not the symptom.", urgency: "essential" },
+      { task: "Monitor for excessive icicles", details: "Large icicles indicate clogged gutters or ice dams. They are a safety hazard and a sign of drainage problems that need spring attention.", urgency: "recommended" },
+      { task: "Check for overflow during thaws", details: "During mid-winter thaws, verify gutters are draining. If water overflows, debris or ice is blocking flow.", urgency: "recommended" },
+      { task: "Plan spring cleaning and repairs", details: "Note any problems observed during winter for spring service. Budget for repairs or gutter guard installation.", urgency: "optional" },
+    ],
+  },
+
+  handyman: {
+    spring: [
+      { task: "Inspect exterior caulking and weatherstripping", details: "Winter damages seals around windows, doors, and siding joints. Re-caulk and replace weatherstripping as needed.", urgency: "essential" },
+      { task: "Check and repair window screens", details: "Install window screens for the warm season. Repair holes and replace damaged frames. Screens keep insects out and allow fresh air in.", urgency: "recommended" },
+      { task: "Test outdoor fixtures and outlets", details: "Check exterior lighting, outlets (GFCI), and hose bibs for winter damage. Replace burned-out bulbs and reset tripped outlets.", urgency: "recommended" },
+      { task: "Address winter-related damage", details: "Repair any damage discovered from winter: loose siding, cracked trim, damaged gutters, and settling-related drywall cracks.", urgency: "recommended" },
+    ],
+    summer: [
+      { task: "Tackle outdoor repair projects", details: "Repair or stain decks, fix fence sections, paint exterior trim, and address any structural maintenance. Warm weather allows outdoor work.", urgency: "recommended" },
+      { task: "Install ceiling fans or upgrade fixtures", details: "Ceiling fans reduce summer cooling costs. Summer is also a good time for fixture upgrades and minor electrical work.", urgency: "optional" },
+      { task: "Check and maintain sliding doors", details: "Clean tracks, lubricate rollers, and adjust alignment. Sliding doors get heavy use in summer and need regular maintenance.", urgency: "optional" },
+      { task: "Organize garage and storage areas", details: "Declutter, install shelving, and organize tools. A well-organized garage is easier to maintain and provides better access to equipment.", urgency: "optional" },
+    ],
+    fall: [
+      { task: "Winterize windows and doors", details: "Install storm windows, apply window insulation film, replace worn weatherstripping, and caulk drafty spots. Every gap costs heating dollars.", urgency: "essential" },
+      { task: "Reverse ceiling fans to clockwise", details: "Running fans clockwise on low pushes warm air down from the ceiling, improving heating efficiency in rooms with high ceilings.", urgency: "recommended" },
+      { task: "Install weather barriers at exterior doors", details: "Add door sweeps, replace threshold seals, and install draft blockers. Doors are the largest sources of air leaks in most homes.", urgency: "essential" },
+      { task: "Test smoke and CO detectors", details: "Replace batteries and test all smoke and carbon monoxide detectors before heating season. PA law requires CO detectors in homes with fuel-burning appliances.", urgency: "essential" },
+    ],
+    winter: [
+      { task: "Address interior repairs", details: "Winter is ideal for indoor projects: fix drywall cracks, tighten loose hardware, repair sticky doors (humidity changes warp wood).", urgency: "recommended" },
+      { task: "Fix drafts as they are discovered", details: "If you feel cold air from outlets, windows, or baseboards, apply temporary fixes (outlet gaskets, rope caulk) until permanent repairs in spring.", urgency: "essential" },
+      { task: "Maintain humidifier if installed", details: "Whole-house humidifiers need filter changes and cleaning during the heating season. Proper humidity protects woodwork and improves comfort.", urgency: "recommended" },
+      { task: "Plan spring projects", details: "Create a prioritized list of maintenance and improvement projects for spring. Get quotes during winter when contractors have more availability.", urgency: "optional" },
+    ],
+  },
+
+  veterinary: {
+    spring: [
+      { task: "Schedule annual wellness exam", details: "Spring is ideal for annual checkups, vaccinations, and heartworm testing. Book early as vet schedules fill up quickly.", urgency: "essential" },
+      { task: "Start tick and flea prevention", details: "Erie's tick season begins in early spring. Start preventive medication before ticks become active. Lyme disease is prevalent in the region.", urgency: "essential" },
+      { task: "Update vaccinations", details: "Ensure rabies (PA law) and core vaccinations are current. If your pet boards, grooming, or attends daycare, bordetella is required.", urgency: "essential" },
+      { task: "Begin heartworm prevention", details: "Start or resume monthly heartworm preventive medication. Mosquitoes that transmit heartworm emerge in spring.", urgency: "essential" },
+    ],
+    summer: [
+      { task: "Watch for heatstroke signs", details: "Never leave pets in parked cars. Provide shade and fresh water outdoors. Signs of heatstroke: excessive panting, drooling, lethargy.", urgency: "essential" },
+      { task: "Protect against blue-green algae", details: "Lake Erie and local ponds can develop toxic blue-green algae in summer. Do not let pets drink from or swim in affected water.", urgency: "essential" },
+      { task: "Maintain flea and tick prevention", details: "Continue monthly preventive treatment through summer. Check pets for ticks after walks in wooded areas and tall grass.", urgency: "essential" },
+      { task: "Schedule dental cleaning", details: "Summer is a good time for non-emergency procedures like dental cleaning. Book early as anesthesia slots are limited.", urgency: "optional" },
+    ],
+    fall: [
+      { task: "Continue tick prevention through first hard freeze", details: "Ticks remain active in Erie until sustained freezing temperatures. Maintain prevention through November.", urgency: "essential" },
+      { task: "Schedule senior pet bloodwork", details: "Pets over 7 years benefit from fall bloodwork panels to catch age-related issues before winter, when vet visits are harder to schedule.", urgency: "recommended" },
+      { task: "Update microchip information", details: "If you have moved or changed phone numbers, update your pet's microchip registration. Microchips only work if the contact information is current.", urgency: "recommended" },
+      { task: "Prepare for holiday hazards", details: "Educate family about toxic foods (chocolate, grapes, xylitol), holiday plants (poinsettias), and decorations that can harm pets.", urgency: "recommended" },
+    ],
+    winter: [
+      { task: "Protect paws from road salt", details: "Wipe paws after walks or use paw booties. Road salt and de-icing chemicals irritate paw pads and are toxic if ingested by licking.", urgency: "essential" },
+      { task: "Watch for antifreeze exposure", details: "Antifreeze has a sweet taste that attracts pets. Even small amounts are fatal. Clean up spills immediately and store securely.", urgency: "essential" },
+      { task: "Limit outdoor time in extreme cold", details: "Short-coated and small dogs need limited exposure during sub-zero Erie temperatures. Signs of hypothermia: shivering, lethargy, weak pulse.", urgency: "essential" },
+      { task: "Maintain heartworm prevention year-round", details: "Many vets recommend year-round heartworm prevention. If you paused in fall, restart in spring before mosquito season.", urgency: "recommended" },
+    ],
+  },
+
+  chiropractic: {
+    spring: [
+      { task: "Address accumulated winter strain", details: "Months of snow shoveling, ice scraping, and hunched posture take a toll. Spring is an excellent time for a chiropractic evaluation.", urgency: "recommended" },
+      { task: "Prepare for increased outdoor activity", details: "As Erie warms up, people become more active outdoors. A spinal tune-up helps prevent injury during gardening, sports, and exercise.", urgency: "recommended" },
+      { task: "Check posture and ergonomics", details: "If you spent winter at a desk, evaluate your workspace ergonomics. A chiropractor can identify posture issues before they cause pain.", urgency: "optional" },
+      { task: "Start a wellness care routine", details: "Regular monthly adjustments maintain spinal health and prevent problems. Spring is a great time to establish a maintenance schedule.", urgency: "optional" },
+    ],
+    summer: [
+      { task: "Stay active with proper form", details: "Summer activities like swimming, cycling, and hiking are excellent for spinal health. Use proper form and warm up to prevent injury.", urgency: "recommended" },
+      { task: "Address sports injuries promptly", details: "Do not ignore strains and sprains from summer sports. Early chiropractic treatment prevents minor injuries from becoming chronic problems.", urgency: "recommended" },
+      { task: "Stay hydrated for disc health", details: "Spinal discs need hydration to function properly. Erie's humid summers can be deceiving — drink water even when you do not feel thirsty.", urgency: "optional" },
+      { task: "Maintain regular adjustment schedule", details: "Do not skip maintenance appointments during busy summer months. Consistent care provides the best long-term results.", urgency: "recommended" },
+    ],
+    fall: [
+      { task: "Pre-winter spinal tune-up", details: "Get adjusted before snow shoveling season. A well-aligned spine is more resilient to the physical demands of clearing Erie's heavy lake effect snow.", urgency: "essential" },
+      { task: "Learn proper shoveling technique", details: "Your chiropractor can demonstrate snow shoveling mechanics that protect your back: bend at knees, avoid twisting, push rather than lift.", urgency: "essential" },
+      { task: "Address slip and fall injuries", details: "Wet leaves and early ice create fall hazards. Seek chiropractic evaluation promptly after any slip or fall, even if pain seems minor.", urgency: "recommended" },
+      { task: "Evaluate your mattress and pillow", details: "As you spend more time indoors, sleep quality matters more. Your chiropractor can recommend sleep positions and support appropriate for your spine.", urgency: "optional" },
+    ],
+    winter: [
+      { task: "See chiropractor after shoveling strain", details: "Snow shoveling is the number one cause of back injury in Erie winters. If you feel any strain or pain, schedule an appointment immediately.", urgency: "essential" },
+      { task: "Prevent injury with proper technique", details: "Push snow instead of lifting when possible. Take frequent breaks. Use an ergonomic shovel. Do not twist to throw snow — turn your whole body.", urgency: "essential" },
+      { task: "Address slip-on-ice injuries", details: "Falls on icy surfaces can cause whiplash, back strain, and joint misalignment. Seek evaluation even if you feel okay — symptoms can be delayed.", urgency: "essential" },
+      { task: "Maintain mobility during cold months", details: "Cold weather tightens muscles and reduces mobility. Regular chiropractic care and stretching prevent winter stiffness.", urgency: "recommended" },
+    ],
+  },
+
+  accounting: {
+    spring: [
+      { task: "File tax returns by April 15", details: "Federal and PA state returns are due April 15. File or request an extension. Note that an extension to file is not an extension to pay.", urgency: "essential" },
+      { task: "Review withholdings for the new year", details: "If you owed money or received a large refund, adjust W-4 withholdings. A large refund means you are giving the government an interest-free loan.", urgency: "recommended" },
+      { task: "Organize receipts and documents", details: "Create a filing system for the new tax year. Scan and digitize receipts. Set up a dedicated folder for deductible expenses.", urgency: "recommended" },
+      { task: "Pay first quarter estimated taxes", details: "Self-employed individuals and those with significant non-withheld income: Q1 estimated taxes are due April 15.", urgency: "essential" },
+    ],
+    summer: [
+      { task: "Mid-year tax planning review", details: "Review income trajectory and tax liability at mid-year. Adjust estimated payments or withholdings if income has changed significantly.", urgency: "recommended" },
+      { task: "Pay second quarter estimated taxes", details: "Q2 estimated taxes due June 15. Calculate payment based on year-to-date income and projected annual earnings.", urgency: "essential" },
+      { task: "Review business financial statements", details: "Mid-year review of profit/loss statements helps identify tax-saving opportunities before year-end.", urgency: "recommended" },
+      { task: "Organize deductible expenses", details: "Categorize receipts and expenses from the first half of the year. Staying current prevents a year-end scramble.", urgency: "optional" },
+    ],
+    fall: [
+      { task: "Year-end tax planning", details: "Meet with your accountant to review projections and identify strategies: accelerate deductions, defer income, maximize retirement contributions.", urgency: "essential" },
+      { task: "Pay third quarter estimated taxes", details: "Q3 estimated taxes due September 15. Adjust based on actual year-to-date income.", urgency: "essential" },
+      { task: "Maximize retirement contributions", details: "Review 401(k), IRA, and SEP-IRA contribution levels. Maximizing contributions before December 31 reduces taxable income.", urgency: "recommended" },
+      { task: "Review property tax assessments", details: "Erie County property assessments can be appealed if your value seems too high. Discuss with your accountant before the appeal deadline.", urgency: "optional" },
+    ],
+    winter: [
+      { task: "Gather tax documents as they arrive", details: "W-2s, 1099s, mortgage interest statements, and other tax documents arrive in January. Create a checklist and file documents as received.", urgency: "essential" },
+      { task: "Pay fourth quarter estimated taxes", details: "Q4 estimated taxes due January 15. Final quarterly payment for the prior tax year.", urgency: "essential" },
+      { task: "Schedule early filing appointment", details: "Book your tax preparation appointment early in the season (February-March) for the best appointment availability.", urgency: "recommended" },
+      { task: "Review charitable donation records", details: "Compile charitable donation receipts from the prior year. Cash and non-cash donations both require proper documentation.", urgency: "recommended" },
+    ],
+  },
+
+  photography: {
+    spring: [
+      { task: "Book summer and fall sessions early", details: "Summer and fall are Erie's busiest photography seasons. Book engagement, senior, and family sessions 2-3 months in advance.", urgency: "essential" },
+      { task: "Cherry blossom and spring bloom sessions", details: "Erie's spring blooms create beautiful backdrops for portraits. Timing is narrow — blooms last only 1-2 weeks.", urgency: "recommended" },
+      { task: "Update business headshots", details: "Spring is a popular time for new headshots and branding photos. Schedule before spring wardrobes change.", urgency: "optional" },
+      { task: "Scout new outdoor locations", details: "Visit potential photo locations as they emerge from winter. New parks, gardens, and urban spaces offer fresh backdrops.", urgency: "optional" },
+    ],
+    summer: [
+      { task: "Golden hour beach sessions at Presque Isle", details: "Summer sunsets at Presque Isle are spectacular for photography. Book evening sessions to capture the golden light over Lake Erie.", urgency: "recommended" },
+      { task: "Wedding photography peak season", details: "June through September is peak wedding season in Erie. Photographers are in high demand — book as early as possible.", urgency: "essential" },
+      { task: "Real estate photography for peak listings", details: "Summer is peak real estate season in Erie. Professional photos are essential for competitive listings.", urgency: "recommended" },
+      { task: "Book fall sessions now", details: "Fall foliage sessions book quickly. Reserve October dates during summer for the best selection.", urgency: "recommended" },
+    ],
+    fall: [
+      { task: "Fall foliage portrait sessions", details: "Peak fall color in Erie typically occurs in mid-October. Schedule outdoor sessions to capture the vibrant reds, oranges, and golds.", urgency: "essential" },
+      { task: "Senior portrait season", details: "Fall is prime season for high school senior portraits with autumn backdrops. Presque Isle and Asbury Woods are popular locations.", urgency: "essential" },
+      { task: "Holiday card photo sessions", details: "Book holiday family photos in October or early November. This allows time for card printing and mailing before December.", urgency: "recommended" },
+      { task: "Plan indoor winter shoots", details: "Scout indoor locations for winter sessions: studios, historic buildings, decorated holiday venues.", urgency: "optional" },
+    ],
+    winter: [
+      { task: "Snow session opportunities", details: "Fresh snowfall at Presque Isle creates magical photo opportunities. Sessions are kept short due to cold but produce unique images.", urgency: "optional" },
+      { task: "Holiday family portraits", details: "Festive indoor sessions with holiday decorations and cozy settings. Studio sessions eliminate weather concerns.", urgency: "recommended" },
+      { task: "Plan spring sessions", details: "Winter is the time to plan and book spring photography: engagement sessions, Easter photos, and spring branding work.", urgency: "recommended" },
+      { task: "Update portfolio and website", details: "The slower winter season is ideal for photographers to update their portfolio, website, and social media with recent work.", urgency: "optional" },
+    ],
+  },
+
+  "pet-grooming": {
+    spring: [
+      { task: "Schedule de-shedding treatment", details: "Dogs blow their heavy winter coats in spring. A professional de-shedding treatment removes loose undercoat and reduces shedding at home.", urgency: "essential" },
+      { task: "Start tick check routine", details: "As temperatures rise, ticks become active. Check your pet thoroughly after outdoor activities, especially ears, belly, and between toes.", urgency: "essential" },
+      { task: "Address winter skin and coat issues", details: "Dry winter air and indoor heating leave coats dull and skin flaky. A moisturizing bath and conditioning treatment restore coat health.", urgency: "recommended" },
+      { task: "Trim winter-length nails", details: "Reduced outdoor activity during winter means nails grow longer. Spring trim brings them back to proper length.", urgency: "recommended" },
+    ],
+    summer: [
+      { task: "Keep coat at a comfortable length", details: "A shorter cut helps dogs stay cool, but do not shave double-coated breeds — their undercoat protects against both heat and sunburn.", urgency: "essential" },
+      { task: "Increase grooming frequency", details: "Summer activities mean more dirt, burrs, and tangles. Increase grooming from every 8 weeks to every 4-6 weeks.", urgency: "recommended" },
+      { task: "Check ears after swimming", details: "Dogs that swim in Lake Erie or local ponds are prone to ear infections. Dry ears thoroughly after swimming and check weekly.", urgency: "recommended" },
+      { task: "Watch for hot spots", details: "Humid summer weather promotes hot spots (moist dermatitis). Keep coat clean and dry. See a groomer or vet at first sign.", urgency: "recommended" },
+    ],
+    fall: [
+      { task: "Prepare coat for winter growth", details: "Fall grooming sets the foundation for a healthy winter coat. De-mat, condition, and trim as needed before the coat thickens.", urgency: "recommended" },
+      { task: "Address matting before it worsens", details: "As the undercoat grows in for winter, matting can develop quickly if not brushed regularly. Professional de-matting prevents shaving.", urgency: "essential" },
+      { task: "Last tick check of the season", details: "Ticks remain active until sustained freezing. Continue checking and preventive medication through November.", urgency: "recommended" },
+      { task: "Stock up on winter paw care", details: "Purchase paw balm and booties before winter. Start acclimating your dog to booties so they accept them when salt hits the sidewalks.", urgency: "recommended" },
+    ],
+    winter: [
+      { task: "Protect paws from road salt", details: "Apply paw balm before walks and wipe paws thoroughly afterward. Road salt causes cracking, irritation, and is toxic if ingested.", urgency: "essential" },
+      { task: "Maintain coat length for warmth", details: "Keep longer coats on dogs during Erie's cold winter. Light trimming around eyes, ears, and sanitary areas maintains hygiene without sacrificing warmth.", urgency: "recommended" },
+      { task: "Moisturize dry skin and coat", details: "Indoor heating dries out skin and coat. Add omega-3 supplements to food and use moisturizing shampoo at grooming appointments.", urgency: "recommended" },
+      { task: "Keep regular grooming appointments", details: "Do not skip winter grooming. Regular brushing and professional grooming prevent mats that form under winter gear and sweaters.", urgency: "recommended" },
+    ],
+  },
+
+  "snow-removal": {
+    spring: [
+      { task: "Assess property for winter damage", details: "Inspect lawn, pavement, curbs, and landscaping for plow damage. Document any contractor-caused damage for resolution.", urgency: "essential" },
+      { task: "Clean up sand and salt residue", details: "Sweep or power-wash driveways and sidewalks to remove accumulated sand and salt. Salt residue damages concrete and kills grass.", urgency: "recommended" },
+      { task: "Repair pavement damage", details: "Fill cracks and potholes in driveways and walkways caused by freeze-thaw cycles and plow equipment. Seal concrete to prevent further damage.", urgency: "recommended" },
+      { task: "Reseed damaged lawn areas", details: "Plow scarring and salt damage often kill grass along driveways and walkways. Reseed or re-sod affected areas in early spring.", urgency: "optional" },
+    ],
+    summer: [
+      { task: "Research snow removal contractors", details: "Summer is the best time to research, compare, and select a snow removal contractor for the upcoming winter. Quality companies book early.", urgency: "recommended" },
+      { task: "Sign seasonal contract early", details: "Early-bird seasonal contracts (signed June-August) often come with discounted rates. Lock in pricing before the fall rush.", urgency: "recommended" },
+      { task: "Repair or replace snow removal markers", details: "Install or replace driveway and walkway markers before they are needed. Markers guide plow operators and prevent property damage.", urgency: "optional" },
+      { task: "Maintain personal snow removal equipment", details: "Service snow blowers, check shovels, and stock de-icing materials during summer sales when prices are lowest.", urgency: "optional" },
+    ],
+    fall: [
+      { task: "Finalize snow removal contract", details: "All seasonal contracts should be signed before November 1. Confirm trigger depth, service area, and de-icing inclusion.", urgency: "essential" },
+      { task: "Install driveway markers", details: "Place reflective markers along driveway edges and walkways. Markers guide plows in heavy snowfall and prevent landscape damage.", urgency: "essential" },
+      { task: "Stock de-icing supplies", details: "Purchase rock salt, calcium chloride, and ice melt for walkways. Store in a dry location. Having supplies prevents scrambling during the first storm.", urgency: "essential" },
+      { task: "Prepare snow blower", details: "Service your snow blower: change oil, spark plug, check auger belt, and test start. Do this before the first snowfall when shops are less busy.", urgency: "essential" },
+    ],
+    winter: [
+      { task: "Communicate with your plow service", details: "Know your contractor's trigger depth, typical response time, and contact number. Communicate any access issues or changes.", urgency: "essential" },
+      { task: "Clear walkways between plow visits", details: "Keep sidewalks and front steps clear to comply with Erie's 24-hour sidewalk clearing ordinance. Apply de-icer after shoveling.", urgency: "essential" },
+      { task: "Monitor roof snow loads", details: "After major lake effect storms, assess roof snow accumulation. If snow depth exceeds 2 feet of heavy wet snow, schedule roof clearing.", urgency: "essential" },
+      { task: "Document plowing for billing", details: "Track snowfall events and plowing visits. Verify your service log matches the contractor's billing, especially for per-push contracts.", urgency: "recommended" },
+    ],
+  },
+
+  restoration: {
+    spring: [
+      { task: "Monitor basement for snowmelt flooding", details: "Spring thaw is Erie's peak basement flooding season. Test sump pumps weekly. Have a restoration company's number ready.", urgency: "essential" },
+      { task: "Inspect for winter water damage", details: "Check ceilings, walls, and around windows for signs of ice dam water infiltration. Look for discoloration, bubbling, and peeling paint.", urgency: "essential" },
+      { task: "Test and maintain sump pump", details: "Pour water into the sump pit to verify the pump activates and drainage works. Replace battery backup if needed.", urgency: "essential" },
+      { task: "Check for hidden mold", details: "Winter moisture trapped in walls can foster mold growth visible only in spring. Musty odors, dark spots, and allergic reactions are warning signs.", urgency: "recommended" },
+    ],
+    summer: [
+      { task: "Address humidity and moisture control", details: "Erie's humid summers can promote mold growth. Run dehumidifiers in basements and crawl spaces. Keep humidity below 50%.", urgency: "recommended" },
+      { task: "Inspect AC condensation drainage", details: "Clogged condensate lines from AC units can cause water damage. Check that the drain line flows freely and the drip pan is not overflowing.", urgency: "recommended" },
+      { task: "Service appliance supply lines", details: "Check washing machine hoses, dishwasher connections, and refrigerator ice maker lines. Replace rubber hoses with braided stainless steel.", urgency: "recommended" },
+      { task: "Review homeowner's insurance", details: "Verify your policy covers water damage, understand exclusions, and consider adding flood insurance if in a flood-prone Erie area.", urgency: "optional" },
+    ],
+    fall: [
+      { task: "Winterize plumbing to prevent pipe bursts", details: "Insulate exposed pipes, disconnect garden hoses, and shut off exterior faucets. Burst pipes are the number one cause of water damage in Erie.", urgency: "essential" },
+      { task: "Clean gutters and extend downspouts", details: "Clogged gutters cause foundation water intrusion. Downspouts should direct water 6+ feet from the foundation.", urgency: "essential" },
+      { task: "Test sump pump and battery backup", details: "Winter power outages can disable your sump pump. Test the battery backup and replace if more than 3 years old.", urgency: "essential" },
+      { task: "Know your emergency contacts", details: "Program 24/7 restoration company numbers into your phone. In a water damage emergency, fast response prevents extensive damage.", urgency: "recommended" },
+    ],
+    winter: [
+      { task: "Prevent frozen pipes", details: "Keep heat at 55°F minimum, open cabinet doors on exterior walls, and let faucets drip during sub-zero nights. Know your main water shutoff location.", urgency: "essential" },
+      { task: "Monitor for ice dam water infiltration", details: "If you see water stains on ceilings near exterior walls during winter, ice dams may be forcing water into your home. Act immediately.", urgency: "essential" },
+      { task: "Respond quickly to any water intrusion", details: "If you discover water damage, call a restoration company within hours, not days. Mold can begin growing within 24-48 hours.", urgency: "essential" },
+      { task: "Document damage for insurance", details: "Photograph all water damage before cleanup begins. Save damaged materials if possible for the adjuster. Keep all restoration receipts.", urgency: "essential" },
+    ],
+  },
+
+  glass: {
+    spring: [
+      { task: "Replace cracked windows from winter", details: "Winter temperature swings and storm damage often crack window glass. Replace before spring storms cause further damage or water infiltration.", urgency: "essential" },
+      { task: "Inspect IGUs for failed seals", details: "Look for fogging or condensation between double-pane glass. Failed seals mean reduced insulation. Spring is ideal for replacement.", urgency: "recommended" },
+      { task: "Clean and inspect all windows", details: "Professional window cleaning reveals chips, cracks, and seal failures hidden by winter grime. Address issues before summer.", urgency: "recommended" },
+      { task: "Plan bathroom renovations", details: "If planning a shower enclosure or mirror installation, schedule during spring for summer completion.", urgency: "optional" },
+    ],
+    summer: [
+      { task: "Install shower enclosures during remodeling", details: "Summer is peak bathroom renovation season. Custom shower enclosures require 1-2 weeks fabrication time. Order early.", urgency: "recommended" },
+      { task: "Replace storefront glass", details: "Commercial glass projects are ideal in summer when weather cooperates. Update damaged or outdated storefront windows.", urgency: "optional" },
+      { task: "Add glass features to outdoor spaces", details: "Wind screens, glass railings, and outdoor shower enclosures enhance summer living spaces.", urgency: "optional" },
+      { task: "Address auto glass chips promptly", details: "Summer heat can cause windshield chips to spread into cracks. Repair chips under a quarter-size before they require full replacement.", urgency: "recommended" },
+    ],
+    fall: [
+      { task: "Check all windows before winter", details: "Inspect every window for cracks, failed seals, and drafts. Repair or replace before winter heating costs increase.", urgency: "essential" },
+      { task: "Replace fogged IGUs for energy savings", details: "Failed insulated glass units waste heating energy. Replacing them before winter provides immediate energy savings.", urgency: "recommended" },
+      { task: "Seal around window frames", details: "Apply fresh caulk around window frames where old caulk has cracked or separated. This prevents cold air infiltration and moisture entry.", urgency: "recommended" },
+      { task: "Consider storm windows for older homes", details: "If your Erie home has single-pane windows, exterior or interior storm windows can significantly improve insulation.", urgency: "optional" },
+    ],
+    winter: [
+      { task: "Keep emergency board-up number handy", details: "Winter storms can break windows with wind-blown debris. Have your glass company's 24/7 emergency number saved for quick response.", urgency: "recommended" },
+      { task: "Address emergency breakage immediately", details: "Broken windows in winter create dangerous cold exposure and energy waste. Use temporary plastic sheeting until professional repair.", urgency: "essential" },
+      { task: "Monitor for condensation between panes", details: "New fogging indicates seal failure. While not urgent, note which windows need spring replacement.", urgency: "optional" },
+      { task: "Plan spring glass upgrades", details: "Winter is ideal for researching energy-efficient glass options, getting quotes, and scheduling spring installation.", urgency: "optional" },
+    ],
+  },
+
+  irrigation: {
+    spring: [
+      { task: "Schedule spring startup", details: "Contact your irrigation company to schedule system activation for late April to mid-May, after Erie's last frost risk passes.", urgency: "essential" },
+      { task: "Inspect heads and zones during startup", details: "Walk the system during the first run. Check each zone for broken heads, clogged nozzles, and misaligned spray patterns.", urgency: "essential" },
+      { task: "Reprogram controller for spring", details: "Adjust watering schedule for spring conditions: shorter run times, fewer days per week. Increase gradually as temperatures rise.", urgency: "recommended" },
+      { task: "Test backflow preventer", details: "Erie code requires annual backflow preventer testing. Schedule testing during spring startup. A certified tester provides the required report.", urgency: "essential" },
+    ],
+    summer: [
+      { task: "Adjust watering for hot weather", details: "Increase run times during hot, dry periods. Water deeply but infrequently: 1 inch per week total including rainfall.", urgency: "essential" },
+      { task: "Check for dry spots and coverage gaps", details: "Walk the lawn regularly looking for dry areas. Adjust head positions and nozzles to ensure uniform coverage.", urgency: "recommended" },
+      { task: "Monitor water bills for leaks", details: "A sudden increase in water usage may indicate an underground leak. Professional leak detection costs less than wasted water.", urgency: "recommended" },
+      { task: "Adjust rain sensor", details: "Verify your rain sensor is working properly. It should suspend irrigation during and after significant rainfall.", urgency: "recommended" },
+    ],
+    fall: [
+      { task: "Schedule winterization by mid-October", details: "Erie's first hard freeze can arrive in late October. All irrigation systems must be blown out before freezing temperatures.", urgency: "essential" },
+      { task: "Reduce watering as temperatures drop", details: "Gradually reduce watering frequency and duration as grass growth slows. Stop watering when nighttime temperatures consistently fall below 40°F.", urgency: "recommended" },
+      { task: "Mark heads and valve boxes", details: "Mark sprinkler head locations with flags before winter snow covers them. This prevents accidental damage from snow removal equipment.", urgency: "recommended" },
+      { task: "Disconnect and drain hose connections", details: "Disconnect any hoses attached to the irrigation system. Drain and store indoor. Frozen connections cause backflow damage.", urgency: "essential" },
+    ],
+    winter: [
+      { task: "System should be fully winterized", details: "If your system was not winterized, contact a professional immediately before temperatures drop further. Frozen pipes crack and valves shatter.", urgency: "essential" },
+      { task: "Plan spring upgrades", details: "Winter is ideal for planning system additions: new zones for garden beds, drip irrigation, smart controller upgrades, or coverage improvements.", urgency: "optional" },
+      { task: "Research smart controllers", details: "Smart irrigation controllers adjust watering based on weather data. Research options during winter for spring installation. Can reduce water use 20-40%.", urgency: "optional" },
+      { task: "Check stored equipment", details: "Inspect stored hose bibs, nozzles, and accessories for damage. Order replacements for spring installation.", urgency: "optional" },
+    ],
+  },
+
+  demolition: {
+    spring: [
+      { task: "Begin demolition projects as ground thaws", details: "Frozen ground makes excavation impossible. As Erie's ground thaws in April, demolition and excavation projects can begin.", urgency: "essential" },
+      { task: "Pull permits and schedule environmental testing", details: "Demolition permits and asbestos testing take time. Start the permitting process in early spring for a timely project start.", urgency: "essential" },
+      { task: "Schedule utility disconnections", details: "Gas, electric, water, and sewer must be properly disconnected before demolition. Utility companies may require 2-4 weeks advance notice.", urgency: "essential" },
+      { task: "Plan site access and staging", details: "Assess site access for heavy equipment. Identify staging areas for dumpsters and equipment. Notify neighbors of upcoming work.", urgency: "recommended" },
+    ],
+    summer: [
+      { task: "Execute major demolition projects", details: "Summer offers the best working conditions: long days, dry weather, and accessible ground. Peak construction season means high demand for contractors.", urgency: "recommended" },
+      { task: "Complete excavation work", details: "Foundation excavation, grading, and utility trenching are most efficient in summer when soil conditions are optimal.", urgency: "recommended" },
+      { task: "Manage dust and debris", details: "Dry summer conditions create dust during demolition. Water suppression and site fencing control dust and debris.", urgency: "recommended" },
+      { task: "Schedule concrete work after excavation", details: "If pouring new foundations or concrete after demolition, warm summer temperatures provide ideal curing conditions.", urgency: "optional" },
+    ],
+    fall: [
+      { task: "Complete excavation before ground freezes", details: "Erie's ground typically freezes by late November. All excavation and grading work must be completed before then.", urgency: "essential" },
+      { task: "Stabilize open excavations for winter", details: "If excavation cannot be completed, properly secure open sites: slope walls, install erosion control, and fence for safety.", urgency: "essential" },
+      { task: "Final grading and seeding", details: "After demolition, grade the site for proper drainage and seed or straw mulch to prevent erosion through winter.", urgency: "recommended" },
+      { task: "Complete debris hauling", details: "Remove all demolition debris before winter makes site access difficult. Dispose of materials at approved facilities.", urgency: "recommended" },
+    ],
+    winter: [
+      { task: "Interior demolition can continue", details: "Interior gutting and demolition work is not weather-dependent. Winter can be productive for interior selective demolition.", urgency: "recommended" },
+      { task: "Plan spring projects and obtain permits", details: "Use winter to plan demolition projects, obtain quotes, and begin the permitting process for spring starts.", urgency: "recommended" },
+      { task: "Environmental assessments for spring demolition", details: "Schedule asbestos and lead paint inspections during winter. Results are needed before permits are issued.", urgency: "recommended" },
+      { task: "Monitor secured sites", details: "If a partially demolished or excavated site is secured for winter, inspect periodically for safety fence integrity and erosion.", urgency: "optional" },
+    ],
+  },
 };
 
 export function getSeasonalGuide(slug: string): SeasonalGuide | undefined {
