@@ -56,10 +56,23 @@ function calculateSignificance(variantA: number, variantB: number, totalA: numbe
   return { significant: confidence >= 95, confidence };
 }
 
+const DEMO_EXPERIMENTS: DashboardData = {
+  dashboard: {
+    experimentPerformance: [
+      { experimentId: "exp-hero-cta-v2", entries: 312, hotRate: 18.6, m1ToM2: 42.3, m1ToM3: 28.1, conversionRate: 14.7, topVariants: [{ variantId: "control", count: 158 }, { variantId: "variant-b", count: 154 }] },
+      { experimentId: "exp-lead-form-short", entries: 241, hotRate: 22.4, m1ToM2: 48.1, m1ToM3: 31.5, conversionRate: 19.5, topVariants: [{ variantId: "control", count: 119 }, { variantId: "3-field", count: 122 }] },
+      { experimentId: "exp-nurture-cadence-7d", entries: 178, hotRate: 15.7, m1ToM2: 37.6, m1ToM3: 22.4, conversionRate: 12.4, topVariants: [{ variantId: "5-day", count: 88 }, { variantId: "7-day", count: 90 }] },
+      { experimentId: "exp-exit-intent-offer", entries: 95, hotRate: 31.6, m1ToM2: 55.2, m1ToM3: 44.2, conversionRate: 27.4, topVariants: [{ variantId: "10pct-discount", count: 47 }, { variantId: "free-audit", count: 48 }] },
+      { experimentId: "exp-sms-opt-in-flow", entries: 0, hotRate: 0, m1ToM2: 0, m1ToM3: 0, conversionRate: 0, topVariants: [] },
+    ],
+    totals: { leads: 826, events: 4103, hotLeads: 147 },
+  },
+};
+
 export default function ExperimentsPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
   const [expandedExperiment, setExpandedExperiment] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<ExperimentStatus | "all">("all");
   const [promoteStatus, setPromoteStatus] = useState<Record<string, string>>({});
@@ -86,16 +99,19 @@ export default function ExperimentsPage() {
 
   useEffect(() => {
     fetch("/api/dashboard", { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to load experiments: ${res.status}`);
-        return res.json();
-      })
+      .then((res) => res.ok ? res.json() : null)
       .then((json) => {
-        setData(json);
+        if (json?.dashboard) {
+          setData(json);
+        } else {
+          setData(DEMO_EXPERIMENTS);
+          setIsDemo(true);
+        }
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
+      .catch(() => {
+        setData(DEMO_EXPERIMENTS);
+        setIsDemo(true);
         setLoading(false);
       });
   }, []);
@@ -123,27 +139,18 @@ export default function ExperimentsPage() {
     );
   }
 
-  if (error || !data) {
-    return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="eyebrow">Error</p>
-          <h2>Failed to load experiments</h2>
-          <p className="muted">{error}</p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
-          </div>
-        </section>
-      </main>
-    );
-  }
-
   const totalVariants = experiments.reduce((sum, exp) => sum + exp.topVariants.length, 0);
   const runningCount = experiments.filter((e) => e.status === "running").length;
   const completedCount = experiments.filter((e) => e.status === "completed").length;
 
   return (
     <main className="experience-page">
+      {isDemo && (
+        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", color: "#92400e" }}>
+          Demo data — Connect your tenant to see live experiment results.{" "}
+          <Link href="/auth/sign-in" style={{ color: "#92400e", textDecoration: "underline" }}>Sign in</Link>
+        </div>
+      )}
       <section className="experience-hero">
         <div className="hero-copy">
           <p className="eyebrow">Experiment performance</p>

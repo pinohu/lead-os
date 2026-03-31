@@ -60,6 +60,59 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#4f46e5" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://leadgen-os.com/#organization",
+                  name: tenantConfig.brandName,
+                  url: "https://leadgen-os.com",
+                  logo: {
+                    "@type": "ImageObject",
+                    url: "https://leadgen-os.com/og-image.png",
+                    width: 1200,
+                    height: 630,
+                  },
+                  description:
+                    "Multi-tenant lead generation infrastructure. Capture, score, route, nurture, and convert leads with configurable funnel graphs, AI-powered content, and 137+ integrations.",
+                  sameAs: [],
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://leadgen-os.com/#website",
+                  url: "https://leadgen-os.com",
+                  name: `${tenantConfig.brandName} — Enterprise Lead Generation Platform`,
+                  publisher: { "@id": "https://leadgen-os.com/#organization" },
+                  potentialAction: {
+                    "@type": "SearchAction",
+                    target: {
+                      "@type": "EntryPoint",
+                      urlTemplate: "https://leadgen-os.com/industries?q={search_term_string}",
+                    },
+                    "query-input": "required name=search_term_string",
+                  },
+                },
+                {
+                  "@type": "SoftwareApplication",
+                  "@id": "https://leadgen-os.com/#app",
+                  name: `${tenantConfig.brandName} Platform`,
+                  applicationCategory: "BusinessApplication",
+                  operatingSystem: "Web",
+                  offers: {
+                    "@type": "Offer",
+                    url: "https://leadgen-os.com/pricing",
+                    priceCurrency: "USD",
+                  },
+                  publisher: { "@id": "https://leadgen-os.com/#organization" },
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body className={`${inter.className} bg-background text-foreground antialiased`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md">

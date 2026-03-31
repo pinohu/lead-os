@@ -111,12 +111,41 @@ function GaugeBar({ label, current, target, unit }: KPITarget) {
   );
 }
 
+const DEMO_METRICS: PerformanceMetrics = {
+  conversionRate: 18.4,
+  avgLeadScore: 72.3,
+  avgTimeToConvert: 4.2,
+  emailPerformance: { openRate: 41.7, clickRate: 12.3 },
+  scoringAccuracy: 87.1,
+  topFunnels: [
+    { funnel: "qualification", conversions: 61, rate: 25.3 },
+    { funnel: "checkout", conversions: 54, rate: 65.1 },
+    { funnel: "webinar", conversions: 31, rate: 32.0 },
+  ],
+  bottomFunnels: [
+    { funnel: "drip", conversions: 8, rate: 4.1 },
+    { funnel: "continuity", conversions: 11, rate: 6.8 },
+  ],
+};
+
+const DEMO_INSIGHTS: Insight[] = [
+  { type: "opportunity", severity: "info", message: "Email open rate is 41.7% — above the 35% industry benchmark.", metric: "emailOpenRate", currentValue: 41.7, targetValue: 35, recommendation: "A/B test subject line personalization to push toward 48%." },
+  { type: "trend", severity: "warning", message: "Avg time to convert increased from 3.8 to 4.2 days over the last 7 days.", metric: "avgTimeToConvert", currentValue: 4.2, targetValue: 3.5, recommendation: "Add urgency trigger at day 3 of the nurture sequence." },
+  { type: "problem", severity: "critical", message: "Drip funnel conversion rate (4.1%) is 60% below target.", metric: "dripFunnelRate", currentValue: 4.1, targetValue: 10.0, recommendation: "Review drip email copy and reduce cadence gap from 5 days to 3 days." },
+];
+
+const DEMO_HISTORY: FeedbackCycle[] = [
+  { id: "fc-demo-001", type: "weekly", period: "2026-W13", status: "applied", insights: DEMO_INSIGHTS.slice(0, 2), adjustments: [{ type: "scoring", target: "engagement-weight", oldValue: 0.25, newValue: 0.30, reason: "High-engagement leads converting 1.4x better", autoApplied: true }], createdAt: "2026-03-25T08:00:00Z", appliedAt: "2026-03-25T08:05:00Z" },
+  { id: "fc-demo-002", type: "daily", period: "2026-03-30", status: "analyzed", insights: DEMO_INSIGHTS.slice(2), adjustments: [], createdAt: "2026-03-30T07:00:00Z" },
+];
+
 export default function FeedbackPage() {
   const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
   const [insights, setInsights] = useState<Insight[]>([]);
   const [history, setHistory] = useState<FeedbackCycle[]>([]);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
@@ -127,15 +156,26 @@ export default function FeedbackPage() {
         fetch("/api/feedback/cycle?limit=10"),
       ]);
 
-      const metricsData = await metricsRes.json();
-      const insightsData = await insightsRes.json();
-      const historyData = await historyRes.json();
+      const metricsData = metricsRes.ok ? await metricsRes.json() : null;
+      const insightsData = insightsRes.ok ? await insightsRes.json() : null;
+      const historyData = historyRes.ok ? await historyRes.json() : null;
 
-      if (metricsData.data) setMetrics(metricsData.data);
-      if (insightsData.data) setInsights(insightsData.data);
-      if (historyData.data) setHistory(historyData.data);
+      const hasLiveData = metricsData?.data || insightsData?.data || historyData?.data;
+      if (hasLiveData) {
+        if (metricsData?.data) setMetrics(metricsData.data);
+        if (insightsData?.data) setInsights(insightsData.data);
+        if (historyData?.data) setHistory(historyData.data);
+      } else {
+        setMetrics(DEMO_METRICS);
+        setInsights(DEMO_INSIGHTS);
+        setHistory(DEMO_HISTORY);
+        setIsDemo(true);
+      }
     } catch {
-      setError("Failed to load feedback data");
+      setMetrics(DEMO_METRICS);
+      setInsights(DEMO_INSIGHTS);
+      setHistory(DEMO_HISTORY);
+      setIsDemo(true);
     } finally {
       setLoading(false);
     }
@@ -190,13 +230,6 @@ export default function FeedbackPage() {
     );
   }
 
-  if (error && !metrics) {
-    return (
-      <main style={{ maxWidth: 1180, margin: "0 auto", padding: "32px 24px" }}>
-        <p style={{ color: "#dc2626", fontSize: 14 }}>{error}</p>
-      </main>
-    );
-  }
 
   const kpis: KPITarget[] = metrics
     ? [
@@ -210,6 +243,11 @@ export default function FeedbackPage() {
 
   return (
     <main style={{ maxWidth: 1180, margin: "0 auto", padding: "32px 24px" }}>
+      {isDemo && (
+        <div style={{ background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 8, padding: "10px 16px", fontSize: "0.875rem", color: "#92400e", marginBottom: 24 }}>
+          Demo data — Connect your tenant to see live feedback and performance metrics.
+        </div>
+      )}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <h1 style={{ fontSize: 24, fontWeight: 700, color: "#111827", margin: 0 }}>
           Feedback Loop

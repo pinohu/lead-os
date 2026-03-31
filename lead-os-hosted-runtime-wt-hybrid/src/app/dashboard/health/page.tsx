@@ -36,6 +36,27 @@ interface AtRiskData {
   atRiskTenants: HealthScore[];
 }
 
+const DEMO_AT_RISK: AtRiskData = {
+  atRiskTenants: [
+    { tenantId: "tenant-acme-roofing", score: 28, factors: { loginFrequency: 15, featureAdoption: 30, leadVolume: 20, configCompleteness: 40, integrationCount: 35 }, riskLevel: "churning", lastCalculatedAt: "2026-03-30T08:00:00Z" },
+    { tenantId: "tenant-swift-hvac", score: 54, factors: { loginFrequency: 50, featureAdoption: 45, leadVolume: 60, configCompleteness: 55, integrationCount: 62 }, riskLevel: "at-risk", lastCalculatedAt: "2026-03-30T08:00:00Z" },
+    { tenantId: "tenant-green-lawn", score: 61, factors: { loginFrequency: 65, featureAdoption: 55, leadVolume: 70, configCompleteness: 60, integrationCount: 50 }, riskLevel: "at-risk", lastCalculatedAt: "2026-03-30T08:00:00Z" },
+  ],
+};
+
+const DEMO_HEALTH: HealthData = {
+  healthScore: { tenantId: "demo-tenant", score: 78, factors: { loginFrequency: 82, featureAdoption: 71, leadVolume: 90, configCompleteness: 68, integrationCount: 75 }, riskLevel: "healthy", lastCalculatedAt: "2026-03-30T08:00:00Z" },
+  featureUsage: [
+    { tenantId: "demo-tenant", feature: "dashboard.viewed", lastUsedAt: "2026-03-30T07:55:00Z", usageCount: 142, uniqueUsers: 3 },
+    { tenantId: "demo-tenant", feature: "lead.captured", lastUsedAt: "2026-03-30T06:30:00Z", usageCount: 89, uniqueUsers: 2 },
+    { tenantId: "demo-tenant", feature: "lead.exported", lastUsedAt: "2026-03-29T15:20:00Z", usageCount: 12, uniqueUsers: 2 },
+    { tenantId: "demo-tenant", feature: "email.sent", lastUsedAt: "2026-03-30T08:00:00Z", usageCount: 204, uniqueUsers: 2 },
+    { tenantId: "demo-tenant", feature: "scoring.configured", lastUsedAt: "2026-03-28T11:00:00Z", usageCount: 7, uniqueUsers: 1 },
+    { tenantId: "demo-tenant", feature: "webhook.configured", lastUsedAt: "2026-03-25T14:30:00Z", usageCount: 3, uniqueUsers: 1 },
+    { tenantId: "demo-tenant", feature: "attribution.viewed", lastUsedAt: "2026-03-27T09:00:00Z", usageCount: 21, uniqueUsers: 2 },
+  ],
+};
+
 const KNOWN_FEATURES = [
   "dashboard.viewed",
   "lead.captured",
@@ -142,22 +163,27 @@ export default function HealthDashboardPage() {
   const [data, setData] = useState<HealthData | null>(null);
   const [atRisk, setAtRisk] = useState<AtRiskData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
   const [tenantId, setTenantId] = useState("");
   const [inputTenantId, setInputTenantId] = useState("");
 
   useEffect(() => {
     fetch("/api/analytics/health", { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to load health data: ${res.status}`);
-        return res.json();
-      })
+      .then((res) => res.ok ? res.json() : null)
       .then((json) => {
-        setAtRisk(json.data);
+        if (json?.data) {
+          setAtRisk(json.data);
+        } else {
+          setAtRisk(DEMO_AT_RISK);
+          setData(DEMO_HEALTH);
+          setIsDemo(true);
+        }
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
+      .catch(() => {
+        setAtRisk(DEMO_AT_RISK);
+        setData(DEMO_HEALTH);
+        setIsDemo(true);
         setLoading(false);
       });
   }, []);
@@ -167,19 +193,17 @@ export default function HealthDashboardPage() {
     if (!id) return;
     setTenantId(id);
     setLoading(true);
-    setError(null);
 
     fetch(`/api/analytics/health?tenantId=${encodeURIComponent(id)}`, { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to load health data: ${res.status}`);
-        return res.json();
-      })
+      .then((res) => res.ok ? res.json() : null)
       .then((json) => {
-        setData(json.data);
+        setData(json?.data ?? DEMO_HEALTH);
+        if (!json?.data) setIsDemo(true);
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
+      .catch(() => {
+        setData(DEMO_HEALTH);
+        setIsDemo(true);
         setLoading(false);
       });
   }
@@ -194,25 +218,16 @@ export default function HealthDashboardPage() {
     );
   }
 
-  if (error && !data && !atRisk) {
-    return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="eyebrow">Error</p>
-          <h2>Failed to load health data</h2>
-          <p className="muted">{error}</p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
-          </div>
-        </section>
-      </main>
-    );
-  }
-
   const usedFeatures = new Set(data?.featureUsage.map((f) => f.feature) ?? []);
 
   return (
     <main className="experience-page">
+      {isDemo && (
+        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", color: "#92400e" }}>
+          Demo data — Sign in as an operator to see live tenant health scores.{" "}
+          <Link href="/auth/sign-in" style={{ color: "#92400e", textDecoration: "underline" }}>Sign in</Link>
+        </div>
+      )}
       <section className="panel">
         <p className="eyebrow">Product Analytics</p>
         <h1>Tenant Health</h1>

@@ -26,6 +26,39 @@ interface ScoringData {
   }>;
 }
 
+const DEMO_ANALYTICS: AnalyticsData = {
+  channelPerformance: [
+    { source: "google-ads", leads: 412, conversions: 61, conversionRate: 14.8 },
+    { source: "organic-search", leads: 287, conversions: 52, conversionRate: 18.1 },
+    { source: "facebook-ads", leads: 198, conversions: 24, conversionRate: 12.1 },
+    { source: "email", leads: 163, conversions: 38, conversionRate: 23.3 },
+    { source: "referral", leads: 94, conversions: 29, conversionRate: 30.9 },
+    { source: "direct", leads: 77, conversions: 17, conversionRate: 22.1 },
+    { source: "linkedin", leads: 51, conversions: 11, conversionRate: 21.6 },
+    { source: "youtube", leads: 39, conversions: 6, conversionRate: 15.4 },
+  ],
+  funnelPerformance: [
+    { family: "lead-magnet", leads: 312, conversions: 47, hotLeads: 28, conversionRate: 15.1 },
+    { family: "qualification", leads: 241, conversions: 61, hotLeads: 34, conversionRate: 25.3 },
+    { family: "chat", leads: 188, conversions: 39, hotLeads: 22, conversionRate: 20.7 },
+    { family: "webinar", leads: 97, conversions: 31, hotLeads: 18, conversionRate: 32.0 },
+    { family: "checkout", leads: 83, conversions: 54, hotLeads: 41, conversionRate: 65.1 },
+  ],
+};
+
+const DEMO_SCORING: ScoringData = {
+  leads: [
+    { leadKey: "lk-demo-001", firstName: "James", lastName: "Rivera", email: "james.r@example.com", niche: "roofing", source: "google-ads", family: "qualification", stage: "converted", score: 94, createdAt: "2026-03-01T10:00:00Z", updatedAt: "2026-03-15T14:22:00Z" },
+    { leadKey: "lk-demo-002", firstName: "Priya", lastName: "Mehta", email: "priya.m@example.com", niche: "hvac", source: "referral", family: "lead-magnet", stage: "active", score: 87, createdAt: "2026-03-05T09:15:00Z", updatedAt: "2026-03-20T11:44:00Z" },
+    { leadKey: "lk-demo-003", firstName: "Carlos", lastName: "Nguyen", email: "carlos.n@example.com", niche: "landscaping", source: "organic-search", family: "chat", stage: "referral-ready", score: 81, createdAt: "2026-03-08T16:30:00Z", updatedAt: "2026-03-22T09:10:00Z" },
+    { leadKey: "lk-demo-004", firstName: "Sandra", lastName: "Chen", email: "sandra.c@example.com", niche: "plumbing", source: "email", family: "qualification", stage: "onboarding", score: 79, createdAt: "2026-03-10T11:00:00Z", updatedAt: "2026-03-25T15:30:00Z" },
+    { leadKey: "lk-demo-005", firstName: "Marcus", lastName: "Johnson", email: "marcus.j@example.com", niche: "electrical", source: "facebook-ads", family: "lead-magnet", stage: "converted", score: 76, createdAt: "2026-03-12T14:00:00Z", updatedAt: "2026-03-28T08:50:00Z" },
+    { leadKey: "lk-demo-006", firstName: "Ava", lastName: "Patel", email: "ava.p@example.com", niche: "roofing", source: "referral", family: "webinar", stage: "active", score: 72, createdAt: "2026-03-14T10:45:00Z", updatedAt: "2026-03-29T12:20:00Z" },
+    { leadKey: "lk-demo-007", firstName: "Derek", lastName: "Williams", email: "derek.w@example.com", niche: "hvac", source: "google-ads", family: "qualification", stage: "retention-risk", score: 58, createdAt: "2026-02-20T09:00:00Z", updatedAt: "2026-03-18T10:00:00Z" },
+    { leadKey: "lk-demo-008", firstName: "Natalie", lastName: "Kim", email: "natalie.k@example.com", niche: "landscaping", source: "direct", family: "chat", stage: "converted", score: 91, createdAt: "2026-03-02T13:30:00Z", updatedAt: "2026-03-16T16:45:00Z" },
+  ],
+};
+
 const MODEL_DESCRIPTIONS: Record<AttributionModel, string> = {
   "first-touch": "100% credit to the first interaction source. Best for understanding awareness channels.",
   "last-touch": "100% credit to the last interaction source. Best for understanding closing channels.",
@@ -38,28 +71,30 @@ export default function AttributionPage() {
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [scoringData, setScoringData] = useState<ScoringData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
   const [selectedModel, setSelectedModel] = useState<AttributionModel>("first-touch");
   const [expandedLead, setExpandedLead] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/dashboard/analytics", { credentials: "include" }).then((res) => {
-        if (!res.ok) throw new Error(`Analytics: ${res.status}`);
-        return res.json();
-      }),
-      fetch("/api/dashboard/scoring", { credentials: "include" }).then((res) => {
-        if (!res.ok) throw new Error(`Scoring: ${res.status}`);
-        return res.json();
-      }),
+      fetch("/api/dashboard/analytics", { credentials: "include" }).then((res) => res.ok ? res.json() : null),
+      fetch("/api/dashboard/scoring", { credentials: "include" }).then((res) => res.ok ? res.json() : null),
     ])
       .then(([analytics, scoring]) => {
-        setAnalyticsData(analytics.data);
-        setScoringData(scoring.data);
+        if (analytics?.data && scoring?.data) {
+          setAnalyticsData(analytics.data);
+          setScoringData(scoring.data);
+        } else {
+          setAnalyticsData(DEMO_ANALYTICS);
+          setScoringData(DEMO_SCORING);
+          setIsDemo(true);
+        }
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
+      .catch(() => {
+        setAnalyticsData(DEMO_ANALYTICS);
+        setScoringData(DEMO_SCORING);
+        setIsDemo(true);
         setLoading(false);
       });
   }, []);
@@ -137,23 +172,14 @@ export default function AttributionPage() {
     );
   }
 
-  if (error || !analyticsData || !scoringData) {
-    return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="eyebrow">Error</p>
-          <h2>Failed to load attribution</h2>
-          <p className="muted">{error}</p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
-          </div>
-        </section>
-      </main>
-    );
-  }
-
   return (
     <main className="experience-page">
+      {isDemo && (
+        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", color: "#92400e" }}>
+          Demo data — Connect your analytics integration to see live attribution.{" "}
+          <Link href="/dashboard/credentials" style={{ color: "#92400e", textDecoration: "underline" }}>Set up credentials</Link>
+        </div>
+      )}
       <section className="experience-hero">
         <div className="hero-copy">
           <p className="eyebrow">Attribution</p>
