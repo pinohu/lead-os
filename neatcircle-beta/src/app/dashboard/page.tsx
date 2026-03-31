@@ -82,19 +82,50 @@ function MetricList({
   );
 }
 
+const DEMO_METRICS: Metrics = {
+  success: true,
+  generatedAt: new Date().toISOString(),
+  summary: { totalRecords: 1247, leadsToday: 23, leadsThisWeek: 141, hotLeads: 38, converted: 229, conversionRate: 18.4, nurtureActive: 312, errors: 2 },
+  nurtureFunnel: { new: 412, contacted: 287, engaged: 198, qualified: 126, converted: 229 },
+  topNiches: [
+    { name: "roofing", total: 312, converted: 61, conversionRate: 19.6, hotLeads: 22 },
+    { name: "hvac", total: 241, converted: 47, conversionRate: 19.5, hotLeads: 18 },
+    { name: "landscaping", total: 188, converted: 34, conversionRate: 18.1, hotLeads: 14 },
+    { name: "plumbing", total: 163, converted: 31, conversionRate: 19.0, hotLeads: 12 },
+    { name: "electrical", total: 144, converted: 28, conversionRate: 19.4, hotLeads: 10 },
+  ],
+  topIntakeSources: [{ source: "google-ads", count: 412 }, { source: "organic", count: 287 }, { source: "referral", count: 94 }, { source: "email", count: 163 }],
+  topBehavioralSignals: [{ event: "page.viewed", count: 4103 }, { event: "cta.clicked", count: 812 }, { event: "form.submitted", count: 447 }, { event: "chat.opened", count: 231 }],
+  topBlueprints: [{ name: "qualification", count: 241 }, { name: "lead-magnet", count: 312 }, { name: "chat", count: 188 }, { name: "webinar", count: 97 }],
+  topServices: [{ name: "roofing-assessment", count: 312 }, { name: "hvac-quote", count: 241 }, { name: "landscaping-estimate", count: 188 }],
+  topExperiments: [{ name: "hero-cta-v2", count: 312 }, { name: "lead-form-short", count: 241 }],
+  topVariants: [{ name: "variant-b", count: 154 }, { name: "control", count: 158 }, { name: "3-field", count: 122 }],
+  topFunnelSteps: [{ name: "capture", count: 1247 }, { name: "score", count: 1189 }, { name: "route", count: 1021 }, { name: "nurture", count: 812 }],
+  topSourceBlueprintPaths: [{ name: "google-ads → qualification", count: 203 }, { name: "organic → lead-magnet", count: 187 }],
+  traceCoverage: { sessionRate: 94.2, leadKeyRate: 88.7, experimentRate: 71.3, blueprintRate: 82.1 },
+  statusBreakdown: { new: 412, contacted: 287, engaged: 198, qualified: 126, converted: 229, cold: 95 },
+};
+
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/dashboard/metrics")
-      .then((res) => res.json())
-      .then((data: Metrics) => {
-        if (data.success) setMetrics(data);
-        else setError("Failed to load metrics");
+      .then((res) => res.ok ? res.json() : null)
+      .then((data: Metrics | null) => {
+        if (data?.success) {
+          setMetrics(data);
+        } else {
+          setMetrics(DEMO_METRICS);
+          setIsDemo(true);
+        }
       })
-      .catch((err: Error) => setError(err.message))
+      .catch(() => {
+        setMetrics(DEMO_METRICS);
+        setIsDemo(true);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -106,13 +137,7 @@ export default function DashboardPage() {
     );
   }
 
-  if (error || !metrics) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#0f0f23", color: "#e74c3c", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div>{error || "No data"}</div>
-      </div>
-    );
-  }
+  if (!metrics) return null;
 
   const {
     summary,
@@ -131,7 +156,13 @@ export default function DashboardPage() {
   } = metrics;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0f0f23", color: "#fff", padding: 32, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0f0f23", color: "#fff", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+      {isDemo && (
+        <div style={{ background: "#1e1a3f", borderBottom: "1px solid #3730a3", padding: "10px 32px", fontSize: "0.875rem", color: "#a5b4fc" }}>
+          Demo data — Connect your Lead OS instance to see live metrics.
+        </div>
+      )}
+      <div style={{ padding: 32 }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <header style={{ marginBottom: 32 }}>
           <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0 }}>Lead OS Control Tower</h1>
@@ -292,6 +323,7 @@ export default function DashboardPage() {
               ))}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

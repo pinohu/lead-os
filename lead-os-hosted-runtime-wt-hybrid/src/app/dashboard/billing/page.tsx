@@ -53,6 +53,22 @@ const PLAN_INFO: Record<string, PlanInfo> = {
 };
 
 const DEFAULT_PLAN = PLAN_INFO["whitelabel-starter"];
+
+const DEMO_USAGE: UsageRecord = {
+  tenantId: "demo-tenant",
+  period: new Date().toISOString().slice(0, 7),
+  leads: 47,
+  emails: 312,
+  sms: 18,
+  whatsapp: 6,
+  updatedAt: new Date().toISOString(),
+};
+
+const DEMO_HISTORY_RECORDS: UsageRecord[] = [
+  { tenantId: "demo-tenant", period: "2026-02", leads: 38, emails: 241, sms: 12, whatsapp: 4, updatedAt: "2026-02-28T23:00:00Z" },
+  { tenantId: "demo-tenant", period: "2026-01", leads: 29, emails: 188, sms: 9, whatsapp: 2, updatedAt: "2026-01-31T23:00:00Z" },
+  { tenantId: "demo-tenant", period: "2025-12", leads: 55, emails: 389, sms: 24, whatsapp: 11, updatedAt: "2025-12-31T23:00:00Z" },
+];
 const TENANT_ID = "default-tenant";
 
 function formatCurrency(cents: number): string {
@@ -224,26 +240,31 @@ export default function BillingPage() {
   const [historyRecords, setHistoryRecords] = useState<UsageRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
   const [plan, setPlan] = useState(DEFAULT_PLAN);
 
   useEffect(() => {
     fetch(`/api/billing/usage?tenantId=${TENANT_ID}`, { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to load usage: ${res.status}`);
-        return res.json();
-      })
+      .then((res) => res.ok ? res.json() : null)
       .then((json) => {
-        setUsage(json.data);
-        // Detect actual plan from usage response or tenant config
-        const detectedPlanId = json.data?.planId ?? json.meta?.planId;
-        if (detectedPlanId && PLAN_INFO[detectedPlanId as keyof typeof PLAN_INFO]) {
-          setPlan(PLAN_INFO[detectedPlanId as keyof typeof PLAN_INFO]);
+        if (json?.data) {
+          setUsage(json.data);
+          const detectedPlanId = json.data?.planId ?? json.meta?.planId;
+          if (detectedPlanId && PLAN_INFO[detectedPlanId as keyof typeof PLAN_INFO]) {
+            setPlan(PLAN_INFO[detectedPlanId as keyof typeof PLAN_INFO]);
+          }
+        } else {
+          setUsage(DEMO_USAGE);
+          setHistoryRecords(DEMO_HISTORY_RECORDS);
+          setIsDemo(true);
         }
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
+      .catch(() => {
+        setUsage(DEMO_USAGE);
+        setHistoryRecords(DEMO_HISTORY_RECORDS);
+        setIsDemo(true);
         setLoading(false);
       });
 
@@ -292,26 +313,7 @@ export default function BillingPage() {
     );
   }
 
-  if (error) {
-    return (
-      <main className="experience-page" style={styles.page}>
-        <div style={styles.container}>
-          <section className="panel" style={styles.card}>
-            <p className="eyebrow" style={{ color: "#94a3b8", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", margin: "0 0 8px" }}>Error</p>
-            <h2 style={{ color: "#f8fafc", margin: "0 0 8px", fontSize: "1.25rem" }}>Failed to load billing</h2>
-            <p style={styles.muted}>{error}</p>
-            <div style={{ marginTop: 16 }}>
-              <Link href="/dashboard" style={{ color: "#14b8a6", textDecoration: "none", fontWeight: 600, fontSize: "0.85rem" }}>
-                Back to dashboard
-              </Link>
-            </div>
-          </section>
-        </div>
-      </main>
-    );
-  }
-
-  const currentUsage = usage ?? { leads: 0, emails: 0, sms: 0, whatsapp: 0 };
+  const currentUsage = usage ?? DEMO_USAGE;
 
   const meters = [
     { label: "Leads", used: currentUsage.leads, limit: plan.limits.leadsPerMonth },
@@ -322,6 +324,17 @@ export default function BillingPage() {
 
   return (
     <main className="experience-page" style={styles.page}>
+      {isDemo && (
+        <div style={{ background: "#1e3a5f", borderBottom: "1px solid #2d5a8e", padding: "10px 24px", fontSize: "0.875rem", color: "#93c5fd" }}>
+          Demo data — Sign in to view your live usage and billing details.{" "}
+          <Link href="/auth/sign-in" style={{ color: "#60a5fa", textDecoration: "underline" }}>Sign in</Link>
+        </div>
+      )}
+      {error && (
+        <div style={{ background: "#3b1a1a", borderBottom: "1px solid #7f1d1d", padding: "10px 24px", fontSize: "0.875rem", color: "#fca5a5" }}>
+          {error}
+        </div>
+      )}
       <div style={styles.container}>
         <h1 style={styles.title}>Billing</h1>
 
