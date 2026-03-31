@@ -67,10 +67,17 @@ function getScheduleBadgeStyle(): { background: string; color: string } {
   return { background: "rgba(99, 102, 241, 0.15)", color: "#6366f1" };
 }
 
+const DEMO_JOBS: CreativeJob[] = [
+  { id: "job-demo-001", tenantId: "demo", type: "weekly-video-recap", schedule: "weekly", status: "active", lastRunAt: "2026-03-24T08:00:00Z", nextRunAt: "2026-03-31T08:00:00Z", lastOutput: { artifactCount: 3, generatedAt: "2026-03-24T08:05:00Z" }, createdAt: "2026-01-10T09:00:00Z", updatedAt: "2026-03-24T08:05:00Z" },
+  { id: "job-demo-002", tenantId: "demo", type: "email-sequence-update", schedule: "weekly", status: "active", lastRunAt: "2026-03-25T10:00:00Z", nextRunAt: "2026-04-01T10:00:00Z", lastOutput: { artifactCount: 5, generatedAt: "2026-03-25T10:12:00Z" }, createdAt: "2026-01-15T09:00:00Z", updatedAt: "2026-03-25T10:12:00Z" },
+  { id: "job-demo-003", tenantId: "demo", type: "landing-page-refresh", schedule: "monthly", status: "paused", lastRunAt: "2026-03-01T09:00:00Z", nextRunAt: undefined, lastOutput: { artifactCount: 4, generatedAt: "2026-03-01T09:08:00Z" }, createdAt: "2026-01-20T09:00:00Z", updatedAt: "2026-03-01T09:08:00Z" },
+];
+
 export default function CreativePipelinePage() {
   const [jobs, setJobs] = useState<CreativeJob[]>([]);
   const [recentOutputs, setRecentOutputs] = useState<Map<string, CreativeOutput>>(new Map());
   const [loading, setLoading] = useState(true);
+  const [isDemo, setIsDemo] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [runningJobs, setRunningJobs] = useState<Set<string>>(new Set());
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -86,14 +93,17 @@ export default function CreativePipelinePage() {
     try {
       setLoading(true);
       const res = await fetch(`/api/creative/jobs?tenantId=${tenantId}`);
+      if (!res.ok) throw new Error("not-ok");
       const json = await res.json();
-      if (json.error) {
-        setError(json.error.message);
+      if (json.error || !json.data?.length) {
+        setJobs(DEMO_JOBS);
+        setIsDemo(true);
       } else {
-        setJobs(json.data ?? []);
+        setJobs(json.data);
       }
     } catch {
-      setError("Failed to load creative jobs");
+      setJobs(DEMO_JOBS);
+      setIsDemo(true);
     } finally {
       setLoading(false);
     }
@@ -228,6 +238,11 @@ export default function CreativePipelinePage() {
 
   return (
     <main style={{ maxWidth: 1180, margin: "0 auto", padding: "32px 24px" }}>
+      {isDemo && (
+        <div style={{ background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 8, padding: "10px 16px", fontSize: "0.875rem", color: "#92400e", marginBottom: 24 }}>
+          Demo jobs — Connect your tenant to manage live creative pipeline schedules.
+        </div>
+      )}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0 }}>Creative Pipelines</h1>

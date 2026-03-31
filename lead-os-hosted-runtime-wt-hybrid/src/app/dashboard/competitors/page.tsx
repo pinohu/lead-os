@@ -40,6 +40,21 @@ interface CompetitorWithSnapshot {
 
 const TENANT_ID = "default-tenant";
 
+const DEMO_COMPETITORS: CompetitorWithSnapshot[] = [
+  {
+    competitor: { id: "comp-demo-001", tenantId: TENANT_ID, url: "https://www.acme-roofing.com", name: "Acme Roofing Co.", nicheSlug: "construction", lastScrapedAt: "2026-03-28T09:00:00Z", scrapeCount: 12, status: "active", createdAt: "2026-01-15T09:00:00Z", updatedAt: "2026-03-28T09:00:00Z" },
+    latestSnapshot: { id: "snap-001", competitorId: "comp-demo-001", tenantId: TENANT_ID, scrapedAt: "2026-03-28T09:00:00Z", colorCount: 4, sectionCount: 7, headlineCount: 12, ctaCount: 6, hasChat: false, hasBooking: true, hasPricing: false, hasTestimonials: true, confidence: 88, summary: "Established roofing brand with strong local SEO. Booking CTA on every page. No chat widget or public pricing." },
+  },
+  {
+    competitor: { id: "comp-demo-002", tenantId: TENANT_ID, url: "https://www.swifthvac.io", name: "Swift HVAC", nicheSlug: "healthcare", lastScrapedAt: "2026-03-27T14:00:00Z", scrapeCount: 8, status: "active", createdAt: "2026-02-01T09:00:00Z", updatedAt: "2026-03-27T14:00:00Z" },
+    latestSnapshot: { id: "snap-002", competitorId: "comp-demo-002", tenantId: TENANT_ID, scrapedAt: "2026-03-27T14:00:00Z", colorCount: 3, sectionCount: 5, headlineCount: 9, ctaCount: 3, hasChat: true, hasBooking: false, hasPricing: true, hasTestimonials: false, confidence: 74, summary: "Modern HVAC site with live chat and visible pricing tiers. Lacks testimonials and online booking." },
+  },
+  {
+    competitor: { id: "comp-demo-003", tenantId: TENANT_ID, url: "https://greenlawn-erie.com", name: "Green Lawn Erie", nicheSlug: "construction", lastScrapedAt: "2026-03-20T11:00:00Z", scrapeCount: 4, status: "paused", createdAt: "2026-02-20T09:00:00Z", updatedAt: "2026-03-20T11:00:00Z" },
+    latestSnapshot: { id: "snap-003", competitorId: "comp-demo-003", tenantId: TENANT_ID, scrapedAt: "2026-03-20T11:00:00Z", colorCount: 6, sectionCount: 4, headlineCount: 6, ctaCount: 2, hasChat: false, hasBooking: false, hasPricing: false, hasTestimonials: true, confidence: 61, summary: "Small local landscaping site. Minimal CTAs and no online scheduling. Good testimonials section." },
+  },
+];
+
 const NICHE_OPTIONS = [
   { value: "", label: "— No niche —" },
   { value: "saas", label: "SaaS / Software" },
@@ -314,6 +329,7 @@ const styles = {
 export default function CompetitorsPage() {
   const [details, setDetails] = useState<CompetitorWithSnapshot[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDemo, setIsDemo] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
@@ -329,9 +345,16 @@ export default function CompetitorsPage() {
   const loadCompetitors = useCallback(async () => {
     try {
       const res = await fetch(`/api/competitors?tenantId=${TENANT_ID}`, { credentials: "include" });
-      if (!res.ok) throw new Error(`Failed to load competitors: ${res.status}`);
+      if (!res.ok) throw new Error("not-ok");
       const json = await res.json();
       const competitors: TrackedCompetitor[] = json.data ?? [];
+
+      if (competitors.length === 0) {
+        setDetails(DEMO_COMPETITORS);
+        setIsDemo(true);
+        setLoading(false);
+        return;
+      }
 
       const detailResults = await Promise.all(
         competitors.map(async (c) => {
@@ -348,8 +371,9 @@ export default function CompetitorsPage() {
 
       setDetails(detailResults);
       setLoading(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+    } catch {
+      setDetails(DEMO_COMPETITORS);
+      setIsDemo(true);
       setLoading(false);
     }
   }, []);
@@ -470,22 +494,13 @@ export default function CompetitorsPage() {
     );
   }
 
-  if (error) {
-    return (
-      <main style={styles.page}>
-        <div style={styles.container}>
-          <div style={styles.formCard}>
-            <p style={{ color: "#94a3b8", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", margin: "0 0 8px" }}>Error</p>
-            <h2 style={{ color: "#f8fafc", margin: "0 0 8px", fontSize: "1.25rem" }}>Failed to load competitors</h2>
-            <p style={styles.muted}>{error}</p>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main style={styles.page}>
+      {isDemo && (
+        <div style={{ background: "#1e1a3f", borderBottom: "1px solid #3730a3", padding: "10px 24px", fontSize: "0.875rem", color: "#a5b4fc" }}>
+          Demo competitors — Sign in to track and analyze your real competitors.{" "}
+        </div>
+      )}
       <div style={styles.container}>
         <h1 style={styles.title}>Competitor Intelligence</h1>
 
