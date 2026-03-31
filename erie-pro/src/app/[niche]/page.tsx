@@ -22,6 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { InternalLinks } from "@/components/internal-links"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -295,6 +296,8 @@ export default async function NichePage({ params }: Props) {
           }),
         }}
       />
+
+      <InternalLinks niche={niche.slug} currentPage="" />
     </main>
   )
 }

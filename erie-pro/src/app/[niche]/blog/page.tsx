@@ -28,6 +28,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { InternalLinks } from "@/components/internal-links"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -171,6 +172,8 @@ export default async function NicheBlogPage({ params }: Props) {
           }),
         }}
       />
+
+      <InternalLinks niche={slug} currentPage="blog" />
     </main>
   )
 }

@@ -16,6 +16,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { InternalLinks } from "@/components/internal-links"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -254,6 +255,8 @@ export default async function NicheCertificationsPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      <InternalLinks niche={slug} currentPage="certifications" />
     </main>
   )
 }

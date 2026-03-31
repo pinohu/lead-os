@@ -29,6 +29,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
+import { InternalLinks } from "@/components/internal-links"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -235,6 +236,8 @@ export default async function NicheComparePage({ params }: Props) {
           </Button>
         </div>
       </section>
+
+      <InternalLinks niche={slug} currentPage="compare" />
     </main>
   )
 }
