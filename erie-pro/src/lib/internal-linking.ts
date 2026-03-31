@@ -22,18 +22,30 @@ export interface BreadcrumbItem {
 // Defines which niches are related to each other for cross-linking.
 
 const nicheRelationships: Record<string, string[]> = {
-  plumbing: ["hvac", "electrical", "roofing"],
-  hvac: ["plumbing", "electrical", "roofing"],
-  electrical: ["plumbing", "hvac", "painting"],
-  roofing: ["plumbing", "hvac", "painting", "landscaping"],
-  landscaping: ["roofing", "painting", "pest-control"],
+  plumbing: ["hvac", "electrical", "roofing", "septic", "foundation"],
+  hvac: ["plumbing", "electrical", "roofing", "windows-doors", "chimney"],
+  electrical: ["plumbing", "hvac", "painting", "appliance-repair", "home-security", "garage-door"],
+  roofing: ["plumbing", "hvac", "painting", "landscaping", "chimney", "windows-doors"],
+  landscaping: ["roofing", "painting", "pest-control", "fencing", "concrete", "tree-service"],
   dental: ["legal", "cleaning"],
   legal: ["dental", "real-estate"],
-  cleaning: ["pest-control", "painting", "landscaping"],
+  cleaning: ["pest-control", "painting", "landscaping", "moving", "flooring"],
   "auto-repair": ["electrical", "painting"],
   "pest-control": ["cleaning", "landscaping", "roofing"],
-  painting: ["roofing", "cleaning", "electrical", "landscaping"],
-  "real-estate": ["legal", "cleaning", "landscaping"],
+  painting: ["roofing", "cleaning", "electrical", "landscaping", "fencing", "flooring"],
+  "real-estate": ["legal", "cleaning", "landscaping", "moving"],
+  "garage-door": ["roofing", "home-security", "electrical"],
+  fencing: ["landscaping", "concrete", "painting"],
+  flooring: ["painting", "cleaning", "windows-doors"],
+  "windows-doors": ["roofing", "hvac", "electrical", "flooring"],
+  moving: ["cleaning", "painting", "flooring"],
+  "tree-service": ["landscaping", "roofing", "fencing"],
+  "appliance-repair": ["electrical", "plumbing", "hvac"],
+  foundation: ["concrete", "plumbing", "septic"],
+  "home-security": ["electrical", "windows-doors", "garage-door"],
+  concrete: ["foundation", "fencing", "landscaping"],
+  septic: ["plumbing", "foundation", "landscaping"],
+  chimney: ["roofing", "hvac", "painting"],
 };
 
 // ── Niche Labels ──────────────────────────────────────────────────────
@@ -51,6 +63,18 @@ const nicheLabels: Record<string, string> = {
   "pest-control": "Pest Control",
   painting: "Painting",
   "real-estate": "Real Estate",
+  "garage-door": "Garage Door",
+  fencing: "Fencing",
+  flooring: "Flooring",
+  "windows-doors": "Windows & Doors",
+  moving: "Moving",
+  "tree-service": "Tree Service",
+  "appliance-repair": "Appliance Repair",
+  foundation: "Foundation",
+  "home-security": "Home Security",
+  concrete: "Concrete",
+  septic: "Septic",
+  chimney: "Chimney",
 };
 
 // ── Content Page Types ────────────────────────────────────────────────
