@@ -8,3 +8,4 @@ lead-os-embed-widgets/
 .env.local
 .env.production
 .env.*.local
+.vercel
