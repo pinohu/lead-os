@@ -1,47 +1,53 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { nicheCatalog } from "@/lib/catalog";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
   title: "Industries | Lead OS",
   description:
-    "Explore growth systems, lead capture funnels, and automation infrastructure purpose-built for your industry. Discover how Lead OS adapts to the way your business actually works.",
+    "Explore growth systems, lead capture funnels, and automation infrastructure purpose-built for your industry.",
 };
 
 export default function IndustriesPage() {
   const niches = Object.values(nicheCatalog);
 
   return (
-    <main className="experience-page">
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Industries we serve</p>
-          <h1>Growth systems built for your industry</h1>
-          <p className="lede">
-            Every industry has different lead sources, sales cycles, and
-            compliance requirements. Lead OS ships pre-configured funnels,
-            scoring rules, and automation playbooks tuned to the way your
-            market actually buys.
-          </p>
-        </div>
-      </section>
+    <main id="main-content" className="max-w-6xl mx-auto px-4 py-16">
+      <div className="text-center mb-12">
+        <Badge variant="secondary" className="mb-4">Industries we serve</Badge>
+        <h1 className="text-4xl font-extrabold tracking-tight mb-4">
+          Growth systems built for your industry
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Every industry has different lead sources, sales cycles, and compliance
+          requirements. Lead OS ships pre-configured funnels, scoring rules, and
+          automation playbooks tuned to the way your market actually buys.
+        </p>
+      </div>
 
-      <section className="grid two" style={{ gap: "var(--space-4)" }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {niches.map((niche) => (
-          <article key={niche.slug} className="panel">
-            <p className="eyebrow">{niche.label}</p>
-            <p>{niche.summary}</p>
-            <div className="cta-row">
-              <Link href={`/industries/${niche.slug}`} className="primary">
-                Explore {niche.label}
-              </Link>
-              <Link href={`/assess/${niche.slug}`} className="secondary">
-                Take the Assessment
-              </Link>
-            </div>
-          </article>
+          <Card key={niche.slug} className="flex flex-col">
+            <CardHeader>
+              <CardTitle className="text-lg">{niche.label}</CardTitle>
+              <CardDescription className="text-sm leading-relaxed">
+                {niche.summary}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="mt-auto flex gap-3">
+              <Button asChild size="sm">
+                <Link href={`/industries/${niche.slug}`}>Explore {niche.label}</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/assess/${niche.slug}`}>Take Assessment</Link>
+              </Button>
+            </CardContent>
+          </Card>
         ))}
-      </section>
+      </div>
     </main>
   );
 }

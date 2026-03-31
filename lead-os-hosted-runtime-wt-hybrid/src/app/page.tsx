@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { tenantConfig } from "@/lib/tenant";
 import { buildOgImageUrl } from "@/lib/og-url";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Check, ArrowRight, Zap, Shield, BarChart3, Users, Bot, Clock } from "lucide-react";
 
 const brandName = tenantConfig.brandName || "Lead OS";
 
@@ -15,198 +19,220 @@ export const metadata: Metadata = {
   },
 };
 
+const replacedTools = [
+  "CRM", "Email Marketing", "SMS", "Landing Pages", "A/B Testing", "Analytics",
+  "Workflow Automation", "Content AI", "Lead Scoring", "Booking", "Chat", "Billing",
+];
+
+const steps = [
+  { n: "01", title: "Add a client", desc: "Type their niche. The system generates scoring weights, assessment questions, nurture sequences, and landing pages automatically." },
+  { n: "02", title: "Launch their funnel", desc: "Embed one script tag or use our white-label landing pages. Leads flow in from forms, chat, assessments, and calculators." },
+  { n: "03", title: "Leads score automatically", desc: "4D scoring (intent + fit + engagement + urgency) classifies every lead. You focus on client calls, not spreadsheets." },
+  { n: "04", title: "Report and scale", desc: "Automated client reports prove your value. Add niches. Grow your book of business without adding headcount." },
+];
+
+const stats = [
+  { stat: "16", label: "Niches pre-configured" },
+  { stat: "137+", label: "Integrations" },
+  { stat: "498", label: "API endpoints" },
+  { stat: "4,151", label: "Tests passing" },
+];
+
+const enterpriseFeatures = [
+  { icon: Shield, title: "SOC 2 Controls", desc: "Persistent audit trail, access reviews, encryption at rest (AES-256), data retention policies." },
+  { icon: Users, title: "SSO + 2FA", desc: "SAML/OIDC single sign-on, TOTP authentication, IP allowlisting, backup codes." },
+  { icon: BarChart3, title: "99.9% SLA", desc: "Deep health checks, status page, incident response runbook, Kubernetes-ready." },
+  { icon: Zap, title: "5 RBAC Roles", desc: "Owner, admin, operator, viewer, billing-admin with granular permissions." },
+  { icon: Bot, title: "AI Agent Teams", desc: "Autonomous recovery, prospect discovery, content generation, churn prevention." },
+  { icon: Clock, title: "Joy Layer", desc: "Morning briefings, milestone celebrations, time-saved tracking, overnight automation." },
+];
+
+const joyOvernight = [
+  "Churn prevention \u2014 disengaged leads auto re-engaged across all clients",
+  "Warm leads going cold \u2014 next nurture step sent per client playbook",
+  "Pipeline thin for a client \u2014 prospecting activated automatically",
+  "Client report auto-generated with key metrics",
+];
+
+const joyMorning = [
+  "\u201c12 new leads came in across 6 clients while you slept\u201d",
+  "\u201c23.4 hours saved this month \u2014 worth $3,510\u201d",
+  "\u201c2 clients need attention. 13 are on autopilot.\u201d",
+  "One recommended action per client for the day",
+];
+
+const personas = [
+  { label: "SaaS Founders", href: "/for/saas-founders" },
+  { label: "Lead Gen Companies", href: "/for/lead-gen" },
+  { label: "Consultants", href: "/for/consultants" },
+  { label: "Franchise Operators", href: "/for/franchises" },
+];
+
 export default function HomePage() {
   return (
-    <main className="experience-page" data-theme="light" style={{ colorScheme: "light" }}>
-      {/* ── Hero ────────────────────────────────────────────────────── */}
-      <section style={{
-        textAlign: "center",
-        padding: "100px 24px 80px",
-        background: "radial-gradient(ellipse 80% 60% at 50% -20%, rgba(79, 70, 229, 0.08) 0%, transparent 70%)",
-      }}>
-        <div style={{ maxWidth: 720, margin: "0 auto" }}>
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            padding: "5px 14px 5px 6px", borderRadius: 999,
-            background: "var(--accent-soft)", border: "1px solid var(--accent-glow)",
-            fontSize: "0.8rem", fontWeight: 600, color: "var(--accent)",
-            marginBottom: 28,
-          }}>
-            <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "var(--accent)" }} />
+    <main id="main-content">
+      {/* ── Hero ──────────────────────────────────────────── */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+        <div className="relative max-w-4xl mx-auto text-center px-4 pt-24 pb-20">
+          <Badge variant="secondary" className="mb-6 text-sm px-4 py-1.5">
             Built for agencies managing multiple clients
-          </div>
-          <h1 style={{ color: "var(--text)" }}>
-            Run all your clients from one dashboard.<br />
-            Cancel the other 8 tools.
+          </Badge>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1] mb-5">
+            Run all your clients from<br className="hidden sm:block" /> one dashboard.
           </h1>
-          <p style={{ fontSize: "1.12rem", color: "var(--text-soft)", maxWidth: 580, margin: "16px auto 0", lineHeight: 1.7 }}>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
             White-label lead capture, AI scoring, and multi-channel nurture for every client.
-            One platform, one login, one bill.
+            One platform, one login, one bill. Cancel the other 8 tools.
           </p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 36 }}>
-            <Link href="/onboard" className="primary" style={{ padding: "12px 28px", fontSize: "0.95rem" }}>Start your free agency account</Link>
-            <Link href="#how-it-works" className="secondary" style={{ padding: "12px 28px", fontSize: "0.95rem" }}>See how it works</Link>
+          <div className="flex gap-3 justify-center flex-wrap">
+            <Button asChild size="lg" className="text-base px-8 h-12">
+              <Link href="/onboard">Start your free agency account</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="text-base px-8 h-12">
+              <Link href="#how-it-works">See how it works</Link>
+            </Button>
           </div>
-          <p style={{ fontSize: "0.78rem", color: "var(--text-soft)", marginTop: 14, letterSpacing: "0.01em" }}>
+          <p className="text-xs text-muted-foreground mt-4 tracking-wide">
             No credit card &middot; 15-minute setup &middot; White-label ready
           </p>
         </div>
       </section>
 
-      {/* ── The Agency Problem ──────────────────────────────────────── */}
-      <section className="panel" aria-labelledby="problem-heading">
-        <p className="eyebrow">The agency problem</p>
-        <h2 id="problem-heading" style={{ maxWidth: 600 }}>
-          You&apos;re paying $630&ndash;$4,550/month in SaaS fees per client
-        </h2>
-        <p className="muted" style={{ maxWidth: 600, marginBottom: 20, fontSize: "0.95rem", lineHeight: 1.7 }}>
-          You&apos;re spending 20+ hours a week on manual reporting. And your clients
-          are still asking &ldquo;what are we getting for this?&rdquo;
-        </p>
-        <ul style={{
-          display: "flex", flexWrap: "wrap", gap: 10, paddingLeft: 0, listStyle: "none", marginTop: 20, marginBottom: 24,
-        }}>
-          {["CRM", "Email Marketing", "SMS", "Landing Pages", "A/B Testing", "Analytics",
-            "Workflow Automation", "Content AI", "Lead Scoring", "Booking", "Chat", "Billing",
-          ].map((tool) => (
-            <li key={tool} style={{
-              padding: "7px 14px", borderRadius: 999,
-              background: "rgba(161, 39, 47, 0.07)", border: "1px solid rgba(161, 39, 47, 0.14)",
-              fontSize: "0.88rem", fontWeight: 600, color: "var(--text-soft)",
-              textDecoration: "line-through", textDecorationColor: "rgba(161, 39, 47, 0.4)",
-            }}>{tool}</li>
+      {/* ── The Agency Problem ────────────────────────────── */}
+      <section className="max-w-3xl mx-auto px-4 py-16">
+        <div className="text-center mb-8">
+          <Badge variant="outline" className="mb-4">The agency problem</Badge>
+          <h2 className="text-3xl font-bold tracking-tight mb-3">
+            You&apos;re paying $630&ndash;$4,550/month in SaaS fees per client
+          </h2>
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            You&apos;re spending 20+ hours a week on manual reporting. And your clients
+            are still asking &ldquo;what are we getting for this?&rdquo;
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2 justify-center mb-6">
+          {replacedTools.map((tool) => (
+            <span key={tool} className="px-3 py-1.5 rounded-full text-sm font-medium text-muted-foreground line-through decoration-destructive/40 bg-destructive/5 border border-destructive/10">
+              {tool}
+            </span>
           ))}
-        </ul>
-        <div style={{
-          padding: "18px 22px", borderRadius: "var(--radius-md)",
-          background: "var(--success-soft)", border: "1px solid rgba(29, 111, 81, 0.22)",
-          display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8,
-        }}>
-          <span style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--success)" }}>Total saved:</span>
-          <span style={{ fontSize: "1.1rem", fontWeight: 700 }}>$630&ndash;4,550/month per client</span>
+        </div>
+        <Card className="border-green-200 bg-green-50/50">
+          <CardContent className="pt-6 flex items-center justify-center gap-3 flex-wrap">
+            <span className="text-lg font-extrabold text-green-600">Total saved:</span>
+            <span className="text-lg font-bold">$630&ndash;4,550/month per client</span>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* ── How It Works ──────────────────────────────────── */}
+      <section id="how-it-works" className="max-w-5xl mx-auto px-4 py-16">
+        <div className="text-center mb-10">
+          <Badge variant="outline" className="mb-4">How it works</Badge>
+          <h2 className="text-3xl font-bold tracking-tight">Four steps from zero to automated agency</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {steps.map(({ n, title, desc }) => (
+            <Card key={n} className="bg-muted/30">
+              <CardHeader className="pb-3">
+                <div className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold mb-2">
+                  {n}
+                </div>
+                <CardTitle className="text-lg">{title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
 
-      {/* ── How It Works ────────────────────────────────────────────── */}
-      <section className="panel" id="how-it-works">
-        <p className="eyebrow">How it works</p>
-        <h2>Four steps from zero to automated agency</h2>
-        <ol style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: 16, paddingLeft: 0, listStyle: "none", marginTop: 24,
-        }}>
-          {[
-            { n: "1", title: "Add a client", desc: "Type their niche. The system generates scoring weights, assessment questions, nurture sequences, and landing pages automatically." },
-            { n: "2", title: "Launch their funnel", desc: "Embed one script tag or use our white-label landing pages. Leads flow in from forms, chat, assessments, and calculators." },
-            { n: "3", title: "Leads score automatically", desc: "4D scoring (intent + fit + engagement + urgency) classifies every lead. You focus on client calls, not spreadsheets." },
-            { n: "4", title: "Report and scale", desc: "Automated client reports prove your value. Add niches. Grow your book of business without adding headcount." },
-          ].map(({ n, title, desc }) => (
-            <li key={n} style={{
-              display: "grid", gap: 12, padding: 22, borderRadius: "var(--radius-md)",
-              background: "rgba(34, 95, 84, 0.06)", border: "1px solid var(--surface-border)",
-            }}>
-              <div aria-hidden="true" style={{
-                display: "inline-flex", alignItems: "center", justifyContent: "center",
-                width: 36, height: 36, borderRadius: 999, background: "var(--accent)", color: "#fff9f2",
-                fontWeight: 800, fontSize: "0.95rem", flexShrink: 0,
-              }}>{n}</div>
+      {/* ── Stats Bar ─────────────────────────────────────── */}
+      <section className="border-y border-border py-10">
+        <div className="max-w-4xl mx-auto px-4 flex flex-wrap justify-center gap-12">
+          {stats.map(({ stat, label }) => (
+            <div key={label} className="text-center">
+              <div className="text-3xl font-extrabold text-primary tracking-tight">{stat}</div>
+              <div className="text-xs text-muted-foreground mt-1">{label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Enterprise Grade ──────────────────────────────── */}
+      <section className="max-w-5xl mx-auto px-4 py-16">
+        <div className="text-center mb-10">
+          <Badge variant="outline" className="mb-4">Enterprise-grade from day one</Badge>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Security, compliance, and reliability you can sell to any client
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {enterpriseFeatures.map(({ icon: Icon, title, desc }) => (
+            <Card key={title}>
+              <CardHeader className="pb-2">
+                <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-2">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <CardTitle className="text-base">{title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Joy Layer ─────────────────────────────────────── */}
+      <section className="max-w-4xl mx-auto px-4 py-16">
+        <Card className="border-l-4 border-l-primary bg-primary/[0.03]">
+          <CardHeader>
+            <Badge variant="outline" className="w-fit mb-2">The Joy Layer</Badge>
+            <CardTitle className="text-2xl">Your morning briefing tells you which clients need attention</CardTitle>
+            <CardDescription className="text-base">
+              Wake up to a dashboard that shows which clients are on autopilot and which need a nudge.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h3 style={{ marginBottom: 6 }}>{title}</h3>
-                <p className="muted" style={{ fontSize: "0.95rem" }}>{desc}</p>
+                <h3 className="text-sm font-semibold mb-3">What happens overnight</h3>
+                <ul className="space-y-2">
+                  {joyOvernight.map((item) => (
+                    <li key={item} className="flex gap-2 text-sm text-muted-foreground">
+                      <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </li>
-          ))}
-        </ol>
+              <div>
+                <h3 className="text-sm font-semibold mb-3">What you see in the morning</h3>
+                <ul className="space-y-2">
+                  {joyMorning.map((item) => (
+                    <li key={item} className="flex gap-2 text-sm text-muted-foreground">
+                      <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
-      {/* ── Social Proof (Agency-Focused) ──────────────────────────── */}
-      <section style={{
-        display: "flex", flexWrap: "wrap", justifyContent: "center",
-        gap: "48px", padding: "40px 24px",
-        borderBottom: "1px solid var(--surface-border)",
-      }}>
-        {[
-          { stat: "16", label: "Niches pre-configured", detail: "Deploy for plumbers, lawyers, dentists — any niche" },
-          { stat: "84", label: "AI personas", detail: "Every client gets a unique brand voice" },
-          { stat: "91", label: "Nurture emails", detail: "7-stage sequences for every industry, written and ready" },
-          { stat: "4", label: "Revenue models", detail: "Managed, white-label, marketplace, or retainer" },
-        ].map(({ stat, label, detail }) => (
-          <div key={label} style={{ textAlign: "center", maxWidth: 200 }}>
-            <div style={{ fontSize: "1.8rem", fontWeight: 700, letterSpacing: "-0.03em", color: "var(--text)" }}>{stat}</div>
-            <div style={{ fontSize: "0.82rem", color: "var(--text-soft)", fontWeight: 500, marginTop: 2 }}>{label}</div>
-            <div style={{ fontSize: "0.76rem", color: "var(--text-soft)", marginTop: 4, lineHeight: 1.4 }}>{detail}</div>
-          </div>
-        ))}
-      </section>
-
-      {/* ── Enterprise Grade ────────────────────────────────────────── */}
-      <section>
-        <p className="eyebrow">Enterprise-grade from day one</p>
-        <h2>Security, compliance, and reliability you can sell to any client</h2>
-        <div className="grid three" style={{ marginTop: 16 }}>
-          {[
-            { title: "SOC 2 Controls", desc: "Persistent audit trail, access reviews, encryption verification, data retention policies." },
-            { title: "2FA + SSO", desc: "TOTP authentication, SAML/OIDC single sign-on, IP allowlisting, backup codes." },
-            { title: "99.9% SLA", desc: "Deep health checks, status page, incident response runbook, Kubernetes-ready deployment." },
-            { title: "5 RBAC Roles", desc: "Owner, admin, operator, viewer, billing-admin — each with granular permissions." },
-            { title: "OpenAPI 3.1", desc: "Full API documentation at /api/docs/openapi.json. 315+ endpoints." },
-            { title: "4,151 Tests", desc: "Zero failures. Multi-tenant stress test with 50 concurrent tenants. E2E pipeline verified." },
-          ].map(({ title, desc }) => (
-            <article key={title} className="panel" style={{ padding: 20 }}>
-              <h3 style={{ margin: "0 0 6px", fontSize: "0.94rem" }}>{title}</h3>
-              <p className="muted" style={{ margin: 0, fontSize: "0.84rem" }}>{desc}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Joy Layer ───────────────────────────────────────────────── */}
-      <section className="panel" style={{ borderLeft: "4px solid var(--accent)", background: "var(--accent-soft)" }}>
-        <p className="eyebrow">The Joy Layer</p>
-        <h2>Your morning briefing tells you which clients need attention</h2>
-        <p className="muted" style={{ maxWidth: 560, marginBottom: 16 }}>
-          Wake up to a dashboard that shows which clients are on autopilot
-          and which need a nudge. No more logging into 8 tools to figure out
-          what happened overnight.
+      {/* ── Email Capture ─────────────────────────────────── */}
+      <section className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <Badge variant="outline" className="mb-4">Get early access</Badge>
+        <h2 className="text-3xl font-bold tracking-tight mb-3">See it in action with your first client</h2>
+        <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
+          Enter your email and we&apos;ll set up a demo workspace pre-loaded with your niche.
         </p>
-        <div className="grid two">
-          <div>
-            <h3 style={{ fontSize: "0.94rem", margin: "0 0 8px" }}>What happens overnight</h3>
-            <ul className="check-list" style={{ fontSize: "0.88rem" }}>
-              <li>Churn prevention — disengaged leads auto re-engaged across all clients</li>
-              <li>Warm leads going cold — next nurture step sent per client playbook</li>
-              <li>Pipeline thin for a client — prospecting activated</li>
-              <li>Client report auto-generated with key metrics</li>
-            </ul>
-          </div>
-          <div>
-            <h3 style={{ fontSize: "0.94rem", margin: "0 0 8px" }}>What you see in the morning</h3>
-            <ul className="check-list" style={{ fontSize: "0.88rem" }}>
-              <li>&ldquo;12 new leads came in across 6 clients while you slept&rdquo;</li>
-              <li>&ldquo;23.4 hours saved this month — worth $3,510&rdquo;</li>
-              <li>&ldquo;2 clients need attention. 13 are on autopilot.&rdquo;</li>
-              <li>One recommended action per client for the day</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Simple Email Capture ─────────────────────────────────────── */}
-      <section className="panel" style={{ textAlign: "center", padding: "40px 28px" }}>
-        <p className="eyebrow">Get early access</p>
-        <h2>See it in action with your first client</h2>
-        <p className="muted" style={{ maxWidth: 480, margin: "8px auto 24px" }}>
-          Enter your email and we&apos;ll set up a demo workspace
-          pre-loaded with your niche.
-        </p>
-        <form
-          action="/api/capture"
-          method="POST"
-          style={{
-            display: "flex", gap: 10, justifyContent: "center",
-            flexWrap: "wrap", maxWidth: 480, margin: "0 auto",
-          }}
-        >
+        <form action="/api/capture" method="POST" className="flex gap-3 justify-center flex-wrap max-w-md mx-auto">
           <input type="hidden" name="source" value="homepage" />
           <input
             type="email"
@@ -214,55 +240,40 @@ export default function HomePage() {
             required
             placeholder="you@agency.com"
             aria-label="Email address"
-            style={{
-              flex: "1 1 240px", minHeight: 48, padding: "12px 16px",
-              borderRadius: "var(--radius-sm)",
-              border: "1px solid rgba(0,0,0,0.12)", background: "#fff",
-              fontSize: "0.95rem",
-            }}
+            className="flex-1 min-w-[240px] h-12 px-4 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
-          <button type="submit" className="primary" style={{ minHeight: 48, padding: "12px 24px" }}>
-            Start free
-          </button>
+          <Button type="submit" size="lg" className="h-12">Start free</Button>
         </form>
       </section>
 
-      {/* ── Not an Agency? ──────────────────────────────────────────── */}
-      <section style={{ padding: "32px 0" }}>
-        <p className="muted" style={{ textAlign: "center", marginBottom: 16, fontSize: "0.88rem" }}>Not an agency?</p>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: 12,
-        }}>
-          {[
-            { label: "SaaS Founders", href: "/for/saas-founders" },
-            { label: "Lead Gen Companies", href: "/for/lead-gen" },
-            { label: "Consultants", href: "/for/consultants" },
-            { label: "Franchise Operators", href: "/for/franchises" },
-          ].map(({ label, href }) => (
-            <Link key={label} href={href} style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "14px 18px", borderRadius: "var(--radius-sm)",
-              border: "1px solid var(--surface-border)", fontSize: "0.88rem",
-              fontWeight: 600, color: "var(--text)",
-            }}>
-              {label} <span style={{ color: "var(--accent)" }}>&rarr;</span>
-            </Link>
+      {/* ── Persona Links ─────────────────────────────────── */}
+      <section className="max-w-3xl mx-auto px-4 py-8">
+        <p className="text-sm text-muted-foreground text-center mb-4">Not an agency?</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {personas.map(({ label, href }) => (
+            <Button key={label} asChild variant="outline" className="justify-between h-auto py-3.5 px-5">
+              <Link href={href}>
+                {label} <ArrowRight className="h-4 w-4 text-primary" />
+              </Link>
+            </Button>
           ))}
         </div>
       </section>
 
-      {/* ── Final CTA ───────────────────────────────────────────────── */}
-      <section className="panel" style={{ textAlign: "center", marginTop: 32 }}>
-        <h2>Start your free agency account</h2>
-        <p className="muted" style={{ maxWidth: 480, margin: "8px auto 20px" }}>
+      {/* ── Final CTA ─────────────────────────────────────── */}
+      <section className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <h2 className="text-3xl font-bold tracking-tight mb-3">Start your free agency account</h2>
+        <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
           No credit card. No sales call. Add your first client in 15 minutes
           and see why agencies are consolidating their entire stack into one platform.
         </p>
-        <div className="cta-row" style={{ justifyContent: "center" }}>
-          <Link href="/onboard" className="primary">Start your free agency account</Link>
-          <Link href="/pricing" className="secondary">View pricing</Link>
+        <div className="flex gap-3 justify-center flex-wrap">
+          <Button asChild size="lg" className="px-8">
+            <Link href="/onboard">Start your free agency account</Link>
+          </Button>
+          <Button asChild variant="outline" size="lg" className="px-8">
+            <Link href="/pricing">View pricing</Link>
+          </Button>
         </div>
       </section>
     </main>
