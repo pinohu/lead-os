@@ -228,8 +228,29 @@ export default async function NicheTipsPage({ params }: Props) {
 
   const tips = TIPS_DATA[slug] ?? []
 
+  const tipsJsonLd = tips.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "@id": `https://erie.pro/${slug}/tips#howto`,
+    name: `${niche.label} Tips for ${cityConfig.name} Homeowners`,
+    description: `Actionable ${content.serviceLabel} tips for ${cityConfig.name}, ${cityConfig.stateCode} homeowners. Save money, avoid problems, and know when to call a professional.`,
+    step: tips.map((item, i) => ({
+      "@type": "HowToTip",
+      position: i + 1,
+      name: item.tip,
+      text: item.detail,
+    })),
+  } : null
+
   return (
-    <main>
+    <>
+      {tipsJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(tipsJsonLd) }}
+        />
+      )}
+      <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div className="border-b bg-muted/30">
         <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
@@ -321,5 +342,6 @@ export default async function NicheTipsPage({ params }: Props) {
 
       <InternalLinks niche={slug} currentPage="tips" />
     </main>
+    </>
   )
 }

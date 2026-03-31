@@ -242,8 +242,42 @@ export default async function NicheCostsPage({ params }: Props) {
   const factors = COST_FACTORS[slug] ?? []
   const diyComparison = DIY_VS_PRO[slug] ?? []
 
+  const costsJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `https://erie.pro/${slug}/costs#service`,
+    name: `${niche.label} Services in ${cityConfig.name}, ${cityConfig.stateCode}`,
+    provider: {
+      "@type": "LocalBusiness",
+      "@id": `https://erie.pro/${slug}/#business`,
+      name: cityConfig.domain,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: cityConfig.name,
+        addressRegion: cityConfig.stateCode,
+        addressCountry: "US",
+      },
+    },
+    areaServed: { "@type": "City", name: cityConfig.name },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: `${niche.label} Pricing in ${cityConfig.name}`,
+      itemListElement: content.pricingRanges.map((pr, i) => ({
+        "@type": "Offer",
+        position: i + 1,
+        name: pr.service,
+        description: pr.range,
+      })),
+    },
+  }
+
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(costsJsonLd) }}
+      />
+      <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div className="border-b bg-muted/30">
         <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
@@ -499,5 +533,6 @@ export default async function NicheCostsPage({ params }: Props) {
 
       <InternalLinks niche={slug} currentPage="costs" />
     </main>
+    </>
   )
 }

@@ -62,8 +62,28 @@ export default async function NichePricingPage({ params }: Props) {
   const content = getNicheContent(slug)
   if (!niche || !content) notFound()
 
+  const pricingJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `https://erie.pro/${slug}/pricing#pricelist`,
+    name: `${niche.label} Pricing in ${cityConfig.name}, ${cityConfig.stateCode}`,
+    description: `Average prices for ${content.serviceLabel} in ${cityConfig.name}. Updated for ${new Date().getFullYear()}.`,
+    numberOfItems: content.pricingRanges.length,
+    itemListElement: content.pricingRanges.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.service,
+      description: item.range,
+    })),
+  }
+
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingJsonLd) }}
+      />
+      <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div className="border-b bg-muted/30">
         <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
@@ -252,5 +272,6 @@ export default async function NichePricingPage({ params }: Props) {
 
       <InternalLinks niche={slug} currentPage="pricing" />
     </main>
+    </>
   )
 }

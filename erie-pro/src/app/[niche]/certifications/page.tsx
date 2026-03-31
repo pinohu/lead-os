@@ -132,8 +132,30 @@ export default async function NicheCertificationsPage({ params }: Props) {
 
   const certDetails = CERT_DETAILS[slug] ?? []
 
+  const certJsonLd = certDetails.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `https://erie.pro/${slug}/certifications#certlist`,
+    name: `${niche.label} Certifications to Look For in ${cityConfig.name}, ${cityConfig.stateCode}`,
+    description: `Essential ${content.serviceLabel} certifications and licenses to verify when hiring in ${cityConfig.name}.`,
+    numberOfItems: certDetails.length,
+    itemListElement: certDetails.map((cert, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: cert.name,
+      description: cert.what,
+    })),
+  } : null
+
   return (
-    <main>
+    <>
+      {certJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(certJsonLd) }}
+        />
+      )}
+      <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div className="border-b bg-muted/30">
         <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
@@ -259,5 +281,6 @@ export default async function NicheCertificationsPage({ params }: Props) {
 
       <InternalLinks niche={slug} currentPage="certifications" />
     </main>
+    </>
   )
 }

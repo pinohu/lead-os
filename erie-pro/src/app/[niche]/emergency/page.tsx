@@ -61,8 +61,46 @@ export default async function NicheEmergencyPage({ params }: Props) {
   const content = getNicheContent(slug)
   if (!niche || !content || content.emergencyServices.length === 0) notFound()
 
+  const emergencyJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "EmergencyService",
+    "@id": `https://erie.pro/${slug}/emergency#service`,
+    name: `Emergency ${niche.label} in ${cityConfig.name}, ${cityConfig.stateCode}`,
+    description: `24/7 emergency ${content.serviceLabel} in ${cityConfig.name}. Fast response from verified, licensed providers.`,
+    provider: {
+      "@type": "LocalBusiness",
+      "@id": `https://erie.pro/${slug}/#business`,
+      name: cityConfig.domain,
+      telephone: "+18142000328",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: cityConfig.name,
+        addressRegion: cityConfig.stateCode,
+        addressCountry: "US",
+      },
+    },
+    areaServed: { "@type": "City", name: cityConfig.name },
+    availableChannel: {
+      "@type": "ServiceChannel",
+      serviceUrl: `https://erie.pro/${slug}#quote`,
+      availableLanguage: "English",
+    },
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      opens: "00:00",
+      closes: "23:59",
+    },
+    serviceType: content.emergencyServices,
+  }
+
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(emergencyJsonLd) }}
+      />
+      <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div className="border-b bg-muted/30">
         <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
@@ -311,5 +349,6 @@ export default async function NicheEmergencyPage({ params }: Props) {
         </div>
       </section>
     </main>
+    </>
   )
 }

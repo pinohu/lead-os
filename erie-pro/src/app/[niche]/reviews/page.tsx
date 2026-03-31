@@ -65,8 +65,34 @@ export default async function NicheReviewsPage({ params }: Props) {
   const content = getNicheContent(slug)
   if (!niche || !content) notFound()
 
+  const avgRating = (SAMPLE_REVIEWS.reduce((sum, r) => sum + r.rating, 0) / SAMPLE_REVIEWS.length).toFixed(1)
+  const reviewJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": `https://erie.pro/${slug}/#business`,
+    name: `${niche.label} in ${cityConfig.name}, ${cityConfig.stateCode}`,
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: avgRating,
+      reviewCount: String(SAMPLE_REVIEWS.length),
+      bestRating: "5",
+      worstRating: "1",
+    },
+    review: SAMPLE_REVIEWS.map((r) => ({
+      "@type": "Review",
+      author: { "@type": "Person", name: r.name },
+      reviewRating: { "@type": "Rating", ratingValue: String(r.rating), bestRating: "5", worstRating: "1" },
+      reviewBody: r.text,
+    })),
+  }
+
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewJsonLd) }}
+      />
+      <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div className="border-b bg-muted/30">
         <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
@@ -238,5 +264,6 @@ export default async function NicheReviewsPage({ params }: Props) {
         </div>
       </section>
     </main>
+    </>
   )
 }
