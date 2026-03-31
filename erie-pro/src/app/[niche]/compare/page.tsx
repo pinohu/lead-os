@@ -45,6 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `How to Compare ${content.pluralLabel} in ${cityConfig.name}, ${cityConfig.stateCode}`,
     description: `What to look for when choosing a ${niche.label.toLowerCase()} provider in ${cityConfig.name}. Compare licensing, pricing, reviews, and more.`,
+    alternates: { canonical: `https://erie.pro/${slug}/compare` },
   }
 }
 

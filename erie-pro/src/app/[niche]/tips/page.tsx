@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Tips — Quick Advice for ${cityConfig.name} Homeowners`,
     description: `Actionable ${content.serviceLabel} tips for ${cityConfig.name}, ${cityConfig.stateCode} homeowners. Save money, avoid problems, and know when to call a professional.`,
+    alternates: { canonical: `https://erie.pro/${slug}/tips` },
   }
 }
 

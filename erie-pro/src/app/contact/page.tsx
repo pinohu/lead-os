@@ -31,6 +31,7 @@ import {
 export const metadata: Metadata = {
   title: `Contact ${cityConfig.domain} — Get in Touch`,
   description: `Contact the ${cityConfig.domain} team. Questions about finding a provider, listing your business, or feedback about the platform.`,
+  alternates: { canonical: 'https://erie.pro/contact' },
 }
 
 export default function ContactPage() {

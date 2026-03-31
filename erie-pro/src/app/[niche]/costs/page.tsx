@@ -41,6 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Costs in ${cityConfig.name}, ${cityConfig.stateCode} — Complete Pricing Guide`,
     description: `Detailed ${content.serviceLabel} cost breakdown for ${cityConfig.name}. Average prices, factors that affect cost, DIY vs. professional comparison, and tips for getting the best value.`,
+    alternates: { canonical: `https://erie.pro/${slug}/costs` },
   }
 }
 

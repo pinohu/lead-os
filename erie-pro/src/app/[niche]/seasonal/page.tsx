@@ -34,6 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Seasonal Guide — Year-Round Maintenance for ${cityConfig.name} Homes`,
     description: `Season-by-season ${content.serviceLabel} maintenance guide for ${cityConfig.name}, ${cityConfig.stateCode}. Lake effect snow prep, freeze-thaw protection, spring flooding prevention, and summer storm readiness.`,
+    alternates: { canonical: `https://erie.pro/${slug}/seasonal` },
   }
 }
 

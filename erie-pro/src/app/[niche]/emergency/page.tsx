@@ -51,6 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `Emergency ${niche.label} in ${cityConfig.name}, ${cityConfig.stateCode} — 24/7 Service`,
     description: `Need emergency ${content.serviceLabel} in ${cityConfig.name}? Get fast response from verified providers. Available 24/7 for urgent situations.`,
+    alternates: { canonical: `https://erie.pro/${slug}/emergency` },
   }
 }
 

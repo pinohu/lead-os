@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${content.pluralLabel} Directory — ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
     description: `Browse verified ${content.pluralLabel.toLowerCase()} in ${cityConfig.name}, ${cityConfig.stateCode}. Licensed, insured professionals with reviews. Claim your listing today.`,
+    alternates: { canonical: `https://erie.pro/${slug}/directory` },
   }
 }
 

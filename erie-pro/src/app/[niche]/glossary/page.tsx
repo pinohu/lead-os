@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Glossary — Key Terms Every ${cityConfig.name} Homeowner Should Know`,
     description: `Understand ${content.serviceLabel} terminology. ${content.pluralLabel} glossary with definitions for common industry terms relevant to ${cityConfig.name}, ${cityConfig.stateCode} residents.`,
+    alternates: { canonical: `https://erie.pro/${slug}/glossary` },
   }
 }
 

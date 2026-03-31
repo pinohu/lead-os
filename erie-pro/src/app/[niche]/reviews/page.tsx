@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Reviews — ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
     description: `Read and leave reviews for ${content.pluralLabel.toLowerCase()} in ${cityConfig.name}, ${cityConfig.stateCode}. Verified reviews from real customers help you make the right hiring decision.`,
+    alternates: { canonical: `https://erie.pro/${slug}/reviews` },
   }
 }
 

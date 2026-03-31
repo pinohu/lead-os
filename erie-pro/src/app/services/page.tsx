@@ -24,6 +24,7 @@ import {
 export const metadata: Metadata = {
   title: `All Services — ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
   description: `Browse all ${niches.length} service categories on ${cityConfig.domain}. Find verified professionals for plumbing, HVAC, electrical, roofing, landscaping, dental, legal, cleaning, auto repair, pest control, painting, and real estate in ${cityConfig.name}, ${cityConfig.stateCode}.`,
+  alternates: { canonical: 'https://erie.pro/services' },
 }
 
 export default function ServicesPage() {

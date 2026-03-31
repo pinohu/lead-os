@@ -22,6 +22,7 @@ import {
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://erie.pro'),
   title: {
     default: `Find Local Services in ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
     template: `%s | ${cityConfig.domain}`,

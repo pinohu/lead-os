@@ -62,6 +62,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: `https://${cityConfig.domain}/${slug}`,
     },
+    alternates: { canonical: `https://erie.pro/${slug}` },
   }
 }
 

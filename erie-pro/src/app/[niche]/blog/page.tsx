@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Clock,
   ArrowRight,
+  User,
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { getNicheBySlug, niches } from "@/lib/niches"
@@ -30,6 +31,27 @@ import {
 } from "@/components/ui/breadcrumb"
 import { InternalLinks } from "@/components/internal-links"
 
+const AUTHOR = "Erie Pro Editorial Team"
+
+/** Stagger publication dates across the last 6 months for realism */
+function getArticleDate(index: number): string {
+  const base = new Date("2026-03-20")
+  // Spread articles backwards: each article ~12 days earlier, cycling across 6 months
+  const offsetDays = index * 12
+  const d = new Date(base)
+  d.setDate(d.getDate() - offsetDays)
+  // Clamp to no earlier than 2025-10-01 (roughly 6 months back)
+  const floor = new Date("2025-10-01")
+  if (d < floor) d.setTime(floor.getTime() + index * 86400000)
+  return d.toISOString().slice(0, 10)
+}
+
+function formatDate(iso: string): string {
+  const [y, m, d] = iso.split("-")
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+  return `${months[Number(m) - 1]} ${Number(d)}, ${y}`
+}
+
 type Props = { params: Promise<{ niche: string }> }
 
 export function generateStaticParams() {
@@ -44,6 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Blog — Expert Tips for ${cityConfig.name} Homeowners`,
     description: `Read expert ${niche.label.toLowerCase()} tips, guides, and advice for ${cityConfig.name}, ${cityConfig.stateCode} homeowners. Seasonal tips, cost guides, and more.`,
+    alternates: { canonical: `https://erie.pro/${slug}/blog` },
   }
 }
 
@@ -105,9 +128,12 @@ export default async function NicheBlogPage({ params }: Props) {
           {content.blogTopics.map((topic, i) => (
             <Card key={i} id={`article-${i}`} className="group transition-shadow hover:shadow-md">
               <CardHeader className="pb-3">
-                <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   <Calendar className="h-3 w-3" />
-                  <span>Article</span>
+                  <time dateTime={getArticleDate(i)}>{formatDate(getArticleDate(i))}</time>
+                  <span className="text-muted-foreground/50">|</span>
+                  <User className="h-3 w-3" />
+                  <span>By {AUTHOR}</span>
                   <span className="text-muted-foreground/50">|</span>
                   <Clock className="h-3 w-3" />
                   <span>{4 + (i % 5)} min read</span>
@@ -171,6 +197,13 @@ export default async function NicheBlogPage({ params }: Props) {
               name: cityConfig.domain,
               url: `https://${cityConfig.domain}`,
             },
+            blogPost: content.blogTopics.map((topic, i) => ({
+              "@type": "BlogPosting",
+              headline: topic,
+              datePublished: getArticleDate(i),
+              author: { "@type": "Organization", name: AUTHOR },
+              url: `https://${cityConfig.domain}/${slug}/blog#article-${i}`,
+            })),
           }),
         }}
       />

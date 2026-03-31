@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Certifications — What to Look for in ${cityConfig.name}, ${cityConfig.stateCode}`,
     description: `Essential ${content.serviceLabel} certifications and licenses to verify when hiring in ${cityConfig.name}. What each certification means, why it matters, and how to verify.`,
+    alternates: { canonical: `https://erie.pro/${slug}/certifications` },
   }
 }
 
