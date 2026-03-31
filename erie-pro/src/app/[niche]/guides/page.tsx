@@ -131,9 +131,11 @@ export default async function NicheGuidesPage({ params }: Props) {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Button variant="ghost" size="sm" className="group/btn -ml-2 text-primary">
-                      Read Full Guide
-                      <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover/btn:translate-x-0.5" />
+                    <Button asChild variant="ghost" size="sm" className="group/btn -ml-2 text-primary">
+                      <Link href={`/${slug}#quote`}>
+                        Get Expert Help
+                        <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover/btn:translate-x-0.5" />
+                      </Link>
                     </Button>
                   </CardContent>
                 </div>

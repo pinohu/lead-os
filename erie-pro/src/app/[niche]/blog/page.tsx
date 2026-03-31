@@ -125,9 +125,11 @@ export default async function NicheBlogPage({ params }: Props) {
                     ? "seasonal considerations and local climate factors."
                     : "practical tips and professional recommendations."}
                 </p>
-                <Button variant="ghost" size="sm" className="group/btn -ml-2 text-primary">
-                  Read Article
-                  <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover/btn:translate-x-0.5" />
+                <Button asChild variant="ghost" size="sm" className="group/btn -ml-2 text-primary">
+                  <Link href={`/${slug}#services`}>
+                    Learn More
+                    <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover/btn:translate-x-0.5" />
+                  </Link>
                 </Button>
               </CardContent>
             </Card>

@@ -399,7 +399,7 @@ export default async function ProviderPage({ params }: Props) {
                 </a>
               </Button>
               <Button asChild variant="outline" size="lg">
-                <a href="tel:+18145551234">
+                <a href="#contact">
                   <Phone className="mr-2 h-4 w-4" />
                   (814) 555-1234
                 </a>
@@ -581,7 +581,7 @@ export default async function ProviderPage({ params }: Props) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form className="space-y-4">
+                <form action="/api/contact" method="POST" className="space-y-4">
                   <input type="hidden" name="niche" value={niche.slug} />
                   <input type="hidden" name="provider" value={providerSlug} />
                   <input type="hidden" name="city" value={cityConfig.slug} />
@@ -679,13 +679,13 @@ export default async function ProviderPage({ params }: Props) {
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button asChild variant="outline" className="w-full justify-start">
-                  <a href="tel:+18145551234">
+                  <a href="#contact">
                     <Phone className="mr-2 h-4 w-4" />
                     (814) 555-1234
                   </a>
                 </Button>
                 <Button asChild variant="outline" className="w-full justify-start">
-                  <a href={`mailto:info@${providerSlug}.com`}>
+                  <a href="#contact">
                     <Mail className="mr-2 h-4 w-4" />
                     info@{providerSlug}.com
                   </a>
