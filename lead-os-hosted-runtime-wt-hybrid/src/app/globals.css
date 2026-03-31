@@ -15,7 +15,7 @@
     --secondary: 240 5% 96%;
     --secondary-foreground: 240 6% 10%;
     --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
+    --muted-foreground: 240 4% 35%;
     --accent-foreground: 240 6% 10%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
@@ -30,11 +30,6 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-}
 
 :root {
   --bg: #ffffff;
@@ -45,7 +40,7 @@
   --surface-dark: rgba(10, 10, 15, 0.96);
   --surface-border: rgba(0, 0, 0, 0.06);
   --text: #111827;
-  --text-soft: #6b7280;
+  --text-soft: #4b5563;
   --text-inverse: #f9fafb;
   --accent: #4f46e5;
   --accent-strong: #4338ca;
@@ -794,7 +789,7 @@ button[disabled] {
   --surface-strong: #ffffff;
   --surface-border: rgba(0, 0, 0, 0.06);
   --text: #111827;
-  --text-soft: #6b7280;
+  --text-soft: #4b5563;
   --accent: #4f46e5;
   --accent-strong: #4338ca;
   --accent-soft: rgba(79, 70, 229, 0.06);
