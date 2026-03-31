@@ -310,13 +310,19 @@ export default function CredentialsPage() {
   const fetchData = useCallback(async () => {
     try {
       const res = await fetch("/api/credentials", { credentials: "include" });
-      if (!res.ok) throw new Error(`Failed to load credentials: ${res.status}`);
-      const json = await res.json();
-      setCredentials(json.data.credentials);
-      setProviders(json.data.providers);
+      if (res.ok) {
+        const json = await res.json();
+        setCredentials(json.data.credentials ?? []);
+        setProviders(json.data.providers ?? []);
+      } else {
+        // Graceful empty state — show the form without blocking
+        setCredentials([]);
+        setProviders([]);
+      }
       setLoading(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load credentials");
+    } catch {
+      setCredentials([]);
+      setProviders([]);
       setLoading(false);
     }
   }, []);
@@ -467,25 +473,6 @@ export default function CredentialsPage() {
         <div style={styles.container}>
           <div style={styles.card}>
             <p style={styles.muted}>Loading credentials...</p>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  if (error) {
-    return (
-      <main style={styles.page}>
-        <div style={styles.container}>
-          <div style={styles.card}>
-            <p style={{ ...styles.summaryLabel, color: "#94a3b8" }}>Error</p>
-            <h2 style={{ color: "#f8fafc", margin: "0 0 8px", fontSize: "1.25rem" }}>Failed to load credentials</h2>
-            <p style={styles.muted}>{error}</p>
-            <div style={{ marginTop: 16 }}>
-              <Link href="/dashboard" style={styles.navLink}>
-                Back to dashboard
-              </Link>
-            </div>
           </div>
         </div>
       </main>
