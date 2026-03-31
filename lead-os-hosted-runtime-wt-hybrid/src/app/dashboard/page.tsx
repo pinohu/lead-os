@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { THREE_VISIT_FRAMEWORK } from "@/lib/automation";
 import { GettingStartedChecklist } from "@/components/getting-started-checklist";
+
+export const metadata: Metadata = {
+  title: "Dashboard — Lead OS Operator Command Center",
+  description: "KPI overview, three-visit milestone framework, and automation health for your Lead OS instance.",
+};
 import { buildDashboardSnapshot } from "@/lib/dashboard";
 import { getOperatorSession } from "@/lib/operator-auth";
 import { getAutomationHealth } from "@/lib/providers";

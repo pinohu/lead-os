@@ -5,7 +5,7 @@ import {
   getDefaultFunnelGraph,
   CANONICAL_NODE_LIBRARY,
 } from "../src/lib/funnel-library.ts";
-import type { FunnelFamily, NodeType } from "../src/lib/runtime-schema.ts";
+import type { FunnelFamily, NodeType, ChannelType } from "../src/lib/runtime-schema.ts";
 
 const TEST_TENANT = "tenant-test-001";
 
@@ -108,7 +108,7 @@ test("node type validation: every node has channel and purpose", () => {
 
 test("node type validation: canonical library covers all standard channels", () => {
   const channels = new Set(Object.values(CANONICAL_NODE_LIBRARY).map((n) => n.channel));
-  const expected = ["web", "email", "chat", "voice", "sms", "whatsapp", "checkout", "internal"];
+  const expected: ChannelType[] = ["web", "email", "chat", "voice", "sms", "whatsapp", "checkout", "internal"];
   for (const ch of expected) {
     assert.ok(channels.has(ch), `Canonical library missing channel: ${ch}`);
   }

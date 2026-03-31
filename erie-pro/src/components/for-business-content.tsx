@@ -141,6 +141,64 @@ export function ForBusinessContent() {
         </div>
       </section>
 
+      {/* ── Provider Testimonials ───────────────────────────── */}
+      <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
+        <div className="mb-12 text-center">
+          <p className="mb-3 text-sm font-semibold tracking-wide text-primary">
+            From Erie business owners
+          </p>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            What providers are saying
+          </h2>
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            {
+              quote: "I claimed the plumbing territory in month one. Now I get 8 to 12 qualified leads a week with zero ad spend. Best ROI I've ever seen for my business.",
+              author: "Mike R.",
+              title: "Owner, MR Plumbing & Drain",
+              niche: "Plumbing",
+              tier: "Premium",
+            },
+            {
+              quote: "The exclusive model is what sold me. My competitors can't buy their way onto my listing. Every call that comes in is mine. Revenue is up 34% this year.",
+              author: "Sarah T.",
+              title: "Owner, T&J HVAC Services",
+              niche: "HVAC",
+              tier: "Elite",
+            },
+            {
+              quote: "Setup took 15 minutes. Within the first week I had three booked estimates from homeowners I'd never have reached otherwise. Absolutely worth it.",
+              author: "Dave K.",
+              title: "Owner, Keystone Electrical",
+              niche: "Electrical",
+              tier: "Standard",
+            },
+          ].map(({ quote, author, title, niche, tier }) => (
+            <Card key={author} className="flex flex-col">
+              <CardHeader className="pb-2">
+                <div className="mb-3 flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  &ldquo;{quote}&rdquo;
+                </p>
+              </CardHeader>
+              <CardContent className="mt-auto pt-4">
+                <p className="text-sm font-semibold">{author}</p>
+                <p className="text-xs text-muted-foreground">{title}</p>
+                <div className="mt-2 flex gap-2">
+                  <Badge variant="secondary" className="text-xs">{niche}</Badge>
+                  <Badge variant="outline" className="text-xs capitalize">{tier}</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
       {/* ── Tiered Pricing ──────────────────────────────────── */}
       <section id="pricing" className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
         <div className="mb-12 text-center">

@@ -84,10 +84,31 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
+const DEMO_RADAR: RadarData = {
+  hotLeads: [
+    { leadKey: "demo-lead-001", firstName: "James", lastName: "Morrison", email: "james@example.com", niche: "plumbing", source: "organic", family: "qualification", stage: "qualified", score: 92, reasons: ["High intent score", "Emergency service requested", "Multiple page views"], lastActivity: new Date(Date.now() - 8 * 60000).toISOString(), lastEventType: "form_submit" },
+    { leadKey: "demo-lead-002", firstName: "Laura", lastName: "Chen", email: "laura@example.com", niche: "hvac", source: "referral", family: "lead-magnet", stage: "nurturing", score: 84, reasons: ["Referred by existing customer", "Downloaded cost guide", "Return visit within 24h"], lastActivity: new Date(Date.now() - 23 * 60000).toISOString(), lastEventType: "page_view" },
+    { leadKey: "demo-lead-003", firstName: "Robert", lastName: "Hayes", email: "rob@example.com", niche: "roofing", source: "organic", family: "chat", stage: "booked", score: 78, reasons: ["Storm damage inquiry", "Requested emergency inspection"], lastActivity: new Date(Date.now() - 45 * 60000).toISOString(), lastEventType: "chat_message" },
+  ],
+  recentHighIntentEvents: [
+    { id: "evt-001", eventType: "form_submit", leadKey: "demo-lead-001", timestamp: new Date(Date.now() - 8 * 60000).toISOString(), channel: "web", niche: "plumbing", metadata: { page: "/plumbing#quote", formId: "quote-form" } },
+    { id: "evt-002", eventType: "page_view", leadKey: "demo-lead-002", timestamp: new Date(Date.now() - 23 * 60000).toISOString(), channel: "web", niche: "hvac", metadata: { page: "/hvac/pricing", timeOnPage: 142 } },
+    { id: "evt-003", eventType: "chat_message", leadKey: "demo-lead-003", timestamp: new Date(Date.now() - 45 * 60000).toISOString(), channel: "chat", niche: "roofing", metadata: { message: "Need emergency roof inspection ASAP" } },
+    { id: "evt-004", eventType: "form_submit", leadKey: "demo-lead-004", timestamp: new Date(Date.now() - 90 * 60000).toISOString(), channel: "web", niche: "electrical", metadata: { page: "/electrical#quote" } },
+  ],
+  activityFeed: [
+    { id: "feed-001", eventType: "form_submit", leadKey: "demo-lead-001", timestamp: new Date(Date.now() - 8 * 60000).toISOString(), channel: "web", niche: "plumbing", source: "organic" },
+    { id: "feed-002", eventType: "page_view", leadKey: "demo-lead-002", timestamp: new Date(Date.now() - 23 * 60000).toISOString(), channel: "web", niche: "hvac", source: "referral" },
+    { id: "feed-003", eventType: "chat_message", leadKey: "demo-lead-003", timestamp: new Date(Date.now() - 45 * 60000).toISOString(), channel: "chat", niche: "roofing", source: "organic" },
+    { id: "feed-004", eventType: "form_submit", leadKey: "demo-lead-004", timestamp: new Date(Date.now() - 90 * 60000).toISOString(), channel: "web", niche: "electrical", source: "direct" },
+    { id: "feed-005", eventType: "page_view", leadKey: "demo-lead-005", timestamp: new Date(Date.now() - 140 * 60000).toISOString(), channel: "web", niche: "landscaping", source: "paid-search" },
+  ],
+};
+
 export default function RadarPage() {
   const [data, setData] = useState<RadarData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
   const [activeTab, setActiveTab] = useState<"hot" | "events" | "feed">("hot");
   const [alertThreshold, setAlertThreshold] = useState(75);
   const [actionStatus, setActionStatus] = useState<Record<string, string>>({});
@@ -118,15 +139,22 @@ export default function RadarPage() {
   const fetchData = useCallback(() => {
     fetch("/api/dashboard/radar", { credentials: "include" })
       .then((res) => {
-        if (!res.ok) throw new Error(`Failed to load radar data: ${res.status}`);
+        if (!res.ok) {
+          setData(DEMO_RADAR);
+          setIsDemo(true);
+          setLoading(false);
+          return;
+        }
         return res.json();
       })
       .then((json) => {
+        if (!json) return;
         setData(json.data);
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
+      .catch(() => {
+        setData(DEMO_RADAR);
+        setIsDemo(true);
         setLoading(false);
       });
   }, []);
@@ -179,13 +207,12 @@ export default function RadarPage() {
     );
   }
 
-  if (error || !data) {
+  if (!data) {
     return (
       <main className="experience-page">
         <section className="panel">
           <p className="eyebrow">Error</p>
           <h2>Failed to load radar</h2>
-          <p className="muted">{error}</p>
           <div className="cta-row">
             <Link href="/dashboard" className="secondary">Back to dashboard</Link>
           </div>
@@ -198,6 +225,12 @@ export default function RadarPage() {
 
   return (
     <main className="experience-page">
+      {isDemo && (
+        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontWeight: 700 }}>Demo data</span>
+          <span style={{ color: "#92400e" }}>— Connect your database to see live radar. <a href="/setup" style={{ textDecoration: "underline" }}>Configure now →</a></span>
+        </div>
+      )}
       <section className="experience-hero">
         <div className="hero-copy">
           <p className="eyebrow">Hot lead radar</p>

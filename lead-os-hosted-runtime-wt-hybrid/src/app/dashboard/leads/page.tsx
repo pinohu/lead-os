@@ -158,6 +158,26 @@ export default function LeadsPage() {
 
   const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
+  function downloadCsv() {
+    const leads = sortedLeads.length > 0 ? sortedLeads : (data?.leads ?? []);
+    if (leads.length === 0) return;
+    const headers = ["Lead Key", "First Name", "Last Name", "Email", "Phone", "Company", "Score", "Temperature", "Niche", "Stage", "Source", "Captured At"];
+    const rows = leads.map((l) => [
+      l.leadKey, l.firstName, l.lastName,
+      l.email ?? "", l.phone ?? "", l.company ?? "",
+      String(l.score), l.temperature, l.niche, l.stage, l.source,
+      new Date(l.capturedAt).toISOString(),
+    ].map((v) => `"${v.replace(/"/g, '""')}"`).join(","));
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `leads-export-${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   if (error) {
     return (
       <main className="experience-page">
@@ -205,6 +225,15 @@ export default function LeadsPage() {
             <Link href="/dashboard/radar" className="secondary">
               Hot lead radar
             </Link>
+            <button
+              type="button"
+              onClick={downloadCsv}
+              className="secondary"
+              disabled={!data || data.leads.length === 0}
+              title="Export current view as CSV"
+            >
+              ↓ Export CSV
+            </button>
           </div>
         </div>
         <aside className="hero-rail">

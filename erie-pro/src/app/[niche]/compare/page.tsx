@@ -7,6 +7,8 @@ import {
   CheckCircle2,
   Shield,
   AlertTriangle,
+  X,
+  Minus,
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { getNicheBySlug } from "@/lib/niches"
@@ -30,6 +32,46 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { InternalLinks } from "@/components/internal-links"
+
+type ComparisonValue = "yes" | "no" | "varies" | string
+
+interface ComparisonRow {
+  factor: string
+  budget: ComparisonValue
+  established: ComparisonValue
+  erieProVerified: ComparisonValue
+}
+
+function ComparisonCell({ value }: { value: ComparisonValue }) {
+  if (value === "yes") return (
+    <span className="flex items-center justify-center gap-1 text-green-600 font-medium text-sm">
+      <CheckCircle2 className="h-4 w-4" /> Yes
+    </span>
+  )
+  if (value === "no") return (
+    <span className="flex items-center justify-center gap-1 text-red-500 font-medium text-sm">
+      <X className="h-4 w-4" /> No
+    </span>
+  )
+  if (value === "varies") return (
+    <span className="flex items-center justify-center gap-1 text-amber-500 font-medium text-sm">
+      <Minus className="h-4 w-4" /> Varies
+    </span>
+  )
+  return <span className="text-center text-sm text-muted-foreground block">{value}</span>
+}
+
+const COMPARISON_ROWS: ComparisonRow[] = [
+  { factor: "PA State License Verified", budget: "varies", established: "yes", erieProVerified: "yes" },
+  { factor: "Liability Insurance on File", budget: "no", established: "yes", erieProVerified: "yes" },
+  { factor: "Written Estimate Provided", budget: "varies", established: "yes", erieProVerified: "yes" },
+  { factor: "Warranty on Labor", budget: "no", established: "varies", erieProVerified: "yes" },
+  { factor: "24/7 Emergency Service", budget: "no", established: "varies", erieProVerified: "yes" },
+  { factor: "Verified Customer Reviews", budget: "varies", established: "yes", erieProVerified: "yes" },
+  { factor: "Upfront Pricing Transparency", budget: "no", established: "varies", erieProVerified: "yes" },
+  { factor: "Background Checked", budget: "no", established: "varies", erieProVerified: "yes" },
+  { factor: "Satisfaction Guarantee", budget: "no", established: "varies", erieProVerified: "yes" },
+]
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -100,8 +142,45 @@ export default async function NicheComparePage({ params }: Props) {
         </div>
       </section>
 
+      {/* ── Side-by-Side Comparison Table ────────────────────── */}
+      <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+        <h2 className="mb-2 text-2xl font-bold tracking-tight">
+          Provider Comparison at a Glance
+        </h2>
+        <p className="mb-8 text-muted-foreground">
+          How different types of {content.pluralLabel.toLowerCase()} stack up across the criteria that matter most.
+        </p>
+        <div className="overflow-x-auto rounded-lg border">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-muted/50">
+                <th className="px-4 py-3 text-left font-semibold" scope="col">Criteria</th>
+                <th className="px-4 py-3 text-center font-semibold text-muted-foreground" scope="col">Budget Provider</th>
+                <th className="px-4 py-3 text-center font-semibold" scope="col">Established Pro</th>
+                <th className="px-4 py-3 text-center font-semibold text-primary" scope="col">
+                  Erie Pro Verified ✓
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {COMPARISON_ROWS.map((row, i) => (
+                <tr key={i} className={i % 2 === 0 ? "bg-white dark:bg-background" : "bg-muted/20"}>
+                  <td className="px-4 py-3 font-medium">{row.factor}</td>
+                  <td className="px-4 py-3"><ComparisonCell value={row.budget} /></td>
+                  <td className="px-4 py-3"><ComparisonCell value={row.established} /></td>
+                  <td className="px-4 py-3 bg-primary/5"><ComparisonCell value={row.erieProVerified} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-4 text-xs text-muted-foreground">
+          * "Budget Provider" refers to unverified contractors found through general search or classified ads. "Established Pro" refers to established local businesses without platform verification. All {cityConfig.domain} providers are screened for license, insurance, and reviews.
+        </p>
+      </section>
+
       {/* ── Comparison Points ─────────────────────────────────── */}
-      <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <section className="mx-auto max-w-3xl px-4 pb-16 sm:px-6">
         <h2 className="mb-8 text-2xl font-bold tracking-tight">
           Key Factors to Compare
         </h2>

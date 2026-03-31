@@ -5,6 +5,8 @@ import {
   MapPin,
   Send,
   MessageSquare,
+  Phone,
+  Clock,
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { Button } from "@/components/ui/button"
@@ -177,11 +179,41 @@ export default function ContactPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-3">
+                  <Phone className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                  <div>
+                    <p className="text-sm font-medium">Phone</p>
+                    <a
+                      href="tel:+18142000328"
+                      className="text-sm text-muted-foreground hover:text-primary"
+                    >
+                      (814) 200-0328
+                    </a>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
                   <Mail className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                   <div>
                     <p className="text-sm font-medium">Email</p>
-                    <p className="text-sm text-muted-foreground">
+                    <a
+                      href={`mailto:hello@${cityConfig.domain}`}
+                      className="text-sm text-muted-foreground hover:text-primary"
+                    >
                       hello@{cityConfig.domain}
+                    </a>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Clock className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                  <div>
+                    <p className="text-sm font-medium">Business Hours</p>
+                    <p className="text-sm text-muted-foreground">
+                      Mon–Fri: 8:00 AM – 6:00 PM ET
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Sat: 9:00 AM – 3:00 PM ET
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Emergency provider dispatch: 24/7
                     </p>
                   </div>
                 </div>
@@ -192,6 +224,10 @@ export default function ContactPage() {
                     <p className="text-sm text-muted-foreground">
                       {cityConfig.name}, {cityConfig.stateCode} and
                       surrounding communities
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Including Millcreek, Harborcreek, Fairview, Girard,
+                      and all of Erie County
                     </p>
                   </div>
                 </div>
@@ -258,10 +294,30 @@ export default function ContactPage() {
             name: `Contact ${cityConfig.domain}`,
             url: `https://${cityConfig.domain}/contact`,
             mainEntity: {
-              "@type": "Organization",
+              "@type": "LocalBusiness",
               name: cityConfig.domain,
+              telephone: "+1-814-200-0328",
               email: `hello@${cityConfig.domain}`,
               url: `https://${cityConfig.domain}`,
+              areaServed: {
+                "@type": "City",
+                name: cityConfig.name,
+                containedInPlace: { "@type": "State", name: "Pennsylvania" },
+              },
+              openingHoursSpecification: [
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                  opens: "08:00",
+                  closes: "18:00",
+                },
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: ["Saturday"],
+                  opens: "09:00",
+                  closes: "15:00",
+                },
+              ],
             },
           }),
         }}

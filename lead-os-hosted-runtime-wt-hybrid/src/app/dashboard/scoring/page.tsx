@@ -64,10 +64,29 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
   );
 }
 
+const DEMO_SCORING: ScoringData = {
+  leads: [
+    { leadKey: "demo-lead-001", firstName: "James", lastName: "Morrison", email: "james@example.com", niche: "plumbing", source: "organic", family: "qualification", stage: "qualified", score: 84, hot: true, temperature: "burning", breakdown: { intent: 90, fit: 85, engagement: 80, urgency: 82 }, recommendedActions: ["Send hot-lead SMS", "Assign to top provider", "Schedule follow-up call"], createdAt: "2026-03-28T10:15:00Z", updatedAt: "2026-03-29T08:00:00Z" },
+    { leadKey: "demo-lead-002", firstName: "Laura", lastName: "Chen", email: "laura@example.com", niche: "hvac", source: "referral", family: "lead-magnet", stage: "nurturing", score: 71, hot: true, temperature: "hot", breakdown: { intent: 75, fit: 70, engagement: 68, urgency: 72 }, recommendedActions: ["Send HVAC cost guide", "Book consultation"], createdAt: "2026-03-27T14:30:00Z", updatedAt: "2026-03-28T09:00:00Z" },
+    { leadKey: "demo-lead-003", firstName: "Tom", lastName: "Bradley", email: "tom@example.com", niche: "electrical", source: "direct", family: "chat", stage: "booked", score: 62, hot: false, temperature: "warm", breakdown: { intent: 65, fit: 60, engagement: 58, urgency: 65 }, recommendedActions: ["Confirm appointment", "Send pre-appointment checklist"], createdAt: "2026-03-26T09:45:00Z", updatedAt: "2026-03-27T11:00:00Z" },
+    { leadKey: "demo-lead-004", firstName: "Angela", lastName: "Park", email: "angela@example.com", niche: "roofing", source: "organic", family: "qualification", stage: "captured", score: 45, hot: false, temperature: "warm", breakdown: { intent: 50, fit: 42, engagement: 40, urgency: 48 }, recommendedActions: ["Send roofing guide", "Add to nurture sequence"], createdAt: "2026-03-25T16:00:00Z", updatedAt: "2026-03-26T08:00:00Z" },
+    { leadKey: "demo-lead-005", firstName: "Kevin", lastName: "Walsh", email: "kevin@example.com", niche: "landscaping", source: "paid-search", family: "lead-magnet", stage: "engaged", score: 28, hot: false, temperature: "cold", breakdown: { intent: 30, fit: 25, engagement: 28, urgency: 29 }, recommendedActions: ["Start cold nurture sequence", "Send seasonal tips content"], createdAt: "2026-03-24T11:20:00Z", updatedAt: "2026-03-24T11:20:00Z" },
+  ],
+  temperatureDistribution: { cold: 31, warm: 58, hot: 39, burning: 19 },
+  scoreByNiche: [
+    { niche: "plumbing", avgScore: 68.4, count: 28 },
+    { niche: "hvac", avgScore: 64.2, count: 23 },
+    { niche: "electrical", avgScore: 61.0, count: 19 },
+    { niche: "roofing", avgScore: 70.1, count: 17 },
+    { niche: "landscaping", avgScore: 52.3, count: 14 },
+    { niche: "legal", avgScore: 73.2, count: 7 },
+  ],
+};
+
 export default function ScoringPage() {
   const [data, setData] = useState<ScoringData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
   const [temperatureFilter, setTemperatureFilter] = useState<Temperature | "all">("all");
   const [nicheFilter, setNicheFilter] = useState("all");
   const [expandedLead, setExpandedLead] = useState<string | null>(null);
@@ -75,15 +94,22 @@ export default function ScoringPage() {
   useEffect(() => {
     fetch("/api/dashboard/scoring", { credentials: "include" })
       .then((res) => {
-        if (!res.ok) throw new Error(`Failed to load scoring data: ${res.status}`);
+        if (!res.ok) {
+          setData(DEMO_SCORING);
+          setIsDemo(true);
+          setLoading(false);
+          return;
+        }
         return res.json();
       })
       .then((json) => {
+        if (!json) return;
         setData(json.data);
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
+      .catch(() => {
+        setData(DEMO_SCORING);
+        setIsDemo(true);
         setLoading(false);
       });
   }, []);
@@ -98,13 +124,12 @@ export default function ScoringPage() {
     );
   }
 
-  if (error || !data) {
+  if (!data) {
     return (
       <main className="experience-page">
         <section className="panel">
           <p className="eyebrow">Error</p>
           <h2>Failed to load scoring</h2>
-          <p className="muted">{error}</p>
           <div className="cta-row">
             <Link href="/dashboard" className="secondary">Back to dashboard</Link>
           </div>
@@ -125,6 +150,12 @@ export default function ScoringPage() {
 
   return (
     <main className="experience-page">
+      {isDemo && (
+        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontWeight: 700 }}>Demo data</span>
+          <span style={{ color: "#92400e" }}>— Connect your database to see live scoring. <a href="/setup" style={{ textDecoration: "underline" }}>Configure now →</a></span>
+        </div>
+      )}
       <section className="experience-hero">
         <div className="hero-copy">
           <p className="eyebrow">Lead scoring</p>

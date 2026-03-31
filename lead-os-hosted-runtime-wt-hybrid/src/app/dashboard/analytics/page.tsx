@@ -18,23 +18,95 @@ interface AnalyticsData {
   funnelPerformance: Array<{ family: string; leads: number; conversions: number; hotLeads: number; conversionRate: number }>;
 }
 
+const DEMO_DATA: AnalyticsData = {
+  metrics: { totalLeads: 147, conversionRate: 18.4, avgScore: 62, hotLeads: 31 },
+  funnelStages: [
+    { stage: "anonymous", count: 147, conversionFromPrevious: 100 },
+    { stage: "engaged", count: 118, conversionFromPrevious: 80.3 },
+    { stage: "captured", count: 94, conversionFromPrevious: 79.7 },
+    { stage: "qualified", count: 67, conversionFromPrevious: 71.3 },
+    { stage: "nurturing", count: 52, conversionFromPrevious: 77.6 },
+    { stage: "booked", count: 38, conversionFromPrevious: 73.1 },
+    { stage: "offered", count: 31, conversionFromPrevious: 81.6 },
+    { stage: "converted", count: 27, conversionFromPrevious: 87.1 },
+    { stage: "onboarding", count: 14, conversionFromPrevious: 51.9 },
+    { stage: "active", count: 9, conversionFromPrevious: 64.3 },
+    { stage: "retention-risk", count: 2, conversionFromPrevious: 22.2 },
+    { stage: "referral-ready", count: 7, conversionFromPrevious: 77.8 },
+    { stage: "churned", count: 3, conversionFromPrevious: 33.3 },
+  ],
+  scoreDistribution: [
+    { label: "0-10", count: 4 },
+    { label: "11-20", count: 8 },
+    { label: "21-30", count: 11 },
+    { label: "31-40", count: 17 },
+    { label: "41-50", count: 22 },
+    { label: "51-60", count: 28 },
+    { label: "61-70", count: 24 },
+    { label: "71-80", count: 18 },
+    { label: "81-90", count: 10 },
+    { label: "91-100", count: 5 },
+  ],
+  channelPerformance: [
+    { source: "organic", leads: 54, conversions: 12, conversionRate: 22.2 },
+    { source: "referral", leads: 31, conversions: 9, conversionRate: 29.0 },
+    { source: "direct", leads: 28, conversions: 4, conversionRate: 14.3 },
+    { source: "paid-search", leads: 19, conversions: 2, conversionRate: 10.5 },
+    { source: "social", leads: 15, conversions: 0, conversionRate: 0 },
+  ],
+  weeklyTimeSeries: [
+    { weekStart: "2026-03-03", weekEnd: "2026-03-10", count: 24 },
+    { weekStart: "2026-03-10", weekEnd: "2026-03-17", count: 31 },
+    { weekStart: "2026-03-17", weekEnd: "2026-03-24", count: 28 },
+    { weekStart: "2026-03-24", weekEnd: "2026-03-31", count: 37 },
+    { weekStart: "2026-03-31", weekEnd: "2026-04-07", count: 27 },
+  ],
+  nichePerformance: [
+    { niche: "plumbing", leads: 28, conversions: 6, hotLeads: 8, avgScore: 68.4, conversionRate: 21.4 },
+    { niche: "hvac", leads: 23, conversions: 5, hotLeads: 6, avgScore: 64.2, conversionRate: 21.7 },
+    { niche: "electrical", leads: 19, conversions: 4, hotLeads: 4, avgScore: 61.0, conversionRate: 21.1 },
+    { niche: "roofing", leads: 17, conversions: 3, hotLeads: 5, avgScore: 70.1, conversionRate: 17.6 },
+    { niche: "landscaping", leads: 14, conversions: 2, hotLeads: 3, avgScore: 55.3, conversionRate: 14.3 },
+    { niche: "pest-control", leads: 11, conversions: 2, hotLeads: 2, avgScore: 58.9, conversionRate: 18.2 },
+    { niche: "cleaning", leads: 9, conversions: 1, hotLeads: 1, avgScore: 51.7, conversionRate: 11.1 },
+    { niche: "painting", leads: 8, conversions: 1, hotLeads: 1, avgScore: 48.5, conversionRate: 12.5 },
+    { niche: "legal", leads: 7, conversions: 2, hotLeads: 1, avgScore: 73.2, conversionRate: 28.6 },
+    { niche: "dental", leads: 11, conversions: 1, hotLeads: 0, avgScore: 44.1, conversionRate: 9.1 },
+  ],
+  funnelPerformance: [
+    { family: "lead-magnet", leads: 42, conversions: 9, hotLeads: 11, conversionRate: 21.4 },
+    { family: "qualification", leads: 38, conversions: 8, hotLeads: 9, conversionRate: 21.1 },
+    { family: "chat", leads: 27, conversions: 5, hotLeads: 6, conversionRate: 18.5 },
+    { family: "checkout", leads: 19, conversions: 4, hotLeads: 3, conversionRate: 21.1 },
+    { family: "webinar", leads: 12, conversions: 1, hotLeads: 2, conversionRate: 8.3 },
+    { family: "retention", leads: 9, conversions: 0, hotLeads: 0, conversionRate: 0 },
+  ],
+};
+
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
     fetch("/api/dashboard/analytics", { credentials: "include" })
       .then((res) => {
-        if (!res.ok) throw new Error(`Failed to load analytics: ${res.status}`);
+        if (!res.ok) {
+          setData(DEMO_DATA);
+          setIsDemo(true);
+          setLoading(false);
+          return;
+        }
         return res.json();
       })
       .then((json) => {
+        if (!json) return;
         setData(json.data);
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
+      .catch(() => {
+        setData(DEMO_DATA);
+        setIsDemo(true);
         setLoading(false);
       });
   }, []);
@@ -49,21 +121,6 @@ export default function AnalyticsPage() {
     );
   }
 
-  if (error) {
-    return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="eyebrow">Error</p>
-          <h2>Failed to load analytics</h2>
-          <p className="muted">{error}</p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
-          </div>
-        </section>
-      </main>
-    );
-  }
-
   if (!data) return null;
 
   const maxScoreCount = Math.max(...data.scoreDistribution.map((b) => b.count), 1);
@@ -71,6 +128,12 @@ export default function AnalyticsPage() {
 
   return (
     <main className="experience-page">
+      {isDemo && (
+        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontWeight: 700 }}>Demo data</span>
+          <span style={{ color: "#92400e" }}>— Connect your database to see live analytics. <a href="/setup" style={{ textDecoration: "underline" }}>Configure now →</a></span>
+        </div>
+      )}
       <section className="experience-hero">
         <div className="hero-copy">
           <p className="eyebrow">Analytics</p>

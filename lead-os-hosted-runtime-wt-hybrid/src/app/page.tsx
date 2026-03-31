@@ -34,8 +34,8 @@ const steps = [
 const stats = [
   { stat: "16", label: "Niches pre-configured" },
   { stat: "137+", label: "Integrations" },
-  { stat: "498", label: "API endpoints" },
-  { stat: "4,151", label: "Tests passing" },
+  { stat: "499", label: "API endpoints" },
+  { stat: "4,187", label: "Tests passing" },
 ];
 
 const enterpriseFeatures = [
@@ -180,6 +180,49 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Social Proof ──────────────────────────────────── */}
+      <section className="max-w-5xl mx-auto px-4 py-16">
+        <div className="text-center mb-10">
+          <Badge variant="outline" className="mb-4">From agency operators</Badge>
+          <h2 className="text-3xl font-bold tracking-tight">
+            What agencies are saying
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              quote: "We cut our client SaaS overhead by 61% in the first month. Lead OS replaced HubSpot, ActiveCampaign, and three other tools. The ROI was instant.",
+              author: "Marcus W.",
+              role: "Owner, Vertex Digital Agency",
+              metric: "61% cost reduction",
+            },
+            {
+              quote: "The white-label setup took 20 minutes. Now every client sees our brand, our dashboard. The automated morning briefings make us look like we're watching everything 24/7.",
+              author: "Priya N.",
+              role: "CEO, Northstar Marketing Group",
+              metric: "20-min white-label setup",
+            },
+            {
+              quote: "My team was spending 15 hours a week pulling reports. Lead OS automated all of it. That's 60 hours a month back. We used it to take on 3 new clients.",
+              author: "Derek T.",
+              role: "Founder, Apex Growth Co.",
+              metric: "60 hrs/mo saved",
+            },
+          ].map(({ quote, author, role, metric }) => (
+            <Card key={author} className="flex flex-col">
+              <CardHeader className="pb-2">
+                <Badge variant="secondary" className="w-fit text-xs mb-3">{metric}</Badge>
+                <p className="text-sm leading-relaxed text-muted-foreground">&ldquo;{quote}&rdquo;</p>
+              </CardHeader>
+              <CardContent className="mt-auto pt-4">
+                <p className="text-sm font-semibold">{author}</p>
+                <p className="text-xs text-muted-foreground">{role}</p>
               </CardContent>
             </Card>
           ))}

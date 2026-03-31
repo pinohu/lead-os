@@ -24,7 +24,7 @@ Lead OS captures visitor intent through embeddable widgets, scores and routes le
 | Service niches (Erie) | 46 |
 | Integration adapters | 62 |
 | Funnel node types | 98 |
-| Industry templates | 13 |
+| Industry templates | 16 |
 
 ## Architecture
 
