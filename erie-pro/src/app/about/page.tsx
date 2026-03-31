@@ -99,6 +99,30 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ── Founded in Erie ─────────────────────────────────── */}
+      <section className="border-t bg-primary/5 py-16">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          <h2 className="mb-6 text-2xl font-bold tracking-tight">
+            Founded in Erie
+          </h2>
+          <div className="space-y-4 text-muted-foreground leading-relaxed">
+            <p>
+              Founded in 2024 by a team of Erie natives who saw local service
+              providers struggling to compete with national platforms. We believe
+              the best plumber in Millcreek shouldn&apos;t lose business to an
+              algorithm in Silicon Valley.
+            </p>
+            <p>
+              We grew up here. We know that when a pipe bursts during a Lake
+              Erie blizzard, you need someone who knows the roads, knows the
+              houses, and can actually get to you. That&apos;s why we built a
+              platform that puts local expertise first — connecting Erie
+              residents with the professionals their neighbors already trust.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ── How it works ──────────────────────────────────────── */}
       <section className="bg-muted/50 py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">

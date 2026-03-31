@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import type { Metadata } from "next"
 import {
   Users,
@@ -52,7 +53,7 @@ export const metadata: Metadata = {
   title: `Admin Dashboard -- ${cityConfig.domain}`,
   description:
     "Comprehensive admin dashboard for monitoring leads, providers, territories, and revenue.",
-  robots: "noindex, nofollow",
+  robots: { index: false, follow: false },
 }
 
 // ── Sample Data ────────────────────────────────────────────────────
@@ -168,6 +169,12 @@ function getStatusColor(status: string) {
 }
 
 export default function AdminDashboard() {
+  const adminKey = process.env.ADMIN_ACCESS_KEY
+  if (!adminKey) {
+    // In production without admin key configured, redirect away
+    redirect("/for-business")
+  }
+
   const providers = getAllProviders()
   const stats = getProviderStats()
 

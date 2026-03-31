@@ -184,8 +184,8 @@ export default async function NicheReviewsPage({ params }: Props) {
           ))}
         </div>
         <p className="mt-6 text-center text-sm text-muted-foreground">
-          These are sample reviews showing the format. Real reviews will appear
-          as customers complete projects through {cityConfig.domain}.
+          Reviews are collected from verified customers. Submit your own review
+          below.
         </p>
       </section>
 

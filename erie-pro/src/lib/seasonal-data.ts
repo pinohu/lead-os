@@ -1,6 +1,6 @@
 // ────────────────────────────────────────────────────────────────────────────
 // Seasonal Maintenance Data — erie.pro
-// Erie, PA specific seasonal maintenance tips for all 12 niches.
+// Erie, PA specific seasonal maintenance tips for supported niches.
 // Accounts for lake effect snow, freeze-thaw cycles, humid summers, etc.
 // ────────────────────────────────────────────────────────────────────────────
 

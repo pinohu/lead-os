@@ -1,6 +1,6 @@
 // ────────────────────────────────────────────────────────────────────────────
 // Glossary Data — erie.pro
-// Industry-specific glossary terms for all 12 niches.
+// Industry-specific glossary terms for supported niches.
 // Each term includes a definition useful for Erie, PA homeowners.
 // ────────────────────────────────────────────────────────────────────────────
 

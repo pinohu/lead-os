@@ -62,7 +62,7 @@ export interface LocalNicheContent {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// All 12 niches with comprehensive Erie, PA specific content
+// All niches with comprehensive Erie, PA specific content (see niches.ts for count)
 // ────────────────────────────────────────────────────────────────────────────
 
 export const NICHE_CONTENT: Record<string, LocalNicheContent> = {
@@ -3256,7 +3256,7 @@ export function getNicheContent(slug: string): LocalNicheContent | undefined {
  * Get all niche slugs for static params generation.
  */
 export function getAllNicheSlugs(): string[] {
-  // Return ALL niche slugs from niches.ts (source of truth for all 24 niches),
+  // Return ALL niche slugs from niches.ts (source of truth),
   // not just the ones with content entries. Pages that need content should
   // call getNicheContent() and handle undefined gracefully.
   try {

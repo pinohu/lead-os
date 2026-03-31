@@ -5,6 +5,38 @@
 
 import { getNicheBySlug } from "./niches";
 
+// ── Niche-category local context ─────────────────────────────────
+// Returns a contextual sentence appropriate for the niche category,
+// instead of one-size-fits-all "lake-effect climate and older housing stock."
+
+const HOME_SERVICE_NICHES = new Set([
+  "plumbing", "hvac", "electrical", "roofing", "landscaping", "cleaning",
+  "painting", "garage-door", "fencing", "flooring", "windows-doors",
+  "foundation", "concrete", "septic", "chimney", "gutters", "drywall",
+  "insulation", "pressure-washing", "carpet-cleaning", "handyman",
+  "restoration", "glass", "irrigation", "demolition", "pool-spa",
+  "home-security", "snow-removal", "tree-service", "solar",
+]);
+const AUTO_NICHES = new Set(["auto-repair", "towing"]);
+const HEALTH_NICHES = new Set(["dental", "veterinary", "chiropractic"]);
+const PROFESSIONAL_NICHES = new Set(["legal", "accounting", "photography", "real-estate"]);
+
+export function getLocalContext(nicheSlug: string): string {
+  if (HOME_SERVICE_NICHES.has(nicheSlug)) {
+    return "Erie's lake-effect climate, older housing stock, and freeze-thaw cycles create specific demands that require experienced local professionals.";
+  }
+  if (AUTO_NICHES.has(nicheSlug)) {
+    return "Erie's harsh winters, road salt, and pothole-heavy streets put extra wear on vehicles, making reliable local service essential.";
+  }
+  if (HEALTH_NICHES.has(nicheSlug)) {
+    return "Erie residents deserve convenient access to quality healthcare providers who understand the needs of our community.";
+  }
+  if (PROFESSIONAL_NICHES.has(nicheSlug)) {
+    return "Erie's growing business community needs trusted local professionals who understand Pennsylvania regulations and the regional economy.";
+  }
+  return "Erie residents and businesses trust local providers who are invested in our community's success.";
+}
+
 // ── Types ──────────────────────────────────────────────────────────
 
 export interface LocalSeoData {
@@ -188,7 +220,7 @@ const NICHE_SEO_SNIPPETS: Record<string, string> = {
 function generateGenericSnippet(nicheSlug: string): string {
   const niche = getNicheBySlug(nicheSlug);
   const label = niche?.label ?? nicheSlug;
-  return `Erie, Pennsylvania residents rely on quality ${label.toLowerCase()} services throughout the year. With a population of approximately 95,000 and a homeownership rate of 52%, there is steady demand for ${label.toLowerCase()} across neighborhoods like Millcreek, Harborcreek, Downtown Erie, and Fairview. Erie County's lake-effect climate and older housing stock create specific needs that local professionals understand.`;
+  return `Erie, Pennsylvania residents rely on quality ${label.toLowerCase()} services throughout the year. With a population of approximately 95,000 and a homeownership rate of 52%, there is steady demand for ${label.toLowerCase()} across neighborhoods like Millcreek, Harborcreek, Downtown Erie, and Fairview. ${getLocalContext(nicheSlug)}`;
 }
 
 // ── Public API ─────────────────────────────────────────────────────
@@ -309,9 +341,8 @@ export function getLocalMetaDescription(niche: string): string {
   const nicheData = getNicheBySlug(niche);
   const label = nicheData?.label ?? niche;
   const seo = ERIE_LOCAL_SEO;
-  const neighborhoods = seo.neighborhoods.slice(0, 4).join(", ");
 
-  return `Find the best ${label.toLowerCase()} services in ${seo.city}, ${seo.stateCode}. Serving ${neighborhoods} and all of ${seo.countyName}. Licensed, insured, verified providers. Free quotes, no obligation.`;
+  return `Find trusted ${label.toLowerCase()} providers in ${seo.city}, ${seo.stateCode}. Compare verified professionals, read reviews, get free quotes. Serving Millcreek, Harborcreek, Fairview and surrounding areas.`;
 }
 
 /**

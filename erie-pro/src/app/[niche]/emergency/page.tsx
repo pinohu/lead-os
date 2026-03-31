@@ -102,12 +102,23 @@ export default async function NicheEmergencyPage({ params }: Props) {
             Need urgent {content.serviceLabel}? Get connected with an
             emergency provider in {cityConfig.name} now.
           </p>
-          <Button asChild size="lg" className="mt-6" variant="destructive">
-            <Link href={`/${slug}#quote`}>
-              <Phone className="mr-2 h-4 w-4" />
-              Get Emergency Help Now
-            </Link>
-          </Button>
+          <p className="mx-auto mt-3 max-w-md text-sm font-medium text-red-700 dark:text-red-300">
+            For emergencies, call a provider directly from our directory
+          </p>
+          <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Button asChild size="lg" variant="destructive">
+              <Link href={`/${slug}#quote`}>
+                <Phone className="mr-2 h-4 w-4" />
+                Get Emergency Help Now
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href={`/${slug}`}>
+                <ArrowRight className="mr-2 h-4 w-4" />
+                Browse {niche.label} Directory
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 

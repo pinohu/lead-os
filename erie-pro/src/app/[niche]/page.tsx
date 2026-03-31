@@ -33,6 +33,11 @@ import { FeaturedProvider } from "@/components/featured-provider"
 
 type Props = { params: Promise<{ niche: string }> }
 
+/** Append "Services" only when the label doesn't already end with "Service(s)". */
+function withServices(label: string): string {
+  return /\bServices?\s*$/i.test(label) ? label : `${label} Services`;
+}
+
 export function generateStaticParams() {
   return niches.map((n) => ({ niche: n.slug }))
 }
@@ -46,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = getLocalMetaDescription(slug)
 
   return {
-    title: `${niche.label} in ${cityConfig.name}, ${cityConfig.stateCode} — Get a Free Quote`,
+    title: `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode} — Get a Free Quote`,
     description,
   }
 }
@@ -63,6 +68,19 @@ export default async function NichePage({ params }: Props) {
 
   return (
     <main>
+      {/* ── Breadcrumb ────────────────────────────────────────── */}
+      <nav aria-label="Breadcrumb" className="border-b bg-muted/30">
+        <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
+          <ol className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <li><Link href="/" className="hover:text-foreground">Home</Link></li>
+            <li>/</li>
+            <li><Link href="/services" className="hover:text-foreground">Services</Link></li>
+            <li>/</li>
+            <li className="text-foreground font-medium">{niche.label}</li>
+          </ol>
+        </div>
+      </nav>
+
       {/* ── Featured Provider (perk-managed) ──────────────────── */}
       <FeaturedProvider niche={niche.slug} city={cityConfig.slug} />
 
@@ -114,7 +132,7 @@ export default async function NichePage({ params }: Props) {
       {/* ── Local SEO Context Section ─────────────────────────── */}
       <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
         <h2 className="mb-4 text-xl font-bold tracking-tight">
-          {niche.label} Services in {ERIE_LOCAL_SEO.countyName}
+          {withServices(niche.label)} in {ERIE_LOCAL_SEO.countyName}
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
           {localSnippet}
