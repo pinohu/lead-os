@@ -39,6 +39,26 @@ const TEMP_BADGE: Record<Temperature, { label: string; bg: string; color: string
 
 const PAGE_SIZE = 25;
 
+const DEMO_LEADS: LeadRow[] = [
+  { leadKey: "lk-001", firstName: "James", lastName: "Rivera", email: "james.r@example.com", phone: "(814) 555-0101", company: "Rivera Properties", score: 94, temperature: "burning", niche: "roofing", stage: "qualified", source: "google-ads", capturedAt: "2026-03-29T10:15:00Z" },
+  { leadKey: "lk-002", firstName: "Priya", lastName: "Mehta", email: "priya.m@example.com", phone: null, company: null, score: 87, temperature: "hot", niche: "hvac", stage: "contacted", source: "referral", capturedAt: "2026-03-28T14:30:00Z" },
+  { leadKey: "lk-003", firstName: "Carlos", lastName: "Nguyen", email: "carlos.n@example.com", phone: "(814) 555-0103", company: "Green Valley LLC", score: 81, temperature: "hot", niche: "landscaping", stage: "engaged", source: "organic", capturedAt: "2026-03-27T09:00:00Z" },
+  { leadKey: "lk-004", firstName: "Sandra", lastName: "Chen", email: "sandra.c@example.com", phone: "(814) 555-0104", company: "Chen Consulting", score: 79, temperature: "warm", niche: "plumbing", stage: "new", source: "email", capturedAt: "2026-03-26T16:45:00Z" },
+  { leadKey: "lk-005", firstName: "Marcus", lastName: "Johnson", email: "marcus.j@example.com", phone: null, company: null, score: 76, temperature: "warm", niche: "electrical", stage: "new", source: "facebook-ads", capturedAt: "2026-03-25T11:20:00Z" },
+  { leadKey: "lk-006", firstName: "Ava", lastName: "Patel", email: "ava.p@example.com", phone: "(814) 555-0106", company: "Patel Realty", score: 72, temperature: "warm", niche: "roofing", stage: "converted", source: "referral", capturedAt: "2026-03-24T08:00:00Z" },
+  { leadKey: "lk-007", firstName: "Derek", lastName: "Williams", email: "derek.w@example.com", phone: "(814) 555-0107", company: null, score: 58, temperature: "cold", niche: "hvac", stage: "cold", source: "google-ads", capturedAt: "2026-03-20T13:00:00Z" },
+  { leadKey: "lk-008", firstName: "Natalie", lastName: "Kim", email: "natalie.k@example.com", phone: "(814) 555-0108", company: "Kim Services", score: 91, temperature: "burning", niche: "landscaping", stage: "qualified", source: "direct", capturedAt: "2026-03-23T15:00:00Z" },
+  { leadKey: "lk-009", firstName: "Robert", lastName: "Torres", email: "r.torres@example.com", phone: null, company: "Torres Build", score: 67, temperature: "warm", niche: "roofing", stage: "contacted", source: "organic", capturedAt: "2026-03-22T10:30:00Z" },
+  { leadKey: "lk-010", firstName: "Lisa", lastName: "Anderson", email: "lisa.a@example.com", phone: "(814) 555-0110", company: null, score: 83, temperature: "hot", niche: "plumbing", stage: "engaged", source: "email", capturedAt: "2026-03-21T09:15:00Z" },
+];
+
+const DEMO_LEADS_RESPONSE: LeadsApiResponse = {
+  leads: DEMO_LEADS,
+  total: 147,
+  page: 1,
+  pageSize: PAGE_SIZE,
+};
+
 function formatDate(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
@@ -71,6 +91,7 @@ function SkeletonRows() {
 export default function LeadsPage() {
   const [data, setData] = useState<LeadsApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isDemo, setIsDemo] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
@@ -97,22 +118,27 @@ export default function LeadsPage() {
     });
 
     fetch(`/api/dashboard/leads?${params.toString()}`, { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
-        return res.json();
-      })
+      .then((res) => res.ok ? res.json() : null)
       .then((json) => {
-        const payload = json.data as LeadsApiResponse;
-        setData(payload);
-        if (allLeadsOnce.length === 0 && page === 1 &&
-          temperatureFilter === "all" && nicheFilter === "all" &&
-          stageFilter === "all" && search === "") {
-          setAllLeadsOnce(payload.leads);
+        const payload = json?.data as LeadsApiResponse | undefined;
+        if (payload?.leads) {
+          setData(payload);
+          if (allLeadsOnce.length === 0 && page === 1 &&
+            temperatureFilter === "all" && nicheFilter === "all" &&
+            stageFilter === "all" && search === "") {
+            setAllLeadsOnce(payload.leads);
+          }
+        } else {
+          setData(DEMO_LEADS_RESPONSE);
+          setAllLeadsOnce(DEMO_LEADS);
+          setIsDemo(true);
         }
         setLoading(false);
       })
-      .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : "Unknown error loading leads");
+      .catch(() => {
+        setData(DEMO_LEADS_RESPONSE);
+        setAllLeadsOnce(DEMO_LEADS);
+        setIsDemo(true);
         setLoading(false);
       });
   }, [page, temperatureFilter, nicheFilter, stageFilter, search, allLeadsOnce.length]);
@@ -178,28 +204,14 @@ export default function LeadsPage() {
     URL.revokeObjectURL(url);
   }
 
-  if (error) {
-    return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="eyebrow">Error</p>
-          <h2>Failed to load leads</h2>
-          <p className="muted">{error}</p>
-          <div className="cta-row">
-            <button type="button" onClick={fetchLeads} className="primary">
-              Retry
-            </button>
-            <Link href="/dashboard" className="secondary">
-              Back to dashboard
-            </Link>
-          </div>
-        </section>
-      </main>
-    );
-  }
-
   return (
     <main className="experience-page">
+      {isDemo && (
+        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", color: "#92400e" }}>
+          Demo data (147 sample leads) — Sign in to view and manage your live lead database.{" "}
+          <Link href="/auth/sign-in" style={{ color: "#92400e", textDecoration: "underline" }}>Sign in</Link>
+        </div>
+      )}
       <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; }

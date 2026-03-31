@@ -56,36 +56,64 @@ function temperatureColor(temp: string): string {
   }
 }
 
+const DEMO_REVENUE: RevenueData = {
+  byNiche: {
+    roofing: { revenue: 183500, count: 61 },
+    hvac: { revenue: 141000, count: 47 },
+    landscaping: { revenue: 102000, count: 34 },
+    plumbing: { revenue: 93000, count: 31 },
+    electrical: { revenue: 84000, count: 28 },
+  },
+  total: 603500,
+  leadsSold: 201,
+  avgPrice: 3002,
+};
+
+const DEMO_MARKETPLACE_LEADS: MarketplaceLead[] = [
+  { id: "ml-001", niche: "roofing", qualityScore: 94, temperature: "burning", summary: "Homeowner needs full roof replacement after hail damage. Has insurance claim approved.", price: 4500, status: "available", createdAt: "2026-03-29T10:00:00Z" },
+  { id: "ml-002", niche: "hvac", qualityScore: 87, temperature: "hot", summary: "Commercial property HVAC upgrade for 8,000 sq ft office building.", price: 3800, status: "available", createdAt: "2026-03-28T14:00:00Z" },
+  { id: "ml-003", niche: "landscaping", qualityScore: 81, temperature: "hot", summary: "2-acre residential landscaping redesign with irrigation system.", price: 2900, status: "claimed", claimedBy: "buyer-001", createdAt: "2026-03-27T09:00:00Z" },
+  { id: "ml-004", niche: "plumbing", qualityScore: 79, temperature: "warm", summary: "Kitchen and two bathroom remodel plumbing package.", price: 2400, status: "sold", soldAt: "2026-03-26T11:00:00Z", createdAt: "2026-03-25T16:00:00Z" },
+  { id: "ml-005", niche: "electrical", qualityScore: 76, temperature: "warm", summary: "Panel upgrade and EV charger installation for new build.", price: 2100, status: "available", createdAt: "2026-03-24T08:00:00Z" },
+];
+
+const DEMO_BUYERS: BuyerAccount[] = [
+  { id: "buyer-001", email: "bids@acme-roofing.com", company: "Acme Roofing Co.", totalSpent: 183500, leadsPurchased: 41, status: "active" },
+  { id: "buyer-002", email: "leads@swifthvac.io", company: "Swift HVAC", totalSpent: 141000, leadsPurchased: 34, status: "active" },
+  { id: "buyer-003", email: "buy@greenlawn.com", company: "Green Lawn Erie", totalSpent: 56000, leadsPurchased: 19, status: "active" },
+];
+
 export default function MarketplaceDashboardPage() {
   const [revenue, setRevenue] = useState<RevenueData | null>(null);
   const [leads, setLeads] = useState<MarketplaceLead[]>([]);
   const [buyers, setBuyers] = useState<BuyerAccount[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/marketplace/revenue", { credentials: "include" }).then((r) => {
-        if (!r.ok) throw new Error(`Revenue fetch failed: ${r.status}`);
-        return r.json();
-      }),
-      fetch("/api/marketplace/leads?limit=50", { credentials: "include" }).then((r) => {
-        if (!r.ok) throw new Error(`Leads fetch failed: ${r.status}`);
-        return r.json();
-      }),
-      fetch("/api/marketplace/buyers", { credentials: "include" }).then((r) => {
-        if (!r.ok) throw new Error(`Buyers fetch failed: ${r.status}`);
-        return r.json();
-      }),
+      fetch("/api/marketplace/revenue", { credentials: "include" }).then((r) => r.ok ? r.json() : null),
+      fetch("/api/marketplace/leads?limit=50", { credentials: "include" }).then((r) => r.ok ? r.json() : null),
+      fetch("/api/marketplace/buyers", { credentials: "include" }).then((r) => r.ok ? r.json() : null),
     ])
       .then(([revenueJson, leadsJson, buyersJson]) => {
-        setRevenue(revenueJson.data);
-        setLeads(leadsJson.data ?? []);
-        setBuyers(buyersJson.data ?? []);
+        if (revenueJson?.data || leadsJson?.data || buyersJson?.data) {
+          setRevenue(revenueJson?.data ?? null);
+          setLeads(leadsJson?.data ?? []);
+          setBuyers(buyersJson?.data ?? []);
+        } else {
+          setRevenue(DEMO_REVENUE);
+          setLeads(DEMO_MARKETPLACE_LEADS);
+          setBuyers(DEMO_BUYERS);
+          setIsDemo(true);
+        }
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
+      .catch(() => {
+        setRevenue(DEMO_REVENUE);
+        setLeads(DEMO_MARKETPLACE_LEADS);
+        setBuyers(DEMO_BUYERS);
+        setIsDemo(true);
         setLoading(false);
       });
   }, []);
@@ -95,21 +123,6 @@ export default function MarketplaceDashboardPage() {
       <main className="experience-page">
         <section className="panel">
           <p className="muted">Loading marketplace data...</p>
-        </section>
-      </main>
-    );
-  }
-
-  if (error) {
-    return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="eyebrow">Error</p>
-          <h2>Failed to load marketplace</h2>
-          <p className="muted">{error}</p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
-          </div>
         </section>
       </main>
     );
@@ -132,6 +145,12 @@ export default function MarketplaceDashboardPage() {
 
   return (
     <main className="experience-page">
+      {isDemo && (
+        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", color: "#92400e" }}>
+          Demo marketplace data — Connect your tenant to manage live lead inventory.{" "}
+          <Link href="/auth/sign-in" style={{ color: "#92400e", textDecoration: "underline" }}>Sign in</Link>
+        </div>
+      )}
       <section className="experience-hero">
         <div className="hero-copy">
           <p className="eyebrow">Marketplace</p>
