@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { InternalLinks } from "@/components/internal-links"
+import { FeaturedProvider } from "@/components/featured-provider"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -47,6 +48,9 @@ export default async function NichePage({ params }: Props) {
 
   return (
     <main>
+      {/* ── Featured Provider (if premium/elite) ────────────── */}
+      <FeaturedProvider niche={niche.slug} city={cityConfig.slug} />
+
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="border-b bg-muted/30 pb-12 pt-16">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
