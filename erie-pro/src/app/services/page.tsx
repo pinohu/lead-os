@@ -28,8 +28,29 @@ export const metadata: Metadata = {
 }
 
 export default function ServicesPage() {
+  const servicesJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": "https://erie.pro/services#servicelist",
+    name: `All Services — ${cityConfig.name}, ${cityConfig.stateCode}`,
+    description: `Browse all ${niches.length} service categories on ${cityConfig.domain}. Verified professionals for every home service need in ${cityConfig.name}.`,
+    numberOfItems: niches.length,
+    itemListElement: niches.map((niche, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: niche.label,
+      description: niche.description,
+      url: `https://erie.pro/${niche.slug}`,
+    })),
+  }
+
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesJsonLd) }}
+      />
+      <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div className="border-b bg-muted/30">
         <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
@@ -149,5 +170,6 @@ export default function ServicesPage() {
         </div>
       </section>
     </main>
+    </>
   )
 }

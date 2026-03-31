@@ -97,8 +97,32 @@ export default async function NicheComparePage({ params }: Props) {
   const content = getNicheContent(slug)
   if (!niche || !content) notFound()
 
+  const compareJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": `https://erie.pro/${slug}/compare#article`,
+    headline: `How to Choose the Right ${niche.label} Provider in ${cityConfig.name}, ${cityConfig.stateCode}`,
+    description: `What to look for, what to ask, and red flags to avoid when comparing ${content.pluralLabel.toLowerCase()} in the Erie area.`,
+    url: `https://erie.pro/${slug}/compare`,
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://erie.pro/#organization",
+      name: cityConfig.domain,
+    },
+    about: {
+      "@type": "Service",
+      name: `${niche.label} Services`,
+      areaServed: { "@type": "City", name: cityConfig.name },
+    },
+  }
+
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(compareJsonLd) }}
+      />
+      <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div className="border-b bg-muted/30">
         <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
@@ -319,5 +343,6 @@ export default async function NicheComparePage({ params }: Props) {
 
       <InternalLinks niche={slug} currentPage="compare" />
     </main>
+    </>
   )
 }

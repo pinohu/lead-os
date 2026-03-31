@@ -54,8 +54,29 @@ export default async function NicheDirectoryPage({ params }: Props) {
   const content = getNicheContent(slug)
   if (!niche || !content) notFound()
 
+  const directoryJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `https://erie.pro/${slug}/directory#directory`,
+    name: `${content.pluralLabel} Directory — ${cityConfig.name}, ${cityConfig.stateCode}`,
+    description: `Verified ${content.pluralLabel.toLowerCase()} serving the ${cityConfig.name} metro area. Licensed, insured professionals with reviews.`,
+    numberOfItems: PLACEHOLDER_SLOTS.length,
+    itemListElement: PLACEHOLDER_SLOTS.map((slot, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: `${niche.label} Provider — ${slot.area}, ${cityConfig.stateCode}`,
+      description: slot.specialty,
+      url: `https://erie.pro/${slug}`,
+    })),
+  }
+
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(directoryJsonLd) }}
+      />
+      <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div className="border-b bg-muted/30">
         <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
@@ -231,5 +252,6 @@ export default async function NicheDirectoryPage({ params }: Props) {
         </div>
       </section>
     </main>
+    </>
   )
 }

@@ -81,8 +81,31 @@ export default async function NicheSeasonalPage({ params }: Props) {
   const month = new Date().getMonth()
   const currentSeason = month >= 2 && month <= 4 ? "spring" : month >= 5 && month <= 7 ? "summer" : month >= 8 && month <= 10 ? "fall" : "winter"
 
+  const seasonalJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "@id": `https://erie.pro/${slug}/seasonal#guide`,
+    name: `${niche.label} Seasonal Maintenance Guide for ${cityConfig.name}, ${cityConfig.stateCode}`,
+    description: `Year-round ${content.serviceLabel} maintenance schedule for ${cityConfig.name} homes. Season-by-season tasks covering lake effect winter prep and spring flood prevention.`,
+    step: (["spring", "summer", "fall", "winter"] as const).map((season) => ({
+      "@type": "HowToSection",
+      name: `${season.charAt(0).toUpperCase() + season.slice(1)} ${niche.label} Maintenance`,
+      itemListElement: guide[season].map((task, i) => ({
+        "@type": "HowToStep",
+        position: i + 1,
+        name: task.task,
+        text: task.details,
+      })),
+    })),
+  }
+
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(seasonalJsonLd) }}
+      />
+      <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div className="border-b bg-muted/30">
         <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
@@ -212,5 +235,6 @@ export default async function NicheSeasonalPage({ params }: Props) {
         </div>
       </section>
     </main>
+    </>
   )
 }
