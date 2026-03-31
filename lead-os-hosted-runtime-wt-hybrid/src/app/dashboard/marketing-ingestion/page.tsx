@@ -296,11 +296,12 @@ export default function MarketingIngestionPage() {
   const loadArtifacts = useCallback(async () => {
     try {
       const res = await fetch(`/api/ingestion/upload?tenantId=${TENANT_ID}`, { credentials: "include" });
-      if (!res.ok) throw new Error(`Failed to load artifacts: ${res.status}`);
-      const json = await res.json();
-      setArtifacts(json.data ?? []);
+      const json = res.ok ? await res.json() : null;
+      setArtifacts(json?.data ?? []);
       setLoading(false);
     } catch (err) {
+      // Graceful empty state — show the form even without auth
+      setArtifacts([]);
       setError(err instanceof Error ? err.message : "Unknown error");
       setLoading(false);
     }
@@ -388,20 +389,6 @@ export default function MarketingIngestionPage() {
         <div style={styles.container}>
           <div style={styles.formCard}>
             <p style={styles.muted}>Loading marketing intelligence data...</p>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  if (error) {
-    return (
-      <main style={styles.page}>
-        <div style={styles.container}>
-          <div style={styles.formCard}>
-            <p style={{ color: "#94a3b8", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", margin: "0 0 8px" }}>Error</p>
-            <h2 style={{ color: "#f8fafc", margin: "0 0 8px", fontSize: "1.25rem" }}>Failed to load artifacts</h2>
-            <p style={styles.muted}>{error}</p>
           </div>
         </div>
       </main>

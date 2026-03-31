@@ -37,25 +37,41 @@ interface MagnetSummary {
   }>;
 }
 
+const DEMO_LEAD_MAGNET_DATA: LeadMagnetData = {
+  leads: [
+    { leadKey: "lk-lm-001", firstName: "James", lastName: "Rivera", email: "james.r@example.com", niche: "roofing", source: "google-ads", family: "lead-magnet", stage: "qualified", score: 94, createdAt: "2026-03-28T10:00:00Z", updatedAt: "2026-03-29T14:00:00Z" },
+    { leadKey: "lk-lm-002", firstName: "Priya", lastName: "Mehta", email: "priya.m@example.com", niche: "hvac", source: "referral", family: "lead-magnet", stage: "converted", score: 87, createdAt: "2026-03-27T09:00:00Z", updatedAt: "2026-03-29T10:00:00Z" },
+    { leadKey: "lk-lm-003", firstName: "Carlos", lastName: "Nguyen", email: "carlos.n@example.com", niche: "landscaping", source: "organic", family: "lead-magnet", stage: "engaged", score: 81, createdAt: "2026-03-26T16:00:00Z", updatedAt: "2026-03-28T09:00:00Z" },
+    { leadKey: "lk-lm-004", firstName: "Sandra", lastName: "Chen", email: "sandra.c@example.com", niche: "plumbing", source: "email", family: "lead-magnet", stage: "new", score: 74, createdAt: "2026-03-25T11:00:00Z", updatedAt: "2026-03-25T11:00:00Z" },
+    { leadKey: "lk-lm-005", firstName: "Marcus", lastName: "Johnson", email: "marcus.j@example.com", niche: "electrical", source: "facebook-ads", family: "lead-magnet", stage: "contacted", score: 68, createdAt: "2026-03-24T14:00:00Z", updatedAt: "2026-03-26T08:00:00Z" },
+    { leadKey: "lk-lm-006", firstName: "Ava", lastName: "Patel", email: "ava.p@example.com", niche: "roofing", source: "referral", family: "lead-magnet", stage: "converted", score: 91, createdAt: "2026-03-23T10:00:00Z", updatedAt: "2026-03-27T12:00:00Z" },
+    { leadKey: "lk-lm-007", firstName: "Natalie", lastName: "Kim", email: "natalie.k@example.com", niche: "landscaping", source: "direct", family: "lead-magnet", stage: "qualified", score: 83, createdAt: "2026-03-22T15:00:00Z", updatedAt: "2026-03-26T11:00:00Z" },
+    { leadKey: "lk-lm-008", firstName: "Derek", lastName: "Williams", email: "derek.w@example.com", niche: "hvac", source: "google-ads", family: "lead-magnet", stage: "cold", score: 52, createdAt: "2026-03-18T09:00:00Z", updatedAt: "2026-03-20T10:00:00Z" },
+  ],
+};
+
 export default function LeadMagnetsPage() {
   const [data, setData] = useState<LeadMagnetData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [nicheFilter, setNicheFilter] = useState("all");
 
   useEffect(() => {
     fetch("/api/dashboard/scoring", { credentials: "include" })
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to load data: ${res.status}`);
-        return res.json();
-      })
+      .then((res) => res.ok ? res.json() : null)
       .then((json) => {
-        setData(json.data);
+        if (json?.data?.leads) {
+          setData(json.data);
+        } else {
+          setData(DEMO_LEAD_MAGNET_DATA);
+          setIsDemo(true);
+        }
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err instanceof Error ? err.message : "Unknown error");
+      .catch(() => {
+        setData(DEMO_LEAD_MAGNET_DATA);
+        setIsDemo(true);
         setLoading(false);
       });
   }, []);
@@ -140,23 +156,14 @@ export default function LeadMagnetsPage() {
     );
   }
 
-  if (error || !data) {
-    return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="eyebrow">Error</p>
-          <h2>Failed to load lead magnets</h2>
-          <p className="muted">{error}</p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
-          </div>
-        </section>
-      </main>
-    );
-  }
-
   return (
     <main className="experience-page">
+      {isDemo && (
+        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", color: "#92400e" }}>
+          Demo data — Sign in to manage your live lead magnets.{" "}
+          <Link href="/auth/sign-in" style={{ color: "#92400e", textDecoration: "underline" }}>Sign in</Link>
+        </div>
+      )}
       <section className="experience-hero">
         <div className="hero-copy">
           <p className="eyebrow">Lead magnets</p>
