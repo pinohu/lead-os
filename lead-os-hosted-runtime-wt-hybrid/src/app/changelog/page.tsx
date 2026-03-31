@@ -15,6 +15,36 @@ interface Release {
 
 const releases: Release[] = [
   {
+    version: "1.2.0",
+    date: "2026-03-31",
+    added: [
+      "Demo data fallbacks on 12 dashboard pages — attribution, analytics, scoring, radar, revenue, leads, marketplace, health, experiments, feedback, competitors, creative, lead-magnets, billing, tenants",
+      "Schema.org Organization + WebSite + SoftwareApplication JSON-LD in kernel root layout",
+      "Schema.org LocalBusiness + WebSite JSON-LD in erie-pro root layout with dynamic city and niche data",
+      "28 server-component layout.tsx files for unique dashboard page titles (SEO)",
+      "CSV export on leads dashboard — exports all visible lead rows with one click",
+      "Provider testimonials section on for-business page (erie-pro)",
+      "Agency owner testimonials section on kernel homepage with metric badges",
+      "Comparison table on niche compare pages (9 rows, 3 columns)",
+      "HowTo Schema.org JSON-LD on niche guides pages for rich search results",
+      "Phone number and business hours on erie-pro contact page",
+      "Niche-specific step lists on guide cards with CheckCircle2 icons",
+      "Skip-to-main-content accessibility link in NeatCircle layout",
+      "Checklist page metadata (generateMetadata server layout for client-component page)",
+    ],
+    changed: [
+      "Dashboard pages that returned error walls now show demo data with amber banners",
+      "Credentials and marketing-ingestion pages now show empty state instead of blocking error",
+      "Feedback page action errors (run cycle, apply adjustments) preserved inline",
+      "Revenue page always returns data — no null state on failure",
+    ],
+    fixed: [
+      "TypeScript error in api-funnel.test.ts: ChannelType import for strict array typing",
+      "Analytics, scoring, radar dashboards showing error wall on unauthenticated visits",
+      "All 12 dashboard client-component pages now render useful content for all visitors",
+    ],
+  },
+  {
     version: "1.1.0",
     date: "2026-03-28",
     added: [
