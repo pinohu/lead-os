@@ -9,6 +9,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { MobileNav } from "@/components/mobile-nav"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { LocalSeoFooter } from "@/components/local-seo-footer"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -173,6 +174,9 @@ export default function RootLayout({
           <div id="main-content" role="main">
             {children}
           </div>
+
+          {/* ── Local SEO Footer ────────────────────────────── */}
+          <LocalSeoFooter />
 
           {/* ── Footer ───────────────────────────────────────── */}
           <footer role="contentinfo" className="border-t bg-muted/40">

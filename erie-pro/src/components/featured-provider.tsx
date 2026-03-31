@@ -5,6 +5,7 @@ import { Star, Phone, Shield, Award, CheckCircle2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { getPerkStatus } from "@/lib/perk-manager"
 import { getProviderByNicheAndCity } from "@/lib/provider-store"
 import {
   getBadgeLabel,
@@ -17,24 +18,29 @@ interface FeaturedProviderProps {
   city: string
 }
 
-function resolveTier(
-  rawTier: string
-): ProviderTier | null {
-  if (rawTier === "premium" || rawTier === "elite") return rawTier
-  return null
-}
-
 export function FeaturedProvider({ niche, city }: FeaturedProviderProps) {
+  // ── Perk-based check: is there an active subscription with featured badge? ──
+  const perkStatus = getPerkStatus(niche, city)
+
+  // No active subscription or no featured badge perk → don't render
+  if (!perkStatus.subscriptionActive || !perkStatus.perks.featuredBadge) {
+    return null
+  }
+
+  // Fetch the full provider profile for display details
   const provider = getProviderByNicheAndCity(niche, city)
+
+  // Graceful handling: subscription is active in perk-manager but provider
+  // record might have been removed or changed — don't crash, just skip
   if (!provider) return null
 
-  // Only show the badge for premium or elite providers
-  const tier = resolveTier(provider.tier as string)
-  if (!tier) return null
-
+  const tier = perkStatus.tier as ProviderTier
   const badgeLabel = getBadgeLabel(tier)
   const badgeColors = getTierColor(tier)
   const isElite = tier === "elite"
+
+  // If tier doesn't warrant a badge (standard), don't render
+  if (!badgeLabel) return null
 
   return (
     <section className="mx-auto max-w-4xl px-4 pt-8 sm:px-6">
@@ -68,6 +74,13 @@ export function FeaturedProvider({ niche, city }: FeaturedProviderProps) {
                 )}
                 {badgeLabel}
               </Badge>
+
+              {/* Show extra perk indicators for elite */}
+              {perkStatus.perks.nationalListing && (
+                <Badge variant="outline" className="text-xs">
+                  National Directory
+                </Badge>
+              )}
             </div>
 
             <h3 className="text-xl font-bold tracking-tight">
@@ -114,6 +127,12 @@ export function FeaturedProvider({ niche, city }: FeaturedProviderProps) {
                 <CheckCircle2 className="h-3 w-3 text-green-600" />
                 Est. {provider.yearEstablished}
               </span>
+              {perkStatus.perks.reviewAutomation && (
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <CheckCircle2 className="h-3 w-3 text-green-600" />
+                  Automated Reviews
+                </span>
+              )}
             </div>
           </div>
 

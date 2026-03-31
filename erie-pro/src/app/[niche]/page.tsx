@@ -11,6 +11,12 @@ import {
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { niches, getNicheBySlug } from "@/lib/niches"
+import {
+  getLocalSeoSnippet,
+  getLocalSchemaOrg,
+  getLocalMetaDescription,
+  ERIE_LOCAL_SEO,
+} from "@/lib/local-seo"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -35,9 +41,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { niche: slug } = await params
   const niche = getNicheBySlug(slug)
   if (!niche) return { title: "Not Found" }
+
+  // Use the enriched local SEO meta description
+  const description = getLocalMetaDescription(slug)
+
   return {
     title: `${niche.label} in ${cityConfig.name}, ${cityConfig.stateCode} — Get a Free Quote`,
-    description: `Find the best ${niche.label.toLowerCase()} services in ${cityConfig.name}, ${cityConfig.state}. ${niche.description}. Get a free quote today.`,
+    description,
   }
 }
 
@@ -46,9 +56,14 @@ export default async function NichePage({ params }: Props) {
   const niche = getNicheBySlug(slug)
   if (!niche) notFound()
 
+  // ── Local SEO data ──────────────────────────────────────────────
+  const localSnippet = getLocalSeoSnippet(slug)
+  const localSchema = getLocalSchemaOrg(slug)
+  const neighborhoods = ERIE_LOCAL_SEO.neighborhoods
+
   return (
     <main>
-      {/* ── Featured Provider (if premium/elite) ────────────── */}
+      {/* ── Featured Provider (perk-managed) ──────────────────── */}
       <FeaturedProvider niche={niche.slug} city={cityConfig.slug} />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
@@ -66,7 +81,7 @@ export default async function NichePage({ params }: Props) {
 
           <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
             {niche.description}. Serving{" "}
-            {cityConfig.serviceArea.slice(0, 5).join(", ")} and
+            {neighborhoods.slice(0, 5).join(", ")} and
             surrounding areas.
           </p>
 
@@ -96,8 +111,18 @@ export default async function NichePage({ params }: Props) {
         </div>
       </section>
 
+      {/* ── Local SEO Context Section ─────────────────────────── */}
+      <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
+        <h2 className="mb-4 text-xl font-bold tracking-tight">
+          {niche.label} Services in {ERIE_LOCAL_SEO.countyName}
+        </h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {localSnippet}
+        </p>
+      </section>
+
       {/* ── Service info cards ──────────────────────────────── */}
-      <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+      <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6">
         <div className="grid gap-6 md:grid-cols-3">
           <Card>
             <CardHeader className="pb-3">
@@ -105,7 +130,7 @@ export default async function NichePage({ params }: Props) {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                {cityConfig.serviceArea.join(", ")}
+                {neighborhoods.join(", ")}
               </p>
             </CardContent>
           </Card>
@@ -229,8 +254,8 @@ export default async function NichePage({ params }: Props) {
                 desc: `${cityConfig.name} providers typically respond within hours, not days.`,
               },
               {
-                title: `Serving all of ${cityConfig.name}`,
-                desc: `Coverage across ${cityConfig.serviceArea.slice(0, 4).join(", ")}, and more.`,
+                title: `Serving all of ${ERIE_LOCAL_SEO.countyName}`,
+                desc: `Coverage across ${neighborhoods.slice(0, 4).join(", ")}, and more.`,
               },
             ].map(({ title, desc }) => (
               <div key={title} className="flex gap-3">
@@ -278,26 +303,11 @@ export default async function NichePage({ params }: Props) {
         </p>
       </section>
 
-      {/* ── Schema.org ──────────────────────────────────────── */}
+      {/* ── Enhanced Schema.org with local SEO data ────────── */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Service",
-            name: `${niche.label} in ${cityConfig.name}, ${cityConfig.stateCode}`,
-            description: niche.description,
-            url: `https://${cityConfig.domain}/${niche.slug}`,
-            areaServed: cityConfig.serviceArea.map((area) => ({
-              "@type": "City",
-              name: area,
-            })),
-            provider: {
-              "@type": "LocalBusiness",
-              name: cityConfig.domain,
-              url: `https://${cityConfig.domain}`,
-            },
-          }),
+          __html: JSON.stringify(localSchema),
         }}
       />
 
