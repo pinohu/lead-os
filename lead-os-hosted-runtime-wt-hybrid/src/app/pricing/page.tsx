@@ -1,81 +1,90 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Check } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Pricing",
+  title: "Pricing — Lead OS",
   description:
-    "Lead OS pricing plans. Choose the right tier for your lead generation needs, from starter to enterprise.",
+    "Enterprise lead generation pricing. Replace 15-20 SaaS tools with one platform. Plans from $299/mo.",
 };
 
 const plans = [
   {
     name: "Starter",
-    price: "$99",
+    price: "$299",
     period: "/mo",
-    description: "For solo operators getting started with lead generation.",
+    description: "For solo operators launching their first lead engine.",
     features: [
-      "100 leads/month",
-      "5 funnel configurations",
-      "3 integrations",
-      "Email nurturing",
-      "Basic scoring",
+      "250 leads/month",
+      "10 funnel configurations",
+      "5 integrations",
+      "Email nurturing sequences",
+      "4D lead scoring",
       "Operator dashboard",
+      "Dry-run testing mode",
       "Email support",
     ],
-    cta: "Get Started",
+    cta: "Start Free Trial",
     href: "/onboard?plan=starter",
     highlighted: false,
   },
   {
     name: "Growth",
-    price: "$249",
+    price: "$599",
     period: "/mo",
-    description: "For growing agencies managing multiple niches.",
+    description: "For growing agencies managing multiple niches and channels.",
     features: [
-      "500 leads/month",
-      "15 funnel configurations",
-      "10 integrations",
+      "1,500 leads/month",
+      "25 funnel configurations",
+      "25 integrations",
       "Multi-channel nurturing",
-      "AI-powered scoring",
+      "AI-powered scoring & content",
       "A/B experiment engine",
-      "AI content generation",
+      "Prospect discovery scout",
+      "Competitive analysis",
       "Priority support",
     ],
-    cta: "Get Started",
+    cta: "Start Free Trial",
     href: "/onboard?plan=growth",
     highlighted: true,
   },
   {
     name: "Professional",
-    price: "$499",
+    price: "$1,299",
     period: "/mo",
     description: "For established agencies and white-label SaaS operators.",
     features: [
-      "2,000 leads/month",
+      "10,000 leads/month",
       "Unlimited funnels",
-      "All 110+ integrations",
+      "All 137+ integrations",
       "Multi-tenant management",
       "Lead marketplace access",
-      "AI agent teams",
-      "Custom branding",
-      "API access",
+      "AI agent orchestration",
+      "Custom branding & domains",
+      "Full API access",
+      "Joy Layer automation",
       "Dedicated support",
     ],
-    cta: "Get Started",
+    cta: "Start Free Trial",
     href: "/onboard?plan=professional",
     highlighted: false,
   },
   {
     name: "Enterprise",
-    price: "Custom",
-    period: "",
-    description: "For large-scale operations with custom requirements.",
+    price: "$2,999",
+    period: "/mo",
+    description: "For large-scale operations with custom infrastructure needs.",
     features: [
       "Unlimited leads",
       "Custom implementation",
       "Dedicated infrastructure",
-      "SLA guarantee (99.9%)",
-      "On-premise option",
+      "99.9% SLA guarantee",
+      "SSO (SAML/OIDC)",
+      "IP allowlisting & 2FA",
+      "SOC 2 compliance reports",
       "Custom integrations",
       "Dedicated account manager",
       "Phone + Slack support",
@@ -88,118 +97,70 @@ const plans = [
 
 export default function PricingPage() {
   return (
-    <main id="main-content" style={{ maxWidth: "76rem", margin: "0 auto", padding: "3rem 1rem" }}>
-      <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-        <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.75rem" }}>
-          Simple, Transparent Pricing
+    <main id="main-content" className="max-w-7xl mx-auto px-4 py-16">
+      <div className="text-center mb-12">
+        <Badge variant="secondary" className="mb-4">Pricing</Badge>
+        <h1 className="text-4xl font-extrabold tracking-tight mb-3">
+          Replace 15-20 Tools With One Platform
         </h1>
-        <p style={{ color: "#6b7280", maxWidth: "36rem", margin: "0 auto" }}>
-          Start free in development mode. Choose a plan when you are ready to go to production.
+        <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+          Every plan includes a 14-day free trial. Start in dry-run mode with zero risk.
+          Upgrade, downgrade, or cancel anytime.
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(16rem, 1fr))",
-          gap: "1.5rem",
-          marginBottom: "4rem",
-        }}
-      >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
         {plans.map((plan) => (
-          <div
+          <Card
             key={plan.name}
-            style={{
-              border: plan.highlighted ? "2px solid #4f46e5" : "1px solid #e5e7eb",
-              borderRadius: "0.75rem",
-              padding: "2rem 1.5rem",
-              display: "flex",
-              flexDirection: "column",
-              background: plan.highlighted ? "#fafafe" : "#fff",
-              position: "relative",
-            }}
+            className={
+              plan.highlighted
+                ? "border-2 border-primary relative shadow-lg"
+                : "relative"
+            }
           >
             {plan.highlighted && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-0.75rem",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  background: "#4f46e5",
-                  color: "#fff",
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  padding: "0.125rem 0.75rem",
-                  borderRadius: "1rem",
-                }}
-              >
+              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
                 Most Popular
-              </span>
+              </Badge>
             )}
-            <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.25rem" }}>
-              {plan.name}
-            </h2>
-            <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1rem" }}>
-              {plan.description}
-            </p>
-            <p style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "1.5rem" }}>
-              {plan.price}
-              <span style={{ fontSize: "0.875rem", fontWeight: 400, color: "#6b7280" }}>
-                {plan.period}
-              </span>
-            </p>
-            <ul style={{ listStyle: "none", padding: 0, flex: 1, marginBottom: "1.5rem" }}>
-              {plan.features.map((feature) => (
-                <li
-                  key={feature}
-                  style={{
-                    padding: "0.25rem 0",
-                    fontSize: "0.875rem",
-                    color: "#374151",
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: "0.5rem",
-                  }}
-                >
-                  <span style={{ color: "#10b981", flexShrink: 0 }} aria-hidden="true">&#10003;</span>
-                  {feature}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href={plan.href}
-              style={{
-                display: "block",
-                textAlign: "center",
-                padding: "0.625rem 1rem",
-                background: plan.highlighted ? "#4f46e5" : "#f3f4f6",
-                color: plan.highlighted ? "#fff" : "#374151",
-                borderRadius: "0.375rem",
-                textDecoration: "none",
-                fontWeight: 600,
-                fontSize: "0.875rem",
-              }}
-            >
-              {plan.cta}
-            </Link>
-          </div>
+            <CardHeader>
+              <CardTitle className="text-xl">{plan.name}</CardTitle>
+              <CardDescription>{plan.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <p className="text-4xl font-extrabold mb-6">
+                {plan.price}
+                <span className="text-base font-normal text-muted-foreground">
+                  {plan.period}
+                </span>
+              </p>
+              <ul className="space-y-2">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+            <CardFooter>
+              <Button
+                asChild
+                variant={plan.highlighted ? "default" : "outline"}
+                className="w-full"
+                size="lg"
+              >
+                <Link href={plan.href}>{plan.cta}</Link>
+              </Button>
+            </CardFooter>
+          </Card>
         ))}
       </div>
 
-      <section style={{ textAlign: "center", marginBottom: "4rem" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "2rem" }}>
-          Trusted by Growing Businesses
-        </h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(18rem, 1fr))",
-            gap: "1.5rem",
-            maxWidth: "56rem",
-            margin: "0 auto 2rem",
-          }}
-        >
+      <section className="text-center mb-16">
+        <h2 className="text-2xl font-bold mb-8">Trusted by Growing Businesses</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
           {[
             {
               quote: "We went from manually tracking leads in spreadsheets to a fully automated pipeline in under a week. Our conversion rate is up 40%.",
@@ -217,61 +178,52 @@ export default function PricingPage() {
               role: "Founder, BuildRight Consulting",
             },
           ].map((testimonial) => (
-            <figure
-              key={testimonial.author}
-              style={{
-                border: "1px solid #e5e7eb",
-                borderRadius: "0.75rem",
-                padding: "1.5rem",
-                margin: 0,
-                textAlign: "left",
-                background: "#fff",
-              }}
-            >
-              <blockquote style={{ margin: "0 0 1rem", fontSize: "0.875rem", color: "#374151", lineHeight: 1.6, fontStyle: "italic" }}>
-                &ldquo;{testimonial.quote}&rdquo;
-              </blockquote>
-              <figcaption style={{ fontSize: "0.8125rem" }}>
-                <strong style={{ color: "#111827" }}>{testimonial.author}</strong>
-                <br />
-                <span style={{ color: "#6b7280" }}>{testimonial.role}</span>
-              </figcaption>
-            </figure>
+            <Card key={testimonial.author} className="text-left">
+              <CardContent className="pt-6">
+                <blockquote className="text-sm text-muted-foreground italic leading-relaxed mb-4">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </blockquote>
+                <div className="text-sm">
+                  <strong>{testimonial.author}</strong>
+                  <br />
+                  <span className="text-muted-foreground">{testimonial.role}</span>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: "2rem", flexWrap: "wrap", marginBottom: "2rem" }}>
+        <div className="flex justify-center gap-8 flex-wrap">
           {[
-            { metric: "10K+", label: "Leads captured monthly" },
-            { metric: "110+", label: "Integrations available" },
+            { metric: "50K+", label: "Leads captured monthly" },
+            { metric: "137+", label: "Integrations available" },
             { metric: "16", label: "Industry niches" },
             { metric: "99.9%", label: "Uptime SLA" },
           ].map((stat) => (
-            <div key={stat.label} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#4f46e5" }}>{stat.metric}</div>
-              <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>{stat.label}</div>
+            <div key={stat.label} className="text-center">
+              <div className="text-2xl font-extrabold text-primary">{stat.metric}</div>
+              <div className="text-xs text-muted-foreground">{stat.label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      <section style={{ textAlign: "center", marginBottom: "4rem" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "2rem" }}>
-          Frequently Asked Questions
-        </h2>
-        <div style={{ maxWidth: "40rem", margin: "0 auto", textAlign: "left" }}>
+      <section className="text-center mb-16">
+        <h2 className="text-2xl font-bold mb-8">Frequently Asked Questions</h2>
+        <div className="max-w-2xl mx-auto text-left space-y-0">
           {[
             { q: "Can I try Lead OS before committing?", a: "Yes. Every plan starts with a 14-day free trial. You also get full dry-run mode for testing your setup with no real data sent." },
             { q: "Can I change plans later?", a: "Absolutely. Upgrade or downgrade at any time from your dashboard. Changes take effect at the start of your next billing cycle." },
             { q: "What happens if I exceed my lead limit?", a: "We will notify you when you reach 80% of your limit. If you go over, new leads are queued (not lost) until you upgrade or the next billing cycle starts." },
             { q: "Do you offer annual billing?", a: "Yes. Annual plans save 20%. Contact us or select annual billing during checkout." },
-            { q: "Is my data secure?", a: "All data is encrypted at rest (AES-256) and in transit (TLS 1.3). We are GDPR and CCPA compliant. You own your data." },
+            { q: "Is my data secure?", a: "All data is encrypted at rest (AES-256) and in transit (TLS 1.3). We are GDPR and CCPA compliant with SOC 2 reporting. You own your data." },
           ].map((faq) => (
-            <details key={faq.q} style={{ borderBottom: "1px solid #e5e7eb", padding: "1rem 0" }}>
-              <summary style={{ fontSize: "0.9375rem", fontWeight: 600, color: "#111827", cursor: "pointer" }}>
+            <details key={faq.q} className="border-b border-border py-4 group">
+              <summary className="text-[0.9375rem] font-semibold cursor-pointer list-none flex items-center justify-between">
                 {faq.q}
+                <span className="text-muted-foreground group-open:rotate-180 transition-transform">&#9662;</span>
               </summary>
-              <p style={{ fontSize: "0.875rem", color: "#6b7280", lineHeight: 1.6, marginTop: "0.5rem" }}>
+              <p className="text-sm text-muted-foreground leading-relaxed mt-2">
                 {faq.a}
               </p>
             </details>
@@ -279,32 +231,21 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section style={{ textAlign: "center" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1rem" }}>
-          All Plans Include
-        </h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(14rem, 1fr))",
-            gap: "1rem",
-            maxWidth: "48rem",
-            margin: "0 auto",
-            textAlign: "left",
-          }}
-        >
+      <section className="text-center">
+        <h2 className="text-2xl font-bold mb-6">All Plans Include</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left">
           {[
-            "Dry-run mode for testing",
+            "Dry-run testing mode",
             "78 funnel node types",
-            "Lead scoring (4 dimensions)",
+            "4D lead scoring",
             "Embeddable widgets",
             "GDPR compliance tools",
             "Operator dashboard",
             "Webhook event spine",
             "Niche auto-configuration",
           ].map((feature) => (
-            <p key={feature} style={{ fontSize: "0.875rem", color: "#374151", display: "flex", gap: "0.5rem", alignItems: "baseline" }}>
-              <span style={{ color: "#4f46e5" }} aria-hidden="true">&#10003;</span>
+            <p key={feature} className="text-sm flex gap-2 items-baseline">
+              <Check className="h-3.5 w-3.5 text-primary shrink-0" />
               {feature}
             </p>
           ))}

@@ -47,7 +47,7 @@ const faqData: FaqCategory[] = [
   {
     title: "Billing",
     items: [
-      { question: "What plans are available?", answer: "Starter ($99/mo), Growth ($249/mo), Professional ($499/mo), and Enterprise (custom). See the /pricing page for full feature comparison." },
+      { question: "What plans are available?", answer: "Starter ($299/mo), Growth ($599/mo), Professional ($1,299/mo), and Enterprise ($2,999/mo). All plans include a 14-day free trial. See the /pricing page for full feature comparison." },
       { question: "How do I upgrade my plan?", answer: "Go to Dashboard > Billing and click 'Change Plan'. Upgrades take effect immediately. Downgrades take effect at the next billing cycle." },
       { question: "How do I cancel?", answer: "Go to Dashboard > Billing and click 'Manage Subscription'. You can cancel anytime. Your access continues until the end of the current billing period. You can export your data before cancellation." },
       { question: "What counts toward usage limits?", answer: "Each plan has limits on leads/month, emails/month, SMS/month, active funnels, and enabled integrations. Usage resets at the start of each billing cycle." },
