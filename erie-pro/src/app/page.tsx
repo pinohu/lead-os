@@ -17,9 +17,12 @@ import {
   Shield,
   Clock,
   Star,
+  MapPin,
+  Globe,
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { niches } from "@/lib/niches"
+import { CITY_TEMPLATES } from "@/lib/city-factory"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -299,6 +302,82 @@ export default function HomePage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      </section>
+
+      {/* ── City Expansion ────────────────────────────────────── */}
+      <section className="border-t bg-muted/50 py-24">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <div className="mb-16 text-center">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary">
+              <Globe className="h-4 w-4" />
+              Expanding across the Great Lakes Region
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              One city at a time
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
+              We started in {cityConfig.name}. Next, we bring the same
+              verified provider network to cities across Pennsylvania, New
+              York, and Ohio.
+            </p>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {CITY_TEMPLATES.map((city) => (
+              <Card key={city.slug} className="relative overflow-hidden">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-lg">{city.name}</CardTitle>
+                    </div>
+                    <Badge
+                      variant={
+                        city.status === "active"
+                          ? "default"
+                          : city.status === "coming-soon"
+                          ? "secondary"
+                          : "outline"
+                      }
+                    >
+                      {city.status === "active"
+                        ? "Live"
+                        : city.status === "coming-soon"
+                        ? "Coming Soon"
+                        : "Planned"}
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    {city.stateCode} &middot; Pop. {city.population.toLocaleString()} &middot;{" "}
+                    {city.serviceArea.length} communities
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs text-muted-foreground">
+                    {city.serviceArea.slice(0, 5).join(", ")}
+                    {city.serviceArea.length > 5 && ` +${city.serviceArea.length - 5} more`}
+                  </p>
+                  {city.status === "active" && (
+                    <div className="mt-3">
+                      <Badge variant="default" className="bg-green-600 text-white">
+                        <CheckCircle2 className="mr-1 h-3 w-3" /> Active &mdash; 12 niches
+                      </Badge>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-sm text-muted-foreground">
+              Want to be the exclusive provider in a new city?{" "}
+              <Link href="/for-business" className="font-semibold text-primary hover:underline">
+                Claim your territory early <ArrowRight className="inline h-3 w-3" />
+              </Link>
+            </p>
+          </div>
         </div>
       </section>
 
