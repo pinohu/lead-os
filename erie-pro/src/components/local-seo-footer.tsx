@@ -85,7 +85,7 @@ export function LocalSeoFooter() {
             name: "erie.pro",
             description: `Find verified local service providers in ${seo.city}, ${seo.stateCode}. Free quotes, no obligation.`,
             url: "https://erie.pro",
-            telephone: "+1-814-000-0000",
+            telephone: "+1-814-200-0328",
             address: {
               "@type": "PostalAddress",
               addressLocality: seo.city,

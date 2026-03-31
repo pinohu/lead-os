@@ -129,7 +129,7 @@ export default function ContactPage() {
                       id="phone"
                       name="phone"
                       type="tel"
-                      placeholder="(814) 555-1234"
+                      placeholder="(814) 555-0199"
                     />
                   </div>
 

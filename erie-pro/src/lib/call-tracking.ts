@@ -59,7 +59,7 @@ const MOCK_TRACKING_NUMBERS: Record<string, string> = {
   "real-estate-erie": "(814) 900-0112",
 };
 
-// Provider phone routing table
+// Provider phone routing table — providerPhone values are fictional 555-XXXX demo numbers.
 const PROVIDER_ROUTES: Record<string, { providerPhone: string; providerId: string }> = {
   "(814) 900-0101": { providerPhone: "(814) 555-0101", providerId: "prov-plumb-001" },
   "(814) 900-0102": { providerPhone: "(814) 555-0301", providerId: "prov-hvac-001" },

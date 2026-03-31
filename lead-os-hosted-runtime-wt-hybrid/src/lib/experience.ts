@@ -440,7 +440,7 @@ export function resolveExperienceProfile(input: ExperienceInput): ExperienceProf
     primaryActionLabel: MODE_LABELS[mode],
     primaryActionHref: destination,
     secondaryActionLabel: "Talk to a human",
-    secondaryActionHref: `mailto:${input.supportEmail ?? "support@example.com"}`,
+    secondaryActionHref: "/contact",
     trustPromise: intel.trustSignals.primary.slice(0, 2).join(". ") + ".",
     progressLabel:
       input.returning

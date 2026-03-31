@@ -1,10 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Loader2, Building, Shield } from "lucide-react";
 import { niches } from "@/lib/niches";
 import { cityConfig } from "@/lib/city-config";
+import {
+  TIER_ORDER,
+  calculateMonthlyFee,
+  type ProviderTier,
+} from "@/lib/premium-rewards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,7 +40,17 @@ interface ClaimResult {
 }
 
 export default function ClaimPage() {
-  const [niche, setNiche] = useState("");
+  const searchParams = useSearchParams();
+  const initialNiche = searchParams.get("niche") ?? "";
+  const initialTier = searchParams.get("tier") ?? "standard";
+  const validTier = TIER_ORDER.includes(initialTier as ProviderTier)
+    ? (initialTier as ProviderTier)
+    : "standard";
+
+  const [niche, setNiche] = useState(
+    niches.some((n) => n.slug === initialNiche) ? initialNiche : ""
+  );
+  const [tier, setTier] = useState<ProviderTier>(validTier);
   const [businessName, setBusinessName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -44,6 +60,9 @@ export default function ClaimPage() {
   const [result, setResult] = useState<ClaimResult | null>(null);
 
   const selectedNiche = niches.find((n) => n.slug === niche);
+  const tierPrice = selectedNiche
+    ? calculateMonthlyFee(selectedNiche.monthlyFee, tier)
+    : 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,6 +75,7 @@ export default function ClaimPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           niche,
+          tier,
           providerName: businessName,
           providerEmail: email,
           phone,
@@ -162,6 +182,50 @@ export default function ClaimPage() {
             </CardContent>
           </Card>
 
+          {/* Tier Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                Provider Tier
+              </CardTitle>
+              <CardDescription>
+                Choose the tier that fits your growth goals.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <Label>Tier *</Label>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {TIER_ORDER.map((t) => {
+                    const price = selectedNiche
+                      ? calculateMonthlyFee(selectedNiche.monthlyFee, t)
+                      : null;
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setTier(t)}
+                        className={`rounded-lg border-2 p-3 text-left transition-colors ${
+                          tier === t
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        }`}
+                      >
+                        <p className="font-semibold capitalize">{t}</p>
+                        {price !== null && (
+                          <p className="text-sm text-muted-foreground">
+                            ${price}/mo
+                          </p>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Business Details */}
           <Card>
             <CardHeader>
@@ -202,7 +266,7 @@ export default function ClaimPage() {
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="(814) 555-0100"
+                    placeholder="(814) 555-0199"
                     required
                   />
                 </div>
@@ -245,13 +309,14 @@ export default function ClaimPage() {
                       {selectedNiche.label} Territory &mdash; {cityConfig.name}
                     </p>
                     <p className="text-sm text-muted-foreground">
+                      <span className="capitalize">{tier}</span> tier &middot;
                       Exclusive lead access &middot; All{" "}
                       {cityConfig.serviceArea.length} communities
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-primary">
-                      ${selectedNiche.monthlyFee}
+                      ${tierPrice}
                     </p>
                     <p className="text-xs text-muted-foreground">per month</p>
                   </div>

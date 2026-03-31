@@ -27,6 +27,14 @@ export const metadata: Metadata = {
     template: `%s | ${cityConfig.domain}`,
   },
   description: `Find the best local service providers in ${cityConfig.name}, ${cityConfig.state}. Verified businesses, free quotes, no obligation. Serving ${cityConfig.serviceArea.slice(0, 5).join(", ")} and surrounding areas.`,
+  openGraph: {
+    type: "website",
+    siteName: "erie.pro",
+    locale: "en_US",
+    title: `Find Local Services in ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
+    description: `Find the best local service providers in ${cityConfig.name}, ${cityConfig.state}. Verified businesses, free quotes, no obligation.`,
+    url: `https://${cityConfig.domain}`,
+  },
 }
 
 export default function RootLayout({

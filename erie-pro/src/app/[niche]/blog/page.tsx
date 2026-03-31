@@ -103,7 +103,7 @@ export default async function NicheBlogPage({ params }: Props) {
       <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
         <div className="grid gap-6 md:grid-cols-2">
           {content.blogTopics.map((topic, i) => (
-            <Card key={i} className="group transition-shadow hover:shadow-md">
+            <Card key={i} id={`article-${i}`} className="group transition-shadow hover:shadow-md">
               <CardHeader className="pb-3">
                 <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
                   <Calendar className="h-3 w-3" />
@@ -126,8 +126,8 @@ export default async function NicheBlogPage({ params }: Props) {
                     : "practical tips and professional recommendations."}
                 </p>
                 <Button asChild variant="ghost" size="sm" className="group/btn -ml-2 text-primary">
-                  <Link href={`/${slug}#services`}>
-                    Learn More
+                  <Link href={`/${slug}/blog#article-${i}`}>
+                    Read Article
                     <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover/btn:translate-x-0.5" />
                   </Link>
                 </Button>

@@ -54,6 +54,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode} — Get a Free Quote`,
     description,
+    openGraph: {
+      type: "website",
+      siteName: "erie.pro",
+      locale: "en_US",
+      title: `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode} — Get a Free Quote`,
+      description,
+      url: `https://${cityConfig.domain}/${slug}`,
+    },
   }
 }
 
@@ -222,7 +230,7 @@ export default async function NichePage({ params }: Props) {
                   name="phone"
                   required
                   aria-required="true"
-                  placeholder="(814) 555-1234"
+                  placeholder="(814) 555-0199"
                 />
               </div>
               <div className="space-y-2">

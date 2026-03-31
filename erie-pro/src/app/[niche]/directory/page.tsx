@@ -106,7 +106,7 @@ export default async function NicheDirectoryPage({ params }: Props) {
             {content.pluralLabel} — {cityConfig.name} Area
           </h2>
           <Badge variant="outline">
-            {PLACEHOLDER_SLOTS.length} Listings Available
+            {PLACEHOLDER_SLOTS.length} Territories Open
           </Badge>
         </div>
 
@@ -125,11 +125,11 @@ export default async function NicheDirectoryPage({ params }: Props) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="font-semibold text-muted-foreground/60">
-                      {niche.label} Professional — {slot.area}
+                      Be the first {niche.label.toLowerCase()} provider in {slot.area}
                     </p>
                     {slot.featured && (
-                      <Badge className="bg-primary/10 text-primary text-xs">
-                        Featured
+                      <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 text-xs">
+                        Featured Territory
                       </Badge>
                     )}
                   </div>
@@ -144,16 +144,15 @@ export default async function NicheDirectoryPage({ params }: Props) {
                     </span>
                     <span className="flex items-center gap-1">
                       <Clock className="h-3.5 w-3.5" />
-                      Available
+                      Unclaimed
                     </span>
                   </div>
                 </div>
-                <Badge
-                  variant="outline"
-                  className="shrink-0 border-green-300 text-green-700 dark:text-green-400"
-                >
-                  Available
-                </Badge>
+                <Button asChild variant="outline" size="sm" className="shrink-0">
+                  <Link href="/for-business">
+                    Claim Listing
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           ))}

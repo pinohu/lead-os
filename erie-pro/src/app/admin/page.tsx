@@ -58,6 +58,7 @@ export const metadata: Metadata = {
 
 // ── Sample Data ────────────────────────────────────────────────────
 
+// Demo lead data — phone numbers are fictional 555-XXXX placeholders for development/testing only.
 const recentLeads = [
   {
     id: "lead-abc123",

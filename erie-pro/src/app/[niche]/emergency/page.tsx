@@ -298,11 +298,14 @@ export default async function NicheEmergencyPage({ params }: Props) {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <a href="tel:+18145551234">
+              <a href="tel:+18142000328">
                 <Phone className="mr-2 h-4 w-4" />
-                Call (814) 555-1234
+                Call (814) 200-0328
               </a>
             </Button>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Or call your local emergency service provider directly.
+            </p>
           </div>
         </div>
       </section>

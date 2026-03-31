@@ -58,6 +58,95 @@ const TEMPERATURE_RANK: Record<string, number> = {
   cold: 1,
 };
 
+const LOADING_TIMEOUT_MS = 3_000;
+
+const DEMO_LEADS: MarketplaceLead[] = [
+  {
+    id: "demo-1",
+    niche: "Plumbing",
+    qualityScore: 87,
+    temperature: "hot",
+    city: "Erie",
+    state: "PA",
+    industry: "Home Services",
+    summary: "Homeowner needs emergency pipe repair in basement. Requested same-day availability.",
+    contactFields: ["email", "phone", "address"],
+    price: 4500,
+    status: "available",
+    createdAt: new Date(Date.now() - 2 * 60 * 60_000).toISOString(),
+  },
+  {
+    id: "demo-2",
+    niche: "HVAC",
+    qualityScore: 72,
+    temperature: "warm",
+    city: "Erie",
+    state: "PA",
+    industry: "Home Services",
+    summary: "Commercial office requesting HVAC maintenance quote for 3-unit system. Annual contract interest.",
+    contactFields: ["email", "phone"],
+    price: 3200,
+    status: "available",
+    createdAt: new Date(Date.now() - 8 * 60 * 60_000).toISOString(),
+  },
+  {
+    id: "demo-3",
+    niche: "Roofing",
+    qualityScore: 93,
+    temperature: "burning",
+    city: "Millcreek",
+    state: "PA",
+    industry: "Home Services",
+    summary: "Insurance claim approved for full roof replacement. Homeowner comparing 3 contractors this week.",
+    contactFields: ["email", "phone", "address"],
+    price: 7500,
+    status: "available",
+    createdAt: new Date(Date.now() - 30 * 60_000).toISOString(),
+  },
+  {
+    id: "demo-4",
+    niche: "Electrician",
+    qualityScore: 65,
+    temperature: "warm",
+    city: "Harborcreek",
+    state: "PA",
+    industry: "Home Services",
+    summary: "New construction wiring estimate for 2,400 sq ft home. Builder needs licensed electrician.",
+    contactFields: ["email", "phone"],
+    price: 2800,
+    status: "available",
+    createdAt: new Date(Date.now() - 24 * 60 * 60_000).toISOString(),
+  },
+  {
+    id: "demo-5",
+    niche: "Landscaping",
+    qualityScore: 58,
+    temperature: "cold",
+    city: "Erie",
+    state: "PA",
+    industry: "Home Services",
+    summary: "Property management company seeking seasonal landscaping bids for 12-unit complex.",
+    contactFields: ["email"],
+    price: 1900,
+    status: "available",
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60_000).toISOString(),
+  },
+  {
+    id: "demo-6",
+    niche: "Pest Control",
+    qualityScore: 81,
+    temperature: "hot",
+    city: "Fairview",
+    state: "PA",
+    industry: "Home Services",
+    summary: "Restaurant owner needs immediate pest inspection for health department compliance. Urgent timeline.",
+    contactFields: ["email", "phone", "address"],
+    price: 3800,
+    status: "available",
+    createdAt: new Date(Date.now() - 4 * 60 * 60_000).toISOString(),
+  },
+];
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -795,6 +884,7 @@ export default function PublicMarketplacePage() {
   const [claimedLeads, setClaimedLeads] = useState<ClaimedLead[]>([]);
   const [previewLead, setPreviewLead] = useState<MarketplaceLead | null>(null);
   const [submittingOutcome, setSubmittingOutcome] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
 
   // Unique niches derived from all loaded leads
   const uniqueNiches = useMemo(
@@ -856,8 +946,12 @@ export default function PublicMarketplacePage() {
           setLoading(false);
           setLoadingMore(false);
         })
-        .catch((err: unknown) => {
-          setError(err instanceof Error ? err.message : "Unknown error");
+        .catch(() => {
+          // API unavailable (no database, network error, etc.) — show demo leads
+          setError(null);
+          setLeads(DEMO_LEADS);
+          setTotalLeads(DEMO_LEADS.length);
+          setIsDemo(true);
           setLoading(false);
           setLoadingMore(false);
         });
@@ -869,6 +963,21 @@ export default function PublicMarketplacePage() {
   useEffect(() => {
     fetchLeads(0, false);
   }, [fetchLeads]);
+
+  // Loading timeout: if still loading after 3s, fall back to demo leads
+  useEffect(() => {
+    if (!loading) return;
+    const timer = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        setError(null);
+        setLeads(DEMO_LEADS);
+        setTotalLeads(DEMO_LEADS.length);
+        setIsDemo(true);
+      }
+    }, LOADING_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   // -----------------------------------------------------------------------
   // Load more: try client-side pagination first; fetch from server if needed
@@ -1112,6 +1221,25 @@ export default function PublicMarketplacePage() {
         </div>
       )}
 
+      {/* Demo mode banner */}
+      {isDemo && (
+        <div
+          role="status"
+          style={{
+            marginTop: 16,
+            padding: "12px 16px",
+            borderRadius: 8,
+            background: "rgba(234, 179, 8, 0.1)",
+            border: "1px solid rgba(234, 179, 8, 0.3)",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            color: "#92400e",
+          }}
+        >
+          Demo mode — Showing sample leads. Live leads will appear once the system is connected to a database.
+        </div>
+      )}
+
       {/* Lead grid */}
       {loading ? (
         <section className="panel" style={{ marginTop: 24 }}>
@@ -1124,7 +1252,11 @@ export default function PublicMarketplacePage() {
         </section>
       ) : processedLeads.length === 0 ? (
         <section className="panel" style={{ marginTop: 24 }}>
-          <p className="muted">No leads match your filters. Try adjusting your criteria.</p>
+          <p className="muted">
+            {searchQuery || nicheFilter || tempFilter || minPrice || maxPrice
+              ? "No leads match your filters. Try adjusting your criteria."
+              : "No leads available yet. Leads appear here as they enter the system through intake forms, assessments, and chat."}
+          </p>
         </section>
       ) : (
         <>

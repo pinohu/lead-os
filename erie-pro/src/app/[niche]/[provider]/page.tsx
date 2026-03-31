@@ -401,7 +401,7 @@ export default async function ProviderPage({ params }: Props) {
               <Button asChild variant="outline" size="lg">
                 <a href="#contact">
                   <Phone className="mr-2 h-4 w-4" />
-                  (814) 555-1234
+                  (814) 200-0328
                 </a>
               </Button>
             </div>
@@ -604,7 +604,7 @@ export default async function ProviderPage({ params }: Props) {
                       type="tel"
                       name="phone"
                       required
-                      placeholder="(814) 555-1234"
+                      placeholder="(814) 555-0199"
                     />
                   </div>
 
@@ -681,7 +681,7 @@ export default async function ProviderPage({ params }: Props) {
                 <Button asChild variant="outline" className="w-full justify-start">
                   <a href="#contact">
                     <Phone className="mr-2 h-4 w-4" />
-                    (814) 555-1234
+                    (814) 200-0328
                   </a>
                 </Button>
                 <Button asChild variant="outline" className="w-full justify-start">
@@ -718,7 +718,7 @@ export default async function ProviderPage({ params }: Props) {
             name: providerName,
             description: `${niche.label} services in ${cityConfig.name}, ${cityConfig.state}. ${niche.description}.`,
             url: `https://${cityConfig.domain}/${niche.slug}/${providerSlug}`,
-            telephone: "+1-814-555-1234",
+            telephone: "+1-814-200-0328",
             email: `info@${providerSlug}.com`,
             address: {
               "@type": "PostalAddress",

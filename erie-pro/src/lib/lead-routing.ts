@@ -49,6 +49,7 @@ export interface LeadOutcome {
 
 // ── In-Memory Stores ──────────────────────────────────────────────────
 
+// Demo provider data — phone numbers are fictional 555-XXXX placeholders for development/testing only.
 const providers: Provider[] = [
   {
     id: "prov-plumb-001",
