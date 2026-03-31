@@ -361,7 +361,7 @@ export default function HomePage() {
                   {city.status === "active" && (
                     <div className="mt-3">
                       <Badge variant="default" className="bg-green-600 text-white">
-                        <CheckCircle2 className="mr-1 h-3 w-3" /> Active &mdash; 12 niches
+                        <CheckCircle2 className="mr-1 h-3 w-3" /> Active &mdash; {niches.length} niches
                       </Badge>
                     </div>
                   )}

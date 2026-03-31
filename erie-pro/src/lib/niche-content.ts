@@ -1902,7 +1902,15 @@ export function getNicheContent(slug: string): LocalNicheContent | undefined {
  * Get all niche slugs for static params generation.
  */
 export function getAllNicheSlugs(): string[] {
-  return Object.keys(NICHE_CONTENT);
+  // Return ALL niche slugs from niches.ts (source of truth for all 24 niches),
+  // not just the ones with content entries. Pages that need content should
+  // call getNicheContent() and handle undefined gracefully.
+  try {
+    const { niches } = require("./niches");
+    return niches.map((n: { slug: string }) => n.slug);
+  } catch {
+    return Object.keys(NICHE_CONTENT);
+  }
 }
 
 /**
