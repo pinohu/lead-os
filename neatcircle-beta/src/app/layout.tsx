@@ -51,8 +51,48 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${siteConfig.siteUrl}/#organization`,
+        name: siteConfig.brandName,
+        url: siteConfig.siteUrl,
+        description: siteConfig.marketingDescription,
+        contactPoint: {
+          "@type": "ContactPoint",
+          email: siteConfig.supportEmail,
+          contactType: "customer support",
+        },
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${siteConfig.siteUrl}/#website`,
+        url: siteConfig.siteUrl,
+        name: `${siteConfig.brandName} | ${siteConfig.marketingHeadline}`,
+        publisher: { "@id": `${siteConfig.siteUrl}/#organization` },
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": `${siteConfig.siteUrl}/#app`,
+        name: siteConfig.brandName,
+        applicationCategory: "BusinessApplication",
+        description: siteConfig.marketingDescription,
+        url: siteConfig.siteUrl,
+        publisher: { "@id": `${siteConfig.siteUrl}/#organization` },
+      },
+    ],
+  }
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
