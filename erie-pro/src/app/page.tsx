@@ -34,18 +34,18 @@ import {
 import { Badge } from "@/components/ui/badge"
 
 const nicheIcons: Record<string, React.ReactNode> = {
-  plumbing: <Wrench className="h-6 w-6" />,
-  hvac: <Thermometer className="h-6 w-6" />,
-  electrical: <Zap className="h-6 w-6" />,
-  roofing: <Home className="h-6 w-6" />,
-  landscaping: <Leaf className="h-6 w-6" />,
-  dental: <Heart className="h-6 w-6" />,
-  legal: <Scale className="h-6 w-6" />,
-  cleaning: <Sparkles className="h-6 w-6" />,
-  "auto-repair": <Car className="h-6 w-6" />,
-  "pest-control": <Bug className="h-6 w-6" />,
-  painting: <Paintbrush className="h-6 w-6" />,
-  "real-estate": <Building className="h-6 w-6" />,
+  plumbing: <Wrench className="h-6 w-6" aria-hidden="true" />,
+  hvac: <Thermometer className="h-6 w-6" aria-hidden="true" />,
+  electrical: <Zap className="h-6 w-6" aria-hidden="true" />,
+  roofing: <Home className="h-6 w-6" aria-hidden="true" />,
+  landscaping: <Leaf className="h-6 w-6" aria-hidden="true" />,
+  dental: <Heart className="h-6 w-6" aria-hidden="true" />,
+  legal: <Scale className="h-6 w-6" aria-hidden="true" />,
+  cleaning: <Sparkles className="h-6 w-6" aria-hidden="true" />,
+  "auto-repair": <Car className="h-6 w-6" aria-hidden="true" />,
+  "pest-control": <Bug className="h-6 w-6" aria-hidden="true" />,
+  painting: <Paintbrush className="h-6 w-6" aria-hidden="true" />,
+  "real-estate": <Building className="h-6 w-6" aria-hidden="true" />,
 }
 
 export default function HomePage() {
@@ -157,13 +157,13 @@ export default function HomePage() {
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {niches.map((niche) => (
-            <Link key={niche.slug} href={`/${niche.slug}`} className="group">
+            <Link key={niche.slug} href={`/${niche.slug}`} className="group rounded-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none">
               <Card className="h-full transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
                       {nicheIcons[niche.slug] ?? (
-                        <Wrench className="h-6 w-6" />
+                        <Wrench className="h-6 w-6" aria-hidden="true" />
                       )}
                     </div>
                   </div>
@@ -279,11 +279,12 @@ export default function HomePage() {
           ].map(({ name, service, quote }) => (
             <Card key={name}>
               <CardHeader>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1" aria-label="5 out of 5 stars">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
                       className="h-4 w-4 fill-warning text-warning"
+                      aria-hidden="true"
                     />
                   ))}
                 </div>

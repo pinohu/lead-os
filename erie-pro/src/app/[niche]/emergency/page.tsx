@@ -148,7 +148,7 @@ export default async function NicheEmergencyPage({ params }: Props) {
           <div className="space-y-6">
             <Card>
               <CardContent className="flex items-start gap-4 pt-6">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-sm font-bold text-red-600 dark:bg-red-900/50">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-sm font-bold text-red-600 dark:bg-red-900/50" aria-label="Step 1: Ensure safety first">
                   1
                 </div>
                 <div>
@@ -167,7 +167,7 @@ export default async function NicheEmergencyPage({ params }: Props) {
 
             <Card>
               <CardContent className="flex items-start gap-4 pt-6">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-600 dark:bg-amber-900/50">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-600 dark:bg-amber-900/50" aria-label="Step 2: Mitigate further damage">
                   2
                 </div>
                 <div>
@@ -186,7 +186,7 @@ export default async function NicheEmergencyPage({ params }: Props) {
 
             <Card>
               <CardContent className="flex items-start gap-4 pt-6">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600 dark:bg-blue-900/50">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600 dark:bg-blue-900/50" aria-label="Step 3: Contact an emergency provider">
                   3
                 </div>
                 <div>
@@ -205,7 +205,7 @@ export default async function NicheEmergencyPage({ params }: Props) {
 
             <Card>
               <CardContent className="flex items-start gap-4 pt-6">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-600 dark:bg-green-900/50">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-600 dark:bg-green-900/50" aria-label="Step 4: Document the damage">
                   4
                 </div>
                 <div>
@@ -290,12 +290,20 @@ export default async function NicheEmergencyPage({ params }: Props) {
             Get connected with a verified emergency provider in{" "}
             {cityConfig.name} right away.
           </p>
-          <Button asChild size="lg" variant="destructive" className="mt-6">
-            <Link href={`/${slug}#quote`}>
-              <Phone className="mr-2 h-4 w-4" />
-              Get Emergency Help Now
-            </Link>
-          </Button>
+          <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Button asChild size="lg" variant="destructive">
+              <Link href={`/${slug}#quote`}>
+                <Phone className="mr-2 h-4 w-4" />
+                Get Emergency Help Now
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <a href="tel:+18145551234">
+                <Phone className="mr-2 h-4 w-4" />
+                Call (814) 555-1234
+              </a>
+            </Button>
+          </div>
         </div>
       </section>
     </main>

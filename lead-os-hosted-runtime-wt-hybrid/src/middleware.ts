@@ -16,6 +16,10 @@ const authRateLimiter = createRateLimiter({
 
 // ---------------------------------------------------------------------------
 // Content Security Policy
+// PRODUCTION TODO: Tighten 'unsafe-inline' and 'unsafe-eval' in script-src
+// and 'unsafe-inline' in style-src once Next.js nonce-based CSP is configured.
+// These are required during development but should be replaced with nonce or
+// hash-based directives for production hardening.
 // ---------------------------------------------------------------------------
 
 const CSP_DIRECTIVES = [
@@ -130,6 +134,10 @@ function applySecurityHeaders(response: NextResponse, requestId: string): NextRe
   response.headers.set("x-request-id", requestId);
   response.headers.set("x-api-version", "2026-03-30");
   response.headers.set("Content-Security-Policy", CSP_DIRECTIVES);
+  response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
   return response;
 }
 

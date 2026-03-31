@@ -166,7 +166,7 @@ export function ForBusinessContent() {
               <button
                 key={n.slug}
                 onClick={() => setSelectedNiche(n.slug)}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none ${
                   selectedNiche === n.slug
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
@@ -300,7 +300,7 @@ export function ForBusinessContent() {
                         isElite
                           ? "bg-purple-600 hover:bg-purple-700"
                           : isPremium
-                          ? "bg-amber-600 hover:bg-amber-700"
+                          ? "bg-amber-700 hover:bg-amber-800"
                           : ""
                       }`}
                     >
@@ -324,12 +324,12 @@ export function ForBusinessContent() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">
-                <th className="py-3 text-left font-semibold">Feature</th>
-                <th className="py-3 text-center font-semibold">Standard</th>
-                <th className="py-3 text-center font-semibold text-amber-700 dark:text-amber-400">
+                <th scope="col" className="py-3 text-left font-semibold">Feature</th>
+                <th scope="col" className="py-3 text-center font-semibold">Standard</th>
+                <th scope="col" className="py-3 text-center font-semibold text-amber-700 dark:text-amber-400">
                   Premium
                 </th>
-                <th className="py-3 text-center font-semibold text-purple-700 dark:text-purple-400">
+                <th scope="col" className="py-3 text-center font-semibold text-purple-700 dark:text-purple-400">
                   Elite
                 </th>
               </tr>

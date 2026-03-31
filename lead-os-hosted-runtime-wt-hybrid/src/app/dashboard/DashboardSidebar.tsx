@@ -262,7 +262,11 @@ export function DashboardSidebar() {
     setIsMobileOpen(false);
   }, [pathname]);
 
-  // Trap focus in mobile drawer and restore on close
+  // Focus management: traps focus in mobile drawer when open, restores focus
+  // to hamburger button on close. Escape key dismisses the drawer.
+  // NOTE: This focus trap covers Tab cycling and Escape dismiss. If the drawer
+  // content grows significantly, consider a dedicated focus-trap library
+  // (e.g., focus-trap-react) for more robust edge-case handling.
   useEffect(() => {
     if (!isMobileOpen) {
       hamburgerRef.current?.focus();

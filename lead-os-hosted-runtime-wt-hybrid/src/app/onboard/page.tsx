@@ -582,7 +582,7 @@ export default function OnboardPage() {
         </header>
 
         {step !== "email" && step !== "complete" && (
-          <nav aria-label="Onboarding progress" style={styles.stepIndicator}>
+          <nav aria-label="Onboarding progress" aria-live="polite" style={styles.stepIndicator}>
             {WIZARD_STEPS.map((s, i) => (
               <span
                 key={s}
@@ -718,7 +718,7 @@ export default function OnboardPage() {
                 We will auto-generate your lead capture system based on your niche.
               </div>
               <div style={styles.buttonRow}>
-                <button type="button" onClick={handleBack} style={styles.secondaryButton}>Back</button>
+                <button type="button" onClick={handleBack} style={styles.secondaryButton} aria-label="Go back to previous step">Back</button>
                 <button
                   type="button"
                   onClick={() => handleAdvanceStep({
@@ -767,7 +767,7 @@ export default function OnboardPage() {
                 ))}
               </div>
               <div style={styles.buttonRow}>
-                <button type="button" onClick={handleBack} style={styles.secondaryButton}>Back</button>
+                <button type="button" onClick={handleBack} style={styles.secondaryButton} aria-label="Go back to previous step">Back</button>
                 <button
                   type="button"
                   onClick={() => handleAdvanceStep({ planId: selectedPlan })}
@@ -856,7 +856,7 @@ export default function OnboardPage() {
                 />
               </div>
               <div style={styles.buttonRow}>
-                <button type="button" onClick={handleBack} style={styles.secondaryButton}>Back</button>
+                <button type="button" onClick={handleBack} style={styles.secondaryButton} aria-label="Go back to previous step">Back</button>
                 <button
                   type="button"
                   onClick={() => handleAdvanceStep({
@@ -904,7 +904,7 @@ export default function OnboardPage() {
                 ))}
               </div>
               <div style={styles.buttonRow}>
-                <button type="button" onClick={handleBack} style={styles.secondaryButton}>Back</button>
+                <button type="button" onClick={handleBack} style={styles.secondaryButton} aria-label="Go back to previous step">Back</button>
                 <button
                   type="button"
                   onClick={() => handleAdvanceStep({ enabledProviders: [...enabledProviders] })}
@@ -964,7 +964,7 @@ export default function OnboardPage() {
                 ) : null;
               })()}
               <div style={styles.buttonRow}>
-                <button type="button" onClick={handleBack} style={styles.secondaryButton}>Back</button>
+                <button type="button" onClick={handleBack} style={styles.secondaryButton} aria-label="Go back to previous step">Back</button>
                 <button
                   type="button"
                   onClick={() => handleAdvanceStep({})}

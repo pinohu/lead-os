@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { InternalLinks } from "@/components/internal-links"
 import { FeaturedProvider } from "@/components/featured-provider"
@@ -193,17 +194,20 @@ export default async function NichePage({ params }: Props) {
               <input type="hidden" name="city" value={cityConfig.slug} />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">First name</label>
+                  <Label htmlFor="firstName">First name</Label>
                   <Input
+                    id="firstName"
                     type="text"
                     name="firstName"
                     required
+                    aria-required="true"
                     placeholder="John"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Last name</label>
+                  <Label htmlFor="lastName">Last name</Label>
                   <Input
+                    id="lastName"
                     type="text"
                     name="lastName"
                     placeholder="Smith"
@@ -211,28 +215,33 @@ export default async function NichePage({ params }: Props) {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Phone</label>
+                <Label htmlFor="phone">Phone</Label>
                 <Input
+                  id="phone"
                   type="tel"
                   name="phone"
                   required
+                  aria-required="true"
                   placeholder="(814) 555-1234"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
+                <Label htmlFor="email">Email</Label>
                 <Input
+                  id="email"
                   type="email"
                   name="email"
                   required
+                  aria-required="true"
                   placeholder="john@example.com"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">
+                <Label htmlFor="message">
                   What do you need?
-                </label>
+                </Label>
                 <textarea
+                  id="message"
                   name="message"
                   rows={3}
                   className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"

@@ -86,10 +86,10 @@ export default function HomePage() {
             One platform, one login, one bill. Cancel the other 8 tools.
           </p>
           <div className="flex gap-3 justify-center flex-wrap">
-            <Button asChild size="lg" className="text-base px-8 h-12">
+            <Button asChild size="lg" className="text-base px-8 h-12 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
               <Link href="/onboard">Start your free agency account</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="text-base px-8 h-12">
+            <Button asChild variant="outline" size="lg" className="text-base px-8 h-12 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
               <Link href="#how-it-works">See how it works</Link>
             </Button>
           </div>
@@ -242,7 +242,7 @@ export default function HomePage() {
             aria-label="Email address"
             className="flex-1 min-w-[240px] h-12 px-4 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
-          <Button type="submit" size="lg" className="h-12">Start free</Button>
+          <Button type="submit" size="lg" className="h-12 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">Start free</Button>
         </form>
       </section>
 
@@ -251,7 +251,7 @@ export default function HomePage() {
         <p className="text-sm text-muted-foreground text-center mb-4">Not an agency?</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {personas.map(({ label, href }) => (
-            <Button key={label} asChild variant="outline" className="justify-between h-auto py-3.5 px-5">
+            <Button key={label} asChild variant="outline" className="justify-between h-auto py-3.5 px-5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
               <Link href={href}>
                 {label} <ArrowRight className="h-4 w-4 text-primary" />
               </Link>
@@ -268,10 +268,10 @@ export default function HomePage() {
           and see why agencies are consolidating their entire stack into one platform.
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
-          <Button asChild size="lg" className="px-8">
+          <Button asChild size="lg" className="px-8 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
             <Link href="/onboard">Start your free agency account</Link>
           </Button>
-          <Button asChild variant="outline" size="lg" className="px-8">
+          <Button asChild variant="outline" size="lg" className="px-8 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
             <Link href="/pricing">View pricing</Link>
           </Button>
         </div>

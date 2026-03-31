@@ -50,6 +50,8 @@ export function MobileNav() {
           {/* Services accordion */}
           <button
             onClick={() => setServicesOpen(!servicesOpen)}
+            aria-expanded={servicesOpen}
+            aria-controls="services-menu"
             className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
           >
             Services
@@ -60,7 +62,7 @@ export function MobileNav() {
             />
           </button>
           {servicesOpen && (
-            <div className="ml-3 space-y-0.5 border-l pl-3">
+            <div id="services-menu" className="ml-3 space-y-0.5 border-l pl-3">
               {niches.map((n) => (
                 <Link
                   key={n.slug}

@@ -104,7 +104,7 @@ export default function ClaimPage() {
       </div>
 
       {result?.success ? (
-        <Card className="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30">
+        <Card className="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30" role="alert" aria-live="polite">
           <CardHeader>
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-8 w-8 text-green-600" />
@@ -262,7 +262,9 @@ export default function ClaimPage() {
 
           {/* Error */}
           {result?.error && (
-            <p className="text-sm font-medium text-destructive">{result.error}</p>
+            <div role="alert">
+              <p className="text-sm font-medium text-destructive">{result.error}</p>
+            </div>
           )}
 
           {/* Submit */}

@@ -8,22 +8,22 @@ Lead OS captures visitor intent through embeddable widgets, scores and routes le
 
 | Metric | Count |
 |--------|-------|
-| Source files | 1,004+ |
+| Source files | 1,100+ |
 | Lines of code | 210,000+ |
-| API endpoints | 498 |
+| API endpoints | 499 |
 | UI pages | 60 |
-| Dashboard pages | 29 |
+| Dashboard pages | 31 |
 | Provider integrations | 137 |
-| Lib modules | 233 |
-| Test files | 333 |
-| Test cases | 4,151 |
+| Lib modules | 234 |
+| Test files | 175 |
+| Test cases | 4,187 |
 | Test pass rate | 100% |
-| Erie-Pro pages | 630 |
+| Erie-Pro pages | 702 |
 | NeatCircle pages | 152 |
-| Total deployed pages | 1,321 |
-| Service niches (Erie) | 44 |
-| Integration adapters | 35 |
-| Funnel node types | 78 |
+| Total deployed pages | 1,393 |
+| Service niches (Erie) | 46 |
+| Integration adapters | 62 |
+| Funnel node types | 98 |
 | Industry templates | 13 |
 
 ## Architecture
@@ -33,7 +33,7 @@ Lead OS captures visitor intent through embeddable widgets, scores and routes le
                     |         Erie Pro                |
                     |          (erie-pro)             |
                     |  Next.js 15 + Tailwind          |
-                    |  44 niches, 630 pages            |
+                    |  46 niches, 702 pages            |
                     +---------------+-----------------+
                                     |
                     +---------------+-----------------+
@@ -47,7 +47,7 @@ Lead OS captures visitor intent through embeddable widgets, scores and routes le
                     |        Kernel Runtime           |
                     | (lead-os-hosted-runtime-wt-hybrid)|
                     |  Next.js 16 + PostgreSQL        |
-                    |  539 pages, 498 API endpoints   |
+                    |  539 pages, 499 API endpoints   |
                     +---------------+-----------------+
                                     |
       +----------+----------+------+------+----------+
@@ -61,9 +61,9 @@ Lead OS captures visitor intent through embeddable widgets, scores and routes le
 
 | Layer | Package | Role |
 |-------|---------|------|
-| Erie Pro | `erie-pro` | Geographic territory platform, 44 niches, 630 pages, exclusive city/niche claims |
+| Erie Pro | `erie-pro` | Geographic territory platform, 46 niches, 702 pages, exclusive city/niche claims |
 | Edge Layer | `neatcircle-beta` | Marketing site, behavioral tracking, experience personalization, widget orchestration, 152 pages |
-| Kernel Runtime | `lead-os-hosted-runtime-wt-hybrid` | Intake, scoring, funnel decisioning, AI agents, social content, marketplace, billing, provider orchestration, operator dashboard, 539 pages, 498 API endpoints |
+| Kernel Runtime | `lead-os-hosted-runtime-wt-hybrid` | Intake, scoring, funnel decisioning, AI agents, social content, marketplace, billing, provider orchestration, operator dashboard, 539 pages, 499 API endpoints |
 | Automation Layer | Activepieces + n8n + cron jobs | Durable multi-step workflows, retries, milestone-driven sequences |
 | CRM Layer | SuiteDash + SalesNexus | Contact management, deals, pipeline stages, human workflow |
 
@@ -104,8 +104,8 @@ No environment variables are required for local development. The system runs ent
 
 | Site | URL | Purpose |
 |------|-----|---------|
-| Lead OS Kernel | https://lead-os-nine.vercel.app | Dashboard, API, 498 endpoints |
-| Erie Pro | https://erie-pro.vercel.app | Territory platform, 44 niches |
+| Lead OS Kernel | https://lead-os-nine.vercel.app | Dashboard, API, 499 endpoints |
+| Erie Pro | https://erie-pro.vercel.app | Territory platform, 46 niches |
 | NeatCircle | https://neatcircle.com | Agency marketing site |
 
 ### Verify
@@ -123,7 +123,7 @@ Returns `{ "success": true, "service": "lead-os-hosted-runtime", ... }`.
 | `/` | Public landing page |
 | `/onboard` | Client self-service signup wizard |
 | `/setup` | First-run setup wizard |
-| `/dashboard` | Operator dashboard (29 pages) |
+| `/dashboard` | Operator dashboard (31 pages) |
 | `/marketplace` | Public lead marketplace |
 | `/auth/sign-in` | Operator login (magic link) |
 | `/assess/:slug` | Dynamic assessment forms |
@@ -167,7 +167,7 @@ Returns `{ "success": true, "service": "lead-os-hosted-runtime", ... }`.
 - Audit logging with success rate tracking
 
 ### Funnel System
-- 78 funnel node types across 8 families (lead magnet, qualification, chat, webinar, authority, checkout, retention, continuity)
+- 98 funnel node types across 8 families (lead magnet, qualification, chat, webinar, authority, checkout, retention, continuity)
 - Composable nodes for custom flow creation
 - A/B experiment engine with statistical significance detection
 
@@ -205,7 +205,7 @@ Returns `{ "success": true, "service": "lead-os-hosted-runtime", ... }`.
 - GDPR compliance (export, deletion, consent)
 - RLS policy generator for database-level tenant isolation
 
-### Operator Dashboard (29 pages)
+### Operator Dashboard (31 pages)
 
 | Page | Function |
 |------|----------|
@@ -235,6 +235,8 @@ Returns `{ "success": true, "service": "lead-os-hosted-runtime", ... }`.
 | Workflows | Automation workflow management |
 | Joy | Team morale, celebrations, and culture |
 | Competitors | Competitive intelligence and tracking |
+| Prospects | Prospect discovery and pipeline management |
+| Marketing Ingestion | Marketing artifact analysis and competitive intelligence |
 
 ## Integration Catalog (137 providers)
 
@@ -333,7 +335,7 @@ cd lead-os-hosted-runtime-wt-hybrid
 npm test
 ```
 
-4,151 test cases using Node.js native test runner with TypeScript support. Tests run with in-memory storage and dry-run mode.
+4,187 test cases using Node.js native test runner with TypeScript support. Tests run with in-memory storage and dry-run mode.
 
 ## Documentation
 
@@ -343,6 +345,7 @@ npm test
 | [API Reference](docs/API_REFERENCE.md) | Detailed endpoint documentation |
 | [Setup Guide](docs/SETUP_GUIDE.md) | Step-by-step installation |
 | [Architecture](docs/LEAD_OPERATING_SYSTEM_ARCHITECTURE.md) | System design and layer boundaries |
+| [Changelog](CHANGELOG.md) | Version history and release notes |
 
 ## Project Structure
 
@@ -354,20 +357,20 @@ lead-os/
   lead-os-hosted-runtime-wt-hybrid/      # Kernel runtime (system of record)
     src/
       app/
-        api/                             # 498 API endpoints
-        dashboard/                       # 29 operator dashboard pages
+        api/                             # 499 API endpoints
+        dashboard/                       # 31 operator dashboard pages
         auth/                            # Authentication pages
         onboard/                         # Self-service onboarding
         setup/                           # First-run setup wizard
         marketplace/                     # Public lead marketplace
         assess/                          # Dynamic assessment forms
         calculator/                      # ROI calculator
-      lib/                               # 233 library modules
-        integrations/                    # 35 integration adapters
-    tests/                               # 4,151 test cases
-  erie-pro/                              # Geographic territory platform (630 pages)
+      lib/                               # 234 library modules
+        integrations/                    # 62 integration adapters
+    tests/                               # 4,187 test cases
+  erie-pro/                              # Geographic territory platform (702 pages)
     src/
-      app/                               # 44 niches x 15 page types + static
+      app/                               # 46 niches x 15 page types + static
       lib/                               # niches, content, glossary, seasonal, SEO
       components/ui/                     # 52 shadcn components
   neatcircle-beta/                       # Edge / marketing layer (152 pages)

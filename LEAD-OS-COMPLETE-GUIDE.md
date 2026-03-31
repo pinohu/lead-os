@@ -34,22 +34,22 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 
 | Metric | Count |
 |--------|-------|
-| Total source files | 1,004+ |
+| Total source files | 1,100+ |
 | Lines of code | 210,000+ |
-| API endpoints | 498 |
+| API endpoints | 499 |
 | UI pages | 60 |
 | Dashboard pages | 29 |
 | Provider integrations | 137 |
-| Lib modules | 233 |
-| Integration adapters | 35 |
-| Funnel node types | 78 |
-| Industry templates | 16 |
-| Test files | 333 |
-| Test cases | 4,151 |
+| Lib modules | 234 |
+| Integration adapters | 62 |
+| Funnel node types | 98 |
+| Industry templates | 13 |
+| Test files | 175 |
+| Test cases | 4,187 |
 | Test pass rate | 100% |
-| Erie-Pro niches | 44 |
-| Erie-Pro pages | 630 |
-| Total deployed pages | 1,321 |
+| Erie-Pro niches | 46 |
+| Erie-Pro pages | 702 |
+| Total deployed pages | 1,393 |
 
 ---
 
@@ -64,8 +64,8 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 | Personalization Engine | `personalization-engine.ts` | Delivers niche-specific, temperature-aware content and CTAs |
 | Context Engine | `context-engine.ts` | Maintains full lead lifecycle context with scoring history |
 | Niche Generator | `niche-generator.ts` | Auto-generates complete niche configs from an industry name |
-| Niche Templates | `niche-templates.ts` | 16 industry category templates (1,905 lines of domain knowledge) |
-| Funnel Library | `funnel-library.ts` | 78 funnel node types across 8 funnel families |
+| Niche Templates | `niche-templates.ts` | 13 industry category templates (1,905 lines of domain knowledge) |
+| Funnel Library | `funnel-library.ts` | 98 funnel node types across 8 funnel families |
 | Catalog | `catalog.ts` | Niche registry with runtime registration support |
 | Offer Engine | `offer-engine.ts` | Dynamic offer selection based on lead temperature |
 | Lead Magnet Engine | `lead-magnet-engine.ts` | Manages and delivers lead magnets per niche/temperature |
@@ -197,7 +197,7 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 | Auto Deploy | `auto-deploy.ts` | GitHub, Vercel, and Cloudflare Pages deployment |
 | Realtime | `realtime.ts` | Server-sent events for live dashboard updates |
 
-### Integration Adapters (35 files)
+### Integration Adapters (62 files)
 
 | Adapter | Category | What It Does |
 |---------|----------|-------------|
@@ -250,9 +250,9 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 ```
 Middleware (authentication gate, CORS, requestId)
     |
-API Routes (295 endpoints - validation + orchestration)
+API Routes (499 endpoints - validation + orchestration)
     |
-Library Modules (138 files - business logic, engines, stores)
+Library Modules (234 files - business logic, engines, stores)
     |
 Persistence (PostgreSQL + in-memory + AITable)
 ```
@@ -373,7 +373,7 @@ Additional AI capabilities via LangChain adapter:
 
 ### 4.5 Funnel System
 
-78 funnel node types organized into 8 families:
+98 funnel node types organized into 8 families:
 
 | Family | Purpose | Key Nodes |
 |--------|---------|-----------|
@@ -463,7 +463,7 @@ Deploy Lead OS for clients as a done-for-you service. Charge $5K-25K for setup p
 **5. Franchise Networks**
 Deploy identical lead capture across 50-500 franchise locations with centralized analytics and per-location customization.
 
-### Industries Served (13 Template Categories)
+### Industries Served (13 template categories)
 
 | Category | Example Niches |
 |----------|---------------|
@@ -1045,7 +1045,7 @@ Building Lead OS from scratch would require:
 Deploy a complete lead-gen platform for a new niche in under 5 minutes. The niche generator produces scoring weights, assessment questions, nurture sequences, and content templates automatically. Competitors require weeks of manual configuration.
 
 **2. Vertical Depth**
-16 industry templates with domain-specific psychology profiles, pain points, urgency signals, and conversion patterns. This isn't a generic form builder -- it understands that a plumber has different buying triggers than a lawyer.
+13 industry templates with domain-specific psychology profiles, pain points, urgency signals, and conversion patterns. This isn't a generic form builder -- it understands that a plumber has different buying triggers than a lawyer.
 
 **3. Multi-Revenue Optionality**
 The same codebase supports four distinct business models. Start as a managed service, add a SaaS tier, open a marketplace -- all without code changes or redeployment.
@@ -1188,19 +1188,19 @@ Each AppSumo integration follows the established adapter pattern:
 6. **Add dashboard config** in Credentials page for operator API key entry
 7. **Wire automation** — connect to Activepieces/n8n for workflow triggers
 
-Estimated effort per adapter: 200-400 lines, following the pattern established by the existing 35 adapters.
+Estimated effort per adapter: 200-400 lines, following the pattern established by the existing 62 adapters.
 
 ---
 
 ## Summary
 
-Lead OS is a 210,000+-line, 1,004+-file production platform that unifies lead generation, scoring, nurturing, AI content creation, automated prospecting, A/B experiment optimization, competitive analysis, billing, and marketplace operations into a single deployable runtime. It includes Erie-Pro, a 630-page geographic monopoly engine spanning 44 niches. It serves any industry through automated niche configuration, supports four simultaneous revenue models, integrates with 137 external services, and reaches break-even with a single client.
+Lead OS is a 210,000+-line, 1,100+-file production platform that unifies lead generation, scoring, nurturing, AI content creation, automated prospecting, A/B experiment optimization, competitive analysis, billing, and marketplace operations into a single deployable runtime. It includes Erie-Pro, a 702-page geographic monopoly engine spanning 46 niches. It serves any industry through automated niche configuration, supports four simultaneous revenue models, integrates with 137 external services, and reaches break-even with a single client.
 
 Key additions since initial release:
 - **Automated Prospecting Engine**: Discovery scout finds businesses, scores digital presence gaps, classifies opportunities (managed-service, white-label, affiliate, partner), generates personalized outreach, and auto-ingests into the lead pipeline
 - **Autoresearch Experiment Engine**: Z-test evaluation of running A/B tests with early stopping, auto-rollback, and auto-promotion across 5 optimization surfaces
 - **Competitive Analysis Pipeline**: Scrape competitor websites, extract design tokens and funnel patterns, process marketing artifacts into actionable intelligence
-- **Erie-Pro Geographic Monopoly Engine**: 630 pages across 44 niches with city hub pages, niche landing pages, and provider profile pages for local market domination
+- **Erie-Pro Geographic Monopoly Engine**: 702 pages across 46 niches with city hub pages, niche landing pages, and provider profile pages for local market domination
 - **Enhanced Dashboard**: 29 pages including prospects, competitors, marketing ingestion, leads, and expanded credentials with verification
 
-The system is deployed, tested (4,151 passing test cases, 0 TypeScript errors), security-audited, and performance-optimized. It is live at https://github.com/pinohu/lead-os and can be deployed to Vercel, Railway, or any Node.js host in under 10 minutes.
+The system is deployed, tested (4,187 passing test cases, 0 TypeScript errors), security-audited, and performance-optimized. It is live at https://github.com/pinohu/lead-os and can be deployed to Vercel, Railway, or any Node.js host in under 10 minutes.
