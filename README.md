@@ -8,32 +8,46 @@ Lead OS captures visitor intent through embeddable widgets, scores and routes le
 
 | Metric | Count |
 |--------|-------|
-| Source files | 488 |
-| Lines of code | 96,265 |
-| API endpoints | 278 |
-| UI pages | 36 |
-| Dashboard pages | 23 |
-| Provider integrations | 110 |
+| Source files | 1,004+ |
+| Lines of code | 210,000+ |
+| API endpoints | 498 |
+| UI pages | 60 |
+| Dashboard pages | 29 |
+| Provider integrations | 137 |
+| Lib modules | 233 |
+| Test files | 333 |
+| Test cases | 4,151 |
+| Test pass rate | 100% |
+| Erie-Pro pages | 630 |
+| NeatCircle pages | 152 |
+| Total deployed pages | 1,321 |
+| Service niches (Erie) | 44 |
 | Integration adapters | 35 |
 | Funnel node types | 78 |
 | Industry templates | 13 |
-| Test cases | 3,964 |
 
 ## Architecture
 
 ```
                     +---------------------------------+
+                    |         Erie Pro                |
+                    |          (erie-pro)             |
+                    |  Next.js 15 + Tailwind          |
+                    |  44 niches, 630 pages            |
+                    +---------------+-----------------+
+                                    |
+                    +---------------+-----------------+
                     |         Edge Layer              |
                     |       (neatcircle-beta)         |
                     |  Next.js 15 + Tailwind          |
-                    |  Vercel / Cloudflare            |
+                    |  Agency marketing, 152 pages    |
                     +---------------+-----------------+
                                     |
                     +---------------+-----------------+
                     |        Kernel Runtime           |
                     | (lead-os-hosted-runtime-wt-hybrid)|
                     |  Next.js 16 + PostgreSQL        |
-                    |  Railway / Vercel / Docker      |
+                    |  539 pages, 498 API endpoints   |
                     +---------------+-----------------+
                                     |
       +----------+----------+------+------+----------+
@@ -47,8 +61,9 @@ Lead OS captures visitor intent through embeddable widgets, scores and routes le
 
 | Layer | Package | Role |
 |-------|---------|------|
-| Edge Layer | `neatcircle-beta` | Marketing site, behavioral tracking, experience personalization, widget orchestration |
-| Kernel Runtime | `lead-os-hosted-runtime-wt-hybrid` | Intake, scoring, funnel decisioning, AI agents, social content, marketplace, billing, provider orchestration, operator dashboard |
+| Erie Pro | `erie-pro` | Geographic territory platform, 44 niches, 630 pages, exclusive city/niche claims |
+| Edge Layer | `neatcircle-beta` | Marketing site, behavioral tracking, experience personalization, widget orchestration, 152 pages |
+| Kernel Runtime | `lead-os-hosted-runtime-wt-hybrid` | Intake, scoring, funnel decisioning, AI agents, social content, marketplace, billing, provider orchestration, operator dashboard, 539 pages, 498 API endpoints |
 | Automation Layer | Activepieces + n8n + cron jobs | Durable multi-step workflows, retries, milestone-driven sequences |
 | CRM Layer | SuiteDash + SalesNexus | Contact management, deals, pipeline stages, human workflow |
 
@@ -85,6 +100,14 @@ npm run dev    # Starts at http://localhost:3000
 
 No environment variables are required for local development. The system runs entirely in-memory with dry-run mode for all external integrations.
 
+## Live Deployments
+
+| Site | URL | Purpose |
+|------|-----|---------|
+| Lead OS Kernel | https://lead-os-nine.vercel.app | Dashboard, API, 498 endpoints |
+| Erie Pro | https://erie-pro.vercel.app | Territory platform, 44 niches |
+| NeatCircle | https://neatcircle.com | Agency marketing site |
+
 ### Verify
 
 ```bash
@@ -100,7 +123,7 @@ Returns `{ "success": true, "service": "lead-os-hosted-runtime", ... }`.
 | `/` | Public landing page |
 | `/onboard` | Client self-service signup wizard |
 | `/setup` | First-run setup wizard |
-| `/dashboard` | Operator dashboard (23 pages) |
+| `/dashboard` | Operator dashboard (29 pages) |
 | `/marketplace` | Public lead marketplace |
 | `/auth/sign-in` | Operator login (magic link) |
 | `/assess/:slug` | Dynamic assessment forms |
@@ -182,7 +205,7 @@ Returns `{ "success": true, "service": "lead-os-hosted-runtime", ... }`.
 - GDPR compliance (export, deletion, consent)
 - RLS policy generator for database-level tenant isolation
 
-### Operator Dashboard (23 pages)
+### Operator Dashboard (29 pages)
 
 | Page | Function |
 |------|----------|
@@ -210,8 +233,10 @@ Returns `{ "success": true, "service": "lead-os-hosted-runtime", ... }`.
 | Settings | Tenant configuration |
 | Tenants | Multi-tenant management (super-admin) |
 | Workflows | Automation workflow management |
+| Joy | Team morale, celebrations, and culture |
+| Competitors | Competitive intelligence and tracking |
 
-## Integration Catalog (110 providers)
+## Integration Catalog (137 providers)
 
 All integrations operate in **dry-run mode** when their API key is not configured.
 
@@ -245,7 +270,8 @@ All integrations operate in **dry-run mode** when their API key is not configure
 | Model | Price Range | How It Works |
 |-------|------------|-------------|
 | Managed Service | $200-1,000/mo | You run Lead OS for clients, they get a branded dashboard |
-| White-Label SaaS | $99-499/mo | Client gets their own branded instance, self-service |
+| White-Label SaaS | $299-2,999/mo | Client gets their own branded instance, self-service |
+| Territory Model | $300-1,500/mo | Erie-pro exclusive territory claim per niche per city |
 | Implementation + Retainer | $5K-25K setup + $1K-5K/mo | Custom projects with ongoing management |
 | Lead Marketplace | $25-500/lead | Capture leads and sell them through the marketplace |
 
@@ -307,7 +333,7 @@ cd lead-os-hosted-runtime-wt-hybrid
 npm test
 ```
 
-3,964 test cases using Node.js native test runner with TypeScript support. Tests run with in-memory storage and dry-run mode.
+4,151 test cases using Node.js native test runner with TypeScript support. Tests run with in-memory storage and dry-run mode.
 
 ## Documentation
 
@@ -328,18 +354,23 @@ lead-os/
   lead-os-hosted-runtime-wt-hybrid/      # Kernel runtime (system of record)
     src/
       app/
-        api/                             # 278 API endpoints
-        dashboard/                       # 23 operator dashboard pages
+        api/                             # 498 API endpoints
+        dashboard/                       # 29 operator dashboard pages
         auth/                            # Authentication pages
         onboard/                         # Self-service onboarding
         setup/                           # First-run setup wizard
         marketplace/                     # Public lead marketplace
         assess/                          # Dynamic assessment forms
         calculator/                      # ROI calculator
-      lib/                               # 124 library modules
+      lib/                               # 233 library modules
         integrations/                    # 35 integration adapters
-    tests/                               # 3,964 test cases
-  neatcircle-beta/                       # Edge / marketing layer
+    tests/                               # 4,151 test cases
+  erie-pro/                              # Geographic territory platform (630 pages)
+    src/
+      app/                               # 44 niches x 15 page types + static
+      lib/                               # niches, content, glossary, seasonal, SEO
+      components/ui/                     # 52 shadcn components
+  neatcircle-beta/                       # Edge / marketing layer (152 pages)
   Funnel Blueprints/                     # Funnel blueprint documents
   _n8n_sources/                          # n8n workflow sources
   make-scenarios/                        # Make.com scenario exports

@@ -26,7 +26,7 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 - **Niche-agnostic**: A built-in niche generator auto-configures the entire system for any industry (legal, dental, HVAC, real estate, coaching, etc.) using rule-based template composition. No LLM dependency for configuration.
 - **Multi-tenant from day one**: Each client gets isolated data, scoring weights, funnels, branding, and provider credentials. Managed via API or self-service onboarding wizard.
 - **Four revenue models in one codebase**: Sell it as a managed service, a white-label SaaS, an implementation + retainer, or a lead marketplace. All four work simultaneously.
-- **110 provider integrations**: From AI (OpenAI, Anthropic) to CRM (SuiteDash, SalesNexus) to email (Sinosend) to SMS (EasyText) to video (Zebracat, Meiro, Gumlet) to page builders (Brizy, GrapesJS) to automation (Activepieces, n8n) to analytics (Umami, Plerdy) to booking (Trafft, Lunacal). Every provider operates in dry-run mode without API keys, so the system always works.
+- **137 provider integrations**: From AI (OpenAI, Anthropic) to CRM (SuiteDash, SalesNexus) to email (Sinosend) to SMS (EasyText) to video (Zebracat, Meiro, Gumlet) to page builders (Brizy, GrapesJS) to automation (Activepieces, n8n) to analytics (Umami, Plerdy) to booking (Trafft, Lunacal). Every provider operates in dry-run mode without API keys, so the system always works.
 - **Embeddable**: Drop a `<script>` tag on any website. The widget system renders lead capture forms, assessments, calculators, and chat interfaces without requiring the client to change their website.
 - **AI-powered content pipeline**: Generates social media content (angles, hooks, scripts), adapts it across 12 platform variants (TikTok, IG Reels, YouTube Shorts, LinkedIn, X, Threads), tracks performance, and auto-generates DM conversion sequences.
 
@@ -34,19 +34,22 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 
 | Metric | Count |
 |--------|-------|
-| Total source files | 668 |
-| Lines of code | 139,331 |
-| API endpoints | 295 |
-| UI pages | 40+ |
-| Dashboard pages | 27 |
-| Provider integrations | 110 |
-| Lib modules | 138 |
+| Total source files | 1,004+ |
+| Lines of code | 210,000+ |
+| API endpoints | 498 |
+| UI pages | 60 |
+| Dashboard pages | 29 |
+| Provider integrations | 137 |
+| Lib modules | 233 |
 | Integration adapters | 35 |
 | Funnel node types | 78 |
-| Industry templates | 13 |
-| Test files | 125 |
-| Test cases | 2,179 |
+| Industry templates | 16 |
+| Test files | 333 |
+| Test cases | 4,151 |
 | Test pass rate | 100% |
+| Erie-Pro niches | 44 |
+| Erie-Pro pages | 630 |
+| Total deployed pages | 1,321 |
 
 ---
 
@@ -61,7 +64,7 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 | Personalization Engine | `personalization-engine.ts` | Delivers niche-specific, temperature-aware content and CTAs |
 | Context Engine | `context-engine.ts` | Maintains full lead lifecycle context with scoring history |
 | Niche Generator | `niche-generator.ts` | Auto-generates complete niche configs from an industry name |
-| Niche Templates | `niche-templates.ts` | 13 industry category templates (1,905 lines of domain knowledge) |
+| Niche Templates | `niche-templates.ts` | 16 industry category templates (1,905 lines of domain knowledge) |
 | Funnel Library | `funnel-library.ts` | 78 funnel node types across 8 funnel families |
 | Catalog | `catalog.ts` | Niche registry with runtime registration support |
 | Offer Engine | `offer-engine.ts` | Dynamic offer selection based on lead temperature |
@@ -406,7 +409,7 @@ Widgets support: lead capture forms, assessments, calculators, chat interfaces, 
 
 ### 4.8 Operator Dashboard
 
-27 dashboard pages for client operators:
+29 dashboard pages for client operators:
 
 | Page | Function |
 |------|----------|
@@ -449,7 +452,7 @@ Widgets support: lead capture forms, assessments, calculators, chat interfaces, 
 Run lead generation as a managed service for their clients. Deploy a white-labeled instance per client vertical. Charge $2K-10K/month per client.
 
 **2. SaaS Entrepreneurs**
-Launch a vertical lead-gen SaaS (e.g., "LeadGen for Dentists") without building from scratch. White-label at $99-499/month per seat.
+Launch a vertical lead-gen SaaS (e.g., "LeadGen for Dentists") without building from scratch. White-label at $299-$2,999/month per seat.
 
 **3. Lead Generation Companies**
 Capture leads across multiple niches and sell them through the marketplace. The system handles scoring, enrichment, and pricing automatically.
@@ -494,7 +497,7 @@ You run Lead OS for the client. They get a branded dashboard and you handle conf
 | Growth | $750 | $500 | 2,000 | 25,000 | 2,000 |
 | Enterprise | $1,500 | $1,000 | Unlimited | Unlimited | Unlimited |
 
-### Model 2: White-Label SaaS ($99-499/mo)
+### Model 2: White-Label SaaS ($299-$2,999/mo)
 
 Client gets their own branded instance. Self-service with your branding.
 
@@ -1042,7 +1045,7 @@ Building Lead OS from scratch would require:
 Deploy a complete lead-gen platform for a new niche in under 5 minutes. The niche generator produces scoring weights, assessment questions, nurture sequences, and content templates automatically. Competitors require weeks of manual configuration.
 
 **2. Vertical Depth**
-13 industry templates with domain-specific psychology profiles, pain points, urgency signals, and conversion patterns. This isn't a generic form builder -- it understands that a plumber has different buying triggers than a lawyer.
+16 industry templates with domain-specific psychology profiles, pain points, urgency signals, and conversion patterns. This isn't a generic form builder -- it understands that a plumber has different buying triggers than a lawyer.
 
 **3. Multi-Revenue Optionality**
 The same codebase supports four distinct business models. Start as a managed service, add a SaaS tier, open a marketplace -- all without code changes or redeployment.
@@ -1191,12 +1194,13 @@ Estimated effort per adapter: 200-400 lines, following the pattern established b
 
 ## Summary
 
-Lead OS is a 139,331-line, 668-file production platform that unifies lead generation, scoring, nurturing, AI content creation, automated prospecting, A/B experiment optimization, competitive analysis, billing, and marketplace operations into a single deployable runtime. It serves any industry through automated niche configuration, supports four simultaneous revenue models, integrates with 110 external services (with a validated roadmap to 141+ via AppSumo lifetime deals), and reaches break-even with a single client.
+Lead OS is a 210,000+-line, 1,004+-file production platform that unifies lead generation, scoring, nurturing, AI content creation, automated prospecting, A/B experiment optimization, competitive analysis, billing, and marketplace operations into a single deployable runtime. It includes Erie-Pro, a 630-page geographic monopoly engine spanning 44 niches. It serves any industry through automated niche configuration, supports four simultaneous revenue models, integrates with 137 external services, and reaches break-even with a single client.
 
 Key additions since initial release:
 - **Automated Prospecting Engine**: Discovery scout finds businesses, scores digital presence gaps, classifies opportunities (managed-service, white-label, affiliate, partner), generates personalized outreach, and auto-ingests into the lead pipeline
 - **Autoresearch Experiment Engine**: Z-test evaluation of running A/B tests with early stopping, auto-rollback, and auto-promotion across 5 optimization surfaces
 - **Competitive Analysis Pipeline**: Scrape competitor websites, extract design tokens and funnel patterns, process marketing artifacts into actionable intelligence
-- **Enhanced Dashboard**: 27 pages including prospects, competitors, marketing ingestion, leads, and expanded credentials with verification
+- **Erie-Pro Geographic Monopoly Engine**: 630 pages across 44 niches with city hub pages, niche landing pages, and provider profile pages for local market domination
+- **Enhanced Dashboard**: 29 pages including prospects, competitors, marketing ingestion, leads, and expanded credentials with verification
 
-The system is deployed, tested (2,179 passing test cases, 0 TypeScript errors), security-audited, and performance-optimized. It is live at https://github.com/pinohu/lead-os and can be deployed to Vercel, Railway, or any Node.js host in under 10 minutes.
+The system is deployed, tested (4,151 passing test cases, 0 TypeScript errors), security-audited, and performance-optimized. It is live at https://github.com/pinohu/lead-os and can be deployed to Vercel, Railway, or any Node.js host in under 10 minutes.
