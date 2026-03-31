@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Dry-run mode — log but don't send
-    console.log("[contact] Lead received:", { name, email, phone, message, niche });
+    // Dry-run mode — log receipt without PII
+    console.log("[contact] Lead received:", { niche: niche ?? "general", hasPhone: !!phone, hasMessage: !!message });
 
     return NextResponse.json({
       success: true,

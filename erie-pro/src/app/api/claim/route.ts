@@ -31,6 +31,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(providerEmail)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid email format" },
+        { status: 400 }
+      );
+    }
+
+    if (phone.replace(/\D/g, "").length < 10) {
+      return NextResponse.json(
+        { success: false, error: "Phone number must be at least 10 digits" },
+        { status: 400 }
+      );
+    }
+
     const nicheData = getNicheBySlug(niche);
     if (!nicheData) {
       return NextResponse.json(

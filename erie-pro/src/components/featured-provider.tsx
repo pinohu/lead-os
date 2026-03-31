@@ -43,7 +43,7 @@ export function FeaturedProvider({ niche, city }: FeaturedProviderProps) {
   if (!badgeLabel) return null
 
   return (
-    <section className="mx-auto max-w-4xl px-4 pt-8 sm:px-6">
+    <section className="mx-auto max-w-4xl px-4 pt-8 sm:px-6" aria-label={`Featured ${niche} provider in ${city}`}>
       <Card
         className={`relative overflow-hidden border-2 ${
           isElite
