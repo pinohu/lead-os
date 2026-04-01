@@ -53,8 +53,26 @@ const columns: { label: string; color: string; items: RoadmapItem[] }[] = [
 ];
 
 export default function RoadmapPage() {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const roadmapJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${baseUrl}/roadmap#webpage`,
+    url: `${baseUrl}/roadmap`,
+    name: "Lead OS Product Roadmap",
+    description: "See what is planned, in progress, and completed for Lead OS.",
+    isPartOf: { "@id": `${baseUrl}/#website` },
+    about: {
+      "@type": "SoftwareApplication",
+      "@id": `${baseUrl}/#app`,
+      name: "Lead OS",
+    },
+  }
+
   return (
-    <main id="main-content" style={{ maxWidth: "76rem", margin: "0 auto", padding: "3rem 1rem" }}>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(roadmapJsonLd) }} />
+      <main id="main-content" style={{ maxWidth: "76rem", margin: "0 auto", padding: "3rem 1rem" }}>
       <div style={{ textAlign: "center", marginBottom: "3rem" }}>
         <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.5rem" }}>Product Roadmap</h1>
         <p style={{ color: "#6b7280", maxWidth: "32rem", margin: "0 auto" }}>
@@ -123,5 +141,6 @@ export default function RoadmapPage() {
         ))}
       </div>
     </main>
+    </>
   );
 }

@@ -96,8 +96,45 @@ const plans = [
 ];
 
 export default function PricingPage() {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+
+  const pricingFaqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      { "@type": "Question", name: "Can I try Lead OS before committing?", acceptedAnswer: { "@type": "Answer", text: "Yes. Every plan starts with a 14-day free trial. You also get full dry-run mode for testing your setup with no real data sent." } },
+      { "@type": "Question", name: "Can I change plans later?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. Upgrade or downgrade at any time from your dashboard. Changes take effect at the start of your next billing cycle." } },
+      { "@type": "Question", name: "What happens if I exceed my lead limit?", acceptedAnswer: { "@type": "Answer", text: "We will notify you when you reach 80% of your limit. If you go over, new leads are queued (not lost) until you upgrade or the next billing cycle starts." } },
+      { "@type": "Question", name: "Do you offer annual billing?", acceptedAnswer: { "@type": "Answer", text: "Yes. Annual plans save 20%. Contact us or select annual billing during checkout." } },
+      { "@type": "Question", name: "Is my data secure?", acceptedAnswer: { "@type": "Answer", text: "All data is encrypted at rest (AES-256) and in transit (TLS 1.3). We are GDPR and CCPA compliant with SOC 2 reporting. You own your data." } },
+    ],
+  }
+
+  const softwareAppJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "@id": `${baseUrl}/#app`,
+    name: "Lead OS",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    description: "Enterprise lead generation platform. Replace 15-20 SaaS tools with one platform.",
+    url: baseUrl,
+    offers: plans.map((plan) => ({
+      "@type": "Offer",
+      name: plan.name,
+      price: plan.price.replace("$", ""),
+      priceCurrency: "USD",
+      description: plan.description,
+      url: `${baseUrl}${plan.href}`,
+      availability: "https://schema.org/InStock",
+    })),
+  }
+
   return (
-    <main id="main-content" className="max-w-7xl mx-auto px-4 py-16">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingFaqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppJsonLd) }} />
+      <main id="main-content" className="max-w-7xl mx-auto px-4 py-16">
       <div className="text-center mb-12">
         <Badge variant="secondary" className="mb-4">Pricing</Badge>
         <h1 className="text-4xl font-extrabold tracking-tight mb-3">
@@ -252,5 +289,6 @@ export default function PricingPage() {
         </div>
       </section>
     </main>
+    </>
   );
 }

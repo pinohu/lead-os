@@ -62,7 +62,20 @@ export default async function AssessmentPage({ params, searchParams }: Assessmen
     referrer: headerStore.get("referer") ?? undefined,
   });
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const assessJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${baseUrl}/assess/${niche.slug}#webpage`,
+    url: `${baseUrl}/assess/${niche.slug}`,
+    name: niche.assessmentTitle,
+    description: niche.summary,
+    isPartOf: { "@id": `${baseUrl}/#website` },
+  }
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(assessJsonLd) }} />
     <div data-theme="light" style={{ colorScheme: "light" }}>
     <ExperienceScaffold
       eyebrow="Hosted assessment"
@@ -108,5 +121,6 @@ export default async function AssessmentPage({ params, searchParams }: Assessmen
       />
     </ExperienceScaffold>
     </div>
+    </>
   );
 }
