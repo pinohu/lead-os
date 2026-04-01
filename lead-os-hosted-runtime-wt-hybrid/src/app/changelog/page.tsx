@@ -15,6 +15,29 @@ interface Release {
 
 const releases: Release[] = [
   {
+    version: "1.3.0",
+    date: "2026-03-31",
+    added: [
+      "Schema.org AggregateRating + Review JSON-LD on all erie-pro niche reviews pages",
+      "Schema.org Service + OfferCatalog JSON-LD on all erie-pro niche costs pages",
+      "Schema.org EmergencyService JSON-LD with 24/7 hours on all erie-pro emergency pages",
+      "Schema.org ItemList pricing JSON-LD on all erie-pro niche pricing pages",
+      "Schema.org HowTo + HowToTip JSON-LD on all erie-pro niche tips pages",
+      "Schema.org ItemList credentials JSON-LD on all erie-pro niche certifications pages",
+      "Schema.org HowTo + HowToSection JSON-LD on all erie-pro niche seasonal pages",
+      "Schema.org ItemList territory JSON-LD on all erie-pro niche directory pages",
+      "Schema.org Article JSON-LD on all erie-pro niche compare pages",
+      "Schema.org ItemList JSON-LD on erie-pro services page (all 13 niches)",
+      "Schema.org Organization + WebSite + SoftwareApplication JSON-LD in NeatCircle root layout",
+      "sitemap.ts for NeatCircle covering services, stories, industries, locations, and assessments",
+      "robots.ts for NeatCircle with correct disallow rules for dashboard and control-center",
+    ],
+    changed: [
+      "Erie-pro now has Schema.org structured data on every public-facing route (15 of 15 non-admin pages)",
+      "NeatCircle root layout now exports structured data alongside skip-to-content and metadata",
+    ],
+  },
+  {
     version: "1.2.0",
     date: "2026-03-31",
     added: [
