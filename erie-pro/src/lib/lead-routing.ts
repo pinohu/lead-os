@@ -385,3 +385,80 @@ export function getAllProviders(): Provider[] {
 export function getLeadResult(leadId: string): LeadRouteResult | undefined {
   return leadResults.get(leadId);
 }
+
+/**
+ * Count banked (unmatched) leads for a given niche.
+ * These are real leads with no provider to receive them — the pitch inventory.
+ */
+export function getBankedLeadsByNiche(niche: string): number {
+  let count = 0;
+  for (const result of leadResults.values()) {
+    if (result.niche === niche && result.routeType === "unmatched") {
+      count++;
+    }
+  }
+  return count;
+}
+
+/**
+ * Get banked lead counts for ALL niches — used for the admin dashboard
+ * and for surfacing urgency on the claim/directory pages.
+ */
+export function getAllBankedLeadCounts(): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const result of leadResults.values()) {
+    if (result.routeType === "unmatched") {
+      counts[result.niche] = (counts[result.niche] ?? 0) + 1;
+    }
+  }
+  return counts;
+}
+
+/**
+ * Get the full list of unmatched lead records for a niche
+ * (used by pay-per-lead purchase flow to select which lead to sell).
+ */
+export function getUnmatchedLeadsForNiche(niche: string): LeadRouteResult[] {
+  const results: LeadRouteResult[] = [];
+  for (const result of leadResults.values()) {
+    if (result.niche === niche && result.routeType === "unmatched") {
+      results.push(result);
+    }
+  }
+  return results.sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
+}
+
+/**
+ * Mark an unmatched lead as routed to a pay-per-lead buyer.
+ * Called after successful Stripe payment confirmation.
+ */
+export function assignLeadToBuyer(
+  leadId: string,
+  buyerEmail: string
+): LeadRouteResult | null {
+  const result = leadResults.get(leadId);
+  if (!result || result.routeType !== "unmatched") return null;
+
+  const updated: LeadRouteResult = {
+    ...result,
+    routeType: "overflow",
+    routedTo: {
+      id: `buyer-${Date.now()}`,
+      slug: "pay-per-lead-buyer",
+      businessName: buyerEmail,
+      niche: result.niche,
+      city: result.city,
+      tier: "overflow",
+      email: buyerEmail,
+      responseTimeAvg: 0,
+      conversionRate: 0,
+      satisfactionScore: 0,
+      isActive: true,
+      slaTimeoutSeconds: 86400,
+    },
+  };
+  leadResults.set(leadId, updated);
+  return updated;
+}

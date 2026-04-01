@@ -1,10 +1,13 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { Building2, ArrowRight, MapPin, Star, Clock, ShieldCheck, Phone } from "lucide-react"
+import { Building2, ArrowRight, MapPin, Star, Clock, ShieldCheck, Phone, Flame, Lock } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { getNicheBySlug } from "@/lib/niches"
 import { getNicheContent, getAllNicheSlugs } from "@/lib/niche-content"
+import { getProviderByNicheAndCity } from "@/lib/provider-store"
+import { getBankedLeadsByNiche } from "@/lib/lead-routing"
+import { LEAD_PRICES } from "@/lib/stripe-integration"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -53,6 +56,12 @@ export default async function NicheDirectoryPage({ params }: Props) {
   const niche = getNicheBySlug(slug)
   const content = getNicheContent(slug)
   if (!niche || !content) notFound()
+
+  const claimedProvider = getProviderByNicheAndCity(slug, cityConfig.slug)
+  const isClaimed = claimedProvider !== undefined
+  const bankedLeads = getBankedLeadsByNiche(slug)
+  const highUrgency = bankedLeads >= 10
+  const medUrgency = bankedLeads >= 3
 
   const directoryJsonLd = {
     "@context": "https://schema.org",
@@ -121,114 +130,277 @@ export default async function NicheDirectoryPage({ params }: Props) {
         </div>
       </section>
 
+      {/* ── Urgency Banner (unclaimed + banked leads) ─────────── */}
+      {!isClaimed && bankedLeads > 0 && (
+        <div className={`border-b px-4 py-3 text-center text-sm font-medium ${
+          highUrgency
+            ? "bg-red-50 border-red-200 text-red-800 dark:bg-red-950/30 dark:border-red-900 dark:text-red-300"
+            : "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/30 dark:border-amber-900 dark:text-amber-300"
+        }`}>
+          <Flame className="inline h-4 w-4 mr-1 -mt-0.5" />
+          {highUrgency
+            ? `${bankedLeads} leads are waiting in ${niche.label} right now — no one is receiving them. This territory is unclaimed.`
+            : `${bankedLeads} ${niche.label.toLowerCase()} leads are sitting unclaimed in ${cityConfig.name}. Be the first to receive them.`
+          }
+        </div>
+      )}
+
       {/* ── Directory Listings ────────────────────────────────── */}
       <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-xl font-bold">
             {content.pluralLabel} — {cityConfig.name} Area
           </h2>
-          <Badge variant="outline">
-            {PLACEHOLDER_SLOTS.length} Territories Open
+          <Badge variant={isClaimed ? "default" : "outline"}>
+            {isClaimed ? (
+              <><Lock className="mr-1 h-3 w-3" /> Territory Claimed</>
+            ) : (
+              `${PLACEHOLDER_SLOTS.length} Territories Open`
+            )}
           </Badge>
         </div>
 
-        <div className="grid gap-4">
-          {PLACEHOLDER_SLOTS.map((slot, i) => (
-            <Card
-              key={i}
-              className="border-dashed border-2 hover:border-primary/50 transition-colors"
-            >
-              <CardContent className="flex items-center gap-4 py-5">
-                <Avatar className="h-14 w-14 bg-muted">
-                  <AvatarFallback className="text-lg text-muted-foreground/40">
-                    {niche.icon}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-semibold text-muted-foreground/60">
-                      Be the first {niche.label.toLowerCase()} provider in {slot.area}
-                    </p>
-                    {slot.featured && (
-                      <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 text-xs">
-                        Featured Territory
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground/50">
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {slot.area}, {cityConfig.stateCode}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Star className="h-3.5 w-3.5" />
-                      {slot.specialty}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5" />
-                      Unclaimed
-                    </span>
-                  </div>
+        {/* Claimed: show the active provider prominently */}
+        {isClaimed && claimedProvider && (
+          <Card className="mb-6 border-primary/30 bg-primary/5">
+            <CardContent className="flex items-center gap-4 py-5">
+              <Avatar className="h-14 w-14 bg-primary/10">
+                <AvatarFallback className="text-lg">{niche.icon}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="font-semibold">{claimedProvider.businessName}</p>
+                  <Badge className="text-xs">
+                    <ShieldCheck className="mr-1 h-3 w-3" /> Verified
+                  </Badge>
                 </div>
-                <Button asChild variant="outline" size="sm" className="shrink-0">
-                  <Link href="/for-business">
-                    Claim Listing
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <MapPin className="h-3.5 w-3.5" />{cityConfig.name}, {cityConfig.stateCode}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Star className="h-3.5 w-3.5" />{claimedProvider.avgRating.toFixed(1)} ({claimedProvider.reviewCount} reviews)
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="h-3.5 w-3.5" />Responds in ~{Math.round(claimedProvider.avgResponseTime / 60)} min
+                  </span>
+                </div>
+              </div>
+              <Button asChild size="sm" className="shrink-0">
+                <Link href={`/${slug}#quote`}>Get a Quote</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Unclaimed: show open slots */}
+        {!isClaimed && (
+          <div className="grid gap-4">
+            {PLACEHOLDER_SLOTS.map((slot, i) => (
+              <Card
+                key={i}
+                className="border-dashed border-2 hover:border-primary/50 transition-colors"
+              >
+                <CardContent className="flex items-center gap-4 py-5">
+                  <Avatar className="h-14 w-14 bg-muted">
+                    <AvatarFallback className="text-lg text-muted-foreground/40">
+                      {niche.icon}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-semibold text-muted-foreground/60">
+                        Be the first {niche.label.toLowerCase()} provider in {slot.area}
+                      </p>
+                      {slot.featured && (
+                        <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 text-xs">
+                          Featured Territory
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground/50">
+                      <span className="flex items-center gap-1">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {slot.area}, {cityConfig.stateCode}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Star className="h-3.5 w-3.5" />
+                        {slot.specialty}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3.5 w-3.5" />
+                        Unclaimed
+                      </span>
+                    </div>
+                  </div>
+                  <Button asChild variant="outline" size="sm" className="shrink-0">
+                    <Link href={`/for-business/claim?niche=${slug}`}>
+                      Claim Listing
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </section>
 
       <Separator className="mx-auto max-w-4xl" />
 
-      {/* ── Claim Your Listing CTA ────────────────────────────── */}
+      {/* ── Business CTA — tiered based on claim status & banked leads ── */}
       <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
-        <Card className="bg-primary/5 border-primary/20">
-          <CardHeader className="text-center pb-2">
-            <CardTitle className="text-2xl">
-              Are you a {niche.label.toLowerCase()} professional in{" "}
-              {cityConfig.name}?
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="mx-auto max-w-lg text-muted-foreground mb-6">
-              Claim your exclusive listing on {cityConfig.domain} and become
-              the go-to {niche.label.toLowerCase()} provider in your service
-              area. Limited to one verified provider per community.
-            </p>
-            <div className="grid gap-4 sm:grid-cols-3 max-w-lg mx-auto mb-8">
-              <div className="flex flex-col items-center gap-1">
-                <ShieldCheck className="h-6 w-6 text-primary" />
-                <span className="text-sm font-medium">Verified Badge</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <Star className="h-6 w-6 text-primary" />
-                <span className="text-sm font-medium">Featured Listing</span>
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <Phone className="h-6 w-6 text-primary" />
-                <span className="text-sm font-medium">Direct Leads</span>
-              </div>
-            </div>
-            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        {isClaimed ? (
+          /* Claimed: only show consumer CTA, no business pitch */
+          <Card className="bg-muted/30">
+            <CardHeader className="text-center pb-2">
+              <CardTitle className="text-xl">
+                Looking for {content.serviceLabel} in {cityConfig.name}?
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="mx-auto max-w-lg text-muted-foreground mb-6">
+                Our verified {niche.label.toLowerCase()} professional is ready to help.
+                Request a free quote and get a response within the hour.
+              </p>
               <Button asChild size="lg">
-                <Link href="/for-business">
-                  Claim Your Listing
+                <Link href={`/${slug}#quote`}>
+                  {content.ctaPrimary}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/contact">Learn More</Link>
-              </Button>
-            </div>
-            <p className="mt-4 text-xs text-muted-foreground">
-              Starting at ${niche.monthlyFee}/month &middot; Exclusive
-              territory available
-            </p>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : bankedLeads > 0 ? (
+          /* Unclaimed + banked leads: show the full pitch with lead count */
+          <div className="grid gap-6 sm:grid-cols-2">
+            {/* Tier 1: Pay-per-lead */}
+            <Card className="border-amber-200 bg-amber-50/50 dark:border-amber-900/50 dark:bg-amber-950/20">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <Flame className="h-5 w-5 text-amber-600" />
+                  <CardTitle className="text-lg">Try one lead first</CardTitle>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {bankedLeads} {niche.label.toLowerCase()} {bankedLeads === 1 ? "lead is" : "leads are"} waiting right now.
+                  Buy one with no commitment.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="rounded border bg-background p-2 text-center">
+                    <p className="font-bold text-base">${LEAD_PRICES.cold}</p>
+                    <p className="text-muted-foreground">Cold lead</p>
+                  </div>
+                  <div className="rounded border bg-background p-2 text-center">
+                    <p className="font-bold text-base text-amber-700">${LEAD_PRICES.warm}</p>
+                    <p className="text-muted-foreground">Warm lead</p>
+                  </div>
+                  <div className="rounded border bg-background p-2 text-center">
+                    <p className="font-bold text-base text-orange-600">${LEAD_PRICES.hot}</p>
+                    <p className="text-muted-foreground">Hot lead</p>
+                  </div>
+                  <div className="rounded border bg-background p-2 text-center">
+                    <p className="font-bold text-base text-red-600">${LEAD_PRICES.burning}</p>
+                    <p className="text-muted-foreground">Burning lead</p>
+                  </div>
+                </div>
+                <Button asChild size="sm" className="w-full" variant="outline">
+                  <Link href={`/for-business?niche=${slug}&intent=buy-lead`}>
+                    Buy a Lead — No Contract
+                    <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Tier 2: Claim the territory */}
+            <Card className="bg-primary/5 border-primary/20">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <Lock className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-lg">Own the territory</CardTitle>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Claim exclusive access to all {bankedLeads} banked leads plus
+                  every future {niche.label.toLowerCase()} lead in {cityConfig.name}.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid gap-4 grid-cols-3 text-center text-xs mb-2">
+                  <div className="flex flex-col items-center gap-1">
+                    <ShieldCheck className="h-5 w-5 text-primary" />
+                    <span className="font-medium">Verified Badge</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <Star className="h-5 w-5 text-primary" />
+                    <span className="font-medium">Featured Listing</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <Phone className="h-5 w-5 text-primary" />
+                    <span className="font-medium">All Leads</span>
+                  </div>
+                </div>
+                <Button asChild size="sm" className="w-full">
+                  <Link href={`/for-business/claim?niche=${slug}`}>
+                    Claim Territory — from ${niche.monthlyFee}/mo
+                    <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                  </Link>
+                </Button>
+                {(highUrgency || medUrgency) && (
+                  <p className="text-xs text-center text-muted-foreground">
+                    {highUrgency
+                      ? `⚡ High demand — ${bankedLeads} leads unclaimed`
+                      : `${bankedLeads} leads waiting for a provider`}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          /* Unclaimed, no banked leads: standard claim pitch */
+          <Card className="bg-primary/5 border-primary/20">
+            <CardHeader className="text-center pb-2">
+              <CardTitle className="text-2xl">
+                Are you a {niche.label.toLowerCase()} professional in {cityConfig.name}?
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="mx-auto max-w-lg text-muted-foreground mb-6">
+                Claim your exclusive listing on {cityConfig.domain} and become
+                the go-to {niche.label.toLowerCase()} provider in your service
+                area. Limited to one verified provider per community.
+              </p>
+              <div className="grid gap-4 sm:grid-cols-3 max-w-lg mx-auto mb-8">
+                <div className="flex flex-col items-center gap-1">
+                  <ShieldCheck className="h-6 w-6 text-primary" />
+                  <span className="text-sm font-medium">Verified Badge</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <Star className="h-6 w-6 text-primary" />
+                  <span className="text-sm font-medium">Featured Listing</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <Phone className="h-6 w-6 text-primary" />
+                  <span className="text-sm font-medium">Direct Leads</span>
+                </div>
+              </div>
+              <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                <Button asChild size="lg">
+                  <Link href={`/for-business/claim?niche=${slug}`}>
+                    Claim Your Listing
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg">
+                  <Link href="/contact">Learn More</Link>
+                </Button>
+              </div>
+              <p className="mt-4 text-xs text-muted-foreground">
+                Starting at ${niche.monthlyFee}/month &middot; Exclusive territory available
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </section>
 
       {/* ── Consumer CTA ──────────────────────────────────────── */}

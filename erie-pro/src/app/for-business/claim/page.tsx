@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Loader2, Building, Shield } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, Building, Shield, Flame, Lock } from "lucide-react";
 import { niches } from "@/lib/niches";
 import { cityConfig } from "@/lib/city-config";
 import {
@@ -39,6 +39,12 @@ interface ClaimResult {
   error?: string;
 }
 
+interface NicheStatus {
+  claimed: boolean;
+  bankedLeads: number;
+  urgency: "high" | "medium" | "low";
+}
+
 export default function ClaimPage() {
   const searchParams = useSearchParams();
   const initialNiche = searchParams.get("niche") ?? "";
@@ -58,6 +64,16 @@ export default function ClaimPage() {
   const [license, setLicense] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<ClaimResult | null>(null);
+  const [nicheStatus, setNicheStatus] = useState<NicheStatus | null>(null);
+
+  // Fetch niche status whenever niche selection changes
+  useEffect(() => {
+    if (!niche) { setNicheStatus(null); return; }
+    fetch(`/api/niche-status/${niche}`)
+      .then((r) => r.json())
+      .then((data) => setNicheStatus({ claimed: data.claimed, bankedLeads: data.bankedLeads, urgency: data.urgency }))
+      .catch(() => setNicheStatus(null));
+  }, [niche]);
 
   const selectedNiche = niches.find((n) => n.slug === niche);
   const tierPrice = selectedNiche
@@ -177,6 +193,32 @@ export default function ClaimPage() {
                     {selectedNiche.description} &middot; Avg project value:{" "}
                     {selectedNiche.avgProjectValue}
                   </p>
+                )}
+
+                {/* Banked lead urgency callout */}
+                {nicheStatus && !nicheStatus.claimed && nicheStatus.bankedLeads > 0 && (
+                  <div className={`mt-2 flex items-start gap-2 rounded-lg border px-3 py-2.5 text-sm ${
+                    nicheStatus.urgency === "high"
+                      ? "border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300"
+                      : "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-300"
+                  }`}>
+                    <Flame className="h-4 w-4 mt-0.5 shrink-0" />
+                    <span>
+                      <strong>{nicheStatus.bankedLeads} {selectedNiche?.label.toLowerCase()} {nicheStatus.bankedLeads === 1 ? "lead is" : "leads are"} waiting</strong> right now with no provider to receive them.
+                      Claim this territory and they&apos;re yours immediately.
+                    </span>
+                  </div>
+                )}
+
+                {/* Already claimed notice */}
+                {nicheStatus?.claimed && (
+                  <div className="mt-2 flex items-start gap-2 rounded-lg border border-muted px-3 py-2.5 text-sm text-muted-foreground">
+                    <Lock className="h-4 w-4 mt-0.5 shrink-0" />
+                    <span>
+                      This territory is already claimed in {cityConfig.name}. Select a different category or{" "}
+                      <Link href="/contact" className="underline">contact us</Link> about waitlist options.
+                    </span>
+                  </div>
                 )}
               </div>
             </CardContent>
@@ -337,7 +379,7 @@ export default function ClaimPage() {
             type="submit"
             size="lg"
             className="w-full text-base"
-            disabled={submitting || !niche || !businessName || !email || !phone}
+            disabled={submitting || !niche || !businessName || !email || !phone || nicheStatus?.claimed === true}
           >
             {submitting ? (
               <>

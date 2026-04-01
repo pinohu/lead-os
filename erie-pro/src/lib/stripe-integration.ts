@@ -147,6 +147,61 @@ export function createTerritoryCheckoutSession(
   return checkout;
 }
 
+// ── Pay-Per-Lead Pricing ────────────────────────────────────────────
+
+export type LeadTemperature = "cold" | "warm" | "hot" | "burning";
+
+export const LEAD_PRICES: Record<LeadTemperature, number> = {
+  cold: 25,
+  warm: 50,
+  hot: 100,
+  burning: 200,
+};
+
+export interface LeadPurchaseCheckout {
+  leadId: string;
+  niche: string;
+  temperature: LeadTemperature;
+  price: number;
+  buyerEmail: string;
+  checkoutUrl: string;
+  sessionId: string;
+}
+
+/**
+ * Create a one-time Stripe checkout for a single pay-per-lead purchase.
+ * Tier 1 monetization: zero commitment, proof-of-value before subscription.
+ */
+export function createLeadPurchaseCheckout(
+  leadId: string,
+  niche: string,
+  temperature: LeadTemperature,
+  buyerEmail: string
+): LeadPurchaseCheckout {
+  const price = LEAD_PRICES[temperature];
+  const sessionId = generateSessionId();
+
+  if (isDryRun) {
+    console.log(`[Stripe DRY-RUN] Lead purchase session: ${sessionId}`, {
+      leadId,
+      niche,
+      temperature,
+      price,
+      buyerEmail,
+    });
+  }
+
+  return {
+    leadId,
+    niche,
+    temperature,
+    price,
+    buyerEmail,
+    checkoutUrl: `${APP_DOMAIN}/for-business/leads/success?session_id=${sessionId}&lead_id=${leadId}&niche=${niche}`,
+    sessionId,
+  };
+}
+
 /**
  * Handle Stripe webhook events.
  * In dry-run mode, logs the event.
