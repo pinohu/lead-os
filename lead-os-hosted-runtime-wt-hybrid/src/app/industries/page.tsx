@@ -13,8 +13,27 @@ export const metadata: Metadata = {
 
 export default function IndustriesPage() {
   const niches = Object.values(nicheCatalog);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+
+  const industriesJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${baseUrl}/industries#industries`,
+    name: "Industries | Lead OS",
+    description: "Explore growth systems, lead capture funnels, and automation infrastructure purpose-built for your industry.",
+    numberOfItems: niches.length,
+    itemListElement: niches.map((niche, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: niche.label,
+      description: niche.summary,
+      url: `${baseUrl}/industries/${niche.slug}`,
+    })),
+  };
 
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(industriesJsonLd) }} />
     <main id="main-content" className="max-w-6xl mx-auto px-4 py-16">
       <div className="text-center mb-12">
         <Badge variant="secondary" className="mb-4">Industries we serve</Badge>
@@ -49,5 +68,6 @@ export default function IndustriesPage() {
         ))}
       </div>
     </main>
+    </>
   );
 }

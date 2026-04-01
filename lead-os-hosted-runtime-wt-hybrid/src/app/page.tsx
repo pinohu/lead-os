@@ -69,7 +69,49 @@ const personas = [
 ];
 
 export default function HomePage() {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+
+  const homeJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${baseUrl}/#organization`,
+        name: brandName,
+        url: baseUrl,
+        description: "White-label lead capture, AI scoring, and multi-channel nurture for digital marketing agencies.",
+        contactPoint: { "@type": "ContactPoint", email: "support@leadgen-os.com", contactType: "customer support" },
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${baseUrl}/#website`,
+        url: baseUrl,
+        name: `${brandName} | Run All Your Clients From One Dashboard`,
+        publisher: { "@id": `${baseUrl}/#organization` },
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": `${baseUrl}/#app`,
+        name: brandName,
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        description: "Programmable multi-tenant lead generation platform. Replace 15-20 SaaS tools with one platform.",
+        url: baseUrl,
+        publisher: { "@id": `${baseUrl}/#organization` },
+        offers: {
+          "@type": "Offer",
+          price: "299",
+          priceCurrency: "USD",
+          description: "Starter plan — 14-day free trial",
+          availability: "https://schema.org/InStock",
+        },
+      },
+    ],
+  };
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
     <main id="main-content">
       {/* ── Hero ──────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
@@ -320,5 +362,6 @@ export default function HomePage() {
         </div>
       </section>
     </main>
+    </>
   );
 }

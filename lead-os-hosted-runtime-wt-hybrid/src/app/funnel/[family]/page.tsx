@@ -65,7 +65,20 @@ export default async function FunnelFamilyPage({ params, searchParams }: FunnelF
     referrer: headerStore.get("referer") ?? undefined,
   });
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const funnelJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${baseUrl}/funnel/${family}#webpage`,
+    url: `${baseUrl}/funnel/${family}`,
+    name: `${graph.name} for ${niche.label} | Lead OS`,
+    description: `Explore the ${graph.name} funnel family — adaptive lead capture, scoring, and nurture automation for ${niche.label}.`,
+    isPartOf: { "@id": `${baseUrl}/#website` },
+  };
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(funnelJsonLd) }} />
     <ExperienceScaffold
       eyebrow="Canonical funnel family"
       title={`${graph.name} for ${niche.label}`}
@@ -121,5 +134,6 @@ export default async function FunnelFamilyPage({ params, searchParams }: FunnelF
         profile={profile}
       />
     </ExperienceScaffold>
+    </>
   );
 }

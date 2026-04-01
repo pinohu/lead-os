@@ -10,8 +10,27 @@ export const metadata: Metadata = {
 
 export default function DirectoryIndexPage() {
   const niches = Object.values(nicheCatalog);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+
+  const directoryJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${baseUrl}/directory#directory`,
+    name: "Business Directory | Lead OS",
+    description: "Browse by vertical to discover assessment tools, authority guides, lead capture systems, and proven funnel blueprints designed for your specific business.",
+    numberOfItems: niches.length,
+    itemListElement: niches.map((niche, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: niche.label,
+      description: niche.summary,
+      url: `${baseUrl}/industries/${niche.slug}`,
+    })),
+  };
 
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(directoryJsonLd) }} />
     <div data-theme="light" style={{ colorScheme: "light" }}>
     <main className="experience-page">
       <section className="experience-hero">
@@ -83,5 +102,6 @@ export default function DirectoryIndexPage() {
       </section>
     </main>
     </div>
+    </>
   );
 }

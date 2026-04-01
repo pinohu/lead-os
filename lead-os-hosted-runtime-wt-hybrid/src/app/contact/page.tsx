@@ -5,6 +5,26 @@ import Link from "next/link";
 
 type InquiryType = "sales" | "support" | "partnership" | "other";
 
+const contactJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "@id": "https://leadgen-os.com/contact#webpage",
+  url: "https://leadgen-os.com/contact",
+  name: "Contact Lead OS",
+  description: "Questions about Lead OS? Reach out to our sales, support, or partnership team.",
+  isPartOf: { "@id": "https://leadgen-os.com/#website" },
+  mainEntity: {
+    "@type": "Organization",
+    "@id": "https://leadgen-os.com/#organization",
+    name: "Lead OS",
+    url: "https://leadgen-os.com",
+    contactPoint: [
+      { "@type": "ContactPoint", email: "support@leadgen-os.com", contactType: "customer support", availableLanguage: "English" },
+      { "@type": "ContactPoint", email: "legal@leadgen-os.com", contactType: "legal" },
+    ],
+  },
+};
+
 export default function ContactPage() {
   const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [name, setName] = useState("");
@@ -30,6 +50,8 @@ export default function ContactPage() {
 
   if (formState === "success") {
     return (
+      <>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }} />
       <main id="main-content" style={{ maxWidth: "32rem", margin: "0 auto", padding: "6rem 1rem", textAlign: "center" }}>
         <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.75rem" }}>Message Sent</h1>
         <p style={{ color: "#6b7280", marginBottom: "1.5rem" }}>
@@ -39,10 +61,13 @@ export default function ContactPage() {
           Return home
         </Link>
       </main>
+      </>
     );
   }
 
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }} />
     <main id="main-content" style={{ maxWidth: "32rem", margin: "0 auto", padding: "3rem 1rem" }}>
       <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.5rem" }}>Contact Us</h1>
       <p style={{ color: "#6b7280", marginBottom: "2rem" }}>
@@ -154,5 +179,6 @@ export default function ContactPage() {
         </p>
       </div>
     </main>
+    </>
   );
 }

@@ -72,7 +72,27 @@ const demos = [
 ];
 
 export default function DemoPage() {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+
+  const demoJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${baseUrl}/demo#demos`,
+    name: "Lead OS Feature Demos",
+    description: "Interactive demos of lead capture, scoring, AI content generation, and the operator dashboard.",
+    numberOfItems: demos.length,
+    itemListElement: demos.map((demo, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: demo.title,
+      description: demo.description,
+      url: `${baseUrl}/demo#${demo.title.toLowerCase().replace(/\s+/g, "-")}`,
+    })),
+  };
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(demoJsonLd) }} />
     <main id="main-content" style={{ maxWidth: "64rem", margin: "0 auto", padding: "3rem 1rem" }}>
       <div style={{ textAlign: "center", marginBottom: "3rem" }}>
         <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.75rem" }}>
@@ -175,5 +195,6 @@ export default function DemoPage() {
         </div>
       </section>
     </main>
+    </>
   );
 }

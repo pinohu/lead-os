@@ -7,7 +7,23 @@ export const metadata: Metadata = {
 };
 
 export default function TermsOfServicePage() {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+
+  const termsJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${baseUrl}/terms#webpage`,
+    url: `${baseUrl}/terms`,
+    name: "Terms of Service | Lead OS",
+    description: "Terms of Service for Lead OS. Read the terms governing your use of the Lead OS platform.",
+    isPartOf: { "@id": `${baseUrl}/#website` },
+    about: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    dateModified: "2026-03-28",
+  };
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(termsJsonLd) }} />
     <main id="main-content" className="experience-page">
       <section className="experience-hero">
         <div className="hero-copy">
@@ -108,5 +124,6 @@ export default function TermsOfServicePage() {
         </section>
       </article>
     </main>
+    </>
   );
 }

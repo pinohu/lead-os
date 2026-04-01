@@ -7,7 +7,23 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+
+  const privacyJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${baseUrl}/privacy#webpage`,
+    url: `${baseUrl}/privacy`,
+    name: "Privacy Policy | Lead OS",
+    description: "Learn how Lead OS collects, uses, and protects your personal data. Understand your GDPR and CCPA rights.",
+    isPartOf: { "@id": `${baseUrl}/#website` },
+    about: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
+    dateModified: "2026-01-15",
+  };
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(privacyJsonLd) }} />
     <main id="main-content" className="experience-page">
       <section className="experience-hero">
         <div className="hero-copy">
@@ -402,5 +418,6 @@ export default function PrivacyPolicyPage() {
         </section>
       </article>
     </main>
+    </>
   );
 }
