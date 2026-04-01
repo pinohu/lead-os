@@ -66,6 +66,18 @@ const faqData: FaqCategory[] = [
   },
 ];
 
+const helpFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqData.flatMap((category) =>
+    category.items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    }))
+  ),
+}
+
 export default function HelpCenterPage() {
   const [search, setSearch] = useState("");
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
@@ -93,7 +105,9 @@ export default function HelpCenterPage() {
   };
 
   return (
-    <main id="main-content" style={{ maxWidth: "48rem", margin: "0 auto", padding: "3rem 1rem" }}>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(helpFaqJsonLd) }} />
+      <main id="main-content" style={{ maxWidth: "48rem", margin: "0 auto", padding: "3rem 1rem" }}>
       <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.5rem" }}>Help Center</h1>
       <p style={{ color: "#6b7280", marginBottom: "2rem" }}>
         Find answers to common questions about Lead OS.
@@ -202,5 +216,6 @@ export default function HelpCenterPage() {
         </Link>
       </section>
     </main>
+    </>
   );
 }
