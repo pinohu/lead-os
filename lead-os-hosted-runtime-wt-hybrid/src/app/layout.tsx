@@ -46,6 +46,8 @@ const footerPlatform = [
   { label: "Pricing", href: "/pricing" },
   { label: "Directory", href: "/directory" },
   { label: "Marketplace", href: "/marketplace" },
+  { label: "Demo", href: "/demo" },
+  { label: "ROI Calculator", href: "/calculator" },
 ];
 
 const footerResources = [
@@ -54,12 +56,14 @@ const footerResources = [
   { label: "Roadmap", href: "/roadmap" },
   { label: "Contact", href: "/contact" },
   { label: "API Docs", href: "/docs/api" },
+  { label: "Setup Guide", href: "/setup" },
 ];
 
 const footerLegal = [
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },
   { label: "Manage Data", href: "/privacy/manage" },
+  { label: "Cookie Policy", href: "/privacy#cookies" },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

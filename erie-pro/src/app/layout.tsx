@@ -251,62 +251,89 @@ export default function RootLayout({
           {/* ── Footer ───────────────────────────────────────── */}
           <footer role="contentinfo" className="border-t bg-muted/40">
             <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-              <div className="grid gap-8 md:grid-cols-4">
-                {/* Brand */}
+              <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
+                {/* Column 1: Brand */}
                 <div>
                   <div className="mb-2 text-lg font-bold">
                     {cityConfig.domain}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Find verified local service providers in{" "}
-                    {cityConfig.name}, {cityConfig.stateCode}. Free quotes,
-                    no obligation.
+                    Erie&apos;s trusted local services directory
                   </p>
-                </div>
-
-                {/* Popular Services */}
-                <div>
-                  <h4 className="mb-3 text-sm font-semibold">
-                    Popular Services
-                  </h4>
-                  <div className="space-y-2">
-                    {niches.slice(0, 6).map((n) => (
-                      <Link
-                        key={n.slug}
-                        href={`/${n.slug}`}
-                        className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
-                      >
-                        {n.icon} {n.label}
-                      </Link>
-                    ))}
+                  <div className="mt-4 space-y-1.5 text-sm text-muted-foreground">
+                    <p>
+                      <a href="tel:+18142000328" className="hover:text-foreground transition-colors">
+                        (814) 200-0328
+                      </a>
+                    </p>
+                    <p>
+                      <a href={`mailto:hello@${cityConfig.domain}`} className="hover:text-foreground transition-colors">
+                        hello@{cityConfig.domain}
+                      </a>
+                    </p>
                   </div>
                 </div>
 
-                {/* Service Areas */}
+                {/* Column 2: Services */}
                 <div>
-                  <h4 className="mb-3 text-sm font-semibold">Service Areas</h4>
-                  <div className="space-y-2">
-                    {cityConfig.serviceArea.slice(0, 6).map((area) => (
-                      <span
-                        key={area}
-                        className="block text-sm text-muted-foreground"
-                      >
-                        {area}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Links */}
-                <div>
-                  <h4 className="mb-3 text-sm font-semibold">Company</h4>
-                  <div className="space-y-2">
+                  <h4 className="mb-3 text-sm font-semibold">Services</h4>
+                  <nav aria-label="Service links" className="space-y-2">
+                    {["plumbing", "hvac", "roofing", "electrical", "landscaping", "cleaning"].map((slug) => {
+                      const niche = niches.find((n) => n.slug === slug)
+                      return niche ? (
+                        <Link
+                          key={slug}
+                          href={`/${slug}`}
+                          className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          {niche.icon} {niche.label}
+                        </Link>
+                      ) : null
+                    })}
                     <Link
-                      href="/directory"
+                      href="/services"
+                      className="block text-sm font-medium text-primary transition-colors hover:text-primary/80"
+                    >
+                      View all {niches.length} services &rarr;
+                    </Link>
+                  </nav>
+                </div>
+
+                {/* Column 3: For Businesses */}
+                <div>
+                  <h4 className="mb-3 text-sm font-semibold">For Businesses</h4>
+                  <nav aria-label="Business links" className="space-y-2">
+                    <Link
+                      href="/for-business/claim"
                       className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      Directory
+                      Claim Your Territory
                     </Link>
+                    <Link
+                      href="/dashboard"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Provider Dashboard
+                    </Link>
+                    <Link
+                      href="/for-business"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Pricing
+                    </Link>
+                    <Link
+                      href="/for-business#faq"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      For Business FAQ
+                    </Link>
+                  </nav>
+                </div>
+
+                {/* Column 4: Company */}
+                <div>
+                  <h4 className="mb-3 text-sm font-semibold">Company</h4>
+                  <nav aria-label="Company links" className="space-y-2">
                     <Link
                       href="/about"
                       className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -320,12 +347,6 @@ export default function RootLayout({
                       Contact
                     </Link>
                     <Link
-                      href="/for-business"
-                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      For Businesses
-                    </Link>
-                    <Link
                       href="/privacy"
                       className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
@@ -337,7 +358,7 @@ export default function RootLayout({
                     >
                       Terms of Service
                     </Link>
-                  </div>
+                  </nav>
                 </div>
               </div>
 
@@ -348,7 +369,9 @@ export default function RootLayout({
                   &copy; {new Date().getFullYear()} {cityConfig.domain}. All
                   rights reserved. Powered by Lead OS.
                 </p>
-                <p>Erie, PA 16501 &middot; <a href={`mailto:hello@${cityConfig.domain}`} className="underline hover:text-foreground">hello@{cityConfig.domain}</a></p>
+                <p>
+                  Serving Erie, Millcreek, Harborcreek, and the greater Erie County area
+                </p>
               </div>
             </div>
           </footer>

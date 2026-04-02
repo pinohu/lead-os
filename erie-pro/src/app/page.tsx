@@ -17,13 +17,12 @@ import {
   Shield,
   Clock,
   MapPin,
-  Globe,
+
   Phone,
   Star,
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { niches } from "@/lib/niches"
-import { CITY_TEMPLATES } from "@/lib/city-factory"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -97,7 +96,11 @@ export default function HomePage() {
             </span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-base font-medium text-foreground/80">
+            Erie&apos;s trusted directory for verified local service providers
+          </p>
+
+          <p className="mx-auto mt-3 max-w-2xl text-lg text-muted-foreground">
             {niches.length} service categories across{" "}
             {cityConfig.serviceArea.length} communities. Get free quotes
             from verified local professionals — no obligation, no hassle.
@@ -152,6 +155,11 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-12 gap-y-4 px-4 py-8 sm:px-6">
           {[
             {
+              icon: <MapPin className="h-5 w-5 text-primary" />,
+              value: "Locally Owned",
+              label: "Erie, PA",
+            },
+            {
               icon: <Building className="h-5 w-5 text-primary" />,
               value: String(niches.length),
               label: "Service categories",
@@ -163,13 +171,8 @@ export default function HomePage() {
             },
             {
               icon: <Clock className="h-5 w-5 text-primary" />,
-              value: "< 2 min",
-              label: "To get a quote",
-            },
-            {
-              icon: <Star className="h-5 w-5 text-primary" />,
-              value: "$0",
-              label: "Always free for you",
+              value: "Since 2024",
+              label: "Serving Erie",
             },
           ].map(({ icon, value, label }) => (
             <div key={label} className="flex items-center gap-3">
@@ -180,6 +183,32 @@ export default function HomePage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── Local Identity ────────────────────────────────────── */}
+      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
+        <div className="rounded-xl border bg-background p-8 text-center">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Proudly serving the Erie, PA community
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+            From the shores of Presque Isle to the Bayfront and beyond,
+            erie.pro connects homeowners across Erie County with verified
+            local professionals. Whether you&apos;re in Downtown Erie,
+            Millcreek, the Westside, Eastside, or Harborcreek — we&apos;ve
+            got you covered with {niches.length} service categories.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <MapPin className="h-4 w-4 text-primary" />
+              Serving Erie, Millcreek, Harborcreek &amp; surrounding communities
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Building className="h-4 w-4 text-primary" />
+              {niches.length} verified service categories
+            </span>
+          </div>
         </div>
       </section>
 
@@ -387,79 +416,42 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── City Expansion ────────────────────────────────────── */}
+      {/* ── Service Areas ────────────────────────────────────── */}
       <section className="border-t bg-muted/50 py-24">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
           <div className="mb-16 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary">
-              <Globe className="h-4 w-4" />
-              Expanding across the Great Lakes Region
+              <MapPin className="h-4 w-4" />
+              Serving {cityConfig.serviceArea.length} communities
             </div>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              One city at a time
+              We cover {cityConfig.name} and beyond
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-              We started in {cityConfig.name}. Next, we bring the same
-              verified provider network to cities across Pennsylvania, New
-              York, and Ohio.
+              No matter where you live in the {cityConfig.name} area, we
+              connect you with verified providers who serve your community.
             </p>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {CITY_TEMPLATES.map((city) => (
-              <Card
-                key={city.slug}
-                className={`relative overflow-hidden ${city.status !== "active" ? "opacity-80" : ""}`}
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {cityConfig.serviceArea.map((area) => (
+              <span
+                key={area}
+                className="inline-flex items-center gap-1.5 rounded-full border bg-background px-4 py-2 text-sm font-medium"
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                      <MapPin className={`h-5 w-5 ${city.status === "active" ? "text-primary" : "text-muted-foreground"}`} />
-                      <CardTitle className="text-lg">{city.name}</CardTitle>
-                    </div>
-                    {city.status === "active" ? (
-                      <Badge variant="default">Live</Badge>
-                    ) : (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-muted text-muted-foreground">
-                        {city.status === "coming-soon" ? "Coming 2025" : "Planned"}
-                      </span>
-                    )}
-                  </div>
-                  <CardDescription>
-                    {city.stateCode} &middot; Pop. {city.population.toLocaleString()} &middot;{" "}
-                    {city.serviceArea.length} communities
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground">
-                    {city.serviceArea.slice(0, 5).join(", ")}
-                    {city.serviceArea.length > 5 && ` +${city.serviceArea.length - 5} more`}
-                  </p>
-                  {city.status === "active" ? (
-                    <div className="mt-3">
-                      <Badge variant="default" className="bg-green-600 text-white">
-                        <CheckCircle2 className="mr-1 h-3 w-3" /> Active &mdash; {niches.length} niches
-                      </Badge>
-                    </div>
-                  ) : (
-                    <p className="mt-3 text-xs text-muted-foreground italic">
-                      {city.status === "coming-soon"
-                        ? "Provider sign-ups opening soon"
-                        : "On the expansion roadmap"}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+                <MapPin className="h-3.5 w-3.5 text-primary" />
+                {area}
+              </span>
             ))}
           </div>
 
           <div className="mt-12 text-center">
-            <p className="text-sm text-muted-foreground">
-              Want to be the exclusive provider in a new city?{" "}
-              <Link href="/for-business" className="font-semibold text-primary hover:underline">
-                Claim your territory early <ArrowRight className="inline h-3 w-3" />
+            <Button asChild variant="outline" size="lg">
+              <Link href="/areas">
+                View all service areas
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </p>
+            </Button>
           </div>
         </div>
       </section>
