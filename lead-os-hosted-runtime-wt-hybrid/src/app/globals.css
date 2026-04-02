@@ -225,7 +225,7 @@ h4 {
   font-weight: 650;
   line-height: 1.2;
   letter-spacing: -0.03em;
-  color: hsl(var(--foreground));
+  color: hsl(var(--foreground)) !important;
 }
 
 h1 {

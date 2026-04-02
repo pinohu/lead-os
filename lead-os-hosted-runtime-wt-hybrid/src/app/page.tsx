@@ -145,7 +145,7 @@ export default function HomePage() {
       <section className="max-w-3xl mx-auto px-4 py-16" aria-labelledby="agency-problem-heading">
         <div className="text-center mb-8">
           <Badge variant="outline" className="mb-4">The agency problem</Badge>
-          <h2 id="agency-problem-heading" className="text-3xl font-bold tracking-tight mb-3">
+          <h2 id="agency-problem-heading" className="text-3xl font-bold tracking-tight text-foreground mb-3">
             You&apos;re paying $630&ndash;$4,550/month in SaaS fees per client
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
@@ -172,7 +172,7 @@ export default function HomePage() {
       <section id="how-it-works" className="max-w-5xl mx-auto px-4 py-16" aria-labelledby="how-it-works-heading">
         <div className="text-center mb-10">
           <Badge variant="outline" className="mb-4">How it works</Badge>
-          <h2 id="how-it-works-heading" className="text-3xl font-bold tracking-tight">Four steps from zero to automated agency</h2>
+          <h2 id="how-it-works-heading" className="text-3xl font-bold tracking-tight text-foreground">Four steps from zero to automated agency</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {steps.map(({ n, title, desc }) => (
@@ -207,7 +207,7 @@ export default function HomePage() {
       <section className="max-w-5xl mx-auto px-4 py-16" aria-labelledby="enterprise-heading">
         <div className="text-center mb-10">
           <Badge variant="outline" className="mb-4">Enterprise-grade from day one</Badge>
-          <h2 id="enterprise-heading" className="text-3xl font-bold tracking-tight">
+          <h2 id="enterprise-heading" className="text-3xl font-bold tracking-tight text-foreground">
             Security, compliance, and reliability you can sell to any client
           </h2>
         </div>
@@ -232,7 +232,7 @@ export default function HomePage() {
       <section className="max-w-5xl mx-auto px-4 py-16" aria-labelledby="social-proof-heading">
         <div className="text-center mb-10">
           <Badge variant="outline" className="mb-4">From agency operators</Badge>
-          <h2 id="social-proof-heading" className="text-3xl font-bold tracking-tight">
+          <h2 id="social-proof-heading" className="text-3xl font-bold tracking-tight text-foreground">
             What agencies are saying
           </h2>
         </div>
@@ -284,7 +284,7 @@ export default function HomePage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h3 className="text-sm font-semibold mb-3">What happens overnight</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">What happens overnight</h3>
                 <ul className="space-y-2">
                   {joyOvernight.map((item) => (
                     <li key={item} className="flex gap-2 text-sm text-muted-foreground">
@@ -295,7 +295,7 @@ export default function HomePage() {
                 </ul>
               </div>
               <div>
-                <h3 className="text-sm font-semibold mb-3">What you see in the morning</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">What you see in the morning</h3>
                 <ul className="space-y-2">
                   {joyMorning.map((item) => (
                     <li key={item} className="flex gap-2 text-sm text-muted-foreground">
@@ -313,7 +313,7 @@ export default function HomePage() {
       {/* ── Email Capture ─────────────────────────────────── */}
       <section className="max-w-2xl mx-auto px-4 py-16 text-center" aria-labelledby="email-capture-heading">
         <Badge variant="outline" className="mb-4">Get early access</Badge>
-        <h2 id="email-capture-heading" className="text-3xl font-bold tracking-tight mb-3">See it in action with your first client</h2>
+        <h2 id="email-capture-heading" className="text-3xl font-bold tracking-tight text-foreground mb-3">See it in action with your first client</h2>
         <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
           Enter your email and we&apos;ll set up a demo workspace pre-loaded with your niche.
         </p>
@@ -351,7 +351,7 @@ export default function HomePage() {
 
       {/* ── Final CTA ─────────────────────────────────────── */}
       <section className="max-w-2xl mx-auto px-4 py-16 text-center" aria-labelledby="final-cta-heading">
-        <h2 id="final-cta-heading" className="text-3xl font-bold tracking-tight mb-3">Start your free agency account</h2>
+        <h2 id="final-cta-heading" className="text-3xl font-bold tracking-tight text-foreground mb-3">Start your free agency account</h2>
         <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
           No credit card. No sales call. Add your first client in 15 minutes
           and see why agencies are consolidating their entire stack into one platform.
