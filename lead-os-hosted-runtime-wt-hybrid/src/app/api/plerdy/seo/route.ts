@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[plerdy/seo POST]", err instanceof Error ? err.message : err);
+    logger.error("plerdy/seo POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "AUDIT_FAILED", message: "Failed to run SEO audit" }, meta: null },
       { status: 500, headers },
@@ -61,7 +62,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[plerdy/seo GET]", err instanceof Error ? err.message : err);
+    logger.error("plerdy/seo GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch audit history" }, meta: null },
       { status: 500, headers },

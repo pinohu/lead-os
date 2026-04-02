@@ -24,10 +24,10 @@ function buildUnsubscribeUrl(siteUrl: string, email: string, tenantId: string): 
 export async function GET(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret) {
-    return NextResponse.json({ success: false, error: "Cron not configured" }, { status: 503 });
+    return NextResponse.json({ data: null, error: { code: "SERVICE_UNAVAILABLE", message: "Cron not configured" } }, { status: 503 });
   }
   if (request.headers.get("authorization") !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ data: null, error: { code: "UNAUTHORIZED", message: "Unauthorized" } }, { status: 401 });
   }
 
   const processed: Array<{ leadKey: string; stage: string; channels: string[] }> = [];
@@ -129,8 +129,7 @@ export async function GET(request: Request) {
   }
 
   return NextResponse.json({
-    success: true,
-    processed,
-    count: processed.length,
+    data: { processed, count: processed.length },
+    error: null,
   });
 }

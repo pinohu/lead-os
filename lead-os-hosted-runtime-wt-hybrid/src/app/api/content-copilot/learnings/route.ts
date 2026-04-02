@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[content-copilot/learnings]", err instanceof Error ? err.message : err);
+    logger.error("content-copilot/learnings failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       {
         data: null,
@@ -87,7 +88,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[content-copilot/learnings]", err instanceof Error ? err.message : err);
+    logger.error("content-copilot/learnings failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       {
         data: null,

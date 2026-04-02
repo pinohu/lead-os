@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -124,7 +125,7 @@ export async function POST(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[ingestion/upload]", err instanceof Error ? err.message : err);
+    logger.error("ingestion/upload failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "INGEST_FAILED", message: "Failed to analyze marketing artifact" }, meta: null },
       { status: 500, headers },
@@ -151,7 +152,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[ingestion/upload GET]", err instanceof Error ? err.message : err);
+    logger.error("ingestion/upload GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch artifacts" }, meta: null },
       { status: 500, headers },
@@ -191,7 +192,7 @@ export async function DELETE(request: Request) {
     await removeArtifact(id.trim());
     return new NextResponse(null, { status: 204, headers });
   } catch (err) {
-    console.error("[ingestion/upload DELETE]", err instanceof Error ? err.message : err);
+    logger.error("ingestion/upload DELETE failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "DELETE_FAILED", message: "Failed to remove artifact" }, meta: null },
       { status: 500, headers },

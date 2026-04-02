@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -45,7 +46,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[groove/affiliate/conversions GET]", err instanceof Error ? err.message : err);
+    logger.error("groove/affiliate/conversions GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch conversions" }, meta: null },
       { status: 500, headers },
@@ -82,7 +83,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[groove/affiliate/conversions POST]", err instanceof Error ? err.message : err);
+    logger.error("groove/affiliate/conversions POST failed", { error: err instanceof Error ? err.message : String(err) });
     const message = err instanceof Error ? err.message : "Failed to record conversion";
     const status = message.includes("not found") ? 404 : 500;
     return NextResponse.json(
@@ -124,7 +125,7 @@ export async function PATCH(request: Request) {
       { status: 200, headers },
     );
   } catch (err) {
-    console.error("[groove/affiliate/conversions PATCH]", err instanceof Error ? err.message : err);
+    logger.error("groove/affiliate/conversions PATCH failed", { error: err instanceof Error ? err.message : String(err) });
     const message = err instanceof Error ? err.message : "Failed to update conversion";
     const status = message.includes("not found") ? 404 : 500;
     return NextResponse.json(

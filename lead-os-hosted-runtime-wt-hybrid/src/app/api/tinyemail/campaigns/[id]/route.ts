@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -31,7 +32,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[tinyemail/campaigns/[id] GET]", err instanceof Error ? err.message : err);
+    logger.error("[tinyemail/campaigns/[id] GET]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch campaign stats" }, meta: null },
       { status: 500, headers },
@@ -57,7 +58,7 @@ export async function POST(
       { headers },
     );
   } catch (err) {
-    console.error("[tinyemail/campaigns/[id] POST]", err instanceof Error ? err.message : err);
+    logger.error("[tinyemail/campaigns/[id] POST]", { error: err instanceof Error ? err.message : String(err) });
     const message = err instanceof Error ? err.message : "Failed to send campaign";
     const status = message.includes("not found") ? 404 : 500;
     return NextResponse.json(

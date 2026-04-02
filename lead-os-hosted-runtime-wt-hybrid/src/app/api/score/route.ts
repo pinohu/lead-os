@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { logger } from "@/lib/logger";
 import {
   computeCompositeScore,
   computeIntentScore,
@@ -26,20 +28,30 @@ const TEMPERATURE_THRESHOLDS = {
   burning: { min: 80, max: 100 },
 };
 
+const ScoreRequestSchema = z.object({
+  leadId: z.string().min(1, "leadId is required"),
+  signals: z.object({
+    source: z.string().min(1, "signals.source is required"),
+  }).passthrough(),
+});
+
 export async function GET() {
   try {
     return NextResponse.json({
-      success: true,
       data: {
         dimensions: SCORING_DIMENSIONS,
         weights: DEFAULT_WEIGHTS,
         temperatureThresholds: TEMPERATURE_THRESHOLDS,
         version: "1.0.0",
       },
+      error: null,
     });
-  } catch {
+  } catch (err) {
+    logger.error("GET /api/score failed", {
+      error: err instanceof Error ? err.message : String(err),
+    });
     return NextResponse.json(
-      { success: false, error: "Failed to retrieve scoring config" },
+      { data: null, error: { code: "FETCH_FAILED", message: "Failed to retrieve scoring config" } },
       { status: 500 },
     );
   }
@@ -50,24 +62,28 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => null);
     if (!body) {
       return NextResponse.json(
-        { success: false, error: "Invalid JSON body" },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid JSON body" } },
         { status: 400 },
       );
     }
 
-    const { leadId, signals } = body as { leadId?: string; signals?: ScoringContext };
-    if (!leadId || typeof leadId !== "string") {
+    const parsed = ScoreRequestSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: "leadId is required" },
-        { status: 400 },
+        {
+          data: null,
+          error: {
+            code: "VALIDATION_ERROR",
+            message: parsed.error.issues.map((e) => e.message).join("; "),
+            details: parsed.error.issues,
+          },
+        },
+        { status: 422 },
       );
     }
-    if (!signals || typeof signals !== "object" || !signals.source) {
-      return NextResponse.json(
-        { success: false, error: "signals object with at least a source field is required" },
-        { status: 400 },
-      );
-    }
+
+    const { leadId } = parsed.data;
+    const signals = body.signals as ScoringContext;
 
     const intent = computeIntentScore(signals);
     const fit = computeFitScore(signals);
@@ -80,7 +96,6 @@ export async function POST(req: NextRequest) {
     const recommendation = getScoreRecommendation(scores);
 
     return NextResponse.json({
-      success: true,
       data: {
         leadId,
         scores: { intent, fit, engagement, urgency, composite },
@@ -88,10 +103,14 @@ export async function POST(req: NextRequest) {
         recommendation,
         computedAt: new Date().toISOString(),
       },
+      error: null,
     });
-  } catch {
+  } catch (err) {
+    logger.error("POST /api/score failed", {
+      error: err instanceof Error ? err.message : String(err),
+    });
     return NextResponse.json(
-      { success: false, error: "Internal server error" },
+      { data: null, error: { code: "INTERNAL_ERROR", message: "Internal server error" } },
       { status: 500 },
     );
   }

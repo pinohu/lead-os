@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -32,7 +33,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[salesnexus/campaigns/[id] GET]", err instanceof Error ? err.message : err);
+    logger.error("[salesnexus/campaigns/[id] GET]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch campaign stats" }, meta: null },
       { status: 500, headers },
@@ -65,7 +66,7 @@ export async function POST(
         { status: 404, headers },
       );
     }
-    console.error("[salesnexus/campaigns/[id] POST]", message);
+    logger.error("[salesnexus/campaigns/[id] POST]", { error: message });
     return NextResponse.json(
       { data: null, error: { code: "SEND_FAILED", message: message }, meta: null },
       { status: 400, headers },
@@ -98,7 +99,7 @@ export async function PATCH(
         { status: 404, headers },
       );
     }
-    console.error("[salesnexus/campaigns/[id] PATCH]", message);
+    logger.error("[salesnexus/campaigns/[id] PATCH]", { error: message });
     return NextResponse.json(
       { data: null, error: { code: "PAUSE_FAILED", message: message }, meta: null },
       { status: 400, headers },

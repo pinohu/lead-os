@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[vista-social/profiles GET]", err instanceof Error ? err.message : err);
+    logger.error("vista-social/profiles GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to list profiles" }, meta: null },
       { status: 500, headers },
@@ -60,7 +61,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[vista-social/profiles POST]", err instanceof Error ? err.message : err);
+    logger.error("vista-social/profiles POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "CREATE_FAILED", message: "Failed to connect profile" }, meta: null },
       { status: 500, headers },

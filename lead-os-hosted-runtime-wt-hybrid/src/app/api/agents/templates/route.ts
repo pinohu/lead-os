@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { listAvailableTemplates } from "@/lib/agent-templates";
@@ -12,7 +13,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[agents-templates]", err instanceof Error ? err.message : err);
+    logger.error("agents-templates failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to list templates" }, meta: null },
       { status: 500, headers },

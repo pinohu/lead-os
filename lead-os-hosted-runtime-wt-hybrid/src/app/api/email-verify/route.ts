@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[email-verify POST]", err instanceof Error ? err.message : err);
+    logger.error("email-verify POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "VERIFY_FAILED", message: "Email verification failed" }, meta: null },
       { status: 500, headers },
@@ -93,7 +94,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[email-verify GET]", err instanceof Error ? err.message : err);
+    logger.error("email-verify GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "STATS_FAILED", message: "Failed to retrieve verification stats" }, meta: null },
       { status: 500, headers },

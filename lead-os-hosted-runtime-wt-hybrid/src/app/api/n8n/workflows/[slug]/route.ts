@@ -8,7 +8,7 @@ export async function GET(_request: Request, context: { params: Params }) {
   const workflow = getN8nStarterWorkflow(slug);
 
   if (!workflow) {
-    return NextResponse.json({ success: false, error: "Workflow not found" }, { status: 404 });
+    return NextResponse.json({ data: null, error: { code: "NOT_FOUND", message: "Workflow not found" } }, { status: 404 });
   }
 
   return NextResponse.json(workflow.workflow, {

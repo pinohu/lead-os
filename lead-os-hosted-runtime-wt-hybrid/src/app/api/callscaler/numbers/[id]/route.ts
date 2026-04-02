@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -39,7 +40,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[callscaler/numbers/[id] GET]", err instanceof Error ? err.message : err);
+    logger.error("[callscaler/numbers/[id] GET]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch tracking number" }, meta: null },
       { status: 500, headers },
@@ -91,7 +92,7 @@ export async function PATCH(
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to update tracking number";
     const status = message.includes("not found") ? 404 : 400;
-    console.error("[callscaler/numbers/[id] PATCH]", message);
+    logger.error("callscaler/numbers/[id] PATCH failed", { error: message });
     return NextResponse.json(
       { data: null, error: { code: "UPDATE_FAILED", message }, meta: null },
       { status, headers },

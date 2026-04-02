@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -34,7 +35,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[acumbamail/campaigns GET]", err instanceof Error ? err.message : err);
+    logger.error("acumbamail/campaigns GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch campaigns" }, meta: null },
       { status: 500, headers },
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[acumbamail/campaigns POST]", err instanceof Error ? err.message : err);
+    logger.error("acumbamail/campaigns POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "CREATE_FAILED", message: "Failed to create campaign" }, meta: null },
       { status: 500, headers },

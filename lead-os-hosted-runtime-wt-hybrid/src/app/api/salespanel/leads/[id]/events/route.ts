@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -61,7 +62,7 @@ export async function POST(
       { headers },
     );
   } catch (err) {
-    console.error("[salespanel/leads/id/events POST]", err instanceof Error ? err.message : err);
+    logger.error("salespanel/leads/id/events POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "TRACK_FAILED", message: "Failed to track event" }, meta: null },
       { status: 500, headers },

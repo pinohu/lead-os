@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -44,7 +45,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[markopolo/campaigns/[id] GET]", err instanceof Error ? err.message : err);
+    logger.error("[markopolo/campaigns/[id] GET]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch campaign" }, meta: null },
       { status: 500, headers },
@@ -99,7 +100,7 @@ export async function PATCH(
       { headers },
     );
   } catch (err) {
-    console.error("[markopolo/campaigns/[id] PATCH]", err instanceof Error ? err.message : err);
+    logger.error("[markopolo/campaigns/[id] PATCH]", { error: err instanceof Error ? err.message : String(err) });
     const message = err instanceof Error ? err.message : "Failed to update campaign";
     const status = message.includes("not found") ? 404 : 422;
     return NextResponse.json(

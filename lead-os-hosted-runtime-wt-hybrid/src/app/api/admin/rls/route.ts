@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[admin-rls]", err instanceof Error ? err.message : err);
+    logger.error("admin-rls failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "GENERATION_FAILED", message: "Failed to generate RLS SQL" }, meta: null },
       { status: 500, headers },

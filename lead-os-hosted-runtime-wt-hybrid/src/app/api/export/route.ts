@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -74,7 +75,7 @@ export async function POST(request: Request) {
     const job = await createExportJob(body.tenantId, body.type, body.format, filters);
 
     processExportJob(job.id).catch((err: unknown) => {
-      console.error(`Export job ${job.id} failed:`, err);
+      logger.error(`Export job ${job.id} failed:`, { error: err instanceof Error ? err.message : String(err) });
     });
 
     return NextResponse.json(

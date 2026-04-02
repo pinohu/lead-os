@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -19,7 +20,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[callscaler/stats GET]", err instanceof Error ? err.message : err);
+    logger.error("callscaler/stats GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "STATS_FAILED", message: "Failed to compute call stats" }, meta: null },
       { status: 500, headers },

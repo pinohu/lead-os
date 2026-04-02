@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { analyzeCompanyFromWebsite } from "@/lib/integrations/langchain-adapter";
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
       { status: 200, headers },
     );
   } catch (err) {
-    console.error("[ai-analyze-company]", err instanceof Error ? err.message : err);
+    logger.error("ai-analyze-company failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "ANALYSIS_FAILED", message: "Failed to analyze company" }, meta: null },
       { status: 500, headers },

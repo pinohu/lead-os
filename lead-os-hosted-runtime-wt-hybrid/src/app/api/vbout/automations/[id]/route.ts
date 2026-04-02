@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -54,7 +55,7 @@ export async function PATCH(
       { headers },
     );
   } catch (err) {
-    console.error("[vbout/automations/[id] PATCH]", err instanceof Error ? err.message : err);
+    logger.error("[vbout/automations/[id] PATCH]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "UPDATE_FAILED", message: "Failed to toggle automation" }, meta: null },
       { status: 500, headers },
@@ -101,7 +102,7 @@ export async function POST(
       { headers },
     );
   } catch (err) {
-    console.error("[vbout/automations/[id] POST]", err instanceof Error ? err.message : err);
+    logger.error("[vbout/automations/[id] POST]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "EXECUTE_FAILED", message: "Failed to execute automation" }, meta: null },
       { status: 500, headers },

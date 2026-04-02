@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -38,7 +39,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[novocall/callbacks/[id] GET]", err instanceof Error ? err.message : err);
+    logger.error("[novocall/callbacks/[id] GET]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch callback" }, meta: null },
       { status: 500, headers },
@@ -80,7 +81,7 @@ export async function PATCH(
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to update callback status";
     const status = message.includes("not found") ? 404 : 500;
-    console.error("[novocall/callbacks/[id] PATCH]", message);
+    logger.error("[novocall/callbacks/[id] PATCH]", { error: message });
     return NextResponse.json(
       { data: null, error: { code: "UPDATE_FAILED", message }, meta: null },
       { status, headers },

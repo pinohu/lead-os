@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { generateEmail, autoboundResult } from "@/lib/integrations/autobound-adapter";
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
       meta: { count: emails.length },
     });
   } catch (err) {
-    console.error("[autobound-generate]", err instanceof Error ? err.message : err);
+    logger.error("autobound-generate failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "GENERATION_FAILED", message: "Failed to generate personalized email" }, meta: null },
       { status: 500 },

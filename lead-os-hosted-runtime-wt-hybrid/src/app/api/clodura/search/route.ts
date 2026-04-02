@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[clodura/search POST]", err instanceof Error ? err.message : err);
+    logger.error("clodura/search POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "SEARCH_FAILED", message: "Failed to search contacts" }, meta: null },
       { status: 500, headers },
@@ -80,7 +81,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[clodura/search GET]", err instanceof Error ? err.message : err);
+    logger.error("clodura/search GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to retrieve stored contacts" }, meta: null },
       { status: 500, headers },

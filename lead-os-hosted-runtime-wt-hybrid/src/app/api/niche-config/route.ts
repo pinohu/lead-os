@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
@@ -100,7 +101,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[niche-config]", err instanceof Error ? err.message : err);
+    logger.error("niche-config failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "INTERNAL_ERROR", message: "Failed to create niche config" }, meta: null },
       { status: 500, headers },

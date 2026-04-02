@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
     const deletionRequest = await requestDeletion(body.tenantId, body.email.trim().toLowerCase());
 
     processDeletion(deletionRequest.id).catch((err: unknown) => {
-      console.error(`Deletion request ${deletionRequest.id} failed:`, err);
+      logger.error(`Deletion request ${deletionRequest.id} failed:`, { error: err instanceof Error ? err.message : String(err) });
     });
 
     return NextResponse.json(

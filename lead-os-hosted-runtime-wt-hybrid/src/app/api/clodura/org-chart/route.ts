@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[clodura/org-chart POST]", err instanceof Error ? err.message : err);
+    logger.error("clodura/org-chart POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "ORG_CHART_FAILED", message: "Failed to retrieve org chart" }, meta: null },
       { status: 500, headers },

@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
@@ -468,7 +469,7 @@ export async function POST(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[scoring]", err instanceof Error ? err.message : err);
+    logger.error("scoring failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       {
         data: null,

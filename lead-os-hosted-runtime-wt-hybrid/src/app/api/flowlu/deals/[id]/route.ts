@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -67,7 +68,7 @@ export async function PATCH(
       { headers },
     );
   } catch (err) {
-    console.error("[flowlu/deals/id PATCH]", err instanceof Error ? err.message : err);
+    logger.error("flowlu/deals/id PATCH failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "UPDATE_FAILED", message: "Failed to update deal" }, meta: null },
       { status: 500, headers },

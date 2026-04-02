@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -33,7 +34,7 @@ export async function POST(
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to convert call to lead";
     const status = message.includes("not found") ? 404 : 500;
-    console.error("[callscaler/calls/[id]/convert POST]", message);
+    logger.error("callscaler/calls/[id]/convert POST failed", { error: message });
     return NextResponse.json(
       { data: null, error: { code: "CONVERT_FAILED", message }, meta: null },
       { status, headers },

@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[ingest-competitor]", err instanceof Error ? err.message : err);
+    logger.error("ingest-competitor failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "INGEST_FAILED", message: "Failed to ingest competitor page" }, meta: null },
       { status: 500, headers },

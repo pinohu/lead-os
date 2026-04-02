@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
@@ -41,7 +42,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[context-leadKey]", err instanceof Error ? err.message : err);
+    logger.error("context-leadKey failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "INTERNAL_ERROR", message: "Failed to retrieve context" }, meta: null },
       { status: 500, headers },
@@ -95,7 +96,7 @@ export async function PATCH(
       { headers },
     );
   } catch (err) {
-    console.error("[context-leadKey]", err instanceof Error ? err.message : err);
+    logger.error("context-leadKey failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "INTERNAL_ERROR", message: "Failed to update context" }, meta: null },
       { status: 500, headers },

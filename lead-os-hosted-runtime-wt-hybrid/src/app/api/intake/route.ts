@@ -6,6 +6,7 @@ import { createRateLimiter } from "@/lib/rate-limiter";
 import { enforcePlanLimits } from "@/lib/plan-enforcer";
 import { resolveTenantFromRequest } from "@/lib/tenant-context";
 import { getClientIp } from "@/lib/request-utils";
+import { logger } from "@/lib/logger";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 30 });
 
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
     const rateResult = rateLimiter.check(`intake:${ip}`);
     if (!rateResult.allowed) {
       return NextResponse.json(
-        { success: false, error: "Too many requests. Please try again later." },
+        { data: null, error: { code: "RATE_LIMITED", message: "Too many requests. Please try again later." } },
         {
           status: 429,
           headers: {
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
     const validation = validateSafe(IntakePayloadSchema, body);
     if (!validation.valid) {
       return NextResponse.json(
-        { success: false, error: "Validation failed", details: validation.errors },
+        { data: null, error: { code: "VALIDATION_ERROR", message: "Validation failed", details: validation.errors } },
         { status: 422, headers },
       );
     }
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
     const planCheck = await enforcePlanLimits(tenantConfig.tenantId, "leads");
     if (!planCheck.allowed) {
       return NextResponse.json(
-        { success: false, error: "Plan limit reached", reason: planCheck.reason, usage: planCheck.usage },
+        { data: null, error: { code: "PLAN_LIMIT", message: "Plan limit reached", reason: planCheck.reason, usage: planCheck.usage } },
         { status: 403, headers },
       );
     }
@@ -65,14 +66,17 @@ export async function POST(request: Request) {
       body.ingress_intent = ingressDecision.intentLevel;
       body.ingress_funnel = ingressDecision.funnelType;
     } catch (err) {
-      console.error("[intake] ingress enrichment skipped:", err instanceof Error ? err.message : err);
+      logger.warn("Ingress enrichment skipped", { error: err instanceof Error ? err.message : String(err) });
     }
 
     const result = await persistLead(body);
     return NextResponse.json(result, { headers });
   } catch (error) {
+    logger.error("POST /api/intake failed", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return NextResponse.json(
-      { success: false, error: error instanceof Error ? error.message : "Intake failed" },
+      { data: null, error: { code: "INTAKE_FAILED", message: error instanceof Error ? error.message : "Intake failed" } },
       { status: 400, headers },
     );
   }

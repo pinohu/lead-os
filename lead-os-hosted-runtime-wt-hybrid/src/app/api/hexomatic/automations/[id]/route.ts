@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -32,7 +33,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[hexomatic/automations/[id] GET]", err instanceof Error ? err.message : err);
+    logger.error("[hexomatic/automations/[id] GET]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch automation" }, meta: null },
       { status: 500, headers },
@@ -58,7 +59,7 @@ export async function POST(
       { headers },
     );
   } catch (err) {
-    console.error("[hexomatic/automations/[id] POST]", err instanceof Error ? err.message : err);
+    logger.error("[hexomatic/automations/[id] POST]", { error: err instanceof Error ? err.message : String(err) });
     const message = err instanceof Error ? err.message : "Failed to run automation";
     const status = message.includes("not found") ? 404 : message.includes("already completed") ? 409 : 500;
     return NextResponse.json(
@@ -86,7 +87,7 @@ export async function PATCH(
       { headers },
     );
   } catch (err) {
-    console.error("[hexomatic/automations/[id] PATCH]", err instanceof Error ? err.message : err);
+    logger.error("[hexomatic/automations/[id] PATCH]", { error: err instanceof Error ? err.message : String(err) });
     const message = err instanceof Error ? err.message : "Failed to pause automation";
     const status = message.includes("not found") ? 404 : message.includes("not running") ? 409 : 500;
     return NextResponse.json(

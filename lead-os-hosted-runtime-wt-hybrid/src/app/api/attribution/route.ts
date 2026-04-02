@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import {
@@ -51,7 +52,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[attribution]", err instanceof Error ? err.message : err);
+    logger.error("attribution failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       {
         data: null,
@@ -237,7 +238,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[attribution]", err instanceof Error ? err.message : err);
+    logger.error("attribution failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       {
         data: null,

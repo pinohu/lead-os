@@ -15,7 +15,7 @@ export async function GET(request: Request, context: { params: Promise<{ slug: s
   const workflow = buildStarterProvisionPayload(slug);
 
   if (!workflow) {
-    return NextResponse.json({ success: false, message: "Unknown n8n starter workflow" }, { status: 404 });
+    return NextResponse.json({ data: null, error: { code: "NOT_FOUND", message: "Unknown n8n starter workflow" } }, { status: 404 });
   }
 
   return NextResponse.json({
@@ -41,15 +41,14 @@ export async function POST(request: Request, context: { params: Promise<{ slug: 
   const workflow = buildStarterProvisionPayload(slug);
 
   if (!workflow) {
-    return NextResponse.json({ success: false, message: "Unknown n8n starter workflow" }, { status: 404 });
+    return NextResponse.json({ data: null, error: { code: "NOT_FOUND", message: "Unknown n8n starter workflow" } }, { status: 404 });
   }
 
   if (!canProvisionToN8n()) {
     return NextResponse.json(
       {
-        success: false,
-        configured: false,
-        message: "n8n API credentials are not configured for provisioning",
+        data: null,
+        error: { code: "SERVICE_UNAVAILABLE", message: "n8n API credentials are not configured for provisioning" },
       },
       { status: 503 },
     );

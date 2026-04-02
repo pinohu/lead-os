@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import type { EnvCheck, NicheOption, InitialConfig, SetupStatus } from "@/components/SetupWizardClient";
 import { SetupWizardClient } from "@/components/SetupWizardClient";
 import { tenantConfig } from "@/lib/tenant";
 import { nicheCatalog } from "@/lib/catalog";
+
+export const metadata: Metadata = {
+  title: "Setup — Lead OS",
+  description: "First-run setup wizard for your Lead OS instance. Configure brand, environment, and integrations.",
+};
 
 // ---------------------------------------------------------------------------
 // Environment checks — describes every variable the wizard surfaces
@@ -160,11 +166,6 @@ function buildNicheOptions(): NicheOption[] {
 // ---------------------------------------------------------------------------
 // Page — server component
 // ---------------------------------------------------------------------------
-
-export const metadata = {
-  title: "Setup Wizard",
-  description: "First-run setup for your Lead OS instance.",
-};
 
 export default async function SetupPage() {
   const [setupStatus, envChecks, niches] = await Promise.all([

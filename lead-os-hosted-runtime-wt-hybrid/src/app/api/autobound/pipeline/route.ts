@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { generateForProspectPipeline, autoboundResult } from "@/lib/integrations/autobound-adapter";
@@ -67,7 +68,7 @@ export async function POST(request: Request) {
       meta: { prospectCount: prospects.length },
     });
   } catch (err) {
-    console.error("[autobound-pipeline]", err instanceof Error ? err.message : err);
+    logger.error("autobound-pipeline failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "PIPELINE_FAILED", message: "Failed to generate pipeline emails" }, meta: null },
       { status: 500 },

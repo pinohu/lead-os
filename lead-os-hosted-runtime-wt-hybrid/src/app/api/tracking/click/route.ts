@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { recordEmailEvent } from "@/lib/email-tracking";
@@ -83,7 +84,7 @@ function isAllowedRedirectTarget(url: string): boolean {
 
   if (allowedHosts.size === 0) {
     if (process.env.NODE_ENV === "production") {
-      console.warn(
+      logger.warn(
         "[security] LEAD_OS_ALLOWED_REDIRECT_HOSTS is not set — click tracking allows open redirects. " +
         "Set this env var to a comma-separated list of trusted hostnames.",
       );

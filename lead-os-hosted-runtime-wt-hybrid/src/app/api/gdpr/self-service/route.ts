@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { exportUserData, requestDeletion, processDeletion } from "@/lib/gdpr";
@@ -71,7 +72,7 @@ export async function GET(request: Request) {
     if (action === "delete") {
       const deletionRequest = await requestDeletion(tenantId, email);
       processDeletion(deletionRequest.id).catch((err: unknown) => {
-        console.error(`Self-service deletion ${deletionRequest.id} failed:`, err);
+        logger.error(`Self-service deletion ${deletionRequest.id} failed:`, { error: err instanceof Error ? err.message : String(err) });
       });
 
       return NextResponse.json(

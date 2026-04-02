@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -44,7 +45,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[groove/mail/contacts GET]", err instanceof Error ? err.message : err);
+    logger.error("groove/mail/contacts GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch contact" }, meta: null },
       { status: 500, headers },
@@ -81,7 +82,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[groove/mail/contacts POST]", err instanceof Error ? err.message : err);
+    logger.error("groove/mail/contacts POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "ADD_FAILED", message: "Failed to add contact" }, meta: null },
       { status: 500, headers },
@@ -118,7 +119,7 @@ export async function DELETE(request: Request) {
       { status: 200, headers },
     );
   } catch (err) {
-    console.error("[groove/mail/contacts DELETE]", err instanceof Error ? err.message : err);
+    logger.error("groove/mail/contacts DELETE failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "REMOVE_FAILED", message: "Failed to remove contact" }, meta: null },
       { status: 500, headers },

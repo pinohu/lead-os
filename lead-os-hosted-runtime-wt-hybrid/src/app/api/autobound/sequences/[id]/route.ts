@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { getSequence, advanceSequence, pauseSequence, resumeSequence } from "@/lib/integrations/autobound-adapter";
@@ -59,7 +60,7 @@ export async function PATCH(
       result = await resumeSequence(id);
     }
   } catch (err) {
-    console.error("[autobound-sequence-action]", err instanceof Error ? err.message : err);
+    logger.error("autobound-sequence-action failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "ACTION_FAILED", message: `Failed to ${action} sequence` }, meta: null },
       { status: 500 },

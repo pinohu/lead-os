@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -42,7 +43,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[content-copilot/suggestions]", err instanceof Error ? err.message : err);
+    logger.error("content-copilot/suggestions failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       {
         data: null,

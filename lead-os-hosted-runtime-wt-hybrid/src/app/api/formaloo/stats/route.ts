@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { getFormalooStats } from "@/lib/integrations/formaloo-adapter";
@@ -16,7 +17,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[formaloo-stats]", err instanceof Error ? err.message : err);
+    logger.error("formaloo-stats failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "STATS_FAILED", message: "Failed to fetch Formaloo stats" }, meta: null },
       { status: 500, headers },

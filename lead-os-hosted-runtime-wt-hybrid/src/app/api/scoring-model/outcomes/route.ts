@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -44,7 +45,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[scoring-model/outcomes GET]", err instanceof Error ? err.message : err);
+    logger.error("scoring-model/outcomes GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch conversion outcomes" }, meta: null },
       { status: 500, headers },
@@ -115,7 +116,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[scoring-model/outcomes POST]", err instanceof Error ? err.message : err);
+    logger.error("scoring-model/outcomes POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "RECORD_FAILED", message: "Failed to record conversion outcome" }, meta: null },
       { status: 500, headers },

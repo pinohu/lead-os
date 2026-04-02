@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -21,7 +22,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[markopolo/campaigns/[id]/optimize GET]", err instanceof Error ? err.message : err);
+    logger.error("[markopolo/campaigns/[id]/optimize GET]", { error: err instanceof Error ? err.message : String(err) });
     const message = err instanceof Error ? err.message : "Failed to get optimization suggestions";
     const status = message.includes("not found") ? 404 : 500;
     return NextResponse.json(

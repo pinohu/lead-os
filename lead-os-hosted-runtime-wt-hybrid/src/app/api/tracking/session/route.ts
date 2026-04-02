@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import {
@@ -236,7 +237,7 @@ export async function POST(request: Request) {
       { status: 400, headers },
     );
   } catch (err) {
-    console.error("[tracking-session]", err instanceof Error ? err.message : err);
+    logger.error("tracking-session failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "TRACKING_FAILED", message: "Failed to process tracking request" }, meta: null },
       { status: 400, headers },
@@ -286,7 +287,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[tracking-session]", err instanceof Error ? err.message : err);
+    logger.error("tracking-session failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "TRACKING_FAILED", message: "Failed to get visitor profile" }, meta: null },
       { status: 400, headers },

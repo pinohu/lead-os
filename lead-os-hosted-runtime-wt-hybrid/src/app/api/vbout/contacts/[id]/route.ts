@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -41,7 +42,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[vbout/contacts/[id] GET]", err instanceof Error ? err.message : err);
+    logger.error("[vbout/contacts/[id] GET]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch contact" }, meta: null },
       { status: 500, headers },
@@ -88,7 +89,7 @@ export async function PATCH(
       { headers },
     );
   } catch (err) {
-    console.error("[vbout/contacts/[id] PATCH]", err instanceof Error ? err.message : err);
+    logger.error("[vbout/contacts/[id] PATCH]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "UPDATE_FAILED", message: "Failed to update contact" }, meta: null },
       { status: 500, headers },

@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[vista-social/distribute POST]", err instanceof Error ? err.message : err);
+    logger.error("vista-social/distribute POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "DISTRIBUTE_FAILED", message: "Failed to distribute content" }, meta: null },
       { status: 500, headers },

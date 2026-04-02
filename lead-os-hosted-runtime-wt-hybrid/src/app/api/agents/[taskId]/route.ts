@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { getAgentTask, cancelAgentTask } from "@/lib/agent-orchestrator";
@@ -23,7 +24,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[agents-taskId]", err instanceof Error ? err.message : err);
+    logger.error("agents-taskId failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch agent task" }, meta: null },
       { status: 500, headers },
@@ -52,7 +53,7 @@ export async function DELETE(
       { headers },
     );
   } catch (err) {
-    console.error("[agents-taskId]", err instanceof Error ? err.message : err);
+    logger.error("agents-taskId failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "CANCEL_FAILED", message: "Failed to cancel agent task" }, meta: null },
       { status: 500, headers },

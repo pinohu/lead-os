@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { decideNextStep } from "@/lib/orchestrator";
+import { logger } from "@/lib/logger";
 import type { FunnelFamily } from "@/lib/runtime-schema";
 
 const VALID_FAMILIES: FunnelFamily[] = [
@@ -34,9 +35,12 @@ export async function POST(request: Request) {
       },
       { headers },
     );
-  } catch {
+  } catch (err) {
+    logger.error("POST /api/decision failed", {
+      error: err instanceof Error ? err.message : String(err),
+    });
     return NextResponse.json(
-      { success: false, error: "Decision failed" },
+      { data: null, error: { code: "DECISION_FAILED", message: "Decision failed" } },
       { status: 400, headers },
     );
   }

@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -42,7 +43,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[groove/affiliate/[programId] GET]", err instanceof Error ? err.message : err);
+    logger.error("[groove/affiliate/[programId] GET]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch program details" }, meta: null },
       { status: 500, headers },
@@ -83,7 +84,7 @@ export async function POST(
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[groove/affiliate/[programId] POST]", err instanceof Error ? err.message : err);
+    logger.error("[groove/affiliate/[programId] POST]", { error: err instanceof Error ? err.message : String(err) });
     const message = err instanceof Error ? err.message : "Failed to register affiliate";
     const status = message.includes("not found") ? 404 : 500;
     return NextResponse.json(

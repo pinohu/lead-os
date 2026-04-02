@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -43,7 +44,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[groove/mail/sequences GET]", err instanceof Error ? err.message : err);
+    logger.error("groove/mail/sequences GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to list sequences" }, meta: null },
       { status: 500, headers },
@@ -80,7 +81,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[groove/mail/sequences POST]", err instanceof Error ? err.message : err);
+    logger.error("groove/mail/sequences POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "CREATE_FAILED", message: "Failed to create sequence" }, meta: null },
       { status: 500, headers },
@@ -117,7 +118,7 @@ export async function PATCH(request: Request) {
       { status: 200, headers },
     );
   } catch (err) {
-    console.error("[groove/mail/sequences PATCH]", err instanceof Error ? err.message : err);
+    logger.error("groove/mail/sequences PATCH failed", { error: err instanceof Error ? err.message : String(err) });
     const message = err instanceof Error ? err.message : "Failed to enroll in sequence";
     const status = message.includes("not found") ? 404 : 500;
     return NextResponse.json(

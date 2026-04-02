@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -40,7 +41,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[ab-test-id]", err instanceof Error ? err.message : err);
+    logger.error("ab-test-id failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch experiment" }, meta: null },
       { status: 500, headers },

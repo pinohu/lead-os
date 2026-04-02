@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[plerdy/tracking GET]", err instanceof Error ? err.message : err);
+    logger.error("plerdy/tracking GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to generate tracking code" }, meta: null },
       { status: 500, headers },

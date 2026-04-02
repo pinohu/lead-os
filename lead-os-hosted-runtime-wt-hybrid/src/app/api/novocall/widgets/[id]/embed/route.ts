@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -29,7 +30,7 @@ export async function GET(
       { headers },
     );
   } catch (err) {
-    console.error("[novocall/widgets/[id]/embed GET]", err instanceof Error ? err.message : err);
+    logger.error("[novocall/widgets/[id]/embed GET]", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "EMBED_FAILED", message: "Failed to generate embed code" }, meta: null },
       { status: 500, headers },

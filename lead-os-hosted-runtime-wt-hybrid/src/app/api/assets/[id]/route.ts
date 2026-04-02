@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -24,7 +25,7 @@ export async function GET(
 
     return NextResponse.json({ data: asset, error: null, meta: null }, { headers });
   } catch (err) {
-    console.error("[assets-id]", err instanceof Error ? err.message : err);
+    logger.error("assets-id failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "FETCH_FAILED", message: "Failed to fetch asset" }, meta: null },
       { status: 500, headers },
@@ -53,7 +54,7 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204, headers });
   } catch (err) {
-    console.error("[assets-id]", err instanceof Error ? err.message : err);
+    logger.error("assets-id failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "DELETE_FAILED", message: "Failed to delete asset" }, meta: null },
       { status: 500, headers },

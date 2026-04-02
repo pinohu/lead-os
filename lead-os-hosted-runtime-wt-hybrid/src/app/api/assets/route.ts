@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[assets]", err instanceof Error ? err.message : err);
+    logger.error("assets failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "LIST_FAILED", message: "Failed to list assets" }, meta: null },
       { status: 500, headers },
@@ -136,7 +137,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[assets]", err instanceof Error ? err.message : err);
+    logger.error("assets failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "CREATE_FAILED", message: "Failed to create asset" }, meta: null },
       { status: 500, headers },

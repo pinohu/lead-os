@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[novocall/callbacks POST]", err instanceof Error ? err.message : err);
+    logger.error("novocall/callbacks POST failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "REQUEST_FAILED", message: "Failed to request callback" }, meta: null },
       { status: 500, headers },
@@ -76,7 +77,7 @@ export async function GET(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[novocall/callbacks GET]", err instanceof Error ? err.message : err);
+    logger.error("novocall/callbacks GET failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "LIST_FAILED", message: "Failed to list callbacks" }, meta: null },
       { status: 500, headers },

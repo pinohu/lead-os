@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[rescore]", err instanceof Error ? err.message : err);
+    logger.error("rescore failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "RESCORE_FAILED", message: "Failed to rescore lead" }, meta: null },
       { status: 500, headers },

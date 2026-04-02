@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
@@ -38,7 +39,7 @@ export async function POST(
       { status: 201, headers },
     );
   } catch (err) {
-    console.error("[happierleads/visitors/[id]/convert POST]", err instanceof Error ? err.message : err);
+    logger.error("[happierleads/visitors/[id]/convert POST]", { error: err instanceof Error ? err.message : String(err) });
     const message = err instanceof Error ? err.message : "Failed to convert visitor";
     const status = message.includes("not found") ? 404 : 500;
     return NextResponse.json(

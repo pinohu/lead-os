@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import {
@@ -101,7 +102,7 @@ export async function POST(request: Request) {
       { headers },
     );
   } catch (err) {
-    console.error("[personalization]", err instanceof Error ? err.message : err);
+    logger.error("personalization failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { data: null, error: { code: "PERSONALIZATION_FAILED", message: "Failed to generate personalized experience" }, meta: null },
       { status: 400, headers },
