@@ -300,8 +300,8 @@ export default async function AdminDashboard() {
           {recentLeads.length === 0 ? (
             <p className="text-sm text-gray-500 dark:text-gray-400 py-8 text-center">No leads yet. Leads will appear here as they come in.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <Table className="min-w-[640px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Time</TableHead>
@@ -457,8 +457,8 @@ export default async function AdminDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <Table className="min-w-[640px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Provider</TableHead>

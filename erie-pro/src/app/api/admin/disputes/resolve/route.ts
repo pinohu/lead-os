@@ -8,6 +8,7 @@ import { prisma } from "@/lib/db"
 import { audit } from "@/lib/audit-log"
 import { auth } from "@/lib/auth"
 import { logger } from "@/lib/logger"
+import { sendDisputeResolutionEmail } from "@/lib/email"
 import { MAX_BODY_SIZE } from "@/lib/validation"
 
 const ResolveSchema = z.object({
@@ -104,6 +105,28 @@ export async function POST(req: NextRequest) {
       },
       ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
     })
+
+    // Notify the provider of the resolution outcome
+    if (updated.provider?.email) {
+      const leadName = [updated.lead?.firstName, updated.lead?.lastName]
+        .filter(Boolean)
+        .join(" ") || "Unknown"
+
+      await sendDisputeResolutionEmail(
+        updated.provider.email,
+        updated.provider.businessName ?? "Provider",
+        {
+          status,
+          leadName,
+          niche: updated.lead?.niche ?? "service",
+          creditAmount: creditAmount ?? null,
+          reason: existing.reason,
+        }
+      ).catch((err) => {
+        // Non-blocking: log but don't fail the resolution
+        logger.error("/api/admin/disputes/resolve", "Failed to send resolution email:", err)
+      })
+    }
 
     return NextResponse.json({
       success: true,

@@ -300,6 +300,53 @@ export async function sendListingOutreach(
   });
 }
 
+export async function sendDisputeResolutionEmail(
+  providerEmail: string,
+  providerName: string,
+  details: {
+    status: "approved" | "denied";
+    leadName: string;
+    niche: string;
+    creditAmount: number | null;
+    reason: string | null;
+  }
+): Promise<boolean> {
+  const isApproved = details.status === "approved";
+  const statusLabel = isApproved ? "Approved" : "Denied";
+  const statusColor = isApproved ? "#16a34a" : "#dc2626";
+  const statusBg = isApproved ? "#dcfce7" : "#fef2f2";
+
+  const creditLine = isApproved && details.creditAmount
+    ? `<p style="color:#374151;margin:0 0 16px">A credit of <strong>$${details.creditAmount.toFixed(2)}</strong> has been applied to your account.</p>`
+    : "";
+
+  const outcomeLine = isApproved
+    ? "Your dispute has been reviewed and approved. The lead has been credited back to your account."
+    : "Your dispute has been reviewed. After careful evaluation, the dispute was not approved. The lead charge remains on your account.";
+
+  return sendEmail({
+    to: providerEmail,
+    subject: `Dispute ${statusLabel} — ${escapeHtml(details.niche)} lead`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">Dispute ${statusLabel}</h2>
+      <div style="margin:0 0 20px">
+        <span style="display:inline-block;background:${statusBg};color:${statusColor};padding:4px 12px;border-radius:4px;font-size:13px;font-weight:600">${statusLabel}</span>
+      </div>
+      <p style="color:#374151;margin:0 0 16px">Hi ${escapeHtml(providerName)},</p>
+      <p style="color:#374151;margin:0 0 16px">${outcomeLine}</p>
+      ${creditLine}
+      <table style="width:100%;border-collapse:collapse;margin:0 0 24px">
+        <tr><td style="padding:8px 0;color:#6b7280;width:100px">Lead:</td><td style="padding:8px 0;color:#111827;font-weight:600">${escapeHtml(details.leadName)}</td></tr>
+        <tr><td style="padding:8px 0;color:#6b7280">Niche:</td><td style="padding:8px 0;color:#111827">${escapeHtml(details.niche)}</td></tr>
+        ${details.reason ? `<tr><td style="padding:8px 0;color:#6b7280;vertical-align:top">Reason:</td><td style="padding:8px 0;color:#111827">${escapeHtml(details.reason)}</td></tr>` : ""}
+      </table>
+      <a href="https://${cityConfig.domain}/dashboard/leads" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">View Dashboard</a>
+      <p style="margin:16px 0 0;font-size:13px;color:#9ca3af">If you have questions, reply to this email or contact us at hello@${cityConfig.domain}.</p>
+    `, providerEmail),
+    replyTo: `hello@${cityConfig.domain}`,
+  });
+}
+
 export async function sendEmailVerification(
   email: string,
   token: string

@@ -126,8 +126,8 @@ export default async function AdminListingsPage({ searchParams }: Props) {
               No listings found. Run the scraper to populate directory listings.
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <Table className="min-w-[640px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Business</TableHead>

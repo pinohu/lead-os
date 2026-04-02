@@ -60,8 +60,8 @@ export default async function AuditLogPage({
 
       {/* ── Log Table ─────────────────────────────────────────── */}
       <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <table className="min-w-[640px] w-full text-sm">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
                 <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-400">Time</th>
