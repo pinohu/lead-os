@@ -15,11 +15,11 @@ export default function NotFound() {
           <h1 id="not-found-heading" className="text-3xl font-bold">
             Page not found
           </h1>
-          <p className="muted lede">
+          <p className="text-lg text-muted-foreground">
             The page you are looking for does not exist, was moved, or is no
             longer available.
           </p>
-          <div className="cta-row justify-center">
+          <div className="flex flex-wrap gap-3 justify-center">
             <Link href="/" className="primary" aria-label="Return to the home page">
               Back to home
             </Link>
