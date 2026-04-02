@@ -11,58 +11,29 @@ export default function DashboardError({
     <div
       role="alert"
       aria-live="assertive"
-      style={{
-        padding: "2rem",
-        maxWidth: "32rem",
-        margin: "4rem auto",
-        textAlign: "center",
-      }}
+      className="mx-auto mt-16 max-w-lg p-8 text-center"
     >
-      <h2 style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: "0.5rem" }}>
+      <h2 className="mb-2 text-xl font-semibold">
         Dashboard Error
       </h2>
-      <p style={{ color: "#6b7280", marginBottom: "1rem" }}>
+      <p className="mb-4 text-muted-foreground">
         Something went wrong loading this dashboard section.
       </p>
       {process.env.NODE_ENV === "development" && error.message && (
-        <pre
-          style={{
-            background: "#fef2f2",
-            color: "#991b1b",
-            padding: "0.75rem",
-            borderRadius: "0.375rem",
-            fontSize: "0.75rem",
-            overflow: "auto",
-            marginBottom: "1rem",
-            textAlign: "left",
-          }}
-        >
+        <pre className="mb-4 overflow-auto rounded-md bg-red-50 p-3 text-left text-xs text-red-800">
           {error.message}
         </pre>
       )}
-      <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
+      <div className="flex justify-center gap-3">
         <button
           onClick={reset}
-          style={{
-            padding: "0.5rem 1rem",
-            background: "#4f46e5",
-            color: "#fff",
-            border: "none",
-            borderRadius: "0.375rem",
-            cursor: "pointer",
-          }}
+          className="cursor-pointer rounded-md bg-indigo-600 px-4 py-2 text-white"
         >
           Retry
         </button>
         <a
           href="/dashboard"
-          style={{
-            padding: "0.5rem 1rem",
-            background: "#f3f4f6",
-            color: "#374151",
-            borderRadius: "0.375rem",
-            textDecoration: "none",
-          }}
+          className="rounded-md bg-gray-100 px-4 py-2 text-gray-700 no-underline"
         >
           Return to Dashboard
         </a>

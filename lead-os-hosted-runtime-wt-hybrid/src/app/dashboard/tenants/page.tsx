@@ -20,117 +20,11 @@ interface TenantRecord {
   createdAt: string;
 }
 
-const STATUS_STYLES: Record<string, { background: string; color: string; border: string }> = {
-  active: { background: "rgba(34, 197, 94, 0.1)", color: "#4ade80", border: "1px solid rgba(34, 197, 94, 0.3)" },
-  provisioning: { background: "rgba(250, 204, 21, 0.1)", color: "#fbbf24", border: "1px solid rgba(250, 204, 21, 0.3)" },
-  suspended: { background: "rgba(239, 68, 68, 0.1)", color: "#f87171", border: "1px solid rgba(239, 68, 68, 0.3)" },
-  cancelled: { background: "rgba(148, 163, 184, 0.1)", color: "#94a3b8", border: "1px solid rgba(148, 163, 184, 0.3)" },
-};
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "#0a0f1a",
-    color: "#e2e8f0",
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  } as React.CSSProperties,
-  container: {
-    maxWidth: 1100,
-    margin: "0 auto",
-    padding: "32px 24px",
-  } as React.CSSProperties,
-  headerRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-    flexWrap: "wrap" as const,
-    gap: 12,
-  } as React.CSSProperties,
-  title: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: 0,
-  } as React.CSSProperties,
-  provisionButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "10px 20px",
-    borderRadius: 8,
-    border: "none",
-    background: "#14b8a6",
-    color: "#0a0f1a",
-    fontSize: "0.85rem",
-    fontWeight: 700,
-    textDecoration: "none",
-    cursor: "pointer",
-    minHeight: 44,
-  } as React.CSSProperties,
-  table: {
-    width: "100%",
-    borderCollapse: "collapse" as const,
-    fontSize: "0.85rem",
-  } as React.CSSProperties,
-  th: {
-    textAlign: "left" as const,
-    padding: "10px 14px",
-    color: "#94a3b8",
-    fontWeight: 600,
-    fontSize: "0.78rem",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-    borderBottom: "1px solid rgba(148, 163, 184, 0.15)",
-  } as React.CSSProperties,
-  td: {
-    padding: "12px 14px",
-    borderBottom: "1px solid rgba(148, 163, 184, 0.08)",
-    color: "#e2e8f0",
-  } as React.CSSProperties,
-  row: {
-    cursor: "pointer",
-    transition: "background 150ms ease",
-  } as React.CSSProperties,
-  badge: (status: string) => ({
-    display: "inline-block",
-    padding: "3px 10px",
-    borderRadius: 999,
-    fontSize: "0.72rem",
-    fontWeight: 600,
-    ...(STATUS_STYLES[status] ?? STATUS_STYLES.cancelled),
-  }) as React.CSSProperties,
-  expandedRow: {
-    background: "rgba(255, 255, 255, 0.02)",
-  } as React.CSSProperties,
-  expandedContent: {
-    padding: "16px 14px 20px",
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-    gap: 16,
-    fontSize: "0.82rem",
-  } as React.CSSProperties,
-  detailLabel: {
-    color: "#64748b",
-    fontSize: "0.75rem",
-    fontWeight: 600,
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.04em",
-    marginBottom: 4,
-  } as React.CSSProperties,
-  detailValue: {
-    color: "#cbd5e1",
-    fontSize: "0.85rem",
-  } as React.CSSProperties,
-  card: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(148, 163, 184, 0.1)",
-    borderRadius: 12,
-    overflow: "hidden",
-  } as React.CSSProperties,
-  muted: {
-    color: "#64748b",
-    fontSize: "0.85rem",
-  } as React.CSSProperties,
+const STATUS_CLASSES: Record<string, string> = {
+  active: "border-green-500/30 bg-green-500/10 text-green-400",
+  provisioning: "border-yellow-400/30 bg-yellow-400/10 text-yellow-400",
+  suspended: "border-red-500/30 bg-red-500/10 text-red-400",
+  cancelled: "border-slate-400/30 bg-slate-400/10 text-slate-400",
 };
 
 const DEMO_TENANTS: TenantRecord[] = [
@@ -170,11 +64,11 @@ export default function TenantsPage() {
 
   if (loading) {
     return (
-      <main className="experience-page" style={styles.page}>
-        <div style={styles.container}>
-          <section className="panel" style={styles.card}>
-            <div style={{ padding: 32 }}>
-              <p style={styles.muted}>Loading tenants...</p>
+      <main className="experience-page min-h-screen bg-[#0a0f1a] font-sans text-slate-200">
+        <div className="mx-auto max-w-[1100px] px-6 py-8">
+          <section className="panel rounded-xl border border-slate-500/10 bg-white/[0.04]">
+            <div className="p-8">
+              <p className="text-sm text-slate-500">Loading tenants...</p>
             </div>
           </section>
         </div>
@@ -186,39 +80,39 @@ export default function TenantsPage() {
     Object.entries(channels).filter(([, v]) => v).map(([k]) => k);
 
   return (
-    <main className="experience-page" style={styles.page}>
+    <main className="experience-page min-h-screen bg-[#0a0f1a] font-sans text-slate-200">
       {isDemo && (
-        <div style={{ background: "#1e1a3f", borderBottom: "1px solid #3730a3", padding: "10px 24px", fontSize: "0.875rem", color: "#a5b4fc" }}>
+        <div className="border-b border-indigo-800 bg-[#1e1a3f] px-6 py-2.5 text-sm text-indigo-300">
           Demo tenants — Sign in as a super-operator to manage live tenant provisioning.
         </div>
       )}
-      <div style={styles.container}>
-        <div style={styles.headerRow}>
-          <h1 style={styles.title}>Tenants</h1>
-          <Link href="/onboard" style={styles.provisionButton}>
+      <div className="mx-auto max-w-[1100px] px-6 py-8">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="m-0 text-2xl font-bold text-slate-50">Tenants</h1>
+          <Link href="/onboard" className="inline-flex min-h-11 items-center rounded-lg bg-teal-500 px-5 py-2.5 text-sm font-bold text-[#0a0f1a] no-underline">
             Provision New Tenant
           </Link>
         </div>
 
         {tenants.length === 0 ? (
-          <div style={{ ...styles.card, padding: 48, textAlign: "center" }}>
-            <p style={{ color: "#94a3b8", margin: "0 0 16px", fontSize: "1rem" }}>No tenants yet</p>
-            <Link href="/onboard" style={{ color: "#14b8a6", textDecoration: "none", fontWeight: 600 }}>
+          <div className="rounded-xl border border-slate-500/10 bg-white/[0.04] p-12 text-center">
+            <p className="mb-4 text-base text-slate-400">No tenants yet</p>
+            <Link href="/onboard" className="font-semibold text-teal-400 no-underline">
               Provision your first tenant
             </Link>
           </div>
         ) : (
-          <div style={styles.card}>
-            <table style={styles.table}>
+          <div className="overflow-hidden rounded-xl border border-slate-500/10 bg-white/[0.04]">
+            <table className="w-full border-collapse text-sm">
               <thead>
                 <tr>
-                  <th scope="col" style={styles.th}>Slug</th>
-                  <th scope="col" style={styles.th}>Brand</th>
-                  <th scope="col" style={styles.th}>Niche</th>
-                  <th scope="col" style={styles.th}>Plan</th>
-                  <th scope="col" style={styles.th}>Model</th>
-                  <th scope="col" style={styles.th}>Status</th>
-                  <th scope="col" style={styles.th}>Created</th>
+                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Slug</th>
+                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Brand</th>
+                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Niche</th>
+                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Plan</th>
+                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Model</th>
+                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Status</th>
+                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Created</th>
                 </tr>
               </thead>
               <tbody>
@@ -226,46 +120,43 @@ export default function TenantsPage() {
                   <>
                     <tr
                       key={tenant.tenantId}
-                      style={{
-                        ...styles.row,
-                        background: expandedId === tenant.tenantId ? "rgba(255, 255, 255, 0.03)" : "transparent",
-                      }}
+                      className={`cursor-pointer transition-colors duration-150 ${expandedId === tenant.tenantId ? "bg-white/[0.03]" : "bg-transparent"}`}
                       onClick={() => toggleExpand(tenant.tenantId)}
                       tabIndex={0}
                       onKeyDown={(e) => e.key === "Enter" && toggleExpand(tenant.tenantId)}
                       aria-expanded={expandedId === tenant.tenantId}
                     >
-                      <td style={styles.td}>
-                        <code style={{ fontSize: "0.82rem", color: "#5eead4" }}>{tenant.slug}</code>
+                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">
+                        <code className="text-xs text-teal-300">{tenant.slug}</code>
                       </td>
-                      <td style={styles.td}>{tenant.brandName}</td>
-                      <td style={styles.td}>{tenant.defaultNiche}</td>
-                      <td style={styles.td}>{tenant.plan}</td>
-                      <td style={styles.td}>{tenant.revenueModel}</td>
-                      <td style={styles.td}>
-                        <span style={styles.badge(tenant.status)}>{tenant.status}</span>
+                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">{tenant.brandName}</td>
+                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">{tenant.defaultNiche}</td>
+                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">{tenant.plan}</td>
+                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">{tenant.revenueModel}</td>
+                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">
+                        <span className={`inline-block rounded-full border px-2.5 py-0.5 text-[0.72rem] font-semibold ${STATUS_CLASSES[tenant.status] ?? STATUS_CLASSES.cancelled}`}>{tenant.status}</span>
                       </td>
-                      <td style={styles.td}>{new Date(tenant.createdAt).toLocaleDateString()}</td>
+                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">{new Date(tenant.createdAt).toLocaleDateString()}</td>
                     </tr>
                     {expandedId === tenant.tenantId && (
-                      <tr key={`${tenant.tenantId}-expanded`} style={styles.expandedRow}>
-                        <td colSpan={7} style={{ padding: 0 }}>
-                          <div style={styles.expandedContent}>
+                      <tr key={`${tenant.tenantId}-expanded`} className="bg-white/[0.02]">
+                        <td colSpan={7} className="p-0">
+                          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 px-3.5 py-4 text-xs">
                             <div>
-                              <div style={styles.detailLabel}>Site URL</div>
-                              <div style={styles.detailValue}>{tenant.siteUrl || "Not set"}</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Site URL</div>
+                              <div className="text-sm text-slate-300">{tenant.siteUrl || "Not set"}</div>
                             </div>
                             <div>
-                              <div style={styles.detailLabel}>Operator Emails</div>
-                              <div style={styles.detailValue}>{tenant.operatorEmails.join(", ") || "None"}</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Operator Emails</div>
+                              <div className="text-sm text-slate-300">{tenant.operatorEmails.join(", ") || "None"}</div>
                             </div>
                             <div>
-                              <div style={styles.detailLabel}>Enabled Funnels</div>
-                              <div style={styles.detailValue}>{tenant.enabledFunnels.join(", ") || "None"}</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Enabled Funnels</div>
+                              <div className="text-sm text-slate-300">{tenant.enabledFunnels.join(", ") || "None"}</div>
                             </div>
                             <div>
-                              <div style={styles.detailLabel}>Active Channels</div>
-                              <div style={styles.detailValue}>{activeChannels(tenant.channels).join(", ") || "None"}</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Active Channels</div>
+                              <div className="text-sm text-slate-300">{activeChannels(tenant.channels).join(", ") || "None"}</div>
                             </div>
                           </div>
                         </td>

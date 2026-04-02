@@ -52,11 +52,19 @@ interface KPITarget {
 function severityColor(severity: string): { bg: string; color: string; border: string } {
   switch (severity) {
     case "critical":
-      return { bg: "#fef2f2", color: "#991b1b", border: "#fecaca" };
+      return { bg: "bg-red-50", color: "text-red-800", border: "border-red-200" };
     case "warning":
-      return { bg: "#fffbeb", color: "#92400e", border: "#fde68a" };
+      return { bg: "bg-amber-50", color: "text-amber-800", border: "border-amber-200" };
     default:
-      return { bg: "#eff6ff", color: "#1e40af", border: "#bfdbfe" };
+      return { bg: "bg-blue-50", color: "text-blue-800", border: "border-blue-200" };
+  }
+}
+
+function severityRawColor(severity: string): string {
+  switch (severity) {
+    case "critical": return "#991b1b";
+    case "warning": return "#92400e";
+    default: return "#1e40af";
   }
 }
 
@@ -69,16 +77,12 @@ function typeIcon(type: string): string {
   }
 }
 
-function statusBadge(status: string): { bg: string; color: string } {
+function statusBadgeClass(status: string): string {
   switch (status) {
-    case "applied":
-      return { bg: "#dcfce7", color: "#166534" };
-    case "analyzed":
-      return { bg: "#dbeafe", color: "#1e40af" };
-    case "pending":
-      return { bg: "#fef3c7", color: "#92400e" };
-    default:
-      return { bg: "#f3f4f6", color: "#374151" };
+    case "applied": return "bg-green-100 text-green-800";
+    case "analyzed": return "bg-blue-100 text-blue-800";
+    case "pending": return "bg-amber-100 text-amber-800";
+    default: return "bg-gray-100 text-gray-700";
   }
 }
 
@@ -86,25 +90,20 @@ function GaugeBar({ label, current, target, unit }: KPITarget) {
   const ratio = target > 0 ? Math.min(current / target, 2) : 0;
   const percentage = Math.min(ratio * 50, 100);
   const isGood = current >= target;
-  const barColor = isGood ? "#22c55e" : current >= target * 0.7 ? "#f59e0b" : "#ef4444";
+  const barColor = isGood ? "bg-green-500" : current >= target * 0.7 ? "bg-amber-500" : "bg-red-500";
 
   return (
-    <div style={{ marginBottom: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
-        <span style={{ fontWeight: 600, color: "#374151" }}>{label}</span>
-        <span style={{ color: isGood ? "#166534" : "#92400e" }}>
+    <div className="mb-4">
+      <div className="flex justify-between text-[13px] mb-1">
+        <span className="font-semibold text-gray-700">{label}</span>
+        <span className={isGood ? "text-green-800" : "text-amber-800"}>
           {current}{unit} / {target}{unit}
         </span>
       </div>
-      <div style={{ background: "#e5e7eb", borderRadius: 4, height: 8, overflow: "hidden" }}>
+      <div className="bg-gray-200 rounded h-2 overflow-hidden">
         <div
-          style={{
-            background: barColor,
-            width: `${percentage}%`,
-            height: "100%",
-            borderRadius: 4,
-            transition: "width 300ms ease",
-          }}
+          className={`h-full rounded transition-all duration-300 ${barColor}`}
+          style={{ width: `${percentage}%` }}
         />
       </div>
     </div>
@@ -129,7 +128,7 @@ const DEMO_METRICS: PerformanceMetrics = {
 };
 
 const DEMO_INSIGHTS: Insight[] = [
-  { type: "opportunity", severity: "info", message: "Email open rate is 41.7% — above the 35% industry benchmark.", metric: "emailOpenRate", currentValue: 41.7, targetValue: 35, recommendation: "A/B test subject line personalization to push toward 48%." },
+  { type: "opportunity", severity: "info", message: "Email open rate is 41.7% -- above the 35% industry benchmark.", metric: "emailOpenRate", currentValue: 41.7, targetValue: 35, recommendation: "A/B test subject line personalization to push toward 48%." },
   { type: "trend", severity: "warning", message: "Avg time to convert increased from 3.8 to 4.2 days over the last 7 days.", metric: "avgTimeToConvert", currentValue: 4.2, targetValue: 3.5, recommendation: "Add urgency trigger at day 3 of the nurture sequence." },
   { type: "problem", severity: "critical", message: "Drip funnel conversion rate (4.1%) is 60% below target.", metric: "dripFunnelRate", currentValue: 4.1, targetValue: 10.0, recommendation: "Review drip email copy and reduce cadence gap from 5 days to 3 days." },
 ];
@@ -155,81 +154,51 @@ export default function FeedbackPage() {
         fetch("/api/feedback/insights"),
         fetch("/api/feedback/cycle?limit=10"),
       ]);
-
       const metricsData = metricsRes.ok ? await metricsRes.json() : null;
       const insightsData = insightsRes.ok ? await insightsRes.json() : null;
       const historyData = historyRes.ok ? await historyRes.json() : null;
-
       const hasLiveData = metricsData?.data || insightsData?.data || historyData?.data;
       if (hasLiveData) {
         if (metricsData?.data) setMetrics(metricsData.data);
         if (insightsData?.data) setInsights(insightsData.data);
         if (historyData?.data) setHistory(historyData.data);
       } else {
-        setMetrics(DEMO_METRICS);
-        setInsights(DEMO_INSIGHTS);
-        setHistory(DEMO_HISTORY);
-        setIsDemo(true);
+        setMetrics(DEMO_METRICS); setInsights(DEMO_INSIGHTS); setHistory(DEMO_HISTORY); setIsDemo(true);
       }
     } catch {
-      setMetrics(DEMO_METRICS);
-      setInsights(DEMO_INSIGHTS);
-      setHistory(DEMO_HISTORY);
-      setIsDemo(true);
+      setMetrics(DEMO_METRICS); setInsights(DEMO_INSIGHTS); setHistory(DEMO_HISTORY); setIsDemo(true);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   async function handleRunCycle(type: "daily" | "weekly" | "monthly") {
     setRunning(true);
     try {
-      const res = await fetch("/api/feedback/cycle", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type }),
-      });
+      const res = await fetch("/api/feedback/cycle", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type }) });
       const data = await res.json();
-      if (data.data) {
-        setHistory((prev) => [data.data, ...prev]);
-      }
+      if (data.data) { setHistory((prev) => [data.data, ...prev]); }
       await fetchData();
-    } catch {
-      setError("Failed to run feedback cycle");
-    } finally {
-      setRunning(false);
-    }
+    } catch { setError("Failed to run feedback cycle"); } finally { setRunning(false); }
   }
 
   async function handleApply(cycleId: string) {
     try {
-      const res = await fetch(`/api/feedback/cycle/${cycleId}/apply`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await fetch(`/api/feedback/cycle/${cycleId}/apply`, { method: "POST", headers: { "Content-Type": "application/json" } });
       const data = await res.json();
-      if (data.data) {
-        setHistory((prev) =>
-          prev.map((c) => (c.id === cycleId ? data.data : c)),
-        );
-      }
-    } catch {
-      setError("Failed to apply adjustments");
-    }
+      if (data.data) { setHistory((prev) => prev.map((c) => (c.id === cycleId ? data.data : c))); }
+    } catch { setError("Failed to apply adjustments"); }
   }
 
   if (loading) {
     return (
-      <main style={{ maxWidth: 1180, margin: "0 auto", padding: "32px 24px" }}>
-        <p style={{ color: "#6b7280", fontSize: 14 }}>Loading feedback data...</p>
+      <main className="max-w-[1180px] mx-auto px-6 py-8">
+        <p className="text-gray-500 text-sm">Loading feedback data...</p>
       </main>
     );
   }
-
 
   const kpis: KPITarget[] = metrics
     ? [
@@ -242,34 +211,26 @@ export default function FeedbackPage() {
     : [];
 
   return (
-    <main style={{ maxWidth: 1180, margin: "0 auto", padding: "32px 24px" }}>
+    <main className="max-w-[1180px] mx-auto px-6 py-8">
       {isDemo && (
-        <div style={{ background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 8, padding: "10px 16px", fontSize: "0.875rem", color: "#92400e", marginBottom: 24 }}>
+        <div className="bg-amber-100 border border-amber-300 rounded-lg px-4 py-2.5 text-sm text-amber-800 mb-6">
           Demo data — Connect your tenant to see live feedback and performance metrics.
         </div>
       )}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#111827", margin: 0 }}>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 m-0">
           Feedback Loop
         </h1>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="flex gap-2">
           {(["daily", "weekly", "monthly"] as const).map((type) => (
             <button
               key={type}
               type="button"
               onClick={() => handleRunCycle(type)}
               disabled={running}
-              style={{
-                background: running ? "#d1d5db" : "#14b8a6",
-                color: "#fff",
-                border: "none",
-                borderRadius: 8,
-                padding: "8px 16px",
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: running ? "not-allowed" : "pointer",
-                minHeight: 36,
-              }}
+              className={`border-none rounded-lg px-4 py-2 text-[13px] font-semibold min-h-[36px] ${
+                running ? "bg-gray-300 text-white cursor-not-allowed" : "bg-teal-500 text-white cursor-pointer"
+              }`}
             >
               Run {type}
             </button>
@@ -278,76 +239,58 @@ export default function FeedbackPage() {
       </div>
 
       {error && (
-        <div
-          role="alert"
-          style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "12px 16px", marginBottom: 16, color: "#991b1b", fontSize: 13 }}
-        >
+        <div role="alert" className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-4 text-red-800 text-[13px]">
           {error}
         </div>
       )}
 
-      <section aria-label="KPI Performance" style={{ marginBottom: 32 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 600, color: "#374151", marginBottom: 16 }}>
+      <section aria-label="KPI Performance" className="mb-8">
+        <h2 className="text-base font-semibold text-gray-700 mb-4">
           Performance vs KPI Targets
         </h2>
-        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 12, padding: 20 }}>
+        <div className="bg-white border border-gray-200 rounded-xl p-5">
           {kpis.map((kpi) => (
             <GaugeBar key={kpi.label} {...kpi} />
           ))}
           {kpis.length === 0 && (
-            <p style={{ color: "#9ca3af", fontSize: 13, margin: 0 }}>No metrics available yet.</p>
+            <p className="text-gray-400 text-[13px] m-0">No metrics available yet.</p>
           )}
         </div>
       </section>
 
-      <section aria-label="Current Insights" style={{ marginBottom: 32 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 600, color: "#374151", marginBottom: 16 }}>
+      <section aria-label="Current Insights" className="mb-8">
+        <h2 className="text-base font-semibold text-gray-700 mb-4">
           Insights ({insights.length})
         </h2>
         {insights.length === 0 && (
-          <p style={{ color: "#9ca3af", fontSize: 13 }}>No insights generated yet. Run a feedback cycle to generate insights.</p>
+          <p className="text-gray-400 text-[13px]">No insights generated yet. Run a feedback cycle to generate insights.</p>
         )}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2">
           {insights.map((insight, i) => {
             const colors = severityColor(insight.severity);
             return (
               <div
                 key={i}
-                style={{
-                  background: colors.bg,
-                  border: `1px solid ${colors.border}`,
-                  borderRadius: 8,
-                  padding: "12px 16px",
-                }}
+                className={`${colors.bg} border ${colors.border} rounded-lg px-4 py-3`}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                <div className="flex items-center gap-2 mb-1">
                   <span
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: 22,
-                      height: 22,
-                      borderRadius: "50%",
-                      background: colors.color,
-                      color: "#fff",
-                      fontSize: 12,
-                      fontWeight: 700,
-                    }}
+                    className="inline-flex items-center justify-center w-[22px] h-[22px] rounded-full text-white text-xs font-bold"
+                    style={{ background: severityRawColor(insight.severity) }}
                   >
                     {typeIcon(insight.type)}
                   </span>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: colors.color }}>
+                  <span className={`text-[13px] font-semibold ${colors.color}`}>
                     {insight.severity.toUpperCase()}
                   </span>
-                  <span style={{ fontSize: 12, color: "#6b7280" }}>
+                  <span className="text-xs text-gray-500">
                     {insight.metric}
                   </span>
                 </div>
-                <p style={{ margin: "0 0 4px", fontSize: 14, color: "#111827" }}>
+                <p className="mb-1 text-sm text-gray-900">
                   {insight.message}
                 </p>
-                <p style={{ margin: 0, fontSize: 12, color: "#6b7280" }}>
+                <p className="m-0 text-xs text-gray-500">
                   {insight.recommendation}
                 </p>
               </div>
@@ -356,68 +299,52 @@ export default function FeedbackPage() {
         </div>
       </section>
 
-      <section aria-label="Feedback Cycle History" style={{ marginBottom: 32 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 600, color: "#374151", marginBottom: 16 }}>
+      <section aria-label="Feedback Cycle History" className="mb-8">
+        <h2 className="text-base font-semibold text-gray-700 mb-4">
           Cycle History
         </h2>
         {history.length === 0 && (
-          <p style={{ color: "#9ca3af", fontSize: 13 }}>No feedback cycles run yet.</p>
+          <p className="text-gray-400 text-[13px]">No feedback cycles run yet.</p>
         )}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="flex flex-col gap-3">
           {history.map((cycle) => {
-            const badge = statusBadge(cycle.status);
             const pendingAdjustments = cycle.adjustments.filter((a) => !a.autoApplied);
             const hasPending = cycle.status !== "applied" && pendingAdjustments.length > 0;
 
             return (
               <div
                 key={cycle.id}
-                style={{
-                  background: "#fff",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 12,
-                  padding: 16,
-                }}
+                className="bg-white border border-gray-200 rounded-xl p-4"
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-gray-900">
                       {cycle.type.charAt(0).toUpperCase() + cycle.type.slice(1)} Cycle
                     </span>
-                    <span
-                      style={{
-                        display: "inline-block",
-                        background: badge.bg,
-                        color: badge.color,
-                        fontSize: 11,
-                        fontWeight: 700,
-                        padding: "2px 8px",
-                        borderRadius: 999,
-                      }}
-                    >
+                    <span className={`inline-block text-[11px] font-bold px-2 py-0.5 rounded-full ${statusBadgeClass(cycle.status)}`}>
                       {cycle.status}
                     </span>
                   </div>
-                  <span style={{ fontSize: 12, color: "#9ca3af" }}>
+                  <span className="text-xs text-gray-400">
                     {new Date(cycle.createdAt).toLocaleDateString()}
                   </span>
                 </div>
 
-                <p style={{ margin: "0 0 8px", fontSize: 12, color: "#6b7280" }}>
+                <p className="mb-2 text-xs text-gray-500">
                   Period: {cycle.period} | Insights: {cycle.insights.length} | Adjustments: {cycle.adjustments.length}
                 </p>
 
                 {cycle.adjustments.length > 0 && (
-                  <div style={{ marginTop: 8 }}>
-                    <p style={{ fontSize: 12, fontWeight: 600, color: "#374151", margin: "0 0 4px" }}>
+                  <div className="mt-2">
+                    <p className="text-xs font-semibold text-gray-700 mb-1">
                       Adjustments:
                     </p>
-                    <ul style={{ margin: 0, paddingLeft: 16, fontSize: 12, color: "#6b7280" }}>
+                    <ul className="m-0 pl-4 text-xs text-gray-500">
                       {cycle.adjustments.slice(0, 5).map((adj, i) => (
-                        <li key={i} style={{ marginBottom: 2 }}>
-                          <span style={{ fontWeight: 600 }}>{adj.type}</span>: {adj.reason}
+                        <li key={i} className="mb-0.5">
+                          <span className="font-semibold">{adj.type}</span>: {adj.reason}
                           {adj.autoApplied && (
-                            <span style={{ color: "#16a34a", marginLeft: 4 }}>(auto-applied)</span>
+                            <span className="text-green-600 ml-1">(auto-applied)</span>
                           )}
                         </li>
                       ))}
@@ -426,21 +353,11 @@ export default function FeedbackPage() {
                 )}
 
                 {hasPending && (
-                  <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+                  <div className="mt-3 flex gap-2">
                     <button
                       type="button"
                       onClick={() => handleApply(cycle.id)}
-                      style={{
-                        background: "#14b8a6",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: 6,
-                        padding: "6px 14px",
-                        fontSize: 12,
-                        fontWeight: 600,
-                        cursor: "pointer",
-                        minHeight: 32,
-                      }}
+                      className="bg-teal-500 text-white border-none rounded-md px-3.5 py-1.5 text-xs font-semibold cursor-pointer min-h-[32px]"
                     >
                       Apply {pendingAdjustments.length} pending adjustments
                     </button>

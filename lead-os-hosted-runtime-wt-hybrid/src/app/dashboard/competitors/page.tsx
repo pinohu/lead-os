@@ -56,7 +56,7 @@ const DEMO_COMPETITORS: CompetitorWithSnapshot[] = [
 ];
 
 const NICHE_OPTIONS = [
-  { value: "", label: "— No niche —" },
+  { value: "", label: "-- No niche --" },
   { value: "saas", label: "SaaS / Software" },
   { value: "ecommerce", label: "E-commerce" },
   { value: "agency", label: "Agency / Services" },
@@ -88,243 +88,11 @@ function lastAnalyzedDate(details: CompetitorWithSnapshot[]): string {
   return formatDate(latest);
 }
 
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "#0a0f1a",
-    color: "#e2e8f0",
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  } as React.CSSProperties,
-  container: {
-    maxWidth: 1100,
-    margin: "0 auto",
-    padding: "32px 24px",
-  } as React.CSSProperties,
-  title: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 24px",
-  } as React.CSSProperties,
-  summaryGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-    gap: 16,
-    marginBottom: 24,
-  } as React.CSSProperties,
-  summaryCard: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(255, 255, 255, 0.06)",
-    borderRadius: 12,
-    padding: "20px 24px",
-  } as React.CSSProperties,
-  summaryLabel: {
-    fontSize: "0.78rem",
-    fontWeight: 600,
-    color: "rgba(255, 255, 255, 0.5)",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-    margin: "0 0 8px",
-  } as React.CSSProperties,
-  summaryValue: {
-    fontSize: "1.75rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: 0,
-  } as React.CSSProperties,
-  summaryMeta: {
-    fontSize: "0.78rem",
-    color: "rgba(255, 255, 255, 0.4)",
-    margin: "4px 0 0",
-  } as React.CSSProperties,
-  formCard: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(255, 255, 255, 0.06)",
-    borderRadius: 12,
-    padding: 24,
-    marginBottom: 24,
-  } as React.CSSProperties,
-  cardTitle: {
-    fontSize: "0.85rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 16px",
-  } as React.CSSProperties,
-  formRow: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr auto auto",
-    gap: 12,
-    alignItems: "end",
-  } as React.CSSProperties,
-  fieldGroup: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: 6,
-  } as React.CSSProperties,
-  label: {
-    fontSize: "0.78rem",
-    fontWeight: 600,
-    color: "rgba(255, 255, 255, 0.5)",
-  } as React.CSSProperties,
-  input: {
-    background: "rgba(255, 255, 255, 0.06)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: 8,
-    padding: "10px 14px",
-    color: "#f1f5f9",
-    fontSize: "0.85rem",
-    outline: "none",
-    minHeight: 44,
-    width: "100%",
-    boxSizing: "border-box" as const,
-  } as React.CSSProperties,
-  select: {
-    background: "rgba(255, 255, 255, 0.06)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: 8,
-    padding: "10px 14px",
-    color: "#f1f5f9",
-    fontSize: "0.85rem",
-    outline: "none",
-    minHeight: 44,
-    cursor: "pointer",
-  } as React.CSSProperties,
-  primaryButton: {
-    padding: "10px 20px",
-    borderRadius: 8,
-    border: "none",
-    background: "#14b8a6",
-    color: "#0a0f1a",
-    fontSize: "0.85rem",
-    fontWeight: 700,
-    cursor: "pointer",
-    minHeight: 44,
-    whiteSpace: "nowrap" as const,
-  } as React.CSSProperties,
-  secondaryButton: {
-    padding: "8px 14px",
-    borderRadius: 8,
-    border: "1px solid rgba(148, 163, 184, 0.3)",
-    background: "transparent",
-    color: "#94a3b8",
-    fontSize: "0.8rem",
-    fontWeight: 600,
-    cursor: "pointer",
-    minHeight: 44,
-  } as React.CSSProperties,
-  dangerButton: {
-    padding: "8px 14px",
-    borderRadius: 8,
-    border: "1px solid rgba(239, 68, 68, 0.3)",
-    background: "transparent",
-    color: "#f87171",
-    fontSize: "0.8rem",
-    fontWeight: 600,
-    cursor: "pointer",
-    minHeight: 44,
-  } as React.CSSProperties,
-  competitorCard: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(255, 255, 255, 0.06)",
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 12,
-  } as React.CSSProperties,
-  competitorHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 12,
-  } as React.CSSProperties,
-  competitorName: {
-    fontSize: "1rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 4px",
-  } as React.CSSProperties,
-  competitorUrl: {
-    fontSize: "0.78rem",
-    color: "rgba(255, 255, 255, 0.4)",
-    margin: 0,
-    wordBreak: "break-all" as const,
-  } as React.CSSProperties,
-  statusBadge: (status: string) => ({
-    display: "inline-block",
-    padding: "3px 10px",
-    borderRadius: 999,
-    fontSize: "0.72rem",
-    fontWeight: 700,
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-    background:
-      status === "active"
-        ? "rgba(20, 184, 166, 0.15)"
-        : status === "error"
-          ? "rgba(239, 68, 68, 0.15)"
-          : "rgba(148, 163, 184, 0.15)",
-    color:
-      status === "active"
-        ? "#14b8a6"
-        : status === "error"
-          ? "#f87171"
-          : "#94a3b8",
-  }) as React.CSSProperties,
-  snapshotRow: {
-    display: "flex",
-    flexWrap: "wrap" as const,
-    gap: 16,
-    padding: "12px 0",
-    borderTop: "1px solid rgba(255, 255, 255, 0.06)",
-    fontSize: "0.8rem",
-    color: "rgba(255, 255, 255, 0.5)",
-  } as React.CSSProperties,
-  snapshotStat: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: 2,
-  } as React.CSSProperties,
-  snapshotStatLabel: {
-    fontSize: "0.7rem",
-    color: "rgba(255, 255, 255, 0.3)",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-  } as React.CSSProperties,
-  snapshotStatValue: {
-    fontSize: "0.85rem",
-    fontWeight: 600,
-    color: "rgba(255, 255, 255, 0.8)",
-  } as React.CSSProperties,
-  cardActions: {
-    display: "flex",
-    gap: 8,
-    marginTop: 12,
-  } as React.CSSProperties,
-  muted: {
-    color: "rgba(255, 255, 255, 0.4)",
-    fontSize: "0.85rem",
-  } as React.CSSProperties,
-  errorText: {
-    color: "#f87171",
-    fontSize: "0.82rem",
-    margin: "8px 0 0",
-  } as React.CSSProperties,
-  snapshotSummary: {
-    fontSize: "0.8rem",
-    color: "rgba(255, 255, 255, 0.5)",
-    margin: "8px 0 0",
-    fontStyle: "italic" as const,
-  } as React.CSSProperties,
-  featurePill: (active: boolean) => ({
-    display: "inline-block",
-    padding: "2px 8px",
-    borderRadius: 999,
-    fontSize: "0.7rem",
-    fontWeight: 600,
-    background: active ? "rgba(20, 184, 166, 0.12)" : "rgba(255, 255, 255, 0.04)",
-    color: active ? "#14b8a6" : "rgba(255, 255, 255, 0.25)",
-    border: `1px solid ${active ? "rgba(20, 184, 166, 0.2)" : "rgba(255, 255, 255, 0.06)"}`,
-  }) as React.CSSProperties,
-};
+function statusBadgeClass(status: string): string {
+  if (status === "active") return "bg-teal-500/15 text-teal-500";
+  if (status === "error") return "bg-red-500/15 text-red-400";
+  return "bg-slate-500/15 text-slate-400";
+}
 
 export default function CompetitorsPage() {
   const [details, setDetails] = useState<CompetitorWithSnapshot[]>([]);
@@ -484,10 +252,10 @@ export default function CompetitorsPage() {
 
   if (loading) {
     return (
-      <main style={styles.page}>
-        <div style={styles.container}>
-          <div style={styles.formCard}>
-            <p style={styles.muted}>Loading competitor data...</p>
+      <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
+        <div className="max-w-[1100px] mx-auto px-6 py-8">
+          <div className="rounded-xl bg-white/5 border border-white/10 p-6">
+            <p className="text-white/40 text-sm">Loading competitor data...</p>
           </div>
         </div>
       </main>
@@ -495,51 +263,51 @@ export default function CompetitorsPage() {
   }
 
   return (
-    <main style={styles.page}>
+    <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
       {isDemo && (
-        <div style={{ background: "#1e1a3f", borderBottom: "1px solid #3730a3", padding: "10px 24px", fontSize: "0.875rem", color: "#a5b4fc" }}>
+        <div className="bg-[#1e1a3f] border-b border-indigo-800 px-6 py-2.5 text-sm text-indigo-300">
           Demo competitors — Sign in to track and analyze your real competitors.{" "}
         </div>
       )}
-      <div style={styles.container}>
-        <h1 style={styles.title}>Competitor Intelligence</h1>
+      <div className="max-w-[1100px] mx-auto px-6 py-8">
+        <h1 className="text-2xl font-bold text-slate-50 mb-6">Competitor Intelligence</h1>
 
         {/* Summary cards */}
-        <div style={styles.summaryGrid} role="region" aria-label="Summary statistics">
-          <div style={styles.summaryCard}>
-            <p style={styles.summaryLabel}>Total Tracked</p>
-            <p style={styles.summaryValue}>{details.length}</p>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-6" role="region" aria-label="Summary statistics">
+          <div className="rounded-xl bg-white/5 border border-white/10 px-6 py-5">
+            <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Total Tracked</p>
+            <p className="text-3xl font-bold text-slate-50">{details.length}</p>
           </div>
-          <div style={styles.summaryCard}>
-            <p style={styles.summaryLabel}>Last Analyzed</p>
-            <p style={styles.summaryValue} aria-label={`Last analyzed: ${lastAnalyzedDate(details)}`}>
+          <div className="rounded-xl bg-white/5 border border-white/10 px-6 py-5">
+            <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Last Analyzed</p>
+            <p className="text-3xl font-bold text-slate-50" aria-label={`Last analyzed: ${lastAnalyzedDate(details)}`}>
               {lastAnalyzedDate(details)}
             </p>
           </div>
-          <div style={styles.summaryCard}>
-            <p style={styles.summaryLabel}>Avg Confidence</p>
-            <p style={styles.summaryValue}>{details.length > 0 ? `${avgConfidence(details)}%` : "—"}</p>
-            <p style={styles.summaryMeta}>based on analyzed competitors</p>
+          <div className="rounded-xl bg-white/5 border border-white/10 px-6 py-5">
+            <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Avg Confidence</p>
+            <p className="text-3xl font-bold text-slate-50">{details.length > 0 ? `${avgConfidence(details)}%` : "\u2014"}</p>
+            <p className="text-xs text-white/40 mt-1">based on analyzed competitors</p>
           </div>
         </div>
 
-        {/* Status message (aria-live region) */}
-        <div aria-live="polite" aria-atomic="true" style={{ marginBottom: statusMessage ? 16 : 0 }}>
+        {/* Status message */}
+        <div aria-live="polite" aria-atomic="true" className={statusMessage ? "mb-4" : ""}>
           {statusMessage && (
-            <p style={{ color: "#14b8a6", fontSize: "0.85rem", fontWeight: 600, margin: 0 }}>
+            <p className="text-teal-500 text-sm font-semibold m-0">
               {statusMessage}
             </p>
           )}
         </div>
 
         {/* Add competitor form */}
-        <section style={styles.formCard} aria-labelledby="add-competitor-heading">
-          <h2 id="add-competitor-heading" style={styles.cardTitle}>Add Competitor</h2>
+        <section className="rounded-xl bg-white/5 border border-white/10 p-6 mb-6" aria-labelledby="add-competitor-heading">
+          <h2 id="add-competitor-heading" className="text-sm font-bold text-slate-50 mb-4">Add Competitor</h2>
           <form onSubmit={handleAddCompetitor} noValidate>
-            <div style={styles.formRow}>
-              <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-                <div style={styles.fieldGroup}>
-                  <label htmlFor="competitor-url" style={styles.label}>
+            <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-3 items-end">
+              <fieldset className="border-none p-0 m-0">
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="competitor-url" className="text-xs font-semibold text-white/50">
                     URL
                   </label>
                   <input
@@ -549,15 +317,15 @@ export default function CompetitorsPage() {
                     onChange={(e) => setFormUrl(e.target.value)}
                     placeholder="https://competitor.com"
                     required
-                    style={styles.input}
+                    className="bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 text-slate-100 text-sm outline-none min-h-[44px] w-full box-border"
                     aria-required="true"
                     aria-describedby={formError ? "form-error" : undefined}
                   />
                 </div>
               </fieldset>
-              <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-                <div style={styles.fieldGroup}>
-                  <label htmlFor="competitor-name" style={styles.label}>
+              <fieldset className="border-none p-0 m-0">
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="competitor-name" className="text-xs font-semibold text-white/50">
                     Name
                   </label>
                   <input
@@ -567,21 +335,21 @@ export default function CompetitorsPage() {
                     onChange={(e) => setFormName(e.target.value)}
                     placeholder="Acme Corp"
                     required
-                    style={styles.input}
+                    className="bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 text-slate-100 text-sm outline-none min-h-[44px] w-full box-border"
                     aria-required="true"
                   />
                 </div>
               </fieldset>
-              <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-                <div style={styles.fieldGroup}>
-                  <label htmlFor="competitor-niche" style={styles.label}>
+              <fieldset className="border-none p-0 m-0">
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="competitor-niche" className="text-xs font-semibold text-white/50">
                     Niche (optional)
                   </label>
                   <select
                     id="competitor-niche"
                     value={formNiche}
                     onChange={(e) => setFormNiche(e.target.value)}
-                    style={styles.select}
+                    className="bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 text-slate-100 text-sm outline-none min-h-[44px] cursor-pointer"
                   >
                     {NICHE_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -591,11 +359,11 @@ export default function CompetitorsPage() {
                   </select>
                 </div>
               </fieldset>
-              <div style={{ paddingTop: 22 }}>
+              <div className="pt-[22px]">
                 <button
                   type="submit"
                   disabled={formSubmitting}
-                  style={{ ...styles.primaryButton, opacity: formSubmitting ? 0.6 : 1 }}
+                  className={`px-5 py-2.5 rounded-lg border-none bg-teal-500 text-[#0a0f1a] text-sm font-bold cursor-pointer min-h-[44px] whitespace-nowrap ${formSubmitting ? "opacity-60" : ""}`}
                   aria-busy={formSubmitting}
                 >
                   {formSubmitting ? "Adding..." : "Add Competitor"}
@@ -603,7 +371,7 @@ export default function CompetitorsPage() {
               </div>
             </div>
             {formError && (
-              <p id="form-error" role="alert" style={styles.errorText}>
+              <p id="form-error" role="alert" className="text-red-400 text-sm mt-2">
                 {formError}
               </p>
             )}
@@ -612,101 +380,111 @@ export default function CompetitorsPage() {
 
         {/* Competitor list */}
         <section aria-labelledby="competitor-list-heading">
-          <h2 id="competitor-list-heading" style={{ ...styles.cardTitle, marginBottom: 12 }}>
+          <h2 id="competitor-list-heading" className="text-sm font-bold text-slate-50 mb-3">
             Tracked Competitors
             {details.length > 0 && (
-              <span style={{ fontWeight: 400, color: "rgba(255,255,255,0.4)", marginLeft: 8, fontSize: "0.8rem" }}>
+              <span className="font-normal text-white/40 ml-2 text-xs">
                 ({details.length})
               </span>
             )}
           </h2>
 
           {details.length === 0 ? (
-            <div style={styles.formCard}>
-              <p style={styles.muted}>No competitors tracked yet. Add one above to get started.</p>
+            <div className="rounded-xl bg-white/5 border border-white/10 p-6">
+              <p className="text-white/40 text-sm">No competitors tracked yet. Add one above to get started.</p>
             </div>
           ) : (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            <ul className="list-none p-0 m-0">
               {details.map(({ competitor, latestSnapshot }) => (
-                <li key={competitor.id} style={styles.competitorCard}>
-                  <div style={styles.competitorHeader}>
+                <li key={competitor.id} className="rounded-xl bg-white/5 border border-white/10 p-5 mb-3">
+                  <div className="flex justify-between items-start mb-3">
                     <div>
-                      <h3 style={styles.competitorName}>{competitor.name}</h3>
-                      <p style={styles.competitorUrl}>
+                      <h3 className="text-base font-bold text-slate-50 mb-1">{competitor.name}</h3>
+                      <p className="text-xs text-white/40 m-0 break-all">
                         <a
                           href={competitor.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          style={{ color: "rgba(255,255,255,0.4)", textDecoration: "none" }}
+                          className="text-white/40 no-underline"
                           aria-label={`Visit ${competitor.name} website`}
                         >
                           {competitor.url}
                         </a>
                       </p>
                       {competitor.nicheSlug && (
-                        <p style={{ ...styles.competitorUrl, marginTop: 4 }}>
+                        <p className="text-xs text-white/40 mt-1">
                           Niche: {competitor.nicheSlug}
                         </p>
                       )}
                     </div>
-                    <span style={styles.statusBadge(competitor.status)} aria-label={`Status: ${competitor.status}`}>
+                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-[0.72rem] font-bold uppercase tracking-wider ${statusBadgeClass(competitor.status)}`} aria-label={`Status: ${competitor.status}`}>
                       {competitor.status}
                     </span>
                   </div>
 
                   {competitor.lastError && (
-                    <p role="alert" style={styles.errorText}>
+                    <p role="alert" className="text-red-400 text-sm mt-2">
                       Last error: {competitor.lastError}
                     </p>
                   )}
 
                   {latestSnapshot ? (
                     <>
-                      <div style={styles.snapshotRow} aria-label="Latest snapshot statistics">
-                        <div style={styles.snapshotStat}>
-                          <span style={styles.snapshotStatLabel}>Sections</span>
-                          <span style={styles.snapshotStatValue}>{latestSnapshot.sectionCount}</span>
+                      <div className="flex flex-wrap gap-4 py-3 border-t border-white/10 text-xs text-white/50" aria-label="Latest snapshot statistics">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[0.7rem] text-white/30 uppercase tracking-wider">Sections</span>
+                          <span className="text-sm font-semibold text-white/80">{latestSnapshot.sectionCount}</span>
                         </div>
-                        <div style={styles.snapshotStat}>
-                          <span style={styles.snapshotStatLabel}>Headlines</span>
-                          <span style={styles.snapshotStatValue}>{latestSnapshot.headlineCount}</span>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[0.7rem] text-white/30 uppercase tracking-wider">Headlines</span>
+                          <span className="text-sm font-semibold text-white/80">{latestSnapshot.headlineCount}</span>
                         </div>
-                        <div style={styles.snapshotStat}>
-                          <span style={styles.snapshotStatLabel}>CTAs</span>
-                          <span style={styles.snapshotStatValue}>{latestSnapshot.ctaCount}</span>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[0.7rem] text-white/30 uppercase tracking-wider">CTAs</span>
+                          <span className="text-sm font-semibold text-white/80">{latestSnapshot.ctaCount}</span>
                         </div>
-                        <div style={styles.snapshotStat}>
-                          <span style={styles.snapshotStatLabel}>Confidence</span>
-                          <span style={styles.snapshotStatValue}>{latestSnapshot.confidence}%</span>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[0.7rem] text-white/30 uppercase tracking-wider">Confidence</span>
+                          <span className="text-sm font-semibold text-white/80">{latestSnapshot.confidence}%</span>
                         </div>
-                        <div style={styles.snapshotStat}>
-                          <span style={styles.snapshotStatLabel}>Analyzed</span>
-                          <span style={styles.snapshotStatValue}>{formatDate(latestSnapshot.scrapedAt)}</span>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[0.7rem] text-white/30 uppercase tracking-wider">Analyzed</span>
+                          <span className="text-sm font-semibold text-white/80">{formatDate(latestSnapshot.scrapedAt)}</span>
                         </div>
                       </div>
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 4 }} aria-label="Detected features">
-                        <span style={styles.featurePill(latestSnapshot.hasChat)}>Chat</span>
-                        <span style={styles.featurePill(latestSnapshot.hasBooking)}>Booking</span>
-                        <span style={styles.featurePill(latestSnapshot.hasPricing)}>Pricing</span>
-                        <span style={styles.featurePill(latestSnapshot.hasTestimonials)}>Testimonials</span>
+                      <div className="flex gap-2 flex-wrap mb-1" aria-label="Detected features">
+                        {[
+                          { label: "Chat", active: latestSnapshot.hasChat },
+                          { label: "Booking", active: latestSnapshot.hasBooking },
+                          { label: "Pricing", active: latestSnapshot.hasPricing },
+                          { label: "Testimonials", active: latestSnapshot.hasTestimonials },
+                        ].map((feat) => (
+                          <span
+                            key={feat.label}
+                            className={`inline-block px-2 py-0.5 rounded-full text-[0.7rem] font-semibold border ${
+                              feat.active
+                                ? "bg-teal-500/10 text-teal-500 border-teal-500/20"
+                                : "bg-white/5 text-white/25 border-white/10"
+                            }`}
+                          >
+                            {feat.label}
+                          </span>
+                        ))}
                       </div>
-                      <p style={styles.snapshotSummary}>{latestSnapshot.summary}</p>
+                      <p className="text-xs text-white/50 mt-2 italic">{latestSnapshot.summary}</p>
                     </>
                   ) : (
-                    <p style={{ ...styles.muted, marginTop: 8 }}>
-                      Not yet analyzed. Click "Analyze" to scrape this competitor.
+                    <p className="text-white/40 text-sm mt-2">
+                      Not yet analyzed. Click &quot;Analyze&quot; to scrape this competitor.
                     </p>
                   )}
 
-                  <div style={styles.cardActions}>
+                  <div className="flex gap-2 mt-3">
                     <button
                       type="button"
                       onClick={() => handleAnalyze(competitor.id)}
                       disabled={analyzingIds.has(competitor.id)}
-                      style={{
-                        ...styles.secondaryButton,
-                        opacity: analyzingIds.has(competitor.id) ? 0.6 : 1,
-                      }}
+                      className={`px-3.5 py-2 rounded-lg border border-slate-600/50 bg-transparent text-slate-400 text-xs font-semibold cursor-pointer min-h-[44px] ${analyzingIds.has(competitor.id) ? "opacity-60" : ""}`}
                       aria-busy={analyzingIds.has(competitor.id)}
                       aria-label={`Analyze ${competitor.name}`}
                     >
@@ -716,10 +494,7 @@ export default function CompetitorsPage() {
                       type="button"
                       onClick={() => handleRemove(competitor.id)}
                       disabled={removingIds.has(competitor.id)}
-                      style={{
-                        ...styles.dangerButton,
-                        opacity: removingIds.has(competitor.id) ? 0.6 : 1,
-                      }}
+                      className={`px-3.5 py-2 rounded-lg border border-red-500/30 bg-transparent text-red-400 text-xs font-semibold cursor-pointer min-h-[44px] ${removingIds.has(competitor.id) ? "opacity-60" : ""}`}
                       aria-busy={removingIds.has(competitor.id)}
                       aria-label={`Remove ${competitor.name}`}
                     >

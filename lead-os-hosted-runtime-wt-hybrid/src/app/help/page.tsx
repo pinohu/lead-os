@@ -107,13 +107,13 @@ export default function HelpCenterPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(helpFaqJsonLd) }} />
-      <main id="main-content" style={{ maxWidth: "48rem", margin: "0 auto", padding: "3rem 1rem" }}>
-      <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.5rem" }}>Help Center</h1>
-      <p style={{ color: "#6b7280", marginBottom: "2rem" }}>
+      <main id="main-content" className="max-w-3xl mx-auto px-4 py-12">
+      <h1 className="text-2xl font-extrabold mb-2">Help Center</h1>
+      <p className="text-muted-foreground mb-8">
         Find answers to common questions about Lead OS.
       </p>
 
-      <div style={{ marginBottom: "2rem" }}>
+      <div className="mb-8">
         <label htmlFor="faq-search" className="sr-only">
           Search help articles
         </label>
@@ -124,19 +124,13 @@ export default function HelpCenterPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           aria-label="Search help articles"
-          style={{
-            width: "100%",
-            padding: "0.75rem 1rem",
-            border: "1px solid #d1d5db",
-            borderRadius: "0.5rem",
-            fontSize: "1rem",
-          }}
+          className="w-full px-4 py-3 border border-border rounded-lg text-base"
         />
       </div>
 
       {filtered.map((category) => (
-        <section key={category.title} style={{ marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.75rem" }}>
+        <section key={category.title} className="mb-8">
+          <h2 className="text-xl font-bold mb-3">
             {category.title}
           </h2>
           {category.items.map((item) => {
@@ -145,37 +139,20 @@ export default function HelpCenterPage() {
             return (
               <div
                 key={key}
-                style={{
-                  border: "1px solid #e5e7eb",
-                  borderRadius: "0.375rem",
-                  marginBottom: "0.5rem",
-                  overflow: "hidden",
-                }}
+                className="border border-border rounded-md mb-2 overflow-hidden"
               >
                 <button
                   onClick={() => toggleItem(key)}
                   aria-expanded={isOpen}
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem 1rem",
-                    background: "#fafafa",
-                    border: "none",
-                    textAlign: "left",
-                    cursor: "pointer",
-                    fontWeight: 600,
-                    fontSize: "0.875rem",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
+                  className="w-full px-4 py-3 bg-muted border-none text-left cursor-pointer font-semibold text-sm flex justify-between items-center"
                 >
                   {item.question}
-                  <span aria-hidden="true" style={{ transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
+                  <span aria-hidden="true" className={`text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}>
                     &#9660;
                   </span>
                 </button>
                 {isOpen && (
-                  <div style={{ padding: "0.75rem 1rem", fontSize: "0.875rem", color: "#4b5563", lineHeight: 1.6 }}>
+                  <div className="px-4 py-3 text-sm text-muted-foreground leading-relaxed">
                     {item.answer}
                   </div>
                 )}
@@ -185,32 +162,16 @@ export default function HelpCenterPage() {
         </section>
       ))}
 
-      <section
-        style={{
-          marginTop: "3rem",
-          padding: "2rem",
-          background: "#f9fafb",
-          borderRadius: "0.75rem",
-          textAlign: "center",
-        }}
-      >
-        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+      <section className="mt-12 p-8 bg-muted rounded-xl text-center">
+        <h2 className="text-xl font-bold mb-2">
           Still need help?
         </h2>
-        <p style={{ color: "#6b7280", marginBottom: "1rem" }}>
+        <p className="text-muted-foreground mb-4">
           Contact our support team and we will get back to you within 24 hours.
         </p>
         <Link
           href="/contact"
-          style={{
-            display: "inline-block",
-            padding: "0.5rem 1.5rem",
-            background: "#4f46e5",
-            color: "#fff",
-            borderRadius: "0.375rem",
-            textDecoration: "none",
-            fontWeight: 600,
-          }}
+          className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-md no-underline font-semibold"
         >
           Contact Support
         </Link>

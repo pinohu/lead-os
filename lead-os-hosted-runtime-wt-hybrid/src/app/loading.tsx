@@ -4,27 +4,10 @@ export default function GlobalLoading() {
       role="status"
       aria-busy="true"
       aria-label="Loading"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "60vh",
-        gap: "1rem",
-      }}
+      className="flex flex-col items-center justify-center min-h-[60vh] gap-4"
     >
-      <div
-        style={{
-          width: "2.5rem",
-          height: "2.5rem",
-          border: "3px solid #e5e7eb",
-          borderTopColor: "#4f46e5",
-          borderRadius: "50%",
-          animation: "spin 0.8s linear infinite",
-        }}
-      />
-      <p style={{ color: "#6b7280", fontSize: "0.875rem" }}>Loading&hellip;</p>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <div className="w-10 h-10 border-[3px] border-border border-t-primary rounded-full animate-spin" />
+      <p className="text-muted-foreground text-sm">Loading&hellip;</p>
     </div>
   );
 }

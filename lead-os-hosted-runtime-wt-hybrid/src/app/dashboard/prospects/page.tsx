@@ -144,137 +144,6 @@ function formatDate(iso: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Shared style tokens
-// ---------------------------------------------------------------------------
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "#0a0f1a",
-    color: "#e2e8f0",
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  } as React.CSSProperties,
-
-  container: {
-    maxWidth: 1100,
-    margin: "0 auto",
-    padding: "32px 24px",
-  } as React.CSSProperties,
-
-  card: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(255, 255, 255, 0.06)",
-    borderRadius: 12,
-    padding: "20px 24px",
-  } as React.CSSProperties,
-
-  statLabel: {
-    fontSize: "0.78rem",
-    fontWeight: 600,
-    color: "rgba(255, 255, 255, 0.5)",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-    margin: "0 0 8px",
-  } as React.CSSProperties,
-
-  statValue: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: 0,
-  } as React.CSSProperties,
-
-  sectionTitle: {
-    fontSize: "0.92rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 16px",
-  } as React.CSSProperties,
-
-  fieldGroup: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: 6,
-  } as React.CSSProperties,
-
-  fieldLabel: {
-    fontSize: "0.78rem",
-    fontWeight: 600,
-    color: "rgba(255, 255, 255, 0.5)",
-  } as React.CSSProperties,
-
-  input: {
-    background: "rgba(255, 255, 255, 0.06)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: 8,
-    padding: "10px 14px",
-    color: "#f1f5f9",
-    fontSize: "0.85rem",
-    outline: "none",
-    minHeight: 44,
-    width: "100%",
-    boxSizing: "border-box" as const,
-    fontFamily: "inherit",
-  } as React.CSSProperties,
-
-  select: {
-    background: "rgba(255, 255, 255, 0.06)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: 8,
-    padding: "10px 14px",
-    color: "#f1f5f9",
-    fontSize: "0.85rem",
-    outline: "none",
-    minHeight: 44,
-    cursor: "pointer",
-    fontFamily: "inherit",
-  } as React.CSSProperties,
-
-  primaryButton: {
-    background: "#3b82f6",
-    color: "#fff",
-    border: "none",
-    borderRadius: 8,
-    padding: "10px 20px",
-    fontWeight: 600,
-    cursor: "pointer",
-    fontSize: "0.88rem",
-    minHeight: 44,
-    fontFamily: "inherit",
-  } as React.CSSProperties,
-
-  secondaryButton: {
-    background: "transparent",
-    color: "#94a3b8",
-    border: "1px solid rgba(148, 163, 184, 0.3)",
-    borderRadius: 8,
-    padding: "8px 14px",
-    fontWeight: 600,
-    cursor: "pointer",
-    fontSize: "0.8rem",
-    minHeight: 44,
-    fontFamily: "inherit",
-  } as React.CSSProperties,
-
-  muted: {
-    color: "rgba(255, 255, 255, 0.4)",
-    fontSize: "0.85rem",
-  } as React.CSSProperties,
-
-  errorText: {
-    color: "#f87171",
-    fontSize: "0.82rem",
-    margin: "8px 0 0",
-  } as React.CSSProperties,
-
-  successText: {
-    color: "#34d399",
-    fontSize: "0.82rem",
-    margin: "8px 0 0",
-  } as React.CSSProperties,
-};
-
-// ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
 
@@ -282,18 +151,8 @@ function PriorityBadge({ priority }: { priority: Priority }) {
   const cfg = PRIORITY_CONFIG[priority];
   return (
     <span
-      style={{
-        display: "inline-block",
-        padding: "3px 10px",
-        borderRadius: 999,
-        fontSize: "0.72rem",
-        fontWeight: 700,
-        textTransform: "uppercase",
-        letterSpacing: "0.05em",
-        background: cfg.bg,
-        color: cfg.color,
-        whiteSpace: "nowrap",
-      }}
+      className="inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.72rem] font-bold uppercase tracking-wider"
+      style={{ background: cfg.bg, color: cfg.color }}
     >
       {cfg.label}
     </span>
@@ -302,18 +161,7 @@ function PriorityBadge({ priority }: { priority: Priority }) {
 
 function OpportunityBadge({ type }: { type: OpportunityType }) {
   return (
-    <span
-      style={{
-        display: "inline-block",
-        padding: "3px 10px",
-        borderRadius: 999,
-        fontSize: "0.72rem",
-        fontWeight: 700,
-        background: "rgba(99, 102, 241, 0.15)",
-        color: "#a5b4fc",
-        whiteSpace: "nowrap",
-      }}
-    >
+    <span className="inline-block whitespace-nowrap rounded-full bg-indigo-500/15 px-2.5 py-0.5 text-[0.72rem] font-bold text-indigo-300">
       {OPPORTUNITY_LABELS[type]}
     </span>
   );
@@ -329,29 +177,17 @@ function ConfidenceBar({ value }: { value: number }) {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label={`Confidence ${value}%`}
-      style={{ display: "flex", alignItems: "center", gap: 8 }}
+      className="flex items-center gap-2"
     >
-      <div
-        style={{
-          flex: 1,
-          height: 6,
-          borderRadius: 999,
-          background: "rgba(255, 255, 255, 0.08)",
-          overflow: "hidden",
-        }}
-      >
+      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.08]">
         <div
-          style={{
-            width: `${value}%`,
-            height: "100%",
-            background: color,
-            borderRadius: 999,
-            transition: "width 400ms ease",
-          }}
+          className="h-full rounded-full transition-[width] duration-500 ease-out"
+          style={{ width: `${value}%`, background: color }}
         />
       </div>
       <span
-        style={{ fontSize: "0.76rem", fontWeight: 700, color, minWidth: 32, textAlign: "right" }}
+        className="min-w-8 text-right text-xs font-bold"
+        style={{ color }}
       >
         {value}%
       </span>
@@ -380,106 +216,64 @@ function ProspectCard({
 
   return (
     <article
-      style={{
-        background: "rgba(255, 255, 255, 0.04)",
-        border: "1px solid rgba(255, 255, 255, 0.06)",
-        borderRadius: 12,
-        padding: "20px 24px",
-        marginBottom: 12,
-      }}
+      className="mb-3 rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5"
       aria-label={`Prospect: ${prospect.businessName}`}
     >
       {/* Card header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          gap: 16,
-          marginBottom: 12,
-          flexWrap: "wrap",
-        }}
-      >
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <h3
-            style={{
-              fontSize: "1rem",
-              fontWeight: 700,
-              color: "#f8fafc",
-              margin: "0 0 4px",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <h3 className="mb-1 truncate text-base font-bold text-slate-50">
             {prospect.businessName}
           </h3>
-          <p
-            style={{
-              fontSize: "0.78rem",
-              color: "rgba(255, 255, 255, 0.4)",
-              margin: 0,
-            }}
-          >
+          <p className="m-0 text-xs text-white/40">
             {prospect.niche}
-            {prospect.geo ? ` · ${prospect.geo}` : ""}
+            {prospect.geo ? ` \u00b7 ${prospect.geo}` : ""}
             {prospect.website ? (
               <>
-                {" · "}
+                {" \u00b7 "}
                 <a
                   href={prospect.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: "#60a5fa", textDecoration: "none" }}
+                  className="text-blue-400 no-underline"
                   aria-label={`Visit ${prospect.businessName} website`}
                 >
                   {prospect.website.replace(/^https?:\/\//, "")}
                 </a>
               </>
             ) : null}
-            {prospect.phone ? ` · ${prospect.phone}` : ""}
+            {prospect.phone ? ` \u00b7 ${prospect.phone}` : ""}
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", flexShrink: 0 }}>
+        <div className="flex shrink-0 flex-wrap gap-1.5">
           <PriorityBadge priority={prospect.priority} />
           <OpportunityBadge type={prospect.opportunityType} />
         </div>
       </div>
 
       {/* Metrics row */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-          gap: 12,
-          marginBottom: 14,
-        }}
-      >
+      <div className="mb-3.5 grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3">
         <div>
-          <p style={styles.statLabel}>Confidence</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Confidence</p>
           <ConfidenceBar value={prospect.confidence} />
         </div>
         <div>
-          <p style={styles.statLabel}>Est. Monthly Value</p>
-          <p style={{ ...styles.statValue, fontSize: "1.1rem" }}>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Est. Monthly Value</p>
+          <p className="m-0 text-lg font-bold text-slate-50">
             {formatCurrency(prospect.estimatedMonthlyValue)}
           </p>
         </div>
         <div>
-          <p style={styles.statLabel}>Opportunity Score</p>
-          <p style={{ ...styles.statValue, fontSize: "1.1rem" }}>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Opportunity Score</p>
+          <p className="m-0 text-lg font-bold text-slate-50">
             {prospect.opportunityScore}
-            <span
-              style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.35)", marginLeft: 2 }}
-            >
-              /100
-            </span>
+            <span className="ml-0.5 text-[0.72rem] text-white/35">/100</span>
           </p>
         </div>
         <div>
-          <p style={styles.statLabel}>Contact Attempts</p>
-          <p style={{ ...styles.statValue, fontSize: "1.1rem" }}>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Contact Attempts</p>
+          <p className="m-0 text-lg font-bold text-slate-50">
             {prospect.contactAttempts}
           </p>
         </div>
@@ -487,37 +281,18 @@ function ProspectCard({
 
       {/* Suggested action */}
       {prospect.suggestedAction && (
-        <p
-          style={{
-            fontSize: "0.82rem",
-            color: "rgba(255, 255, 255, 0.6)",
-            margin: "0 0 14px",
-            fontStyle: "italic",
-          }}
-        >
+        <p className="mb-3.5 m-0 text-xs italic text-white/60">
           {prospect.suggestedAction}
         </p>
       )}
 
       {/* Reasoning chips */}
       {prospect.reasoning.length > 0 && (
-        <div
-          style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}
-          aria-label="Discovery reasoning"
-        >
+        <div className="mb-3.5 flex flex-wrap gap-1.5" aria-label="Discovery reasoning">
           {prospect.reasoning.map((reason, i) => (
             <span
               key={i}
-              style={{
-                display: "inline-block",
-                padding: "2px 8px",
-                borderRadius: 999,
-                fontSize: "0.7rem",
-                fontWeight: 600,
-                background: "rgba(99, 102, 241, 0.1)",
-                color: "#c4b5fd",
-                border: "1px solid rgba(99, 102, 241, 0.2)",
-              }}
+              className="inline-block rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2 py-0.5 text-[0.7rem] font-semibold text-purple-300"
             >
               {reason}
             </span>
@@ -526,24 +301,10 @@ function ProspectCard({
       )}
 
       {/* Action row */}
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          alignItems: "center",
-          flexWrap: "wrap",
-          borderTop: "1px solid rgba(255, 255, 255, 0.06)",
-          paddingTop: 14,
-        }}
-      >
+      <div className="flex flex-wrap items-center gap-2.5 border-t border-white/[0.06] pt-3.5">
         <label
           htmlFor={`status-${prospect.id}`}
-          style={{
-            fontSize: "0.76rem",
-            fontWeight: 600,
-            color: "rgba(255, 255, 255, 0.4)",
-            whiteSpace: "nowrap",
-          }}
+          className="whitespace-nowrap text-xs font-semibold text-white/40"
         >
           Status
         </label>
@@ -553,13 +314,8 @@ function ProspectCard({
           onChange={(e) => onStatusChange(prospect.id, e.target.value as ProspectStatus)}
           disabled={isUpdating}
           aria-busy={isUpdating}
-          style={{
-            ...styles.select,
-            minHeight: 36,
-            padding: "6px 10px",
-            fontSize: "0.8rem",
-            opacity: isUpdating ? 0.6 : 1,
-          }}
+          className="min-h-9 cursor-pointer rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1.5 font-[inherit] text-xs text-slate-100 outline-none"
+          style={{ opacity: isUpdating ? 0.6 : 1 }}
           aria-label={`Update status for ${prospect.businessName}`}
         >
           {STATUS_OPTIONS.map((opt) => (
@@ -575,13 +331,8 @@ function ProspectCard({
           disabled={isContacting}
           aria-busy={isContacting}
           aria-label={`Mark ${prospect.businessName} as contacted`}
-          style={{
-            ...styles.primaryButton,
-            minHeight: 36,
-            padding: "6px 14px",
-            fontSize: "0.8rem",
-            opacity: isContacting ? 0.6 : 1,
-          }}
+          className="min-h-9 cursor-pointer rounded-lg border-none bg-blue-500 px-3.5 py-1.5 font-[inherit] text-xs font-semibold text-white"
+          style={{ opacity: isContacting ? 0.6 : 1 }}
         >
           {isContacting ? "Marking..." : "Contact"}
         </button>
@@ -591,26 +342,15 @@ function ProspectCard({
           onClick={() => setExpanded((prev) => !prev)}
           aria-expanded={expanded}
           aria-controls={`outreach-${prospect.id}`}
-          style={{
-            ...styles.secondaryButton,
-            minHeight: 36,
-            padding: "6px 14px",
-            fontSize: "0.8rem",
-          }}
+          className="min-h-9 cursor-pointer rounded-lg border border-slate-400/30 bg-transparent px-3.5 py-1.5 font-[inherit] text-xs font-semibold text-slate-400"
         >
           {expanded ? "Hide template" : "View template"}
         </button>
 
-        <span
-          style={{
-            marginLeft: "auto",
-            fontSize: "0.72rem",
-            color: "rgba(255, 255, 255, 0.25)",
-          }}
-        >
+        <span className="ml-auto text-[0.72rem] text-white/25">
           Added {formatDate(prospect.createdAt)}
           {prospect.lastContactedAt
-            ? ` · Last contacted ${formatDate(prospect.lastContactedAt)}`
+            ? ` \u00b7 Last contacted ${formatDate(prospect.lastContactedAt)}`
             : ""}
         </span>
       </div>
@@ -621,37 +361,12 @@ function ProspectCard({
           id={`outreach-${prospect.id}`}
           role="region"
           aria-label={`Outreach template for ${prospect.businessName}`}
-          style={{
-            marginTop: 14,
-            background: "rgba(0, 0, 0, 0.3)",
-            border: "1px solid rgba(255, 255, 255, 0.06)",
-            borderRadius: 8,
-            padding: "14px 16px",
-          }}
+          className="mt-3.5 rounded-lg border border-white/[0.06] bg-black/30 px-4 py-3.5"
         >
-          <p
-            style={{
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              color: "rgba(255, 255, 255, 0.35)",
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              margin: "0 0 8px",
-            }}
-          >
+          <p className="mb-2 text-[0.72rem] font-bold uppercase tracking-wider text-white/35">
             Outreach Template
           </p>
-          <pre
-            style={{
-              margin: 0,
-              fontSize: "0.82rem",
-              color: "rgba(255, 255, 255, 0.65)",
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-word",
-              fontFamily: "inherit",
-              lineHeight: 1.6,
-            }}
-          >
+          <pre className="m-0 whitespace-pre-wrap break-words font-[inherit] text-xs leading-relaxed text-white/65">
             {prospect.outreachTemplate}
           </pre>
         </div>
@@ -665,7 +380,6 @@ function ProspectCard({
 // ---------------------------------------------------------------------------
 
 export default function ProspectsPage() {
-  // Prospect list state
   const [prospects, setProspects] = useState<Prospect[]>([]);
   const [stats, setStats] = useState<ProspectStats>({
     total: 0,
@@ -676,7 +390,6 @@ export default function ProspectsPage() {
   const [listLoading, setListLoading] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
 
-  // Scout form state
   const [scoutNiche, setScoutNiche] = useState("");
   const [scoutGeo, setScoutGeo] = useState("");
   const [scoutAutoIngest, setScoutAutoIngest] = useState(false);
@@ -684,21 +397,14 @@ export default function ProspectsPage() {
   const [scoutError, setScoutError] = useState<string | null>(null);
   const [scoutResult, setScoutResult] = useState<ScoutResult | null>(null);
 
-  // Filter state
   const [filterStatus, setFilterStatus] = useState<ProspectStatus | "all">("all");
   const [filterOpportunity, setFilterOpportunity] = useState<OpportunityType | "all">("all");
   const [filterPriority, setFilterPriority] = useState<Priority | "all">("all");
 
-  // Per-card action state
   const [updatingIds, setUpdatingIds] = useState<Set<string>>(new Set());
   const [contactingIds, setContactingIds] = useState<Set<string>>(new Set());
 
-  // Status message (aria-live region)
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-
-  // ---------------------------------------------------------------------------
-  // Data fetching
-  // ---------------------------------------------------------------------------
 
   const loadProspects = useCallback(async () => {
     setListLoading(true);
@@ -722,10 +428,6 @@ export default function ProspectsPage() {
   useEffect(() => {
     void loadProspects();
   }, [loadProspects]);
-
-  // ---------------------------------------------------------------------------
-  // Scout handler
-  // ---------------------------------------------------------------------------
 
   const handleScout = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -769,10 +471,6 @@ export default function ProspectsPage() {
     [scoutNiche, scoutGeo, scoutAutoIngest, loadProspects],
   );
 
-  // ---------------------------------------------------------------------------
-  // Status update handler
-  // ---------------------------------------------------------------------------
-
   const handleStatusChange = useCallback(
     async (id: string, status: ProspectStatus) => {
       setUpdatingIds((prev) => new Set(prev).add(id));
@@ -807,10 +505,6 @@ export default function ProspectsPage() {
     [],
   );
 
-  // ---------------------------------------------------------------------------
-  // Contact handler
-  // ---------------------------------------------------------------------------
-
   const handleContact = useCallback(async (id: string) => {
     setContactingIds((prev) => new Set(prev).add(id));
     setStatusMessage(null);
@@ -842,10 +536,6 @@ export default function ProspectsPage() {
     }
   }, []);
 
-  // ---------------------------------------------------------------------------
-  // Derived filtered list
-  // ---------------------------------------------------------------------------
-
   const filteredProspects = prospects.filter((p) => {
     if (filterStatus !== "all" && p.status !== filterStatus) return false;
     if (filterOpportunity !== "all" && p.opportunityType !== filterOpportunity) return false;
@@ -853,33 +543,19 @@ export default function ProspectsPage() {
     return true;
   });
 
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
-
   return (
-    <main style={styles.page}>
-      <div style={styles.container}>
+    <main className="min-h-screen bg-[#0a0f1a] font-sans text-slate-200">
+      <div className="mx-auto max-w-[1100px] px-6 py-8">
 
         {/* Page header */}
-        <div style={{ marginBottom: 28 }}>
-          <Link
-            href="/dashboard"
-            style={{ fontSize: "0.82rem", color: "#60a5fa", textDecoration: "none" }}
-          >
+        <div className="mb-7">
+          <Link href="/dashboard" className="text-xs text-blue-400 no-underline">
             &larr; Dashboard
           </Link>
-          <h1
-            style={{
-              fontSize: "1.5rem",
-              fontWeight: 700,
-              color: "#f8fafc",
-              margin: "12px 0 6px",
-            }}
-          >
+          <h1 className="mb-1.5 mt-3 text-2xl font-bold text-slate-50">
             Prospect Discovery
           </h1>
-          <p style={styles.muted}>
+          <p className="text-sm text-white/40">
             Automatically discover high-value businesses, classify opportunities, and feed them
             into your lead pipeline.
           </p>
@@ -887,69 +563,51 @@ export default function ProspectsPage() {
 
         {/* Summary stats */}
         <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: 16,
-            marginBottom: 24,
-          }}
+          className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4"
           role="region"
           aria-label="Prospect summary statistics"
         >
-          <div style={styles.card}>
-            <p style={styles.statLabel}>Total Prospects</p>
-            <p style={styles.statValue}>{stats.total}</p>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Total Prospects</p>
+            <p className="m-0 text-2xl font-bold text-slate-50">{stats.total}</p>
           </div>
-          <div style={styles.card}>
-            <p style={styles.statLabel}>Hot Prospects</p>
-            <p style={{ ...styles.statValue, color: "#ef4444" }}>{stats.hot}</p>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Hot Prospects</p>
+            <p className="m-0 text-2xl font-bold text-red-400">{stats.hot}</p>
           </div>
-          <div style={styles.card}>
-            <p style={styles.statLabel}>Est. Monthly Value</p>
-            <p style={{ ...styles.statValue, color: "#34d399" }}>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Est. Monthly Value</p>
+            <p className="m-0 text-2xl font-bold text-emerald-400">
               {formatCurrency(stats.estimatedMonthlyValue)}
             </p>
           </div>
-          <div style={styles.card}>
-            <p style={styles.statLabel}>Pipeline Leads</p>
-            <p style={{ ...styles.statValue, color: "#60a5fa" }}>{stats.pipelineLeads}</p>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Pipeline Leads</p>
+            <p className="m-0 text-2xl font-bold text-blue-400">{stats.pipelineLeads}</p>
           </div>
         </div>
 
         {/* Aria-live status announcer */}
-        <div
-          aria-live="polite"
-          aria-atomic="true"
-          style={{ minHeight: 24, marginBottom: statusMessage ? 12 : 0 }}
-        >
+        <div aria-live="polite" aria-atomic="true" className={statusMessage ? "mb-3 min-h-6" : "min-h-6"}>
           {statusMessage && (
-            <p style={styles.successText}>{statusMessage}</p>
+            <p className="mt-2 text-xs text-emerald-400">{statusMessage}</p>
           )}
         </div>
 
         {/* Scout form */}
         <section
-          style={{ ...styles.card, marginBottom: 24 }}
+          className="mb-6 rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5"
           aria-labelledby="scout-form-heading"
         >
-          <h2 id="scout-form-heading" style={styles.sectionTitle}>
+          <h2 id="scout-form-heading" className="mb-4 text-sm font-bold text-slate-50">
             Scout New Prospects
           </h2>
           <form onSubmit={handleScout} noValidate>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 16,
-                marginBottom: 16,
-              }}
-            >
-              <div style={styles.fieldGroup}>
-                <label htmlFor="scout-niche" style={styles.fieldLabel}>
+            <div className="mb-4 grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="scout-niche" className="text-xs font-semibold text-white/50">
                   Niche
-                  <span style={{ color: "#f87171", marginLeft: 3 }} aria-hidden="true">
-                    *
-                  </span>
+                  <span className="ml-0.5 text-red-400" aria-hidden="true">*</span>
                 </label>
                 <input
                   id="scout-niche"
@@ -960,12 +618,12 @@ export default function ProspectsPage() {
                   required
                   aria-required="true"
                   aria-describedby={scoutError ? "scout-error" : undefined}
-                  style={styles.input}
+                  className="min-h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 font-[inherit] text-sm text-slate-100 outline-none"
                   disabled={scoutLoading}
                 />
               </div>
-              <div style={styles.fieldGroup}>
-                <label htmlFor="scout-geo" style={styles.fieldLabel}>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="scout-geo" className="text-xs font-semibold text-white/50">
                   Location / Geo
                 </label>
                 <input
@@ -974,46 +632,25 @@ export default function ProspectsPage() {
                   value={scoutGeo}
                   onChange={(e) => setScoutGeo(e.target.value)}
                   placeholder="e.g. Austin TX, Chicago, New York"
-                  style={styles.input}
+                  className="min-h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 font-[inherit] text-sm text-slate-100 outline-none"
                   disabled={scoutLoading}
                 />
               </div>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-                flexWrap: "wrap",
-              }}
-            >
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  cursor: "pointer",
-                  fontSize: "0.85rem",
-                  color: "rgba(255, 255, 255, 0.65)",
-                  fontWeight: 600,
-                  userSelect: "none",
-                }}
-              >
+            <div className="flex flex-wrap items-center gap-4">
+              <label className="flex cursor-pointer select-none items-center gap-2 text-sm font-semibold text-white/65">
                 <input
                   type="checkbox"
                   checked={scoutAutoIngest}
                   onChange={(e) => setScoutAutoIngest(e.target.checked)}
                   disabled={scoutLoading}
-                  style={{ width: 16, height: 16, cursor: "pointer", accentColor: "#3b82f6" }}
+                  className="h-4 w-4 cursor-pointer accent-blue-500"
                   aria-describedby="auto-ingest-hint"
                 />
                 Auto-ingest to pipeline
               </label>
-              <span
-                id="auto-ingest-hint"
-                style={{ fontSize: "0.76rem", color: "rgba(255, 255, 255, 0.3)" }}
-              >
+              <span id="auto-ingest-hint" className="text-xs text-white/30">
                 Automatically adds discovered prospects to your lead pipeline
               </span>
 
@@ -1021,18 +658,15 @@ export default function ProspectsPage() {
                 type="submit"
                 disabled={scoutLoading}
                 aria-busy={scoutLoading}
-                style={{
-                  ...styles.primaryButton,
-                  marginLeft: "auto",
-                  opacity: scoutLoading ? 0.6 : 1,
-                }}
+                className="ml-auto min-h-11 cursor-pointer rounded-lg border-none bg-blue-500 px-5 py-2.5 font-[inherit] text-sm font-semibold text-white"
+                style={{ opacity: scoutLoading ? 0.6 : 1 }}
               >
                 {scoutLoading ? "Scouting..." : "Scout Now"}
               </button>
             </div>
 
             {scoutError && (
-              <p id="scout-error" role="alert" style={styles.errorText}>
+              <p id="scout-error" role="alert" className="mt-2 text-sm text-red-400">
                 {scoutError}
               </p>
             )}
@@ -1043,37 +677,16 @@ export default function ProspectsPage() {
             <div
               role="region"
               aria-label="Scout results"
-              style={{
-                marginTop: 20,
-                padding: "16px 20px",
-                background: "rgba(52, 211, 153, 0.06)",
-                border: "1px solid rgba(52, 211, 153, 0.15)",
-                borderRadius: 8,
-              }}
+              className="mt-5 rounded-lg border border-emerald-400/15 bg-emerald-400/[0.06] px-5 py-4"
             >
-              <p
-                style={{
-                  fontSize: "0.8rem",
-                  fontWeight: 700,
-                  color: "#34d399",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                  margin: "0 0 6px",
-                }}
-              >
+              <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
                 Scout Complete
               </p>
-              <p style={{ fontSize: "0.85rem", color: "rgba(255, 255, 255, 0.65)", margin: 0 }}>
+              <p className="m-0 text-sm text-white/65">
                 {scoutResult.summary}
               </p>
               {scoutResult.prospects.length > 0 && (
-                <p
-                  style={{
-                    fontSize: "0.78rem",
-                    color: "rgba(255, 255, 255, 0.4)",
-                    margin: "6px 0 0",
-                  }}
-                >
+                <p className="mt-1.5 text-xs text-white/40">
                   {scoutResult.prospects.length} prospect
                   {scoutResult.prospects.length !== 1 ? "s" : ""} discovered
                   {scoutAutoIngest ? " and ingested to pipeline." : "."}
@@ -1085,73 +698,62 @@ export default function ProspectsPage() {
 
         {/* Filters */}
         <section
-          style={{ ...styles.card, marginBottom: 20 }}
+          className="mb-5 rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5"
           aria-labelledby="filters-heading"
         >
-          <h2 id="filters-heading" style={styles.sectionTitle}>
+          <h2 id="filters-heading" className="mb-4 text-sm font-bold text-slate-50">
             Filter Prospects
           </h2>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, alignItems: "flex-end" }}>
-            <div style={styles.fieldGroup}>
-              <label htmlFor="filter-status" style={styles.fieldLabel}>
+          <div className="flex flex-wrap items-end gap-3.5">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="filter-status" className="text-xs font-semibold text-white/50">
                 Status
               </label>
               <select
                 id="filter-status"
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as ProspectStatus | "all")}
-                style={{ ...styles.select, minHeight: 40, padding: "8px 12px", fontSize: "0.82rem" }}
+                className="min-h-10 cursor-pointer rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 font-[inherit] text-xs text-slate-100 outline-none"
               >
                 {STATUS_FILTER_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
             </div>
 
-            <div style={styles.fieldGroup}>
-              <label htmlFor="filter-opportunity" style={styles.fieldLabel}>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="filter-opportunity" className="text-xs font-semibold text-white/50">
                 Opportunity Type
               </label>
               <select
                 id="filter-opportunity"
                 value={filterOpportunity}
-                onChange={(e) =>
-                  setFilterOpportunity(e.target.value as OpportunityType | "all")
-                }
-                style={{ ...styles.select, minHeight: 40, padding: "8px 12px", fontSize: "0.82rem" }}
+                onChange={(e) => setFilterOpportunity(e.target.value as OpportunityType | "all")}
+                className="min-h-10 cursor-pointer rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 font-[inherit] text-xs text-slate-100 outline-none"
               >
                 {OPPORTUNITY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
             </div>
 
-            <div style={styles.fieldGroup}>
-              <label htmlFor="filter-priority" style={styles.fieldLabel}>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="filter-priority" className="text-xs font-semibold text-white/50">
                 Priority
               </label>
               <select
                 id="filter-priority"
                 value={filterPriority}
                 onChange={(e) => setFilterPriority(e.target.value as Priority | "all")}
-                style={{ ...styles.select, minHeight: 40, padding: "8px 12px", fontSize: "0.82rem" }}
+                className="min-h-10 cursor-pointer rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 font-[inherit] text-xs text-slate-100 outline-none"
               >
                 {PRIORITY_FILTER_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
             </div>
 
-            <span
-              style={{ fontSize: "0.78rem", color: "rgba(255, 255, 255, 0.35)", paddingBottom: 10 }}
-              aria-live="polite"
-            >
+            <span className="pb-2.5 text-xs text-white/35" aria-live="polite">
               {filteredProspects.length} of {prospects.length} shown
             </span>
           </div>
@@ -1161,31 +763,19 @@ export default function ProspectsPage() {
         <section aria-labelledby="prospects-list-heading">
           <h2
             id="prospects-list-heading"
-            style={{
-              ...styles.sectionTitle,
-              marginBottom: 16,
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
+            className="mb-4 flex items-center gap-2.5 text-sm font-bold text-slate-50"
           >
             Discovered Prospects
             {!listLoading && (
-              <span
-                style={{
-                  fontSize: "0.78rem",
-                  fontWeight: 400,
-                  color: "rgba(255, 255, 255, 0.35)",
-                }}
-              >
+              <span className="text-xs font-normal text-white/35">
                 ({filteredProspects.length})
               </span>
             )}
           </h2>
 
           {listLoading && (
-            <div style={{ ...styles.card, textAlign: "center", padding: 40 }}>
-              <p style={styles.muted} aria-busy="true">
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-10 text-center">
+              <p className="text-sm text-white/40" aria-busy="true">
                 Loading prospects...
               </p>
             </div>
@@ -1194,17 +784,13 @@ export default function ProspectsPage() {
           {listError && !listLoading && (
             <div
               role="alert"
-              style={{
-                ...styles.card,
-                border: "1px solid rgba(239, 68, 68, 0.25)",
-                background: "rgba(239, 68, 68, 0.06)",
-              }}
+              className="rounded-xl border border-red-500/25 bg-red-500/[0.06] px-6 py-5"
             >
-              <p style={styles.errorText}>{listError}</p>
+              <p className="mt-2 text-sm text-red-400">{listError}</p>
               <button
                 type="button"
                 onClick={loadProspects}
-                style={{ ...styles.secondaryButton, marginTop: 10 }}
+                className="mt-2.5 min-h-11 cursor-pointer rounded-lg border border-slate-400/30 bg-transparent px-3.5 py-2 font-[inherit] text-xs font-semibold text-slate-400"
               >
                 Retry
               </button>
@@ -1212,18 +798,11 @@ export default function ProspectsPage() {
           )}
 
           {!listLoading && !listError && filteredProspects.length === 0 && (
-            <div style={{ ...styles.card, textAlign: "center", padding: 40 }}>
-              <p
-                style={{
-                  fontWeight: 700,
-                  color: "#f8fafc",
-                  marginBottom: 8,
-                  fontSize: "1rem",
-                }}
-              >
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-10 text-center">
+              <p className="mb-2 text-base font-bold text-slate-50">
                 No prospects found.
               </p>
-              <p style={{ ...styles.muted, marginBottom: 0 }}>
+              <p className="m-0 text-sm text-white/40">
                 {prospects.length === 0
                   ? "Use the Scout form above to discover new business opportunities."
                   : "Try adjusting your filters to see more results."}
@@ -1232,7 +811,7 @@ export default function ProspectsPage() {
           )}
 
           {!listLoading && !listError && filteredProspects.length > 0 && (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            <ul className="m-0 list-none p-0">
               {filteredProspects.map((prospect) => (
                 <li key={prospect.id}>
                   <ProspectCard

@@ -159,9 +159,9 @@ export default function LeadMagnetsPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", color: "#92400e" }}>
+        <div className="border-b border-amber-300 bg-amber-50 px-6 py-2.5 text-sm text-amber-800">
           Demo data — Sign in to manage your live lead magnets.{" "}
-          <Link href="/auth/sign-in" style={{ color: "#92400e", textDecoration: "underline" }}>Sign in</Link>
+          <Link href="/auth/sign-in" className="text-amber-800 underline">Sign in</Link>
         </div>
       )}
       <section className="experience-hero">
@@ -197,13 +197,13 @@ export default function LeadMagnetsPage() {
 
       <section className="panel">
         <p className="eyebrow">Filters</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "0.88rem" }}>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="flex items-center gap-2 text-sm font-bold">
             Category
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              style={selectStyle}
+              className="min-h-9 rounded-xl border border-border/40 bg-white/90 px-3 py-1.5 text-sm text-foreground"
             >
               <option value="all">All categories</option>
               {allCategories.map((cat) => (
@@ -211,12 +211,12 @@ export default function LeadMagnetsPage() {
               ))}
             </select>
           </label>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "0.88rem" }}>
+          <label className="flex items-center gap-2 text-sm font-bold">
             Niche
             <select
               value={nicheFilter}
               onChange={(e) => setNicheFilter(e.target.value)}
-              style={selectStyle}
+              className="min-h-9 rounded-xl border border-border/40 bg-white/90 px-3 py-1.5 text-sm text-foreground"
             >
               <option value="all">All niches</option>
               {allNiches.map((niche) => (
@@ -224,7 +224,7 @@ export default function LeadMagnetsPage() {
               ))}
             </select>
           </label>
-          <span style={{ fontSize: "0.82rem", color: "var(--text-soft)" }}>
+          <span className="text-xs text-muted-foreground">
             Showing {filteredMagnets.length} magnets
           </span>
         </div>
@@ -240,40 +240,41 @@ export default function LeadMagnetsPage() {
             <article key={`${magnet.family}::${magnet.niche}`} className="stack-card">
               <p className="eyebrow">{magnet.family}</p>
               <h3>{magnet.niche}</h3>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12, marginTop: 8 }}>
+              <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-3">
                 <div>
-                  <p style={{ fontSize: "0.76rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-soft)", marginBottom: 2 }}>
+                  <p className="mb-0.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
                     Delivered
                   </p>
-                  <p style={{ fontSize: "1.4rem", fontWeight: 800 }}>{magnet.totalDelivered}</p>
+                  <p className="text-2xl font-extrabold">{magnet.totalDelivered}</p>
                 </div>
                 <div>
-                  <p style={{ fontSize: "0.76rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-soft)", marginBottom: 2 }}>
+                  <p className="mb-0.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
                     Converted
                   </p>
-                  <p style={{ fontSize: "1.4rem", fontWeight: 800 }}>{magnet.converted}</p>
+                  <p className="text-2xl font-extrabold">{magnet.converted}</p>
                 </div>
                 <div>
-                  <p style={{ fontSize: "0.76rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-soft)", marginBottom: 2 }}>
+                  <p className="mb-0.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
                     Conv. Rate
                   </p>
-                  <p style={{ fontSize: "1.4rem", fontWeight: 800 }}>{magnet.conversionRate}%</p>
+                  <p className="text-2xl font-extrabold">{magnet.conversionRate}%</p>
                 </div>
                 <div>
-                  <p style={{ fontSize: "0.76rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-soft)", marginBottom: 2 }}>
+                  <p className="mb-0.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
                     Avg Score
                   </p>
-                  <p style={{ fontSize: "1.4rem", fontWeight: 800 }}>{magnet.avgScore}</p>
+                  <p className="text-2xl font-extrabold">{magnet.avgScore}</p>
                 </div>
               </div>
-              <div style={{ marginTop: 12, height: 8, background: "rgba(34, 95, 84, 0.08)", borderRadius: 4, overflow: "hidden" }}>
-                <div style={{
-                  height: "100%",
-                  width: `${magnet.conversionRate}%`,
-                  background: magnet.conversionRate >= 20 ? "var(--success)" : magnet.conversionRate >= 10 ? "var(--accent)" : "var(--secondary)",
-                  borderRadius: 4,
-                  minWidth: magnet.converted > 0 ? 4 : 0,
-                }} />
+              <div className="mt-3 h-2 overflow-hidden rounded bg-[rgba(34,95,84,0.08)]">
+                <div
+                  className="h-full rounded"
+                  style={{
+                    width: `${magnet.conversionRate}%`,
+                    background: magnet.conversionRate >= 20 ? "var(--success)" : magnet.conversionRate >= 10 ? "var(--accent)" : "var(--secondary)",
+                    minWidth: magnet.converted > 0 ? 4 : 0,
+                  }}
+                />
               </div>
             </article>
           ))
@@ -286,42 +287,38 @@ export default function LeadMagnetsPage() {
         {recentDeliveries.length === 0 ? (
           <p className="muted">No recent deliveries to show.</p>
         ) : (
-          <div style={{ overflowX: "auto", marginTop: 16 }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.88rem" }}>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
               <thead>
                 <tr>
-                  <th style={thStyle}>Lead</th>
-                  <th style={thStyle}>Family</th>
-                  <th style={thStyle}>Niche</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Score</th>
-                  <th style={thStyle}>Stage</th>
-                  <th style={thStyle}>Date</th>
+                  <th className="border-b-2 border-border/30 px-3 py-2.5 text-left text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Lead</th>
+                  <th className="border-b-2 border-border/30 px-3 py-2.5 text-left text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Family</th>
+                  <th className="border-b-2 border-border/30 px-3 py-2.5 text-left text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Niche</th>
+                  <th className="border-b-2 border-border/30 px-3 py-2.5 text-right text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Score</th>
+                  <th className="border-b-2 border-border/30 px-3 py-2.5 text-left text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Stage</th>
+                  <th className="border-b-2 border-border/30 px-3 py-2.5 text-left text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Date</th>
                 </tr>
               </thead>
               <tbody>
                 {recentDeliveries.map((delivery) => (
                   <tr key={delivery.leadKey}>
-                    <td style={tdStyle}>
-                      <Link href={`/dashboard/leads/${encodeURIComponent(delivery.leadKey)}`} style={{ fontWeight: 600 }}>
+                    <td className="border-b border-border/20 px-3 py-2.5">
+                      <Link href={`/dashboard/leads/${encodeURIComponent(delivery.leadKey)}`} className="font-semibold">
                         {delivery.firstName} {delivery.lastName}
                       </Link>
                     </td>
-                    <td style={tdStyle}>{delivery.family}</td>
-                    <td style={tdStyle}>{delivery.niche}</td>
-                    <td style={{ ...tdStyle, textAlign: "right" }}>{delivery.score}</td>
-                    <td style={tdStyle}>
-                      <span style={{
-                        padding: "2px 10px",
-                        borderRadius: 999,
-                        background: ["converted", "onboarding", "active"].includes(delivery.stage)
-                          ? "var(--success-soft)" : "var(--secondary-soft)",
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                      }}>
+                    <td className="border-b border-border/20 px-3 py-2.5">{delivery.family}</td>
+                    <td className="border-b border-border/20 px-3 py-2.5">{delivery.niche}</td>
+                    <td className="border-b border-border/20 px-3 py-2.5 text-right">{delivery.score}</td>
+                    <td className="border-b border-border/20 px-3 py-2.5">
+                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                        ["converted", "onboarding", "active"].includes(delivery.stage)
+                          ? "bg-[var(--success-soft)]" : "bg-[var(--secondary-soft)]"
+                      }`}>
                         {delivery.stage}
                       </span>
                     </td>
-                    <td style={tdStyle}>{new Date(delivery.createdAt).toLocaleDateString()}</td>
+                    <td className="border-b border-border/20 px-3 py-2.5">{new Date(delivery.createdAt).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -332,29 +329,3 @@ export default function LeadMagnetsPage() {
     </main>
   );
 }
-
-const selectStyle: React.CSSProperties = {
-  minHeight: 36,
-  padding: "6px 12px",
-  borderRadius: 14,
-  border: "1px solid rgba(20, 33, 29, 0.14)",
-  background: "rgba(255, 255, 255, 0.92)",
-  color: "var(--text)",
-  fontSize: "0.88rem",
-};
-
-const thStyle: React.CSSProperties = {
-  textAlign: "left",
-  padding: "10px 12px",
-  borderBottom: "2px solid rgba(20, 33, 29, 0.1)",
-  fontWeight: 800,
-  fontSize: "0.76rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.08em",
-  color: "var(--text-soft)",
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: "10px 12px",
-  borderBottom: "1px solid rgba(20, 33, 29, 0.06)",
-};

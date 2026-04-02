@@ -39,7 +39,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       {/* Brand header */}
       <section className="hero" aria-labelledby="auth-heading">
         <p className="eyebrow">Operator access</p>
-        <h1 id="auth-heading" style={{ fontSize: "clamp(2rem, 4vw, 3.6rem)" }}>
+        <h1 id="auth-heading" className="text-[clamp(2rem,4vw,3.6rem)]">
           {brandName}
         </h1>
         <p className="lede hero-support">
@@ -49,20 +49,11 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       </section>
 
       {/* Two-column layout on wide screens: form left, feature panel right */}
-      <div
-        className="auth-sign-in-layout"
-        style={{
-          display: "grid",
-          gap: "18px",
-          alignItems: "start",
-          gridTemplateColumns: "1fr",
-        }}
-      >
+      <div className="auth-sign-in-layout grid gap-[18px] items-start grid-cols-1">
         {/* Auth form panel */}
         <section
-          className="panel auth-panel"
+          className="panel auth-panel w-full"
           aria-label="Sign-in form"
-          style={{ width: "100%" }}
         >
           {error ? (
             <div className="status-banner error" role="alert" aria-live="assertive">
@@ -99,7 +90,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
               password needed.
             </p>
 
-            <button type="submit" className="primary" style={{ width: "100%" }}>
+            <button type="submit" className="primary w-full">
               Send magic link
             </button>
           </form>
@@ -107,35 +98,16 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           {/* Trust indicators */}
           <ul
             aria-label="Security guarantees"
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: "1.75rem 0 0",
-              display: "grid",
-              gap: "10px",
-              paddingTop: "1.5rem",
-              borderTop: "1px solid var(--surface-border)",
-            }}
+            className="list-none p-0 mt-7 grid gap-2.5 pt-6 border-t border-border"
           >
             {TRUST_ITEMS.map((item) => (
               <li
                 key={item}
-                className="muted"
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: "10px",
-                  fontSize: "0.87rem",
-                }}
+                className="muted flex items-start gap-2.5 text-sm"
               >
                 <span
                   aria-hidden="true"
-                  style={{
-                    color: "var(--success)",
-                    fontWeight: 800,
-                    flexShrink: 0,
-                    marginTop: "0.05em",
-                  }}
+                  className="text-emerald-600 font-extrabold shrink-0 mt-0.5"
                 >
                   ✓
                 </span>
@@ -145,18 +117,11 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           </ul>
 
           {/* New-account link */}
-          <div
-            style={{
-              marginTop: "1.75rem",
-              paddingTop: "1.5rem",
-              borderTop: "1px solid var(--surface-border)",
-              textAlign: "center",
-            }}
-          >
-            <p className="muted" style={{ marginBottom: "0.75rem", fontSize: "0.95rem" }}>
+          <div className="mt-7 pt-6 border-t border-border text-center">
+            <p className="muted mb-3 text-[0.95rem]">
               New to {brandName}?
             </p>
-            <a href="/onboard" className="secondary" style={{ display: "inline-block" }}>
+            <a href="/onboard" className="secondary inline-block">
               Create your account
             </a>
           </div>
@@ -173,55 +138,18 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             borderColor: "rgba(200, 220, 210, 0.1)",
           }}
         >
-          <p
-            style={{
-              fontSize: "0.76rem",
-              fontWeight: 800,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-              color: "var(--accent)",
-              marginBottom: "1rem",
-            }}
-          >
+          <p className="text-xs font-extrabold tracking-[0.16em] uppercase text-accent mb-4">
             What you get access to
           </p>
-          <ul
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: 0,
-              display: "grid",
-              gap: "10px",
-            }}
-          >
+          <ul className="list-none p-0 m-0 grid gap-2.5">
             {FEATURE_LIST.map((feature) => (
               <li
                 key={feature}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  padding: "12px 14px",
-                  borderRadius: "var(--radius-sm)",
-                  background: "rgba(255, 255, 255, 0.06)",
-                  fontSize: "0.95rem",
-                }}
+                className="flex items-center gap-3 px-3.5 py-3 rounded-md bg-white/[0.06] text-[0.95rem]"
               >
                 <span
                   aria-hidden="true"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "28px",
-                    height: "28px",
-                    borderRadius: "999px",
-                    background: "var(--accent-soft)",
-                    color: "var(--accent)",
-                    fontSize: "0.82rem",
-                    fontWeight: 800,
-                    flexShrink: 0,
-                  }}
+                  className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-accent/10 text-accent text-xs font-extrabold shrink-0"
                 >
                   ✓
                 </span>

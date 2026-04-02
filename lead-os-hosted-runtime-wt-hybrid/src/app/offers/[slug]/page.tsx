@@ -63,7 +63,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
   });
 
   return (
-    <div data-theme="light" style={{ colorScheme: "light" }}>
+    <div data-theme="light" className="[color-scheme:light]">
     <ExperienceScaffold
       eyebrow="Offer path"
       title={`${niche.label} offer path built for high-intent visitors`}
@@ -132,11 +132,11 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
               </article>
               <article className="panel">
                 <p className="eyebrow">Guarantee &amp; social proof</p>
-                <p style={{ fontSize: "0.92rem", lineHeight: 1.6 }}>
+                <p className="text-sm leading-relaxed">
                   <strong>{offerTemplate.guaranteeType.replace(/-/g, " ")} guarantee</strong>{" "}
                   &mdash; {offerTemplate.guaranteeDays} days
                 </p>
-                <p className="muted" style={{ fontSize: "0.84rem", marginTop: 8 }}>
+                <p className="muted text-sm mt-2">
                   {offerTemplate.language.socialProofTemplate
                     .replace("{{count}}", "100+")
                     .replace("{{rating}}", "4.8")}
@@ -156,24 +156,15 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
             <p className="eyebrow">What {niche.label.toLowerCase()} leaders are saying</p>
             <div className="grid three">
               {testimonials.map((t) => (
-                <article key={t.author} className="panel" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <p style={{ fontStyle: "italic", fontSize: "0.92rem", lineHeight: 1.6, flex: 1 }}>
+                <article key={t.author} className="panel flex flex-col gap-3">
+                  <p className="italic text-sm leading-relaxed flex-1">
                     &ldquo;{t.quote}&rdquo;
                   </p>
                   <div>
-                    <strong style={{ display: "block", fontSize: "0.88rem" }}>{t.author}</strong>
-                    <span className="muted" style={{ fontSize: "0.78rem" }}>{t.role}, {t.company}</span>
+                    <strong className="block text-sm">{t.author}</strong>
+                    <span className="muted text-xs">{t.role}, {t.company}</span>
                   </div>
-                  <span style={{
-                    display: "inline-block",
-                    padding: "4px 10px",
-                    borderRadius: 999,
-                    background: "var(--accent-soft)",
-                    color: "var(--accent-strong)",
-                    fontSize: "0.76rem",
-                    fontWeight: 700,
-                    width: "fit-content",
-                  }}>
+                  <span className="inline-block px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-bold w-fit">
                     {t.metric}
                   </span>
                 </article>
@@ -188,17 +179,17 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
         return (
           <section>
             <p className="eyebrow">Addressing your concerns</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div className="flex flex-col gap-3">
               {intel.objections.map((obj) => (
-                <article key={obj.objection} className="panel" style={{ borderLeft: "4px solid var(--success)" }}>
-                  <p style={{ margin: "0 0 6px", fontWeight: 700, fontSize: "0.94rem" }}>&ldquo;{obj.objection}&rdquo;</p>
-                  <p style={{ margin: 0, fontSize: "0.88rem" }}>{obj.evidenceBasedResponse}</p>
+                <article key={obj.objection} className="panel border-l-4 border-l-emerald-500">
+                  <p className="m-0 mb-1.5 font-bold text-sm">&ldquo;{obj.objection}&rdquo;</p>
+                  <p className="m-0 text-sm">{obj.evidenceBasedResponse}</p>
                 </article>
               ))}
             </div>
-            <div className="panel" style={{ marginTop: 16, background: "var(--accent-soft)" }}>
+            <div className="panel mt-4 bg-accent/10">
               <p className="eyebrow">Our guarantee</p>
-              <p style={{ margin: 0, fontSize: "0.94rem", fontWeight: 600 }}>
+              <p className="m-0 text-sm font-semibold">
                 {intel.conversionPsychology.guaranteePreference === "money-back" ? "Full money-back guarantee if you don't see results." :
                  intel.conversionPsychology.guaranteePreference === "results-based" ? "Results guaranteed — or you don't pay." :
                  intel.conversionPsychology.guaranteePreference === "trial-period" ? "Free trial period — no commitment, cancel anytime." :

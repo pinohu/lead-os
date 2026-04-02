@@ -41,13 +41,13 @@ const AGENT_TYPES: AgentTypeOption[] = [
   { value: "onboarding-agent", label: "Onboarding Agent", description: "Fully provisions a new tenant" },
 ];
 
-const STATUS_STYLES: Record<string, { background: string; color: string }> = {
-  pending: { background: "rgba(234, 179, 8, 0.15)", color: "#ca8a04" },
-  running: { background: "rgba(59, 130, 246, 0.15)", color: "#2563eb" },
-  completed: { background: "rgba(20, 184, 166, 0.15)", color: "#14b8a6" },
-  failed: { background: "rgba(239, 68, 68, 0.15)", color: "#ef4444" },
-  cancelled: { background: "rgba(20, 33, 29, 0.08)", color: "#9ca3af" },
-  skipped: { background: "rgba(20, 33, 29, 0.08)", color: "#9ca3af" },
+const STATUS_CLASSES: Record<string, string> = {
+  pending: "bg-yellow-500/15 text-yellow-600",
+  running: "bg-blue-500/15 text-blue-600",
+  completed: "bg-teal-500/15 text-teal-500",
+  failed: "bg-red-500/15 text-red-500",
+  cancelled: "bg-muted text-muted-foreground",
+  skipped: "bg-muted text-muted-foreground",
 };
 
 const AUTO_REFRESH_MS = 10_000;
@@ -70,20 +70,10 @@ function formatDuration(ms?: number): string {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const style = STATUS_STYLES[status] ?? STATUS_STYLES.pending;
+  const cls = STATUS_CLASSES[status] ?? STATUS_CLASSES.pending;
   return (
     <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        padding: "2px 10px",
-        borderRadius: 999,
-        fontSize: "0.75rem",
-        fontWeight: 700,
-        background: style.background,
-        color: style.color,
-        minHeight: 24,
-      }}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold min-h-[24px] ${cls}`}
       role="status"
       aria-label={`Status: ${status}`}
     >
@@ -96,64 +86,36 @@ function StepRow({ step }: { step: AgentStep }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <li
-      style={{
-        padding: "8px 12px",
-        borderBottom: "1px solid rgba(20, 33, 29, 0.06)",
-      }}
-    >
+    <li className="px-3 py-2 border-b border-border/30">
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          padding: 0,
-          fontSize: "0.82rem",
-          color: "var(--text, #14211d)",
-          textAlign: "left",
-        }}
+        className="flex items-center justify-between w-full bg-transparent border-none cursor-pointer p-0 text-sm text-foreground text-left"
       >
-        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span className="flex items-center gap-2">
           <StatusBadge status={step.status} />
-          <span style={{ fontWeight: 600 }}>{step.name}</span>
-          <span style={{ color: "var(--text-soft, #9ca3af)", fontSize: "0.75rem" }}>
+          <span className="font-semibold">{step.name}</span>
+          <span className="text-muted-foreground text-xs">
             ({step.engine})
           </span>
         </span>
-        <span style={{ color: "var(--text-soft, #9ca3af)", fontSize: "0.75rem" }}>
+        <span className="text-muted-foreground text-xs">
           {formatDuration(step.durationMs)}
         </span>
       </button>
       {expanded && (
-        <div
-          style={{
-            marginTop: 8,
-            padding: "8px 12px",
-            background: "rgba(20, 33, 29, 0.03)",
-            borderRadius: 6,
-            fontSize: "0.75rem",
-            fontFamily: "monospace",
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
-          }}
-        >
+        <div className="mt-2 px-3 py-2 bg-muted/30 rounded-md text-xs font-mono whitespace-pre-wrap break-words">
           {step.error && (
-            <p style={{ color: "#ef4444", margin: "0 0 4px" }}>Error: {step.error}</p>
+            <p className="text-red-500 mb-1">Error: {step.error}</p>
           )}
           {step.output && (
-            <p style={{ margin: 0, color: "var(--text, #14211d)" }}>
+            <p className="text-foreground">
               {JSON.stringify(step.output, null, 2)}
             </p>
           )}
           {!step.error && !step.output && (
-            <p style={{ margin: 0, color: "var(--text-soft, #9ca3af)" }}>No output yet</p>
+            <p className="text-muted-foreground">No output yet</p>
           )}
         </div>
       )}
@@ -166,41 +128,22 @@ function TaskCard({ task, onCancel }: { task: AgentTask; onCancel: (id: string) 
   const agentLabel = AGENT_TYPES.find((a) => a.value === task.agentType)?.label ?? task.agentType;
 
   return (
-    <article
-      style={{
-        border: "1px solid rgba(20, 33, 29, 0.1)",
-        borderRadius: 10,
-        background: "rgba(255, 255, 255, 0.7)",
-        overflow: "hidden",
-      }}
-    >
+    <article className="border border-border/50 rounded-[10px] bg-white/70 overflow-hidden">
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
         aria-controls={`task-detail-${task.id}`}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-          padding: "12px 16px",
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          textAlign: "left",
-          fontSize: "0.85rem",
-          color: "var(--text, #14211d)",
-        }}
+        className="flex items-center justify-between w-full px-4 py-3 bg-transparent border-none cursor-pointer text-left text-sm text-foreground"
       >
-        <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <span className="flex items-center gap-2.5">
           <StatusBadge status={task.status} />
-          <span style={{ fontWeight: 700 }}>{agentLabel}</span>
-          <span style={{ color: "var(--text-soft, #9ca3af)", fontSize: "0.75rem" }}>
+          <span className="font-bold">{agentLabel}</span>
+          <span className="text-muted-foreground text-xs">
             {task.nicheSlug} / {task.tenantId.slice(0, 8)}
           </span>
         </span>
-        <span style={{ display: "flex", alignItems: "center", gap: 10, fontSize: "0.75rem", color: "var(--text-soft, #9ca3af)" }}>
+        <span className="flex items-center gap-2.5 text-xs text-muted-foreground">
           <span>{formatDate(task.createdAt)}</span>
           <span>
             {task.steps.filter((s) => s.status === "completed").length}/{task.steps.length} steps
@@ -211,18 +154,9 @@ function TaskCard({ task, onCancel }: { task: AgentTask; onCancel: (id: string) 
       {expanded && (
         <div
           id={`task-detail-${task.id}`}
-          style={{ padding: "0 16px 12px", borderTop: "1px solid rgba(20, 33, 29, 0.06)" }}
+          className="px-4 pb-3 border-t border-border/30"
         >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "8px 0",
-              fontSize: "0.78rem",
-              color: "var(--text-soft, #9ca3af)",
-            }}
-          >
+          <div className="flex justify-between items-center py-2 text-xs text-muted-foreground">
             <span>ID: {task.id}</span>
             {(task.status === "pending" || task.status === "running") && (
               <button
@@ -231,37 +165,19 @@ function TaskCard({ task, onCancel }: { task: AgentTask; onCancel: (id: string) 
                   e.stopPropagation();
                   onCancel(task.id);
                 }}
-                style={{
-                  padding: "4px 12px",
-                  borderRadius: 6,
-                  border: "1px solid rgba(239, 68, 68, 0.3)",
-                  background: "rgba(239, 68, 68, 0.08)",
-                  color: "#ef4444",
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
+                className="px-3 py-1 rounded-md border border-red-500/30 bg-red-500/10 text-red-500 text-xs font-semibold cursor-pointer"
               >
                 Cancel
               </button>
             )}
           </div>
           {task.error && (
-            <p
-              style={{
-                margin: "0 0 8px",
-                padding: "6px 10px",
-                background: "rgba(239, 68, 68, 0.08)",
-                borderRadius: 6,
-                color: "#ef4444",
-                fontSize: "0.78rem",
-              }}
-            >
+            <p className="mb-2 px-2.5 py-1.5 bg-red-500/10 rounded-md text-red-500 text-xs">
               {task.error}
             </p>
           )}
           <ul
-            style={{ listStyle: "none", padding: 0, margin: 0 }}
+            className="list-none p-0 m-0"
             aria-label="Agent steps"
           >
             {task.steps.map((step, idx) => (
@@ -344,24 +260,12 @@ export default function AgentsPage() {
   }
 
   return (
-    <main
-      style={{
-        maxWidth: 1180,
-        margin: "0 auto",
-        padding: "24px 24px 48px",
-      }}
-    >
-      <header style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: "1.5rem", fontWeight: 800, margin: 0 }}>
+    <main className="max-w-[1180px] mx-auto px-6 pt-6 pb-12">
+      <header className="mb-6">
+        <h1 className="text-2xl font-extrabold">
           Agent Orchestrator
         </h1>
-        <p
-          style={{
-            margin: "6px 0 0",
-            color: "var(--text-soft, #9ca3af)",
-            fontSize: "0.88rem",
-          }}
-        >
+        <p className="mt-1.5 text-muted-foreground text-sm">
           Autonomous agents that chain multiple engines together
         </p>
       </header>
@@ -369,22 +273,12 @@ export default function AgentsPage() {
       {/* Launch controls */}
       <section
         aria-label="Launch agent"
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 10,
-          alignItems: "flex-end",
-          marginBottom: 24,
-          padding: 16,
-          borderRadius: 10,
-          border: "1px solid rgba(20, 33, 29, 0.1)",
-          background: "rgba(255, 255, 255, 0.7)",
-        }}
+        className="flex flex-wrap gap-2.5 items-end mb-6 p-4 rounded-[10px] border border-border/50 bg-white/70"
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <div className="flex flex-col gap-1">
           <label
             htmlFor="agent-type-select"
-            style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-soft, #9ca3af)" }}
+            className="text-xs font-semibold text-muted-foreground"
           >
             Agent Type
           </label>
@@ -392,16 +286,7 @@ export default function AgentsPage() {
             id="agent-type-select"
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            style={{
-              padding: "8px 12px",
-              borderRadius: 6,
-              border: "1px solid rgba(20, 33, 29, 0.15)",
-              background: "#fff",
-              fontSize: "0.82rem",
-              fontWeight: 600,
-              minWidth: 200,
-              minHeight: 44,
-            }}
+            className="px-3 py-2 rounded-md border border-border/60 bg-white text-sm font-semibold min-w-[200px] min-h-[44px]"
           >
             {AGENT_TYPES.map((at) => (
               <option key={at.value} value={at.value}>
@@ -411,10 +296,10 @@ export default function AgentsPage() {
           </select>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <div className="flex flex-col gap-1">
           <label
             htmlFor="niche-slug-input"
-            style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-soft, #9ca3af)" }}
+            className="text-xs font-semibold text-muted-foreground"
           >
             Niche Slug
           </label>
@@ -424,14 +309,7 @@ export default function AgentsPage() {
             value={nicheSlug}
             onChange={(e) => setNicheSlug(e.target.value)}
             placeholder="e.g. construction"
-            style={{
-              padding: "8px 12px",
-              borderRadius: 6,
-              border: "1px solid rgba(20, 33, 29, 0.15)",
-              fontSize: "0.82rem",
-              minWidth: 200,
-              minHeight: 44,
-            }}
+            className="px-3 py-2 rounded-md border border-border/60 text-sm min-w-[200px] min-h-[44px]"
           />
         </div>
 
@@ -440,29 +318,16 @@ export default function AgentsPage() {
           onClick={handleRunAgent}
           disabled={submitting || !nicheSlug.trim()}
           aria-busy={submitting}
-          style={{
-            padding: "8px 20px",
-            borderRadius: 6,
-            border: "none",
-            background: submitting ? "rgba(20, 33, 29, 0.1)" : "var(--accent-strong, #14b8a6)",
-            color: submitting ? "var(--text-soft, #9ca3af)" : "#fff",
-            fontSize: "0.82rem",
-            fontWeight: 700,
-            cursor: submitting ? "not-allowed" : "pointer",
-            minHeight: 44,
-          }}
+          className={`px-5 py-2 rounded-md border-none text-sm font-bold min-h-[44px] ${
+            submitting
+              ? "bg-muted text-muted-foreground cursor-not-allowed"
+              : "bg-teal-500 text-white cursor-pointer"
+          }`}
         >
           {submitting ? "Starting..." : "Run Agent"}
         </button>
 
-        <p
-          style={{
-            margin: 0,
-            fontSize: "0.75rem",
-            color: "var(--text-soft, #9ca3af)",
-            flex: "1 0 100%",
-          }}
-        >
+        <p className="text-xs text-muted-foreground basis-full">
           {AGENT_TYPES.find((a) => a.value === selectedType)?.description}
         </p>
       </section>
@@ -471,15 +336,7 @@ export default function AgentsPage() {
       {error && (
         <div
           role="alert"
-          style={{
-            padding: "10px 16px",
-            marginBottom: 16,
-            borderRadius: 8,
-            background: "rgba(239, 68, 68, 0.08)",
-            border: "1px solid rgba(239, 68, 68, 0.2)",
-            color: "#ef4444",
-            fontSize: "0.82rem",
-          }}
+          className="px-4 py-2.5 mb-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm"
         >
           {error}
         </div>
@@ -489,7 +346,7 @@ export default function AgentsPage() {
       {loading && (
         <p
           aria-live="polite"
-          style={{ textAlign: "center", color: "var(--text-soft, #9ca3af)", fontSize: "0.88rem" }}
+          className="text-center text-muted-foreground text-sm"
         >
           Loading tasks...
         </p>
@@ -497,14 +354,7 @@ export default function AgentsPage() {
 
       {/* Empty state */}
       {!loading && tasks.length === 0 && (
-        <p
-          style={{
-            textAlign: "center",
-            color: "var(--text-soft, #9ca3af)",
-            fontSize: "0.88rem",
-            padding: "48px 0",
-          }}
-        >
+        <p className="text-center text-muted-foreground text-sm py-12">
           No agent tasks yet. Select an agent type and run one above.
         </p>
       )}
@@ -512,7 +362,7 @@ export default function AgentsPage() {
       {/* Task list */}
       {!loading && tasks.length > 0 && (
         <section aria-label="Agent tasks">
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div className="flex flex-col gap-2.5">
             {tasks.map((task) => (
               <TaskCard key={task.id} task={task} onCancel={handleCancel} />
             ))}

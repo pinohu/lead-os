@@ -93,63 +93,43 @@ export default function DemoPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(demoJsonLd) }} />
-    <main id="main-content" style={{ maxWidth: "64rem", margin: "0 auto", padding: "3rem 1rem" }}>
-      <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-        <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.75rem" }}>
+    <main id="main-content" className="max-w-5xl mx-auto px-4 py-12">
+      <div className="text-center mb-12">
+        <h1 className="text-2xl font-extrabold mb-3">
           See Lead OS in Action
         </h1>
-        <p style={{ color: "#6b7280", maxWidth: "36rem", margin: "0 auto", marginBottom: "1.5rem" }}>
+        <p className="text-muted-foreground max-w-xl mx-auto mb-6">
           Explore the capabilities of a complete lead generation platform. No signup required — the system runs entirely in dry-run mode for demos.
         </p>
-        <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+        <div className="flex gap-4 justify-center flex-wrap">
           <Link
             href="/onboard"
-            style={{
-              padding: "0.625rem 1.5rem",
-              background: "#4f46e5",
-              color: "#fff",
-              borderRadius: "0.375rem",
-              textDecoration: "none",
-              fontWeight: 600,
-            }}
+            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-md no-underline font-semibold"
           >
             Start Free Trial
           </Link>
           <Link
             href="/dashboard"
-            style={{
-              padding: "0.625rem 1.5rem",
-              background: "#f3f4f6",
-              color: "#374151",
-              borderRadius: "0.375rem",
-              textDecoration: "none",
-              fontWeight: 600,
-            }}
+            className="px-6 py-2.5 bg-muted text-foreground rounded-md no-underline font-semibold"
           >
             Explore Dashboard
           </Link>
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(18rem, 1fr))", gap: "1.5rem" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {demos.map((demo) => (
           <article
             key={demo.title}
-            style={{
-              border: "1px solid #e5e7eb",
-              borderRadius: "0.75rem",
-              padding: "1.5rem",
-              display: "flex",
-              flexDirection: "column",
-            }}
+            className="border border-border rounded-xl p-6 flex flex-col"
           >
-            <h2 style={{ fontSize: "1.125rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+            <h2 className="text-lg font-bold mb-2">
               {demo.title}
             </h2>
-            <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1rem", lineHeight: 1.5 }}>
+            <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
               {demo.description}
             </p>
-            <ul style={{ paddingLeft: "1.25rem", fontSize: "0.8rem", color: "#4b5563", lineHeight: 1.7, flex: 1 }}>
+            <ul className="pl-5 text-xs text-muted-foreground leading-7 flex-1">
               {demo.details.map((detail) => (
                 <li key={detail}>{detail}</li>
               ))}
@@ -158,37 +138,23 @@ export default function DemoPage() {
         ))}
       </div>
 
-      <section style={{ marginTop: "4rem", textAlign: "center", padding: "2rem", background: "#f9fafb", borderRadius: "0.75rem" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.75rem" }}>
+      <section className="mt-16 text-center p-8 bg-muted rounded-xl">
+        <h2 className="text-xl font-bold mb-3">
           Ready to deploy your own?
         </h2>
-        <p style={{ color: "#6b7280", marginBottom: "1.5rem", maxWidth: "32rem", margin: "0 auto 1.5rem" }}>
+        <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
           Lead OS runs entirely in-memory with dry-run mode for development. No environment variables required. Clone, install, and start in under 2 minutes.
         </p>
-        <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+        <div className="flex gap-4 justify-center flex-wrap">
           <Link
             href="/onboard"
-            style={{
-              padding: "0.625rem 1.5rem",
-              background: "#4f46e5",
-              color: "#fff",
-              borderRadius: "0.375rem",
-              textDecoration: "none",
-              fontWeight: 600,
-            }}
+            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-md no-underline font-semibold"
           >
             Start Onboarding
           </Link>
           <Link
             href="/pricing"
-            style={{
-              padding: "0.625rem 1.5rem",
-              background: "#f3f4f6",
-              color: "#374151",
-              borderRadius: "0.375rem",
-              textDecoration: "none",
-              fontWeight: 600,
-            }}
+            className="px-6 py-2.5 bg-muted text-foreground rounded-md no-underline font-semibold border border-border"
           >
             View Pricing
           </Link>

@@ -92,148 +92,11 @@ function generatePastPeriods(count: number): string[] {
   return periods;
 }
 
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "#0a0f1a",
-    color: "#e2e8f0",
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  } as React.CSSProperties,
-  container: {
-    maxWidth: 1100,
-    margin: "0 auto",
-    padding: "32px 24px",
-  } as React.CSSProperties,
-  title: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 24px",
-  } as React.CSSProperties,
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-    gap: 20,
-    marginBottom: 24,
-  } as React.CSSProperties,
-  card: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(148, 163, 184, 0.1)",
-    borderRadius: 12,
-    padding: 24,
-  } as React.CSSProperties,
-  cardTitle: {
-    fontSize: "0.85rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 16px",
-  } as React.CSSProperties,
-  meterRow: {
-    marginBottom: 16,
-  } as React.CSSProperties,
-  meterLabel: {
-    display: "flex",
-    justifyContent: "space-between",
-    fontSize: "0.82rem",
-    marginBottom: 6,
-  } as React.CSSProperties,
-  meterName: {
-    color: "#cbd5e1",
-    fontWeight: 600,
-  } as React.CSSProperties,
-  meterValue: {
-    color: "#94a3b8",
-  } as React.CSSProperties,
-  meterTrack: {
-    height: 10,
-    background: "rgba(34, 95, 84, 0.12)",
-    borderRadius: 5,
-    overflow: "hidden",
-  } as React.CSSProperties,
-  meterFill: (percent: number) => ({
-    height: "100%",
-    width: `${percent}%`,
-    background: percent >= 90 ? "#f87171" : percent >= 70 ? "#fbbf24" : "#14b8a6",
-    borderRadius: 5,
-    transition: "width 0.4s ease",
-  }) as React.CSSProperties,
-  planDetail: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "8px 0",
-    borderBottom: "1px solid rgba(148, 163, 184, 0.08)",
-    fontSize: "0.85rem",
-  } as React.CSSProperties,
-  planLabel: {
-    color: "#94a3b8",
-  } as React.CSSProperties,
-  planValue: {
-    color: "#f1f5f9",
-    fontWeight: 600,
-  } as React.CSSProperties,
-  featureList: {
-    listStyle: "none",
-    padding: 0,
-    margin: "12px 0 0",
-  } as React.CSSProperties,
-  feature: {
-    fontSize: "0.82rem",
-    color: "#cbd5e1",
-    padding: "3px 0",
-  } as React.CSSProperties,
-  table: {
-    width: "100%",
-    borderCollapse: "collapse" as const,
-    fontSize: "0.85rem",
-  } as React.CSSProperties,
-  th: {
-    textAlign: "left" as const,
-    padding: "10px 14px",
-    color: "#94a3b8",
-    fontWeight: 600,
-    fontSize: "0.78rem",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-    borderBottom: "1px solid rgba(148, 163, 184, 0.15)",
-  } as React.CSSProperties,
-  td: {
-    padding: "10px 14px",
-    borderBottom: "1px solid rgba(148, 163, 184, 0.08)",
-    color: "#e2e8f0",
-  } as React.CSSProperties,
-  buttonRow: {
-    display: "flex",
-    gap: 12,
-    marginTop: 24,
-    flexWrap: "wrap" as const,
-  } as React.CSSProperties,
-  primaryButton: {
-    padding: "10px 20px",
-    borderRadius: 8,
-    border: "none",
-    background: "#14b8a6",
-    color: "#0a0f1a",
-    fontSize: "0.85rem",
-    fontWeight: 700,
-    cursor: "pointer",
-    minHeight: 44,
-  } as React.CSSProperties,
-  secondaryButton: {
-    padding: "10px 20px",
-    borderRadius: 8,
-    border: "1px solid rgba(148, 163, 184, 0.3)",
-    background: "transparent",
-    color: "#94a3b8",
-    fontSize: "0.85rem",
-    fontWeight: 600,
-    cursor: "pointer",
-    minHeight: 44,
-  } as React.CSSProperties,
-  muted: {
-    color: "#64748b",
-    fontSize: "0.85rem",
-  } as React.CSSProperties,
-};
+function meterFillColor(percent: number): string {
+  if (percent >= 90) return "bg-red-400";
+  if (percent >= 70) return "bg-yellow-400";
+  return "bg-teal-500";
+}
 
 export default function BillingPage() {
   const [usage, setUsage] = useState<UsageRecord | null>(null);
@@ -303,10 +166,10 @@ export default function BillingPage() {
 
   if (loading) {
     return (
-      <main className="experience-page" style={styles.page}>
-        <div style={styles.container}>
-          <section className="panel" style={styles.card}>
-            <p style={styles.muted}>Loading billing data...</p>
+      <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
+        <div className="max-w-[1100px] mx-auto px-6 py-8">
+          <section className="rounded-xl bg-white/5 border border-slate-700/40 p-6">
+            <p className="text-slate-500 text-sm">Loading billing data...</p>
           </section>
         </div>
       </main>
@@ -323,94 +186,94 @@ export default function BillingPage() {
   ];
 
   return (
-    <main className="experience-page" style={styles.page}>
+    <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
       {isDemo && (
-        <div style={{ background: "#1e3a5f", borderBottom: "1px solid #2d5a8e", padding: "10px 24px", fontSize: "0.875rem", color: "#93c5fd" }}>
+        <div className="bg-[#1e3a5f] border-b border-[#2d5a8e] px-6 py-2.5 text-sm text-blue-300">
           Demo data — Sign in to view your live usage and billing details.{" "}
-          <Link href="/auth/sign-in" style={{ color: "#60a5fa", textDecoration: "underline" }}>Sign in</Link>
+          <Link href="/auth/sign-in" className="text-blue-400 underline">Sign in</Link>
         </div>
       )}
       {error && (
-        <div style={{ background: "#3b1a1a", borderBottom: "1px solid #7f1d1d", padding: "10px 24px", fontSize: "0.875rem", color: "#fca5a5" }}>
+        <div className="bg-[#3b1a1a] border-b border-red-900 px-6 py-2.5 text-sm text-red-300">
           {error}
         </div>
       )}
-      <div style={styles.container}>
-        <h1 style={styles.title}>Billing</h1>
+      <div className="max-w-[1100px] mx-auto px-6 py-8">
+        <h1 className="text-2xl font-bold text-slate-50 mb-6">Billing</h1>
 
-        <div style={styles.grid}>
-          <div style={styles.card}>
-            <h2 style={styles.cardTitle}>Current Period Usage</h2>
+        <div className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5 mb-6">
+          <div className="rounded-xl bg-white/5 border border-slate-700/40 p-6">
+            <h2 className="text-sm font-bold text-slate-50 mb-4">Current Period Usage</h2>
             {meters.map((meter) => {
               const pct = usagePercent(meter.used, meter.limit);
               const limitLabel = meter.limit < 0 ? "Unlimited" : meter.limit.toLocaleString();
               return (
-                <div key={meter.label} style={styles.meterRow}>
-                  <div style={styles.meterLabel}>
-                    <span style={styles.meterName}>{meter.label}</span>
-                    <span style={styles.meterValue}>
+                <div key={meter.label} className="mb-4">
+                  <div className="flex justify-between text-sm mb-1.5">
+                    <span className="text-slate-300 font-semibold">{meter.label}</span>
+                    <span className="text-slate-400">
                       {meter.used.toLocaleString()} / {limitLabel}
                       {meter.limit > 0 ? ` (${pct}%)` : ""}
                     </span>
                   </div>
-                  <div style={styles.meterTrack} role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={`${meter.label} usage`}>
-                    <div style={styles.meterFill(pct)} />
+                  <div className="h-2.5 bg-teal-900/20 rounded-[5px] overflow-hidden" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={`${meter.label} usage`}>
+                    <div className={`h-full rounded-[5px] transition-all duration-400 ${meterFillColor(pct)}`} style={{ width: `${pct}%` }} />
                   </div>
                 </div>
               );
             })}
           </div>
 
-          <div style={styles.card}>
-            <h2 style={styles.cardTitle}>Plan Details</h2>
-            <div style={styles.planDetail}>
-              <span style={styles.planLabel}>Plan</span>
-              <span style={styles.planValue}>{plan.name}</span>
+          <div className="rounded-xl bg-white/5 border border-slate-700/40 p-6">
+            <h2 className="text-sm font-bold text-slate-50 mb-4">Plan Details</h2>
+            <div className="flex justify-between py-2 border-b border-slate-700/30 text-sm">
+              <span className="text-slate-400">Plan</span>
+              <span className="text-slate-100 font-semibold">{plan.name}</span>
             </div>
-            <div style={styles.planDetail}>
-              <span style={styles.planLabel}>Monthly Price</span>
-              <span style={styles.planValue}>{formatCurrency(plan.monthlyPrice)}/mo</span>
+            <div className="flex justify-between py-2 border-b border-slate-700/30 text-sm">
+              <span className="text-slate-400">Monthly Price</span>
+              <span className="text-slate-100 font-semibold">{formatCurrency(plan.monthlyPrice)}/mo</span>
             </div>
-            <div style={styles.planDetail}>
-              <span style={styles.planLabel}>Lead Limit</span>
-              <span style={styles.planValue}>{plan.limits.leadsPerMonth < 0 ? "Unlimited" : plan.limits.leadsPerMonth.toLocaleString()}</span>
+            <div className="flex justify-between py-2 border-b border-slate-700/30 text-sm">
+              <span className="text-slate-400">Lead Limit</span>
+              <span className="text-slate-100 font-semibold">{plan.limits.leadsPerMonth < 0 ? "Unlimited" : plan.limits.leadsPerMonth.toLocaleString()}</span>
             </div>
-            <div style={styles.planDetail}>
-              <span style={styles.planLabel}>Email Limit</span>
-              <span style={styles.planValue}>{plan.limits.emailsPerMonth < 0 ? "Unlimited" : plan.limits.emailsPerMonth.toLocaleString()}</span>
+            <div className="flex justify-between py-2 border-b border-slate-700/30 text-sm">
+              <span className="text-slate-400">Email Limit</span>
+              <span className="text-slate-100 font-semibold">{plan.limits.emailsPerMonth < 0 ? "Unlimited" : plan.limits.emailsPerMonth.toLocaleString()}</span>
             </div>
-            <ul style={styles.featureList}>
+            <ul className="list-none p-0 mt-3">
               {plan.features.map((f) => (
-                <li key={f} style={styles.feature}>{f}</li>
+                <li key={f} className="text-sm text-slate-300 py-0.5">{f}</li>
               ))}
             </ul>
           </div>
         </div>
 
-        <div style={{ ...styles.card, marginBottom: 24 }}>
-          <h2 style={styles.cardTitle}>Usage History</h2>
+        <div className="rounded-xl bg-white/5 border border-slate-700/40 p-6 mb-6">
+          <h2 className="text-sm font-bold text-slate-50 mb-4">Usage History</h2>
           {historyRecords.length === 0 ? (
-            <p style={styles.muted}>No usage history available</p>
+            <p className="text-slate-500 text-sm">No usage history available</p>
           ) : (
-            <div style={{ overflowX: "auto" }}>
-              <table style={styles.table}>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr>
-                    <th scope="col" style={styles.th}>Period</th>
-                    <th scope="col" style={styles.th}>Leads</th>
-                    <th scope="col" style={styles.th}>Emails</th>
-                    <th scope="col" style={styles.th}>SMS</th>
-                    <th scope="col" style={styles.th}>WhatsApp</th>
+                    <th scope="col" className="text-left px-3.5 py-2.5 text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-700/50">Period</th>
+                    <th scope="col" className="text-left px-3.5 py-2.5 text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-700/50">Leads</th>
+                    <th scope="col" className="text-left px-3.5 py-2.5 text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-700/50">Emails</th>
+                    <th scope="col" className="text-left px-3.5 py-2.5 text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-700/50">SMS</th>
+                    <th scope="col" className="text-left px-3.5 py-2.5 text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-700/50">WhatsApp</th>
                   </tr>
                 </thead>
                 <tbody>
                   {historyRecords.map((record) => (
                     <tr key={record.period}>
-                      <td style={styles.td}>{record.period}</td>
-                      <td style={styles.td}>{record.leads.toLocaleString()}</td>
-                      <td style={styles.td}>{record.emails.toLocaleString()}</td>
-                      <td style={styles.td}>{record.sms.toLocaleString()}</td>
-                      <td style={styles.td}>{record.whatsapp.toLocaleString()}</td>
+                      <td className="px-3.5 py-2.5 border-b border-slate-700/30 text-slate-200">{record.period}</td>
+                      <td className="px-3.5 py-2.5 border-b border-slate-700/30 text-slate-200">{record.leads.toLocaleString()}</td>
+                      <td className="px-3.5 py-2.5 border-b border-slate-700/30 text-slate-200">{record.emails.toLocaleString()}</td>
+                      <td className="px-3.5 py-2.5 border-b border-slate-700/30 text-slate-200">{record.sms.toLocaleString()}</td>
+                      <td className="px-3.5 py-2.5 border-b border-slate-700/30 text-slate-200">{record.whatsapp.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -419,12 +282,12 @@ export default function BillingPage() {
           )}
         </div>
 
-        <div style={styles.buttonRow}>
+        <div className="flex gap-3 mt-6 flex-wrap">
           <button
             type="button"
             onClick={handleManageBilling}
             disabled={portalLoading}
-            style={{ ...styles.secondaryButton, opacity: portalLoading ? 0.6 : 1 }}
+            className={`px-5 py-2.5 rounded-lg border border-slate-600/50 bg-transparent text-slate-400 text-sm font-semibold cursor-pointer min-h-[44px] ${portalLoading ? "opacity-60" : ""}`}
             aria-busy={portalLoading}
           >
             {portalLoading ? "Opening..." : "Manage Billing"}
@@ -449,7 +312,7 @@ export default function BillingPage() {
                 setError("Failed to start checkout");
               }
             }}
-            style={styles.primaryButton}
+            className="px-5 py-2.5 rounded-lg border-none bg-teal-500 text-[#0a0f1a] text-sm font-bold cursor-pointer min-h-[44px]"
           >
             Upgrade Plan
           </button>

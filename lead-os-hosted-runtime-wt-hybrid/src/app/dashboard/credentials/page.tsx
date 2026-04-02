@@ -79,223 +79,6 @@ function findCredential(provider: string, credentials: CredentialPublic[]): Cred
   return credentials.find((c) => c.provider === provider && c.status === "active");
 }
 
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "#0a0f1a",
-    color: "#e2e8f0",
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  } as React.CSSProperties,
-  container: {
-    maxWidth: 1100,
-    margin: "0 auto",
-    padding: "32px 24px",
-  } as React.CSSProperties,
-  title: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 4px",
-  } as React.CSSProperties,
-  lede: {
-    color: "#94a3b8",
-    fontSize: "0.9rem",
-    margin: "0 0 24px",
-    maxWidth: 640,
-    lineHeight: 1.5,
-  } as React.CSSProperties,
-  summaryGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-    gap: 16,
-    marginBottom: 24,
-  } as React.CSSProperties,
-  summaryCard: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(148, 163, 184, 0.1)",
-    borderRadius: 12,
-    padding: "20px 24px",
-  } as React.CSSProperties,
-  summaryLabel: {
-    fontSize: "0.75rem",
-    fontWeight: 600,
-    color: "#94a3b8",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-    margin: "0 0 4px",
-  } as React.CSSProperties,
-  summaryValue: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: 0,
-  } as React.CSSProperties,
-  searchContainer: {
-    marginBottom: 24,
-  } as React.CSSProperties,
-  searchInput: {
-    width: "100%",
-    maxWidth: 400,
-    padding: "10px 16px",
-    borderRadius: 8,
-    border: "1px solid rgba(148, 163, 184, 0.2)",
-    background: "rgba(255, 255, 255, 0.04)",
-    color: "#e2e8f0",
-    fontSize: "0.9rem",
-    outline: "none",
-    minHeight: 44,
-  } as React.CSSProperties,
-  categorySection: {
-    marginBottom: 32,
-  } as React.CSSProperties,
-  categoryTitle: {
-    fontSize: "1.1rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 12px",
-  } as React.CSSProperties,
-  providerGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-    gap: 16,
-  } as React.CSSProperties,
-  card: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(148, 163, 184, 0.1)",
-    borderRadius: 12,
-    padding: 24,
-  } as React.CSSProperties,
-  cardHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 8,
-  } as React.CSSProperties,
-  providerName: {
-    fontSize: "0.95rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: 0,
-    textTransform: "capitalize" as const,
-  } as React.CSSProperties,
-  statusBadge: (connected: boolean) => ({
-    display: "inline-block",
-    padding: "3px 10px",
-    borderRadius: 999,
-    fontSize: "0.75rem",
-    fontWeight: 600,
-    background: connected ? "rgba(5, 150, 105, 0.15)" : "rgba(148, 163, 184, 0.1)",
-    color: connected ? "#34d399" : "#64748b",
-  }) as React.CSSProperties,
-  enablesText: {
-    color: "#94a3b8",
-    fontSize: "0.82rem",
-    margin: "4px 0 0",
-    lineHeight: 1.4,
-  } as React.CSSProperties,
-  verifiedText: {
-    color: "#64748b",
-    fontSize: "0.78rem",
-    margin: "6px 0 0",
-  } as React.CSSProperties,
-  buttonRow: {
-    display: "flex",
-    gap: 8,
-    marginTop: 12,
-    flexWrap: "wrap" as const,
-  } as React.CSSProperties,
-  primaryButton: {
-    padding: "8px 16px",
-    borderRadius: 8,
-    border: "none",
-    background: "#14b8a6",
-    color: "#0a0f1a",
-    fontSize: "0.82rem",
-    fontWeight: 700,
-    cursor: "pointer",
-    minHeight: 44,
-    minWidth: 44,
-  } as React.CSSProperties,
-  secondaryButton: {
-    padding: "8px 16px",
-    borderRadius: 8,
-    border: "1px solid rgba(148, 163, 184, 0.3)",
-    background: "transparent",
-    color: "#94a3b8",
-    fontSize: "0.82rem",
-    fontWeight: 600,
-    cursor: "pointer",
-    minHeight: 44,
-    minWidth: 44,
-  } as React.CSSProperties,
-  dangerButton: {
-    padding: "8px 16px",
-    borderRadius: 8,
-    border: "1px solid rgba(239, 68, 68, 0.3)",
-    background: "transparent",
-    color: "#f87171",
-    fontSize: "0.82rem",
-    fontWeight: 600,
-    cursor: "pointer",
-    minHeight: 44,
-    minWidth: 44,
-  } as React.CSSProperties,
-  formContainer: {
-    marginTop: 12,
-    padding: 16,
-    background: "rgba(255, 255, 255, 0.02)",
-    border: "1px solid rgba(148, 163, 184, 0.08)",
-    borderRadius: 8,
-  } as React.CSSProperties,
-  fieldGroup: {
-    marginBottom: 12,
-  } as React.CSSProperties,
-  label: {
-    display: "block",
-    fontSize: "0.78rem",
-    fontWeight: 600,
-    color: "#cbd5e1",
-    marginBottom: 4,
-  } as React.CSSProperties,
-  input: {
-    width: "100%",
-    padding: "8px 12px",
-    borderRadius: 6,
-    border: "1px solid rgba(148, 163, 184, 0.2)",
-    background: "rgba(255, 255, 255, 0.04)",
-    color: "#e2e8f0",
-    fontSize: "0.85rem",
-    outline: "none",
-    minHeight: 44,
-    boxSizing: "border-box" as const,
-  } as React.CSSProperties,
-  feedback: (type: "success" | "error") => ({
-    marginTop: 8,
-    padding: "8px 12px",
-    borderRadius: 6,
-    fontSize: "0.82rem",
-    fontWeight: 600,
-    background: type === "success" ? "rgba(5, 150, 105, 0.12)" : "rgba(239, 68, 68, 0.12)",
-    color: type === "success" ? "#34d399" : "#f87171",
-  }) as React.CSSProperties,
-  muted: {
-    color: "#64748b",
-    fontSize: "0.85rem",
-  } as React.CSSProperties,
-  navRow: {
-    display: "flex",
-    gap: 12,
-    marginBottom: 24,
-    flexWrap: "wrap" as const,
-  } as React.CSSProperties,
-  navLink: {
-    color: "#14b8a6",
-    textDecoration: "none",
-    fontWeight: 600,
-    fontSize: "0.85rem",
-  } as React.CSSProperties,
-};
-
 export default function CredentialsPage() {
   const [credentials, setCredentials] = useState<CredentialPublic[]>([]);
   const [providers, setProviders] = useState<ProviderDefinition[]>([]);
@@ -315,7 +98,6 @@ export default function CredentialsPage() {
         setCredentials(json.data.credentials ?? []);
         setProviders(json.data.providers ?? []);
       } else {
-        // Graceful empty state — show the form without blocking
         setCredentials([]);
         setProviders([]);
       }
@@ -334,22 +116,14 @@ export default function CredentialsPage() {
   const setBusy = useCallback((provider: string, busy: boolean) => {
     setBusyProviders((prev) => {
       const next = new Set(prev);
-      if (busy) {
-        next.add(provider);
-      } else {
-        next.delete(provider);
-      }
+      if (busy) { next.add(provider); } else { next.delete(provider); }
       return next;
     });
   }, []);
 
   const setProviderFeedback = useCallback((provider: string, fb: FeedbackState | null) => {
     setFeedback((prev) => {
-      if (fb === null) {
-        const next = { ...prev };
-        delete next[provider];
-        return next;
-      }
+      if (fb === null) { const next = { ...prev }; delete next[provider]; return next; }
       return { ...prev, [provider]: fb };
     });
   }, []);
@@ -358,44 +132,30 @@ export default function CredentialsPage() {
     setExpandedProvider((prev) => (prev === provider.provider ? null : provider.provider));
     setProviderFeedback(provider.provider, null);
     const initial: Record<string, string> = {};
-    for (const field of provider.fields) {
-      initial[field] = "";
-    }
+    for (const field of provider.fields) { initial[field] = ""; }
     setFormValues(initial);
   }, [setProviderFeedback]);
 
   const handleSave = useCallback(async (provider: ProviderDefinition) => {
     setBusy(provider.provider, true);
     setProviderFeedback(provider.provider, null);
-
     try {
       const res = await fetch("/api/credentials", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          provider: provider.provider,
-          credentialType: "api-key",
-          credentials: formValues,
-        }),
+        body: JSON.stringify({ provider: provider.provider, credentialType: "api-key", credentials: formValues }),
       });
-
       const json = await res.json();
-
       if (!res.ok) {
-        const msg = json.error?.message || `Failed to save (${res.status})`;
-        setProviderFeedback(provider.provider, { type: "error", message: msg });
+        setProviderFeedback(provider.provider, { type: "error", message: json.error?.message || `Failed to save (${res.status})` });
         return;
       }
-
       setProviderFeedback(provider.provider, { type: "success", message: "Credential saved successfully" });
       setExpandedProvider(null);
       await fetchData();
     } catch (err) {
-      setProviderFeedback(provider.provider, {
-        type: "error",
-        message: err instanceof Error ? err.message : "Network error",
-      });
+      setProviderFeedback(provider.provider, { type: "error", message: err instanceof Error ? err.message : "Network error" });
     } finally {
       setBusy(provider.provider, false);
     }
@@ -404,28 +164,17 @@ export default function CredentialsPage() {
   const handleDisconnect = useCallback(async (providerName: string) => {
     setBusy(providerName, true);
     setProviderFeedback(providerName, null);
-
     try {
-      const res = await fetch(`/api/credentials?provider=${encodeURIComponent(providerName)}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-
+      const res = await fetch(`/api/credentials?provider=${encodeURIComponent(providerName)}`, { method: "DELETE", credentials: "include" });
       const json = await res.json();
-
       if (!res.ok) {
-        const msg = json.error?.message || `Failed to disconnect (${res.status})`;
-        setProviderFeedback(providerName, { type: "error", message: msg });
+        setProviderFeedback(providerName, { type: "error", message: json.error?.message || `Failed to disconnect (${res.status})` });
         return;
       }
-
       setProviderFeedback(providerName, { type: "success", message: "Credential removed" });
       await fetchData();
     } catch (err) {
-      setProviderFeedback(providerName, {
-        type: "error",
-        message: err instanceof Error ? err.message : "Network error",
-      });
+      setProviderFeedback(providerName, { type: "error", message: err instanceof Error ? err.message : "Network error" });
     } finally {
       setBusy(providerName, false);
     }
@@ -434,7 +183,6 @@ export default function CredentialsPage() {
   const handleVerify = useCallback(async (providerName: string) => {
     setBusy(providerName, true);
     setProviderFeedback(providerName, null);
-
     try {
       const res = await fetch("/api/credentials/verify", {
         method: "POST",
@@ -442,26 +190,16 @@ export default function CredentialsPage() {
         credentials: "include",
         body: JSON.stringify({ provider: providerName }),
       });
-
       const json = await res.json();
-
       if (!res.ok) {
-        const msg = json.error?.message || `Verification failed (${res.status})`;
-        setProviderFeedback(providerName, { type: "error", message: msg });
+        setProviderFeedback(providerName, { type: "error", message: json.error?.message || `Verification failed (${res.status})` });
         return;
       }
-
       const result = json.data;
-      setProviderFeedback(providerName, {
-        type: result.valid ? "success" : "error",
-        message: result.message,
-      });
+      setProviderFeedback(providerName, { type: result.valid ? "success" : "error", message: result.message });
       await fetchData();
     } catch (err) {
-      setProviderFeedback(providerName, {
-        type: "error",
-        message: err instanceof Error ? err.message : "Network error",
-      });
+      setProviderFeedback(providerName, { type: "error", message: err instanceof Error ? err.message : "Network error" });
     } finally {
       setBusy(providerName, false);
     }
@@ -469,10 +207,10 @@ export default function CredentialsPage() {
 
   if (loading) {
     return (
-      <main style={styles.page}>
-        <div style={styles.container}>
-          <div style={styles.card}>
-            <p style={styles.muted}>Loading credentials...</p>
+      <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
+        <div className="max-w-[1100px] mx-auto px-6 py-8">
+          <div className="rounded-xl bg-white/5 border border-slate-700/40 p-6">
+            <p className="text-slate-500 text-sm">Loading credentials...</p>
           </div>
         </div>
       </main>
@@ -483,9 +221,7 @@ export default function CredentialsPage() {
   const allCapabilities = new Set<string>();
   for (const cred of credentials) {
     if (cred.status === "active") {
-      for (const cap of cred.capabilities) {
-        allCapabilities.add(cap);
-      }
+      for (const cap of cred.capabilities) { allCapabilities.add(cap); }
     }
   }
 
@@ -499,40 +235,40 @@ export default function CredentialsPage() {
   const grouped = groupByCategory(filteredProviders);
 
   return (
-    <main style={styles.page}>
-      <div style={styles.container}>
-        <h1 style={styles.title}>Credentials Vault</h1>
-        <p style={styles.lede}>
+    <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
+      <div className="max-w-[1100px] mx-auto px-6 py-8">
+        <h1 className="text-2xl font-bold text-slate-50 mb-1">Credentials Vault</h1>
+        <p className="text-slate-400 text-sm mb-6 max-w-[640px] leading-relaxed">
           Connect your tools to unlock capabilities. Each provider enables specific
           features across the platform. Credentials are encrypted at rest with AES-256-GCM.
         </p>
 
-        <nav style={styles.navRow} aria-label="Credentials navigation">
-          <Link href="/dashboard" style={styles.navLink}>
+        <nav className="flex gap-3 mb-6 flex-wrap" aria-label="Credentials navigation">
+          <Link href="/dashboard" className="text-teal-500 no-underline font-semibold text-sm">
             Back to dashboard
           </Link>
-          <Link href="/dashboard/providers" style={styles.navLink}>
+          <Link href="/dashboard/providers" className="text-teal-500 no-underline font-semibold text-sm">
             Provider health
           </Link>
         </nav>
 
-        <div style={styles.summaryGrid}>
-          <div style={styles.summaryCard}>
-            <p style={styles.summaryLabel}>Connected</p>
-            <p style={styles.summaryValue}>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-6">
+          <div className="rounded-xl bg-white/5 border border-slate-700/40 px-6 py-5">
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Connected</p>
+            <p className="text-2xl font-bold text-slate-50">
               {connectedCount} / {providers.length}
             </p>
           </div>
-          <div style={styles.summaryCard}>
-            <p style={styles.summaryLabel}>Capabilities</p>
-            <p style={styles.summaryValue}>
+          <div className="rounded-xl bg-white/5 border border-slate-700/40 px-6 py-5">
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Capabilities</p>
+            <p className="text-2xl font-bold text-slate-50">
               {allCapabilities.size} active
             </p>
           </div>
         </div>
 
-        <div style={styles.searchContainer}>
-          <label htmlFor="credential-search" style={styles.label}>
+        <div className="mb-6">
+          <label htmlFor="credential-search" className="block text-xs font-semibold text-slate-300 mb-1">
             Search providers
           </label>
           <input
@@ -541,25 +277,25 @@ export default function CredentialsPage() {
             placeholder="Filter by name or capability..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.searchInput}
+            className="w-full max-w-[400px] px-4 py-2.5 rounded-lg border border-slate-700/40 bg-white/5 text-slate-200 text-sm outline-none min-h-[44px]"
             aria-label="Search providers by name or capability"
           />
         </div>
 
         {Object.keys(grouped).length === 0 && (
-          <div style={styles.card}>
-            <p style={styles.muted}>No providers match your search.</p>
+          <div className="rounded-xl bg-white/5 border border-slate-700/40 p-6">
+            <p className="text-slate-500 text-sm">No providers match your search.</p>
           </div>
         )}
 
         {Object.entries(grouped)
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([category, categoryProviders]) => (
-            <section key={category} style={styles.categorySection} aria-label={`${CATEGORY_LABELS[category] || category} providers`}>
-              <h2 style={styles.categoryTitle}>
+            <section key={category} className="mb-8" aria-label={`${CATEGORY_LABELS[category] || category} providers`}>
+              <h2 className="text-lg font-bold text-slate-50 mb-3">
                 {CATEGORY_LABELS[category] || category}
               </h2>
-              <div style={styles.providerGrid}>
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-4">
                 {categoryProviders.map((provider) => {
                   const cred = findCredential(provider.provider, credentials);
                   const connected = Boolean(cred);
@@ -571,31 +307,31 @@ export default function CredentialsPage() {
                   return (
                     <article
                       key={provider.provider}
-                      style={styles.card}
+                      className="rounded-xl bg-white/5 border border-slate-700/40 p-6"
                       aria-label={`${provider.provider.replace(/_/g, " ")} provider`}
                     >
-                      <div style={styles.cardHeader}>
-                        <h3 style={styles.providerName}>
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-[0.95rem] font-bold text-slate-50 capitalize">
                           {provider.provider.replace(/_/g, " ")}
                         </h3>
-                        <span style={styles.statusBadge(connected)}>
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${connected ? "bg-emerald-600/15 text-emerald-400" : "bg-slate-700/40 text-slate-500"}`}>
                           {connected ? "Connected" : "Not connected"}
                         </span>
                       </div>
 
-                      <p style={styles.enablesText}>
+                      <p className="text-slate-400 text-sm mt-1 leading-snug">
                         Enables: {provider.enables.join(", ")}
                       </p>
 
                       {cred?.lastVerified && (
-                        <p style={styles.verifiedText}>
+                        <p className="text-slate-500 text-xs mt-1.5">
                           Last verified: {new Date(cred.lastVerified).toLocaleDateString()}
                         </p>
                       )}
 
                       {providerFeedback && (
                         <div
-                          style={styles.feedback(providerFeedback.type)}
+                          className={`mt-2 px-3 py-2 rounded-md text-sm font-semibold ${providerFeedback.type === "success" ? "bg-emerald-600/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}
                           role="status"
                           aria-live="polite"
                         >
@@ -603,15 +339,12 @@ export default function CredentialsPage() {
                         </div>
                       )}
 
-                      <div style={styles.buttonRow}>
+                      <div className="flex gap-2 mt-3 flex-wrap">
                         {connected ? (
                           <>
                             <button
                               type="button"
-                              style={{
-                                ...styles.secondaryButton,
-                                opacity: isBusy ? 0.6 : 1,
-                              }}
+                              className={`px-4 py-2 rounded-lg border border-slate-600/50 bg-transparent text-slate-400 text-sm font-semibold cursor-pointer min-h-[44px] min-w-[44px] ${isBusy ? "opacity-60" : ""}`}
                               onClick={() => handleVerify(provider.provider)}
                               disabled={isBusy}
                               aria-busy={isBusy}
@@ -621,10 +354,7 @@ export default function CredentialsPage() {
                             </button>
                             <button
                               type="button"
-                              style={{
-                                ...styles.dangerButton,
-                                opacity: isBusy ? 0.6 : 1,
-                              }}
+                              className={`px-4 py-2 rounded-lg border border-red-500/30 bg-transparent text-red-400 text-sm font-semibold cursor-pointer min-h-[44px] min-w-[44px] ${isBusy ? "opacity-60" : ""}`}
                               onClick={() => handleDisconnect(provider.provider)}
                               disabled={isBusy}
                               aria-busy={isBusy}
@@ -636,7 +366,7 @@ export default function CredentialsPage() {
                         ) : (
                           <button
                             type="button"
-                            style={styles.primaryButton}
+                            className="px-4 py-2 rounded-lg border-none bg-teal-500 text-[#0a0f1a] text-sm font-bold cursor-pointer min-h-[44px] min-w-[44px]"
                             onClick={() => handleConnect(provider)}
                             aria-expanded={isExpanded}
                             aria-controls={`form-${providerId}`}
@@ -650,15 +380,15 @@ export default function CredentialsPage() {
                       {isExpanded && !connected && (
                         <div
                           id={`form-${providerId}`}
-                          style={styles.formContainer}
+                          className="mt-3 p-4 bg-white/[0.02] border border-slate-700/30 rounded-lg"
                           role="form"
                           aria-label={`${provider.provider.replace(/_/g, " ")} credentials form`}
                         >
                           {provider.fields.map((field) => {
                             const fieldId = `${providerId}-${field}`;
                             return (
-                              <div key={field} style={styles.fieldGroup}>
-                                <label htmlFor={fieldId} style={styles.label}>
+                              <div key={field} className="mb-3">
+                                <label htmlFor={fieldId} className="block text-xs font-semibold text-slate-300 mb-1">
                                   {field.replace(/_/g, " ")}
                                 </label>
                                 <input
@@ -666,12 +396,9 @@ export default function CredentialsPage() {
                                   type={isSecretField(field) ? "password" : "text"}
                                   value={formValues[field] || ""}
                                   onChange={(e) =>
-                                    setFormValues((prev) => ({
-                                      ...prev,
-                                      [field]: e.target.value,
-                                    }))
+                                    setFormValues((prev) => ({ ...prev, [field]: e.target.value }))
                                   }
-                                  style={styles.input}
+                                  className="w-full px-3 py-2 rounded-md border border-slate-700/40 bg-white/5 text-slate-200 text-sm outline-none min-h-[44px] box-border"
                                   autoComplete="off"
                                   aria-label={`${provider.provider.replace(/_/g, " ")} ${field.replace(/_/g, " ")}`}
                                 />
@@ -680,11 +407,7 @@ export default function CredentialsPage() {
                           })}
                           <button
                             type="button"
-                            style={{
-                              ...styles.primaryButton,
-                              marginTop: 4,
-                              opacity: isBusy ? 0.6 : 1,
-                            }}
+                            className={`px-4 py-2 rounded-lg border-none bg-teal-500 text-[#0a0f1a] text-sm font-bold cursor-pointer min-h-[44px] min-w-[44px] mt-1 ${isBusy ? "opacity-60" : ""}`}
                             onClick={() => handleSave(provider)}
                             disabled={isBusy}
                             aria-busy={isBusy}

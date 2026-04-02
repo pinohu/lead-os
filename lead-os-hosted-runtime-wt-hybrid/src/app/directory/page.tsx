@@ -31,7 +31,7 @@ export default function DirectoryIndexPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(directoryJsonLd) }} />
-    <div data-theme="light" style={{ colorScheme: "light" }}>
+    <div data-theme="light" className="[color-scheme:light]">
     <main className="experience-page">
       <section className="experience-hero">
         <div className="hero-copy">
@@ -65,22 +65,22 @@ export default function DirectoryIndexPage() {
       <section>
         <div className="grid three">
           {niches.map((niche) => (
-            <article key={niche.slug} className="panel" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <article key={niche.slug} className="panel flex flex-col gap-3">
               <p className="eyebrow">{niche.slug}</p>
-              <h2 style={{ fontSize: "1.1rem", margin: 0 }}>{niche.label}</h2>
-              <p className="muted" style={{ flex: 1 }}>{niche.summary}</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: "0.84rem" }}>
-                <Link href={`/industries/${niche.slug}`} style={{ color: "var(--accent)" }}>
-                  Industry overview →
+              <h2 className="text-lg m-0">{niche.label}</h2>
+              <p className="muted flex-1">{niche.summary}</p>
+              <div className="flex flex-col gap-1.5 text-sm">
+                <Link href={`/industries/${niche.slug}`} className="text-primary">
+                  Industry overview &rarr;
                 </Link>
-                <Link href={`/assess/${niche.slug}`} style={{ color: "var(--secondary)" }}>
-                  Take the assessment →
+                <Link href={`/assess/${niche.slug}`} className="text-secondary">
+                  Take the assessment &rarr;
                 </Link>
-                <Link href={`/resources/${niche.slug}`} style={{ color: "var(--secondary)" }}>
-                  Read the guide →
+                <Link href={`/resources/${niche.slug}`} className="text-secondary">
+                  Read the guide &rarr;
                 </Link>
-                <Link href={`/calculator?niche=${niche.slug}`} style={{ color: "var(--secondary)" }}>
-                  ROI calculator →
+                <Link href={`/calculator?niche=${niche.slug}`} className="text-secondary">
+                  ROI calculator &rarr;
                 </Link>
               </div>
             </article>
@@ -88,14 +88,14 @@ export default function DirectoryIndexPage() {
         </div>
       </section>
 
-      <section className="panel" style={{ textAlign: "center", marginTop: 40 }}>
+      <section className="panel text-center mt-10">
         <p className="eyebrow">Not sure where to start?</p>
         <h2>Let us match you to the right vertical</h2>
         <p className="muted">
           Take our general assessment and we will recommend the best niche
           configuration, funnel blueprint, and growth path for your business.
         </p>
-        <div className="cta-row" style={{ justifyContent: "center" }}>
+        <div className="cta-row justify-center">
           <Link href="/assess/general" className="primary">Take the general assessment</Link>
           <Link href="/contact" className="secondary">Talk to a human</Link>
         </div>

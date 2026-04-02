@@ -33,16 +33,8 @@ type LeadDetailPageProps = {
 };
 
 // ---------------------------------------------------------------------------
-// Style constants
+// Color constants (used dynamically in JSX)
 // ---------------------------------------------------------------------------
-
-const PAGE_BG = "#0a0f1a";
-const CARD_BG = "rgba(255,255,255,0.04)";
-const CARD_BORDER = "rgba(255,255,255,0.06)";
-const TEXT_PRIMARY = "rgba(255,255,255,0.92)";
-const TEXT_SECONDARY = "rgba(255,255,255,0.55)";
-const TEXT_MUTED = "rgba(255,255,255,0.35)";
-const ACCENT = "#3b82f6";
 
 const TEMP_COLORS: Record<string, string> = {
   cold: "#3b82f6",
@@ -59,7 +51,7 @@ const EVENT_DOT_COLORS: Record<string, string> = {
 };
 
 // ---------------------------------------------------------------------------
-// Pure helpers (no JSX — safe in server components)
+// Pure helpers
 // ---------------------------------------------------------------------------
 
 function formatEventDate(iso: string): string {
@@ -89,66 +81,30 @@ function eventDotColor(eventType: string): string {
   for (const [prefix, color] of Object.entries(EVENT_DOT_COLORS)) {
     if (key.includes(prefix)) return color;
   }
-  return ACCENT;
-}
-
-function statusDot(ok: boolean): React.CSSProperties {
-  return {
-    display: "inline-block",
-    width: 7,
-    height: 7,
-    borderRadius: "50%",
-    backgroundColor: ok ? "#22c55e" : "#ef4444",
-    marginRight: 6,
-    flexShrink: 0,
-  };
+  return "#3b82f6";
 }
 
 // ---------------------------------------------------------------------------
-// Score bar sub-component (plain function — no hooks, valid in server component)
+// Score bar
 // ---------------------------------------------------------------------------
 
 function ScoreBar({ label, score }: { label: string; score: number | null }) {
   const pct = score !== null ? Math.min(100, Math.max(0, score)) : 0;
-  const color = score !== null ? scoreBarColor(score) : TEXT_MUTED;
-
-  const containerStyle: React.CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    gap: 6,
-  };
-
-  const rowStyle: React.CSSProperties = {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  };
-
-  const trackStyle: React.CSSProperties = {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "rgba(255,255,255,0.08)",
-    overflow: "hidden",
-  };
-
-  const fillStyle: React.CSSProperties = {
-    height: "100%",
-    width: score !== null ? `${pct}%` : "0%",
-    borderRadius: 3,
-    backgroundColor: color,
-    transition: "width 0.3s ease",
-  };
+  const color = score !== null ? scoreBarColor(score) : "rgba(255,255,255,0.35)";
 
   return (
-    <div style={containerStyle}>
-      <div style={rowStyle}>
-        <span style={{ fontSize: 13, color: TEXT_SECONDARY }}>{label}</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: score !== null ? color : TEXT_MUTED }}>
-          {score !== null ? score : "—"}
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[13px] text-white/55">{label}</span>
+        <span className="text-[13px] font-semibold" style={{ color: score !== null ? color : "rgba(255,255,255,0.35)" }}>
+          {score !== null ? score : "\u2014"}
         </span>
       </div>
-      <div style={trackStyle}>
-        <div style={fillStyle} />
+      <div className="h-1.5 overflow-hidden rounded-sm bg-white/[0.08]">
+        <div
+          className="h-full rounded-sm transition-[width] duration-300 ease-out"
+          style={{ width: score !== null ? `${pct}%` : "0%", backgroundColor: color }}
+        />
       </div>
     </div>
   );
@@ -159,68 +115,46 @@ function ScoreBar({ label, score }: { label: string; score: number | null }) {
 // ---------------------------------------------------------------------------
 
 function Tag({ label, color }: { label: string; color: string }) {
-  const style: React.CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "3px 10px",
-    borderRadius: 99,
-    fontSize: 12,
-    fontWeight: 600,
-    color,
-    backgroundColor: `${color}1f`,
-    border: `1px solid ${color}40`,
-    letterSpacing: "0.03em",
-    textTransform: "uppercase" as const,
-    whiteSpace: "nowrap" as const,
-  };
-  return <span style={style}>{label}</span>;
+  return (
+    <span
+      className="inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide"
+      style={{ color, backgroundColor: `${color}1f`, borderColor: `${color}40` }}
+    >
+      {label}
+    </span>
+  );
 }
 
 // ---------------------------------------------------------------------------
-// Section card wrapper
+// Card / Section helpers
 // ---------------------------------------------------------------------------
 
-function Card({
-  children,
-  style,
-}: {
-  children: React.ReactNode;
-  style?: React.CSSProperties;
-}) {
-  const base: React.CSSProperties = {
-    backgroundColor: CARD_BG,
-    border: `1px solid ${CARD_BORDER}`,
-    borderRadius: 12,
-    padding: "24px 28px",
-    ...style,
-  };
-  return <div style={base}>{children}</div>;
+function Card({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`rounded-xl border border-white/[0.06] bg-white/[0.04] px-7 py-6 ${className ?? ""}`}>
+      {children}
+    </div>
+  );
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  const style: React.CSSProperties = {
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: "0.1em",
-    textTransform: "uppercase",
-    color: TEXT_MUTED,
-    marginBottom: 12,
-  };
-  return <p style={style}>{children}</p>;
+  return (
+    <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-white/35">
+      {children}
+    </p>
+  );
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  const style: React.CSSProperties = {
-    fontSize: 16,
-    fontWeight: 700,
-    color: TEXT_PRIMARY,
-    margin: "0 0 20px",
-  };
-  return <h2 style={style}>{children}</h2>;
+  return (
+    <h2 className="mb-5 text-base font-bold text-white/90">
+      {children}
+    </h2>
+  );
 }
 
 // ---------------------------------------------------------------------------
-// Activity record card
+// Activity card
 // ---------------------------------------------------------------------------
 
 function ActivityCard({
@@ -238,41 +172,29 @@ function ActivityCard({
   ok?: boolean;
   mode?: string;
 }) {
-  const style: React.CSSProperties = {
-    backgroundColor: "rgba(255,255,255,0.03)",
-    border: `1px solid ${CARD_BORDER}`,
-    borderRadius: 8,
-    padding: "14px 16px",
-    display: "flex",
-    flexDirection: "column",
-    gap: 6,
-  };
-
-  const headerRow: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
-  };
-
   return (
-    <div style={style}>
-      <div style={headerRow}>
-        <span style={{ fontSize: 11, fontWeight: 700, color: ACCENT, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+    <div className="flex flex-col gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] px-4 py-3.5">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-blue-500">
           {eyebrow}
         </span>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          {ok !== undefined && <span style={statusDot(ok)} />}
+        <div className="flex items-center gap-1.5">
+          {ok !== undefined && (
+            <span
+              className="inline-block h-[7px] w-[7px] shrink-0 rounded-full"
+              style={{ backgroundColor: ok ? "#22c55e" : "#ef4444" }}
+            />
+          )}
           {mode && (
-            <span style={{ fontSize: 11, color: TEXT_MUTED, backgroundColor: "rgba(255,255,255,0.06)", padding: "1px 7px", borderRadius: 4 }}>
+            <span className="rounded bg-white/[0.06] px-1.5 py-px text-[11px] text-white/35">
               {mode}
             </span>
           )}
         </div>
       </div>
-      <span style={{ fontSize: 14, fontWeight: 600, color: TEXT_PRIMARY }}>{title}</span>
-      {detail && <span style={{ fontSize: 12, color: TEXT_SECONDARY, lineHeight: 1.5 }}>{detail}</span>}
-      <span style={{ fontSize: 11, color: TEXT_MUTED }}>{formatShortDate(date)}</span>
+      <span className="text-sm font-semibold text-white/90">{title}</span>
+      {detail && <span className="text-xs leading-relaxed text-white/55">{detail}</span>}
+      <span className="text-[11px] text-white/35">{formatShortDate(date)}</span>
     </div>
   );
 }
@@ -309,7 +231,6 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const documentItems = documentJobs as DocumentJobRecord[];
   const progress = summarizeMilestoneProgress(lead);
 
-  // Build scoring context from available lead data
   const scoringCtx: ScoringContext = {
     source: lead.source,
     niche: lead.niche,
@@ -330,169 +251,95 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
   const fullName = [lead.firstName, lead.lastName].filter(Boolean).join(" ") || decodedLeadKey;
 
-  // ---------------------------------------------------------------------------
-  // Layout styles
-  // ---------------------------------------------------------------------------
-
-  const pageStyle: React.CSSProperties = {
-    minHeight: "100vh",
-    backgroundColor: PAGE_BG,
-    padding: "32px 24px 64px",
-    fontFamily: "system-ui, -apple-system, sans-serif",
-  };
-
-  const maxWidthStyle: React.CSSProperties = {
-    maxWidth: 1200,
-    margin: "0 auto",
-    display: "flex",
-    flexDirection: "column",
-    gap: 24,
-  };
-
-  const twoColStyle: React.CSSProperties = {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 24,
-  };
-
-  const dividerStyle: React.CSSProperties = {
-    border: "none",
-    borderTop: `1px solid ${CARD_BORDER}`,
-    margin: "20px 0",
-  };
-
-  const metaRowStyle: React.CSSProperties = {
-    display: "flex",
-    flexWrap: "wrap" as const,
-    gap: 8,
-    alignItems: "center",
-  };
-
-  const metaItemStyle: React.CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    fontSize: 14,
-    color: TEXT_SECONDARY,
-  };
-
-  const metaLabelStyle: React.CSSProperties = {
-    color: TEXT_MUTED,
-    fontSize: 12,
-    fontWeight: 600,
-    textTransform: "uppercase",
-    letterSpacing: "0.07em",
-  };
-
-  const separatorDotStyle: React.CSSProperties = {
-    color: TEXT_MUTED,
-    fontSize: 14,
-  };
-
   return (
-    <main style={pageStyle}>
-      <div style={maxWidthStyle}>
+    <main className="min-h-screen bg-[#0a0f1a] px-6 py-8 pb-16 font-sans">
+      <div className="mx-auto flex max-w-[1200px] flex-col gap-6">
 
         {/* Back nav */}
         <div>
           <Link
             href="/dashboard/leads"
-            style={{ fontSize: 13, color: TEXT_MUTED, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6 }}
+            className="inline-flex items-center gap-1.5 text-[13px] text-white/35 no-underline"
           >
-            ← All leads
+            &larr; All leads
           </Link>
         </div>
 
-        {/* ------------------------------------------------------------------ */}
-        {/* 1. Lead Identity Header                                             */}
-        {/* ------------------------------------------------------------------ */}
+        {/* 1. Lead Identity Header */}
         <Card>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap" as const, gap: 16 }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" as const }}>
-                <h1 style={{ fontSize: 26, fontWeight: 800, color: TEXT_PRIMARY, margin: 0 }}>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-col gap-2.5">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="m-0 text-[26px] font-extrabold text-white/90">
                   {fullName}
                 </h1>
                 <Tag label={temperature} color={tempColor} />
-                <Tag label={lead.source} color={ACCENT} />
+                <Tag label={lead.source} color="#3b82f6" />
                 <Tag label={lead.niche} color="#a855f7" />
               </div>
 
-              <div style={metaRowStyle}>
+              <div className="flex flex-wrap items-center gap-2">
                 {lead.email && (
                   <>
-                    <span style={metaItemStyle}>
-                      <span style={metaLabelStyle}>Email</span>
-                      <a href={`mailto:${lead.email}`} style={{ color: TEXT_SECONDARY, textDecoration: "none" }}>
+                    <span className="flex items-center gap-1.5 text-sm text-white/55">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-white/35">Email</span>
+                      <a href={`mailto:${lead.email}`} className="text-white/55 no-underline">
                         {lead.email}
                       </a>
                     </span>
-                    <span style={separatorDotStyle}>·</span>
+                    <span className="text-sm text-white/35">&middot;</span>
                   </>
                 )}
                 {lead.phone && (
                   <>
-                    <span style={metaItemStyle}>
-                      <span style={metaLabelStyle}>Phone</span>
-                      <a href={`tel:${lead.phone}`} style={{ color: TEXT_SECONDARY, textDecoration: "none" }}>
+                    <span className="flex items-center gap-1.5 text-sm text-white/55">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-white/35">Phone</span>
+                      <a href={`tel:${lead.phone}`} className="text-white/55 no-underline">
                         {lead.phone}
                       </a>
                     </span>
-                    <span style={separatorDotStyle}>·</span>
+                    <span className="text-sm text-white/35">&middot;</span>
                   </>
                 )}
                 {lead.company && (
                   <>
-                    <span style={metaItemStyle}>
-                      <span style={metaLabelStyle}>Company</span>
+                    <span className="flex items-center gap-1.5 text-sm text-white/55">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-white/35">Company</span>
                       <span>{lead.company}</span>
                     </span>
-                    <span style={separatorDotStyle}>·</span>
+                    <span className="text-sm text-white/35">&middot;</span>
                   </>
                 )}
-                <span style={metaItemStyle}>
-                  <span style={metaLabelStyle}>Service</span>
+                <span className="flex items-center gap-1.5 text-sm text-white/55">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-white/35">Service</span>
                   <span>{lead.service}</span>
                 </span>
               </div>
 
-              <div style={metaRowStyle}>
-                <span style={{ fontSize: 12, color: TEXT_MUTED }}>
-                  Created {formatShortDate(lead.createdAt)}
-                </span>
-                <span style={separatorDotStyle}>·</span>
-                <span style={{ fontSize: 12, color: TEXT_MUTED }}>
-                  Updated {formatShortDate(lead.updatedAt)}
-                </span>
-                <span style={separatorDotStyle}>·</span>
-                <span style={{ fontSize: 12, color: TEXT_MUTED }}>
-                  Status: <span style={{ color: lead.status === "active" ? "#22c55e" : TEXT_SECONDARY }}>{lead.status}</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-white/35">Created {formatShortDate(lead.createdAt)}</span>
+                <span className="text-sm text-white/35">&middot;</span>
+                <span className="text-xs text-white/35">Updated {formatShortDate(lead.updatedAt)}</span>
+                <span className="text-sm text-white/35">&middot;</span>
+                <span className="text-xs text-white/35">
+                  Status: <span className={lead.status === "active" ? "text-green-400" : "text-white/55"}>{lead.status}</span>
                 </span>
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" }}>
-              <div style={{ textAlign: "right" as const }}>
-                <div style={{ fontSize: 11, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>
+            <div className="flex flex-col items-end gap-2.5">
+              <div className="text-right">
+                <div className="mb-1 text-[11px] uppercase tracking-widest text-white/35">
                   Composite score
                 </div>
-                <div style={{ fontSize: 48, fontWeight: 900, color: tempColor, lineHeight: 1 }}>
+                <div className="text-5xl font-black leading-none" style={{ color: tempColor }}>
                   {compositeFromLead}
                 </div>
               </div>
-              <div style={{ display: "flex", gap: 8 }}>
+              <div className="flex gap-2">
                 <Link
                   href="/dashboard"
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: 8,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: TEXT_SECONDARY,
-                    border: `1px solid ${CARD_BORDER}`,
-                    textDecoration: "none",
-                    backgroundColor: "rgba(255,255,255,0.04)",
-                  }}
+                  className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-4 py-2 text-[13px] font-semibold text-white/55 no-underline"
                 >
                   Dashboard
                 </Link>
@@ -500,16 +347,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                   href={lead.destination}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: 8,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: "#fff",
-                    backgroundColor: ACCENT,
-                    textDecoration: "none",
-                    border: "none",
-                  }}
+                  className="rounded-lg border-none bg-blue-500 px-4 py-2 text-[13px] font-semibold text-white no-underline"
                 >
                   {lead.ctaLabel || "Open destination"}
                 </a>
@@ -518,105 +356,81 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           </div>
         </Card>
 
-        {/* ------------------------------------------------------------------ */}
-        {/* 2 + 3. Score Breakdown + Nurture Status (side by side)              */}
-        {/* ------------------------------------------------------------------ */}
-        <div style={twoColStyle}>
+        {/* 2 + 3. Score Breakdown + Nurture Status */}
+        <div className="grid grid-cols-2 gap-6">
 
-          {/* Score Breakdown Panel */}
+          {/* Score Breakdown */}
           <Card>
             <SectionLabel>Intelligence</SectionLabel>
             <SectionTitle>Score breakdown</SectionTitle>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="flex flex-col gap-4">
               <ScoreBar label="Composite" score={compositeFromLead} />
-              <hr style={dividerStyle} />
+              <hr className="my-5 border-t border-white/[0.06]" />
               <ScoreBar label="Intent" score={intentScore.score} />
               <ScoreBar label="Fit" score={fitScore.score} />
               <ScoreBar label="Engagement" score={engagementScore.score} />
               <ScoreBar label="Urgency" score={urgencyScore.score} />
             </div>
-            <div style={{ marginTop: 20, padding: "12px 14px", borderRadius: 8, backgroundColor: `${tempColor}14`, border: `1px solid ${tempColor}33` }}>
-              <div style={{ fontSize: 11, color: tempColor, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>
+            <div
+              className="mt-5 rounded-lg border p-3.5"
+              style={{ backgroundColor: `${tempColor}14`, borderColor: `${tempColor}33` }}
+            >
+              <div className="mb-1 text-[11px] font-bold uppercase tracking-wider" style={{ color: tempColor }}>
                 Temperature
               </div>
-              <div style={{ fontSize: 14, color: TEXT_PRIMARY, fontWeight: 600, textTransform: "capitalize" }}>
+              <div className="text-sm font-semibold capitalize text-white/90">
                 {temperature}
-                <span style={{ fontWeight: 400, color: TEXT_SECONDARY, marginLeft: 8 }}>
-                  {temperature === "burning" && "Ready to close — reach out immediately"}
-                  {temperature === "hot" && "High interest — prioritize outreach"}
-                  {temperature === "warm" && "Engaged — nurture and qualify"}
-                  {temperature === "cold" && "Early stage — awareness campaign"}
+                <span className="ml-2 font-normal text-white/55">
+                  {temperature === "burning" && "Ready to close \u2014 reach out immediately"}
+                  {temperature === "hot" && "High interest \u2014 prioritize outreach"}
+                  {temperature === "warm" && "Engaged \u2014 nurture and qualify"}
+                  {temperature === "cold" && "Early stage \u2014 awareness campaign"}
                 </span>
               </div>
             </div>
           </Card>
 
-          {/* Nurture Status Panel */}
+          {/* Nurture Status */}
           <Card>
             <SectionLabel>Funnel</SectionLabel>
             <SectionTitle>Nurture status</SectionTitle>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <div>
-                  <div style={{ fontSize: 11, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>Family</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: TEXT_PRIMARY }}>{lead.family}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>Stage</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: TEXT_PRIMARY }}>{lead.stage}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>Next lead milestone</div>
-                  <div style={{ fontSize: 14, color: TEXT_SECONDARY }}>{progress.nextLeadMilestone?.label ?? "Complete"}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>Next customer milestone</div>
-                  <div style={{ fontSize: 14, color: TEXT_SECONDARY }}>{progress.nextCustomerMilestone?.label ?? "Not started"}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>Visits</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: TEXT_PRIMARY }}>{progress.visitCount}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>Nurture stages sent</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: TEXT_PRIMARY }}>{lead.sentNurtureStages.length}</div>
-                </div>
+            <div className="flex flex-col gap-3.5">
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "Family", value: lead.family, bold: true },
+                  { label: "Stage", value: lead.stage, bold: true },
+                  { label: "Next lead milestone", value: progress.nextLeadMilestone?.label ?? "Complete", bold: false },
+                  { label: "Next customer milestone", value: progress.nextCustomerMilestone?.label ?? "Not started", bold: false },
+                  { label: "Visits", value: String(progress.visitCount), bold: true },
+                  { label: "Nurture stages sent", value: String(lead.sentNurtureStages.length), bold: true },
+                ].map(({ label, value, bold }) => (
+                  <div key={label}>
+                    <div className="mb-1 text-[11px] uppercase tracking-wider text-white/35">{label}</div>
+                    <div className={`text-sm ${bold ? "font-bold text-white/90" : "text-white/55"}`}>{value}</div>
+                  </div>
+                ))}
               </div>
 
-              <hr style={dividerStyle} />
+              <hr className="my-5 border-t border-white/[0.06]" />
 
               <div>
-                <div style={{ fontSize: 11, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
-                  CTA
-                </div>
+                <div className="mb-1.5 text-[11px] uppercase tracking-wider text-white/35">CTA</div>
                 <a
                   href={lead.destination}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ fontSize: 14, color: ACCENT, textDecoration: "none", fontWeight: 600 }}
+                  className="text-sm font-semibold text-blue-500 no-underline"
                 >
-                  {lead.ctaLabel || "View destination"} →
+                  {lead.ctaLabel || "View destination"} &rarr;
                 </a>
               </div>
 
               {lead.sentNurtureStages.length > 0 && (
                 <div>
-                  <div style={{ fontSize: 11, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
-                    Stages delivered
-                  </div>
-                  <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
+                  <div className="mb-2 text-[11px] uppercase tracking-wider text-white/35">Stages delivered</div>
+                  <div className="flex flex-wrap gap-1.5">
                     {lead.sentNurtureStages.map((stage) => (
-                      <span
-                        key={stage}
-                        style={{
-                          fontSize: 11,
-                          padding: "3px 8px",
-                          borderRadius: 4,
-                          backgroundColor: "rgba(59,130,246,0.12)",
-                          border: `1px solid rgba(59,130,246,0.25)`,
-                          color: ACCENT,
-                        }}
-                      >
+                      <span key={stage} className="rounded border border-blue-500/25 bg-blue-500/[0.12] px-2 py-0.5 text-[11px] text-blue-500">
                         {stage}
                       </span>
                     ))}
@@ -626,17 +440,15 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
               {(lead.milestones.leadMilestones.length > 0 || lead.milestones.customerMilestones.length > 0) && (
                 <div>
-                  <div style={{ fontSize: 11, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
-                    Milestones achieved
-                  </div>
-                  <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6 }}>
+                  <div className="mb-2 text-[11px] uppercase tracking-wider text-white/35">Milestones achieved</div>
+                  <div className="flex flex-wrap gap-1.5">
                     {lead.milestones.leadMilestones.map((m) => (
-                      <span key={m} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, backgroundColor: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)", color: "#22c55e" }}>
+                      <span key={m} className="rounded border border-green-500/25 bg-green-500/[0.12] px-2 py-0.5 text-[11px] text-green-500">
                         {m}
                       </span>
                     ))}
                     {lead.milestones.customerMilestones.map((m) => (
-                      <span key={m} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, backgroundColor: "rgba(20,184,166,0.12)", border: "1px solid rgba(20,184,166,0.25)", color: "#14b8a6" }}>
+                      <span key={m} className="rounded border border-teal-500/25 bg-teal-500/[0.12] px-2 py-0.5 text-[11px] text-teal-500">
                         {m}
                       </span>
                     ))}
@@ -647,91 +459,58 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           </Card>
         </div>
 
-        {/* ------------------------------------------------------------------ */}
-        {/* 4. Journey Timeline                                                 */}
-        {/* ------------------------------------------------------------------ */}
+        {/* 4. Journey Timeline */}
         <Card>
           <SectionLabel>History</SectionLabel>
           <SectionTitle>Journey timeline</SectionTitle>
           {filteredEvents.length === 0 ? (
-            <p style={{ fontSize: 14, color: TEXT_MUTED, margin: 0 }}>No events recorded for this lead yet.</p>
+            <p className="m-0 text-sm text-white/35">No events recorded for this lead yet.</p>
           ) : (
-            <div style={{ position: "relative", paddingLeft: 32 }}>
-              {/* Vertical connector line */}
+            <div className="relative pl-8">
               <div
-                style={{
-                  position: "absolute",
-                  left: 7,
-                  top: 8,
-                  bottom: 8,
-                  width: 2,
-                  backgroundColor: "rgba(255,255,255,0.07)",
-                  borderRadius: 1,
-                }}
+                className="absolute left-[7px] top-2 bottom-2 w-0.5 rounded-sm bg-white/[0.07]"
                 aria-hidden="true"
               />
-              <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              <div className="flex flex-col">
                 {filteredEvents.map((event, index) => {
                   const dotColor = eventDotColor(event.eventType);
                   const isLast = index === filteredEvents.length - 1;
                   return (
                     <div
                       key={event.id}
-                      style={{
-                        display: "flex",
-                        gap: 20,
-                        paddingBottom: isLast ? 0 : 20,
-                        position: "relative",
-                      }}
+                      className="relative flex gap-5"
+                      style={{ paddingBottom: isLast ? 0 : 20 }}
                     >
-                      {/* Dot */}
                       <div
+                        className="absolute -left-8 top-1 h-3.5 w-3.5 shrink-0 rounded-full"
                         style={{
-                          position: "absolute",
-                          left: -32,
-                          top: 4,
-                          width: 14,
-                          height: 14,
-                          borderRadius: "50%",
                           backgroundColor: dotColor,
-                          border: `2px solid ${PAGE_BG}`,
+                          border: "2px solid #0a0f1a",
                           boxShadow: `0 0 0 2px ${dotColor}40`,
-                          flexShrink: 0,
                         }}
                         aria-hidden="true"
                       />
-                      {/* Timestamp */}
-                      <div style={{ width: 130, flexShrink: 0, paddingTop: 1 }}>
-                        <span style={{ fontSize: 12, color: TEXT_MUTED, whiteSpace: "nowrap" as const }}>
+                      <div className="w-[130px] shrink-0 pt-px">
+                        <span className="whitespace-nowrap text-xs text-white/35">
                           {formatEventDate(event.timestamp)}
                         </span>
                       </div>
-                      {/* Content */}
-                      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const }}>
-                          <span style={{ fontSize: 14, fontWeight: 700, color: TEXT_PRIMARY }}>
+                      <div className="flex flex-1 flex-col gap-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-sm font-bold text-white/90">
                             {event.eventType}
                           </span>
-                          <span style={{
-                            fontSize: 11,
-                            padding: "2px 7px",
-                            borderRadius: 4,
-                            backgroundColor: `${dotColor}1a`,
-                            border: `1px solid ${dotColor}33`,
-                            color: dotColor,
-                            fontWeight: 600,
-                            textTransform: "uppercase" as const,
-                            letterSpacing: "0.06em",
-                          }}>
+                          <span
+                            className="rounded border px-[7px] py-0.5 text-[11px] font-semibold uppercase tracking-wider"
+                            style={{
+                              backgroundColor: `${dotColor}1a`,
+                              borderColor: `${dotColor}33`,
+                              color: dotColor,
+                            }}
+                          >
                             {event.channel}
                           </span>
-                          <span style={{
-                            fontSize: 11,
-                            padding: "2px 7px",
-                            borderRadius: 4,
-                            backgroundColor: "rgba(255,255,255,0.05)",
-                            color: TEXT_MUTED,
-                          }}>
+                          <span className="rounded bg-white/[0.05] px-[7px] py-0.5 text-[11px] text-white/35">
                             {event.status}
                           </span>
                         </div>
@@ -744,27 +523,17 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           )}
         </Card>
 
-        {/* ------------------------------------------------------------------ */}
-        {/* 5. Activity Grid                                                    */}
-        {/* ------------------------------------------------------------------ */}
-        <div style={twoColStyle}>
+        {/* 5. Activity Grid */}
+        <div className="grid grid-cols-2 gap-6">
           <Card>
             <SectionLabel>Automation</SectionLabel>
             <SectionTitle>Workflow runs</SectionTitle>
             {workflowItems.length === 0 ? (
-              <p style={{ fontSize: 14, color: TEXT_MUTED, margin: 0 }}>No workflow runs recorded yet.</p>
+              <p className="m-0 text-sm text-white/35">No workflow runs recorded yet.</p>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="flex flex-col gap-2.5">
                 {workflowItems.map((workflow) => (
-                  <ActivityCard
-                    key={workflow.id}
-                    eyebrow={workflow.provider}
-                    title={workflow.eventName}
-                    detail={workflow.detail}
-                    date={workflow.createdAt}
-                    ok={workflow.ok}
-                    mode={workflow.mode}
-                  />
+                  <ActivityCard key={workflow.id} eyebrow={workflow.provider} title={workflow.eventName} detail={workflow.detail} date={workflow.createdAt} ok={workflow.ok} mode={workflow.mode} />
                 ))}
               </div>
             )}
@@ -774,44 +543,28 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             <SectionLabel>Channels</SectionLabel>
             <SectionTitle>Provider executions</SectionTitle>
             {providerItems.length === 0 ? (
-              <p style={{ fontSize: 14, color: TEXT_MUTED, margin: 0 }}>No provider executions recorded yet.</p>
+              <p className="m-0 text-sm text-white/35">No provider executions recorded yet.</p>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="flex flex-col gap-2.5">
                 {providerItems.map((execution) => (
-                  <ActivityCard
-                    key={execution.id}
-                    eyebrow={execution.provider}
-                    title={execution.kind}
-                    detail={execution.detail}
-                    date={execution.createdAt}
-                    ok={execution.ok}
-                    mode={execution.mode}
-                  />
+                  <ActivityCard key={execution.id} eyebrow={execution.provider} title={execution.kind} detail={execution.detail} date={execution.createdAt} ok={execution.ok} mode={execution.mode} />
                 ))}
               </div>
             )}
           </Card>
         </div>
 
-        {/* ------------------------------------------------------------------ */}
-        {/* 6. Jobs Grid                                                        */}
-        {/* ------------------------------------------------------------------ */}
-        <div style={twoColStyle}>
+        {/* 6. Jobs Grid */}
+        <div className="grid grid-cols-2 gap-6">
           <Card>
             <SectionLabel>Scheduling</SectionLabel>
             <SectionTitle>Booking jobs</SectionTitle>
             {bookingItems.length === 0 ? (
-              <p style={{ fontSize: 14, color: TEXT_MUTED, margin: 0 }}>No booking jobs recorded yet.</p>
+              <p className="m-0 text-sm text-white/35">No booking jobs recorded yet.</p>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="flex flex-col gap-2.5">
                 {bookingItems.map((job) => (
-                  <ActivityCard
-                    key={job.id}
-                    eyebrow={job.provider}
-                    title={job.status}
-                    detail={job.detail}
-                    date={job.updatedAt}
-                  />
+                  <ActivityCard key={job.id} eyebrow={job.provider} title={job.status} detail={job.detail} date={job.updatedAt} />
                 ))}
               </div>
             )}
@@ -821,43 +574,35 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             <SectionLabel>Documents</SectionLabel>
             <SectionTitle>Document jobs</SectionTitle>
             {documentItems.length === 0 ? (
-              <p style={{ fontSize: 14, color: TEXT_MUTED, margin: 0 }}>No document jobs recorded yet.</p>
+              <p className="m-0 text-sm text-white/35">No document jobs recorded yet.</p>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="flex flex-col gap-2.5">
                 {documentItems.map((job) => (
-                  <ActivityCard
-                    key={job.id}
-                    eyebrow={job.provider}
-                    title={job.status}
-                    detail={job.detail}
-                    date={job.updatedAt}
-                  />
+                  <ActivityCard key={job.id} eyebrow={job.provider} title={job.status} detail={job.detail} date={job.updatedAt} />
                 ))}
               </div>
             )}
           </Card>
         </div>
 
-        {/* ------------------------------------------------------------------ */}
-        {/* Runtime trace (collapsed detail)                                   */}
-        {/* ------------------------------------------------------------------ */}
+        {/* Runtime trace */}
         <Card>
           <SectionLabel>Debug</SectionLabel>
           <SectionTitle>Runtime trace</SectionTitle>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+          <div className="grid grid-cols-3 gap-3">
             {[
               { label: "Visitor ID", value: lead.trace.visitorId },
               { label: "Session ID", value: lead.trace.sessionId },
               { label: "Blueprint ID", value: lead.trace.blueprintId },
               { label: "Step ID", value: lead.trace.stepId },
               { label: "Tenant", value: lead.trace.tenant },
-              { label: "Experiment", value: lead.trace.experimentId ?? "—" },
+              { label: "Experiment", value: lead.trace.experimentId ?? "\u2014" },
             ].map(({ label, value }) => (
               <div key={label}>
-                <div style={{ fontSize: 11, color: TEXT_MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>
+                <div className="mb-1 text-[11px] uppercase tracking-wider text-white/35">
                   {label}
                 </div>
-                <div style={{ fontSize: 12, color: TEXT_SECONDARY, fontFamily: "monospace", wordBreak: "break-all" as const }}>
+                <div className="break-all font-mono text-xs text-white/55">
                   {value}
                 </div>
               </div>

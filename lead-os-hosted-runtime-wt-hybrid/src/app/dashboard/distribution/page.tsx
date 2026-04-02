@@ -70,6 +70,12 @@ function getChannelColor(channel: string): string {
   return CHANNEL_COLORS[channel] ?? "#9ca3af";
 }
 
+function statusBadgeClass(status: string): string {
+  if (status === "scheduled") return "bg-teal-500/15 text-teal-500";
+  if (status === "published") return "bg-green-500/15 text-green-500";
+  return "bg-red-500/15 text-red-500";
+}
+
 export default function DistributionDashboardPage() {
   const [report, setReport] = useState<DistributionReport | null>(null);
   const [schedules, setSchedules] = useState<ContentSchedule[]>([]);
@@ -96,26 +102,11 @@ export default function DistributionDashboardPage() {
         fetch(`/api/distribution/programmatic?tenantId=${tenantId}`),
       ]);
 
-      if (reportRes.status === "fulfilled") {
-        const json = await reportRes.value.json();
-        if (json.data) setReport(json.data);
-      }
-      if (schedulesRes.status === "fulfilled") {
-        const json = await schedulesRes.value.json();
-        if (json.data) setSchedules(json.data);
-      }
-      if (topRes.status === "fulfilled") {
-        const json = await topRes.value.json();
-        if (json.data) setTopContent(json.data);
-      }
-      if (seoRes.status === "fulfilled") {
-        const json = await seoRes.value.json();
-        if (json.data) setSeoPages(json.data);
-      }
-      if (progRes.status === "fulfilled") {
-        const json = await progRes.value.json();
-        if (json.data) setProgrammaticPages(json.data);
-      }
+      if (reportRes.status === "fulfilled") { const json = await reportRes.value.json(); if (json.data) setReport(json.data); }
+      if (schedulesRes.status === "fulfilled") { const json = await schedulesRes.value.json(); if (json.data) setSchedules(json.data); }
+      if (topRes.status === "fulfilled") { const json = await topRes.value.json(); if (json.data) setTopContent(json.data); }
+      if (seoRes.status === "fulfilled") { const json = await seoRes.value.json(); if (json.data) setSeoPages(json.data); }
+      if (progRes.status === "fulfilled") { const json = await progRes.value.json(); if (json.data) setProgrammaticPages(json.data); }
     } catch {
       setError("Failed to load distribution data");
     } finally {
@@ -123,31 +114,10 @@ export default function DistributionDashboardPage() {
     }
   }
 
-  const cardStyle: React.CSSProperties = {
-    background: "var(--surface, #111827)",
-    borderRadius: 12,
-    padding: 24,
-    boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
-  };
-
-  const ghostBtnStyle: React.CSSProperties = {
-    padding: "8px 16px",
-    borderRadius: 8,
-    border: "1px solid var(--text-soft, #374151)",
-    cursor: "pointer",
-    fontSize: "0.875rem",
-    fontWeight: 600,
-    background: "transparent",
-    color: "var(--text-soft, #9ca3af)",
-    textDecoration: "none",
-    display: "inline-flex",
-    alignItems: "center",
-  };
-
   if (loading) {
     return (
-      <main style={{ maxWidth: 1180, margin: "0 auto", padding: "32px 24px" }}>
-        <p style={{ color: "var(--text-soft, #9ca3af)" }}>Loading distribution dashboard...</p>
+      <main className="max-w-[1180px] mx-auto px-6 py-8">
+        <p className="text-muted-foreground">Loading distribution dashboard...</p>
       </main>
     );
   }
@@ -164,15 +134,15 @@ export default function DistributionDashboardPage() {
   });
 
   return (
-    <main style={{ maxWidth: 1180, margin: "0 auto", padding: "32px 24px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+    <main className="max-w-[1180px] mx-auto px-6 py-8">
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0 }}>Distribution Engine</h1>
-          <p style={{ color: "var(--text-soft, #9ca3af)", marginTop: 4, fontSize: "0.875rem" }}>
+          <h1 className="text-2xl font-bold m-0">Distribution Engine</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
             Traffic acquisition across SEO, content, social, and paid channels.
           </p>
         </div>
-        <Link href="/dashboard" style={ghostBtnStyle}>
+        <Link href="/dashboard" className="px-4 py-2 rounded-lg border border-muted-foreground/30 cursor-pointer text-sm font-semibold bg-transparent text-muted-foreground no-underline inline-flex items-center">
           Back to Dashboard
         </Link>
       </div>
@@ -180,12 +150,12 @@ export default function DistributionDashboardPage() {
       {error && (
         <div
           role="alert"
-          style={{ ...cardStyle, background: "rgba(239, 68, 68, 0.1)", borderLeft: "3px solid #ef4444", marginBottom: 24 }}
+          className="rounded-xl bg-red-500/10 border-l-[3px] border-l-red-500 p-6 shadow-sm mb-6"
         >
-          <p style={{ color: "#ef4444", margin: 0 }}>{error}</p>
+          <p className="text-red-500 m-0">{error}</p>
           <button
             type="button"
-            style={{ ...ghostBtnStyle, marginTop: 8 }}
+            className="px-4 py-2 rounded-lg border border-muted-foreground/30 cursor-pointer text-sm font-semibold bg-transparent text-muted-foreground mt-2"
             onClick={() => setError(null)}
           >
             Dismiss
@@ -195,27 +165,27 @@ export default function DistributionDashboardPage() {
 
       {/* Channel Performance Cards */}
       <section aria-label="Channel performance">
-        <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: 12 }}>Channel Performance</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16, marginBottom: 32 }}>
+        <h2 className="text-lg font-semibold mb-3">Channel Performance</h2>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4 mb-8">
           {channelData.map((ch) => (
-            <div key={ch.channel} style={{ ...cardStyle, borderLeft: `3px solid ${getChannelColor(ch.channel)}` }}>
-              <div style={{ fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", color: getChannelColor(ch.channel), marginBottom: 8 }}>
+            <div key={ch.channel} className="rounded-xl bg-card p-6 shadow-sm" style={{ borderLeft: `3px solid ${getChannelColor(ch.channel)}` }}>
+              <div className="text-xs font-semibold uppercase mb-2" style={{ color: getChannelColor(ch.channel) }}>
                 {ch.channel}
               </div>
-              <div style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: 4 }}>
+              <div className="text-2xl font-bold mb-1">
                 {ch.traffic.toLocaleString()}
               </div>
-              <div style={{ fontSize: "0.8rem", color: "var(--text-soft, #9ca3af)" }}>
+              <div className="text-xs text-muted-foreground">
                 traffic
               </div>
-              <div style={{ display: "flex", gap: 16, marginTop: 12, fontSize: "0.8rem" }}>
+              <div className="flex gap-4 mt-3 text-xs">
                 <div>
-                  <span style={{ color: "var(--text-soft, #9ca3af)" }}>Conversions: </span>
-                  <span style={{ fontWeight: 600 }}>{ch.conversions}</span>
+                  <span className="text-muted-foreground">Conversions: </span>
+                  <span className="font-semibold">{ch.conversions}</span>
                 </div>
                 <div>
-                  <span style={{ color: "var(--text-soft, #9ca3af)" }}>Impressions: </span>
-                  <span style={{ fontWeight: 600 }}>{ch.impressions}</span>
+                  <span className="text-muted-foreground">Impressions: </span>
+                  <span className="font-semibold">{ch.impressions}</span>
                 </div>
               </div>
             </div>
@@ -225,85 +195,51 @@ export default function DistributionDashboardPage() {
 
       {/* Page Counts */}
       <section aria-label="Page inventory">
-        <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: 12 }}>Page Inventory</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16, marginBottom: 32 }}>
-          <div style={cardStyle}>
-            <div style={{ fontSize: "0.8rem", color: "var(--text-soft, #9ca3af)", marginBottom: 4 }}>SEO Pages</div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>{seoPages.length}</div>
+        <h2 className="text-lg font-semibold mb-3">Page Inventory</h2>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4 mb-8">
+          <div className="rounded-xl bg-card p-6 shadow-sm">
+            <div className="text-xs text-muted-foreground mb-1">SEO Pages</div>
+            <div className="text-2xl font-bold">{seoPages.length}</div>
           </div>
-          <div style={cardStyle}>
-            <div style={{ fontSize: "0.8rem", color: "var(--text-soft, #9ca3af)", marginBottom: 4 }}>Programmatic Pages</div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>{programmaticPages.length}</div>
+          <div className="rounded-xl bg-card p-6 shadow-sm">
+            <div className="text-xs text-muted-foreground mb-1">Programmatic Pages</div>
+            <div className="text-2xl font-bold">{programmaticPages.length}</div>
           </div>
         </div>
       </section>
 
       {/* Content Calendar */}
       <section aria-label="Content calendar">
-        <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: 12 }}>Content Calendar</h2>
+        <h2 className="text-lg font-semibold mb-3">Content Calendar</h2>
         {schedules.length === 0 ? (
-          <div style={{ ...cardStyle, textAlign: "center", padding: 48, marginBottom: 32 }}>
-            <p style={{ color: "var(--text-soft, #9ca3af)", margin: 0 }}>
+          <div className="rounded-xl bg-card p-12 shadow-sm text-center mb-8">
+            <p className="text-muted-foreground m-0">
               No scheduled content yet. Use the API to schedule posts and articles.
             </p>
           </div>
         ) : (
-          <div style={{ marginBottom: 32 }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <div className="mb-8">
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontSize: "0.75rem", fontWeight: 600, color: "var(--text-soft, #9ca3af)", borderBottom: "1px solid var(--text-soft, #374151)" }}>
-                    Title
-                  </th>
-                  <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontSize: "0.75rem", fontWeight: 600, color: "var(--text-soft, #9ca3af)", borderBottom: "1px solid var(--text-soft, #374151)" }}>
-                    Type
-                  </th>
-                  <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontSize: "0.75rem", fontWeight: 600, color: "var(--text-soft, #9ca3af)", borderBottom: "1px solid var(--text-soft, #374151)" }}>
-                    Publish Date
-                  </th>
-                  <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontSize: "0.75rem", fontWeight: 600, color: "var(--text-soft, #9ca3af)", borderBottom: "1px solid var(--text-soft, #374151)" }}>
-                    Status
-                  </th>
+                  <th scope="col" className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground border-b border-muted-foreground/30">Title</th>
+                  <th scope="col" className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground border-b border-muted-foreground/30">Type</th>
+                  <th scope="col" className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground border-b border-muted-foreground/30">Publish Date</th>
+                  <th scope="col" className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground border-b border-muted-foreground/30">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {schedules.map((s) => (
                   <tr key={s.id}>
-                    <td style={{ padding: "10px 12px", fontSize: "0.875rem", borderBottom: "1px solid rgba(55,65,81,0.3)" }}>
-                      {s.title}
-                    </td>
-                    <td style={{ padding: "10px 12px", fontSize: "0.875rem", borderBottom: "1px solid rgba(55,65,81,0.3)" }}>
-                      <span style={{
-                        padding: "2px 10px",
-                        borderRadius: 9999,
-                        fontSize: "0.7rem",
-                        fontWeight: 500,
-                        background: "rgba(99, 102, 241, 0.15)",
-                        color: "#6366f1",
-                      }}>
+                    <td className="px-3 py-2.5 text-sm border-b border-border/30">{s.title}</td>
+                    <td className="px-3 py-2.5 text-sm border-b border-border/30">
+                      <span className="px-2.5 py-0.5 rounded-full text-[0.7rem] font-medium bg-indigo-500/15 text-indigo-500">
                         {s.contentType}
                       </span>
                     </td>
-                    <td style={{ padding: "10px 12px", fontSize: "0.875rem", color: "var(--text-soft, #9ca3af)", borderBottom: "1px solid rgba(55,65,81,0.3)" }}>
-                      {formatDate(s.publishAt)}
-                    </td>
-                    <td style={{ padding: "10px 12px", fontSize: "0.875rem", borderBottom: "1px solid rgba(55,65,81,0.3)" }}>
-                      <span style={{
-                        padding: "2px 10px",
-                        borderRadius: 9999,
-                        fontSize: "0.7rem",
-                        fontWeight: 500,
-                        background: s.status === "scheduled"
-                          ? "rgba(20, 184, 166, 0.15)"
-                          : s.status === "published"
-                            ? "rgba(34, 197, 94, 0.15)"
-                            : "rgba(239, 68, 68, 0.15)",
-                        color: s.status === "scheduled"
-                          ? "#14b8a6"
-                          : s.status === "published"
-                            ? "#22c55e"
-                            : "#ef4444",
-                      }}>
+                    <td className="px-3 py-2.5 text-sm text-muted-foreground border-b border-border/30">{formatDate(s.publishAt)}</td>
+                    <td className="px-3 py-2.5 text-sm border-b border-border/30">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[0.7rem] font-medium ${statusBadgeClass(s.status)}`}>
                         {s.status}
                       </span>
                     </td>
@@ -317,55 +253,37 @@ export default function DistributionDashboardPage() {
 
       {/* Top Performing Content */}
       <section aria-label="Top performing content">
-        <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: 12 }}>Top Performing Content</h2>
+        <h2 className="text-lg font-semibold mb-3">Top Performing Content</h2>
         {topContent.length === 0 ? (
-          <div style={{ ...cardStyle, textAlign: "center", padding: 48 }}>
-            <p style={{ color: "var(--text-soft, #9ca3af)", margin: 0 }}>
+          <div className="rounded-xl bg-card p-12 shadow-sm text-center">
+            <p className="text-muted-foreground m-0">
               No performance data yet. Track metrics via the analytics API.
             </p>
           </div>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontSize: "0.75rem", fontWeight: 600, color: "var(--text-soft, #9ca3af)", borderBottom: "1px solid var(--text-soft, #374151)" }}>
-                  Content
-                </th>
-                <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontSize: "0.75rem", fontWeight: 600, color: "var(--text-soft, #9ca3af)", borderBottom: "1px solid var(--text-soft, #374151)" }}>
-                  Channel
-                </th>
-                <th scope="col" style={{ textAlign: "right", padding: "8px 12px", fontSize: "0.75rem", fontWeight: 600, color: "var(--text-soft, #9ca3af)", borderBottom: "1px solid var(--text-soft, #374151)" }}>
-                  Traffic
-                </th>
-                <th scope="col" style={{ textAlign: "right", padding: "8px 12px", fontSize: "0.75rem", fontWeight: 600, color: "var(--text-soft, #9ca3af)", borderBottom: "1px solid var(--text-soft, #374151)" }}>
-                  Conversions
-                </th>
+                <th scope="col" className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground border-b border-muted-foreground/30">Content</th>
+                <th scope="col" className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground border-b border-muted-foreground/30">Channel</th>
+                <th scope="col" className="text-right px-3 py-2 text-xs font-semibold text-muted-foreground border-b border-muted-foreground/30">Traffic</th>
+                <th scope="col" className="text-right px-3 py-2 text-xs font-semibold text-muted-foreground border-b border-muted-foreground/30">Conversions</th>
               </tr>
             </thead>
             <tbody>
               {topContent.map((item, idx) => (
                 <tr key={idx}>
-                  <td style={{ padding: "10px 12px", fontSize: "0.875rem", borderBottom: "1px solid rgba(55,65,81,0.3)" }}>
-                    {item.contentId}
-                  </td>
-                  <td style={{ padding: "10px 12px", fontSize: "0.875rem", borderBottom: "1px solid rgba(55,65,81,0.3)" }}>
-                    <span style={{
-                      padding: "2px 10px",
-                      borderRadius: 9999,
-                      fontSize: "0.7rem",
-                      fontWeight: 500,
-                      background: `${getChannelColor(item.channel)}26`,
-                      color: getChannelColor(item.channel),
-                    }}>
+                  <td className="px-3 py-2.5 text-sm border-b border-border/30">{item.contentId}</td>
+                  <td className="px-3 py-2.5 text-sm border-b border-border/30">
+                    <span
+                      className="px-2.5 py-0.5 rounded-full text-[0.7rem] font-medium"
+                      style={{ background: `${getChannelColor(item.channel)}26`, color: getChannelColor(item.channel) }}
+                    >
                       {item.channel}
                     </span>
                   </td>
-                  <td style={{ padding: "10px 12px", fontSize: "0.875rem", textAlign: "right", borderBottom: "1px solid rgba(55,65,81,0.3)" }}>
-                    {item.traffic.toLocaleString()}
-                  </td>
-                  <td style={{ padding: "10px 12px", fontSize: "0.875rem", textAlign: "right", borderBottom: "1px solid rgba(55,65,81,0.3)" }}>
-                    {item.conversions.toLocaleString()}
-                  </td>
+                  <td className="px-3 py-2.5 text-sm text-right border-b border-border/30">{item.traffic.toLocaleString()}</td>
+                  <td className="px-3 py-2.5 text-sm text-right border-b border-border/30">{item.conversions.toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>

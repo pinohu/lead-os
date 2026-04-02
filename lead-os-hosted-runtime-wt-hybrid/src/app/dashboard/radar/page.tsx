@@ -66,19 +66,10 @@ function ScoreRing({ score }: { score: number }) {
       : "var(--secondary)";
 
   return (
-    <span style={{
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      width: 48,
-      height: 48,
-      borderRadius: "50%",
-      border: `3px solid ${color}`,
-      fontWeight: 800,
-      fontSize: "1rem",
-      color,
-      flexShrink: 0,
-    }}>
+    <span
+      className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-base font-extrabold"
+      style={{ border: `3px solid ${color}`, color }}
+    >
       {score}
     </span>
   );
@@ -164,14 +155,12 @@ export default function RadarPage() {
   useEffect(() => {
     fetchData();
 
-    // Try SSE for real-time updates; fall back to 30s polling on error
     let fallbackInterval: ReturnType<typeof setInterval> | null = null;
 
     const sse = new EventSource("/api/realtime/stream");
     sseRef.current = sse;
 
     const handleRealtimeEvent = () => {
-      // Re-fetch full radar state on any realtime event so all panels stay in sync
       fetchData();
     };
 
@@ -182,7 +171,6 @@ export default function RadarPage() {
     sse.addEventListener("marketplace.claimed", handleRealtimeEvent);
 
     sse.onerror = () => {
-      // SSE failed — close and fall back to polling
       sse.close();
       sseRef.current = null;
       if (!fallbackInterval) {
@@ -226,9 +214,9 @@ export default function RadarPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontWeight: 700 }}>Demo data</span>
-          <span style={{ color: "#92400e" }}>— Connect your database to see live radar. <a href="/setup" style={{ textDecoration: "underline" }}>Configure now →</a></span>
+        <div className="flex items-center gap-2 border-b border-amber-300 bg-amber-50 px-6 py-2.5 text-sm">
+          <span className="font-bold">Demo data</span>
+          <span className="text-amber-800">— Connect your database to see live radar. <a href="/setup" className="underline">Configure now &rarr;</a></span>
         </div>
       )}
       <section className="experience-hero">
@@ -244,9 +232,8 @@ export default function RadarPage() {
             <Link href="/dashboard/scoring" className="secondary">Scoring dashboard</Link>
             <button
               type="button"
-              className="secondary"
+              className="secondary min-h-9"
               onClick={fetchData}
-              style={{ minHeight: 36 }}
             >
               Refresh now
             </button>
@@ -273,8 +260,8 @@ export default function RadarPage() {
 
       <section className="panel">
         <p className="eyebrow">Alert configuration</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "0.88rem" }}>
+        <div className="flex flex-wrap items-center gap-4">
+          <label className="flex items-center gap-2 text-sm font-bold">
             Score threshold
             <input
               type="range"
@@ -284,36 +271,23 @@ export default function RadarPage() {
               value={alertThreshold}
               onChange={(e) => setAlertThreshold(Number(e.target.value))}
               aria-label="Alert score threshold"
-              style={{ width: 140 }}
+              className="w-36"
             />
-            <span style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              minWidth: 36,
-              padding: "2px 8px",
-              borderRadius: 999,
-              background: "var(--accent-soft)",
-              fontWeight: 800,
-              fontSize: "0.82rem",
-            }}>
+            <span className="inline-flex min-w-9 items-center justify-center rounded-full bg-[var(--accent-soft)] px-2 py-0.5 text-xs font-extrabold">
               {alertThreshold}
             </span>
           </label>
-          <span style={{ fontSize: "0.82rem", color: "var(--text-soft)" }}>
+          <span className="text-xs text-muted-foreground">
             {filteredHotLeads.length} leads above threshold
           </span>
         </div>
       </section>
 
-      <section className="panel" style={{ padding: 0, overflow: "hidden" }}>
+      <section className="panel overflow-hidden p-0">
         <div
           role="tablist"
           aria-label="Radar views"
-          style={{
-            display: "flex",
-            borderBottom: "1px solid rgba(20, 33, 29, 0.08)",
-          }}
+          className="flex border-b border-border/20"
         >
           {([
             { id: "hot" as const, label: `Hot Leads (${filteredHotLeads.length})` },
@@ -327,77 +301,55 @@ export default function RadarPage() {
               aria-selected={activeTab === tab.id}
               aria-controls={`panel-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
-              style={{
-                flex: 1,
-                padding: "14px 16px",
-                border: "none",
-                borderBottom: activeTab === tab.id ? "3px solid var(--accent)" : "3px solid transparent",
-                background: activeTab === tab.id ? "rgba(196, 99, 45, 0.04)" : "transparent",
-                fontWeight: activeTab === tab.id ? 800 : 600,
-                fontSize: "0.88rem",
-                cursor: "pointer",
-                color: activeTab === tab.id ? "var(--accent-strong)" : "var(--text-soft)",
-                transition: "all 140ms ease",
-              }}
+              className={`flex-1 cursor-pointer border-b-[3px] border-none px-4 py-3.5 text-sm transition-all duration-150 ${
+                activeTab === tab.id
+                  ? "border-b-[var(--accent)] bg-[rgba(196,99,45,0.04)] font-extrabold text-[var(--accent-strong)]"
+                  : "border-b-transparent bg-transparent font-semibold text-muted-foreground"
+              }`}
             >
               {tab.label}
             </button>
           ))}
         </div>
 
-        <div style={{ padding: 28 }}>
+        <div className="p-7">
           {activeTab === "hot" && (
             <div role="tabpanel" id="panel-hot" aria-label="Hot leads panel">
               {filteredHotLeads.length === 0 ? (
                 <p className="muted">No leads above the current threshold ({alertThreshold}).</p>
               ) : (
-                <div style={{ display: "grid", gap: 12 }}>
+                <div className="grid gap-3">
                   {filteredHotLeads.map((lead) => (
                     <article
                       key={lead.leadKey}
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "auto 1fr auto",
-                        gap: 16,
-                        alignItems: "center",
-                        padding: "16px 20px",
-                        borderRadius: 14,
-                        background: lead.score >= 90
-                          ? "rgba(161, 39, 47, 0.04)"
-                          : "rgba(196, 99, 45, 0.04)",
-                        border: `1px solid ${lead.score >= 90 ? "rgba(161, 39, 47, 0.12)" : "rgba(196, 99, 45, 0.12)"}`,
-                      }}
+                      className={`grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-xl px-5 py-4 ${
+                        lead.score >= 90
+                          ? "border border-[rgba(161,39,47,0.12)] bg-[rgba(161,39,47,0.04)]"
+                          : "border border-[rgba(196,99,45,0.12)] bg-[rgba(196,99,45,0.04)]"
+                      }`}
                     >
                       <ScoreRing score={lead.score} />
                       <div>
-                        <h3 style={{ margin: 0, fontSize: "1rem" }}>
+                        <h3 className="m-0 text-base">
                           <Link href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`}>
                             {lead.firstName} {lead.lastName}
                           </Link>
                         </h3>
-                        <p className="muted" style={{ fontSize: "0.82rem", margin: "2px 0 0" }}>
+                        <p className="muted mt-0.5 text-xs">
                           {lead.email ?? lead.leadKey} | {lead.niche} | {lead.source}
                         </p>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 6 }}>
+                        <div className="mt-1.5 flex flex-wrap gap-1">
                           {lead.reasons.map((reason, i) => (
-                            <span key={i} style={{
-                              padding: "2px 8px",
-                              borderRadius: 999,
-                              background: "var(--accent-soft)",
-                              color: "var(--accent-strong)",
-                              fontSize: "0.72rem",
-                              fontWeight: 700,
-                            }}>
+                            <span key={i} className="rounded-full bg-[var(--accent-soft)] px-2 py-0.5 text-[0.72rem] font-bold text-[var(--accent-strong)]">
                               {reason}
                             </span>
                           ))}
                         </div>
                       </div>
-                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      <div className="flex flex-wrap gap-1.5">
                         <button
                           type="button"
-                          className="secondary"
-                          style={{ minHeight: 32, padding: "4px 10px", fontSize: "0.76rem" }}
+                          className="secondary min-h-8 px-2.5 py-1 text-xs"
                           aria-label={`Schedule call with ${lead.firstName} ${lead.lastName}`}
                           disabled={actionStatus[`${lead.leadKey}:schedule`] === "pending"}
                           onClick={() => handleAction(lead.leadKey, "schedule", `${lead.firstName} ${lead.lastName}`)}
@@ -406,8 +358,7 @@ export default function RadarPage() {
                         </button>
                         <button
                           type="button"
-                          className="secondary"
-                          style={{ minHeight: 32, padding: "4px 10px", fontSize: "0.76rem" }}
+                          className="secondary min-h-8 px-2.5 py-1 text-xs"
                           aria-label={`Send email to ${lead.firstName} ${lead.lastName}`}
                           disabled={actionStatus[`${lead.leadKey}:email`] === "pending"}
                           onClick={() => handleAction(lead.leadKey, "email", `${lead.firstName} ${lead.lastName}`)}
@@ -416,8 +367,7 @@ export default function RadarPage() {
                         </button>
                         <button
                           type="button"
-                          className="secondary"
-                          style={{ minHeight: 32, padding: "4px 10px", fontSize: "0.76rem" }}
+                          className="secondary min-h-8 px-2.5 py-1 text-xs"
                           aria-label={`Assign ${lead.firstName} ${lead.lastName} to sales`}
                           disabled={actionStatus[`${lead.leadKey}:assign`] === "pending"}
                           onClick={() => handleAction(lead.leadKey, "assign", `${lead.firstName} ${lead.lastName}`)}
@@ -437,43 +387,26 @@ export default function RadarPage() {
               {data.recentHighIntentEvents.length === 0 ? (
                 <p className="muted">No high-intent events in the last 24 hours.</p>
               ) : (
-                <div style={{ display: "grid", gap: 8 }}>
+                <div className="grid gap-2">
                   {data.recentHighIntentEvents.map((event) => (
                     <article
                       key={event.id}
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr auto",
-                        gap: 12,
-                        alignItems: "center",
-                        padding: "12px 16px",
-                        borderRadius: 14,
-                        background: "rgba(34, 95, 84, 0.04)",
-                        border: "1px solid rgba(34, 95, 84, 0.08)",
-                      }}
+                      className="grid grid-cols-[1fr_auto] items-center gap-3 rounded-xl border border-[rgba(34,95,84,0.08)] bg-[rgba(34,95,84,0.04)] px-4 py-3"
                     >
                       <div>
-                        <p style={{ margin: 0, fontWeight: 700, fontSize: "0.88rem" }}>
-                          <span style={{
-                            padding: "2px 8px",
-                            borderRadius: 999,
-                            background: "var(--accent-soft)",
-                            color: "var(--accent-strong)",
-                            fontSize: "0.72rem",
-                            fontWeight: 800,
-                            marginRight: 8,
-                          }}>
+                        <p className="m-0 text-sm font-bold">
+                          <span className="mr-2 rounded-full bg-[var(--accent-soft)] px-2 py-0.5 text-[0.72rem] font-extrabold text-[var(--accent-strong)]">
                             {event.eventType.replace(/_/g, " ")}
                           </span>
                           <Link href={`/dashboard/leads/${encodeURIComponent(event.leadKey)}`}>
                             {event.leadKey}
                           </Link>
                         </p>
-                        <p className="muted" style={{ fontSize: "0.78rem", margin: "2px 0 0" }}>
+                        <p className="muted mt-0.5 text-xs">
                           {event.channel} | {event.niche}
                         </p>
                       </div>
-                      <span style={{ fontSize: "0.78rem", color: "var(--text-soft)", whiteSpace: "nowrap" }}>
+                      <span className="whitespace-nowrap text-xs text-muted-foreground">
                         {formatTimeAgo(event.timestamp)}
                       </span>
                     </article>
@@ -488,42 +421,27 @@ export default function RadarPage() {
               {data.activityFeed.length === 0 ? (
                 <p className="muted">No activity recorded yet.</p>
               ) : (
-                <div style={{ display: "grid", gap: 4 }}>
+                <div className="grid gap-1">
                   {data.activityFeed.map((event) => (
                     <article
                       key={event.id}
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr auto",
-                        gap: 8,
-                        alignItems: "center",
-                        padding: "8px 12px",
-                        borderRadius: 8,
-                        borderBottom: "1px solid rgba(20, 33, 29, 0.04)",
-                      }}
+                      className="grid grid-cols-[1fr_auto] items-center gap-2 rounded-lg border-b border-border/10 px-3 py-2"
                     >
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        <span style={{
-                          padding: "1px 6px",
-                          borderRadius: 4,
-                          background: "rgba(34, 95, 84, 0.08)",
-                          fontSize: "0.72rem",
-                          fontWeight: 700,
-                          flexShrink: 0,
-                        }}>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="shrink-0 rounded bg-[rgba(34,95,84,0.08)] px-1.5 py-px text-[0.72rem] font-bold">
                           {event.eventType.replace(/_/g, " ")}
                         </span>
                         <Link
                           href={`/dashboard/leads/${encodeURIComponent(event.leadKey)}`}
-                          style={{ fontSize: "0.82rem" }}
+                          className="text-xs"
                         >
                           {event.leadKey}
                         </Link>
-                        <span className="muted" style={{ fontSize: "0.76rem" }}>
+                        <span className="muted text-xs">
                           {event.channel} | {event.source}
                         </span>
                       </div>
-                      <span style={{ fontSize: "0.72rem", color: "var(--text-soft)", whiteSpace: "nowrap" }}>
+                      <span className="whitespace-nowrap text-[0.72rem] text-muted-foreground">
                         {formatTimeAgo(event.timestamp)}
                       </span>
                     </article>

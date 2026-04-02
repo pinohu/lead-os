@@ -84,10 +84,7 @@ export default function ExperimentsPage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          status: "completed",
-          winner: variantId,
-        }),
+        body: JSON.stringify({ status: "completed", winner: variantId }),
       });
       if (!res.ok) throw new Error(`Failed: ${res.status}`);
       setPromoteStatus((prev) => ({ ...prev, [experimentId]: "done" }));
@@ -101,27 +98,15 @@ export default function ExperimentsPage() {
     fetch("/api/dashboard", { credentials: "include" })
       .then((res) => res.ok ? res.json() : null)
       .then((json) => {
-        if (json?.dashboard) {
-          setData(json);
-        } else {
-          setData(DEMO_EXPERIMENTS);
-          setIsDemo(true);
-        }
+        if (json?.dashboard) { setData(json); } else { setData(DEMO_EXPERIMENTS); setIsDemo(true); }
         setLoading(false);
       })
-      .catch(() => {
-        setData(DEMO_EXPERIMENTS);
-        setIsDemo(true);
-        setLoading(false);
-      });
+      .catch(() => { setData(DEMO_EXPERIMENTS); setIsDemo(true); setLoading(false); });
   }, []);
 
   const experiments = useMemo(() => {
     if (!data) return [];
-    return data.dashboard.experimentPerformance.map((exp) => ({
-      ...exp,
-      status: getExperimentStatus(exp),
-    }));
+    return data.dashboard.experimentPerformance.map((exp) => ({ ...exp, status: getExperimentStatus(exp) }));
   }, [data]);
 
   const filteredExperiments = useMemo(() => {
@@ -132,7 +117,7 @@ export default function ExperimentsPage() {
   if (loading) {
     return (
       <main className="experience-page">
-        <section className="panel">
+        <section className="rounded-xl border border-border bg-card p-6">
           <p className="muted">Loading experiment data...</p>
         </section>
       </main>
@@ -146,56 +131,44 @@ export default function ExperimentsPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", color: "#92400e" }}>
+        <div className="bg-amber-100 border-b border-amber-300 px-6 py-2.5 text-sm text-amber-800">
           Demo data — Connect your tenant to see live experiment results.{" "}
-          <Link href="/auth/sign-in" style={{ color: "#92400e", textDecoration: "underline" }}>Sign in</Link>
+          <Link href="/auth/sign-in" className="text-amber-800 underline">Sign in</Link>
         </div>
       )}
       <section className="experience-hero">
         <div className="hero-copy">
-          <p className="eyebrow">Experiment performance</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Experiment performance</p>
           <h1>Variant reporting</h1>
-          <p className="lede">
+          <p className="text-lg text-muted-foreground">
             Compare headline, mode, and device-level experience variants by milestone progression
             instead of just raw capture volume. Statistical significance is calculated when
             sample sizes allow.
           </p>
-          <div className="cta-row">
+          <div className="flex flex-wrap gap-3">
             <Link href="/dashboard" className="secondary">Back to dashboard</Link>
           </div>
         </div>
         <aside className="hero-rail">
-          <p className="eyebrow">Experiment summary</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Experiment summary</p>
           <ul className="journey-rail">
-            <li>
-              <strong>Experiments</strong>
-              <span>{experiments.length}</span>
-            </li>
-            <li>
-              <strong>Variants</strong>
-              <span>{totalVariants}</span>
-            </li>
-            <li>
-              <strong>Running</strong>
-              <span>{runningCount}</span>
-            </li>
-            <li>
-              <strong>Completed</strong>
-              <span>{completedCount}</span>
-            </li>
+            <li><strong>Experiments</strong><span>{experiments.length}</span></li>
+            <li><strong>Variants</strong><span>{totalVariants}</span></li>
+            <li><strong>Running</strong><span>{runningCount}</span></li>
+            <li><strong>Completed</strong><span>{completedCount}</span></li>
           </ul>
         </aside>
       </section>
 
-      <section className="panel">
-        <p className="eyebrow">Filter</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "0.88rem" }}>
+      <section className="rounded-xl border border-border bg-card p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Filter</p>
+        <div className="flex flex-wrap gap-3 items-center">
+          <label className="flex items-center gap-2 font-bold text-sm">
             Status
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ExperimentStatus | "all")}
-              style={selectStyle}
+              className="min-h-[36px] px-3 py-1.5 rounded-xl border border-border/60 bg-white/90 text-foreground text-sm"
             >
               <option value="all">All statuses</option>
               <option value="running">Running</option>
@@ -203,7 +176,7 @@ export default function ExperimentsPage() {
               <option value="paused">Paused</option>
             </select>
           </label>
-          <span style={{ fontSize: "0.82rem", color: "var(--text-soft)" }}>
+          <span className="text-sm text-muted-foreground">
             Showing {filteredExperiments.length} of {experiments.length} experiments
           </span>
         </div>
@@ -211,7 +184,7 @@ export default function ExperimentsPage() {
 
       <section className="stack-grid">
         {filteredExperiments.length === 0 ? (
-          <article className="panel">
+          <article className="rounded-xl border border-border bg-card p-6">
             <p className="muted">No experiments match the selected filter.</p>
           </article>
         ) : (
@@ -227,65 +200,58 @@ export default function ExperimentsPage() {
 
             return (
               <article key={experiment.experimentId} className="stack-card">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 8 }}>
+                <div className="flex justify-between items-start flex-wrap gap-2">
                   <div>
-                    <p className="eyebrow" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{
-                        padding: "2px 10px",
-                        borderRadius: 999,
-                        background: statusColors.bg,
-                        color: statusColors.color,
-                        fontWeight: 800,
-                        fontSize: "0.72rem",
-                        textTransform: "uppercase",
-                      }}>
+                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                      <span
+                        className="px-2.5 py-0.5 rounded-full font-extrabold text-[0.72rem] uppercase"
+                        style={{ background: statusColors.bg, color: statusColors.color }}
+                      >
                         {experiment.status}
                       </span>
                       {experiment.experimentId}
                     </p>
                     <h3>{experiment.entries} entries</h3>
                   </div>
-                  <div style={{ textAlign: "right", fontSize: "0.82rem" }}>
-                    <p style={{ margin: 0 }}>Hot: {experiment.hotRate}%</p>
-                    <p className="muted" style={{ margin: 0 }}>Conv: {experiment.conversionRate}%</p>
+                  <div className="text-right text-sm">
+                    <p className="m-0">Hot: {experiment.hotRate}%</p>
+                    <p className="muted m-0">Conv: {experiment.conversionRate}%</p>
                   </div>
                 </div>
 
-                <div style={{ marginTop: 8 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.76rem", marginBottom: 4 }}>
-                    <span style={{ fontWeight: 700 }}>Sample progress</span>
+                <div className="mt-2">
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="font-bold">Sample progress</span>
                     <span className="muted">{experiment.entries}/{targetSampleSize}</span>
                   </div>
-                  <div style={{ height: 8, background: "rgba(34, 95, 84, 0.08)", borderRadius: 4, overflow: "hidden" }}>
-                    <div style={{
-                      height: "100%",
-                      width: `${sampleProgress}%`,
-                      background: sampleProgress >= 100 ? "var(--success)" : "var(--accent)",
-                      borderRadius: 4,
-                      transition: "width 0.3s ease",
-                    }} />
+                  <div className="h-2 bg-teal-900/10 rounded overflow-hidden">
+                    <div
+                      className="h-full rounded transition-all duration-300"
+                      style={{
+                        width: `${sampleProgress}%`,
+                        background: sampleProgress >= 100 ? "var(--success)" : "var(--accent)",
+                      }}
+                    />
                   </div>
                 </div>
 
-                <p className="muted" style={{ marginTop: 8, fontSize: "0.82rem" }}>
+                <p className="muted mt-2 text-sm">
                   M1 to M2: {experiment.m1ToM2}% | M1 to M3: {experiment.m1ToM3}% | Conversion: {experiment.conversionRate}%
                 </p>
 
-                <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+                <div className="flex gap-2 mt-2 flex-wrap">
                   <button
                     type="button"
                     onClick={() => setExpandedExperiment(isExpanded ? null : experiment.experimentId)}
                     aria-expanded={isExpanded}
-                    className="secondary"
-                    style={{ minHeight: 36, padding: "6px 14px", fontSize: "0.82rem" }}
+                    className="secondary min-h-[36px] px-3.5 py-1.5 text-sm"
                   >
                     {isExpanded ? "Hide analysis" : "View analysis"}
                   </button>
                   {bestVariant && experiment.status === "completed" && (
                     <button
                       type="button"
-                      className="primary"
-                      style={{ minHeight: 36, padding: "6px 14px", fontSize: "0.82rem" }}
+                      className="primary min-h-[36px] px-3.5 py-1.5 text-sm"
                       disabled={promoteStatus[experiment.experimentId] === "pending"}
                       onClick={() => handlePromoteWinner(experiment.experimentId, bestVariant.variantId)}
                     >
@@ -294,82 +260,62 @@ export default function ExperimentsPage() {
                         : promoteStatus[experiment.experimentId] === "done"
                           ? "Promoted"
                           : promoteStatus[experiment.experimentId] === "error"
-                            ? "Failed — retry?"
+                            ? "Failed -- retry?"
                             : `Promote winner: ${bestVariant.variantId}`}
                     </button>
                   )}
                 </div>
 
                 {isExpanded && (
-                  <div style={{ marginTop: 16, display: "grid", gap: 16 }}>
+                  <div className="mt-4 grid gap-4">
                     <div>
-                      <p style={{ fontWeight: 700, fontSize: "0.88rem", marginBottom: 8 }}>Variant comparison</p>
-                      <div style={{ overflowX: "auto" }}>
-                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.88rem" }}>
+                      <p className="font-bold text-sm mb-2">Variant comparison</p>
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse text-sm">
                           <thead>
                             <tr>
-                              <th style={thStyle}>Variant</th>
-                              <th style={{ ...thStyle, textAlign: "right" }}>Entries</th>
-                              <th style={{ ...thStyle, textAlign: "right" }}>Share</th>
-                              <th style={{ ...thStyle, textAlign: "right" }}>Significance</th>
-                              <th style={thStyle}>Status</th>
+                              <th className="text-left px-3 py-2.5 border-b-2 border-border/50 font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Variant</th>
+                              <th className="text-right px-3 py-2.5 border-b-2 border-border/50 font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Entries</th>
+                              <th className="text-right px-3 py-2.5 border-b-2 border-border/50 font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Share</th>
+                              <th className="text-right px-3 py-2.5 border-b-2 border-border/50 font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Significance</th>
+                              <th className="text-left px-3 py-2.5 border-b-2 border-border/50 font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Status</th>
                             </tr>
                           </thead>
                           <tbody>
                             {experiment.topVariants.map((variant, idx) => {
-                              const share = experiment.entries > 0
-                                ? ((variant.count / experiment.entries) * 100).toFixed(1)
-                                : "0";
+                              const share = experiment.entries > 0 ? ((variant.count / experiment.entries) * 100).toFixed(1) : "0";
                               const isBest = bestVariant?.variantId === variant.variantId;
                               const sig = idx > 0 && bestVariant
                                 ? calculateSignificance(bestVariant.count, variant.count, experiment.entries, experiment.entries)
                                 : null;
                               return (
                                 <tr key={variant.variantId}>
-                                  <td style={tdStyle}>
-                                    <span style={{ fontWeight: isBest ? 800 : 400 }}>
+                                  <td className="px-3 py-2.5 border-b border-border/30">
+                                    <span className={isBest ? "font-extrabold" : ""}>
                                       {variant.variantId}
                                       {isBest && (
-                                        <span style={{
-                                          marginLeft: 6,
-                                          padding: "1px 8px",
-                                          borderRadius: 999,
-                                          background: "var(--success-soft)",
-                                          color: "var(--success)",
-                                          fontSize: "0.72rem",
-                                          fontWeight: 800,
-                                        }}>
+                                        <span className="ml-1.5 px-2 py-0.5 rounded-full bg-[var(--success-soft)] text-[var(--success)] text-[0.72rem] font-extrabold">
                                           leader
                                         </span>
                                       )}
                                     </span>
                                   </td>
-                                  <td style={{ ...tdStyle, textAlign: "right" }}>{variant.count}</td>
-                                  <td style={{ ...tdStyle, textAlign: "right" }}>{share}%</td>
-                                  <td style={{ ...tdStyle, textAlign: "right" }}>
+                                  <td className="px-3 py-2.5 border-b border-border/30 text-right">{variant.count}</td>
+                                  <td className="px-3 py-2.5 border-b border-border/30 text-right">{share}%</td>
+                                  <td className="px-3 py-2.5 border-b border-border/30 text-right">
                                     {sig ? (
-                                      <span style={{
-                                        padding: "2px 8px",
-                                        borderRadius: 999,
-                                        background: sig.significant ? "var(--success-soft)" : "var(--danger-soft)",
-                                        color: sig.significant ? "var(--success)" : "var(--danger)",
-                                        fontSize: "0.76rem",
-                                        fontWeight: 700,
-                                      }}>
+                                      <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${sig.significant ? "bg-[var(--success-soft)] text-[var(--success)]" : "bg-[var(--danger-soft)] text-[var(--danger)]"}`}>
                                         {sig.confidence}%
                                       </span>
                                     ) : (
                                       <span className="muted">baseline</span>
                                     )}
                                   </td>
-                                  <td style={tdStyle}>
-                                    <span style={{
-                                      display: "inline-block",
-                                      width: 8,
-                                      height: 8,
-                                      borderRadius: "50%",
-                                      background: isBest ? "var(--success)" : "var(--secondary)",
-                                    }} />
+                                  <td className="px-3 py-2.5 border-b border-border/30">
+                                    <span
+                                      className="inline-block w-2 h-2 rounded-full"
+                                      style={{ background: isBest ? "var(--success)" : "var(--secondary)" }}
+                                    />
                                   </td>
                                 </tr>
                               );
@@ -379,31 +325,20 @@ export default function ExperimentsPage() {
                       </div>
                     </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 }}>
-                      <div style={{ padding: 14, borderRadius: 14, background: "rgba(34, 95, 84, 0.06)" }}>
-                        <p style={{ fontSize: "0.72rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-soft)", margin: 0 }}>
-                          Hot rate
-                        </p>
-                        <p style={{ fontSize: "1.4rem", fontWeight: 800, margin: "4px 0 0" }}>{experiment.hotRate}%</p>
-                      </div>
-                      <div style={{ padding: 14, borderRadius: 14, background: "rgba(34, 95, 84, 0.06)" }}>
-                        <p style={{ fontSize: "0.72rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-soft)", margin: 0 }}>
-                          M1 to M2
-                        </p>
-                        <p style={{ fontSize: "1.4rem", fontWeight: 800, margin: "4px 0 0" }}>{experiment.m1ToM2}%</p>
-                      </div>
-                      <div style={{ padding: 14, borderRadius: 14, background: "rgba(34, 95, 84, 0.06)" }}>
-                        <p style={{ fontSize: "0.72rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-soft)", margin: 0 }}>
-                          M1 to M3
-                        </p>
-                        <p style={{ fontSize: "1.4rem", fontWeight: 800, margin: "4px 0 0" }}>{experiment.m1ToM3}%</p>
-                      </div>
-                      <div style={{ padding: 14, borderRadius: 14, background: "rgba(34, 95, 84, 0.06)" }}>
-                        <p style={{ fontSize: "0.72rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-soft)", margin: 0 }}>
-                          Conversion
-                        </p>
-                        <p style={{ fontSize: "1.4rem", fontWeight: 800, margin: "4px 0 0" }}>{experiment.conversionRate}%</p>
-                      </div>
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-3">
+                      {[
+                        { label: "Hot rate", value: `${experiment.hotRate}%` },
+                        { label: "M1 to M2", value: `${experiment.m1ToM2}%` },
+                        { label: "M1 to M3", value: `${experiment.m1ToM3}%` },
+                        { label: "Conversion", value: `${experiment.conversionRate}%` },
+                      ].map((metric) => (
+                        <div key={metric.label} className="p-3.5 rounded-xl bg-teal-900/5">
+                          <p className="text-[0.72rem] font-extrabold uppercase tracking-widest text-muted-foreground m-0">
+                            {metric.label}
+                          </p>
+                          <p className="text-xl font-extrabold mt-1 m-0">{metric.value}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -415,29 +350,3 @@ export default function ExperimentsPage() {
     </main>
   );
 }
-
-const selectStyle: React.CSSProperties = {
-  minHeight: 36,
-  padding: "6px 12px",
-  borderRadius: 14,
-  border: "1px solid rgba(20, 33, 29, 0.14)",
-  background: "rgba(255, 255, 255, 0.92)",
-  color: "var(--text)",
-  fontSize: "0.88rem",
-};
-
-const thStyle: React.CSSProperties = {
-  textAlign: "left",
-  padding: "10px 12px",
-  borderBottom: "2px solid rgba(20, 33, 29, 0.1)",
-  fontWeight: 800,
-  fontSize: "0.76rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.08em",
-  color: "var(--text-soft)",
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: "10px 12px",
-  borderBottom: "1px solid rgba(20, 33, 29, 0.06)",
-};

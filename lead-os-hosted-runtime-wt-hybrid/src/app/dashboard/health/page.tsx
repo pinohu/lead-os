@@ -92,39 +92,20 @@ function ScoreGauge({ score, riskLevel }: { score: number; riskLevel: string }) 
   const offset = circumference - (score / 100) * circumference;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+    <div className="flex flex-col items-center gap-2">
       <svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label={`Health score: ${score} out of 100, status: ${riskLevel}`}>
         <circle cx="60" cy="60" r="45" fill="none" stroke="#e5e7eb" strokeWidth="10" />
         <circle
-          cx="60"
-          cy="60"
-          r="45"
-          fill="none"
-          stroke={color}
-          strokeWidth="10"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          transform="rotate(-90 60 60)"
+          cx="60" cy="60" r="45" fill="none" stroke={color} strokeWidth="10"
+          strokeDasharray={circumference} strokeDashoffset={offset}
+          strokeLinecap="round" transform="rotate(-90 60 60)"
         />
-        <text x="60" y="56" textAnchor="middle" fontSize="28" fontWeight="bold" fill={color}>
-          {score}
-        </text>
-        <text x="60" y="74" textAnchor="middle" fontSize="11" fill="#6b7280">
-          / 100
-        </text>
+        <text x="60" y="56" textAnchor="middle" fontSize="28" fontWeight="bold" fill={color}>{score}</text>
+        <text x="60" y="74" textAnchor="middle" fontSize="11" fill="#6b7280">/ 100</text>
       </svg>
       <span
-        style={{
-          display: "inline-block",
-          padding: "2px 10px",
-          borderRadius: 12,
-          fontSize: 13,
-          fontWeight: 600,
-          color: "#fff",
-          backgroundColor: color,
-          textTransform: "capitalize",
-        }}
+        className="inline-block px-2.5 py-0.5 rounded-xl text-[13px] font-semibold text-white capitalize"
+        style={{ backgroundColor: color }}
       >
         {riskLevel}
       </span>
@@ -133,21 +114,17 @@ function ScoreGauge({ score, riskLevel }: { score: number; riskLevel: string }) 
 }
 
 function FactorBar({ label, value }: { label: string; value: number }) {
+  const barColor = value >= 60 ? "bg-green-500" : value >= 40 ? "bg-amber-500" : "bg-red-500";
   return (
-    <div style={{ marginBottom: 10 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 3 }}>
+    <div className="mb-2.5">
+      <div className="flex justify-between text-[13px] mb-0.5">
         <span>{label}</span>
-        <span style={{ fontWeight: 600 }}>{value}%</span>
+        <span className="font-semibold">{value}%</span>
       </div>
-      <div style={{ height: 8, backgroundColor: "#e5e7eb", borderRadius: 4, overflow: "hidden" }}>
+      <div className="h-2 bg-gray-200 rounded overflow-hidden">
         <div
-          style={{
-            height: "100%",
-            width: `${value}%`,
-            backgroundColor: value >= 60 ? "#22c55e" : value >= 40 ? "#f59e0b" : "#ef4444",
-            borderRadius: 4,
-            transition: "width 0.3s",
-          }}
+          className={`h-full rounded transition-all duration-300 ${barColor}`}
+          style={{ width: `${value}%` }}
           role="progressbar"
           aria-valuenow={value}
           aria-valuemin={0}
@@ -171,21 +148,10 @@ export default function HealthDashboardPage() {
     fetch("/api/analytics/health", { credentials: "include" })
       .then((res) => res.ok ? res.json() : null)
       .then((json) => {
-        if (json?.data) {
-          setAtRisk(json.data);
-        } else {
-          setAtRisk(DEMO_AT_RISK);
-          setData(DEMO_HEALTH);
-          setIsDemo(true);
-        }
+        if (json?.data) { setAtRisk(json.data); } else { setAtRisk(DEMO_AT_RISK); setData(DEMO_HEALTH); setIsDemo(true); }
         setLoading(false);
       })
-      .catch(() => {
-        setAtRisk(DEMO_AT_RISK);
-        setData(DEMO_HEALTH);
-        setIsDemo(true);
-        setLoading(false);
-      });
+      .catch(() => { setAtRisk(DEMO_AT_RISK); setData(DEMO_HEALTH); setIsDemo(true); setLoading(false); });
   }, []);
 
   function handleLookup() {
@@ -193,25 +159,16 @@ export default function HealthDashboardPage() {
     if (!id) return;
     setTenantId(id);
     setLoading(true);
-
     fetch(`/api/analytics/health?tenantId=${encodeURIComponent(id)}`, { credentials: "include" })
       .then((res) => res.ok ? res.json() : null)
-      .then((json) => {
-        setData(json?.data ?? DEMO_HEALTH);
-        if (!json?.data) setIsDemo(true);
-        setLoading(false);
-      })
-      .catch(() => {
-        setData(DEMO_HEALTH);
-        setIsDemo(true);
-        setLoading(false);
-      });
+      .then((json) => { setData(json?.data ?? DEMO_HEALTH); if (!json?.data) setIsDemo(true); setLoading(false); })
+      .catch(() => { setData(DEMO_HEALTH); setIsDemo(true); setLoading(false); });
   }
 
   if (loading && !data && !atRisk) {
     return (
       <main className="experience-page">
-        <section className="panel">
+        <section className="rounded-xl border border-border bg-card p-6">
           <p className="muted">Loading health data...</p>
         </section>
       </main>
@@ -223,20 +180,20 @@ export default function HealthDashboardPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", color: "#92400e" }}>
+        <div className="bg-amber-100 border-b border-amber-300 px-6 py-2.5 text-sm text-amber-800">
           Demo data — Sign in as an operator to see live tenant health scores.{" "}
-          <Link href="/auth/sign-in" style={{ color: "#92400e", textDecoration: "underline" }}>Sign in</Link>
+          <Link href="/auth/sign-in" className="text-amber-800 underline">Sign in</Link>
         </div>
       )}
-      <section className="panel">
-        <p className="eyebrow">Product Analytics</p>
+      <section className="rounded-xl border border-border bg-card p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Product Analytics</p>
         <h1>Tenant Health</h1>
         <p className="muted">Monitor tenant engagement, feature adoption, and churn risk.</p>
       </section>
 
-      <section className="panel" style={{ marginTop: 24 }}>
+      <section className="rounded-xl border border-border bg-card p-6 mt-6">
         <h2>Lookup Tenant</h2>
-        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+        <div className="flex gap-2 mt-3">
           <label htmlFor="tenant-id-input" className="sr-only">Tenant ID</label>
           <input
             id="tenant-id-input"
@@ -245,29 +202,12 @@ export default function HealthDashboardPage() {
             value={inputTenantId}
             onChange={(e) => setInputTenantId(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") handleLookup(); }}
-            style={{
-              flex: 1,
-              padding: "8px 12px",
-              border: "1px solid #d1d5db",
-              borderRadius: 6,
-              fontSize: 14,
-            }}
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
           />
           <button
             type="button"
             onClick={handleLookup}
-            style={{
-              padding: "8px 20px",
-              backgroundColor: "#14b8a6",
-              color: "#fff",
-              border: "none",
-              borderRadius: 6,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: "pointer",
-              minHeight: 44,
-              minWidth: 44,
-            }}
+            className="px-5 py-2 bg-teal-500 text-white border-none rounded-md text-sm font-semibold cursor-pointer min-h-[44px] min-w-[44px]"
           >
             Check Health
           </button>
@@ -276,12 +216,12 @@ export default function HealthDashboardPage() {
 
       {data && (
         <>
-          <section className="panel" style={{ marginTop: 24 }}>
+          <section className="rounded-xl border border-border bg-card p-6 mt-6">
             <h2>Health Score</h2>
-            <p className="muted" style={{ marginBottom: 16 }}>Tenant: {tenantId}</p>
-            <div style={{ display: "flex", gap: 40, flexWrap: "wrap", alignItems: "flex-start" }}>
+            <p className="muted mb-4">Tenant: {tenantId}</p>
+            <div className="flex gap-10 flex-wrap items-start">
               <ScoreGauge score={data.healthScore.score} riskLevel={data.healthScore.riskLevel} />
-              <div style={{ flex: 1, minWidth: 240 }}>
+              <div className="flex-1 min-w-[240px]">
                 {Object.entries(data.healthScore.factors).map(([key, value]) => (
                   <FactorBar key={key} label={FACTOR_LABELS[key] ?? key} value={value} />
                 ))}
@@ -289,34 +229,25 @@ export default function HealthDashboardPage() {
             </div>
           </section>
 
-          <section className="panel" style={{ marginTop: 24 }}>
+          <section className="rounded-xl border border-border bg-card p-6 mt-6">
             <h2>Feature Adoption</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12, marginTop: 12 }}>
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3 mt-3">
               {KNOWN_FEATURES.map((feature) => {
                 const isUsed = usedFeatures.has(feature);
                 const usage = data.featureUsage.find((f) => f.feature === feature);
                 return (
                   <div
                     key={feature}
-                    style={{
-                      padding: "12px 16px",
-                      border: `1px solid ${isUsed ? "#22c55e" : "#e5e7eb"}`,
-                      borderRadius: 8,
-                      backgroundColor: isUsed ? "#f0fdf4" : "#fafafa",
-                    }}
+                    className={`px-4 py-3 rounded-lg border ${isUsed ? "border-green-500 bg-green-50" : "border-gray-200 bg-gray-50"}`}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: 13, fontWeight: 500 }}>{feature}</span>
-                      <span style={{
-                        fontSize: 11,
-                        fontWeight: 600,
-                        color: isUsed ? "#22c55e" : "#9ca3af",
-                      }}>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[13px] font-medium">{feature}</span>
+                      <span className={`text-[11px] font-semibold ${isUsed ? "text-green-500" : "text-gray-400"}`}>
                         {isUsed ? "Active" : "Unused"}
                       </span>
                     </div>
                     {usage && (
-                      <div style={{ fontSize: 11, color: "#6b7280", marginTop: 4 }}>
+                      <div className="text-[11px] text-gray-500 mt-1">
                         {usage.usageCount} uses, {usage.uniqueUsers} user{usage.uniqueUsers !== 1 ? "s" : ""}
                       </div>
                     )}
@@ -326,9 +257,9 @@ export default function HealthDashboardPage() {
             </div>
           </section>
 
-          <section className="panel" style={{ marginTop: 24 }}>
+          <section className="rounded-xl border border-border bg-card p-6 mt-6">
             <h2>Config Completeness Checklist</h2>
-            <ul style={{ listStyle: "none", padding: 0, margin: "12px 0 0" }}>
+            <ul className="list-none p-0 mt-3">
               {[
                 { label: "Scoring configured", feature: "scoring.configured" },
                 { label: "Webhook configured", feature: "webhook.configured" },
@@ -340,34 +271,16 @@ export default function HealthDashboardPage() {
                 return (
                   <li
                     key={item.feature}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      padding: "8px 0",
-                      borderBottom: "1px solid #f3f4f6",
-                    }}
+                    className="flex items-center gap-2.5 py-2 border-b border-gray-100"
                   >
                     <span
-                      style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: 4,
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor: done ? "#22c55e" : "#e5e7eb",
-                        color: "#fff",
-                        fontSize: 12,
-                        fontWeight: 700,
-                        flexShrink: 0,
-                      }}
+                      className={`w-5 h-5 rounded inline-flex items-center justify-center text-xs font-bold text-white shrink-0 ${done ? "bg-green-500" : "bg-gray-200"}`}
                       role="img"
                       aria-label={done ? "Completed" : "Not completed"}
                     >
                       {done ? "\u2713" : ""}
                     </span>
-                    <span style={{ fontSize: 14, color: done ? "#111" : "#9ca3af" }}>{item.label}</span>
+                    <span className={`text-sm ${done ? "text-gray-900" : "text-gray-400"}`}>{item.label}</span>
                   </li>
                 );
               })}
@@ -377,45 +290,39 @@ export default function HealthDashboardPage() {
       )}
 
       {atRisk && atRisk.atRiskTenants.length > 0 && (
-        <section className="panel" style={{ marginTop: 24 }}>
+        <section className="rounded-xl border border-border bg-card p-6 mt-6">
           <h2>At-Risk Tenants</h2>
-          <p className="muted" style={{ marginBottom: 12 }}>Tenants with health score below 40 that may churn.</p>
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+          <p className="muted mb-3">Tenants with health score below 40 that may churn.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
               <thead>
-                <tr style={{ borderBottom: "2px solid #e5e7eb", textAlign: "left" }}>
-                  <th scope="col" style={{ padding: "8px 12px" }}>Tenant ID</th>
-                  <th scope="col" style={{ padding: "8px 12px" }}>Score</th>
-                  <th scope="col" style={{ padding: "8px 12px" }}>Risk Level</th>
-                  <th scope="col" style={{ padding: "8px 12px" }}>Login Freq.</th>
-                  <th scope="col" style={{ padding: "8px 12px" }}>Feature Adoption</th>
-                  <th scope="col" style={{ padding: "8px 12px" }}>Lead Volume</th>
+                <tr className="border-b-2 border-gray-200 text-left">
+                  <th scope="col" className="px-3 py-2">Tenant ID</th>
+                  <th scope="col" className="px-3 py-2">Score</th>
+                  <th scope="col" className="px-3 py-2">Risk Level</th>
+                  <th scope="col" className="px-3 py-2">Login Freq.</th>
+                  <th scope="col" className="px-3 py-2">Feature Adoption</th>
+                  <th scope="col" className="px-3 py-2">Lead Volume</th>
                 </tr>
               </thead>
               <tbody>
                 {atRisk.atRiskTenants.map((tenant) => (
-                  <tr key={tenant.tenantId} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                    <td style={{ padding: "8px 12px", fontFamily: "monospace", fontSize: 12 }}>
+                  <tr key={tenant.tenantId} className="border-b border-gray-100">
+                    <td className="px-3 py-2 font-mono text-xs">
                       {tenant.tenantId.slice(0, 12)}...
                     </td>
-                    <td style={{ padding: "8px 12px", fontWeight: 600 }}>{tenant.score}</td>
-                    <td style={{ padding: "8px 12px" }}>
-                      <span style={{
-                        display: "inline-block",
-                        padding: "2px 8px",
-                        borderRadius: 10,
-                        fontSize: 12,
-                        fontWeight: 600,
-                        color: "#fff",
-                        backgroundColor: RISK_COLORS[tenant.riskLevel] ?? "#6b7280",
-                        textTransform: "capitalize",
-                      }}>
+                    <td className="px-3 py-2 font-semibold">{tenant.score}</td>
+                    <td className="px-3 py-2">
+                      <span
+                        className="inline-block px-2 py-0.5 rounded-[10px] text-xs font-semibold text-white capitalize"
+                        style={{ backgroundColor: RISK_COLORS[tenant.riskLevel] ?? "#6b7280" }}
+                      >
                         {tenant.riskLevel}
                       </span>
                     </td>
-                    <td style={{ padding: "8px 12px" }}>{tenant.factors.loginFrequency}%</td>
-                    <td style={{ padding: "8px 12px" }}>{tenant.factors.featureAdoption}%</td>
-                    <td style={{ padding: "8px 12px" }}>{tenant.factors.leadVolume}%</td>
+                    <td className="px-3 py-2">{tenant.factors.loginFrequency}%</td>
+                    <td className="px-3 py-2">{tenant.factors.featureAdoption}%</td>
+                    <td className="px-3 py-2">{tenant.factors.leadVolume}%</td>
                   </tr>
                 ))}
               </tbody>
@@ -425,7 +332,7 @@ export default function HealthDashboardPage() {
       )}
 
       {atRisk && atRisk.atRiskTenants.length === 0 && !data && (
-        <section className="panel" style={{ marginTop: 24 }}>
+        <section className="rounded-xl border border-border bg-card p-6 mt-6">
           <h2>All Tenants Healthy</h2>
           <p className="muted">No tenants are currently at risk of churning. Enter a tenant ID above to view detailed health data.</p>
         </section>

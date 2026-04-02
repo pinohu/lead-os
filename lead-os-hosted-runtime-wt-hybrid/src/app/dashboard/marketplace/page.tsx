@@ -146,9 +146,9 @@ export default function MarketplaceDashboardPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", color: "#92400e" }}>
+        <div className="border-b border-amber-300 bg-amber-50 px-6 py-2.5 text-sm text-amber-800">
           Demo marketplace data — Connect your tenant to manage live lead inventory.{" "}
-          <Link href="/auth/sign-in" style={{ color: "#92400e", textDecoration: "underline" }}>Sign in</Link>
+          <Link href="/auth/sign-in" className="text-amber-800 underline">Sign in</Link>
         </div>
       )}
       <section className="experience-hero">
@@ -215,44 +215,23 @@ export default function MarketplaceDashboardPage() {
         {nicheEntries.length === 0 ? (
           <p className="muted">No revenue data yet.</p>
         ) : (
-          <div style={{ display: "grid", gap: 8, marginTop: 16 }}>
+          <div className="mt-4 grid gap-2">
             {nicheEntries.map(([niche, data]) => {
               const maxRevenue = Math.max(...nicheEntries.map(([, d]) => d.revenue), 1);
               const widthPercent = (data.revenue / maxRevenue) * 100;
               return (
                 <div
                   key={niche}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "160px 1fr 120px",
-                    alignItems: "center",
-                    gap: 12,
-                    padding: "8px 0",
-                  }}
+                  className="grid grid-cols-[160px_1fr_120px] items-center gap-3 py-2"
                 >
-                  <span style={{ fontWeight: 700, fontSize: "0.88rem" }}>{niche}</span>
-                  <div
-                    style={{
-                      position: "relative",
-                      height: 28,
-                      background: "rgba(34, 95, 84, 0.08)",
-                      borderRadius: 6,
-                    }}
-                  >
+                  <span className="text-sm font-bold">{niche}</span>
+                  <div className="relative h-7 rounded-md bg-[rgba(34,95,84,0.08)]">
                     <div
-                      style={{
-                        position: "absolute",
-                        left: 0,
-                        top: 0,
-                        height: "100%",
-                        width: `${widthPercent}%`,
-                        background: "var(--accent, #225f54)",
-                        borderRadius: 6,
-                        transition: "width 300ms ease",
-                      }}
+                      className="absolute left-0 top-0 h-full rounded-md bg-[var(--accent,#225f54)] transition-[width] duration-300 ease-out"
+                      style={{ width: `${widthPercent}%` }}
                     />
                   </div>
-                  <span style={{ fontWeight: 600, fontSize: "0.85rem", textAlign: "right" }}>
+                  <span className="text-right text-sm font-semibold">
                     {formatCents(data.revenue)} ({data.count})
                   </span>
                 </div>
@@ -268,23 +247,17 @@ export default function MarketplaceDashboardPage() {
         {Object.keys(temperatureDist).length === 0 ? (
           <p className="muted">No leads published yet.</p>
         ) : (
-          <div style={{ display: "flex", gap: 16, marginTop: 16, flexWrap: "wrap" }}>
+          <div className="mt-4 flex flex-wrap gap-4">
             {(["burning", "hot", "warm", "cold"] as const).map((temp) => (
               <div
                 key={temp}
-                style={{
-                  padding: "12px 20px",
-                  borderRadius: 8,
-                  background: "rgba(34, 95, 84, 0.05)",
-                  border: `2px solid ${temperatureColor(temp)}`,
-                  textAlign: "center",
-                  minWidth: 100,
-                }}
+                className="min-w-[100px] rounded-lg bg-[rgba(34,95,84,0.05)] px-5 py-3 text-center"
+                style={{ border: `2px solid ${temperatureColor(temp)}` }}
               >
-                <div style={{ fontSize: "1.5rem", fontWeight: 800 }}>
+                <div className="text-2xl font-extrabold">
                   {temperatureDist[temp] ?? 0}
                 </div>
-                <div style={{ fontSize: "0.82rem", fontWeight: 600, color: temperatureColor(temp), textTransform: "capitalize" }}>
+                <div className="text-xs font-semibold capitalize" style={{ color: temperatureColor(temp) }}>
                   {temp}
                 </div>
               </div>
@@ -299,31 +272,31 @@ export default function MarketplaceDashboardPage() {
         {soldLeads.length === 0 && claimedLeads.length === 0 ? (
           <p className="muted">No sales activity yet.</p>
         ) : (
-          <div style={{ overflowX: "auto", marginTop: 16 }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem" }}>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
               <thead>
-                <tr style={{ borderBottom: "2px solid rgba(34, 95, 84, 0.15)" }}>
-                  <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700 }}>Niche</th>
-                  <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700 }}>Temperature</th>
-                  <th scope="col" style={{ textAlign: "right", padding: "8px 12px", fontWeight: 700 }}>Score</th>
-                  <th scope="col" style={{ textAlign: "right", padding: "8px 12px", fontWeight: 700 }}>Price</th>
-                  <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700 }}>Status</th>
-                  <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700 }}>Date</th>
+                <tr className="border-b-2 border-[rgba(34,95,84,0.15)]">
+                  <th scope="col" className="px-3 py-2 text-left font-bold">Niche</th>
+                  <th scope="col" className="px-3 py-2 text-left font-bold">Temperature</th>
+                  <th scope="col" className="px-3 py-2 text-right font-bold">Score</th>
+                  <th scope="col" className="px-3 py-2 text-right font-bold">Price</th>
+                  <th scope="col" className="px-3 py-2 text-left font-bold">Status</th>
+                  <th scope="col" className="px-3 py-2 text-left font-bold">Date</th>
                 </tr>
               </thead>
               <tbody>
                 {[...soldLeads, ...claimedLeads].slice(0, 20).map((lead) => (
-                  <tr key={lead.id} style={{ borderBottom: "1px solid rgba(34, 95, 84, 0.08)" }}>
-                    <td style={{ padding: "8px 12px" }}>{lead.niche}</td>
-                    <td style={{ padding: "8px 12px" }}>
-                      <span style={{ color: temperatureColor(lead.temperature), fontWeight: 600, textTransform: "capitalize" }}>
+                  <tr key={lead.id} className="border-b border-[rgba(34,95,84,0.08)]">
+                    <td className="px-3 py-2">{lead.niche}</td>
+                    <td className="px-3 py-2">
+                      <span className="font-semibold capitalize" style={{ color: temperatureColor(lead.temperature) }}>
                         {lead.temperature}
                       </span>
                     </td>
-                    <td style={{ padding: "8px 12px", textAlign: "right" }}>{lead.qualityScore}</td>
-                    <td style={{ padding: "8px 12px", textAlign: "right" }}>{formatCents(lead.price)}</td>
-                    <td style={{ padding: "8px 12px", textTransform: "capitalize" }}>{lead.status}</td>
-                    <td style={{ padding: "8px 12px" }}>
+                    <td className="px-3 py-2 text-right">{lead.qualityScore}</td>
+                    <td className="px-3 py-2 text-right">{formatCents(lead.price)}</td>
+                    <td className="px-3 py-2 capitalize">{lead.status}</td>
+                    <td className="px-3 py-2">
                       {new Date(lead.soldAt ?? lead.createdAt).toLocaleDateString()}
                     </td>
                   </tr>
@@ -340,25 +313,25 @@ export default function MarketplaceDashboardPage() {
         {buyers.length === 0 ? (
           <p className="muted">No buyer accounts created yet.</p>
         ) : (
-          <div style={{ overflowX: "auto", marginTop: 16 }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem" }}>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
               <thead>
-                <tr style={{ borderBottom: "2px solid rgba(34, 95, 84, 0.15)" }}>
-                  <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700 }}>Company</th>
-                  <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700 }}>Email</th>
-                  <th scope="col" style={{ textAlign: "right", padding: "8px 12px", fontWeight: 700 }}>Leads bought</th>
-                  <th scope="col" style={{ textAlign: "right", padding: "8px 12px", fontWeight: 700 }}>Total spent</th>
-                  <th scope="col" style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700 }}>Status</th>
+                <tr className="border-b-2 border-[rgba(34,95,84,0.15)]">
+                  <th scope="col" className="px-3 py-2 text-left font-bold">Company</th>
+                  <th scope="col" className="px-3 py-2 text-left font-bold">Email</th>
+                  <th scope="col" className="px-3 py-2 text-right font-bold">Leads bought</th>
+                  <th scope="col" className="px-3 py-2 text-right font-bold">Total spent</th>
+                  <th scope="col" className="px-3 py-2 text-left font-bold">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {buyers.map((buyer) => (
-                  <tr key={buyer.id} style={{ borderBottom: "1px solid rgba(34, 95, 84, 0.08)" }}>
-                    <td style={{ padding: "8px 12px", fontWeight: 600 }}>{buyer.company}</td>
-                    <td style={{ padding: "8px 12px" }}>{buyer.email}</td>
-                    <td style={{ padding: "8px 12px", textAlign: "right" }}>{buyer.leadsPurchased}</td>
-                    <td style={{ padding: "8px 12px", textAlign: "right" }}>{formatCents(buyer.totalSpent)}</td>
-                    <td style={{ padding: "8px 12px", textTransform: "capitalize" }}>{buyer.status}</td>
+                  <tr key={buyer.id} className="border-b border-[rgba(34,95,84,0.08)]">
+                    <td className="px-3 py-2 font-semibold">{buyer.company}</td>
+                    <td className="px-3 py-2">{buyer.email}</td>
+                    <td className="px-3 py-2 text-right">{buyer.leadsPurchased}</td>
+                    <td className="px-3 py-2 text-right">{formatCents(buyer.totalSpent)}</td>
+                    <td className="px-3 py-2 capitalize">{buyer.status}</td>
                   </tr>
                 ))}
               </tbody>

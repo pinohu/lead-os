@@ -57,14 +57,10 @@ function formatDate(dateStr?: string): string {
   });
 }
 
-function getStatusBadgeStyle(status: "active" | "paused"): { background: string; color: string } {
+function getStatusBadgeClass(status: "active" | "paused"): string {
   return status === "active"
-    ? { background: "var(--accent-soft, rgba(20, 184, 166, 0.15))", color: "var(--accent-strong, #14b8a6)" }
-    : { background: "rgba(20, 33, 29, 0.08)", color: "var(--text-soft, #9ca3af)" };
-}
-
-function getScheduleBadgeStyle(): { background: string; color: string } {
-  return { background: "rgba(99, 102, 241, 0.15)", color: "#6366f1" };
+    ? "bg-teal-500/15 text-teal-500"
+    : "bg-muted text-muted-foreground";
 }
 
 const DEMO_JOBS: CreativeJob[] = [
@@ -191,70 +187,33 @@ export default function CreativePipelinePage() {
     URL.revokeObjectURL(url);
   }
 
-  const cardStyle: React.CSSProperties = {
-    background: "var(--surface, #111827)",
-    borderRadius: 12,
-    padding: 24,
-    boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
-    marginBottom: 16,
-  };
-
-  const btnStyle: React.CSSProperties = {
-    padding: "8px 16px",
-    borderRadius: 8,
-    border: "none",
-    cursor: "pointer",
-    fontSize: "0.875rem",
-    fontWeight: 600,
-  };
-
-  const primaryBtnStyle: React.CSSProperties = {
-    ...btnStyle,
-    background: "var(--accent, #14b8a6)",
-    color: "#fff",
-  };
-
-  const ghostBtnStyle: React.CSSProperties = {
-    ...btnStyle,
-    background: "transparent",
-    color: "var(--text-soft, #9ca3af)",
-    border: "1px solid var(--text-soft, #374151)",
-  };
-
-  const destructiveBtnStyle: React.CSSProperties = {
-    ...btnStyle,
-    background: "transparent",
-    color: "#ef4444",
-    border: "1px solid #ef4444",
-  };
-
   if (loading) {
     return (
-      <main style={{ maxWidth: 1180, margin: "0 auto", padding: "32px 24px" }}>
-        <p style={{ color: "var(--text-soft, #9ca3af)" }}>Loading creative pipelines...</p>
+      <main className="max-w-[1180px] mx-auto px-6 py-8">
+        <p className="text-muted-foreground">Loading creative pipelines...</p>
       </main>
     );
   }
 
   return (
-    <main style={{ maxWidth: 1180, margin: "0 auto", padding: "32px 24px" }}>
+    <main className="max-w-[1180px] mx-auto px-6 py-8">
       {isDemo && (
-        <div style={{ background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 8, padding: "10px 16px", fontSize: "0.875rem", color: "#92400e", marginBottom: 24 }}>
+        <div className="bg-amber-100 border border-amber-300 rounded-lg px-4 py-2.5 text-sm text-amber-800 mb-6">
           Demo jobs — Connect your tenant to manage live creative pipeline schedules.
         </div>
       )}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0 }}>Creative Pipelines</h1>
-          <p style={{ color: "var(--text-soft, #9ca3af)", marginTop: 4, fontSize: "0.875rem" }}>
+          <h1 className="text-2xl font-bold m-0">Creative Pipelines</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
             Scheduled automation jobs that generate creative assets on a cadence.
           </p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <Link href="/dashboard" style={ghostBtnStyle}>
+        <div className="flex gap-2">
+          <Link href="/dashboard" className="px-4 py-2 rounded-lg border border-muted-foreground/30 cursor-pointer text-sm font-semibold bg-transparent text-muted-foreground no-underline inline-flex items-center">
             Back to Dashboard
           </Link>
-          <button type="button" style={primaryBtnStyle} onClick={() => setShowCreateForm(!showCreateForm)}>
+          <button type="button" className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-500 text-white" onClick={() => setShowCreateForm(!showCreateForm)}>
             {showCreateForm ? "Cancel" : "New Job"}
           </button>
         </div>
@@ -263,43 +222,31 @@ export default function CreativePipelinePage() {
       {error && (
         <div
           role="alert"
-          style={{ ...cardStyle, background: "rgba(239, 68, 68, 0.1)", borderLeft: "3px solid #ef4444", marginBottom: 24 }}
+          className="rounded-xl bg-red-500/10 border-l-[3px] border-l-red-500 p-6 shadow-sm mb-6"
         >
-          <p style={{ color: "#ef4444", margin: 0 }}>{error}</p>
-          <button type="button" style={{ ...ghostBtnStyle, marginTop: 8 }} onClick={() => setError(null)}>
+          <p className="text-red-500 m-0">{error}</p>
+          <button type="button" className="px-4 py-2 rounded-lg border border-muted-foreground/30 cursor-pointer text-sm font-semibold bg-transparent text-muted-foreground mt-2" onClick={() => setError(null)}>
             Dismiss
           </button>
         </div>
       )}
 
       {showCreateForm && (
-        <section aria-label="Create new creative job" style={{ ...cardStyle, marginBottom: 24 }}>
-          <h2 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: 16 }}>Create New Job</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
+        <section aria-label="Create new creative job" className="rounded-xl bg-card p-6 shadow-sm mb-6">
+          <h2 className="text-lg font-semibold mb-4">Create New Job</h2>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3">
             {JOB_TYPE_OPTIONS.map((option) => (
               <button
                 key={option.type}
                 type="button"
                 onClick={() => handleCreateJob(option.type, option.defaultSchedule)}
-                style={{
-                  ...cardStyle,
-                  cursor: "pointer",
-                  border: "1px solid var(--text-soft, #374151)",
-                  textAlign: "left",
-                  marginBottom: 0,
-                }}
+                className="rounded-xl bg-card p-6 shadow-sm cursor-pointer border border-muted-foreground/30 text-left"
               >
-                <div style={{ fontWeight: 600, marginBottom: 4 }}>{option.name}</div>
-                <div style={{ fontSize: "0.8rem", color: "var(--text-soft, #9ca3af)", marginBottom: 8 }}>
+                <div className="font-semibold mb-1">{option.name}</div>
+                <div className="text-xs text-muted-foreground mb-2">
                   {option.description}
                 </div>
-                <span style={{
-                  ...getScheduleBadgeStyle(),
-                  padding: "2px 10px",
-                  borderRadius: 9999,
-                  fontSize: "0.75rem",
-                  fontWeight: 500,
-                }}>
+                <span className="bg-indigo-500/15 text-indigo-500 px-2.5 py-0.5 rounded-full text-xs font-medium">
                   {option.defaultSchedule}
                 </span>
               </button>
@@ -309,11 +256,11 @@ export default function CreativePipelinePage() {
       )}
 
       {jobs.length === 0 && !showCreateForm && (
-        <div style={{ ...cardStyle, textAlign: "center", padding: 48 }}>
-          <p style={{ color: "var(--text-soft, #9ca3af)", marginBottom: 16 }}>
+        <div className="rounded-xl bg-card p-12 shadow-sm text-center">
+          <p className="text-muted-foreground mb-4">
             No creative jobs yet. Create one to start generating assets automatically.
           </p>
-          <button type="button" style={primaryBtnStyle} onClick={() => setShowCreateForm(true)}>
+          <button type="button" className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-500 text-white" onClick={() => setShowCreateForm(true)}>
             Create Your First Job
           </button>
         </div>
@@ -323,43 +270,30 @@ export default function CreativePipelinePage() {
         {jobs.map((job) => {
           const isRunning = runningJobs.has(job.id);
           const output = recentOutputs.get(job.id);
-          const statusStyle = getStatusBadgeStyle(job.status);
 
           return (
-            <article key={job.id} style={cardStyle}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+            <article key={job.id} className="rounded-xl bg-card p-6 shadow-sm mb-4">
+              <div className="flex justify-between items-start mb-3">
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                    <h3 style={{ fontSize: "1rem", fontWeight: 600, margin: 0 }}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-base font-semibold m-0">
                       {JOB_TYPE_OPTIONS.find((o) => o.type === job.type)?.name ?? job.type}
                     </h3>
-                    <span style={{
-                      ...statusStyle,
-                      padding: "2px 10px",
-                      borderRadius: 9999,
-                      fontSize: "0.7rem",
-                      fontWeight: 500,
-                    }}>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[0.7rem] font-medium ${getStatusBadgeClass(job.status)}`}>
                       {job.status}
                     </span>
-                    <span style={{
-                      ...getScheduleBadgeStyle(),
-                      padding: "2px 10px",
-                      borderRadius: 9999,
-                      fontSize: "0.7rem",
-                      fontWeight: 500,
-                    }}>
+                    <span className="bg-indigo-500/15 text-indigo-500 px-2.5 py-0.5 rounded-full text-[0.7rem] font-medium">
                       {job.schedule}
                     </span>
                   </div>
-                  <p style={{ color: "var(--text-soft, #9ca3af)", fontSize: "0.8rem", margin: 0 }}>
+                  <p className="text-muted-foreground text-xs m-0">
                     Last run: {formatDate(job.lastRunAt)} | Next run: {formatDate(job.nextRunAt)}
                   </p>
                 </div>
-                <div style={{ display: "flex", gap: 6 }}>
+                <div className="flex gap-1.5">
                   <button
                     type="button"
-                    style={primaryBtnStyle}
+                    className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-500 text-white"
                     disabled={isRunning}
                     onClick={() => handleRunJob(job.id)}
                     aria-label={`Run ${job.type} now`}
@@ -368,7 +302,7 @@ export default function CreativePipelinePage() {
                   </button>
                   <button
                     type="button"
-                    style={ghostBtnStyle}
+                    className="px-4 py-2 rounded-lg border border-muted-foreground/30 cursor-pointer text-sm font-semibold bg-transparent text-muted-foreground"
                     onClick={() => handleToggleStatus(job)}
                     aria-label={`${job.status === "active" ? "Pause" : "Resume"} ${job.type}`}
                   >
@@ -376,7 +310,7 @@ export default function CreativePipelinePage() {
                   </button>
                   <button
                     type="button"
-                    style={destructiveBtnStyle}
+                    className="px-4 py-2 rounded-lg border border-red-500 cursor-pointer text-sm font-semibold bg-transparent text-red-500"
                     onClick={() => handleDeleteJob(job.id)}
                     aria-label={`Delete ${job.type}`}
                   >
@@ -386,33 +320,26 @@ export default function CreativePipelinePage() {
               </div>
 
               {output && (
-                <div style={{ marginTop: 16, borderTop: "1px solid var(--text-soft, #374151)", paddingTop: 16 }}>
-                  <h4 style={{ fontSize: "0.875rem", fontWeight: 600, marginBottom: 8 }}>
+                <div className="mt-4 border-t border-muted-foreground/30 pt-4">
+                  <h4 className="text-sm font-semibold mb-2">
                     Latest Output ({output.artifacts.length} artifact{output.artifacts.length !== 1 ? "s" : ""})
                   </h4>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div className="flex flex-col gap-2">
                     {output.artifacts.map((artifact, idx) => (
                       <div
                         key={idx}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: "8px 12px",
-                          background: "rgba(0,0,0,0.2)",
-                          borderRadius: 8,
-                        }}
+                        className="flex items-center justify-between px-3 py-2 bg-black/20 rounded-lg"
                       >
                         <div>
-                          <span style={{ fontWeight: 500, fontSize: "0.875rem" }}>{artifact.name}</span>
-                          <span style={{ color: "var(--text-soft, #9ca3af)", fontSize: "0.75rem", marginLeft: 8 }}>
+                          <span className="font-medium text-sm">{artifact.name}</span>
+                          <span className="text-muted-foreground text-xs ml-2">
                             {artifact.type} ({artifact.format})
                           </span>
                         </div>
-                        <div style={{ display: "flex", gap: 6 }}>
+                        <div className="flex gap-1.5">
                           <button
                             type="button"
-                            style={{ ...ghostBtnStyle, padding: "4px 12px", fontSize: "0.75rem" }}
+                            className="px-3 py-1 rounded-lg border border-muted-foreground/30 cursor-pointer text-xs font-semibold bg-transparent text-muted-foreground"
                             onClick={() => setPreviewArtifact(artifact)}
                             aria-label={`Preview ${artifact.name}`}
                           >
@@ -420,7 +347,7 @@ export default function CreativePipelinePage() {
                           </button>
                           <button
                             type="button"
-                            style={{ ...ghostBtnStyle, padding: "4px 12px", fontSize: "0.75rem" }}
+                            className="px-3 py-1 rounded-lg border border-muted-foreground/30 cursor-pointer text-xs font-semibold bg-transparent text-muted-foreground"
                             onClick={() => copyArtifactContent(artifact.content)}
                             aria-label={`Copy ${artifact.name}`}
                           >
@@ -428,7 +355,7 @@ export default function CreativePipelinePage() {
                           </button>
                           <button
                             type="button"
-                            style={{ ...ghostBtnStyle, padding: "4px 12px", fontSize: "0.75rem" }}
+                            className="px-3 py-1 rounded-lg border border-muted-foreground/30 cursor-pointer text-xs font-semibold bg-transparent text-muted-foreground"
                             onClick={() => downloadArtifact(artifact)}
                             aria-label={`Download ${artifact.name}`}
                           >
@@ -450,65 +377,39 @@ export default function CreativePipelinePage() {
           role="dialog"
           aria-label="Artifact preview"
           aria-modal="true"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.7)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-            padding: 24,
-          }}
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-[1000] p-6"
           onClick={() => setPreviewArtifact(null)}
           onKeyDown={(e) => { if (e.key === "Escape") setPreviewArtifact(null); }}
         >
           <div
-            style={{
-              background: "var(--surface, #111827)",
-              borderRadius: 12,
-              padding: 24,
-              maxWidth: 900,
-              maxHeight: "80vh",
-              width: "100%",
-              overflow: "auto",
-            }}
+            className="bg-card rounded-xl p-6 max-w-[900px] max-h-[80vh] w-full overflow-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <h2 style={{ fontSize: "1.125rem", fontWeight: 600, margin: 0 }}>{previewArtifact.name}</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold m-0">{previewArtifact.name}</h2>
               <button
                 type="button"
-                style={ghostBtnStyle}
+                className="px-4 py-2 rounded-lg border border-muted-foreground/30 cursor-pointer text-sm font-semibold bg-transparent text-muted-foreground"
                 onClick={() => setPreviewArtifact(null)}
                 aria-label="Close preview"
               >
                 Close
               </button>
             </div>
-            <pre style={{
-              background: "rgba(0,0,0,0.3)",
-              padding: 16,
-              borderRadius: 8,
-              overflow: "auto",
-              fontSize: "0.8rem",
-              lineHeight: 1.5,
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-word",
-            }}>
+            <pre className="bg-black/30 p-4 rounded-lg overflow-auto text-xs leading-relaxed whitespace-pre-wrap break-words">
               {previewArtifact.content}
             </pre>
-            <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+            <div className="flex gap-2 mt-4">
               <button
                 type="button"
-                style={primaryBtnStyle}
+                className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-500 text-white"
                 onClick={() => copyArtifactContent(previewArtifact.content)}
               >
                 Copy to Clipboard
               </button>
               <button
                 type="button"
-                style={ghostBtnStyle}
+                className="px-4 py-2 rounded-lg border border-muted-foreground/30 cursor-pointer text-sm font-semibold bg-transparent text-muted-foreground"
                 onClick={() => downloadArtifact(previewArtifact)}
               >
                 Download File

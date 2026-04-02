@@ -52,12 +52,12 @@ export default function ContactPage() {
     return (
       <>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }} />
-      <main id="main-content" style={{ maxWidth: "32rem", margin: "0 auto", padding: "6rem 1rem", textAlign: "center" }}>
-        <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.75rem" }}>Message Sent</h1>
-        <p style={{ color: "#6b7280", marginBottom: "1.5rem" }}>
+      <main id="main-content" className="max-w-lg mx-auto px-4 py-24 text-center">
+        <h1 className="text-2xl font-bold mb-3">Message Sent</h1>
+        <p className="text-muted-foreground mb-6">
           Thank you for reaching out. We will get back to you within 24 hours.
         </p>
-        <Link href="/" style={{ color: "#4f46e5", textDecoration: "underline" }}>
+        <Link href="/" className="text-primary underline">
           Return home
         </Link>
       </main>
@@ -68,15 +68,15 @@ export default function ContactPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }} />
-    <main id="main-content" style={{ maxWidth: "32rem", margin: "0 auto", padding: "3rem 1rem" }}>
-      <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.5rem" }}>Contact Us</h1>
-      <p style={{ color: "#6b7280", marginBottom: "2rem" }}>
+    <main id="main-content" className="max-w-lg mx-auto px-4 py-12">
+      <h1 className="text-2xl font-extrabold mb-2">Contact Us</h1>
+      <p className="text-muted-foreground mb-8">
         Questions about Lead OS? We would love to hear from you.
       </p>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
-          <label htmlFor="name" style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+          <label htmlFor="name" className="block text-sm font-semibold mb-1">
             Name
           </label>
           <input
@@ -85,12 +85,12 @@ export default function ContactPage() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            style={{ width: "100%", padding: "0.5rem 0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem" }}
+            className="w-full px-3 py-2 border border-border rounded-md"
           />
         </div>
 
         <div>
-          <label htmlFor="email" style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+          <label htmlFor="email" className="block text-sm font-semibold mb-1">
             Email
           </label>
           <input
@@ -99,12 +99,12 @@ export default function ContactPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{ width: "100%", padding: "0.5rem 0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem" }}
+            className="w-full px-3 py-2 border border-border rounded-md"
           />
         </div>
 
         <div>
-          <label htmlFor="company" style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+          <label htmlFor="company" className="block text-sm font-semibold mb-1">
             Company (optional)
           </label>
           <input
@@ -112,19 +112,19 @@ export default function ContactPage() {
             type="text"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
-            style={{ width: "100%", padding: "0.5rem 0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem" }}
+            className="w-full px-3 py-2 border border-border rounded-md"
           />
         </div>
 
         <div>
-          <label htmlFor="inquiry" style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+          <label htmlFor="inquiry" className="block text-sm font-semibold mb-1">
             Inquiry Type
           </label>
           <select
             id="inquiry"
             value={inquiry}
             onChange={(e) => setInquiry(e.target.value as InquiryType)}
-            style={{ width: "100%", padding: "0.5rem 0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem" }}
+            className="w-full px-3 py-2 border border-border rounded-md"
           >
             <option value="sales">Sales</option>
             <option value="support">Support</option>
@@ -134,7 +134,7 @@ export default function ContactPage() {
         </div>
 
         <div>
-          <label htmlFor="message" style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+          <label htmlFor="message" className="block text-sm font-semibold mb-1">
             Message
           </label>
           <textarea
@@ -143,12 +143,12 @@ export default function ContactPage() {
             rows={5}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            style={{ width: "100%", padding: "0.5rem 0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", resize: "vertical" }}
+            className="w-full px-3 py-2 border border-border rounded-md resize-y"
           />
         </div>
 
         {formState === "error" && (
-          <p role="alert" style={{ color: "#dc2626", fontSize: "0.875rem" }}>
+          <p role="alert" className="text-destructive text-sm">
             Something went wrong. Please try again or email us directly.
           </p>
         )}
@@ -156,26 +156,18 @@ export default function ContactPage() {
         <button
           type="submit"
           disabled={formState === "submitting"}
-          style={{
-            padding: "0.625rem 1.5rem",
-            background: formState === "submitting" ? "#9ca3af" : "#4f46e5",
-            color: "#fff",
-            border: "none",
-            borderRadius: "0.375rem",
-            fontWeight: 600,
-            cursor: formState === "submitting" ? "not-allowed" : "pointer",
-          }}
+          className="px-6 py-2.5 bg-primary text-primary-foreground border-none rounded-md font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {formState === "submitting" ? "Sending..." : "Send Message"}
         </button>
       </form>
 
-      <div style={{ marginTop: "2rem", padding: "1.5rem", background: "#f9fafb", borderRadius: "0.5rem" }}>
-        <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+      <div className="mt-8 p-6 bg-muted rounded-lg">
+        <p className="text-sm text-muted-foreground">
           You can also reach us at{" "}
-          <a href="mailto:support@leadgen-os.com" style={{ color: "#4f46e5" }}>support@leadgen-os.com</a>
+          <a href="mailto:support@leadgen-os.com" className="text-primary">support@leadgen-os.com</a>
           {" "}or find us on{" "}
-          <a href="https://github.com/pinohu/lead-os" style={{ color: "#4f46e5" }}>GitHub</a>.
+          <a href="https://github.com/pinohu/lead-os" className="text-primary">GitHub</a>.
         </p>
       </div>
     </main>

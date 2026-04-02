@@ -22,12 +22,12 @@ function confidenceColor(score: number): string {
 }
 
 function topSourceType(artifacts: MarketingArtifact[]): string {
-  if (artifacts.length === 0) return "—";
+  if (artifacts.length === 0) return "\u2014";
   const counts: Record<string, number> = {};
   for (const a of artifacts) {
     counts[a.sourceType] = (counts[a.sourceType] ?? 0) + 1;
   }
-  return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "—";
+  return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "\u2014";
 }
 
 function avgConfidence(artifacts: MarketingArtifact[]): number {
@@ -35,248 +35,6 @@ function avgConfidence(artifacts: MarketingArtifact[]): number {
   const total = artifacts.reduce((sum, a) => sum + a.confidence, 0);
   return Math.round(total / artifacts.length);
 }
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "#0a0f1a",
-    color: "#e2e8f0",
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  } as React.CSSProperties,
-  container: {
-    maxWidth: 1100,
-    margin: "0 auto",
-    padding: "32px 24px",
-  } as React.CSSProperties,
-  title: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 8px",
-  } as React.CSSProperties,
-  muted: {
-    color: "rgba(255, 255, 255, 0.4)",
-    fontSize: "0.85rem",
-    margin: "0 0 24px",
-  } as React.CSSProperties,
-  summaryGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-    gap: 16,
-    marginBottom: 24,
-  } as React.CSSProperties,
-  summaryCard: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(255, 255, 255, 0.06)",
-    borderRadius: 12,
-    padding: "20px 24px",
-  } as React.CSSProperties,
-  summaryLabel: {
-    fontSize: "0.78rem",
-    fontWeight: 600,
-    color: "rgba(255, 255, 255, 0.5)",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-    margin: "0 0 8px",
-  } as React.CSSProperties,
-  summaryValue: {
-    fontSize: "1.75rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: 0,
-  } as React.CSSProperties,
-  formCard: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(255, 255, 255, 0.06)",
-    borderRadius: 12,
-    padding: 24,
-    marginBottom: 24,
-  } as React.CSSProperties,
-  cardTitle: {
-    fontSize: "0.85rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 16px",
-  } as React.CSSProperties,
-  fieldGroup: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: 6,
-    marginBottom: 16,
-  } as React.CSSProperties,
-  label: {
-    fontSize: "0.78rem",
-    fontWeight: 600,
-    color: "rgba(255, 255, 255, 0.5)",
-  } as React.CSSProperties,
-  textarea: {
-    background: "rgba(255, 255, 255, 0.06)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: 8,
-    padding: "10px 14px",
-    color: "#f1f5f9",
-    fontSize: "0.85rem",
-    outline: "none",
-    width: "100%",
-    boxSizing: "border-box" as const,
-    resize: "vertical" as const,
-    minHeight: 120,
-    fontFamily: "inherit",
-  } as React.CSSProperties,
-  input: {
-    background: "rgba(255, 255, 255, 0.06)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: 8,
-    padding: "10px 14px",
-    color: "#f1f5f9",
-    fontSize: "0.85rem",
-    outline: "none",
-    minHeight: 44,
-    width: "100%",
-    boxSizing: "border-box" as const,
-  } as React.CSSProperties,
-  select: {
-    background: "rgba(255, 255, 255, 0.06)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: 8,
-    padding: "10px 14px",
-    color: "#f1f5f9",
-    fontSize: "0.85rem",
-    outline: "none",
-    minHeight: 44,
-    cursor: "pointer",
-    width: "100%",
-    boxSizing: "border-box" as const,
-  } as React.CSSProperties,
-  formGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr 1fr",
-    gap: 12,
-  } as React.CSSProperties,
-  primaryButton: {
-    padding: "10px 20px",
-    borderRadius: 8,
-    border: "none",
-    background: "#14b8a6",
-    color: "#0a0f1a",
-    fontSize: "0.85rem",
-    fontWeight: 700,
-    cursor: "pointer",
-    minHeight: 44,
-    whiteSpace: "nowrap" as const,
-  } as React.CSSProperties,
-  dangerButton: {
-    padding: "8px 14px",
-    borderRadius: 8,
-    border: "1px solid rgba(239, 68, 68, 0.3)",
-    background: "transparent",
-    color: "#f87171",
-    fontSize: "0.8rem",
-    fontWeight: 600,
-    cursor: "pointer",
-    minHeight: 44,
-  } as React.CSSProperties,
-  disabledButton: {
-    padding: "8px 14px",
-    borderRadius: 8,
-    border: "1px solid rgba(255, 255, 255, 0.06)",
-    background: "transparent",
-    color: "rgba(255, 255, 255, 0.2)",
-    fontSize: "0.8rem",
-    fontWeight: 600,
-    cursor: "not-allowed",
-    minHeight: 44,
-  } as React.CSSProperties,
-  artifactCard: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(255, 255, 255, 0.06)",
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 12,
-  } as React.CSSProperties,
-  artifactHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 12,
-  } as React.CSSProperties,
-  artifactTitle: {
-    fontSize: "1rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 4px",
-  } as React.CSSProperties,
-  sourceBadge: {
-    display: "inline-block",
-    padding: "3px 10px",
-    borderRadius: 999,
-    fontSize: "0.72rem",
-    fontWeight: 700,
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-    background: "rgba(99, 102, 241, 0.15)",
-    color: "#818cf8",
-  } as React.CSSProperties,
-  confidenceBadge: (score: number) => ({
-    display: "inline-block",
-    padding: "3px 10px",
-    borderRadius: 999,
-    fontSize: "0.72rem",
-    fontWeight: 700,
-    background: score >= 70
-      ? "rgba(20, 184, 166, 0.15)"
-      : score >= 40
-        ? "rgba(245, 158, 11, 0.15)"
-        : "rgba(239, 68, 68, 0.15)",
-    color: confidenceColor(score),
-  }) as React.CSSProperties,
-  statRow: {
-    display: "flex",
-    flexWrap: "wrap" as const,
-    gap: 16,
-    padding: "12px 0",
-    borderTop: "1px solid rgba(255, 255, 255, 0.06)",
-    fontSize: "0.8rem",
-    color: "rgba(255, 255, 255, 0.5)",
-  } as React.CSSProperties,
-  stat: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: 2,
-  } as React.CSSProperties,
-  statLabel: {
-    fontSize: "0.7rem",
-    color: "rgba(255, 255, 255, 0.3)",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-  } as React.CSSProperties,
-  statValue: {
-    fontSize: "0.85rem",
-    fontWeight: 600,
-    color: "rgba(255, 255, 255, 0.8)",
-  } as React.CSSProperties,
-  cardActions: {
-    display: "flex",
-    gap: 8,
-    marginTop: 12,
-  } as React.CSSProperties,
-  errorText: {
-    color: "#f87171",
-    fontSize: "0.82rem",
-    margin: "8px 0 0",
-  } as React.CSSProperties,
-  offerText: {
-    fontSize: "0.8rem",
-    color: "rgba(255, 255, 255, 0.5)",
-    margin: "8px 0 0",
-    fontStyle: "italic" as const,
-  } as React.CSSProperties,
-  geoText: {
-    fontSize: "0.78rem",
-    color: "rgba(255, 255, 255, 0.35)",
-    margin: "4px 0 0",
-  } as React.CSSProperties,
-};
 
 export default function MarketingIngestionPage() {
   const [artifacts, setArtifacts] = useState<MarketingArtifact[]>([]);
@@ -300,7 +58,6 @@ export default function MarketingIngestionPage() {
       setArtifacts(json?.data ?? []);
       setLoading(false);
     } catch (err) {
-      // Graceful empty state — show the form even without auth
       setArtifacts([]);
       setError(err instanceof Error ? err.message : "Unknown error");
       setLoading(false);
@@ -385,10 +142,10 @@ export default function MarketingIngestionPage() {
 
   if (loading) {
     return (
-      <main style={styles.page}>
-        <div style={styles.container}>
-          <div style={styles.formCard}>
-            <p style={styles.muted}>Loading marketing intelligence data...</p>
+      <main className="min-h-screen bg-[#0a0f1a] font-sans text-slate-200">
+        <div className="mx-auto max-w-[1100px] px-6 py-8">
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-6">
+            <p className="m-0 text-sm text-white/40">Loading marketing intelligence data...</p>
           </div>
         </div>
       </main>
@@ -396,46 +153,46 @@ export default function MarketingIngestionPage() {
   }
 
   return (
-    <main style={styles.page}>
-      <div style={styles.container}>
-        <h1 style={styles.title}>Marketing Intelligence</h1>
-        <p style={styles.muted}>
+    <main className="min-h-screen bg-[#0a0f1a] font-sans text-slate-200">
+      <div className="mx-auto max-w-[1100px] px-6 py-8">
+        <h1 className="mb-2 text-2xl font-bold text-slate-50">Marketing Intelligence</h1>
+        <p className="mb-6 text-sm text-white/40">
           Extract proven messaging, offers, and design patterns from real-world marketing materials.
         </p>
 
         {/* Summary cards */}
-        <div style={styles.summaryGrid} role="region" aria-label="Summary statistics">
-          <div style={styles.summaryCard}>
-            <p style={styles.summaryLabel}>Total Artifacts</p>
-            <p style={styles.summaryValue}>{artifacts.length}</p>
+        <div className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4" role="region" aria-label="Summary statistics">
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Total Artifacts</p>
+            <p className="m-0 text-3xl font-bold text-slate-50">{artifacts.length}</p>
           </div>
-          <div style={styles.summaryCard}>
-            <p style={styles.summaryLabel}>Avg Confidence</p>
-            <p style={styles.summaryValue}>{artifacts.length > 0 ? `${avgConfidence(artifacts)}%` : "—"}</p>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Avg Confidence</p>
+            <p className="m-0 text-3xl font-bold text-slate-50">{artifacts.length > 0 ? `${avgConfidence(artifacts)}%` : "\u2014"}</p>
           </div>
-          <div style={styles.summaryCard}>
-            <p style={styles.summaryLabel}>Top Source Type</p>
-            <p style={{ ...styles.summaryValue, fontSize: "1.25rem" }}>
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Top Source Type</p>
+            <p className="m-0 text-xl font-bold text-slate-50">
               {topSourceType(artifacts)}
             </p>
           </div>
         </div>
 
         {/* Status message */}
-        <div aria-live="polite" aria-atomic="true" style={{ marginBottom: statusMessage ? 16 : 0 }}>
+        <div aria-live="polite" aria-atomic="true" className={statusMessage ? "mb-4" : ""}>
           {statusMessage && (
-            <p style={{ color: "#14b8a6", fontSize: "0.85rem", fontWeight: 600, margin: 0 }}>
+            <p className="m-0 text-sm font-semibold text-teal-400">
               {statusMessage}
             </p>
           )}
         </div>
 
         {/* Upload form */}
-        <section style={styles.formCard} aria-labelledby="upload-form-heading">
-          <h2 id="upload-form-heading" style={styles.cardTitle}>Analyze Artifact</h2>
+        <section className="mb-6 rounded-xl border border-white/[0.06] bg-white/[0.04] p-6" aria-labelledby="upload-form-heading">
+          <h2 id="upload-form-heading" className="mb-4 text-sm font-bold text-slate-50">Analyze Artifact</h2>
           <form onSubmit={handleSubmit} noValidate>
-            <div style={styles.fieldGroup}>
-              <label htmlFor="artifact-text" style={styles.label}>
+            <div className="mb-4 flex flex-col gap-1.5">
+              <label htmlFor="artifact-text" className="text-xs font-semibold text-white/50">
                 Paste extracted text from flyer or ad
               </label>
               <textarea
@@ -444,23 +201,23 @@ export default function MarketingIngestionPage() {
                 onChange={(e) => setFormText(e.target.value)}
                 placeholder={"EMERGENCY PLUMBING SERVICES\nFast. Reliable. Affordable.\nCALL NOW: (555) 123-4567"}
                 required
-                style={styles.textarea}
+                className="min-h-[120px] w-full resize-y rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 font-[inherit] text-sm text-slate-100 outline-none"
                 aria-required="true"
                 aria-describedby={formError ? "upload-form-error" : undefined}
               />
             </div>
 
-            <div style={styles.formGrid}>
-              <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-                <div style={styles.fieldGroup}>
-                  <label htmlFor="artifact-source-type" style={styles.label}>
+            <div className="grid grid-cols-3 gap-3">
+              <fieldset className="m-0 border-none p-0">
+                <div className="mb-4 flex flex-col gap-1.5">
+                  <label htmlFor="artifact-source-type" className="text-xs font-semibold text-white/50">
                     Source type
                   </label>
                   <select
                     id="artifact-source-type"
                     value={formSourceType}
                     onChange={(e) => setFormSourceType(e.target.value)}
-                    style={styles.select}
+                    className="min-h-11 w-full cursor-pointer rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-slate-100 outline-none"
                   >
                     {SOURCE_TYPE_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -471,9 +228,9 @@ export default function MarketingIngestionPage() {
                 </div>
               </fieldset>
 
-              <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-                <div style={styles.fieldGroup}>
-                  <label htmlFor="artifact-niche" style={styles.label}>
+              <fieldset className="m-0 border-none p-0">
+                <div className="mb-4 flex flex-col gap-1.5">
+                  <label htmlFor="artifact-niche" className="text-xs font-semibold text-white/50">
                     Niche slug (optional)
                   </label>
                   <input
@@ -482,14 +239,14 @@ export default function MarketingIngestionPage() {
                     value={formNicheSlug}
                     onChange={(e) => setFormNicheSlug(e.target.value)}
                     placeholder="e.g. plumbing, roofing"
-                    style={styles.input}
+                    className="min-h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-slate-100 outline-none"
                   />
                 </div>
               </fieldset>
 
-              <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-                <div style={styles.fieldGroup}>
-                  <label htmlFor="artifact-geo" style={styles.label}>
+              <fieldset className="m-0 border-none p-0">
+                <div className="mb-4 flex flex-col gap-1.5">
+                  <label htmlFor="artifact-geo" className="text-xs font-semibold text-white/50">
                     City or region hint (optional)
                   </label>
                   <input
@@ -498,17 +255,18 @@ export default function MarketingIngestionPage() {
                     value={formGeoHint}
                     onChange={(e) => setFormGeoHint(e.target.value)}
                     placeholder="e.g. Denver, CO"
-                    style={styles.input}
+                    className="min-h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-slate-100 outline-none"
                   />
                 </div>
               </fieldset>
             </div>
 
-            <div style={{ marginTop: 4 }}>
+            <div className="mt-1">
               <button
                 type="submit"
                 disabled={formSubmitting}
-                style={{ ...styles.primaryButton, opacity: formSubmitting ? 0.6 : 1 }}
+                className="min-h-11 cursor-pointer whitespace-nowrap rounded-lg border-none bg-teal-500 px-5 py-2.5 text-sm font-bold text-[#0a0f1a]"
+                style={{ opacity: formSubmitting ? 0.6 : 1 }}
                 aria-busy={formSubmitting}
               >
                 {formSubmitting ? "Analyzing..." : "Analyze Artifact"}
@@ -516,7 +274,7 @@ export default function MarketingIngestionPage() {
             </div>
 
             {formError && (
-              <p id="upload-form-error" role="alert" style={styles.errorText}>
+              <p id="upload-form-error" role="alert" className="mt-2 text-sm text-red-400">
                 {formError}
               </p>
             )}
@@ -525,44 +283,52 @@ export default function MarketingIngestionPage() {
 
         {/* Artifact list */}
         <section aria-labelledby="artifact-list-heading">
-          <h2 id="artifact-list-heading" style={{ ...styles.cardTitle, marginBottom: 12 }}>
+          <h2 id="artifact-list-heading" className="mb-3 text-sm font-bold text-slate-50">
             Analyzed Artifacts
             {artifacts.length > 0 && (
-              <span style={{ fontWeight: 400, color: "rgba(255,255,255,0.4)", marginLeft: 8, fontSize: "0.8rem" }}>
+              <span className="ml-2 text-xs font-normal text-white/40">
                 ({artifacts.length})
               </span>
             )}
           </h2>
 
           {artifacts.length === 0 ? (
-            <div style={styles.formCard}>
-              <p style={styles.muted}>
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-6">
+              <p className="text-sm text-white/40">
                 No artifacts yet. Paste text from a flyer or ad above to get started.
               </p>
             </div>
           ) : (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            <ul className="m-0 list-none p-0">
               {artifacts.map((artifact) => (
-                <li key={artifact.id} style={styles.artifactCard}>
-                  <div style={styles.artifactHeader}>
+                <li key={artifact.id} className="mb-3 rounded-xl border border-white/[0.06] bg-white/[0.04] p-5">
+                  <div className="mb-3 flex items-start justify-between">
                     <div>
-                      <h3 style={styles.artifactTitle}>
+                      <h3 className="mb-1 text-base font-bold text-slate-50">
                         {artifact.headline ?? artifact.extractedText.slice(0, 50).trim()}
-                        {!artifact.headline && artifact.extractedText.length > 50 ? "…" : ""}
+                        {!artifact.headline && artifact.extractedText.length > 50 ? "\u2026" : ""}
                       </h3>
                       {artifact.geoContext && (artifact.geoContext.city || artifact.geoContext.state) && (
-                        <p style={styles.geoText}>
+                        <p className="mt-1 text-xs text-white/35">
                           {[artifact.geoContext.city, artifact.geoContext.state].filter(Boolean).join(", ")}
                           {artifact.geoContext.zipCode ? ` ${artifact.geoContext.zipCode}` : ""}
                         </p>
                       )}
                     </div>
-                    <div style={{ display: "flex", gap: 8, alignItems: "flex-start", flexWrap: "wrap" as const }}>
-                      <span style={styles.sourceBadge} aria-label={`Source type: ${artifact.sourceType}`}>
+                    <div className="flex flex-wrap items-start gap-2">
+                      <span className="inline-block rounded-full bg-indigo-500/15 px-2.5 py-0.5 text-[0.72rem] font-bold uppercase tracking-wider text-indigo-300" aria-label={`Source type: ${artifact.sourceType}`}>
                         {artifact.sourceType}
                       </span>
                       <span
-                        style={styles.confidenceBadge(artifact.confidence)}
+                        className="inline-block rounded-full px-2.5 py-0.5 text-[0.72rem] font-bold"
+                        style={{
+                          background: artifact.confidence >= 70
+                            ? "rgba(20, 184, 166, 0.15)"
+                            : artifact.confidence >= 40
+                              ? "rgba(245, 158, 11, 0.15)"
+                              : "rgba(239, 68, 68, 0.15)",
+                          color: confidenceColor(artifact.confidence),
+                        }}
                         aria-label={`Confidence score: ${artifact.confidence}%`}
                       >
                         {artifact.confidence}% confidence
@@ -571,51 +337,49 @@ export default function MarketingIngestionPage() {
                   </div>
 
                   {artifact.offer?.primaryOffer && (
-                    <p style={styles.offerText}>{artifact.offer.primaryOffer}</p>
+                    <p className="mt-2 text-xs italic text-white/50">{artifact.offer.primaryOffer}</p>
                   )}
 
-                  <div style={styles.statRow} aria-label="Artifact statistics">
-                    <div style={styles.stat}>
-                      <span style={styles.statLabel}>Urgency</span>
-                      <span style={styles.statValue}>{artifact.urgencySignals.length}</span>
+                  <div className="flex flex-wrap gap-4 border-t border-white/[0.06] py-3 text-xs text-white/50" aria-label="Artifact statistics">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Urgency</span>
+                      <span className="text-sm font-semibold text-white/80">{artifact.urgencySignals.length}</span>
                     </div>
-                    <div style={styles.stat}>
-                      <span style={styles.statLabel}>Trust</span>
-                      <span style={styles.statValue}>{artifact.trustSignals.length}</span>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Trust</span>
+                      <span className="text-sm font-semibold text-white/80">{artifact.trustSignals.length}</span>
                     </div>
-                    <div style={styles.stat}>
-                      <span style={styles.statLabel}>CTAs</span>
-                      <span style={styles.statValue}>{artifact.ctaLabels.length}</span>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">CTAs</span>
+                      <span className="text-sm font-semibold text-white/80">{artifact.ctaLabels.length}</span>
                     </div>
-                    <div style={styles.stat}>
-                      <span style={styles.statLabel}>Phones</span>
-                      <span style={styles.statValue}>{artifact.contactInfo.phones.length}</span>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Phones</span>
+                      <span className="text-sm font-semibold text-white/80">{artifact.contactInfo.phones.length}</span>
                     </div>
-                    <div style={styles.stat}>
-                      <span style={styles.statLabel}>Emails</span>
-                      <span style={styles.statValue}>{artifact.contactInfo.emails.length}</span>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Emails</span>
+                      <span className="text-sm font-semibold text-white/80">{artifact.contactInfo.emails.length}</span>
                     </div>
-                    <div style={styles.stat}>
-                      <span style={styles.statLabel}>Websites</span>
-                      <span style={styles.statValue}>{artifact.contactInfo.websites.length}</span>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Websites</span>
+                      <span className="text-sm font-semibold text-white/80">{artifact.contactInfo.websites.length}</span>
                     </div>
                     {artifact.audience.targetIndustry && (
-                      <div style={styles.stat}>
-                        <span style={styles.statLabel}>Industry</span>
-                        <span style={styles.statValue}>{artifact.audience.targetIndustry}</span>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Industry</span>
+                        <span className="text-sm font-semibold text-white/80">{artifact.audience.targetIndustry}</span>
                       </div>
                     )}
                   </div>
 
-                  <div style={styles.cardActions}>
+                  <div className="mt-3 flex gap-2">
                     <button
                       type="button"
                       onClick={() => handleRemove(artifact.id)}
                       disabled={removingIds.has(artifact.id)}
-                      style={{
-                        ...styles.dangerButton,
-                        opacity: removingIds.has(artifact.id) ? 0.6 : 1,
-                      }}
+                      className="min-h-11 cursor-pointer rounded-lg border border-red-500/30 bg-transparent px-3.5 py-2 text-xs font-semibold text-red-400"
+                      style={{ opacity: removingIds.has(artifact.id) ? 0.6 : 1 }}
                       aria-busy={removingIds.has(artifact.id)}
                       aria-label={`Remove artifact: ${artifact.headline ?? artifact.id}`}
                     >
@@ -624,7 +388,7 @@ export default function MarketingIngestionPage() {
                     <button
                       type="button"
                       disabled
-                      style={styles.disabledButton}
+                      className="min-h-11 cursor-not-allowed rounded-lg border border-white/[0.06] bg-transparent px-3.5 py-2 text-xs font-semibold text-white/20"
                       aria-label="Use as Template — coming soon"
                       aria-disabled="true"
                     >

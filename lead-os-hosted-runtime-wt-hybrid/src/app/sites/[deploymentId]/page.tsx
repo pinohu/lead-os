@@ -29,74 +29,45 @@ export default async function SiteViewerPage({
   };
 
   return (
-    <main
-      style={{
-        maxWidth: 800,
-        margin: "0 auto",
-        padding: "40px 24px",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        color: "#1a1a2e",
-      }}
-    >
-      <header style={{ marginBottom: 32 }}>
-        <p
-          style={{
-            fontSize: "0.82rem",
-            fontWeight: 600,
-            textTransform: "uppercase",
-            letterSpacing: 1.5,
-            color: "#6c757d",
-            marginBottom: 8,
-          }}
-        >
+    <main className="max-w-4xl mx-auto px-6 py-10 text-foreground">
+      <header className="mb-8">
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
           Deployment
         </p>
-        <h1 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 8px" }}>
+        <h1 className="text-3xl font-bold mb-2">
           {deployment.nicheSlug}
         </h1>
-        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <div className="flex gap-3 items-center flex-wrap">
           <span
+            className="inline-block px-3 py-1 rounded-full text-xs font-bold"
             style={{
-              display: "inline-block",
-              padding: "4px 12px",
-              borderRadius: 999,
               background: `${statusColors[deployment.status] || "#6c757d"}20`,
               color: statusColors[deployment.status] || "#6c757d",
-              fontSize: "0.82rem",
-              fontWeight: 700,
             }}
           >
             {deployment.status}
           </span>
-          <span style={{ fontSize: "0.85rem", color: "#6c757d" }}>
+          <span className="text-sm text-muted-foreground">
             Tenant: {deployment.tenantId}
           </span>
-          <span style={{ fontSize: "0.85rem", color: "#6c757d" }}>
+          <span className="text-sm text-muted-foreground">
             Created: {new Date(deployment.createdAt).toLocaleDateString()}
           </span>
         </div>
       </header>
 
       {deployment.repoUrl ? (
-        <section
-          style={{
-            background: "#f8f9fa",
-            padding: 20,
-            borderRadius: 8,
-            marginBottom: 24,
-            border: "1px solid #e5e7eb",
-          }}
-        >
-          <h2 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 8px" }}>URLs</h2>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        <section className="bg-muted p-5 rounded-lg mb-6 border border-border">
+          <h2 className="text-base font-semibold mb-2">URLs</h2>
+          <ul className="list-none p-0 m-0">
             {deployment.repoUrl ? (
-              <li style={{ marginBottom: 8 }}>
-                <strong style={{ fontSize: 13, color: "#6c757d" }}>Repository: </strong>
+              <li className="mb-2">
+                <strong className="text-xs text-muted-foreground">Repository: </strong>
                 <a
                   href={deployment.repoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: "#14b8a6", fontWeight: 600, textDecoration: "none" }}
+                  className="text-primary font-semibold no-underline"
                 >
                   {deployment.repoUrl}
                 </a>
@@ -104,12 +75,12 @@ export default async function SiteViewerPage({
             ) : null}
             {deployment.liveUrl ? (
               <li>
-                <strong style={{ fontSize: 13, color: "#6c757d" }}>Live site: </strong>
+                <strong className="text-xs text-muted-foreground">Live site: </strong>
                 <a
                   href={deployment.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: "#14b8a6", fontWeight: 600, textDecoration: "none" }}
+                  className="text-primary font-semibold no-underline"
                 >
                   {deployment.liveUrl}
                 </a>
@@ -121,26 +92,20 @@ export default async function SiteViewerPage({
 
       {deployment.error ? (
         <section
-          style={{
-            background: "#fef2f2",
-            padding: 16,
-            borderRadius: 8,
-            marginBottom: 24,
-            border: "1px solid #fecaca",
-          }}
+          className="bg-red-50 p-4 rounded-lg mb-6 border border-red-200"
           role="alert"
         >
-          <p style={{ color: "#dc2626", fontWeight: 600, margin: 0 }}>
+          <p className="text-destructive font-semibold m-0">
             Error: {deployment.error}
           </p>
         </section>
       ) : null}
 
       <section>
-        <h2 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 16px" }}>
+        <h2 className="text-xl font-bold mb-4">
           Deployed Assets ({deployment.assets.length})
         </h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="flex flex-col gap-3">
           {deployment.assets.map((asset) => {
             const assetUrl = deployment.liveUrl
               ? `${deployment.liveUrl.replace(/\/$/, "")}/${asset.path}`
@@ -149,17 +114,12 @@ export default async function SiteViewerPage({
             return (
               <article
                 key={asset.path}
-                style={{
-                  background: "#fff",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 8,
-                  padding: 16,
-                }}
+                className="bg-card border border-border rounded-lg p-4"
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                <div className="flex justify-between items-center flex-wrap gap-2">
                   <div>
-                    <p style={{ fontWeight: 600, margin: "0 0 4px" }}>{asset.title}</p>
-                    <p style={{ fontSize: 13, color: "#6c757d", margin: 0 }}>
+                    <p className="font-semibold m-0 mb-1">{asset.title}</p>
+                    <p className="text-xs text-muted-foreground m-0">
                       {asset.type} &mdash; {asset.path}
                     </p>
                   </div>
@@ -168,16 +128,7 @@ export default async function SiteViewerPage({
                       href={assetUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{
-                        display: "inline-block",
-                        padding: "6px 16px",
-                        background: "#14b8a6",
-                        color: "#fff",
-                        borderRadius: 6,
-                        fontSize: 13,
-                        fontWeight: 600,
-                        textDecoration: "none",
-                      }}
+                      className="inline-block px-4 py-1.5 bg-primary text-primary-foreground rounded-md text-xs font-semibold no-underline"
                     >
                       View
                     </a>
@@ -185,27 +136,11 @@ export default async function SiteViewerPage({
                 </div>
 
                 {(asset.type === "form" || asset.type === "widget") && assetUrl ? (
-                  <details style={{ marginTop: 12 }}>
-                    <summary
-                      style={{
-                        cursor: "pointer",
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: "#6c757d",
-                      }}
-                    >
+                  <details className="mt-3">
+                    <summary className="cursor-pointer text-xs font-semibold text-muted-foreground">
                       Embed code
                     </summary>
-                    <pre
-                      style={{
-                        background: "#f1f5f9",
-                        padding: 12,
-                        borderRadius: 6,
-                        fontSize: 12,
-                        overflowX: "auto",
-                        marginTop: 8,
-                      }}
-                    >
+                    <pre className="bg-muted p-3 rounded-md text-xs overflow-x-auto mt-2">
                       {`<iframe src="${assetUrl}" width="100%" height="600" frameborder="0" title="${asset.title}"></iframe>`}
                     </pre>
                   </details>

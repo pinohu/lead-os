@@ -105,7 +105,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
   );
 
   return (
-    <div data-theme="light" style={{ colorScheme: "light" }}>
+    <div data-theme="light" className="[color-scheme:light]">
       <ExperienceScaffold
         eyebrow={niche.label}
         title={headline}
@@ -225,24 +225,15 @@ export default async function IndustryPage({ params, searchParams }: Props) {
               <p className="eyebrow">What {niche.label.toLowerCase()} leaders are saying</p>
               <div className="grid three">
                 {testimonials.map((t) => (
-                  <article key={t.author} className="panel" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    <p style={{ fontStyle: "italic", fontSize: "0.92rem", lineHeight: 1.6, flex: 1 }}>
+                  <article key={t.author} className="panel flex flex-col gap-3">
+                    <p className="italic text-sm leading-relaxed flex-1">
                       &ldquo;{t.quote}&rdquo;
                     </p>
                     <div>
-                      <strong style={{ display: "block", fontSize: "0.88rem" }}>{t.author}</strong>
-                      <span className="muted" style={{ fontSize: "0.78rem" }}>{t.role}, {t.company}</span>
+                      <strong className="block text-sm">{t.author}</strong>
+                      <span className="muted text-xs">{t.role}, {t.company}</span>
                     </div>
-                    <span style={{
-                      display: "inline-block",
-                      padding: "4px 10px",
-                      borderRadius: 999,
-                      background: "var(--accent-soft)",
-                      color: "var(--accent-strong)",
-                      fontSize: "0.76rem",
-                      fontWeight: 700,
-                      width: "fit-content",
-                    }}>
+                    <span className="inline-block px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-bold w-fit">
                       {t.metric}
                     </span>
                   </article>
@@ -262,9 +253,9 @@ export default async function IndustryPage({ params, searchParams }: Props) {
                 <div className="grid two">
                   {intel.buyingTriggers.slice(0, 4).map((trigger) => (
                     <article key={trigger.event} className="panel" style={{ borderLeft: `4px solid ${trigger.urgency === "immediate" ? "var(--danger)" : "var(--accent)"}` }}>
-                      <h3 style={{ margin: "0 0 6px", fontSize: "0.94rem" }}>{trigger.event}</h3>
-                      <p className="muted" style={{ fontSize: "0.82rem", margin: "0 0 4px" }}>{trigger.searchBehavior}</p>
-                      <span style={{ fontSize: "0.76rem", fontStyle: "italic", color: "var(--text-soft)" }}>{trigger.emotionalState}</span>
+                      <h3 className="m-0 mb-1.5 text-sm">{trigger.event}</h3>
+                      <p className="muted text-xs m-0 mb-1">{trigger.searchBehavior}</p>
+                      <span className="text-xs italic text-muted-foreground">{trigger.emotionalState}</span>
                     </article>
                   ))}
                 </div>
@@ -272,31 +263,31 @@ export default async function IndustryPage({ params, searchParams }: Props) {
 
               <section>
                 <p className="eyebrow">Common objections — and how we address them</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div className="flex flex-col gap-3">
                   {intel.objections.map((obj) => (
-                    <details key={obj.objection} className="panel" style={{ cursor: "pointer" }}>
-                      <summary style={{ fontWeight: 700, fontSize: "0.94rem" }}>&ldquo;{obj.objection}&rdquo;</summary>
-                      <div style={{ marginTop: 12, paddingLeft: 16, borderLeft: "3px solid var(--accent-soft)" }}>
-                        <p style={{ margin: "0 0 6px", fontSize: "0.88rem" }}><strong>The real concern:</strong> {obj.underlyingFear}</p>
-                        <p style={{ margin: 0, fontSize: "0.88rem" }}><strong>Our response:</strong> {obj.evidenceBasedResponse}</p>
+                    <details key={obj.objection} className="panel cursor-pointer">
+                      <summary className="font-bold text-sm">&ldquo;{obj.objection}&rdquo;</summary>
+                      <div className="mt-3 pl-4 border-l-[3px] border-accent/20">
+                        <p className="m-0 mb-1.5 text-sm"><strong>The real concern:</strong> {obj.underlyingFear}</p>
+                        <p className="m-0 text-sm"><strong>Our response:</strong> {obj.evidenceBasedResponse}</p>
                       </div>
                     </details>
                   ))}
                 </div>
               </section>
 
-              <section className="panel" style={{ background: "var(--secondary-soft)" }}>
+              <section className="panel bg-secondary/5">
                 <p className="eyebrow">Decision journey for {niche.label.toLowerCase()} buyers</p>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16 }}>
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
                   {intel.decisionJourney.stages.map((stage, i) => (
-                    <div key={stage.name} style={{ textAlign: "center" }}>
-                      <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 36, height: 36, borderRadius: "50%", background: "var(--accent)", color: "white", fontWeight: 800, fontSize: "0.88rem", marginBottom: 8 }}>{i + 1}</span>
-                      <h4 style={{ margin: "0 0 4px", fontSize: "0.88rem" }}>{stage.name}</h4>
-                      <p className="muted" style={{ fontSize: "0.76rem", margin: 0 }}>{stage.primaryAction}</p>
+                    <div key={stage.name} className="text-center">
+                      <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-accent text-white font-extrabold text-sm mb-2">{i + 1}</span>
+                      <h4 className="m-0 mb-1 text-sm">{stage.name}</h4>
+                      <p className="muted text-xs m-0">{stage.primaryAction}</p>
                     </div>
                   ))}
                 </div>
-                <p style={{ textAlign: "center", marginTop: 16, fontSize: "0.84rem" }}>
+                <p className="text-center mt-4 text-sm">
                   <strong>Average timeline:</strong> {intel.decisionJourney.totalDays} days &middot; <strong>Touchpoints:</strong> {intel.decisionJourney.touchpointsNeeded} &middot; <strong>Decision-makers:</strong> {intel.decisionJourney.stakeholders}
                 </p>
               </section>

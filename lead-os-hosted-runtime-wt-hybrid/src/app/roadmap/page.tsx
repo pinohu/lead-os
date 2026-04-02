@@ -11,10 +11,11 @@ interface RoadmapItem {
   description: string;
 }
 
-const columns: { label: string; color: string; items: RoadmapItem[] }[] = [
+const columns: { label: string; color: string; twColor: string; items: RoadmapItem[] }[] = [
   {
     label: "Completed",
     color: "#059669",
+    twColor: "text-emerald-600",
     items: [
       { title: "278 API endpoints", description: "Full intake, scoring, nurturing, marketplace, billing, and operator APIs" },
       { title: "23-page operator dashboard", description: "KPIs, analytics, pipeline, agents, creative, experiments, and more" },
@@ -29,6 +30,7 @@ const columns: { label: string; color: string; items: RoadmapItem[] }[] = [
   {
     label: "In Progress",
     color: "#d97706",
+    twColor: "text-amber-600",
     items: [
       { title: "Self-service tenant provisioning", description: "Automated niche generation, CRM setup, and embed code delivery" },
       { title: "Stripe billing integration", description: "Subscription management with usage-based billing and plan enforcement" },
@@ -39,6 +41,7 @@ const columns: { label: string; color: string; items: RoadmapItem[] }[] = [
   {
     label: "Planned",
     color: "#6366f1",
+    twColor: "text-indigo-500",
     items: [
       { title: "Voice AI lead qualification", description: "Real-time phone-based qualification with AI agents (Pipecat/LiveKit)" },
       { title: "Advanced A/B testing", description: "Auto-optimization with multi-armed bandit algorithms" },
@@ -72,66 +75,41 @@ export default function RoadmapPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(roadmapJsonLd) }} />
-      <main id="main-content" style={{ maxWidth: "76rem", margin: "0 auto", padding: "3rem 1rem" }}>
-      <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-        <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.5rem" }}>Product Roadmap</h1>
-        <p style={{ color: "#6b7280", maxWidth: "32rem", margin: "0 auto" }}>
+      <main id="main-content" className="max-w-6xl mx-auto px-4 py-12">
+      <div className="text-center mb-12">
+        <h1 className="text-2xl font-extrabold mb-2">Product Roadmap</h1>
+        <p className="text-muted-foreground max-w-lg mx-auto">
           See what we are building. Have a feature request?{" "}
-          <Link href="https://github.com/pinohu/lead-os/issues" style={{ color: "#4f46e5", textDecoration: "underline" }}>
+          <Link href="https://github.com/pinohu/lead-os/issues" className="text-primary underline">
             Open an issue on GitHub
           </Link>.
         </p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(20rem, 1fr))",
-          gap: "1.5rem",
-        }}
-      >
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {columns.map((col) => (
           <section key={col.label}>
             <h2
-              style={{
-                fontSize: "0.875rem",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                color: col.color,
-                marginBottom: "1rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-              }}
+              className={`text-sm font-bold uppercase tracking-wide mb-4 flex items-center gap-2 ${col.twColor}`}
             >
               <span
-                style={{
-                  width: "0.5rem",
-                  height: "0.5rem",
-                  borderRadius: "50%",
-                  background: col.color,
-                  display: "inline-block",
-                }}
+                className="w-2 h-2 rounded-full inline-block"
+                style={{ background: col.color }}
                 aria-hidden="true"
               />
               {col.label} ({col.items.length})
             </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <div className="flex flex-col gap-3">
               {col.items.map((item) => (
                 <div
                   key={item.title}
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "0.5rem",
-                    padding: "1rem",
-                    borderLeft: `3px solid ${col.color}`,
-                  }}
+                  className="border border-border rounded-lg p-4"
+                  style={{ borderLeftWidth: 3, borderLeftColor: col.color }}
                 >
-                  <h3 style={{ fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+                  <h3 className="text-sm font-semibold mb-1">
                     {item.title}
                   </h3>
-                  <p style={{ fontSize: "0.8rem", color: "#6b7280", lineHeight: 1.5 }}>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {item.description}
                   </p>
                 </div>

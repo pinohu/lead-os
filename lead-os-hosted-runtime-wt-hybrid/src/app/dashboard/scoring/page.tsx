@@ -46,20 +46,15 @@ const TEMP_LABELS: Record<Temperature, string> = {
 function ScoreBar({ label, value }: { label: string; value: number }) {
   const barColor = value >= 75 ? "var(--accent)" : value >= 40 ? "var(--secondary)" : "rgba(20, 33, 29, 0.25)";
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "90px 1fr 36px", alignItems: "center", gap: 8 }}>
-      <span style={{ fontSize: "0.78rem", fontWeight: 600 }}>{label}</span>
-      <div style={{ height: 14, background: "rgba(34, 95, 84, 0.08)", borderRadius: 4, overflow: "hidden" }}>
+    <div className="grid grid-cols-[90px_1fr_36px] items-center gap-2">
+      <span className="text-xs font-semibold">{label}</span>
+      <div className="h-3.5 overflow-hidden rounded bg-[rgba(34,95,84,0.08)]">
         <div
-          style={{
-            height: "100%",
-            width: `${value}%`,
-            background: barColor,
-            borderRadius: 4,
-            transition: "width 0.3s ease",
-          }}
+          className="h-full rounded transition-[width] duration-300 ease-out"
+          style={{ width: `${value}%`, background: barColor }}
         />
       </div>
-      <span style={{ fontSize: "0.78rem", textAlign: "right", color: "var(--text-soft)" }}>{value}</span>
+      <span className="text-right text-xs text-muted-foreground">{value}</span>
     </div>
   );
 }
@@ -151,9 +146,9 @@ export default function ScoringPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontWeight: 700 }}>Demo data</span>
-          <span style={{ color: "#92400e" }}>— Connect your database to see live scoring. <a href="/setup" style={{ textDecoration: "underline" }}>Configure now →</a></span>
+        <div className="flex items-center gap-2 border-b border-amber-300 bg-amber-50 px-6 py-2.5 text-sm">
+          <span className="font-bold">Demo data</span>
+          <span className="text-amber-800">— Connect your database to see live scoring. <a href="/setup" className="underline">Configure now &rarr;</a></span>
         </div>
       )}
       <section className="experience-hero">
@@ -174,22 +169,17 @@ export default function ScoringPage() {
           <ul className="journey-rail">
             {(["burning", "hot", "warm", "cold"] as Temperature[]).map((temp) => (
               <li key={temp}>
-                <strong style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <strong className="flex items-center gap-2">
                   <span
-                    style={{
-                      display: "inline-block",
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      background: TEMP_COLORS[temp],
-                    }}
+                    className="inline-block h-2.5 w-2.5 rounded-full"
+                    style={{ background: TEMP_COLORS[temp] }}
                   />
                   {TEMP_LABELS[temp]}
                 </strong>
                 <span>
                   {data.temperatureDistribution[temp]}
                   {totalTemp > 0 && (
-                    <span style={{ marginLeft: 8, opacity: 0.7 }}>
+                    <span className="ml-2 opacity-70">
                       ({((data.temperatureDistribution[temp] / totalTemp) * 100).toFixed(0)}%)
                     </span>
                   )}
@@ -202,13 +192,13 @@ export default function ScoringPage() {
 
       <section className="panel">
         <p className="eyebrow">Filters</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "0.88rem" }}>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="flex items-center gap-2 text-sm font-bold">
             Temperature
             <select
               value={temperatureFilter}
               onChange={(e) => setTemperatureFilter(e.target.value as Temperature | "all")}
-              style={selectStyle}
+              className="min-h-9 rounded-xl border border-border/40 bg-white/90 px-3 py-1.5 text-sm text-foreground"
             >
               <option value="all">All</option>
               <option value="burning">Burning</option>
@@ -217,12 +207,12 @@ export default function ScoringPage() {
               <option value="cold">Cold</option>
             </select>
           </label>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "0.88rem" }}>
+          <label className="flex items-center gap-2 text-sm font-bold">
             Niche
             <select
               value={nicheFilter}
               onChange={(e) => setNicheFilter(e.target.value)}
-              style={selectStyle}
+              className="min-h-9 rounded-xl border border-border/40 bg-white/90 px-3 py-1.5 text-sm text-foreground"
             >
               <option value="all">All niches</option>
               {allNiches.map((niche) => (
@@ -230,7 +220,7 @@ export default function ScoringPage() {
               ))}
             </select>
           </label>
-          <span style={{ fontSize: "0.82rem", color: "var(--text-soft)" }}>
+          <span className="text-xs text-muted-foreground">
             Showing {filteredLeads.length} of {data.leads.length} leads
           </span>
         </div>
@@ -246,44 +236,30 @@ export default function ScoringPage() {
             const isExpanded = expandedLead === lead.leadKey;
             return (
               <article key={lead.leadKey} className="stack-card">
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 8 }}>
+                <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <p className="eyebrow" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <p className="eyebrow flex items-center gap-2">
                       <span
-                        style={{
-                          display: "inline-block",
-                          width: 8,
-                          height: 8,
-                          borderRadius: "50%",
-                          background: TEMP_COLORS[lead.temperature],
-                        }}
+                        className="inline-block h-2 w-2 rounded-full"
+                        style={{ background: TEMP_COLORS[lead.temperature] }}
                       />
                       {TEMP_LABELS[lead.temperature]} - {lead.stage}
                     </p>
-                    <h3 style={{ margin: 0 }}>
+                    <h3 className="m-0">
                       {lead.firstName} {lead.lastName}
                     </h3>
-                    <p className="muted" style={{ fontSize: "0.82rem" }}>
+                    <p className="muted text-xs">
                       {lead.email ?? lead.leadKey} | {lead.niche} | {lead.source}
                     </p>
                   </div>
-                  <div style={{ textAlign: "right" }}>
-                    <span style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: 52,
-                      height: 52,
-                      borderRadius: "50%",
-                      background: lead.score >= 75
-                        ? "var(--accent-soft)"
+                  <div className="text-right">
+                    <span className={`inline-flex h-[52px] w-[52px] items-center justify-center rounded-full text-lg font-extrabold ${
+                      lead.score >= 75
+                        ? "bg-[var(--accent-soft)] text-[var(--accent-strong)]"
                         : lead.score >= 40
-                          ? "var(--secondary-soft)"
-                          : "rgba(20, 33, 29, 0.06)",
-                      fontWeight: 800,
-                      fontSize: "1.1rem",
-                      color: lead.score >= 75 ? "var(--accent-strong)" : "var(--text)",
-                    }}>
+                          ? "bg-[var(--secondary-soft)] text-foreground"
+                          : "bg-[rgba(20,33,29,0.06)] text-foreground"
+                    }`}>
                       {lead.score}
                     </span>
                   </div>
@@ -293,22 +269,21 @@ export default function ScoringPage() {
                   type="button"
                   onClick={() => setExpandedLead(isExpanded ? null : lead.leadKey)}
                   aria-expanded={isExpanded}
-                  className="secondary"
-                  style={{ marginTop: 8, minHeight: 36, padding: "6px 14px", fontSize: "0.82rem" }}
+                  className="secondary mt-2 min-h-9 px-3.5 py-1.5 text-xs"
                 >
                   {isExpanded ? "Hide breakdown" : "Show breakdown"}
                 </button>
 
                 {isExpanded && (
-                  <div style={{ marginTop: 12, display: "grid", gap: 16 }}>
-                    <div style={{ display: "grid", gap: 6 }}>
+                  <div className="mt-3 grid gap-4">
+                    <div className="grid gap-1.5">
                       <ScoreBar label="Intent" value={lead.breakdown.intent} />
                       <ScoreBar label="Fit" value={lead.breakdown.fit} />
                       <ScoreBar label="Engagement" value={lead.breakdown.engagement} />
                       <ScoreBar label="Urgency" value={lead.breakdown.urgency} />
                     </div>
                     <div>
-                      <p style={{ fontWeight: 700, fontSize: "0.82rem", marginBottom: 6 }}>Recommended actions</p>
+                      <p className="mb-1.5 text-xs font-bold">Recommended actions</p>
                       <ul className="check-list">
                         {lead.recommendedActions.map((action, i) => (
                           <li key={i}>{action}</li>
@@ -327,21 +302,21 @@ export default function ScoringPage() {
         <section className="panel">
           <p className="eyebrow">Niche averages</p>
           <h2>Score by niche</h2>
-          <div style={{ overflowX: "auto", marginTop: 16 }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.88rem" }}>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
               <thead>
                 <tr>
-                  <th style={thStyle}>Niche</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Leads</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Avg Score</th>
+                  <th className="border-b-2 border-border/30 px-3 py-2.5 text-left text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Niche</th>
+                  <th className="border-b-2 border-border/30 px-3 py-2.5 text-right text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Leads</th>
+                  <th className="border-b-2 border-border/30 px-3 py-2.5 text-right text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Avg Score</th>
                 </tr>
               </thead>
               <tbody>
                 {data.scoreByNiche.map((niche) => (
                   <tr key={niche.niche}>
-                    <td style={tdStyle}>{niche.niche}</td>
-                    <td style={{ ...tdStyle, textAlign: "right" }}>{niche.count}</td>
-                    <td style={{ ...tdStyle, textAlign: "right" }}>{niche.avgScore}</td>
+                    <td className="border-b border-border/20 px-3 py-2.5">{niche.niche}</td>
+                    <td className="border-b border-border/20 px-3 py-2.5 text-right">{niche.count}</td>
+                    <td className="border-b border-border/20 px-3 py-2.5 text-right">{niche.avgScore}</td>
                   </tr>
                 ))}
               </tbody>
@@ -352,29 +327,3 @@ export default function ScoringPage() {
     </main>
   );
 }
-
-const selectStyle: React.CSSProperties = {
-  minHeight: 36,
-  padding: "6px 12px",
-  borderRadius: 14,
-  border: "1px solid rgba(20, 33, 29, 0.14)",
-  background: "rgba(255, 255, 255, 0.92)",
-  color: "var(--text)",
-  fontSize: "0.88rem",
-};
-
-const thStyle: React.CSSProperties = {
-  textAlign: "left",
-  padding: "10px 12px",
-  borderBottom: "2px solid rgba(20, 33, 29, 0.1)",
-  fontWeight: 800,
-  fontSize: "0.76rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.08em",
-  color: "var(--text-soft)",
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: "10px 12px",
-  borderBottom: "1px solid rgba(20, 33, 29, 0.06)",
-};

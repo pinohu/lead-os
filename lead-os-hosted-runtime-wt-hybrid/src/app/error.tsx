@@ -12,63 +12,29 @@ export default function GlobalError({
       id="main-content"
       role="alert"
       aria-live="assertive"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "60vh",
-        padding: "2rem",
-        textAlign: "center",
-      }}
+      className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center"
     >
-      <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.75rem" }}>
+      <h1 className="text-2xl font-bold mb-3">
         Something went wrong
       </h1>
-      <p style={{ color: "#6b7280", marginBottom: "1.5rem", maxWidth: "32rem" }}>
+      <p className="text-muted-foreground mb-6 max-w-lg">
         An unexpected error occurred. Please try again or return to the home page.
       </p>
       {process.env.NODE_ENV === "development" && error.message && (
-        <pre
-          style={{
-            background: "#fef2f2",
-            color: "#991b1b",
-            padding: "1rem",
-            borderRadius: "0.5rem",
-            fontSize: "0.75rem",
-            maxWidth: "40rem",
-            overflow: "auto",
-            marginBottom: "1.5rem",
-          }}
-        >
+        <pre className="bg-red-50 text-red-800 p-4 rounded-lg text-xs max-w-2xl overflow-auto mb-6">
           {error.message}
         </pre>
       )}
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div className="flex gap-4">
         <button
           onClick={reset}
-          style={{
-            padding: "0.5rem 1.5rem",
-            background: "#4f46e5",
-            color: "#fff",
-            border: "none",
-            borderRadius: "0.375rem",
-            cursor: "pointer",
-            fontWeight: 500,
-          }}
+          className="px-6 py-2 bg-primary text-primary-foreground rounded-md cursor-pointer font-medium"
         >
           Try again
         </button>
         <a
           href="/"
-          style={{
-            padding: "0.5rem 1.5rem",
-            background: "#f3f4f6",
-            color: "#374151",
-            borderRadius: "0.375rem",
-            textDecoration: "none",
-            fontWeight: 500,
-          }}
+          className="px-6 py-2 bg-muted text-foreground rounded-md no-underline font-medium"
         >
           Go home
         </a>

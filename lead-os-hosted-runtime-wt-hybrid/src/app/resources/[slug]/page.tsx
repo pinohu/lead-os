@@ -108,7 +108,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
   }));
 
   return (
-    <div data-theme="light" style={{ colorScheme: "light" }}>
+    <div data-theme="light" className="[color-scheme:light]">
       <ExperienceScaffold
         eyebrow="Resource guide"
         title={`The Complete Guide to ${niche.label}`}
@@ -158,7 +158,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
               <article key={i} className="panel">
                 <p className="eyebrow">Challenge</p>
                 <p>{point}</p>
-                <p className="eyebrow" style={{ marginTop: "var(--space-3)" }}>
+                <p className="eyebrow mt-3">
                   Solution
                 </p>
                 <p>{offers[i]}</p>
@@ -171,11 +171,11 @@ export default async function ResourcePage({ params, searchParams }: Props) {
         <section>
           <h2>Frequently asked questions about {niche.label}</h2>
           {faqItems.map((item, i) => (
-            <details key={i} className="panel" style={{ marginBottom: "var(--space-2)" }}>
+            <details key={i} className="panel mb-2">
               <summary>
                 <strong>{item.question}</strong>
               </summary>
-              <p style={{ marginTop: "var(--space-2)" }}>{item.answer}</p>
+              <p className="mt-2">{item.answer}</p>
             </details>
           ))}
         </section>

@@ -134,32 +134,28 @@ const releases: Release[] = [
 
 export default function ChangelogPage() {
   return (
-    <main id="main-content" style={{ maxWidth: "48rem", margin: "0 auto", padding: "3rem 1rem" }}>
-      <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.5rem" }}>Changelog</h1>
-      <p style={{ color: "#6b7280", marginBottom: "3rem" }}>
+    <main id="main-content" className="max-w-3xl mx-auto px-4 py-12">
+      <h1 className="text-2xl font-extrabold mb-2">Changelog</h1>
+      <p className="text-muted-foreground mb-12">
         New features, improvements, and fixes in Lead OS.
       </p>
 
       {releases.map((release) => (
         <article
           key={release.version}
-          style={{
-            marginBottom: "3rem",
-            paddingBottom: "2rem",
-            borderBottom: "1px solid #e5e7eb",
-          }}
+          className="mb-12 pb-8 border-b border-border"
         >
-          <div style={{ display: "flex", alignItems: "baseline", gap: "1rem", marginBottom: "1rem" }}>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: 700 }}>v{release.version}</h2>
-            <time style={{ color: "#6b7280", fontSize: "0.875rem" }}>{release.date}</time>
+          <div className="flex items-baseline gap-4 mb-4">
+            <h2 className="text-2xl font-bold">v{release.version}</h2>
+            <time className="text-muted-foreground text-sm">{release.date}</time>
           </div>
 
           {release.added && release.added.length > 0 && (
-            <div style={{ marginBottom: "1rem" }}>
-              <h3 style={{ fontSize: "0.875rem", fontWeight: 700, color: "#059669", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+            <div className="mb-4">
+              <h3 className="text-sm font-bold text-emerald-600 uppercase tracking-wide mb-2">
                 Added
               </h3>
-              <ul style={{ paddingLeft: "1.25rem", fontSize: "0.875rem", lineHeight: 1.7, color: "#374151" }}>
+              <ul className="pl-5 text-sm leading-7 text-foreground">
                 {release.added.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -168,11 +164,11 @@ export default function ChangelogPage() {
           )}
 
           {release.changed && release.changed.length > 0 && (
-            <div style={{ marginBottom: "1rem" }}>
-              <h3 style={{ fontSize: "0.875rem", fontWeight: 700, color: "#d97706", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+            <div className="mb-4">
+              <h3 className="text-sm font-bold text-amber-600 uppercase tracking-wide mb-2">
                 Changed
               </h3>
-              <ul style={{ paddingLeft: "1.25rem", fontSize: "0.875rem", lineHeight: 1.7, color: "#374151" }}>
+              <ul className="pl-5 text-sm leading-7 text-foreground">
                 {release.changed.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -181,11 +177,11 @@ export default function ChangelogPage() {
           )}
 
           {release.fixed && release.fixed.length > 0 && (
-            <div style={{ marginBottom: "1rem" }}>
-              <h3 style={{ fontSize: "0.875rem", fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+            <div className="mb-4">
+              <h3 className="text-sm font-bold text-red-600 uppercase tracking-wide mb-2">
                 Fixed
               </h3>
-              <ul style={{ paddingLeft: "1.25rem", fontSize: "0.875rem", lineHeight: 1.7, color: "#374151" }}>
+              <ul className="pl-5 text-sm leading-7 text-foreground">
                 {release.fixed.map((item) => (
                   <li key={item}>{item}</li>
                 ))}

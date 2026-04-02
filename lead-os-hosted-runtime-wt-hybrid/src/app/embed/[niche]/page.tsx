@@ -25,37 +25,29 @@ export default async function EmbedPage({ params }: Props) {
 
   // Minimal embed page — no nav, no footer, just the lead capture essentials
   return (
-    <main style={{
-      fontFamily: "'Trebuchet MS', 'Gill Sans', 'Helvetica Neue', sans-serif",
-      maxWidth: 480, margin: "0 auto", padding: 24,
-      color: "#14211d",
-    }}>
-      <h2 style={{ fontSize: "1.2rem", fontWeight: 800, marginBottom: 8 }}>
+    <main className="max-w-[480px] mx-auto p-6 text-foreground" style={{ fontFamily: "'Trebuchet MS', 'Gill Sans', 'Helvetica Neue', sans-serif" }}>
+      <h2 className="text-lg font-extrabold mb-2">
         {niche.assessmentTitle}
       </h2>
-      <p style={{ fontSize: "0.88rem", color: "#385145", marginBottom: 16 }}>
+      <p className="text-sm text-muted-foreground mb-4">
         {niche.summary}
       </p>
       <form
         action="/api/intake"
         method="POST"
-        style={{ display: "flex", flexDirection: "column", gap: 12 }}
+        className="flex flex-col gap-3"
       >
         <input type="hidden" name="source" value="widget" />
         <input type="hidden" name="niche" value={niche.slug} />
         <input name="firstName" placeholder="First name" required
-          style={{ padding: "12px 14px", border: "1px solid #d4d4d4", borderRadius: 8, fontSize: "0.92rem" }} />
+          className="px-3.5 py-3 border border-border rounded-lg text-sm" />
         <input name="email" type="email" placeholder="Email" required
-          style={{ padding: "12px 14px", border: "1px solid #d4d4d4", borderRadius: 8, fontSize: "0.92rem" }} />
-        <button type="submit" style={{
-          padding: "12px 20px", border: "none", borderRadius: 8,
-          background: "#c4632d", color: "white", fontWeight: 700,
-          fontSize: "0.92rem", cursor: "pointer",
-        }}>
-          Get your free assessment →
+          className="px-3.5 py-3 border border-border rounded-lg text-sm" />
+        <button type="submit" className="px-5 py-3 border-none rounded-lg bg-primary text-primary-foreground font-bold text-sm cursor-pointer">
+          Get your free assessment &rarr;
         </button>
       </form>
-      <p style={{ fontSize: "0.72rem", color: "#8a8a8a", marginTop: 8 }}>
+      <p className="text-xs text-muted-foreground mt-2">
         No commitment required. Results in under 2 minutes.
       </p>
     </main>

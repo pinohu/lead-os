@@ -50,7 +50,7 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
   });
 
   return (
-    <div data-theme="light" style={{ colorScheme: "light" }}>
+    <div data-theme="light" className="[color-scheme:light]">
     <ExperienceScaffold
       niche={niche.slug}
       eyebrow="Hosted calculator path"
@@ -92,12 +92,12 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
             <p className="eyebrow">Your {niche.label} ROI estimator</p>
             <h2>{preset.resultLabel}</h2>
             <p className="muted">{preset.formula}</p>
-            <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
+            <fieldset className="border-none p-0 m-0">
               <legend className="sr-only">ROI Calculator Inputs</legend>
               <div className="grid two">
                 {preset.inputs.map((input) => (
-                  <div key={input.id} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                    <label style={{ fontWeight: 700, fontSize: "0.88rem" }}>{input.label}</label>
+                  <div key={input.id} className="flex flex-col gap-1">
+                    <label className="font-bold text-sm">{input.label}</label>
                     <input
                       type="number"
                       defaultValue={input.defaultValue}
@@ -108,13 +108,13 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
                       readOnly
                       aria-readonly="true"
                     />
-                    <span className="muted" style={{ fontSize: "0.76rem" }}>{input.helpText}</span>
+                    <span className="muted text-xs">{input.helpText}</span>
                   </div>
                 ))}
               </div>
             </fieldset>
             <div aria-live="polite" aria-atomic="true" role="status">
-              <p style={{ marginTop: 16, padding: "12px 16px", borderRadius: "var(--radius-sm)", background: "var(--accent-soft)", fontWeight: 700, fontSize: "0.88rem" }}>
+              <p className="mt-4 px-4 py-3 rounded-md bg-accent/10 font-bold text-sm">
                 {preset.proofPoint}
               </p>
             </div>

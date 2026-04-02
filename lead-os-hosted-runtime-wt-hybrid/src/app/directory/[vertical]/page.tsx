@@ -87,7 +87,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
   const coldHeadline = template?.headlineTemplates?.cold;
 
   return (
-    <div data-theme="light" style={{ colorScheme: "light" }}>
+    <div data-theme="light" className="[color-scheme:light]">
     <ExperienceScaffold
       eyebrow={`${niche.label} directory`}
       title={coldHeadline ? coldHeadline.headline.replace(/\{\{niche\}\}/g, niche.label) : `${niche.label} Growth Directory`}
@@ -101,9 +101,9 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
       ]}
     >
       {/* ── Quick Navigation ── */}
-      <section className="panel" style={{ textAlign: "center" }}>
+      <section className="panel text-center">
         <p className="eyebrow">Jump to a resource</p>
-        <div className="cta-row" style={{ justifyContent: "center", flexWrap: "wrap" }}>
+        <div className="cta-row justify-center flex-wrap">
           <Link href={`/industries/${niche.slug}`} className="primary">Industry Overview</Link>
           <Link href={`/assess/${niche.slug}`} className="secondary">Take Assessment</Link>
           <Link href={`/resources/${niche.slug}`} className="secondary">Read the Guide</Link>
@@ -118,7 +118,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
           <div className="grid two">
             {painPoints.map((pain) => (
               <article key={pain} className="panel">
-                <p style={{ margin: 0, fontSize: "0.92rem", lineHeight: 1.6 }}>{pain}</p>
+                <p className="m-0 text-sm leading-relaxed">{pain}</p>
               </article>
             ))}
           </div>
@@ -132,7 +132,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
           <div className="grid two">
             {offers.map((offer) => (
               <article key={offer} className="panel">
-                <p style={{ margin: 0, fontSize: "0.92rem", lineHeight: 1.6 }}>{offer}</p>
+                <p className="m-0 text-sm leading-relaxed">{offer}</p>
               </article>
             ))}
           </div>
@@ -145,19 +145,15 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
           <p className="eyebrow">What {niche.label.toLowerCase()} leaders say</p>
           <div className="grid three">
             {testimonials.map((t) => (
-              <article key={t.author} className="panel" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <p style={{ fontStyle: "italic", fontSize: "0.92rem", lineHeight: 1.6, flex: 1 }}>
+              <article key={t.author} className="panel flex flex-col gap-3">
+                <p className="italic text-sm leading-relaxed flex-1">
                   &ldquo;{t.quote}&rdquo;
                 </p>
                 <div>
-                  <strong style={{ fontSize: "0.88rem" }}>{t.author}</strong>
-                  <span className="muted" style={{ display: "block", fontSize: "0.78rem" }}>{t.role}, {t.company}</span>
+                  <strong className="text-sm">{t.author}</strong>
+                  <span className="muted block text-xs">{t.role}, {t.company}</span>
                 </div>
-                <span style={{
-                  display: "inline-block", padding: "4px 10px", borderRadius: 999,
-                  background: "var(--accent-soft)", color: "var(--accent-strong)",
-                  fontSize: "0.76rem", fontWeight: 700, width: "fit-content",
-                }}>
+                <span className="inline-block px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-bold w-fit">
                   {t.metric}
                 </span>
               </article>
@@ -172,10 +168,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
           <p className="eyebrow">{niche.label} ROI estimator</p>
           <h2>{calcPreset.resultLabel}</h2>
           <p className="muted">{calcPreset.formula}</p>
-          <p style={{
-            marginTop: 12, padding: "12px 16px", borderRadius: "var(--radius-sm)",
-            background: "var(--accent-soft)", fontWeight: 700, fontSize: "0.88rem",
-          }}>
+          <p className="mt-3 px-4 py-3 rounded-md bg-accent/10 font-bold text-sm">
             {calcPreset.proofPoint}
           </p>
           <div className="cta-row">
@@ -190,13 +183,13 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
         <div className="grid two">
           {niche.recommendedFunnels.map((funnel) => (
             <article key={funnel} className="panel">
-              <h3 style={{ margin: 0, fontSize: "1rem", textTransform: "capitalize" }}>
+              <h3 className="m-0 text-base capitalize">
                 {funnel.replace(/-/g, " ")} funnel
               </h3>
-              <p className="muted" style={{ fontSize: "0.84rem" }}>
+              <p className="muted text-sm">
                 Pre-built blueprint optimized for {niche.label.toLowerCase()} businesses.
               </p>
-              <Link href={`/funnel/${funnel}?niche=${niche.slug}`} style={{ fontSize: "0.84rem", color: "var(--accent)" }}>
+              <Link href={`/funnel/${funnel}?niche=${niche.slug}`} className="text-sm text-primary">
                 View blueprint →
               </Link>
             </article>
@@ -212,23 +205,23 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
             <p className="eyebrow">How we compare</p>
             <div className="grid two">
               <article className="panel">
-                <h3 style={{ margin: "0 0 8px", fontSize: "0.94rem" }}>Alternatives you may be considering</h3>
-                <ul style={{ margin: 0, padding: "0 0 0 18px", fontSize: "0.84rem", lineHeight: 1.8 }}>
+                <h3 className="m-0 mb-2 text-sm">Alternatives you may be considering</h3>
+                <ul className="m-0 pl-5 text-sm leading-loose">
                   {intel.competitors.alternatives.map((alt) => (
                     <li key={alt}>{alt}</li>
                   ))}
                 </ul>
               </article>
               <article className="panel">
-                <h3 style={{ margin: "0 0 8px", fontSize: "0.94rem" }}>What makes Lead OS different</h3>
-                <ul style={{ margin: 0, padding: "0 0 0 18px", fontSize: "0.84rem", lineHeight: 1.8 }}>
+                <h3 className="m-0 mb-2 text-sm">What makes Lead OS different</h3>
+                <ul className="m-0 pl-5 text-sm leading-loose">
                   {intel.competitors.differentiators.map((diff) => (
                     <li key={diff}>{diff}</li>
                   ))}
                 </ul>
               </article>
             </div>
-            <p className="muted" style={{ textAlign: "center", marginTop: 12, fontSize: "0.82rem" }}>
+            <p className="muted text-center mt-3 text-xs">
               Switching costs: {intel.competitors.switchingCosts}
             </p>
           </section>

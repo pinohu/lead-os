@@ -37,17 +37,16 @@ export default function PrivacyPolicyPage() {
       </section>
 
       <article
-        className="panel"
-        style={{ maxWidth: 800, margin: "0 auto", lineHeight: 1.75 }}
+        className="panel max-w-4xl mx-auto leading-relaxed"
       >
-        <section aria-labelledby="controller-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="controller-heading" className="mb-10">
           <h2 id="controller-heading">1. Data Controller</h2>
           <p>
             Lead OS (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is the data
             controller responsible for personal data processed through this platform. You may contact
             us regarding privacy matters at:
           </p>
-          <address style={{ fontStyle: "normal", marginTop: 12 }}>
+          <address className="not-italic mt-3">
             <strong>Lead OS Privacy Team</strong>
             <br />
             Email:{" "}
@@ -60,11 +59,11 @@ export default function PrivacyPolicyPage() {
           </address>
         </section>
 
-        <section aria-labelledby="data-collected-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="data-collected-heading" className="mb-10">
           <h2 id="data-collected-heading">2. Data We Collect</h2>
           <p>We collect the following categories of personal data:</p>
 
-          <h3 style={{ marginTop: 20 }}>2.1 Data You Provide Directly</h3>
+          <h3 className="mt-5">2.1 Data You Provide Directly</h3>
           <ul className="check-list">
             <li>
               <strong>Contact information:</strong> Name, email address, phone number, and postal
@@ -84,7 +83,7 @@ export default function PrivacyPolicyPage() {
             </li>
           </ul>
 
-          <h3 style={{ marginTop: 20 }}>2.2 Data Collected Automatically</h3>
+          <h3 className="mt-5">2.2 Data Collected Automatically</h3>
           <ul className="check-list">
             <li>
               <strong>Usage data:</strong> Pages visited, time spent, click patterns, funnel stage
@@ -104,7 +103,7 @@ export default function PrivacyPolicyPage() {
             </li>
           </ul>
 
-          <h3 style={{ marginTop: 20 }}>2.3 Data from Third Parties</h3>
+          <h3 className="mt-5">2.3 Data from Third Parties</h3>
           <ul className="check-list">
             <li>
               <strong>Partner programs:</strong> Referral identifiers from affiliate and partner
@@ -117,7 +116,7 @@ export default function PrivacyPolicyPage() {
           </ul>
         </section>
 
-        <section aria-labelledby="legal-basis-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="legal-basis-heading" className="mb-10">
           <h2 id="legal-basis-heading">3. Legal Basis for Processing (GDPR)</h2>
           <p>
             If you are located in the European Economic Area (EEA) or United Kingdom, we process
@@ -144,7 +143,7 @@ export default function PrivacyPolicyPage() {
           </ul>
         </section>
 
-        <section aria-labelledby="use-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="use-heading" className="mb-10">
           <h2 id="use-heading">4. How We Use Your Data</h2>
           <ul className="check-list">
             <li>Capture and qualify leads on behalf of platform operators.</li>
@@ -159,7 +158,7 @@ export default function PrivacyPolicyPage() {
           </ul>
         </section>
 
-        <section aria-labelledby="sharing-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="sharing-heading" className="mb-10">
           <h2 id="sharing-heading">5. Data Sharing and Disclosure</h2>
           <p>
             We do not sell your personal data. We share data only in the following circumstances:
@@ -191,7 +190,7 @@ export default function PrivacyPolicyPage() {
           </ul>
         </section>
 
-        <section aria-labelledby="cookies-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="cookies-heading" className="mb-10">
           <h2 id="cookies-heading">6. Cookies and Tracking Technologies</h2>
           <p>We use the following categories of cookies and similar technologies:</p>
           <ul className="check-list">
@@ -212,13 +211,13 @@ export default function PrivacyPolicyPage() {
               Partnero) to track referral conversions.
             </li>
           </ul>
-          <p style={{ marginTop: 12 }}>
+          <p className="mt-3">
             You may control cookie preferences through your browser settings. Note that disabling
             strictly necessary cookies may impair platform functionality.
           </p>
         </section>
 
-        <section aria-labelledby="retention-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="retention-heading" className="mb-10">
           <h2 id="retention-heading">7. Data Retention</h2>
           <p>We retain personal data for the following periods:</p>
           <ul className="check-list">
@@ -238,12 +237,12 @@ export default function PrivacyPolicyPage() {
               <strong>Authentication logs:</strong> Retained for 90 days for security monitoring.
             </li>
           </ul>
-          <p style={{ marginTop: 12 }}>
+          <p className="mt-3">
             You may request earlier deletion by exercising your rights as described in Section 9.
           </p>
         </section>
 
-        <section aria-labelledby="transfers-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="transfers-heading" className="mb-10">
           <h2 id="transfers-heading">8. International Data Transfers</h2>
           <p>
             Lead OS operates infrastructure in the United States. If you are located in the EEA, UK,
@@ -263,10 +262,10 @@ export default function PrivacyPolicyPage() {
           </ul>
         </section>
 
-        <section aria-labelledby="gdpr-rights-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="gdpr-rights-heading" className="mb-10">
           <h2 id="gdpr-rights-heading">9. Your Rights</h2>
 
-          <h3 style={{ marginTop: 20 }}>9.1 GDPR Rights (EEA and UK Residents)</h3>
+          <h3 className="mt-5">9.1 GDPR Rights (EEA and UK Residents)</h3>
           <p>If you are located in the EEA or UK, you have the following rights:</p>
           <ul className="check-list">
             <li>
@@ -302,7 +301,7 @@ export default function PrivacyPolicyPage() {
             </li>
           </ul>
 
-          <h3 style={{ marginTop: 20 }}>9.2 CCPA Rights (California Residents)</h3>
+          <h3 className="mt-5">9.2 CCPA Rights (California Residents)</h3>
           <p>
             Under the California Consumer Privacy Act (CCPA) and California Privacy Rights Act
             (CPRA), California residents have the following rights:
@@ -333,7 +332,7 @@ export default function PrivacyPolicyPage() {
               exercising your privacy rights.
             </li>
           </ul>
-          <p style={{ marginTop: 12 }}>
+          <p className="mt-3">
             To exercise your CCPA rights, contact us at{" "}
             <a href="mailto:privacy@leadgen-os.com">privacy@leadgen-os.com</a> or use our data
             endpoints: <a href="/api/gdpr/export">export your data</a> or{" "}
@@ -341,7 +340,7 @@ export default function PrivacyPolicyPage() {
           </p>
         </section>
 
-        <section aria-labelledby="security-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="security-heading" className="mb-10">
           <h2 id="security-heading">10. Security Measures</h2>
           <p>
             We implement industry-standard technical and organizational security measures to protect
@@ -355,13 +354,13 @@ export default function PrivacyPolicyPage() {
             <li>Regular security assessments and dependency audits.</li>
             <li>Incident response procedures with notification timelines per GDPR Art. 33.</li>
           </ul>
-          <p style={{ marginTop: 12 }}>
+          <p className="mt-3">
             No method of transmission over the internet is 100% secure. We cannot guarantee
             absolute security but are committed to using commercially reasonable measures.
           </p>
         </section>
 
-        <section aria-labelledby="children-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="children-heading" className="mb-10">
           <h2 id="children-heading">11. Children&apos;s Privacy</h2>
           <p>
             Lead OS is not directed to individuals under the age of 16. We do not knowingly collect
@@ -372,7 +371,7 @@ export default function PrivacyPolicyPage() {
           </p>
         </section>
 
-        <section aria-labelledby="third-party-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="third-party-heading" className="mb-10">
           <h2 id="third-party-heading">12. Third-Party Services</h2>
           <p>
             Our platform integrates with third-party services at the operator&apos;s direction.
@@ -384,13 +383,13 @@ export default function PrivacyPolicyPage() {
             <li>Payment processors (governed by their own privacy policies).</li>
             <li>Affiliate and referral tracking (e.g., Partnero).</li>
           </ul>
-          <p style={{ marginTop: 12 }}>
+          <p className="mt-3">
             Each third-party service has its own privacy policy. We encourage you to review the
             privacy practices of any third-party services you interact with through our platform.
           </p>
         </section>
 
-        <section aria-labelledby="changes-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="changes-heading" className="mb-10">
           <h2 id="changes-heading">13. Changes to This Policy</h2>
           <p>
             We may update this Privacy Policy periodically. Material changes will be communicated
@@ -400,18 +399,18 @@ export default function PrivacyPolicyPage() {
           </p>
         </section>
 
-        <section aria-labelledby="contact-heading" style={{ marginBottom: 40 }}>
+        <section aria-labelledby="contact-heading" className="mb-10">
           <h2 id="contact-heading">14. Contact Us</h2>
           <p>
             To exercise your rights, make a complaint, or ask questions about this policy:
           </p>
-          <address style={{ fontStyle: "normal", marginTop: 12 }}>
+          <address className="not-italic mt-3">
             <strong>Lead OS Privacy Team</strong>
             <br />
             Email:{" "}
             <a href="mailto:privacy@leadgen-os.com">privacy@leadgen-os.com</a>
           </address>
-          <p style={{ marginTop: 12 }}>
+          <p className="mt-3">
             If you are located in the EEA and believe your rights have been violated, you have the
             right to lodge a complaint with your local data protection authority.
           </p>
