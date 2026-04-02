@@ -264,7 +264,7 @@ export default function LeadsPage() {
                   handleFilterChange();
                 }}
                 aria-label="Search leads by name or email"
-                className="h-9 min-w-[200px] rounded-xl border border-border bg-background px-3 text-sm"
+                className="h-9 min-w-[200px] rounded-xl border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               />
             </label>
 
@@ -276,7 +276,7 @@ export default function LeadsPage() {
                   setTemperatureFilter(e.target.value as Temperature | "all");
                   handleFilterChange();
                 }}
-                className="h-9 rounded-xl border border-border bg-background px-3 text-sm"
+                className="h-9 rounded-xl border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <option value="all">All</option>
                 <option value="burning">Burning</option>
@@ -294,7 +294,7 @@ export default function LeadsPage() {
                   setNicheFilter(e.target.value);
                   handleFilterChange();
                 }}
-                className="h-9 rounded-xl border border-border bg-background px-3 text-sm"
+                className="h-9 rounded-xl border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <option value="all">All niches</option>
                 {allNiches.map((niche) => (
@@ -311,7 +311,7 @@ export default function LeadsPage() {
                   setStageFilter(e.target.value);
                   handleFilterChange();
                 }}
-                className="h-9 rounded-xl border border-border bg-background px-3 text-sm"
+                className="h-9 rounded-xl border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <option value="all">All stages</option>
                 {allStages.map((stage) => (
@@ -347,8 +347,11 @@ export default function LeadsPage() {
                 </th>
                 <th
                   scope="col"
-                  className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap cursor-pointer select-none"
+                  tabIndex={0}
+                  role="columnheader button"
+                  className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   onClick={() => handleSort("score")}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleSort("score"); } }}
                   aria-sort={sortField === "score" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
                 >
                   Score {sortField === "score" ? (sortDir === "asc" ? "\u25B2" : "\u25BC") : "\u2195"}
@@ -367,8 +370,11 @@ export default function LeadsPage() {
                 </th>
                 <th
                   scope="col"
-                  className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap cursor-pointer select-none"
+                  tabIndex={0}
+                  role="columnheader button"
+                  className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   onClick={() => handleSort("capturedAt")}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleSort("capturedAt"); } }}
                   aria-sort={sortField === "capturedAt" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
                 >
                   Captured {sortField === "capturedAt" ? (sortDir === "asc" ? "\u25B2" : "\u25BC") : "\u2195"}

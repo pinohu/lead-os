@@ -309,7 +309,7 @@ export default function MarketingIngestionPage() {
                         {!artifact.headline && artifact.extractedText.length > 50 ? "\u2026" : ""}
                       </h3>
                       {artifact.geoContext && (artifact.geoContext.city || artifact.geoContext.state) && (
-                        <p className="mt-1 text-xs text-white/35">
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {[artifact.geoContext.city, artifact.geoContext.state].filter(Boolean).join(", ")}
                           {artifact.geoContext.zipCode ? ` ${artifact.geoContext.zipCode}` : ""}
                         </p>
@@ -342,33 +342,33 @@ export default function MarketingIngestionPage() {
 
                   <div className="flex flex-wrap gap-4 border-t border-border py-3 text-xs text-muted-foreground" aria-label="Artifact statistics">
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Urgency</span>
-                      <span className="text-sm font-semibold text-white/80">{artifact.urgencySignals.length}</span>
+                      <span className="text-[0.7rem] uppercase tracking-wider text-muted-foreground/70">Urgency</span>
+                      <span className="text-sm font-semibold text-foreground">{artifact.urgencySignals.length}</span>
                     </div>
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Trust</span>
-                      <span className="text-sm font-semibold text-white/80">{artifact.trustSignals.length}</span>
+                      <span className="text-[0.7rem] uppercase tracking-wider text-muted-foreground/70">Trust</span>
+                      <span className="text-sm font-semibold text-foreground">{artifact.trustSignals.length}</span>
                     </div>
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">CTAs</span>
-                      <span className="text-sm font-semibold text-white/80">{artifact.ctaLabels.length}</span>
+                      <span className="text-[0.7rem] uppercase tracking-wider text-muted-foreground/70">CTAs</span>
+                      <span className="text-sm font-semibold text-foreground">{artifact.ctaLabels.length}</span>
                     </div>
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Phones</span>
-                      <span className="text-sm font-semibold text-white/80">{artifact.contactInfo.phones.length}</span>
+                      <span className="text-[0.7rem] uppercase tracking-wider text-muted-foreground/70">Phones</span>
+                      <span className="text-sm font-semibold text-foreground">{artifact.contactInfo.phones.length}</span>
                     </div>
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Emails</span>
-                      <span className="text-sm font-semibold text-white/80">{artifact.contactInfo.emails.length}</span>
+                      <span className="text-[0.7rem] uppercase tracking-wider text-muted-foreground/70">Emails</span>
+                      <span className="text-sm font-semibold text-foreground">{artifact.contactInfo.emails.length}</span>
                     </div>
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Websites</span>
-                      <span className="text-sm font-semibold text-white/80">{artifact.contactInfo.websites.length}</span>
+                      <span className="text-[0.7rem] uppercase tracking-wider text-muted-foreground/70">Websites</span>
+                      <span className="text-sm font-semibold text-foreground">{artifact.contactInfo.websites.length}</span>
                     </div>
                     {artifact.audience.targetIndustry && (
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Industry</span>
-                        <span className="text-sm font-semibold text-white/80">{artifact.audience.targetIndustry}</span>
+                        <span className="text-[0.7rem] uppercase tracking-wider text-muted-foreground/70">Industry</span>
+                        <span className="text-sm font-semibold text-foreground">{artifact.audience.targetIndustry}</span>
                       </div>
                     )}
                   </div>
@@ -388,7 +388,7 @@ export default function MarketingIngestionPage() {
                     <button
                       type="button"
                       disabled
-                      className="min-h-11 cursor-not-allowed rounded-lg border border-border bg-transparent px-3.5 py-2 text-xs font-semibold text-white/20"
+                      className="min-h-11 cursor-not-allowed rounded-lg border border-border bg-transparent px-3.5 py-2 text-xs font-semibold text-muted-foreground/50"
                       aria-label="Use as Template — coming soon"
                       aria-disabled="true"
                     >

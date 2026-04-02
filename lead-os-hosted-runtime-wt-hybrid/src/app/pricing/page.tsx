@@ -195,8 +195,8 @@ export default function PricingPage() {
         ))}
       </div>
 
-      <section className="text-center mb-16">
-        <h2 className="text-2xl font-bold mb-8">Why Teams Choose Lead OS</h2>
+      <section className="text-center mb-16" aria-labelledby="why-choose-heading">
+        <h2 id="why-choose-heading" className="text-2xl font-bold mb-8">Why Teams Choose Lead OS</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
           {[
             {
@@ -240,8 +240,8 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="text-center mb-16">
-        <h2 className="text-2xl font-bold mb-8">Frequently Asked Questions</h2>
+      <section className="text-center mb-16" aria-labelledby="faq-heading">
+        <h2 id="faq-heading" className="text-2xl font-bold mb-8">Frequently Asked Questions</h2>
         <div className="max-w-2xl mx-auto text-left space-y-0">
           {[
             { q: "Can I try Lead OS before committing?", a: "Yes. Every plan starts with a 14-day free trial. You also get full dry-run mode for testing your setup with no real data sent." },
@@ -263,8 +263,8 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="text-center">
-        <h2 className="text-2xl font-bold mb-6">All Plans Include</h2>
+      <section className="text-center" aria-labelledby="all-plans-heading">
+        <h2 id="all-plans-heading" className="text-2xl font-bold mb-6">All Plans Include</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left">
           {[
             "Dry-run testing mode",

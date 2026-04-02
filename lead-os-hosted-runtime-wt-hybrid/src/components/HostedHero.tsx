@@ -5,9 +5,9 @@ import { tenantConfig } from "@/lib/tenant";
 export function HostedHero() {
   const funnelCount = Object.keys(buildDefaultFunnelGraphs(tenantConfig.tenantId)).length;
   return (
-    <section className="hero">
+    <section className="hero" aria-labelledby="hosted-hero-heading">
       <p className="eyebrow">LeadOS Runtime</p>
-      <h1>{tenantConfig.brandName} as a funnel operating system</h1>
+      <h1 id="hosted-hero-heading">{tenantConfig.brandName} as a funnel operating system</h1>
       <p className="lede">
         Deploy this runtime on a lead-focused subdomain and let external sites hand off chat,
         forms, assessments, webinars, checkout flows, and retention journeys into a centralized

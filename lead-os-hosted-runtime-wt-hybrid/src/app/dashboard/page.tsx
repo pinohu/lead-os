@@ -32,10 +32,10 @@ export default async function DashboardPage() {
       <GettingStartedChecklist />
 
       {/* Hero section */}
-      <section className="grid gap-8 lg:grid-cols-3">
+      <section className="grid gap-8 lg:grid-cols-3" aria-labelledby="dashboard-heading">
         <div className="lg:col-span-2 space-y-4">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Operator command center</p>
-          <h1 className="text-2xl font-bold tracking-tight">{tenantConfig.brandName} milestone dashboard</h1>
+          <h1 id="dashboard-heading" className="text-2xl font-bold tracking-tight">{tenantConfig.brandName} milestone dashboard</h1>
           <p className="text-lg text-muted-foreground">
             LeadOS is optimizing for milestone two and milestone three, not just the first capture
             event. This console shows what is moving, what is leaking, and where the next operator
@@ -98,7 +98,7 @@ export default async function DashboardPage() {
       </section>
 
       {/* Metric cards */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4" aria-label="Conversion metrics">
         <Card>
           <CardContent className="pt-6">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead M1 to M2</p>
