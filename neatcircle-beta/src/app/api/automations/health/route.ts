@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import {
   automationCatalog,
@@ -137,7 +138,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch (err) {
-    console.error("Health check error:", err);
+    logger.error("Health check error:", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       {
         status: "error",

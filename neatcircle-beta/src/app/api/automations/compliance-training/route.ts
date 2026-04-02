@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { createCompany, createContact, SuiteDashError } from "@/lib/suitedash";
 import { serverSiteConfig } from "@/lib/site-config";
@@ -111,7 +112,7 @@ export async function POST(req: NextRequest) {
       message: `${contactResults.length} employees enrolled in ${courses.length} compliance course(s)`,
     });
   } catch (err) {
-    console.error("compliance-training error:", err);
+    logger.error("compliance-training error:", { error: err instanceof Error ? err.message : String(err) });
     if (err instanceof SuiteDashError) {
       return NextResponse.json(
         { error: err.message, automation: "compliance-training" },
