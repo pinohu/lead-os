@@ -17,14 +17,13 @@ const columns: { label: string; color: string; twColor: string; items: RoadmapIt
     color: "#059669",
     twColor: "text-emerald-600",
     items: [
-      { title: "278 API endpoints", description: "Full intake, scoring, nurturing, marketplace, billing, and operator APIs" },
-      { title: "23-page operator dashboard", description: "KPIs, analytics, pipeline, agents, creative, experiments, and more" },
-      { title: "110+ provider integrations", description: "CRM, email, SMS, WhatsApp, voice, AI, analytics, automation, deployment" },
-      { title: "AI content generation engine", description: "Social asset engine with 10+ angles, 7 hook types, 12 platform variants" },
-      { title: "Multi-tenant infrastructure", description: "Tenant isolation, automated provisioning, credential vaults" },
-      { title: "A/B experiment engine", description: "Statistical significance detection with automatic winner promotion" },
-      { title: "Lead marketplace", description: "Dynamic pricing by temperature and quality, buyer claiming, outcome tracking" },
-      { title: "Security hardening", description: "CSP headers, rate limiting, CORS enforcement, auth middleware on all routes" },
+      { title: "Full agency dashboard", description: "KPIs, analytics, pipeline management, client reporting, and team tools in one place" },
+      { title: "137+ tool integrations", description: "Connect your CRM, email, SMS, WhatsApp, voice, analytics, and automation tools" },
+      { title: "AI content engine", description: "Generate social posts, ad copy, and email sequences for any industry in minutes" },
+      { title: "Multi-client management", description: "Run all your clients from one account with complete data isolation between them" },
+      { title: "Built-in A/B testing", description: "Test subject lines, landing pages, and offers with automatic winner detection" },
+      { title: "Lead marketplace", description: "Sell surplus qualified leads to verified buyers with dynamic pricing" },
+      { title: "Enterprise security", description: "Bank-level encryption, access controls, and compliance reporting for enterprise clients" },
     ],
   },
   {
@@ -32,10 +31,9 @@ const columns: { label: string; color: string; twColor: string; items: RoadmapIt
     color: "#d97706",
     twColor: "text-amber-600",
     items: [
-      { title: "Self-service tenant provisioning", description: "Automated niche generation, CRM setup, and embed code delivery" },
-      { title: "Stripe billing integration", description: "Subscription management with usage-based billing and plan enforcement" },
-      { title: "AppSumo integration roadmap", description: "31 Tier 1 products mapped to Lead OS modules for enhanced capabilities" },
-      { title: "Database migration system", description: "Formal migration runner replacing dual schema path" },
+      { title: "One-click client setup", description: "Add a new client and get a fully configured account with funnels, scoring, and nurture sequences in minutes" },
+      { title: "Automated billing", description: "Bill clients directly through the platform with usage-based pricing and automated invoicing" },
+      { title: "Extended tool ecosystem", description: "Deeper integrations with 31 additional best-in-class marketing and sales tools" },
     ],
   },
   {
@@ -43,14 +41,14 @@ const columns: { label: string; color: string; twColor: string; items: RoadmapIt
     color: "#6366f1",
     twColor: "text-indigo-500",
     items: [
-      { title: "Voice AI lead qualification", description: "Real-time phone-based qualification with AI agents (Pipecat/LiveKit)" },
-      { title: "Advanced A/B testing", description: "Auto-optimization with multi-armed bandit algorithms" },
-      { title: "Multi-language support", description: "i18n for widgets, dashboard, and nurture content" },
-      { title: "Mobile app for operators", description: "React Native dashboard app with push notifications" },
-      { title: "Advanced attribution modeling", description: "Multi-touch attribution with decay models" },
-      { title: "Marketplace buyer mobile app", description: "Browse and claim leads on the go" },
-      { title: "LightRAG knowledge graphs", description: "Per-tenant knowledge graphs for contextual outreach" },
-      { title: "Mastra AI agent framework", description: "TypeScript-native agent orchestration with MCP support" },
+      { title: "AI phone qualification", description: "Qualify leads by phone using AI agents that sound natural and book appointments automatically" },
+      { title: "Smart A/B optimization", description: "AI that automatically adjusts campaigns based on performance, no manual intervention needed" },
+      { title: "Multi-language support", description: "Run campaigns in any language for your international clients" },
+      { title: "Mobile app", description: "Manage your agency from your phone with real-time notifications and lead alerts" },
+      { title: "Advanced attribution", description: "Show clients exactly which channels and touchpoints are driving their best leads" },
+      { title: "Marketplace mobile app", description: "Let lead buyers browse and claim leads from their phone" },
+      { title: "AI knowledge base", description: "AI that learns your clients' businesses and personalizes every outreach message automatically" },
+      { title: "Next-gen AI agents", description: "Smarter AI agents that handle more complex workflows across your entire client portfolio" },
     ],
   },
 ];
@@ -79,9 +77,9 @@ export default function RoadmapPage() {
       <div className="text-center mb-12">
         <h1 className="text-2xl font-extrabold mb-2">Product Roadmap</h1>
         <p className="text-foreground max-w-lg mx-auto">
-          See what we are building. Have a feature request?{" "}
-          <Link href="https://github.com/pinohu/lead-os/issues" className="text-primary underline">
-            Open an issue on GitHub
+          See what we are building next to help your agency grow. Have a feature request?{" "}
+          <Link href="/contact" className="text-primary underline">
+            Let us know
           </Link>.
         </p>
       </div>

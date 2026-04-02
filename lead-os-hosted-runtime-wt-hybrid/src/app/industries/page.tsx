@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 export const metadata: Metadata = {
   title: "Industries | Lead OS",
   description:
-    "Explore growth systems, lead capture funnels, and automation infrastructure purpose-built for your industry.",
+    "Pre-built lead generation systems for 16+ industries. Launch a new client in minutes, not weeks.",
 };
 
 export default function IndustriesPage() {
@@ -20,7 +20,7 @@ export default function IndustriesPage() {
     "@type": "ItemList",
     "@id": `${baseUrl}/industries#industries`,
     name: "Industries | Lead OS",
-    description: "Explore growth systems, lead capture funnels, and automation infrastructure purpose-built for your industry.",
+    description: "Pre-built lead generation systems for 16+ industries. Launch a new client in minutes, not weeks.",
     numberOfItems: niches.length,
     itemListElement: niches.map((niche, i) => ({
       "@type": "ListItem",
@@ -38,12 +38,12 @@ export default function IndustriesPage() {
       <div className="text-center mb-12">
         <Badge variant="secondary" className="mb-4">Industries we serve</Badge>
         <h1 className="text-4xl font-extrabold tracking-tight mb-4">
-          Growth systems built for your industry
+          Launch any client in minutes, not weeks
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Every industry has different lead sources, sales cycles, and compliance
-          requirements. Lead OS ships pre-configured funnels, scoring rules, and
-          automation playbooks tuned to the way your market actually buys.
+          Every industry has different lead sources, sales cycles, and buyer behavior.
+          Lead OS ships with pre-built funnels, scoring rules, and nurture sequences
+          tuned to each vertical -- so you can onboard a new client and go live the same day.
         </p>
       </div>
 

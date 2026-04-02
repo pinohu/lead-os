@@ -26,25 +26,25 @@ const replacedTools = [
 
 const steps = [
   { n: "01", title: "Add a client", desc: "Type their niche. The system generates scoring weights, assessment questions, nurture sequences, and landing pages automatically." },
-  { n: "02", title: "Launch their funnel", desc: "Embed one script tag or use our white-label landing pages. Leads flow in from forms, chat, assessments, and calculators." },
-  { n: "03", title: "Leads score automatically", desc: "4D scoring (intent + fit + engagement + urgency) classifies every lead. You focus on client calls, not spreadsheets." },
+  { n: "02", title: "Launch their funnel", desc: "Drop a widget on any website or use our white-label landing pages. Leads flow in from forms, chat, assessments, and calculators." },
+  { n: "03", title: "Leads score automatically", desc: "AI-powered scoring classifies every lead by intent, fit, engagement, and urgency. You focus on client calls, not spreadsheets." },
   { n: "04", title: "Report and scale", desc: "Automated client reports prove your value. Add niches. Grow your book of business without adding headcount." },
 ];
 
 const stats = [
-  { stat: "16", label: "Niches pre-configured" },
-  { stat: "137+", label: "Integrations" },
-  { stat: "499", label: "API endpoints" },
-  { stat: "4,187", label: "Tests passing" },
+  { stat: "16", label: "Industries ready to launch" },
+  { stat: "137+", label: "Tool integrations" },
+  { stat: "15+", label: "Hours saved per week" },
+  { stat: "61%", label: "Avg. SaaS cost reduction" },
 ];
 
 const enterpriseFeatures = [
-  { icon: Shield, title: "SOC 2 Controls", desc: "Persistent audit trail, access reviews, encryption at rest (AES-256), data retention policies." },
-  { icon: Users, title: "SSO + 2FA", desc: "SAML/OIDC single sign-on, TOTP authentication, IP allowlisting, backup codes." },
-  { icon: BarChart3, title: "99.9% SLA", desc: "Deep health checks, status page, incident response runbook, Kubernetes-ready." },
-  { icon: Zap, title: "5 RBAC Roles", desc: "Owner, admin, operator, viewer, billing-admin with granular permissions." },
-  { icon: Bot, title: "AI Agent Teams", desc: "Autonomous recovery, prospect discovery, content generation, churn prevention." },
-  { icon: Clock, title: "Joy Layer", desc: "Morning briefings, milestone celebrations, time-saved tracking, overnight automation." },
+  { icon: Shield, title: "Bank-Level Security", desc: "Enterprise-grade encryption, audit trails, and compliance reporting your clients can trust." },
+  { icon: Users, title: "Single Sign-On + 2FA", desc: "One login for your team. Secure access controls so the right people see the right data." },
+  { icon: BarChart3, title: "99.9% Uptime Guarantee", desc: "Your lead capture never sleeps. Backed by a published SLA you can promise to your clients." },
+  { icon: Zap, title: "Team Permissions", desc: "Owner, admin, operator, viewer, and billing roles. Give your team exactly the access they need." },
+  { icon: Bot, title: "AI That Works Overnight", desc: "AI agents re-engage cold leads, discover prospects, generate content, and prevent churn while you sleep." },
+  { icon: Clock, title: "Morning Briefings", desc: "Start every day knowing which clients need attention, how many leads came in, and what to do next." },
 ];
 
 const joyOvernight = [
@@ -62,10 +62,10 @@ const joyMorning = [
 ];
 
 const personas = [
-  { label: "SaaS Founders", href: "/for/saas-founders" },
-  { label: "Lead Gen Companies", href: "/for/lead-gen" },
-  { label: "Consultants", href: "/for/consultants" },
-  { label: "Franchise Operators", href: "/for/franchises" },
+  { label: "SaaS Founders", desc: "Embed lead capture into your product and monetize qualified demand", href: "/for/saas-founders" },
+  { label: "Lead Gen Companies", desc: "Run multi-vertical campaigns from one platform instead of twelve", href: "/for/lead-gen" },
+  { label: "Consultants", desc: "Deliver enterprise-grade lead gen as a service without a dev team", href: "/for/consultants" },
+  { label: "Franchise Operators", desc: "Scale consistent lead capture across every location automatically", href: "/for/franchises" },
 ];
 
 export default function HomePage() {
@@ -95,7 +95,7 @@ export default function HomePage() {
         name: brandName,
         applicationCategory: "BusinessApplication",
         operatingSystem: "Web",
-        description: "Programmable multi-tenant lead generation platform. Replace 15-20 SaaS tools with one platform.",
+        description: "White-label lead generation platform for agencies. Replace 15-20 SaaS tools with one dashboard.",
         url: baseUrl,
         publisher: { "@id": `${baseUrl}/#organization` },
         offers: {
@@ -335,10 +335,14 @@ export default function HomePage() {
       <section className="max-w-3xl mx-auto px-4 py-8" aria-label="Explore by role">
         <p className="text-sm text-muted-foreground text-center mb-4">Not an agency?</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {personas.map(({ label, href }) => (
+          {personas.map(({ label, desc, href }) => (
             <Button key={label} asChild variant="outline" className="justify-between h-auto py-3.5 px-5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
               <Link href={href}>
-                {label} <ArrowRight className="h-4 w-4 text-primary" />
+                <span className="flex flex-col items-start text-left">
+                  <span className="font-semibold">{label}</span>
+                  <span className="text-xs text-muted-foreground font-normal">{desc}</span>
+                </span>
+                <ArrowRight className="h-4 w-4 text-primary shrink-0" />
               </Link>
             </Button>
           ))}

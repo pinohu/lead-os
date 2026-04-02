@@ -18,13 +18,13 @@ const plans = [
     period: "/mo",
     description: "For solo operators launching their first lead engine.",
     features: [
-      "250 leads/month",
-      "10 funnel configurations",
-      "5 integrations",
-      "Email nurturing sequences",
-      "4D lead scoring",
-      "Operator dashboard",
-      "Dry-run testing mode",
+      "Up to 250 qualified leads per month",
+      "10 custom lead capture funnels",
+      "5 tool integrations (CRM, email, etc.)",
+      "Automated email nurture sequences",
+      "AI-powered lead qualification",
+      "Client management dashboard",
+      "Risk-free testing sandbox",
       "Email support",
     ],
     cta: "Start Free Trial",
@@ -37,14 +37,14 @@ const plans = [
     period: "/mo",
     description: "For growing agencies managing multiple niches and channels.",
     features: [
-      "1,500 leads/month",
-      "25 funnel configurations",
-      "25 integrations",
-      "Multi-channel nurturing",
-      "AI-powered scoring & content",
-      "A/B experiment engine",
-      "Prospect discovery scout",
-      "Competitive analysis",
+      "Up to 1,500 qualified leads per month",
+      "25 custom lead capture funnels",
+      "25 tool integrations",
+      "Multi-channel nurturing (email, SMS, chat)",
+      "AI-powered scoring and content creation",
+      "Built-in A/B testing with auto-winner",
+      "Automated prospect discovery",
+      "Competitor benchmarking reports",
       "Priority support",
     ],
     cta: "Start Free Trial",
@@ -57,15 +57,15 @@ const plans = [
     period: "/mo",
     description: "For established agencies and white-label SaaS operators.",
     features: [
-      "10,000 leads/month",
-      "Unlimited funnels",
-      "All 137+ integrations",
-      "Multi-tenant management",
-      "Lead marketplace access",
-      "AI agent orchestration",
-      "Custom branding & domains",
-      "Full API access",
-      "Joy Layer automation",
+      "Up to 10,000 qualified leads per month",
+      "Unlimited lead capture funnels",
+      "All 137+ tool integrations",
+      "Manage multiple clients from one account",
+      "Sell qualified leads through the marketplace",
+      "AI agents that work overnight for you",
+      "Your branding, your domain, your clients",
+      "Developer-friendly API access",
+      "Automated morning briefings and reports",
       "Dedicated support",
     ],
     cta: "Start Free Trial",
@@ -78,14 +78,14 @@ const plans = [
     period: "/mo",
     description: "For large-scale operations with custom infrastructure needs.",
     features: [
-      "Unlimited leads",
-      "Custom implementation",
-      "Dedicated infrastructure",
-      "99.9% SLA guarantee",
-      "SSO (SAML/OIDC)",
-      "IP allowlisting & 2FA",
-      "SOC 2 compliance reports",
-      "Custom integrations",
+      "Unlimited leads across all clients",
+      "Custom implementation and onboarding",
+      "Dedicated infrastructure for your agency",
+      "99.9% uptime SLA guarantee",
+      "Single sign-on for your entire team",
+      "Advanced security (IP restrictions, 2FA)",
+      "Compliance reporting for enterprise clients",
+      "Custom integrations built to your needs",
       "Dedicated account manager",
       "Phone + Slack support",
     ],
@@ -102,11 +102,11 @@ export default function PricingPage() {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: [
-      { "@type": "Question", name: "Can I try Lead OS before committing?", acceptedAnswer: { "@type": "Answer", text: "Yes. Every plan starts with a 14-day free trial. You also get full dry-run mode for testing your setup with no real data sent." } },
+      { "@type": "Question", name: "Can I try Lead OS before committing?", acceptedAnswer: { "@type": "Answer", text: "Yes. Every plan starts with a 14-day free trial. You can test everything in sandbox mode before going live." } },
       { "@type": "Question", name: "Can I change plans later?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. Upgrade or downgrade at any time from your dashboard. Changes take effect at the start of your next billing cycle." } },
       { "@type": "Question", name: "What happens if I exceed my lead limit?", acceptedAnswer: { "@type": "Answer", text: "We will notify you when you reach 80% of your limit. If you go over, new leads are queued (not lost) until you upgrade or the next billing cycle starts." } },
       { "@type": "Question", name: "Do you offer annual billing?", acceptedAnswer: { "@type": "Answer", text: "Yes. Annual plans save 20%. Contact us or select annual billing during checkout." } },
-      { "@type": "Question", name: "Is my data secure?", acceptedAnswer: { "@type": "Answer", text: "All data is encrypted at rest (AES-256) and in transit (TLS 1.3). We are GDPR and CCPA compliant with SOC 2 reporting. You own your data." } },
+      { "@type": "Question", name: "Is my data secure?", acceptedAnswer: { "@type": "Answer", text: "All data is encrypted at rest and in transit using bank-level security standards. We are GDPR and CCPA compliant. You own your data." } },
     ],
   }
 
@@ -141,7 +141,7 @@ export default function PricingPage() {
           Replace 15-20 Tools With One Platform
         </h1>
         <p className="text-foreground max-w-2xl mx-auto text-lg">
-          Every plan includes a 14-day free trial. Start in dry-run mode with zero risk.
+          Every plan includes a 14-day free trial. Test everything risk-free before going live.
           Upgrade, downgrade, or cancel anytime.
         </p>
       </div>
@@ -205,14 +205,14 @@ export default function PricingPage() {
               desc: "One platform for funnels, scoring, nurturing, CRM, analytics, and more.",
             },
             {
-              metric: "4,100+",
-              title: "Automated tests",
-              desc: "Reliability you can count on. Every release passes a comprehensive test suite.",
+              metric: "20+",
+              title: "Hours saved per week",
+              desc: "Automate reporting, lead routing, and nurture sequences across every client.",
             },
             {
               metric: "14 days",
               title: "Free trial, no credit card",
-              desc: "Full access to every feature. Start in dry-run mode with zero risk.",
+              desc: "Full access to every feature. Test your setup risk-free before going live.",
             },
           ].map((item) => (
             <Card key={item.title} className="text-center">
@@ -228,7 +228,7 @@ export default function PricingPage() {
         <div className="flex justify-center gap-8 flex-wrap">
           {[
             { metric: "137+", label: "Integrations available" },
-            { metric: "78", label: "Funnel node types" },
+            { metric: "16", label: "Industries pre-built" },
             { metric: "99.9%", label: "Uptime SLA" },
             { metric: "0", label: "Contracts required" },
           ].map((stat) => (
@@ -244,11 +244,11 @@ export default function PricingPage() {
         <h2 id="faq-heading" className="text-2xl font-bold mb-8">Frequently Asked Questions</h2>
         <div className="max-w-2xl mx-auto text-left space-y-0">
           {[
-            { q: "Can I try Lead OS before committing?", a: "Yes. Every plan starts with a 14-day free trial. You also get full dry-run mode for testing your setup with no real data sent." },
+            { q: "Can I try Lead OS before committing?", a: "Yes. Every plan starts with a 14-day free trial. You can test everything in sandbox mode before going live." },
             { q: "Can I change plans later?", a: "Absolutely. Upgrade or downgrade at any time from your dashboard. Changes take effect at the start of your next billing cycle." },
             { q: "What happens if I exceed my lead limit?", a: "We will notify you when you reach 80% of your limit. If you go over, new leads are queued (not lost) until you upgrade or the next billing cycle starts." },
             { q: "Do you offer annual billing?", a: "Yes. Annual plans save 20%. Contact us or select annual billing during checkout." },
-            { q: "Is my data secure?", a: "All data is encrypted at rest (AES-256) and in transit (TLS 1.3). We are GDPR and CCPA compliant with SOC 2 reporting. You own your data." },
+            { q: "Is my data secure?", a: "All data is encrypted at rest and in transit using bank-level security standards. We are GDPR and CCPA compliant. You own your data." },
           ].map((faq) => (
             <details key={faq.q} className="border-b border-border py-4 group">
               <summary className="text-[0.9375rem] font-semibold cursor-pointer list-none flex items-center justify-between">
@@ -267,14 +267,14 @@ export default function PricingPage() {
         <h2 id="all-plans-heading" className="text-2xl font-bold mb-6">All Plans Include</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left">
           {[
-            "Dry-run testing mode",
-            "78 funnel node types",
-            "4D lead scoring",
-            "Embeddable widgets",
-            "GDPR compliance tools",
-            "Operator dashboard",
-            "Webhook event spine",
-            "Niche auto-configuration",
+            "Risk-free testing sandbox",
+            "Drag-and-drop funnel builder",
+            "AI-powered lead qualification",
+            "Embeddable capture widgets",
+            "GDPR and privacy compliance",
+            "Client management dashboard",
+            "Real-time event notifications",
+            "One-click industry setup",
           ].map((feature) => (
             <p key={feature} className="text-sm flex gap-2 items-baseline">
               <Check className="h-3.5 w-3.5 text-primary shrink-0" />

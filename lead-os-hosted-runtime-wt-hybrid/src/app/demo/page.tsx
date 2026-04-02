@@ -2,71 +2,71 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Demo",
-  description: "See Lead OS in action. Interactive demos of lead capture, scoring, AI content generation, and the operator dashboard.",
+  title: "See Lead OS in Action | Demo",
+  description: "See how Lead OS helps agencies capture, score, and nurture leads from one dashboard. No signup required.",
 };
 
 const demos = [
   {
     title: "Lead Capture",
-    description: "See how embeddable widgets capture visitor intent through quizzes, calculators, forms, and chat.",
+    description: "See how your clients' websites turn visitors into qualified leads through forms, quizzes, calculators, and live chat.",
     details: [
-      "Multi-source intake: forms, assessments, chat, calculators, voice, API",
-      "Embeddable as script tag, iframe, React component, or WordPress plugin",
-      "Idempotent deduplication via lead keys",
-      "Behavioral event tracking (page views, scroll depth, CTA clicks)",
+      "Capture leads from forms, assessments, chat, and calculators",
+      "Works on any website -- drop in a widget and go live",
+      "Automatic duplicate detection keeps your data clean",
+      "Track visitor behavior to understand buyer intent",
     ],
   },
   {
     title: "Lead Scoring",
-    description: "Watch a lead get scored across four dimensions in real-time with niche-specific weight biases.",
+    description: "Watch leads get scored automatically so your team always knows who to call first.",
     details: [
-      "Intent (0-100): How likely is this lead to convert?",
-      "Fit (0-100): How well does this lead match your ideal customer?",
-      "Engagement (0-100): How actively is this lead interacting?",
-      "Urgency (0-100): How time-sensitive is this lead's need?",
-      "Temperature: Cold (0-34), Warm (35-59), Hot (60-79), Burning (80+)",
+      "Intent: How likely is this person to buy?",
+      "Fit: Do they match your client's ideal customer?",
+      "Engagement: Are they actively researching?",
+      "Urgency: Do they need help right now?",
+      "Temperature labels (Cold, Warm, Hot, Burning) make prioritization instant",
     ],
   },
   {
     title: "AI Content Engine",
-    description: "Generate social media content, ad copy, and email sequences powered by AI with niche-specific psychology.",
+    description: "Generate social posts, ad copy, and email sequences in minutes -- all tailored to your client's industry.",
     details: [
-      "10+ content angles per topic with niche psychology",
-      "7 hook types x 12 platform variants",
-      "PAS script generation for short-video, carousel, thread, article",
-      "4-stage DM conversion funnel (acknowledge, value, qualify, offer)",
+      "10+ content angles per topic, matched to your niche",
+      "Ready-to-post content for every major social platform",
+      "Ad scripts for video, carousel, and long-form content",
+      "Automated DM sequences that move leads toward a call",
     ],
   },
   {
-    title: "Operator Dashboard",
-    description: "23-page dashboard with KPIs, analytics, pipeline, AI agents, experiments, and system health.",
+    title: "Agency Dashboard",
+    description: "One dashboard to manage all your clients. See KPIs, pipeline health, and revenue at a glance.",
     details: [
-      "Real-time lead activity radar",
-      "Multi-touch attribution reports",
-      "A/B experiment management with auto-winner detection",
-      "AI agent team coordination and audit logs",
-      "Revenue tracking and forecasting",
+      "Real-time lead activity across all clients",
+      "Attribution reports that prove your value to clients",
+      "A/B testing with automatic winner detection",
+      "AI-generated insights and recommended actions",
+      "Revenue tracking and forecasting per client",
     ],
   },
   {
     title: "Lead Marketplace",
-    description: "List, price, and sell qualified leads through the built-in marketplace with dynamic pricing.",
+    description: "Turn surplus leads into revenue. List, price, and sell qualified leads to verified buyers.",
     details: [
-      "Dynamic pricing by temperature: Cold $25, Warm $50, Hot $100, Burning $200",
-      "Quality multiplier based on composite score",
-      "Buyer claiming with outcome tracking",
-      "Revenue analytics by niche, temperature, and time period",
+      "Dynamic pricing based on lead quality and readiness",
+      "Higher quality leads automatically command higher prices",
+      "Track buyer outcomes to build marketplace reputation",
+      "Revenue analytics by industry, quality tier, and time period",
     ],
   },
   {
     title: "Multi-Channel Nurturing",
-    description: "Automated follow-up across email, SMS, WhatsApp, voice, and chat, adapted to lead temperature.",
+    description: "Automated follow-up across email, SMS, and chat that adapts to each lead's engagement level.",
     details: [
-      "7-stage nurture sequence (day 0 through day 30)",
-      "Temperature-aware content progression",
-      "Escalation engine for stale lead re-engagement",
-      "Channel optimization based on engagement patterns",
+      "Pre-built 30-day nurture sequences for every industry",
+      "Messaging adapts automatically based on lead engagement",
+      "Cold leads get re-engaged before they are lost",
+      "The system learns which channels work best for each audience",
     ],
   },
 ];
@@ -96,10 +96,10 @@ export default function DemoPage() {
     <main id="main-content" className="max-w-5xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
         <h1 className="text-2xl font-extrabold mb-3">
-          See Lead OS in Action
+          See What Your Agency Could Look Like
         </h1>
         <p className="text-foreground max-w-xl mx-auto mb-6">
-          Explore the capabilities of a complete lead generation platform. No signup required — the system runs entirely in dry-run mode for demos.
+          Explore every feature of the platform your agency will run on. No signup required -- everything works in preview mode so you can try before you buy.
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Link
@@ -140,17 +140,17 @@ export default function DemoPage() {
 
       <section className="mt-16 text-center p-8 bg-muted rounded-xl">
         <h2 className="text-xl font-bold mb-3">
-          Ready to deploy your own?
+          Ready to run your agency on one platform?
         </h2>
         <p className="text-foreground mb-6 max-w-lg mx-auto">
-          Lead OS runs entirely in-memory with dry-run mode for development. No environment variables required. Clone, install, and start in under 2 minutes.
+          Set up your first client in 15 minutes. White-label everything with your brand. Start your 14-day free trial -- no credit card required.
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
           <Link
             href="/onboard"
             className="px-6 py-2.5 bg-primary text-primary-foreground rounded-md no-underline font-semibold"
           >
-            Start Onboarding
+            Start Your Free Trial
           </Link>
           <Link
             href="/pricing"

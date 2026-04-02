@@ -69,9 +69,9 @@ export default function ContactPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }} />
     <main id="main-content" className="max-w-lg mx-auto px-4 py-12">
-      <h1 className="text-2xl font-extrabold mb-2">Contact Us</h1>
+      <h1 className="text-2xl font-extrabold mb-2">Talk to Our Team</h1>
       <p className="text-foreground mb-8">
-        Questions about Lead OS? We would love to hear from you.
+        Get personalized onboarding for your agency, ask about enterprise plans, or connect with our support team.
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -169,10 +169,9 @@ export default function ContactPage() {
 
       <div className="mt-8 p-6 bg-muted rounded-lg">
         <p className="text-sm text-muted-foreground">
-          You can also reach us at{" "}
-          <a href="mailto:support@leadgen-os.com" className="text-primary">support@leadgen-os.com</a>
-          {" "}or find us on{" "}
-          <a href="https://github.com/pinohu/lead-os" className="text-primary">GitHub</a>.
+          You can also reach us directly at{" "}
+          <a href="mailto:support@leadgen-os.com" className="text-primary">support@leadgen-os.com</a>.
+          {" "}Most inquiries get a response within 4 business hours.
         </p>
       </div>
     </main>
