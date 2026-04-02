@@ -268,7 +268,7 @@ export function HomepageLeadForm({ niches, citySlug, cityName }: HomepageLeadFor
           onChange={(e) => setTcpaConsent(e.target.checked)}
           required
           aria-required="true"
-          className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+          className="mt-1 h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary dark:bg-gray-800"
         />
         <label htmlFor="hp-tcpaConsent" className="text-xs text-muted-foreground leading-relaxed">
           {TCPA_TEXT}

@@ -114,13 +114,13 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
     <main id="main-content">
       {/* ── Hero ──────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden" aria-labelledby="hero-heading">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
         <div className="relative max-w-4xl mx-auto text-center px-4 pt-24 pb-20">
           <Badge variant="secondary" className="mb-6 text-sm px-4 py-1.5">
             Built for agencies managing multiple clients
           </Badge>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1] mb-5">
+          <h1 id="hero-heading" className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1] mb-5">
             Run all your clients from<br className="hidden sm:block" /> one dashboard.
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
@@ -142,10 +142,10 @@ export default function HomePage() {
       </section>
 
       {/* ── The Agency Problem ────────────────────────────── */}
-      <section className="max-w-3xl mx-auto px-4 py-16">
+      <section className="max-w-3xl mx-auto px-4 py-16" aria-labelledby="agency-problem-heading">
         <div className="text-center mb-8">
           <Badge variant="outline" className="mb-4">The agency problem</Badge>
-          <h2 className="text-3xl font-bold tracking-tight mb-3">
+          <h2 id="agency-problem-heading" className="text-3xl font-bold tracking-tight mb-3">
             You&apos;re paying $630&ndash;$4,550/month in SaaS fees per client
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
@@ -169,10 +169,10 @@ export default function HomePage() {
       </section>
 
       {/* ── How It Works ──────────────────────────────────── */}
-      <section id="how-it-works" className="max-w-5xl mx-auto px-4 py-16">
+      <section id="how-it-works" className="max-w-5xl mx-auto px-4 py-16" aria-labelledby="how-it-works-heading">
         <div className="text-center mb-10">
           <Badge variant="outline" className="mb-4">How it works</Badge>
-          <h2 className="text-3xl font-bold tracking-tight">Four steps from zero to automated agency</h2>
+          <h2 id="how-it-works-heading" className="text-3xl font-bold tracking-tight">Four steps from zero to automated agency</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {steps.map(({ n, title, desc }) => (
@@ -192,7 +192,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Stats Bar ─────────────────────────────────────── */}
-      <section className="border-y border-border py-10">
+      <section className="border-y border-border py-10" aria-label="Platform statistics">
         <div className="max-w-4xl mx-auto px-4 flex flex-wrap justify-center gap-12">
           {stats.map(({ stat, label }) => (
             <div key={label} className="text-center">
@@ -204,10 +204,10 @@ export default function HomePage() {
       </section>
 
       {/* ── Enterprise Grade ──────────────────────────────── */}
-      <section className="max-w-5xl mx-auto px-4 py-16">
+      <section className="max-w-5xl mx-auto px-4 py-16" aria-labelledby="enterprise-heading">
         <div className="text-center mb-10">
           <Badge variant="outline" className="mb-4">Enterprise-grade from day one</Badge>
-          <h2 className="text-3xl font-bold tracking-tight">
+          <h2 id="enterprise-heading" className="text-3xl font-bold tracking-tight">
             Security, compliance, and reliability you can sell to any client
           </h2>
         </div>
@@ -229,10 +229,10 @@ export default function HomePage() {
       </section>
 
       {/* ── Social Proof ──────────────────────────────────── */}
-      <section className="max-w-5xl mx-auto px-4 py-16">
+      <section className="max-w-5xl mx-auto px-4 py-16" aria-labelledby="social-proof-heading">
         <div className="text-center mb-10">
           <Badge variant="outline" className="mb-4">From agency operators</Badge>
-          <h2 className="text-3xl font-bold tracking-tight">
+          <h2 id="social-proof-heading" className="text-3xl font-bold tracking-tight">
             What agencies are saying
           </h2>
         </div>
@@ -272,7 +272,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Joy Layer ─────────────────────────────────────── */}
-      <section className="max-w-4xl mx-auto px-4 py-16">
+      <section className="max-w-4xl mx-auto px-4 py-16" aria-label="The Joy Layer">
         <Card className="border-l-4 border-l-primary bg-primary/[0.03]">
           <CardHeader>
             <Badge variant="outline" className="w-fit mb-2">The Joy Layer</Badge>
@@ -311,9 +311,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Email Capture ─────────────────────────────────── */}
-      <section className="max-w-2xl mx-auto px-4 py-16 text-center">
+      <section className="max-w-2xl mx-auto px-4 py-16 text-center" aria-labelledby="email-capture-heading">
         <Badge variant="outline" className="mb-4">Get early access</Badge>
-        <h2 className="text-3xl font-bold tracking-tight mb-3">See it in action with your first client</h2>
+        <h2 id="email-capture-heading" className="text-3xl font-bold tracking-tight mb-3">See it in action with your first client</h2>
         <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
           Enter your email and we&apos;ll set up a demo workspace pre-loaded with your niche.
         </p>
@@ -332,7 +332,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Persona Links ─────────────────────────────────── */}
-      <section className="max-w-3xl mx-auto px-4 py-8">
+      <section className="max-w-3xl mx-auto px-4 py-8" aria-label="Explore by role">
         <p className="text-sm text-muted-foreground text-center mb-4">Not an agency?</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {personas.map(({ label, href }) => (
@@ -346,8 +346,8 @@ export default function HomePage() {
       </section>
 
       {/* ── Final CTA ─────────────────────────────────────── */}
-      <section className="max-w-2xl mx-auto px-4 py-16 text-center">
-        <h2 className="text-3xl font-bold tracking-tight mb-3">Start your free agency account</h2>
+      <section className="max-w-2xl mx-auto px-4 py-16 text-center" aria-labelledby="final-cta-heading">
+        <h2 id="final-cta-heading" className="text-3xl font-bold tracking-tight mb-3">Start your free agency account</h2>
         <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
           No credit card. No sales call. Add your first client in 15 minutes
           and see why agencies are consolidating their entire stack into one platform.

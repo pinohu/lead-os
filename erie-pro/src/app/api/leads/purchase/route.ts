@@ -102,22 +102,31 @@ export async function POST(req: NextRequest) {
  * Preview available lead counts and pricing without committing.
  */
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const niche = searchParams.get("niche");
+  try {
+    const { searchParams } = new URL(req.url);
+    const niche = searchParams.get("niche");
 
-  if (!niche || !getNicheBySlug(niche)) {
+    if (!niche || !getNicheBySlug(niche)) {
+      return NextResponse.json(
+        { success: false, error: "Missing or invalid niche" },
+        { status: 400 }
+      );
+    }
+
+    const banked = await getUnmatchedLeadsForNiche(niche);
+
+    return NextResponse.json({
+      success: true,
+      niche,
+      availableLeads: banked.length,
+      pricing: LEAD_PRICES,
+      canPurchase: banked.length > 0,
+    });
+  } catch (err) {
+    logger.error("/api/leads/purchase GET", "Error:", err);
     return NextResponse.json(
-      { success: false, error: "Missing or invalid niche" },
-      { status: 400 }
+      { success: false, error: "Internal server error" },
+      { status: 500 }
     );
   }
-
-  const banked = await getUnmatchedLeadsForNiche(niche);
-
-  return NextResponse.json({
-    niche,
-    availableLeads: banked.length,
-    pricing: LEAD_PRICES,
-    canPurchase: banked.length > 0,
-  });
 }

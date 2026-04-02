@@ -86,14 +86,14 @@ function StepProgress({ current }: { current: WizardStep }) {
                     ? "border-green-400/20 bg-green-400/10 text-green-400"
                     : isCurrent
                     ? "border-teal-500/30 bg-teal-500/10 text-teal-500"
-                    : "border-border bg-muted text-white/55"
+                    : "border-border bg-muted text-muted-foreground"
                 }`}
               >
                 {isCompleted ? "✓ " : `${stepNum + 1}. `}
                 {STEP_LABELS[stepNum]}
               </span>
               {stepNum < TOTAL_STEPS - 1 && (
-                <span aria-hidden="true" className="text-[0.7rem] text-white/55">
+                <span aria-hidden="true" className="text-[0.7rem] text-muted-foreground">
                   →
                 </span>
               )}
@@ -146,7 +146,7 @@ function WelcomeStep({ setupStatus, brandName, onNext }: WelcomeStepProps) {
       <h1 id="welcome-heading" className="mb-4 font-serif text-[clamp(2rem,4vw,3rem)] leading-none tracking-tight text-foreground">
         Welcome to {brandName}
       </h1>
-      <p className="text-base leading-relaxed text-white/55">
+      <p className="text-base leading-relaxed text-muted-foreground">
         This wizard walks you through the five steps needed to go from a fresh
         deployment to a live lead-capture system. It takes about three minutes.
         You can always come back and change any of these settings.
@@ -177,7 +177,7 @@ function WelcomeStep({ setupStatus, brandName, onNext }: WelcomeStepProps) {
                 <p className="text-[0.9rem] font-bold text-foreground">
                   {item.label}
                 </p>
-                <p className="text-[0.85rem] leading-relaxed text-white/55">
+                <p className="text-[0.85rem] leading-relaxed text-muted-foreground">
                   {item.note}
                 </p>
               </div>
@@ -216,7 +216,7 @@ function EnvironmentStep({ envChecks, onNext, onBack }: EnvironmentStepProps) {
       <h2 id="env-heading" className="mb-3 font-serif text-[clamp(1.4rem,2.5vw,1.9rem)] leading-none tracking-tight text-foreground">
         Environment check
       </h2>
-      <p className="text-base leading-relaxed text-white/55">
+      <p className="text-base leading-relaxed text-muted-foreground">
         Lead OS reads configuration from environment variables. Required
         variables must be set before the platform functions. Optional services
         run in dry-run mode when missing — no errors, no real side effects.
@@ -224,7 +224,7 @@ function EnvironmentStep({ envChecks, onNext, onBack }: EnvironmentStepProps) {
 
       {required.length > 0 && (
         <div className="mt-6">
-          <p className="mb-3 text-[0.78rem] font-extrabold uppercase tracking-[0.1em] text-white/55">
+          <p className="mb-3 text-[0.78rem] font-extrabold uppercase tracking-[0.1em] text-muted-foreground">
             Required
           </p>
           <ul
@@ -241,7 +241,7 @@ function EnvironmentStep({ envChecks, onNext, onBack }: EnvironmentStepProps) {
 
       {optional.length > 0 && (
         <div className="mt-6">
-          <p className="mb-3 text-[0.78rem] font-extrabold uppercase tracking-[0.1em] text-white/55">
+          <p className="mb-3 text-[0.78rem] font-extrabold uppercase tracking-[0.1em] text-muted-foreground">
             Optional integrations
           </p>
           <ul
@@ -290,7 +290,7 @@ function EnvCheckCard({ check }: { check: EnvCheck }) {
           <p className="text-[0.9rem] font-bold text-foreground">
             {check.label}
           </p>
-          <p className="mt-0.5 font-mono text-[0.75rem] text-white/55">
+          <p className="mt-0.5 font-mono text-[0.75rem] text-muted-foreground">
             {check.key}
           </p>
         </div>
@@ -303,14 +303,14 @@ function EnvCheckCard({ check }: { check: EnvCheck }) {
           {check.present ? "✓" : check.optional ? "–" : "!"}
         </span>
       </div>
-      <p className="text-[0.85rem] leading-relaxed text-white/55">
+      <p className="text-[0.85rem] leading-relaxed text-muted-foreground">
         {check.description}
       </p>
       <span
         className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[0.72rem] font-bold uppercase tracking-wider ${
           check.present
             ? "bg-green-400/10 text-green-400"
-            : "bg-muted text-white/55"
+            : "bg-muted text-muted-foreground"
         }`}
       >
         {check.present ? "Configured" : check.optional ? "Optional — dry-run mode" : "Missing"}
@@ -404,7 +404,7 @@ function QuickConfigStep({
       <h2 id="config-heading" className="mb-3 font-serif text-[clamp(1.4rem,2.5vw,1.9rem)] leading-none tracking-tight text-foreground">
         Quick configuration
       </h2>
-      <p className="text-base leading-relaxed text-white/55">
+      <p className="text-base leading-relaxed text-muted-foreground">
         Set your brand identity and default niche. These values control how the
         platform presents itself to leads and which funnel templates it
         prioritises.
@@ -479,7 +479,7 @@ function QuickConfigStep({
           </select>
           <p
             id={`${formId}-niche-hint`}
-            className="mt-1.5 text-[0.8rem] text-white/55"
+            className="mt-1.5 text-[0.8rem] text-muted-foreground"
           >
             {niches.find((n) => n.slug === formData.defaultNiche)?.summary ?? ""}
           </p>
@@ -500,7 +500,7 @@ function QuickConfigStep({
             />
             <span
               id={`${formId}-accent-value`}
-              className="font-mono text-[0.85rem] text-white/55"
+              className="font-mono text-[0.85rem] text-muted-foreground"
             >
               {formData.accent}
             </span>
@@ -610,7 +610,7 @@ function TestDriveStep({ siteUrl, onNext, onBack }: TestDriveStepProps) {
       <h2 id="testdrive-heading" className="mb-3 font-serif text-[clamp(1.4rem,2.5vw,1.9rem)] leading-none tracking-tight text-foreground">
         Take it for a spin
       </h2>
-      <p className="text-base leading-relaxed text-white/55">
+      <p className="text-base leading-relaxed text-muted-foreground">
         Your instance is configured. Try these three actions to verify
         everything is wired up correctly before going live.
       </p>
@@ -640,7 +640,7 @@ function TestDriveStep({ siteUrl, onNext, onBack }: TestDriveStepProps) {
                   <p className="mb-1 text-[0.95rem] font-bold text-foreground">
                     {card.title}
                   </p>
-                  <p className="text-[0.85rem] leading-relaxed text-white/55">
+                  <p className="text-[0.85rem] leading-relaxed text-muted-foreground">
                     {card.description}
                   </p>
                 </div>
@@ -712,7 +712,7 @@ function AllDoneStep({ siteUrl, tenantId, brandName, onBack }: AllDoneStepProps)
       <h2 id="done-heading" className="mb-3 font-serif text-[clamp(1.4rem,2.5vw,1.9rem)] leading-none tracking-tight text-foreground">
         You&rsquo;re all set
       </h2>
-      <p className="text-base leading-relaxed text-white/55">
+      <p className="text-base leading-relaxed text-muted-foreground">
         {brandName} is live and ready to capture leads. Paste the embed snippet
         below onto any website to activate the capture widget on external pages.
       </p>
@@ -731,7 +731,7 @@ function AllDoneStep({ siteUrl, tenantId, brandName, onBack }: AllDoneStepProps)
             {copied ? "✓ Copied" : "Copy"}
           </button>
         </div>
-        <p className="mb-2 text-[0.85rem] text-white/55">
+        <p className="mb-2 text-[0.85rem] text-muted-foreground">
           Add this to your website&rsquo;s{" "}
           <code className="rounded bg-muted px-1 py-px font-mono text-[0.82em]">
             {"<head>"}
@@ -768,7 +768,7 @@ function AllDoneStep({ siteUrl, tenantId, brandName, onBack }: AllDoneStepProps)
                 >
                   {item.label}
                 </a>
-                <p className="mt-0.5 text-[0.82rem] text-white/55">
+                <p className="mt-0.5 text-[0.82rem] text-muted-foreground">
                   {item.desc}
                 </p>
               </div>

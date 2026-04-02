@@ -77,7 +77,7 @@ export default function ContactPage() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
           <label htmlFor="name" className="block text-sm font-semibold mb-1">
-            Name
+            Name <span aria-hidden="true" className="text-destructive">*</span>
           </label>
           <input
             id="name"
@@ -85,13 +85,14 @@ export default function ContactPage() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-md"
+            placeholder="Your full name"
+            className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           />
         </div>
 
         <div>
           <label htmlFor="email" className="block text-sm font-semibold mb-1">
-            Email
+            Email <span aria-hidden="true" className="text-destructive">*</span>
           </label>
           <input
             id="email"
@@ -99,7 +100,8 @@ export default function ContactPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-md"
+            placeholder="you@company.com"
+            className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           />
         </div>
 
@@ -112,7 +114,8 @@ export default function ContactPage() {
             type="text"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-md"
+            placeholder="Company name"
+            className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           />
         </div>
 
@@ -124,7 +127,7 @@ export default function ContactPage() {
             id="inquiry"
             value={inquiry}
             onChange={(e) => setInquiry(e.target.value as InquiryType)}
-            className="w-full px-3 py-2 border border-border rounded-md"
+            className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <option value="sales">Sales</option>
             <option value="support">Support</option>
@@ -135,7 +138,7 @@ export default function ContactPage() {
 
         <div>
           <label htmlFor="message" className="block text-sm font-semibold mb-1">
-            Message
+            Message <span aria-hidden="true" className="text-destructive">*</span>
           </label>
           <textarea
             id="message"
@@ -143,7 +146,8 @@ export default function ContactPage() {
             rows={5}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-md resize-y"
+            placeholder="How can we help?"
+            className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground resize-y focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           />
         </div>
 
@@ -156,7 +160,8 @@ export default function ContactPage() {
         <button
           type="submit"
           disabled={formState === "submitting"}
-          className="px-6 py-2.5 bg-primary text-primary-foreground border-none rounded-md font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-busy={formState === "submitting"}
+          className="px-6 py-2.5 bg-primary text-primary-foreground border-none rounded-md font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           {formState === "submitting" ? "Sending..." : "Send Message"}
         </button>

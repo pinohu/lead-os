@@ -163,7 +163,7 @@ export default function LeadForm({ nicheSlug, nicheLabel, citySlug, cityName }: 
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="firstName">First name</Label>
+          <Label htmlFor="firstName">First name <span className="text-destructive">*</span></Label>
           <Input
             id="firstName"
             type="text"
@@ -183,7 +183,7 @@ export default function LeadForm({ nicheSlug, nicheLabel, citySlug, cityName }: 
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="phone">Phone</Label>
+        <Label htmlFor="phone">Phone <span className="text-destructive">*</span></Label>
         <Input
           id="phone"
           type="tel"
@@ -199,7 +199,7 @@ export default function LeadForm({ nicheSlug, nicheLabel, citySlug, cityName }: 
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
         <Input
           id="email"
           type="email"
@@ -233,7 +233,7 @@ export default function LeadForm({ nicheSlug, nicheLabel, citySlug, cityName }: 
           onChange={(e) => setTcpaConsent(e.target.checked)}
           required
           aria-required="true"
-          className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+          className="mt-1 h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary dark:bg-gray-800"
         />
         <label htmlFor="tcpaConsent" className="text-xs text-muted-foreground leading-relaxed">
           {TCPA_TEXT}

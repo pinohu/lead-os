@@ -95,7 +95,7 @@ function ScoreBar({ label, score }: { label: string; score: number | null }) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-[13px] text-white/55">{label}</span>
+        <span className="text-[13px] text-muted-foreground">{label}</span>
         <span className="text-[13px] font-semibold" style={{ color: score !== null ? color : "rgba(255,255,255,0.35)" }}>
           {score !== null ? score : "\u2014"}
         </span>
@@ -139,7 +139,7 @@ function Card({ children, className }: { children: React.ReactNode; className?: 
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-white/35">
+    <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/70">
       {children}
     </p>
   );
@@ -186,15 +186,15 @@ function ActivityCard({
             />
           )}
           {mode && (
-            <span className="rounded bg-muted px-1.5 py-px text-[11px] text-white/35">
+            <span className="rounded bg-muted px-1.5 py-px text-[11px] text-muted-foreground/70">
               {mode}
             </span>
           )}
         </div>
       </div>
       <span className="text-sm font-semibold text-foreground">{title}</span>
-      {detail && <span className="text-xs leading-relaxed text-white/55">{detail}</span>}
-      <span className="text-[11px] text-white/35">{formatShortDate(date)}</span>
+      {detail && <span className="text-xs leading-relaxed text-muted-foreground">{detail}</span>}
+      <span className="text-[11px] text-muted-foreground/70">{formatShortDate(date)}</span>
     </div>
   );
 }
@@ -259,7 +259,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         <div>
           <Link
             href="/dashboard/leads"
-            className="inline-flex items-center gap-1.5 text-[13px] text-white/35 no-underline"
+            className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground/70 no-underline"
           >
             &larr; All leads
           </Link>
@@ -281,55 +281,55 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               <div className="flex flex-wrap items-center gap-2">
                 {lead.email && (
                   <>
-                    <span className="flex items-center gap-1.5 text-sm text-white/55">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-white/35">Email</span>
-                      <a href={`mailto:${lead.email}`} className="text-white/55 no-underline">
+                    <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">Email</span>
+                      <a href={`mailto:${lead.email}`} className="text-muted-foreground no-underline">
                         {lead.email}
                       </a>
                     </span>
-                    <span className="text-sm text-white/35">&middot;</span>
+                    <span className="text-sm text-muted-foreground/70">&middot;</span>
                   </>
                 )}
                 {lead.phone && (
                   <>
-                    <span className="flex items-center gap-1.5 text-sm text-white/55">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-white/35">Phone</span>
-                      <a href={`tel:${lead.phone}`} className="text-white/55 no-underline">
+                    <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">Phone</span>
+                      <a href={`tel:${lead.phone}`} className="text-muted-foreground no-underline">
                         {lead.phone}
                       </a>
                     </span>
-                    <span className="text-sm text-white/35">&middot;</span>
+                    <span className="text-sm text-muted-foreground/70">&middot;</span>
                   </>
                 )}
                 {lead.company && (
                   <>
-                    <span className="flex items-center gap-1.5 text-sm text-white/55">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-white/35">Company</span>
+                    <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">Company</span>
                       <span>{lead.company}</span>
                     </span>
-                    <span className="text-sm text-white/35">&middot;</span>
+                    <span className="text-sm text-muted-foreground/70">&middot;</span>
                   </>
                 )}
-                <span className="flex items-center gap-1.5 text-sm text-white/55">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-white/35">Service</span>
+                <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">Service</span>
                   <span>{lead.service}</span>
                 </span>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs text-white/35">Created {formatShortDate(lead.createdAt)}</span>
-                <span className="text-sm text-white/35">&middot;</span>
-                <span className="text-xs text-white/35">Updated {formatShortDate(lead.updatedAt)}</span>
-                <span className="text-sm text-white/35">&middot;</span>
-                <span className="text-xs text-white/35">
-                  Status: <span className={lead.status === "active" ? "text-green-400" : "text-white/55"}>{lead.status}</span>
+                <span className="text-xs text-muted-foreground/70">Created {formatShortDate(lead.createdAt)}</span>
+                <span className="text-sm text-muted-foreground/70">&middot;</span>
+                <span className="text-xs text-muted-foreground/70">Updated {formatShortDate(lead.updatedAt)}</span>
+                <span className="text-sm text-muted-foreground/70">&middot;</span>
+                <span className="text-xs text-muted-foreground/70">
+                  Status: <span className={lead.status === "active" ? "text-green-400" : "text-muted-foreground"}>{lead.status}</span>
                 </span>
               </div>
             </div>
 
             <div className="flex flex-col items-end gap-2.5">
               <div className="text-right">
-                <div className="mb-1 text-[11px] uppercase tracking-widest text-white/35">
+                <div className="mb-1 text-[11px] uppercase tracking-widest text-muted-foreground/70">
                   Composite score
                 </div>
                 <div className="text-5xl font-black leading-none" style={{ color: tempColor }}>
@@ -339,7 +339,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               <div className="flex gap-2">
                 <Link
                   href="/dashboard"
-                  className="rounded-lg border border-border bg-muted px-4 py-2 text-[13px] font-semibold text-white/55 no-underline"
+                  className="rounded-lg border border-border bg-muted px-4 py-2 text-[13px] font-semibold text-muted-foreground no-underline"
                 >
                   Dashboard
                 </Link>
@@ -380,7 +380,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               </div>
               <div className="text-sm font-semibold capitalize text-foreground">
                 {temperature}
-                <span className="ml-2 font-normal text-white/55">
+                <span className="ml-2 font-normal text-muted-foreground">
                   {temperature === "burning" && "Ready to close \u2014 reach out immediately"}
                   {temperature === "hot" && "High interest \u2014 prioritize outreach"}
                   {temperature === "warm" && "Engaged \u2014 nurture and qualify"}
@@ -405,8 +405,8 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                   { label: "Nurture stages sent", value: String(lead.sentNurtureStages.length), bold: true },
                 ].map(({ label, value, bold }) => (
                   <div key={label}>
-                    <div className="mb-1 text-[11px] uppercase tracking-wider text-white/35">{label}</div>
-                    <div className={`text-sm ${bold ? "font-bold text-foreground" : "text-white/55"}`}>{value}</div>
+                    <div className="mb-1 text-[11px] uppercase tracking-wider text-muted-foreground/70">{label}</div>
+                    <div className={`text-sm ${bold ? "font-bold text-foreground" : "text-muted-foreground"}`}>{value}</div>
                   </div>
                 ))}
               </div>
@@ -414,7 +414,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               <hr className="my-5 border-t border-border" />
 
               <div>
-                <div className="mb-1.5 text-[11px] uppercase tracking-wider text-white/35">CTA</div>
+                <div className="mb-1.5 text-[11px] uppercase tracking-wider text-muted-foreground/70">CTA</div>
                 <a
                   href={lead.destination}
                   target="_blank"
@@ -427,7 +427,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
               {lead.sentNurtureStages.length > 0 && (
                 <div>
-                  <div className="mb-2 text-[11px] uppercase tracking-wider text-white/35">Stages delivered</div>
+                  <div className="mb-2 text-[11px] uppercase tracking-wider text-muted-foreground/70">Stages delivered</div>
                   <div className="flex flex-wrap gap-1.5">
                     {lead.sentNurtureStages.map((stage) => (
                       <span key={stage} className="rounded border border-blue-500/25 bg-blue-500/[0.12] px-2 py-0.5 text-[11px] text-blue-500">
@@ -440,7 +440,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
 
               {(lead.milestones.leadMilestones.length > 0 || lead.milestones.customerMilestones.length > 0) && (
                 <div>
-                  <div className="mb-2 text-[11px] uppercase tracking-wider text-white/35">Milestones achieved</div>
+                  <div className="mb-2 text-[11px] uppercase tracking-wider text-muted-foreground/70">Milestones achieved</div>
                   <div className="flex flex-wrap gap-1.5">
                     {lead.milestones.leadMilestones.map((m) => (
                       <span key={m} className="rounded border border-green-500/25 bg-green-500/[0.12] px-2 py-0.5 text-[11px] text-green-500">
@@ -464,7 +464,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           <SectionLabel>History</SectionLabel>
           <SectionTitle>Journey timeline</SectionTitle>
           {filteredEvents.length === 0 ? (
-            <p className="m-0 text-sm text-white/35">No events recorded for this lead yet.</p>
+            <p className="m-0 text-sm text-muted-foreground/70">No events recorded for this lead yet.</p>
           ) : (
             <div className="relative pl-8">
               <div
@@ -491,7 +491,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                         aria-hidden="true"
                       />
                       <div className="w-[130px] shrink-0 pt-px">
-                        <span className="whitespace-nowrap text-xs text-white/35">
+                        <span className="whitespace-nowrap text-xs text-muted-foreground/70">
                           {formatEventDate(event.timestamp)}
                         </span>
                       </div>
@@ -510,7 +510,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                           >
                             {event.channel}
                           </span>
-                          <span className="rounded bg-white/[0.05] px-[7px] py-0.5 text-[11px] text-white/35">
+                          <span className="rounded bg-white/[0.05] px-[7px] py-0.5 text-[11px] text-muted-foreground/70">
                             {event.status}
                           </span>
                         </div>
@@ -529,7 +529,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             <SectionLabel>Automation</SectionLabel>
             <SectionTitle>Workflow runs</SectionTitle>
             {workflowItems.length === 0 ? (
-              <p className="m-0 text-sm text-white/35">No workflow runs recorded yet.</p>
+              <p className="m-0 text-sm text-muted-foreground/70">No workflow runs recorded yet.</p>
             ) : (
               <div className="flex flex-col gap-2.5">
                 {workflowItems.map((workflow) => (
@@ -543,7 +543,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             <SectionLabel>Channels</SectionLabel>
             <SectionTitle>Provider executions</SectionTitle>
             {providerItems.length === 0 ? (
-              <p className="m-0 text-sm text-white/35">No provider executions recorded yet.</p>
+              <p className="m-0 text-sm text-muted-foreground/70">No provider executions recorded yet.</p>
             ) : (
               <div className="flex flex-col gap-2.5">
                 {providerItems.map((execution) => (
@@ -560,7 +560,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             <SectionLabel>Scheduling</SectionLabel>
             <SectionTitle>Booking jobs</SectionTitle>
             {bookingItems.length === 0 ? (
-              <p className="m-0 text-sm text-white/35">No booking jobs recorded yet.</p>
+              <p className="m-0 text-sm text-muted-foreground/70">No booking jobs recorded yet.</p>
             ) : (
               <div className="flex flex-col gap-2.5">
                 {bookingItems.map((job) => (
@@ -574,7 +574,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             <SectionLabel>Documents</SectionLabel>
             <SectionTitle>Document jobs</SectionTitle>
             {documentItems.length === 0 ? (
-              <p className="m-0 text-sm text-white/35">No document jobs recorded yet.</p>
+              <p className="m-0 text-sm text-muted-foreground/70">No document jobs recorded yet.</p>
             ) : (
               <div className="flex flex-col gap-2.5">
                 {documentItems.map((job) => (
@@ -599,10 +599,10 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               { label: "Experiment", value: lead.trace.experimentId ?? "\u2014" },
             ].map(({ label, value }) => (
               <div key={label}>
-                <div className="mb-1 text-[11px] uppercase tracking-wider text-white/35">
+                <div className="mb-1 text-[11px] uppercase tracking-wider text-muted-foreground/70">
                   {label}
                 </div>
-                <div className="break-all font-mono text-xs text-white/55">
+                <div className="break-all font-mono text-xs text-muted-foreground">
                   {value}
                 </div>
               </div>

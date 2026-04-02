@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 
 const OutcomeSchema = z.object({
   leadId: z.string().min(1, "Lead ID is required"),
@@ -32,6 +33,15 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // ── Body size check ──────────────────────────────────────────
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
+    }
+
     const body = await req.json().catch(() => null);
     if (!body) {
       return NextResponse.json(
