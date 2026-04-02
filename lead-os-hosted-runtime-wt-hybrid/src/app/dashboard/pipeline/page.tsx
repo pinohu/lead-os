@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface PipelineStage {
   name: string;
@@ -56,46 +58,23 @@ const NICHE_OPTIONS = [
   "staffing-agency",
 ];
 
-const STATUS_COLORS: Record<string, string> = {
-  completed: "#22c55e",
-  failed: "#ef4444",
-  skipped: "#eab308",
+const STATUS_CLASSES: Record<string, string> = {
+  completed: "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400",
+  failed: "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400",
+  skipped: "border-yellow-500/30 bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
 };
 
-const ROUTE_COLORS: Record<string, string> = {
-  "fast-track": "#8b5cf6",
-  conversion: "#3b82f6",
-  nurture: "#f59e0b",
-  drip: "#6b7280",
+const STATUS_DOT: Record<string, string> = {
+  completed: "bg-green-500",
+  failed: "bg-red-500",
+  skipped: "bg-yellow-500",
 };
 
-const cardStyle: React.CSSProperties = {
-  background: "rgba(255,255,255,0.7)",
-  border: "1px solid rgba(20,33,29,0.08)",
-  borderRadius: 12,
-  padding: "20px 24px",
-};
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "8px 12px",
-  borderRadius: 8,
-  border: "1px solid rgba(20,33,29,0.15)",
-  fontSize: "0.88rem",
-  fontFamily: "inherit",
-};
-
-const buttonStyle: React.CSSProperties = {
-  padding: "10px 20px",
-  borderRadius: 8,
-  border: "none",
-  background: "#14b8a6",
-  color: "#fff",
-  fontWeight: 700,
-  fontSize: "0.88rem",
-  cursor: "pointer",
-  minHeight: 44,
-  minWidth: 44,
+const ROUTE_CLASSES: Record<string, string> = {
+  "fast-track": "bg-violet-500",
+  conversion: "bg-blue-500",
+  nurture: "bg-amber-500",
+  drip: "bg-gray-500",
 };
 
 export default function PipelinePage() {
@@ -187,294 +166,290 @@ export default function PipelinePage() {
   }
 
   return (
-    <main
-      style={{ maxWidth: 1180, margin: "0 auto", padding: "32px 24px" }}
-      aria-label="Pipeline dashboard"
-    >
-      <Link href="/dashboard" style={{ fontSize: "0.82rem", color: "#14b8a6", textDecoration: "none" }}>
+    <main className="max-w-[1180px] mx-auto px-6 py-8 space-y-6" aria-label="Pipeline dashboard">
+      <Link href="/dashboard" className="text-xs text-primary hover:underline">
         &larr; Dashboard
       </Link>
 
-      <h1 style={{ fontSize: "1.6rem", margin: "16px 0 8px", fontWeight: 800 }}>Revenue Pipeline</h1>
-      <p style={{ color: "#666", fontSize: "0.9rem", margin: "0 0 32px" }}>
-        Run leads through the full engine pipeline, or calibrate with synthetic data.
-      </p>
+      <div>
+        <h1 className="text-2xl font-extrabold mt-4 mb-2">Revenue Pipeline</h1>
+        <p className="text-sm text-muted-foreground mb-8">
+          Run leads through the full engine pipeline, or calibrate with synthetic data.
+        </p>
+      </div>
 
       {/* Run Pipeline */}
-      <section style={cardStyle} aria-labelledby="run-pipeline-heading">
-        <h2 id="run-pipeline-heading" style={{ fontSize: "1.1rem", margin: "0 0 16px", fontWeight: 700 }}>Run Pipeline</h2>
+      <Card aria-labelledby="run-pipeline-heading">
+        <CardContent className="pt-6 space-y-4">
+          <h2 id="run-pipeline-heading" className="text-lg font-bold">Run Pipeline</h2>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-          <div>
-            <label htmlFor="pipeline-tenant" style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 4 }}>Tenant ID</label>
-            <input id="pipeline-tenant" type="text" value={tenantId} onChange={(e) => setTenantId(e.target.value)} style={inputStyle} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="pipeline-tenant" className="block text-xs font-semibold mb-1">Tenant ID</label>
+              <input
+                id="pipeline-tenant"
+                type="text"
+                value={tenantId}
+                onChange={(e) => setTenantId(e.target.value)}
+                className="w-full h-9 rounded-lg border border-border bg-background px-3 text-sm font-inherit"
+              />
+            </div>
+            <div>
+              <label htmlFor="pipeline-niche" className="block text-xs font-semibold mb-1">Niche</label>
+              <select
+                id="pipeline-niche"
+                value={niche}
+                onChange={(e) => setNiche(e.target.value)}
+                className="w-full h-9 rounded-lg border border-border bg-background px-3 text-sm"
+              >
+                {NICHE_OPTIONS.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </div>
           </div>
+
           <div>
-            <label htmlFor="pipeline-niche" style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 4 }}>Niche</label>
-            <select id="pipeline-niche" value={niche} onChange={(e) => setNiche(e.target.value)} style={inputStyle}>
-              {NICHE_OPTIONS.map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
-            </select>
+            <label htmlFor="pipeline-lead-json" className="block text-xs font-semibold mb-1">Lead JSON</label>
+            <textarea
+              id="pipeline-lead-json"
+              value={leadJson}
+              onChange={(e) => setLeadJson(e.target.value)}
+              rows={8}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs font-mono"
+            />
           </div>
-        </div>
 
-        <div style={{ marginBottom: 16 }}>
-          <label htmlFor="pipeline-lead-json" style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 4 }}>Lead JSON</label>
-          <textarea
-            id="pipeline-lead-json"
-            value={leadJson}
-            onChange={(e) => setLeadJson(e.target.value)}
-            rows={8}
-            style={{ ...inputStyle, fontFamily: "monospace", fontSize: "0.82rem" }}
-          />
-        </div>
+          <Button
+            onClick={handleRunPipeline}
+            disabled={pipelineLoading}
+          >
+            {pipelineLoading ? "Running..." : "Run Pipeline"}
+          </Button>
 
-        <button
-          type="button"
-          onClick={handleRunPipeline}
-          disabled={pipelineLoading}
-          style={{ ...buttonStyle, opacity: pipelineLoading ? 0.6 : 1 }}
-        >
-          {pipelineLoading ? "Running..." : "Run Pipeline"}
-        </button>
-
-        {pipelineError && (
-          <p role="alert" style={{ color: "#ef4444", marginTop: 12, fontSize: "0.88rem" }}>{pipelineError}</p>
-        )}
-      </section>
+          {pipelineError && (
+            <p role="alert" className="text-sm text-destructive mt-3">{pipelineError}</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Pipeline Result */}
       {pipelineResult && (
-        <section style={{ ...cardStyle, marginTop: 24 }} aria-labelledby="pipeline-result-heading">
-          <h2 id="pipeline-result-heading" style={{ fontSize: "1.1rem", margin: "0 0 16px", fontWeight: 700 }}>
-            Pipeline Result
-          </h2>
+        <Card aria-labelledby="pipeline-result-heading">
+          <CardContent className="pt-6 space-y-4">
+            <h2 id="pipeline-result-heading" className="text-lg font-bold">Pipeline Result</h2>
 
-          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 16 }}>
-            <div style={{ background: ROUTE_COLORS[pipelineResult.route] ?? "#6b7280", color: "#fff", padding: "6px 14px", borderRadius: 999, fontWeight: 700, fontSize: "0.82rem" }}>
-              Route: {pipelineResult.route}
+            <div className="flex gap-3 flex-wrap">
+              <span className={`${ROUTE_CLASSES[pipelineResult.route] ?? "bg-gray-500"} text-white px-3.5 py-1.5 rounded-full text-xs font-bold`}>
+                Route: {pipelineResult.route}
+              </span>
+              <span className="bg-muted px-3.5 py-1.5 rounded-full text-xs">
+                Duration: {pipelineResult.totalDurationMs}ms
+              </span>
+              <span className="bg-muted px-3.5 py-1.5 rounded-full text-xs">
+                Lead: {pipelineResult.leadKey.slice(0, 12)}...
+              </span>
             </div>
-            <div style={{ background: "#f3f4f6", padding: "6px 14px", borderRadius: 999, fontSize: "0.82rem" }}>
-              Duration: {pipelineResult.totalDurationMs}ms
-            </div>
-            <div style={{ background: "#f3f4f6", padding: "6px 14px", borderRadius: 999, fontSize: "0.82rem" }}>
-              Lead: {pipelineResult.leadKey.slice(0, 12)}...
-            </div>
-          </div>
 
-          <h3 style={{ fontSize: "0.95rem", fontWeight: 700, margin: "0 0 8px" }}>Stage Results</h3>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {pipelineResult.stages.map((stage) => (
-              <div
-                key={stage.name}
-                title={stage.error ?? `${stage.durationMs}ms`}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "6px 12px",
-                  borderRadius: 8,
-                  border: `1px solid ${STATUS_COLORS[stage.status]}33`,
-                  background: `${STATUS_COLORS[stage.status]}11`,
-                  fontSize: "0.8rem",
-                }}
-              >
-                <span
-                  aria-label={`${stage.name} ${stage.status}`}
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: "50%",
-                    background: STATUS_COLORS[stage.status],
-                    display: "inline-block",
-                  }}
-                />
-                {stage.name}
-                <span style={{ color: "#999", fontSize: "0.75rem" }}>{stage.durationMs}ms</span>
-              </div>
-            ))}
-          </div>
-        </section>
+            <h3 className="text-sm font-bold">Stage Results</h3>
+            <div className="flex flex-wrap gap-2">
+              {pipelineResult.stages.map((stage) => (
+                <div
+                  key={stage.name}
+                  title={stage.error ?? `${stage.durationMs}ms`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs ${STATUS_CLASSES[stage.status]}`}
+                >
+                  <span
+                    aria-label={`${stage.name} ${stage.status}`}
+                    className={`w-2.5 h-2.5 rounded-full inline-block ${STATUS_DOT[stage.status]}`}
+                  />
+                  {stage.name}
+                  <span className="text-muted-foreground text-[0.75rem]">{stage.durationMs}ms</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Stats */}
       {stats && stats.totalRuns > 0 && (
-        <section style={{ ...cardStyle, marginTop: 24 }} aria-labelledby="stats-heading">
-          <h2 id="stats-heading" style={{ fontSize: "1.1rem", margin: "0 0 16px", fontWeight: 700 }}>Pipeline Stats</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
-            <div>
-              <div style={{ fontSize: "0.78rem", color: "#888", fontWeight: 600 }}>Total Runs</div>
-              <div style={{ fontSize: "1.4rem", fontWeight: 800 }}>{stats.totalRuns}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: "0.78rem", color: "#888", fontWeight: 600 }}>Avg Duration</div>
-              <div style={{ fontSize: "1.4rem", fontWeight: 800 }}>{stats.avgDurationMs}ms</div>
-            </div>
-            <div>
-              <div style={{ fontSize: "0.78rem", color: "#888", fontWeight: 600 }}>Escalation Rate</div>
-              <div style={{ fontSize: "1.4rem", fontWeight: 800 }}>{Math.round(stats.escalationRate * 100)}%</div>
-            </div>
-            {Object.entries(stats.routeDistribution).map(([route, count]) => (
-              <div key={route}>
-                <div style={{ fontSize: "0.78rem", color: "#888", fontWeight: 600 }}>{route}</div>
-                <div style={{ fontSize: "1.4rem", fontWeight: 800, color: ROUTE_COLORS[route] ?? "#333" }}>{count}</div>
+        <Card aria-labelledby="stats-heading">
+          <CardContent className="pt-6 space-y-4">
+            <h2 id="stats-heading" className="text-lg font-bold">Pipeline Stats</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div>
+                <div className="text-xs text-muted-foreground font-semibold">Total Runs</div>
+                <div className="text-2xl font-extrabold">{stats.totalRuns}</div>
               </div>
-            ))}
-          </div>
-        </section>
+              <div>
+                <div className="text-xs text-muted-foreground font-semibold">Avg Duration</div>
+                <div className="text-2xl font-extrabold">{stats.avgDurationMs}ms</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground font-semibold">Escalation Rate</div>
+                <div className="text-2xl font-extrabold">{Math.round(stats.escalationRate * 100)}%</div>
+              </div>
+              {Object.entries(stats.routeDistribution).map(([route, count]) => (
+                <div key={route}>
+                  <div className="text-xs text-muted-foreground font-semibold">{route}</div>
+                  <div className="text-2xl font-extrabold">{count}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Recent Runs */}
       {recentRuns.length > 0 && (
-        <section style={{ ...cardStyle, marginTop: 24 }} aria-labelledby="recent-runs-heading">
-          <h2 id="recent-runs-heading" style={{ fontSize: "1.1rem", margin: "0 0 16px", fontWeight: 700 }}>Recent Runs</h2>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #e5e7eb" }}>
-                <th scope="col" style={{ textAlign: "left", padding: "8px 4px", fontWeight: 700 }}>Lead</th>
-                <th scope="col" style={{ textAlign: "left", padding: "8px 4px", fontWeight: 700 }}>Niche</th>
-                <th scope="col" style={{ textAlign: "left", padding: "8px 4px", fontWeight: 700 }}>Route</th>
-                <th scope="col" style={{ textAlign: "right", padding: "8px 4px", fontWeight: 700 }}>Duration</th>
-                <th scope="col" style={{ textAlign: "right", padding: "8px 4px", fontWeight: 700 }}>Stages</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentRuns.map((run) => (
-                <tr key={run.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                  <td style={{ padding: "8px 4px" }}>{run.leadKey.slice(0, 12)}...</td>
-                  <td style={{ padding: "8px 4px" }}>{run.niche}</td>
-                  <td style={{ padding: "8px 4px" }}>
-                    <span style={{ color: ROUTE_COLORS[run.route] ?? "#333", fontWeight: 700 }}>{run.route}</span>
-                  </td>
-                  <td style={{ padding: "8px 4px", textAlign: "right" }}>{run.totalDurationMs}ms</td>
-                  <td style={{ padding: "8px 4px", textAlign: "right" }}>
-                    {run.stages.filter((s) => s.status === "completed").length}/{run.stages.length}
-                  </td>
+        <Card aria-labelledby="recent-runs-heading">
+          <CardContent className="pt-6 space-y-4">
+            <h2 id="recent-runs-heading" className="text-lg font-bold">Recent Runs</h2>
+            <table className="w-full text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-border">
+                  <th scope="col" className="text-left p-2 font-bold">Lead</th>
+                  <th scope="col" className="text-left p-2 font-bold">Niche</th>
+                  <th scope="col" className="text-left p-2 font-bold">Route</th>
+                  <th scope="col" className="text-right p-2 font-bold">Duration</th>
+                  <th scope="col" className="text-right p-2 font-bold">Stages</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+              </thead>
+              <tbody>
+                {recentRuns.map((run) => (
+                  <tr key={run.id} className="border-b border-border/40">
+                    <td className="p-2">{run.leadKey.slice(0, 12)}...</td>
+                    <td className="p-2">{run.niche}</td>
+                    <td className="p-2 font-bold">{run.route}</td>
+                    <td className="p-2 text-right">{run.totalDurationMs}ms</td>
+                    <td className="p-2 text-right">
+                      {run.stages.filter((s) => s.status === "completed").length}/{run.stages.length}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
       )}
 
       {/* Testbed */}
-      <section style={{ ...cardStyle, marginTop: 32 }} aria-labelledby="testbed-heading">
-        <h2 id="testbed-heading" style={{ fontSize: "1.1rem", margin: "0 0 16px", fontWeight: 700 }}>Vertical Testbed</h2>
-        <p style={{ color: "#666", fontSize: "0.85rem", margin: "0 0 16px" }}>
-          Run synthetic leads through the pipeline to calibrate scoring, routing, and offers.
-        </p>
+      <Card aria-labelledby="testbed-heading">
+        <CardContent className="pt-6 space-y-4">
+          <h2 id="testbed-heading" className="text-lg font-bold">Vertical Testbed</h2>
+          <p className="text-sm text-muted-foreground">
+            Run synthetic leads through the pipeline to calibrate scoring, routing, and offers.
+          </p>
 
-        <div style={{ display: "flex", gap: 16, alignItems: "flex-end", flexWrap: "wrap", marginBottom: 16 }}>
-          <div>
-            <label htmlFor="testbed-niche" style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 4 }}>Niche</label>
-            <select id="testbed-niche" value={testbedNiche} onChange={(e) => setTestbedNiche(e.target.value)} style={inputStyle}>
-              {NICHE_OPTIONS.map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
-            </select>
+          <div className="flex gap-4 items-end flex-wrap">
+            <div>
+              <label htmlFor="testbed-niche" className="block text-xs font-semibold mb-1">Niche</label>
+              <select
+                id="testbed-niche"
+                value={testbedNiche}
+                onChange={(e) => setTestbedNiche(e.target.value)}
+                className="h-9 rounded-lg border border-border bg-background px-3 text-sm"
+              >
+                {NICHE_OPTIONS.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="testbed-size" className="block text-xs font-semibold mb-1">Sample Size</label>
+              <input
+                id="testbed-size"
+                type="number"
+                min={1}
+                max={100}
+                value={testbedSize}
+                onChange={(e) => setTestbedSize(parseInt(e.target.value, 10) || 10)}
+                className="w-24 h-9 rounded-lg border border-border bg-background px-3 text-sm"
+              />
+            </div>
+            <Button
+              onClick={handleRunTestbed}
+              disabled={testbedLoading}
+              className="bg-violet-600 hover:bg-violet-700"
+            >
+              {testbedLoading ? "Running..." : "Run Testbed"}
+            </Button>
           </div>
-          <div>
-            <label htmlFor="testbed-size" style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: 4 }}>Sample Size</label>
-            <input
-              id="testbed-size"
-              type="number"
-              min={1}
-              max={100}
-              value={testbedSize}
-              onChange={(e) => setTestbedSize(parseInt(e.target.value, 10) || 10)}
-              style={{ ...inputStyle, width: 100 }}
-            />
-          </div>
-          <button
-            type="button"
-            onClick={handleRunTestbed}
-            disabled={testbedLoading}
-            style={{ ...buttonStyle, background: "#8b5cf6", opacity: testbedLoading ? 0.6 : 1 }}
-          >
-            {testbedLoading ? "Running..." : "Run Testbed"}
-          </button>
-        </div>
 
-        {testbedError && (
-          <p role="alert" style={{ color: "#ef4444", fontSize: "0.88rem" }}>{testbedError}</p>
-        )}
-      </section>
+          {testbedError && (
+            <p role="alert" className="text-sm text-destructive">{testbedError}</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Testbed Report */}
       {testbedReport && (
-        <section style={{ ...cardStyle, marginTop: 24 }} aria-labelledby="testbed-report-heading">
-          <h2 id="testbed-report-heading" style={{ fontSize: "1.1rem", margin: "0 0 16px", fontWeight: 700 }}>
-            Calibration Report: {testbedReport.nicheSlug}
-          </h2>
+        <Card aria-labelledby="testbed-report-heading">
+          <CardContent className="pt-6 space-y-6">
+            <h2 id="testbed-report-heading" className="text-lg font-bold">
+              Calibration Report: {testbedReport.nicheSlug}
+            </h2>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 24 }}>
-            <div>
-              <div style={{ fontSize: "0.78rem", color: "#888", fontWeight: 600 }}>Sample Size</div>
-              <div style={{ fontSize: "1.4rem", fontWeight: 800 }}>{testbedReport.sampleSize}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: "0.78rem", color: "#888", fontWeight: 600 }}>Avg Duration</div>
-              <div style={{ fontSize: "1.4rem", fontWeight: 800 }}>{testbedReport.avgPipelineDurationMs}ms</div>
-            </div>
-            <div>
-              <div style={{ fontSize: "0.78rem", color: "#888", fontWeight: 600 }}>Escalation Rate</div>
-              <div style={{ fontSize: "1.4rem", fontWeight: 800 }}>{Math.round(testbedReport.escalationRate * 100)}%</div>
-            </div>
-            <div>
-              <div style={{ fontSize: "0.78rem", color: "#888", fontWeight: 600 }}>Revenue Potential</div>
-              <div style={{ fontSize: "1.4rem", fontWeight: 800 }}>${testbedReport.estimatedRevenuePotential.toLocaleString()}</div>
-            </div>
-          </div>
-
-          <h3 style={{ fontSize: "0.95rem", fontWeight: 700, margin: "0 0 8px" }}>Route Distribution</h3>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-            {Object.entries(testbedReport.routePercentages).map(([route, pct]) => (
-              <div
-                key={route}
-                style={{
-                  background: ROUTE_COLORS[route] ?? "#6b7280",
-                  color: "#fff",
-                  padding: "8px 16px",
-                  borderRadius: 8,
-                  fontSize: "0.85rem",
-                  fontWeight: 700,
-                }}
-              >
-                {route}: {pct}% ({testbedReport.routeDistribution[route]})
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div>
+                <div className="text-xs text-muted-foreground font-semibold">Sample Size</div>
+                <div className="text-2xl font-extrabold">{testbedReport.sampleSize}</div>
               </div>
-            ))}
-          </div>
-
-          <h3 style={{ fontSize: "0.95rem", fontWeight: 700, margin: "0 0 8px" }}>Average Scores</h3>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
-            {Object.entries(testbedReport.averageScores).map(([dim, score]) => (
-              <div key={dim} style={{ textAlign: "center" }}>
-                <div style={{ fontSize: "0.75rem", color: "#888", fontWeight: 600, marginBottom: 2 }}>{dim}</div>
-                <div style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: "50%",
-                  border: `3px solid ${score >= 60 ? "#22c55e" : score >= 30 ? "#f59e0b" : "#ef4444"}`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: 800,
-                  fontSize: "1rem",
-                }}>
-                  {score}
-                </div>
+              <div>
+                <div className="text-xs text-muted-foreground font-semibold">Avg Duration</div>
+                <div className="text-2xl font-extrabold">{testbedReport.avgPipelineDurationMs}ms</div>
               </div>
-            ))}
-          </div>
+              <div>
+                <div className="text-xs text-muted-foreground font-semibold">Escalation Rate</div>
+                <div className="text-2xl font-extrabold">{Math.round(testbedReport.escalationRate * 100)}%</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground font-semibold">Revenue Potential</div>
+                <div className="text-2xl font-extrabold">${testbedReport.estimatedRevenuePotential.toLocaleString()}</div>
+              </div>
+            </div>
 
-          <h3 style={{ fontSize: "0.95rem", fontWeight: 700, margin: "0 0 8px" }}>Recommendations</h3>
-          <ul style={{ margin: 0, paddingLeft: 20 }}>
-            {testbedReport.recommendations.map((rec, i) => (
-              <li key={i} style={{ fontSize: "0.85rem", marginBottom: 6, color: "#444" }}>{rec}</li>
-            ))}
-          </ul>
-        </section>
+            <div>
+              <h3 className="text-sm font-bold mb-2">Route Distribution</h3>
+              <div className="flex gap-2 flex-wrap">
+                {Object.entries(testbedReport.routePercentages).map(([route, pct]) => (
+                  <div
+                    key={route}
+                    className={`${ROUTE_CLASSES[route] ?? "bg-gray-500"} text-white px-4 py-2 rounded-lg text-sm font-bold`}
+                  >
+                    {route}: {pct}% ({testbedReport.routeDistribution[route]})
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-bold mb-2">Average Scores</h3>
+              <div className="flex gap-3 flex-wrap">
+                {Object.entries(testbedReport.averageScores).map(([dim, score]) => (
+                  <div key={dim} className="text-center">
+                    <div className="text-[0.75rem] text-muted-foreground font-semibold mb-0.5">{dim}</div>
+                    <div className={`w-14 h-14 rounded-full border-[3px] flex items-center justify-center font-extrabold text-base ${
+                      score >= 60 ? "border-green-500" : score >= 30 ? "border-amber-500" : "border-red-500"
+                    }`}>
+                      {score}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-bold mb-2">Recommendations</h3>
+              <ul className="list-disc pl-5 space-y-1.5">
+                {testbedReport.recommendations.map((rec, i) => (
+                  <li key={i} className="text-sm text-muted-foreground">{rec}</li>
+                ))}
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </main>
   );

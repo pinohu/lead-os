@@ -5,7 +5,10 @@ import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { tenantConfig } from "@/lib/tenant";
 import { embeddedSecrets } from "@/lib/embedded-secrets";
-import { Button } from "@/components/ui/button";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { SiteHeader } from "@/components/site-header";
+import { Separator } from "@/components/ui/separator";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,16 +41,25 @@ export const metadata: Metadata = {
   icons: { icon: "/icon.svg" },
 };
 
-const footerLinks = [
+const footerPlatform = [
   { label: "Industries", href: "/industries" },
   { label: "Pricing", href: "/pricing" },
+  { label: "Directory", href: "/directory" },
   { label: "Marketplace", href: "/marketplace" },
-  { label: "Help", href: "/help" },
+];
+
+const footerResources = [
+  { label: "Help Center", href: "/help" },
   { label: "Changelog", href: "/changelog" },
   { label: "Roadmap", href: "/roadmap" },
   { label: "Contact", href: "/contact" },
+  { label: "API Docs", href: "/docs/api" },
+];
+
+const footerLegal = [
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },
+  { label: "Manage Data", href: "/privacy/manage" },
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -56,7 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const brandName = tenantConfig.brandName;
 
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#4f46e5" />
@@ -115,32 +127,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={`${inter.className} bg-background text-foreground antialiased`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md">
           Skip to content
         </a>
 
         {/* ── Header ──────────────────────────────────────── */}
-        <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <nav className="max-w-7xl mx-auto flex items-center justify-between h-16 px-4" aria-label="Primary navigation">
-            <Link href="/" className="text-lg font-bold tracking-tight text-foreground hover:text-primary transition-colors" aria-label={`${brandName} home`}>
-              {brandName}
-            </Link>
-            <div className="hidden md:flex items-center gap-6">
-              <Link href="/industries" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Industries</Link>
-              <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
-              <Link href="/directory" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Directory</Link>
-              <Link href="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Marketplace</Link>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-                <Link href="/auth/sign-in">Sign in</Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href="/onboard">Get started</Link>
-              </Button>
-            </div>
-          </nav>
-        </header>
+        <SiteHeader brandName={brandName} />
 
         {partneroProgramId ? (
           <Script
@@ -157,24 +150,61 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* ── Footer ──────────────────────────────────────── */}
         <footer className="border-t border-border mt-16" role="contentinfo">
           <div className="max-w-7xl mx-auto px-4 py-12">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="text-center md:text-left">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {/* Column 1: Brand */}
+              <div className="col-span-2 md:col-span-1">
                 <p className="font-semibold text-foreground">{brandName}</p>
-                <p className="text-sm text-muted-foreground mt-1">Enterprise lead generation infrastructure</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Enterprise lead generation infrastructure for every vertical.
+                </p>
               </div>
-              <nav aria-label="Footer navigation" className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-                {footerLinks.map(({ label, href }) => (
-                  <Link key={label} href={href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    {label}
-                  </Link>
-                ))}
-              </nav>
+
+              {/* Column 2: Platform */}
+              <div>
+                <p className="text-sm font-semibold text-foreground mb-3">Platform</p>
+                <nav aria-label="Platform links" className="flex flex-col gap-2">
+                  {footerPlatform.map(({ label, href }) => (
+                    <Link key={label} href={href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      {label}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+
+              {/* Column 3: Resources */}
+              <div>
+                <p className="text-sm font-semibold text-foreground mb-3">Resources</p>
+                <nav aria-label="Resource links" className="flex flex-col gap-2">
+                  {footerResources.map(({ label, href }) => (
+                    <Link key={label} href={href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      {label}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+
+              {/* Column 4: Legal */}
+              <div>
+                <p className="text-sm font-semibold text-foreground mb-3">Legal</p>
+                <nav aria-label="Legal links" className="flex flex-col gap-2">
+                  {footerLegal.map(({ label, href }) => (
+                    <Link key={label} href={href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      {label}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
             </div>
-            <div className="mt-8 pt-6 border-t border-border text-center">
+
+            <Separator className="my-8" />
+
+            <div className="text-center">
               <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} {brandName}. All rights reserved.</p>
             </div>
           </div>
         </footer>
+
+        <Toaster />
 
         {process.env.NEXT_PUBLIC_UMAMI_URL && process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID ? (
           <Script
@@ -183,6 +213,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             strategy="afterInteractive"
           />
         ) : null}
+        </ThemeProvider>
       </body>
     </html>
   );

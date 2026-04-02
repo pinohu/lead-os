@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { THREE_VISIT_FRAMEWORK } from "@/lib/automation";
 import { GettingStartedChecklist } from "@/components/getting-started-checklist";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Dashboard — Lead OS Operator Command Center",
@@ -26,251 +28,293 @@ export default async function DashboardPage() {
   const health = getAutomationHealth();
 
   return (
-    <main className="experience-page">
+    <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
       <GettingStartedChecklist />
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Operator command center</p>
-          <h1>{tenantConfig.brandName} milestone dashboard</h1>
-          <p className="lede">
+
+      {/* Hero section */}
+      <section className="grid gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-4">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Operator command center</p>
+          <h1 className="text-2xl font-bold tracking-tight">{tenantConfig.brandName} milestone dashboard</h1>
+          <p className="text-lg text-muted-foreground">
             LeadOS is optimizing for milestone two and milestone three, not just the first capture
             event. This console shows what is moving, what is leaking, and where the next operator
             intervention belongs.
           </p>
-          <div className="cta-row">
-            <Link href="/dashboard/providers" className="primary">
-              Provider health
-            </Link>
-            <Link href="/dashboard/settings" className="secondary">
-              Runtime settings
-            </Link>
-            <Link href="/dashboard/bookings" className="secondary">
-              Booking jobs
-            </Link>
-            <Link href="/dashboard/documents" className="secondary">
-              Document jobs
-            </Link>
-            <Link href="/dashboard/workflows" className="secondary">
-              Workflow runs
-            </Link>
-            <Link href="/dashboard/experiments" className="secondary">
-              Experiments
-            </Link>
-            <Link href="/dashboard/analytics" className="secondary">
-              Analytics
-            </Link>
-            <Link href="/dashboard/scoring" className="secondary">
-              Scoring
-            </Link>
-            <Link href="/dashboard/attribution" className="secondary">
-              Attribution
-            </Link>
-            <Link href="/dashboard/lead-magnets" className="secondary">
-              Lead magnets
-            </Link>
-            <Link href="/dashboard/radar" className="secondary">
-              Hot lead radar
-            </Link>
-            <a href="/auth/sign-out" className="secondary">
-              Sign out
-            </a>
+          <div className="flex flex-wrap gap-2 pt-2">
+            <Button asChild size="sm">
+              <Link href="/dashboard/providers">Provider health</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/settings">Runtime settings</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/bookings">Booking jobs</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/documents">Document jobs</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/workflows">Workflow runs</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/experiments">Experiments</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/analytics">Analytics</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/scoring">Scoring</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/attribution">Attribution</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/lead-magnets">Lead magnets</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/radar">Hot lead radar</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <a href="/auth/sign-out">Sign out</a>
+            </Button>
           </div>
         </div>
-        <aside className="hero-rail">
-          <p className="eyebrow">Operator session</p>
-          <h2>{session.email}</h2>
-          <p className="muted">
+        <aside className="space-y-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Operator session</p>
+          <h2 className="text-lg font-semibold">{session.email}</h2>
+          <p className="text-sm text-muted-foreground">
             Live mode: {health.liveMode ? "enabled" : "dry run"} | Total leads: {snapshot.totals.leads} | Hot leads: {snapshot.totals.hotLeads}
           </p>
-          <ul className="journey-rail">
+          <ul className="space-y-3 pt-2">
             {THREE_VISIT_FRAMEWORK.lead.map((milestone) => (
-              <li key={milestone.id}>
-                <strong>M{milestone.ordinal}: {milestone.label}</strong>
-                <span>{milestone.description}</span>
+              <li key={milestone.id} className="space-y-0.5">
+                <strong className="text-sm font-semibold">M{milestone.ordinal}: {milestone.label}</strong>
+                <span className="block text-xs text-muted-foreground">{milestone.description}</span>
               </li>
             ))}
           </ul>
         </aside>
       </section>
 
-      <section className="metric-grid">
-        <article className="metric-card">
-          <p className="eyebrow">Lead M1 to M2</p>
-          <h2>{snapshot.conversionRates.leadM1ToM2}%</h2>
-          <p className="muted">Returning-engaged rate from captured leads.</p>
-        </article>
-        <article className="metric-card">
-          <p className="eyebrow">Lead M2 to M3</p>
-          <h2>{snapshot.conversionRates.leadM2ToM3}%</h2>
-          <p className="muted">Booked or offered rate from returning leads.</p>
-        </article>
-        <article className="metric-card">
-          <p className="eyebrow">Customer M1 to M2</p>
-          <h2>{snapshot.conversionRates.customerM1ToM2}%</h2>
-          <p className="muted">Activation rate from onboarded customers.</p>
-        </article>
-        <article className="metric-card">
-          <p className="eyebrow">Customer M2 to M3</p>
-          <h2>{snapshot.conversionRates.customerM2ToM3}%</h2>
-          <p className="muted">Value-realized rate from activated customers.</p>
-        </article>
+      {/* Metric cards */}
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead M1 to M2</p>
+            <h2 className="text-2xl font-bold mt-1">{snapshot.conversionRates.leadM1ToM2}%</h2>
+            <p className="text-sm text-muted-foreground mt-1">Returning-engaged rate from captured leads.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead M2 to M3</p>
+            <h2 className="text-2xl font-bold mt-1">{snapshot.conversionRates.leadM2ToM3}%</h2>
+            <p className="text-sm text-muted-foreground mt-1">Booked or offered rate from returning leads.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Customer M1 to M2</p>
+            <h2 className="text-2xl font-bold mt-1">{snapshot.conversionRates.customerM1ToM2}%</h2>
+            <p className="text-sm text-muted-foreground mt-1">Activation rate from onboarded customers.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Customer M2 to M3</p>
+            <h2 className="text-2xl font-bold mt-1">{snapshot.conversionRates.customerM2ToM3}%</h2>
+            <p className="text-sm text-muted-foreground mt-1">Value-realized rate from activated customers.</p>
+          </CardContent>
+        </Card>
       </section>
 
-      <section className="grid two">
-        <article className="panel">
-          <p className="eyebrow">Execution queues</p>
-          <h2>What operators can act on right now</h2>
-          <div className="stack-grid">
-            <article className="stack-card">
-              <p className="eyebrow">Bookings</p>
-              <h3>{bookingJobs.length}</h3>
-              <p className="muted">Scheduling jobs recorded in the runtime.</p>
-              <Link href="/dashboard/bookings" className="secondary">
-                Open booking queue
-              </Link>
-            </article>
-            <article className="stack-card">
-              <p className="eyebrow">Documents</p>
-              <h3>{documentJobs.length}</h3>
-              <p className="muted">Proposal, agreement, and onboarding document jobs.</p>
-              <Link href="/dashboard/documents" className="secondary">
-                Open document queue
-              </Link>
-            </article>
-            <article className="stack-card">
-              <p className="eyebrow">Workflow runs</p>
-              <h3>{workflowRuns.length}</h3>
-              <p className="muted">n8n and internal workflow emissions logged by LeadOS.</p>
-              <Link href="/dashboard/workflows" className="secondary">
-                Open workflow history
-              </Link>
-            </article>
-            <article className="stack-card">
-              <p className="eyebrow">Experiments</p>
-              <h3>{snapshot.experimentPerformance.length}</h3>
-              <p className="muted">Active experiment buckets currently represented in lead traffic.</p>
-              <Link href="/dashboard/experiments" className="secondary">
-                Open experiment view
-              </Link>
-            </article>
-          </div>
-        </article>
+      {/* Execution queues + Operator focus */}
+      <section className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Execution queues</p>
+            <h2 className="text-lg font-semibold">What operators can act on right now</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Card className="bg-muted/30">
+                <CardContent className="pt-4 space-y-1">
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Bookings</p>
+                  <h3 className="text-xl font-bold">{bookingJobs.length}</h3>
+                  <p className="text-sm text-muted-foreground">Scheduling jobs recorded in the runtime.</p>
+                  <Button asChild variant="outline" size="sm" className="mt-2">
+                    <Link href="/dashboard/bookings">Open booking queue</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card className="bg-muted/30">
+                <CardContent className="pt-4 space-y-1">
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Documents</p>
+                  <h3 className="text-xl font-bold">{documentJobs.length}</h3>
+                  <p className="text-sm text-muted-foreground">Proposal, agreement, and onboarding document jobs.</p>
+                  <Button asChild variant="outline" size="sm" className="mt-2">
+                    <Link href="/dashboard/documents">Open document queue</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card className="bg-muted/30">
+                <CardContent className="pt-4 space-y-1">
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Workflow runs</p>
+                  <h3 className="text-xl font-bold">{workflowRuns.length}</h3>
+                  <p className="text-sm text-muted-foreground">n8n and internal workflow emissions logged by LeadOS.</p>
+                  <Button asChild variant="outline" size="sm" className="mt-2">
+                    <Link href="/dashboard/workflows">Open workflow history</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card className="bg-muted/30">
+                <CardContent className="pt-4 space-y-1">
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Experiments</p>
+                  <h3 className="text-xl font-bold">{snapshot.experimentPerformance.length}</h3>
+                  <p className="text-sm text-muted-foreground">Active experiment buckets currently represented in lead traffic.</p>
+                  <Button asChild variant="outline" size="sm" className="mt-2">
+                    <Link href="/dashboard/experiments">Open experiment view</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-        <article className="panel">
-          <p className="eyebrow">Operator focus</p>
-          <h2>Fast links for intervention</h2>
-          <ul className="check-list">
-            <li><Link href="/dashboard/providers">Provider health and channel readiness</Link></li>
-            <li><Link href="/dashboard/settings">Runtime settings for provider mappings and template IDs</Link></li>
-            <li><Link href="/dashboard/bookings">Scheduling requests and availability lookups</Link></li>
-            <li><Link href="/dashboard/documents">Proposal, agreement, and onboarding document jobs</Link></li>
-            <li><Link href="/dashboard/workflows">Workflow emissions and execution outcomes</Link></li>
-            <li><Link href="/dashboard/experiments">Variant and milestone performance by experiment</Link></li>
-            <li><Link href="/dashboard/analytics">Full analytics with funnel, scores, and channel data</Link></li>
-            <li><Link href="/dashboard/scoring">Lead scoring with breakdown and recommendations</Link></li>
-            <li><Link href="/dashboard/attribution">Channel attribution with model comparison</Link></li>
-            <li><Link href="/dashboard/lead-magnets">Lead magnet delivery and performance tracking</Link></li>
-            <li><Link href="/dashboard/radar">Hot lead radar with real-time monitoring</Link></li>
-          </ul>
-        </article>
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Operator focus</p>
+            <h2 className="text-lg font-semibold">Fast links for intervention</h2>
+            <ul className="space-y-2">
+              <li><Link href="/dashboard/providers" className="text-sm text-primary hover:underline">Provider health and channel readiness</Link></li>
+              <li><Link href="/dashboard/settings" className="text-sm text-primary hover:underline">Runtime settings for provider mappings and template IDs</Link></li>
+              <li><Link href="/dashboard/bookings" className="text-sm text-primary hover:underline">Scheduling requests and availability lookups</Link></li>
+              <li><Link href="/dashboard/documents" className="text-sm text-primary hover:underline">Proposal, agreement, and onboarding document jobs</Link></li>
+              <li><Link href="/dashboard/workflows" className="text-sm text-primary hover:underline">Workflow emissions and execution outcomes</Link></li>
+              <li><Link href="/dashboard/experiments" className="text-sm text-primary hover:underline">Variant and milestone performance by experiment</Link></li>
+              <li><Link href="/dashboard/analytics" className="text-sm text-primary hover:underline">Full analytics with funnel, scores, and channel data</Link></li>
+              <li><Link href="/dashboard/scoring" className="text-sm text-primary hover:underline">Lead scoring with breakdown and recommendations</Link></li>
+              <li><Link href="/dashboard/attribution" className="text-sm text-primary hover:underline">Channel attribution with model comparison</Link></li>
+              <li><Link href="/dashboard/lead-magnets" className="text-sm text-primary hover:underline">Lead magnet delivery and performance tracking</Link></li>
+              <li><Link href="/dashboard/radar" className="text-sm text-primary hover:underline">Hot lead radar with real-time monitoring</Link></li>
+            </ul>
+          </CardContent>
+        </Card>
       </section>
 
-      <section className="grid two">
-        <article className="panel">
-          <p className="eyebrow">Segment view</p>
-          <h2>Where momentum is coming from</h2>
-          <div className="stack-grid">
-            <article className="stack-card">
-              <h3>Top sources</h3>
-              <ul className="check-list">
-                {snapshot.topSources.length === 0 ? (
-                  <li>No traffic yet</li>
-                ) : (
-                  snapshot.topSources.map((entry) => (
-                    <li key={entry.label}>
-                      {entry.label}: {entry.count}
-                    </li>
-                  ))
-                )}
-              </ul>
-            </article>
-            <article className="stack-card">
-              <h3>Top niches</h3>
-              <ul className="check-list">
-                {snapshot.topNiches.length === 0 ? (
-                  <li>No traffic yet</li>
-                ) : (
-                  snapshot.topNiches.map((entry) => (
-                    <li key={entry.label}>
-                      {entry.label}: {entry.count}
-                    </li>
-                  ))
-                )}
-              </ul>
-            </article>
-          </div>
-        </article>
+      {/* Segment view + Funnel mix */}
+      <section className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Segment view</p>
+            <h2 className="text-lg font-semibold">Where momentum is coming from</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Card className="bg-muted/30">
+                <CardContent className="pt-4">
+                  <h3 className="text-base font-semibold mb-2">Top sources</h3>
+                  <ul className="space-y-1">
+                    {snapshot.topSources.length === 0 ? (
+                      <li className="text-sm text-muted-foreground">No traffic yet</li>
+                    ) : (
+                      snapshot.topSources.map((entry) => (
+                        <li key={entry.label} className="text-sm">
+                          {entry.label}: {entry.count}
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card className="bg-muted/30">
+                <CardContent className="pt-4">
+                  <h3 className="text-base font-semibold mb-2">Top niches</h3>
+                  <ul className="space-y-1">
+                    {snapshot.topNiches.length === 0 ? (
+                      <li className="text-sm text-muted-foreground">No traffic yet</li>
+                    ) : (
+                      snapshot.topNiches.map((entry) => (
+                        <li key={entry.label} className="text-sm">
+                          {entry.label}: {entry.count}
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-        <article className="panel">
-          <p className="eyebrow">Funnel mix</p>
-          <h2>Families attracting the most movement</h2>
-          <ul className="check-list">
-            {snapshot.topFamilies.length === 0 ? (
-              <li>No funnel traffic yet</li>
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Funnel mix</p>
+            <h2 className="text-lg font-semibold">Families attracting the most movement</h2>
+            <ul className="space-y-1">
+              {snapshot.topFamilies.length === 0 ? (
+                <li className="text-sm text-muted-foreground">No funnel traffic yet</li>
+              ) : (
+                snapshot.topFamilies.map((entry) => (
+                  <li key={entry.family} className="text-sm">
+                    {entry.family}: {entry.count}
+                  </li>
+                ))
+              )}
+            </ul>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Recent leads + Recent milestone events */}
+      <section className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Recent leads</p>
+            <h2 className="text-lg font-semibold">Lead detail drill-down</h2>
+            {snapshot.leadTimeline.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No leads have been captured in this runtime yet.</p>
             ) : (
-              snapshot.topFamilies.map((entry) => (
-                <li key={entry.family}>
-                  {entry.family}: {entry.count}
-                </li>
-              ))
+              <div className="grid gap-4 sm:grid-cols-2">
+                {snapshot.leadTimeline.map((lead) => (
+                  <Card key={lead.leadKey} className="bg-muted/30">
+                    <CardContent className="pt-4 space-y-1">
+                      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{lead.family}</p>
+                      <h3 className="text-sm font-semibold">{lead.leadKey}</h3>
+                      <p className="text-xs text-muted-foreground">Stage: {lead.stage} | Visits: {lead.visitCount}</p>
+                      <p className="text-xs text-muted-foreground">Next lead milestone: {lead.nextLeadMilestone ?? "Complete"}</p>
+                      <Button asChild variant="outline" size="sm" className="mt-2">
+                        <Link href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`}>
+                          Open lead detail
+                        </Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             )}
-          </ul>
-        </article>
-      </section>
+          </CardContent>
+        </Card>
 
-      <section className="grid two">
-        <article className="panel">
-          <p className="eyebrow">Recent leads</p>
-          <h2>Lead detail drill-down</h2>
-          {snapshot.leadTimeline.length === 0 ? (
-            <p className="muted">No leads have been captured in this runtime yet.</p>
-          ) : (
-            <div className="stack-grid">
-              {snapshot.leadTimeline.map((lead) => (
-                <article key={lead.leadKey} className="stack-card">
-                  <p className="eyebrow">{lead.family}</p>
-                  <h3>{lead.leadKey}</h3>
-                  <p className="muted">Stage: {lead.stage} | Visits: {lead.visitCount}</p>
-                  <p className="muted">Next lead milestone: {lead.nextLeadMilestone ?? "Complete"}</p>
-                  <div className="cta-row">
-                    <Link href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`} className="secondary">
-                      Open lead detail
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </article>
-
-        <article className="panel">
-          <p className="eyebrow">Recent milestone events</p>
-          <h2>Latest trust and conversion signals</h2>
-          {snapshot.recentMilestoneEvents.length === 0 ? (
-            <p className="muted">Milestone events will appear here as the runtime captures activity.</p>
-          ) : (
-            <div className="stack-grid">
-              {snapshot.recentMilestoneEvents.map((event) => (
-                <article key={event.id} className="stack-card">
-                  <p className="eyebrow">{event.type}</p>
-                  <h3>{event.milestoneId}</h3>
-                  <p className="muted">{event.leadKey}</p>
-                  <p className="muted">Visit count: {event.visitCount} | Stage: {event.stage}</p>
-                </article>
-              ))}
-            </div>
-          )}
-        </article>
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Recent milestone events</p>
+            <h2 className="text-lg font-semibold">Latest trust and conversion signals</h2>
+            {snapshot.recentMilestoneEvents.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Milestone events will appear here as the runtime captures activity.</p>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {snapshot.recentMilestoneEvents.map((event) => (
+                  <Card key={event.id} className="bg-muted/30">
+                    <CardContent className="pt-4 space-y-1">
+                      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{event.type}</p>
+                      <h3 className="text-sm font-semibold">{event.milestoneId}</h3>
+                      <p className="text-xs text-muted-foreground">{event.leadKey}</p>
+                      <p className="text-xs text-muted-foreground">Visit count: {event.visitCount} | Stage: {event.stage}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </section>
     </main>
   );

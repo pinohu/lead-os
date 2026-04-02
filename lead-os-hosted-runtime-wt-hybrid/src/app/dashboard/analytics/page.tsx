@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface AnalyticsData {
   metrics: {
@@ -113,10 +115,12 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="muted">Loading analytics data...</p>
-        </section>
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-sm text-muted-foreground">Loading analytics data...</p>
+          </CardContent>
+        </Card>
       </main>
     );
   }
@@ -127,336 +131,277 @@ export default function AnalyticsPage() {
   const maxWeeklyCount = Math.max(...data.weeklyTimeSeries.map((w) => w.count), 1);
 
   return (
-    <main className="experience-page">
+    <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
       {isDemo && (
-        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontWeight: 700 }}>Demo data</span>
-          <span style={{ color: "#92400e" }}>— Connect your database to see live analytics. <a href="/setup" style={{ textDecoration: "underline" }}>Configure now →</a></span>
+        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 rounded-md px-6 py-2.5 text-sm flex items-center gap-2">
+          <span className="font-bold text-amber-800 dark:text-amber-200">Demo data</span>
+          <span className="text-amber-700 dark:text-amber-300">
+            &mdash; Connect your database to see live analytics.{" "}
+            <Link href="/setup" className="underline">Configure now &rarr;</Link>
+          </span>
         </div>
       )}
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Analytics</p>
-          <h1>Lead performance analytics</h1>
-          <p className="lede">
+
+      {/* Hero */}
+      <section className="grid gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-4">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Analytics</p>
+          <h1 className="text-2xl font-bold tracking-tight">Lead performance analytics</h1>
+          <p className="text-lg text-muted-foreground">
             Funnel progression, channel performance, scoring distributions, and trend analysis
             across all captured leads.
           </p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
+          <div className="flex flex-wrap gap-2 pt-2">
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard">Back to dashboard</Link>
+            </Button>
           </div>
         </div>
-        <aside className="hero-rail">
-          <p className="eyebrow">Key metrics</p>
-          <ul className="journey-rail">
-            <li>
-              <strong>Total leads</strong>
-              <span>{data.metrics.totalLeads}</span>
+        <aside className="space-y-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Key metrics</p>
+          <ul className="space-y-3">
+            <li className="space-y-0.5">
+              <strong className="text-sm font-semibold">Total leads</strong>
+              <span className="block text-sm text-muted-foreground">{data.metrics.totalLeads}</span>
             </li>
-            <li>
-              <strong>Conversion rate</strong>
-              <span>{data.metrics.conversionRate}%</span>
+            <li className="space-y-0.5">
+              <strong className="text-sm font-semibold">Conversion rate</strong>
+              <span className="block text-sm text-muted-foreground">{data.metrics.conversionRate}%</span>
             </li>
-            <li>
-              <strong>Average score</strong>
-              <span>{data.metrics.avgScore}</span>
+            <li className="space-y-0.5">
+              <strong className="text-sm font-semibold">Average score</strong>
+              <span className="block text-sm text-muted-foreground">{data.metrics.avgScore}</span>
             </li>
-            <li>
-              <strong>Hot leads</strong>
-              <span>{data.metrics.hotLeads}</span>
+            <li className="space-y-0.5">
+              <strong className="text-sm font-semibold">Hot leads</strong>
+              <span className="block text-sm text-muted-foreground">{data.metrics.hotLeads}</span>
             </li>
           </ul>
         </aside>
       </section>
 
-      <section className="metric-grid">
-        <article className="metric-card">
-          <p className="eyebrow">Total leads</p>
-          <h2>{data.metrics.totalLeads}</h2>
-          <p className="muted">All captured leads in the runtime.</p>
-        </article>
-        <article className="metric-card">
-          <p className="eyebrow">Conversion rate</p>
-          <h2>{data.metrics.conversionRate}%</h2>
-          <p className="muted">Leads that reached converted stage or beyond.</p>
-        </article>
-        <article className="metric-card">
-          <p className="eyebrow">Average score</p>
-          <h2>{data.metrics.avgScore}</h2>
-          <p className="muted">Mean composite score across all leads.</p>
-        </article>
-        <article className="metric-card">
-          <p className="eyebrow">Hot leads</p>
-          <h2>{data.metrics.hotLeads}</h2>
-          <p className="muted">Leads flagged as hot or scoring 75+.</p>
-        </article>
+      {/* Metric cards */}
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Total leads</p>
+            <h2 className="text-2xl font-bold mt-1">{data.metrics.totalLeads}</h2>
+            <p className="text-sm text-muted-foreground mt-1">All captured leads in the runtime.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Conversion rate</p>
+            <h2 className="text-2xl font-bold mt-1">{data.metrics.conversionRate}%</h2>
+            <p className="text-sm text-muted-foreground mt-1">Leads that reached converted stage or beyond.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Average score</p>
+            <h2 className="text-2xl font-bold mt-1">{data.metrics.avgScore}</h2>
+            <p className="text-sm text-muted-foreground mt-1">Mean composite score across all leads.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Hot leads</p>
+            <h2 className="text-2xl font-bold mt-1">{data.metrics.hotLeads}</h2>
+            <p className="text-sm text-muted-foreground mt-1">Leads flagged as hot or scoring 75+.</p>
+          </CardContent>
+        </Card>
       </section>
 
-      <section className="panel">
-        <p className="eyebrow">Lead funnel</p>
-        <h2>Stage progression</h2>
-        {data.funnelStages.length === 0 ? (
-          <p className="muted">No funnel data available yet.</p>
-        ) : (
-          <div style={{ display: "grid", gap: 8, marginTop: 16 }}>
-            {data.funnelStages.map((stage) => {
-              const maxCount = Math.max(...data.funnelStages.map((s) => s.count), 1);
-              const widthPercent = (stage.count / maxCount) * 100;
-              return (
-                <div
-                  key={stage.stage}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "140px 1fr 80px",
-                    alignItems: "center",
-                    gap: 12,
-                    padding: "8px 0",
-                  }}
-                >
-                  <span style={{ fontWeight: 700, fontSize: "0.88rem" }}>{stage.stage}</span>
-                  <div
-                    style={{
-                      position: "relative",
-                      height: 28,
-                      background: "rgba(34, 95, 84, 0.08)",
-                      borderRadius: 6,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${Math.max(widthPercent, 2)}%`,
-                        background: "linear-gradient(90deg, var(--secondary), var(--accent))",
-                        borderRadius: 6,
-                        transition: "width 0.3s ease",
-                      }}
-                    />
-                    <span
-                      style={{
-                        position: "absolute",
-                        left: 8,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        fontSize: "0.78rem",
-                        fontWeight: 700,
-                        color: widthPercent > 20 ? "#fff" : "var(--text)",
-                      }}
-                    >
-                      {stage.count}
+      {/* Funnel */}
+      <Card>
+        <CardContent className="pt-6 space-y-4">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead funnel</p>
+          <h2 className="text-lg font-semibold">Stage progression</h2>
+          {data.funnelStages.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No funnel data available yet.</p>
+          ) : (
+            <div className="grid gap-2 mt-4">
+              {data.funnelStages.map((stage) => {
+                const maxCount = Math.max(...data.funnelStages.map((s) => s.count), 1);
+                const widthPercent = (stage.count / maxCount) * 100;
+                return (
+                  <div key={stage.stage} className="grid grid-cols-[140px_1fr_80px] items-center gap-3 py-2">
+                    <span className="text-sm font-bold">{stage.stage}</span>
+                    <div className="relative h-7 bg-muted/50 rounded-md overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-md transition-all duration-300"
+                        style={{ width: `${Math.max(widthPercent, 2)}%` }}
+                      />
+                      <span className={`absolute left-2 top-1/2 -translate-y-1/2 text-xs font-bold ${widthPercent > 20 ? "text-primary-foreground" : "text-foreground"}`}>
+                        {stage.count}
+                      </span>
+                    </div>
+                    <span className="text-xs text-muted-foreground text-right">
+                      {stage.conversionFromPrevious}%
                     </span>
                   </div>
-                  <span style={{ fontSize: "0.82rem", color: "var(--text-soft)", textAlign: "right" }}>
-                    {stage.conversionFromPrevious}%
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-      <section className="grid two">
-        <article className="panel">
-          <p className="eyebrow">Score distribution</p>
-          <h2>Lead score buckets</h2>
-          {data.scoreDistribution.every((b) => b.count === 0) ? (
-            <p className="muted">No scored leads yet.</p>
-          ) : (
-            <div style={{ display: "grid", gap: 6, marginTop: 16 }}>
-              {data.scoreDistribution.map((bucket) => (
-                <div
-                  key={bucket.label}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "60px 1fr 40px",
-                    alignItems: "center",
-                    gap: 8,
-                  }}
-                >
-                  <span style={{ fontSize: "0.82rem", fontWeight: 600 }}>{bucket.label}</span>
-                  <div
-                    style={{
-                      height: 22,
-                      background: "rgba(34, 95, 84, 0.08)",
-                      borderRadius: 4,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${(bucket.count / maxScoreCount) * 100}%`,
-                        background: "var(--accent)",
-                        borderRadius: 4,
-                        minWidth: bucket.count > 0 ? 4 : 0,
-                      }}
-                    />
+      {/* Score distribution + Weekly captures */}
+      <section className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Score distribution</p>
+            <h2 className="text-lg font-semibold">Lead score buckets</h2>
+            {data.scoreDistribution.every((b) => b.count === 0) ? (
+              <p className="text-sm text-muted-foreground">No scored leads yet.</p>
+            ) : (
+              <div className="grid gap-1.5 mt-4">
+                {data.scoreDistribution.map((bucket) => (
+                  <div key={bucket.label} className="grid grid-cols-[60px_1fr_40px] items-center gap-2">
+                    <span className="text-xs font-semibold">{bucket.label}</span>
+                    <div className="h-5 bg-muted/50 rounded overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded"
+                        style={{ width: `${(bucket.count / maxScoreCount) * 100}%`, minWidth: bucket.count > 0 ? 4 : 0 }}
+                      />
+                    </div>
+                    <span className="text-xs text-right text-muted-foreground">{bucket.count}</span>
                   </div>
-                  <span style={{ fontSize: "0.82rem", textAlign: "right", color: "var(--text-soft)" }}>
-                    {bucket.count}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </article>
-
-        <article className="panel">
-          <p className="eyebrow">Weekly captures</p>
-          <h2>Last 30 days</h2>
-          {data.weeklyTimeSeries.every((w) => w.count === 0) ? (
-            <p className="muted">No leads captured in the last 30 days.</p>
-          ) : (
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 12, marginTop: 16, height: 180 }}>
-              {data.weeklyTimeSeries.map((week) => (
-                <div
-                  key={week.weekStart}
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 6,
-                    height: "100%",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <span style={{ fontSize: "0.78rem", fontWeight: 700 }}>{week.count}</span>
-                  <div
-                    style={{
-                      width: "100%",
-                      height: `${Math.max((week.count / maxWeeklyCount) * 140, 4)}px`,
-                      background: "linear-gradient(180deg, var(--accent), var(--secondary))",
-                      borderRadius: "6px 6px 0 0",
-                    }}
-                  />
-                  <span style={{ fontSize: "0.7rem", color: "var(--text-soft)", textAlign: "center" }}>
-                    {week.weekStart.slice(5)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </article>
-      </section>
-
-      <section className="panel">
-        <p className="eyebrow">Channel performance</p>
-        <h2>Source breakdown</h2>
-        {data.channelPerformance.length === 0 ? (
-          <p className="muted">No channel data available yet.</p>
-        ) : (
-          <div style={{ overflowX: "auto", marginTop: 16 }}>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                fontSize: "0.88rem",
-              }}
-            >
-              <thead>
-                <tr>
-                  <th style={thStyle}>Source</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Leads</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Conversions</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Conv. Rate</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.channelPerformance.map((channel) => (
-                  <tr key={channel.source}>
-                    <td style={tdStyle}>{channel.source}</td>
-                    <td style={{ ...tdStyle, textAlign: "right" }}>{channel.leads}</td>
-                    <td style={{ ...tdStyle, textAlign: "right" }}>{channel.conversions}</td>
-                    <td style={{ ...tdStyle, textAlign: "right" }}>{channel.conversionRate}%</td>
-                  </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Weekly captures</p>
+            <h2 className="text-lg font-semibold">Last 30 days</h2>
+            {data.weeklyTimeSeries.every((w) => w.count === 0) ? (
+              <p className="text-sm text-muted-foreground">No leads captured in the last 30 days.</p>
+            ) : (
+              <div className="flex items-end gap-3 mt-4 h-44">
+                {data.weeklyTimeSeries.map((week) => (
+                  <div key={week.weekStart} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+                    <span className="text-xs font-bold">{week.count}</span>
+                    <div
+                      className="w-full bg-gradient-to-t from-primary to-primary/60 rounded-t-md"
+                      style={{ height: `${Math.max((week.count / maxWeeklyCount) * 140, 4)}px` }}
+                    />
+                    <span className="text-[0.7rem] text-muted-foreground text-center">
+                      {week.weekStart.slice(5)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </section>
 
-      <section className="grid two">
-        <article className="panel">
-          <p className="eyebrow">Niche performance</p>
-          <h2>Top performing niches</h2>
-          {data.nichePerformance.length === 0 ? (
-            <p className="muted">No niche data available yet.</p>
+      {/* Channel performance */}
+      <Card>
+        <CardContent className="pt-6 space-y-4">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Channel performance</p>
+          <h2 className="text-lg font-semibold">Source breakdown</h2>
+          {data.channelPerformance.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No channel data available yet.</p>
           ) : (
-            <div style={{ overflowX: "auto", marginTop: 16 }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.88rem" }}>
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full text-sm border-collapse">
                 <thead>
                   <tr>
-                    <th style={thStyle}>Niche</th>
-                    <th style={{ ...thStyle, textAlign: "right" }}>Leads</th>
-                    <th style={{ ...thStyle, textAlign: "right" }}>Avg Score</th>
-                    <th style={{ ...thStyle, textAlign: "right" }}>Conv. Rate</th>
+                    <th className="text-left px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Source</th>
+                    <th className="text-right px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Leads</th>
+                    <th className="text-right px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Conversions</th>
+                    <th className="text-right px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Conv. Rate</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.nichePerformance.map((niche) => (
-                    <tr key={niche.niche}>
-                      <td style={tdStyle}>{niche.niche}</td>
-                      <td style={{ ...tdStyle, textAlign: "right" }}>{niche.leads}</td>
-                      <td style={{ ...tdStyle, textAlign: "right" }}>{niche.avgScore}</td>
-                      <td style={{ ...tdStyle, textAlign: "right" }}>{niche.conversionRate}%</td>
+                  {data.channelPerformance.map((channel) => (
+                    <tr key={channel.source}>
+                      <td className="px-3 py-2.5 border-b border-border/40">{channel.source}</td>
+                      <td className="px-3 py-2.5 border-b border-border/40 text-right">{channel.leads}</td>
+                      <td className="px-3 py-2.5 border-b border-border/40 text-right">{channel.conversions}</td>
+                      <td className="px-3 py-2.5 border-b border-border/40 text-right">{channel.conversionRate}%</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
-        </article>
+        </CardContent>
+      </Card>
 
-        <article className="panel">
-          <p className="eyebrow">Funnel performance</p>
-          <h2>Top performing funnels</h2>
-          {data.funnelPerformance.length === 0 ? (
-            <p className="muted">No funnel data available yet.</p>
-          ) : (
-            <div style={{ overflowX: "auto", marginTop: 16 }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.88rem" }}>
-                <thead>
-                  <tr>
-                    <th style={thStyle}>Family</th>
-                    <th style={{ ...thStyle, textAlign: "right" }}>Leads</th>
-                    <th style={{ ...thStyle, textAlign: "right" }}>Hot</th>
-                    <th style={{ ...thStyle, textAlign: "right" }}>Conv. Rate</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.funnelPerformance.map((funnel) => (
-                    <tr key={funnel.family}>
-                      <td style={tdStyle}>{funnel.family}</td>
-                      <td style={{ ...tdStyle, textAlign: "right" }}>{funnel.leads}</td>
-                      <td style={{ ...tdStyle, textAlign: "right" }}>{funnel.hotLeads}</td>
-                      <td style={{ ...tdStyle, textAlign: "right" }}>{funnel.conversionRate}%</td>
+      {/* Niche + Funnel performance */}
+      <section className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Niche performance</p>
+            <h2 className="text-lg font-semibold">Top performing niches</h2>
+            {data.nichePerformance.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No niche data available yet.</p>
+            ) : (
+              <div className="overflow-x-auto mt-4">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="text-left px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Niche</th>
+                      <th className="text-right px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Leads</th>
+                      <th className="text-right px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Avg Score</th>
+                      <th className="text-right px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Conv. Rate</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </article>
+                  </thead>
+                  <tbody>
+                    {data.nichePerformance.map((niche) => (
+                      <tr key={niche.niche}>
+                        <td className="px-3 py-2.5 border-b border-border/40">{niche.niche}</td>
+                        <td className="px-3 py-2.5 border-b border-border/40 text-right">{niche.leads}</td>
+                        <td className="px-3 py-2.5 border-b border-border/40 text-right">{niche.avgScore}</td>
+                        <td className="px-3 py-2.5 border-b border-border/40 text-right">{niche.conversionRate}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Funnel performance</p>
+            <h2 className="text-lg font-semibold">Top performing funnels</h2>
+            {data.funnelPerformance.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No funnel data available yet.</p>
+            ) : (
+              <div className="overflow-x-auto mt-4">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="text-left px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Family</th>
+                      <th className="text-right px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Leads</th>
+                      <th className="text-right px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Hot</th>
+                      <th className="text-right px-3 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground">Conv. Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.funnelPerformance.map((funnel) => (
+                      <tr key={funnel.family}>
+                        <td className="px-3 py-2.5 border-b border-border/40">{funnel.family}</td>
+                        <td className="px-3 py-2.5 border-b border-border/40 text-right">{funnel.leads}</td>
+                        <td className="px-3 py-2.5 border-b border-border/40 text-right">{funnel.hotLeads}</td>
+                        <td className="px-3 py-2.5 border-b border-border/40 text-right">{funnel.conversionRate}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </section>
     </main>
   );
 }
-
-const thStyle: React.CSSProperties = {
-  textAlign: "left",
-  padding: "10px 12px",
-  borderBottom: "2px solid rgba(20, 33, 29, 0.1)",
-  fontWeight: 800,
-  fontSize: "0.76rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.08em",
-  color: "var(--text-soft)",
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: "10px 12px",
-  borderBottom: "1px solid rgba(20, 33, 29, 0.06)",
-};

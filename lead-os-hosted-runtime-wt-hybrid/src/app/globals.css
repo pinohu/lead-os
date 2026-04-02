@@ -79,6 +79,69 @@
     --badge-burning-bg: hsla(2, 65%, 46%, 0.14);
     --badge-burning-text: hsl(351, 62%, 37%);
   }
+
+  .dark {
+    /* ── shadcn HSL tokens (dark) ──────────────────────── */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 243 75% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 4% 16%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 243 75% 62%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+
+    /* ── Kernel semantic tokens (dark) ──────────────────── */
+    --bg: #0a0a0f;
+    --bg-deep: #050508;
+    --bg-subtle: #111118;
+    --surface: #18181b;
+    --surface-strong: #27272a;
+    --surface-dark: rgba(10, 10, 15, 0.96);
+    --surface-border: rgba(255, 255, 255, 0.08);
+    --text: #f9fafb;
+    --text-soft: #9ca3af;
+    --text-inverse: #111827;
+    --brand: hsl(243, 75%, 62%);
+    --brand-strong: hsl(243, 75%, 72%);
+    --brand-soft: hsla(243, 75%, 62%, 0.1);
+    --brand-glow: hsla(243, 75%, 62%, 0.16);
+    --secondary-hex: #cbd5e1;
+    --secondary-soft: rgba(203, 213, 225, 0.06);
+    --focus: hsl(243, 75%, 62%);
+    --danger: #f87171;
+    --danger-soft: rgba(248, 113, 113, 0.1);
+    --success-hex: #34d399;
+    --success-soft: rgba(52, 211, 153, 0.1);
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 32px rgba(0, 0, 0, 0.2);
+    --shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-elevated: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 8px 24px rgba(0, 0, 0, 0.4);
+
+    /* ── Badge tokens (dark) ────────────────────────────── */
+    --badge-cold-bg: hsla(211, 60%, 57%, 0.2);
+    --badge-cold-text: hsl(211, 60%, 70%);
+    --badge-warm-bg: hsla(38, 80%, 56%, 0.2);
+    --badge-warm-text: hsl(32, 100%, 65%);
+    --badge-hot-bg: hsla(22, 100%, 41%, 0.2);
+    --badge-hot-text: hsl(16, 100%, 65%);
+    --badge-burning-bg: hsla(2, 65%, 46%, 0.2);
+    --badge-burning-text: hsl(351, 62%, 65%);
+  }
 }
 
 *,

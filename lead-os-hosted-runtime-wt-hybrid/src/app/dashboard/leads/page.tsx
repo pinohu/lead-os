@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type Temperature = "cold" | "warm" | "hot" | "burning";
 
@@ -30,11 +32,11 @@ interface LeadsApiResponse {
 type SortField = "score" | "capturedAt";
 type SortDir = "asc" | "desc";
 
-const TEMP_BADGE: Record<Temperature, { label: string; bg: string; color: string }> = {
-  cold: { label: "Cold", bg: "var(--badge-cold-bg)", color: "var(--badge-cold-text)" },
-  warm: { label: "Warm", bg: "var(--badge-warm-bg)", color: "var(--badge-warm-text)" },
-  hot: { label: "Hot", bg: "var(--badge-hot-bg)", color: "var(--badge-hot-text)" },
-  burning: { label: "Burning", bg: "var(--badge-burning-bg)", color: "var(--badge-burning-text)" },
+const TEMP_BADGE: Record<Temperature, { label: string; className: string }> = {
+  cold: { label: "Cold", className: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300" },
+  warm: { label: "Warm", className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300" },
+  hot: { label: "Hot", className: "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300" },
+  burning: { label: "Burning", className: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300" },
 };
 
 const PAGE_SIZE = 25;
@@ -70,15 +72,10 @@ function SkeletonRows() {
       {Array.from({ length: 8 }).map((_, i) => (
         <tr key={i} aria-hidden="true">
           {Array.from({ length: 8 }).map((__, j) => (
-            <td key={j} style={tdStyle}>
+            <td key={j} className="px-4 py-3 border-b border-border/40">
               <div
-                style={{
-                  height: 14,
-                  borderRadius: 4,
-                  background: "rgba(20, 33, 29, 0.08)",
-                  width: `${55 + ((i * 7 + j * 13) % 40)}%`,
-                  animation: "pulse 1.4s ease-in-out infinite",
-                }}
+                className="h-3.5 rounded bg-muted animate-pulse"
+                style={{ width: `${55 + ((i * 7 + j * 13) % 40)}%` }}
               />
             </td>
           ))}
@@ -205,205 +202,176 @@ export default function LeadsPage() {
   }
 
   return (
-    <main className="experience-page">
+    <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
       {isDemo && (
-        <div style={{ background: "#fef3c7", borderBottom: "1px solid #fcd34d", padding: "10px 24px", fontSize: "0.875rem", color: "#92400e" }}>
+        <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-300 dark:border-amber-800 px-6 py-2.5 text-sm text-amber-800 dark:text-amber-200 rounded-md">
           Demo data (147 sample leads) — Sign in to view and manage your live lead database.{" "}
-          <Link href="/auth/sign-in" style={{ color: "#92400e", textDecoration: "underline" }}>Sign in</Link>
+          <Link href="/auth/sign-in" className="underline font-medium">Sign in</Link>
         </div>
       )}
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.45; }
-        }
-      `}</style>
 
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Lead list</p>
-          <h1>All leads</h1>
-          <p className="lede">
+      {/* Hero */}
+      <section className="grid gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-4">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead list</p>
+          <h1 className="text-2xl font-bold tracking-tight">All leads</h1>
+          <p className="text-lg text-muted-foreground">
             Browse, search, and filter every lead captured by this runtime. Click a row to open the
             full lead detail view.
           </p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">
-              Back to dashboard
-            </Link>
-            <Link href="/dashboard/scoring" className="secondary">
-              Scoring view
-            </Link>
-            <Link href="/dashboard/radar" className="secondary">
-              Hot lead radar
-            </Link>
-            <button
-              type="button"
+          <div className="flex flex-wrap gap-2 pt-2">
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard">Back to dashboard</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/scoring">Scoring view</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard/radar">Hot lead radar</Link>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={downloadCsv}
-              className="secondary"
               disabled={!data || data.leads.length === 0}
-              title="Export current view as CSV"
             >
-              ↓ Export CSV
-            </button>
+              Export CSV
+            </Button>
           </div>
         </div>
-        <aside className="hero-rail">
-          <p className="eyebrow">Total leads</p>
-          <h2>{data?.total ?? "—"}</h2>
-          <p className="muted">
+        <aside className="space-y-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Total leads</p>
+          <h2 className="text-3xl font-bold">{data?.total ?? "\u2014"}</h2>
+          <p className="text-sm text-muted-foreground">
             Page {page} of {totalPages} &mdash; {PAGE_SIZE} per page
           </p>
         </aside>
       </section>
 
-      <section className="panel">
-        <p className="eyebrow">Search and filter</p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
-          <label
-            style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "0.88rem" }}
-          >
-            Search
-            <input
-              type="search"
-              placeholder="Name or email"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                handleFilterChange();
-              }}
-              aria-label="Search leads by name or email"
-              style={{
-                ...selectStyle,
-                minWidth: 200,
-              }}
-            />
-          </label>
+      {/* Filters */}
+      <Card>
+        <CardContent className="pt-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">Search and filter</p>
+          <div className="flex flex-wrap gap-3 items-center">
+            <label className="flex items-center gap-2 text-sm font-semibold">
+              Search
+              <input
+                type="search"
+                placeholder="Name or email"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  handleFilterChange();
+                }}
+                aria-label="Search leads by name or email"
+                className="h-9 min-w-[200px] rounded-xl border border-border bg-background px-3 text-sm"
+              />
+            </label>
 
-          <label
-            style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "0.88rem" }}
-          >
-            Temperature
-            <select
-              value={temperatureFilter}
-              onChange={(e) => {
-                setTemperatureFilter(e.target.value as Temperature | "all");
-                handleFilterChange();
-              }}
-              style={selectStyle}
-            >
-              <option value="all">All</option>
-              <option value="burning">Burning</option>
-              <option value="hot">Hot</option>
-              <option value="warm">Warm</option>
-              <option value="cold">Cold</option>
-            </select>
-          </label>
+            <label className="flex items-center gap-2 text-sm font-semibold">
+              Temperature
+              <select
+                value={temperatureFilter}
+                onChange={(e) => {
+                  setTemperatureFilter(e.target.value as Temperature | "all");
+                  handleFilterChange();
+                }}
+                className="h-9 rounded-xl border border-border bg-background px-3 text-sm"
+              >
+                <option value="all">All</option>
+                <option value="burning">Burning</option>
+                <option value="hot">Hot</option>
+                <option value="warm">Warm</option>
+                <option value="cold">Cold</option>
+              </select>
+            </label>
 
-          <label
-            style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "0.88rem" }}
-          >
-            Niche
-            <select
-              value={nicheFilter}
-              onChange={(e) => {
-                setNicheFilter(e.target.value);
-                handleFilterChange();
-              }}
-              style={selectStyle}
-            >
-              <option value="all">All niches</option>
-              {allNiches.map((niche) => (
-                <option key={niche} value={niche}>
-                  {niche}
-                </option>
-              ))}
-            </select>
-          </label>
+            <label className="flex items-center gap-2 text-sm font-semibold">
+              Niche
+              <select
+                value={nicheFilter}
+                onChange={(e) => {
+                  setNicheFilter(e.target.value);
+                  handleFilterChange();
+                }}
+                className="h-9 rounded-xl border border-border bg-background px-3 text-sm"
+              >
+                <option value="all">All niches</option>
+                {allNiches.map((niche) => (
+                  <option key={niche} value={niche}>{niche}</option>
+                ))}
+              </select>
+            </label>
 
-          <label
-            style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: "0.88rem" }}
-          >
-            Stage
-            <select
-              value={stageFilter}
-              onChange={(e) => {
-                setStageFilter(e.target.value);
-                handleFilterChange();
-              }}
-              style={selectStyle}
-            >
-              <option value="all">All stages</option>
-              {allStages.map((stage) => (
-                <option key={stage} value={stage}>
-                  {stage}
-                </option>
-              ))}
-            </select>
-          </label>
+            <label className="flex items-center gap-2 text-sm font-semibold">
+              Stage
+              <select
+                value={stageFilter}
+                onChange={(e) => {
+                  setStageFilter(e.target.value);
+                  handleFilterChange();
+                }}
+                className="h-9 rounded-xl border border-border bg-background px-3 text-sm"
+              >
+                <option value="all">All stages</option>
+                {allStages.map((stage) => (
+                  <option key={stage} value={stage}>{stage}</option>
+                ))}
+              </select>
+            </label>
 
-          {data && (
-            <span style={{ fontSize: "0.82rem", color: "var(--text-soft)" }}>
-              {data.total} {data.total === 1 ? "lead" : "leads"} found
-            </span>
-          )}
-        </div>
-      </section>
+            {data && (
+              <span className="text-xs text-muted-foreground">
+                {data.total} {data.total === 1 ? "lead" : "leads"} found
+              </span>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
-      <section className="panel" style={{ padding: 0, overflow: "hidden" }}>
-        <div style={{ overflowX: "auto" }}>
+      {/* Table */}
+      <Card className="overflow-hidden">
+        <div className="overflow-x-auto">
           <table
-            style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.88rem" }}
+            className="w-full text-sm border-collapse"
             aria-label="Lead list"
             aria-busy={loading}
           >
             <thead>
               <tr>
-                <th scope="col" style={thStyle}>
+                <th scope="col" className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap">
                   Name
                 </th>
-                <th scope="col" style={thStyle}>
+                <th scope="col" className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap">
                   Email
                 </th>
                 <th
                   scope="col"
-                  style={{ ...thStyle, cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+                  className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap cursor-pointer select-none"
                   onClick={() => handleSort("score")}
-                  aria-sort={
-                    sortField === "score"
-                      ? sortDir === "asc"
-                        ? "ascending"
-                        : "descending"
-                      : "none"
-                  }
+                  aria-sort={sortField === "score" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
                 >
-                  Score {sortField === "score" ? (sortDir === "asc" ? "▲" : "▼") : "↕"}
+                  Score {sortField === "score" ? (sortDir === "asc" ? "\u25B2" : "\u25BC") : "\u2195"}
                 </th>
-                <th scope="col" style={thStyle}>
+                <th scope="col" className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap">
                   Temperature
                 </th>
-                <th scope="col" style={thStyle}>
+                <th scope="col" className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap">
                   Niche
                 </th>
-                <th scope="col" style={thStyle}>
+                <th scope="col" className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap">
                   Stage
                 </th>
-                <th scope="col" style={thStyle}>
+                <th scope="col" className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap">
                   Source
                 </th>
                 <th
                   scope="col"
-                  style={{ ...thStyle, cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+                  className="text-left px-4 py-2.5 border-b-2 border-border font-extrabold text-xs uppercase tracking-wider text-muted-foreground bg-muted/40 whitespace-nowrap cursor-pointer select-none"
                   onClick={() => handleSort("capturedAt")}
-                  aria-sort={
-                    sortField === "capturedAt"
-                      ? sortDir === "asc"
-                        ? "ascending"
-                        : "descending"
-                      : "none"
-                  }
+                  aria-sort={sortField === "capturedAt" ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
                 >
-                  Captured {sortField === "capturedAt" ? (sortDir === "asc" ? "▲" : "▼") : "↕"}
+                  Captured {sortField === "capturedAt" ? (sortDir === "asc" ? "\u25B2" : "\u25BC") : "\u2195"}
                 </th>
               </tr>
             </thead>
@@ -412,124 +380,62 @@ export default function LeadsPage() {
                 <SkeletonRows />
               ) : sortedLeads.length === 0 ? (
                 <tr>
-                  <td colSpan={8} style={{ ...tdStyle, textAlign: "center", padding: "48px 24px" }}>
-                    <p
-                      style={{
-                        fontWeight: 700,
-                        marginBottom: 8,
-                        fontSize: "1rem",
-                        color: "var(--text)",
-                      }}
-                    >
-                      No leads yet.
-                    </p>
-                    <p style={{ color: "var(--text-soft)", marginBottom: 16 }}>
-                      Share your widget to start capturing leads.
-                    </p>
-                    <Link href="/dashboard/settings" className="secondary">
-                      Go to settings
-                    </Link>
+                  <td colSpan={8} className="px-4 py-12 text-center border-b border-border/40">
+                    <p className="font-bold text-base mb-2">No leads yet.</p>
+                    <p className="text-muted-foreground mb-4">Share your widget to start capturing leads.</p>
+                    <Button asChild variant="outline" size="sm">
+                      <Link href="/dashboard/settings">Go to settings</Link>
+                    </Button>
                   </td>
                 </tr>
               ) : (
                 sortedLeads.map((lead) => {
                   const badge = TEMP_BADGE[lead.temperature];
+                  const leadUrl = `/dashboard/leads/${encodeURIComponent(lead.leadKey)}`;
                   return (
                     <tr
                       key={lead.leadKey}
-                      style={{
-                        cursor: "pointer",
-                        transition: "background 120ms ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLTableRowElement).style.background =
-                          "rgba(34, 95, 84, 0.04)";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLTableRowElement).style.background = "";
-                      }}
+                      className="cursor-pointer transition-colors hover:bg-muted/40"
                     >
-                      <td style={{ ...tdStyle, fontWeight: 600 }}>
-                        <Link
-                          href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`}
-                          style={{
-                            color: "var(--text)",
-                            textDecoration: "none",
-                            display: "block",
-                          }}
-                        >
+                      <td className="px-4 py-2.5 border-b border-border/40 font-semibold">
+                        <Link href={leadUrl} className="text-foreground no-underline block">
                           {lead.firstName} {lead.lastName}
                         </Link>
                       </td>
-                      <td style={{ ...tdStyle, color: "var(--text-soft)" }}>
-                        <Link
-                          href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`}
-                          style={{ color: "inherit", textDecoration: "none" }}
-                        >
-                          {lead.email ?? <span style={{ opacity: 0.45 }}>—</span>}
+                      <td className="px-4 py-2.5 border-b border-border/40 text-muted-foreground">
+                        <Link href={leadUrl} className="text-inherit no-underline">
+                          {lead.email ?? <span className="opacity-45">&mdash;</span>}
                         </Link>
                       </td>
-                      <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700 }}>
-                        <Link
-                          href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`}
-                          style={{ color: "inherit", textDecoration: "none" }}
-                        >
+                      <td className="px-4 py-2.5 border-b border-border/40 text-center font-bold">
+                        <Link href={leadUrl} className="text-inherit no-underline">
                           {lead.score}
                         </Link>
                       </td>
-                      <td style={tdStyle}>
-                        <Link
-                          href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`}
-                          style={{ textDecoration: "none" }}
-                        >
-                          <span
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              padding: "3px 10px",
-                              borderRadius: 999,
-                              fontSize: "0.76rem",
-                              fontWeight: 700,
-                              background: badge.bg,
-                              color: badge.color,
-                              whiteSpace: "nowrap",
-                            }}
-                          >
+                      <td className="px-4 py-2.5 border-b border-border/40">
+                        <Link href={leadUrl} className="no-underline">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold whitespace-nowrap ${badge.className}`}>
                             {badge.label}
                           </span>
                         </Link>
                       </td>
-                      <td style={{ ...tdStyle, color: "var(--text-soft)" }}>
-                        <Link
-                          href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`}
-                          style={{ color: "inherit", textDecoration: "none" }}
-                        >
-                          {lead.niche || <span style={{ opacity: 0.45 }}>—</span>}
+                      <td className="px-4 py-2.5 border-b border-border/40 text-muted-foreground">
+                        <Link href={leadUrl} className="text-inherit no-underline">
+                          {lead.niche || <span className="opacity-45">&mdash;</span>}
                         </Link>
                       </td>
-                      <td style={{ ...tdStyle, color: "var(--text-soft)" }}>
-                        <Link
-                          href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`}
-                          style={{ color: "inherit", textDecoration: "none" }}
-                        >
-                          {lead.stage || <span style={{ opacity: 0.45 }}>—</span>}
+                      <td className="px-4 py-2.5 border-b border-border/40 text-muted-foreground">
+                        <Link href={leadUrl} className="text-inherit no-underline">
+                          {lead.stage || <span className="opacity-45">&mdash;</span>}
                         </Link>
                       </td>
-                      <td style={{ ...tdStyle, color: "var(--text-soft)" }}>
-                        <Link
-                          href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`}
-                          style={{ color: "inherit", textDecoration: "none" }}
-                        >
-                          {lead.source || <span style={{ opacity: 0.45 }}>—</span>}
+                      <td className="px-4 py-2.5 border-b border-border/40 text-muted-foreground">
+                        <Link href={leadUrl} className="text-inherit no-underline">
+                          {lead.source || <span className="opacity-45">&mdash;</span>}
                         </Link>
                       </td>
-                      <td
-                        style={{ ...tdStyle, color: "var(--text-soft)", whiteSpace: "nowrap" }}
-                      >
-                        <Link
-                          href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`}
-                          style={{ color: "inherit", textDecoration: "none" }}
-                        >
+                      <td className="px-4 py-2.5 border-b border-border/40 text-muted-foreground whitespace-nowrap">
+                        <Link href={leadUrl} className="text-inherit no-underline">
                           {formatDate(lead.capturedAt)}
                         </Link>
                       </td>
@@ -540,64 +446,36 @@ export default function LeadsPage() {
             </tbody>
           </table>
         </div>
-      </section>
+      </Card>
 
+      {/* Pagination */}
       {data && data.total > PAGE_SIZE && (
-        <section
-          className="panel"
-          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}
-        >
-          <button
-            type="button"
-            className="secondary"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-            aria-label="Previous page"
-          >
-            Previous
-          </button>
-          <span style={{ fontSize: "0.88rem", color: "var(--text-soft)" }}>
-            Page {page} of {totalPages}
-          </span>
-          <button
-            type="button"
-            className="secondary"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            aria-label="Next page"
-          >
-            Next
-          </button>
-        </section>
+        <Card>
+          <CardContent className="pt-6 flex items-center justify-between gap-4">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+              aria-label="Previous page"
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Page {page} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              aria-label="Next page"
+            >
+              Next
+            </Button>
+          </CardContent>
+        </Card>
       )}
     </main>
   );
 }
-
-const selectStyle: React.CSSProperties = {
-  minHeight: 36,
-  padding: "6px 12px",
-  borderRadius: 14,
-  border: "1px solid rgba(20, 33, 29, 0.14)",
-  background: "rgba(255, 255, 255, 0.92)",
-  color: "var(--text)",
-  fontSize: "0.88rem",
-};
-
-const thStyle: React.CSSProperties = {
-  textAlign: "left",
-  padding: "10px 16px",
-  borderBottom: "2px solid rgba(20, 33, 29, 0.1)",
-  fontWeight: 800,
-  fontSize: "0.76rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.08em",
-  color: "var(--text-soft)",
-  background: "rgba(255, 255, 255, 0.6)",
-  whiteSpace: "nowrap",
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: "11px 16px",
-  borderBottom: "1px solid rgba(20, 33, 29, 0.06)",
-};

@@ -38,6 +38,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { cn } from "@/lib/cn";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -125,10 +126,15 @@ const NAV_GROUPS: NavGroup[] = [
 ];
 
 const STORAGE_KEY = "leados_sidebar_collapsed";
-const ACCENT = "#4f46e5";
-const ACCENT_BG = "rgba(79, 70, 229, 0.12)";
-const SIDEBAR_FULL = 240;
-const SIDEBAR_COLLAPSED = 60;
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function isActive(href: string, pathname: string): boolean {
+  if (href === "/dashboard") return pathname === "/dashboard";
+  return pathname === href || pathname.startsWith(href + "/");
+}
 
 // ---------------------------------------------------------------------------
 // NavGroupSection
@@ -151,40 +157,24 @@ function NavGroupSection({ group, pathname, isCollapsed }: NavGroupSectionProps)
 
   return (
     <li>
-      {/* Group header — hidden when collapsed; groups merge into icon-only items */}
+      {/* Group header -- hidden when collapsed; groups merge into icon-only items */}
       {!isCollapsed && (
         <button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
           aria-expanded={isOpen}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-            padding: "6px 12px",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            color: "#6b7280",
-            fontSize: "0.7rem",
-            fontWeight: 700,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            borderRadius: 6,
-          }}
+          className="flex items-center justify-between w-full px-3 py-1.5 bg-transparent border-none cursor-pointer text-muted-foreground text-[0.7rem] font-bold tracking-wider uppercase rounded-md"
         >
-          <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span aria-hidden="true" style={{ display: "inline-flex" }}>{group.icon}</span>
+          <span className="flex items-center gap-1.5">
+            <span aria-hidden="true" className="inline-flex">{group.icon}</span>
             {group.label}
           </span>
           <span
             aria-hidden="true"
-            style={{
-              transform: isOpen ? "rotate(0deg)" : "rotate(-90deg)",
-              transition: "transform 180ms ease",
-              display: "inline-flex",
-            }}
+            className={cn(
+              "inline-flex transition-transform duration-150",
+              !isOpen && "-rotate-90"
+            )}
           >
             <ChevronDown size={12} />
           </span>
@@ -194,14 +184,10 @@ function NavGroupSection({ group, pathname, isCollapsed }: NavGroupSectionProps)
       {/* Items */}
       <ul
         role="list"
-        style={{
-          listStyle: "none",
-          padding: 0,
-          margin: 0,
-          overflow: "hidden",
-          maxHeight: (!isCollapsed && !isOpen) ? 0 : 9999,
-          transition: "max-height 200ms ease",
-        }}
+        className={cn(
+          "list-none p-0 m-0 overflow-hidden transition-[max-height] duration-200 ease-in-out",
+          !isCollapsed && !isOpen ? "max-h-0" : "max-h-[9999px]"
+        )}
       >
         {group.items.map((item) => {
           const active = isActive(item.href, pathname);
@@ -211,46 +197,29 @@ function NavGroupSection({ group, pathname, isCollapsed }: NavGroupSectionProps)
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 title={isCollapsed ? item.label : undefined}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: isCollapsed ? "10px 0" : "8px 12px",
-                  justifyContent: isCollapsed ? "center" : "flex-start",
-                  borderRadius: 8,
-                  textDecoration: "none",
-                  fontSize: "0.875rem",
-                  fontWeight: active ? 700 : 500,
-                  color: active ? ACCENT : "#374151",
-                  background: active ? ACCENT_BG : "transparent",
-                  transition: "background 120ms ease, color 120ms ease",
-                  outline: "none",
-                }}
-                onMouseEnter={(e) => {
-                  if (!active) {
-                    (e.currentTarget as HTMLAnchorElement).style.background = "rgba(79,70,229,0.06)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) {
-                    (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-                  }
-                }}
+                className={cn(
+                  "flex items-center gap-2.5 rounded-lg no-underline text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                  isCollapsed ? "py-2.5 justify-center" : "px-3 py-2 justify-start",
+                  active
+                    ? "font-bold text-primary bg-primary/10"
+                    : "font-medium text-foreground hover:bg-accent"
+                )}
               >
                 <span
                   aria-hidden="true"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: isCollapsed ? "auto" : 18,
-                    flexShrink: 0,
-                    color: active ? ACCENT : "#9ca3af",
-                  }}
+                  className={cn(
+                    "inline-flex items-center justify-center shrink-0",
+                    active ? "text-primary" : "text-muted-foreground",
+                    !isCollapsed && "w-[18px]"
+                  )}
                 >
                   {item.icon}
                 </span>
-                {!isCollapsed && <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
+                {!isCollapsed && (
+                  <span className="whitespace-nowrap overflow-hidden text-ellipsis">
+                    {item.label}
+                  </span>
+                )}
               </Link>
             </li>
           );
@@ -258,15 +227,6 @@ function NavGroupSection({ group, pathname, isCollapsed }: NavGroupSectionProps)
       </ul>
     </li>
   );
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function isActive(href: string, pathname: string): boolean {
-  if (href === "/dashboard") return pathname === "/dashboard";
-  return pathname === href || pathname.startsWith(href + "/");
 }
 
 // ---------------------------------------------------------------------------
@@ -301,9 +261,6 @@ export function DashboardSidebar() {
 
   // Focus management: traps focus in mobile drawer when open, restores focus
   // to hamburger button on close. Escape key dismisses the drawer.
-  // NOTE: This focus trap covers Tab cycling and Escape dismiss. If the drawer
-  // content grows significantly, consider a dedicated focus-trap library
-  // (e.g., focus-trap-react) for more robust edge-case handling.
   useEffect(() => {
     if (!isMobileOpen) {
       hamburgerRef.current?.focus();
@@ -341,41 +298,22 @@ export function DashboardSidebar() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isMobileOpen]);
 
-  const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_FULL;
-
   const sidebarContent = (
     <>
       {/* Operator info */}
       <div
-        style={{
-          padding: isCollapsed ? "16px 0" : "16px 12px",
-          borderBottom: "1px solid #e5e7eb",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: isCollapsed ? "center" : "flex-start",
-          gap: 4,
-        }}
+        className={cn(
+          "border-b border-border flex flex-col gap-1",
+          isCollapsed ? "py-4 items-center" : "p-3 items-start"
+        )}
       >
         {!isCollapsed && (
-          <span style={{ fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#9ca3af" }}>
+          <span className="text-[0.7rem] font-bold tracking-wider uppercase text-muted-foreground">
             Operator
           </span>
         )}
         <div
-          style={{
-            width: 32,
-            height: 32,
-            borderRadius: "50%",
-            background: ACCENT_BG,
-            border: `2px solid ${ACCENT}`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "0.85rem",
-            color: ACCENT,
-            fontWeight: 700,
-            flexShrink: 0,
-          }}
+          className="w-8 h-8 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center text-sm text-primary font-bold shrink-0"
           aria-hidden="true"
         >
           O
@@ -383,14 +321,7 @@ export function DashboardSidebar() {
         {!isCollapsed && (
           <a
             href="/auth/sign-out"
-            style={{
-              fontSize: "0.75rem",
-              color: "#6b7280",
-              textDecoration: "none",
-              marginTop: 2,
-            }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = ACCENT)}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#6b7280")}
+            className="text-xs text-muted-foreground no-underline mt-0.5 hover:text-primary transition-colors"
           >
             Sign out
           </a>
@@ -398,8 +329,8 @@ export function DashboardSidebar() {
       </div>
 
       {/* Nav groups */}
-      <nav aria-label="Dashboard navigation" style={{ flex: 1, overflowY: "auto", padding: "8px 8px 0" }}>
-        <ul role="list" style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 4 }}>
+      <nav aria-label="Dashboard navigation" className="flex-1 overflow-y-auto p-2 pt-2">
+        <ul role="list" className="list-none p-0 m-0 flex flex-col gap-1">
           {NAV_GROUPS.map((group) => (
             <NavGroupSection
               key={group.label}
@@ -412,28 +343,17 @@ export function DashboardSidebar() {
       </nav>
 
       {/* Collapse toggle */}
-      <div style={{ padding: "12px 8px", borderTop: "1px solid #e5e7eb" }}>
+      <div className="p-2 border-t border-border">
         <button
           type="button"
           onClick={toggleCollapse}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: isCollapsed ? "center" : "flex-start",
-            gap: 8,
-            width: "100%",
-            padding: "8px 12px",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            borderRadius: 8,
-            color: "#6b7280",
-            fontSize: "0.8rem",
-            fontWeight: 500,
-          }}
+          className={cn(
+            "flex items-center gap-2 w-full px-3 py-2 bg-transparent border-none cursor-pointer rounded-lg text-muted-foreground text-xs font-medium hover:bg-accent transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+            isCollapsed ? "justify-center" : "justify-start"
+          )}
         >
-          <span aria-hidden="true" style={{ display: "inline-flex", transform: isCollapsed ? "scaleX(-1)" : "none" }}>
+          <span aria-hidden="true" className={cn("inline-flex", isCollapsed && "-scale-x-100")}>
             <PanelLeft size={16} />
           </span>
           {!isCollapsed && "Collapse"}
@@ -444,9 +364,7 @@ export function DashboardSidebar() {
 
   return (
     <>
-      {/* ------------------------------------------------------------------ */}
-      {/* Mobile hamburger — visible only below 768px                         */}
-      {/* ------------------------------------------------------------------ */}
+      {/* Mobile hamburger -- visible only below md */}
       <button
         ref={hamburgerRef}
         type="button"
@@ -454,140 +372,54 @@ export function DashboardSidebar() {
         aria-label="Open navigation menu"
         aria-expanded={isMobileOpen}
         aria-controls="dashboard-sidebar-drawer"
-        style={{
-          position: "fixed",
-          top: 12,
-          left: 12,
-          zIndex: 50,
-          display: "none",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 44,
-          height: 44,
-          borderRadius: 8,
-          background: "#fff",
-          border: "1px solid #e5e7eb",
-          cursor: "pointer",
-          fontSize: "1.1rem",
-        }}
-        className="sidebar-hamburger"
+        className="fixed top-3 left-3 z-50 flex md:hidden items-center justify-center w-11 h-11 rounded-lg bg-card border border-border cursor-pointer"
       >
         <Menu size={20} />
       </button>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Desktop sidebar — hidden below 768px                                */}
-      {/* ------------------------------------------------------------------ */}
+      {/* Desktop sidebar -- hidden below md */}
       <aside
         aria-label="Dashboard sidebar"
-        style={{
-          width: sidebarWidth,
-          minHeight: "100vh",
-          background: "#fff",
-          borderRight: "1px solid #e5e7eb",
-          display: "flex",
-          flexDirection: "column",
-          transition: "width 200ms ease",
-          flexShrink: 0,
-          position: "sticky",
-          top: 0,
-          height: "100vh",
-          overflowY: "auto",
-          overflowX: "hidden",
-        }}
-        className="sidebar-desktop"
+        className={cn(
+          "hidden md:flex flex-col shrink-0 sticky top-0 h-screen overflow-y-auto overflow-x-hidden bg-card border-r border-border transition-[width] duration-200 ease-in-out motion-reduce:transition-none",
+          isCollapsed ? "w-[60px]" : "w-60"
+        )}
       >
         {sidebarContent}
       </aside>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Mobile drawer overlay                                               */}
-      {/* ------------------------------------------------------------------ */}
+      {/* Mobile drawer overlay */}
       {isMobileOpen && (
         <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 40,
-            background: "rgba(0,0,0,0.4)",
-          }}
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
           aria-hidden="true"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
+      {/* Mobile drawer */}
       <aside
         id="dashboard-sidebar-drawer"
         ref={drawerRef}
         aria-label="Dashboard navigation drawer"
         aria-modal="true"
         role="dialog"
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          zIndex: 50,
-          width: SIDEBAR_FULL,
-          height: "100vh",
-          background: "#fff",
-          borderRight: "1px solid #e5e7eb",
-          display: "flex",
-          flexDirection: "column",
-          transform: isMobileOpen ? "translateX(0)" : "translateX(-100%)",
-          transition: "transform 220ms ease",
-          overflowY: "auto",
-          overflowX: "hidden",
-        }}
-        className="sidebar-mobile"
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 w-60 bg-card border-r border-border flex flex-col overflow-y-auto overflow-x-hidden transition-transform duration-200 ease-in-out motion-reduce:transition-none md:hidden",
+          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+        )}
       >
         {/* Close button */}
         <button
           type="button"
           onClick={() => setIsMobileOpen(false)}
           aria-label="Close navigation menu"
-          style={{
-            alignSelf: "flex-end",
-            margin: "12px 12px 0",
-            padding: "6px 10px",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontSize: "1rem",
-            color: "#6b7280",
-            borderRadius: 6,
-          }}
+          className="self-end m-3 mb-0 p-1.5 bg-transparent border-none cursor-pointer text-muted-foreground rounded-md hover:bg-accent transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           <X size={18} />
         </button>
         {sidebarContent}
       </aside>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Responsive styles via a style tag                                   */}
-      {/* ------------------------------------------------------------------ */}
-      <style>{`
-        @media (max-width: 767px) {
-          .sidebar-desktop { display: none !important; }
-          .sidebar-hamburger { display: flex !important; }
-        }
-        @media (min-width: 768px) {
-          .sidebar-mobile { display: none !important; }
-          .sidebar-hamburger { display: none !important; }
-        }
-        .sidebar-desktop a:focus-visible,
-        .sidebar-mobile a:focus-visible,
-        .sidebar-desktop button:focus-visible,
-        .sidebar-mobile button:focus-visible {
-          outline: 2px solid ${ACCENT};
-          outline-offset: 2px;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .sidebar-desktop,
-          .sidebar-mobile * {
-            transition: none !important;
-          }
-        }
-      `}</style>
     </>
   );
 }
