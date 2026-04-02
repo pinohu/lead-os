@@ -238,9 +238,9 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
                   <textarea value={notes} onChange={(event) => setNotes(event.target.value)} rows={4} />
                 </label>
               </div>
-              <p className="muted consent-notice" style={{ fontSize: "0.78rem", marginTop: 12, lineHeight: 1.5 }}>
+              <p className="muted consent-notice mt-3 text-[0.78rem] leading-relaxed">
                 By submitting, you agree to our{" "}
-                <a href="/privacy" style={{ color: "inherit", textDecoration: "underline" }}>
+                <a href="/privacy" className="text-inherit underline">
                   Privacy Policy
                 </a>
                 . We will use your information to respond to your inquiry and may send relevant follow-up communications. You can unsubscribe at any time.

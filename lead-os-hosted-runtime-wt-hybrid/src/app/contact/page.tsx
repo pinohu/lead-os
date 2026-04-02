@@ -54,7 +54,7 @@ export default function ContactPage() {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }} />
       <main id="main-content" className="max-w-lg mx-auto px-4 py-24 text-center">
         <h1 className="text-2xl font-bold mb-3">Message Sent</h1>
-        <p className="text-muted-foreground mb-6">
+        <p className="text-foreground mb-6">
           Thank you for reaching out. We will get back to you within 24 hours.
         </p>
         <Link href="/" className="text-primary underline">
@@ -70,7 +70,7 @@ export default function ContactPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }} />
     <main id="main-content" className="max-w-lg mx-auto px-4 py-12">
       <h1 className="text-2xl font-extrabold mb-2">Contact Us</h1>
-      <p className="text-muted-foreground mb-8">
+      <p className="text-foreground mb-8">
         Questions about Lead OS? We would love to hear from you.
       </p>
 

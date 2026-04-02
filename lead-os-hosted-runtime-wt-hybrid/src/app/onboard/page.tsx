@@ -105,272 +105,6 @@ const STEP_LABELS: Record<WizardStep, string> = {
 
 const WIZARD_STEPS: WizardStep[] = ["niche", "plan", "branding", "integrations", "review"];
 
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "#0a0f1a",
-    color: "#e2e8f0",
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  } as React.CSSProperties,
-  container: {
-    maxWidth: 960,
-    margin: "0 auto",
-    padding: "48px 24px",
-  } as React.CSSProperties,
-  header: {
-    textAlign: "center" as const,
-    marginBottom: 48,
-  } as React.CSSProperties,
-  title: {
-    fontSize: "2rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 8px",
-  } as React.CSSProperties,
-  subtitle: {
-    fontSize: "1rem",
-    color: "#94a3b8",
-    margin: 0,
-  } as React.CSSProperties,
-  stepIndicator: {
-    display: "flex",
-    justifyContent: "center",
-    gap: 8,
-    marginBottom: 40,
-    flexWrap: "wrap" as const,
-  } as React.CSSProperties,
-  stepDot: (active: boolean, completed: boolean) => ({
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    padding: "6px 14px",
-    borderRadius: 999,
-    fontSize: "0.8rem",
-    fontWeight: 600,
-    border: `1px solid ${active ? "#14b8a6" : completed ? "rgba(20, 184, 166, 0.4)" : "rgba(148, 163, 184, 0.2)"}`,
-    background: active ? "rgba(20, 184, 166, 0.15)" : completed ? "rgba(20, 184, 166, 0.05)" : "rgba(255, 255, 255, 0.03)",
-    color: active ? "#14b8a6" : completed ? "#5eead4" : "#64748b",
-    transition: "all 200ms ease",
-  }) as React.CSSProperties,
-  card: {
-    background: "rgba(255, 255, 255, 0.04)",
-    border: "1px solid rgba(148, 163, 184, 0.1)",
-    borderRadius: 12,
-    padding: 32,
-    marginBottom: 24,
-  } as React.CSSProperties,
-  label: {
-    display: "block",
-    fontSize: "0.85rem",
-    fontWeight: 600,
-    color: "#cbd5e1",
-    marginBottom: 6,
-  } as React.CSSProperties,
-  input: {
-    width: "100%",
-    padding: "10px 14px",
-    borderRadius: 8,
-    border: "1px solid rgba(148, 163, 184, 0.2)",
-    background: "rgba(255, 255, 255, 0.06)",
-    color: "#f1f5f9",
-    fontSize: "0.9rem",
-    outline: "none",
-    boxSizing: "border-box" as const,
-  } as React.CSSProperties,
-  select: {
-    width: "100%",
-    padding: "10px 14px",
-    borderRadius: 8,
-    border: "1px solid rgba(148, 163, 184, 0.2)",
-    background: "rgba(255, 255, 255, 0.06)",
-    color: "#f1f5f9",
-    fontSize: "0.9rem",
-    outline: "none",
-    boxSizing: "border-box" as const,
-  } as React.CSSProperties,
-  fieldGroup: {
-    marginBottom: 20,
-  } as React.CSSProperties,
-  buttonRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: 12,
-    marginTop: 32,
-  } as React.CSSProperties,
-  primaryButton: {
-    padding: "12px 28px",
-    borderRadius: 8,
-    border: "none",
-    background: "#14b8a6",
-    color: "#0a0f1a",
-    fontSize: "0.9rem",
-    fontWeight: 700,
-    cursor: "pointer",
-    transition: "opacity 200ms ease",
-    minWidth: 120,
-    minHeight: 44,
-  } as React.CSSProperties,
-  secondaryButton: {
-    padding: "12px 28px",
-    borderRadius: 8,
-    border: "1px solid rgba(148, 163, 184, 0.3)",
-    background: "transparent",
-    color: "#94a3b8",
-    fontSize: "0.9rem",
-    fontWeight: 600,
-    cursor: "pointer",
-    transition: "opacity 200ms ease",
-    minWidth: 120,
-    minHeight: 44,
-  } as React.CSSProperties,
-  error: {
-    color: "#f87171",
-    fontSize: "0.82rem",
-    marginTop: 6,
-  } as React.CSSProperties,
-  hint: {
-    color: "#5eead4",
-    fontSize: "0.85rem",
-    marginTop: 12,
-    padding: "10px 14px",
-    background: "rgba(20, 184, 166, 0.08)",
-    borderRadius: 8,
-    border: "1px solid rgba(20, 184, 166, 0.2)",
-  } as React.CSSProperties,
-  planGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-    gap: 16,
-  } as React.CSSProperties,
-  planCard: (selected: boolean, recommended: boolean) => ({
-    background: selected ? "rgba(20, 184, 166, 0.1)" : "rgba(255, 255, 255, 0.03)",
-    border: `2px solid ${selected ? "#14b8a6" : recommended ? "rgba(20, 184, 166, 0.3)" : "rgba(148, 163, 184, 0.1)"}`,
-    borderRadius: 12,
-    padding: 24,
-    cursor: "pointer",
-    transition: "all 200ms ease",
-    position: "relative" as const,
-  }) as React.CSSProperties,
-  planName: {
-    fontSize: "1.1rem",
-    fontWeight: 700,
-    color: "#f8fafc",
-    margin: "0 0 4px",
-  } as React.CSSProperties,
-  planPrice: {
-    fontSize: "1.5rem",
-    fontWeight: 800,
-    color: "#14b8a6",
-    margin: "0 0 16px",
-  } as React.CSSProperties,
-  planFeatureList: {
-    listStyle: "none",
-    padding: 0,
-    margin: "0 0 12px",
-  } as React.CSSProperties,
-  planFeature: {
-    fontSize: "0.82rem",
-    color: "#cbd5e1",
-    padding: "3px 0",
-  } as React.CSSProperties,
-  planLimits: {
-    fontSize: "0.78rem",
-    color: "#64748b",
-    borderTop: "1px solid rgba(148, 163, 184, 0.1)",
-    paddingTop: 12,
-    marginTop: 8,
-  } as React.CSSProperties,
-  badge: {
-    position: "absolute" as const,
-    top: -10,
-    right: 16,
-    background: "#14b8a6",
-    color: "#0a0f1a",
-    fontSize: "0.7rem",
-    fontWeight: 700,
-    padding: "3px 10px",
-    borderRadius: 999,
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
-  } as React.CSSProperties,
-  toggleRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "14px 0",
-    borderBottom: "1px solid rgba(148, 163, 184, 0.08)",
-  } as React.CSSProperties,
-  toggleLabel: {
-    fontSize: "0.9rem",
-    fontWeight: 600,
-    color: "#f1f5f9",
-  } as React.CSSProperties,
-  toggleDesc: {
-    fontSize: "0.78rem",
-    color: "#64748b",
-    marginTop: 2,
-  } as React.CSSProperties,
-  toggle: (active: boolean) => ({
-    width: 44,
-    height: 24,
-    borderRadius: 12,
-    background: active ? "#14b8a6" : "rgba(148, 163, 184, 0.2)",
-    border: "none",
-    cursor: "pointer",
-    position: "relative" as const,
-    transition: "background 200ms ease",
-    flexShrink: 0,
-    minHeight: 44,
-    display: "flex",
-    alignItems: "center",
-    padding: "0 2px",
-  }) as React.CSSProperties,
-  toggleKnob: (active: boolean) => ({
-    width: 20,
-    height: 20,
-    borderRadius: "50%",
-    background: "#fff",
-    transition: "transform 200ms ease",
-    transform: active ? "translateX(20px)" : "translateX(0)",
-  }) as React.CSSProperties,
-  summaryRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "10px 0",
-    borderBottom: "1px solid rgba(148, 163, 184, 0.08)",
-  } as React.CSSProperties,
-  summaryLabel: {
-    fontSize: "0.85rem",
-    color: "#94a3b8",
-  } as React.CSSProperties,
-  summaryValue: {
-    fontSize: "0.85rem",
-    color: "#f1f5f9",
-    fontWeight: 600,
-  } as React.CSSProperties,
-  codeBlock: {
-    background: "rgba(0, 0, 0, 0.4)",
-    border: "1px solid rgba(148, 163, 184, 0.15)",
-    borderRadius: 8,
-    padding: 16,
-    fontFamily: "'Fira Code', 'Cascadia Code', monospace",
-    fontSize: "0.82rem",
-    color: "#5eead4",
-    overflowX: "auto" as const,
-    whiteSpace: "pre-wrap" as const,
-    wordBreak: "break-all" as const,
-    marginBottom: 16,
-  } as React.CSSProperties,
-  successCard: {
-    background: "rgba(20, 184, 166, 0.08)",
-    border: "1px solid rgba(20, 184, 166, 0.3)",
-    borderRadius: 12,
-    padding: 32,
-    textAlign: "center" as const,
-    marginBottom: 24,
-  } as React.CSSProperties,
-};
-
 export default function OnboardPage() {
   const [step, setStep] = useState<WizardStep>("email");
   const [session, setSession] = useState<OnboardingSession | null>(null);
@@ -574,19 +308,25 @@ export default function OnboardPage() {
   const completedStepIndex = WIZARD_STEPS.indexOf(step as typeof WIZARD_STEPS[number]);
 
   return (
-    <div style={styles.page}>
-      <div style={styles.container}>
-        <header style={styles.header}>
-          <h1 style={styles.title}>Launch Your Lead System</h1>
-          <p style={styles.subtitle}>Set up your white-label lead generation platform in minutes</p>
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto max-w-[960px] px-6 py-12">
+        <header className="mb-12 text-center">
+          <h1 className="mb-2 text-[2rem] font-bold text-slate-50">Launch Your Lead System</h1>
+          <p className="text-base text-muted-foreground">Set up your white-label lead generation platform in minutes</p>
         </header>
 
         {step !== "email" && step !== "complete" && (
-          <nav aria-label="Onboarding progress" aria-live="polite" style={styles.stepIndicator}>
+          <nav aria-label="Onboarding progress" aria-live="polite" className="mb-10 flex flex-wrap justify-center gap-2">
             {WIZARD_STEPS.map((s, i) => (
               <span
                 key={s}
-                style={styles.stepDot(step === s, i < completedStepIndex)}
+                className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[0.8rem] font-semibold transition-all duration-200 ${
+                  step === s
+                    ? "border-teal-500 bg-teal-500/15 text-teal-500"
+                    : i < completedStepIndex
+                    ? "border-teal-500/40 bg-teal-500/5 text-teal-300"
+                    : "border-slate-400/20 bg-white/[0.03] text-muted-foreground"
+                }`}
                 aria-current={step === s ? "step" : undefined}
               >
                 {i < completedStepIndex ? "\u2713 " : `${i + 1}. `}
@@ -597,19 +337,19 @@ export default function OnboardPage() {
         )}
 
         {error && (
-          <div role="alert" style={{ ...styles.card, borderColor: "rgba(248, 113, 113, 0.3)", background: "rgba(248, 113, 113, 0.08)" }}>
-            <p style={{ color: "#f87171", margin: 0, fontSize: "0.9rem" }}>{error}</p>
+          <div role="alert" className="mb-6 rounded-xl border border-red-400/30 bg-red-400/10 p-8">
+            <p className="text-[0.9rem] text-red-400">{error}</p>
           </div>
         )}
 
         {step === "email" && (
           <main>
-            <div style={styles.card}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 20px" }}>
+            <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
                 Get Started
               </h2>
-              <div style={styles.fieldGroup}>
-                <label htmlFor="email-input" style={styles.label}>Email Address</label>
+              <div className="mb-5">
+                <label htmlFor="email-input" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Email Address</label>
                 <input
                   id="email-input"
                   type="email"
@@ -617,19 +357,20 @@ export default function OnboardPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleStartOnboarding()}
                   placeholder="you@company.com"
-                  style={styles.input}
+                  className="w-full rounded-lg border border-slate-400/20 bg-muted px-3.5 py-2.5 text-[0.9rem] text-foreground outline-none"
                   autoComplete="email"
                   aria-required="true"
                 />
               </div>
-              <div style={styles.buttonRow}>
+              <div className="mt-8 flex justify-between gap-3">
                 <span />
                 <button
                   type="button"
                   onClick={handleStartOnboarding}
                   disabled={loading}
-                  style={{ ...styles.primaryButton, opacity: loading ? 0.6 : 1 }}
+                  className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading}
+                  style={{ opacity: loading ? 0.6 : 1 }}
                 >
                   {loading ? "Starting..." : "Start Setup"}
                 </button>
@@ -640,30 +381,30 @@ export default function OnboardPage() {
 
         {step === "niche" && (
           <main>
-            <div style={styles.card}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 20px" }}>
+            <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
                 Define Your Niche
               </h2>
-              <div style={styles.fieldGroup}>
-                <label htmlFor="niche-name" style={styles.label}>Niche Name</label>
+              <div className="mb-5">
+                <label htmlFor="niche-name" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Niche Name</label>
                 <input
                   id="niche-name"
                   type="text"
                   value={niche.name}
                   onChange={(e) => setNiche((prev) => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g., Plumbing Services, Personal Injury Law"
-                  style={styles.input}
+                  className="w-full rounded-lg border border-slate-400/20 bg-muted px-3.5 py-2.5 text-[0.9rem] text-foreground outline-none"
                   aria-required="true"
                   maxLength={100}
                 />
               </div>
-              <div style={styles.fieldGroup}>
-                <label htmlFor="niche-industry" style={styles.label}>Industry (optional)</label>
+              <div className="mb-5">
+                <label htmlFor="niche-industry" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Industry (optional)</label>
                 <select
                   id="niche-industry"
                   value={niche.industry}
                   onChange={(e) => setNiche((prev) => ({ ...prev, industry: e.target.value }))}
-                  style={styles.select}
+                  className="w-full rounded-lg border border-slate-400/20 bg-muted px-3.5 py-2.5 text-[0.9rem] text-foreground outline-none"
                 >
                   <option value="">Select an industry...</option>
                   {INDUSTRIES.map((ind) => (
@@ -671,9 +412,9 @@ export default function OnboardPage() {
                   ))}
                 </select>
               </div>
-              <div style={styles.fieldGroup}>
-                <label htmlFor="keyword-input" style={styles.label}>Keywords (optional)</label>
-                <div style={{ display: "flex", gap: 8 }}>
+              <div className="mb-5">
+                <label htmlFor="keyword-input" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Keywords (optional)</label>
+                <div className="flex gap-2">
                   <input
                     id="keyword-input"
                     type="text"
@@ -681,30 +422,21 @@ export default function OnboardPage() {
                     onChange={(e) => setKeywordInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addKeyword())}
                     placeholder="Add a keyword"
-                    style={{ ...styles.input, flex: 1 }}
+                    className="flex-1 rounded-lg border border-slate-400/20 bg-muted px-3.5 py-2.5 text-[0.9rem] text-foreground outline-none"
                   />
-                  <button type="button" onClick={addKeyword} style={{ ...styles.secondaryButton, minWidth: 60, padding: "10px 14px" }}>
+                  <button type="button" onClick={addKeyword} className="min-h-[44px] min-w-[60px] rounded-lg border border-slate-400/30 bg-transparent px-3.5 py-2.5 text-[0.9rem] font-semibold text-muted-foreground transition-opacity duration-200">
                     Add
                   </button>
                 </div>
                 {niche.keywords.length > 0 && (
-                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
                     {niche.keywords.map((kw) => (
-                      <span key={kw} style={{
-                        display: "inline-flex", alignItems: "center", gap: 4,
-                        padding: "4px 10px", borderRadius: 999, fontSize: "0.78rem",
-                        background: "rgba(20, 184, 166, 0.15)", color: "#5eead4",
-                        border: "1px solid rgba(20, 184, 166, 0.3)",
-                      }}>
+                      <span key={kw} className="inline-flex items-center gap-1 rounded-full border border-teal-500/30 bg-teal-500/15 px-2.5 py-1 text-[0.78rem] text-teal-300">
                         {kw}
                         <button
                           type="button"
                           onClick={() => removeKeyword(kw)}
-                          style={{
-                            background: "none", border: "none", color: "#5eead4",
-                            cursor: "pointer", fontSize: "1rem", lineHeight: 1, padding: 0,
-                            minWidth: 20, minHeight: 20,
-                          }}
+                          className="min-h-[20px] min-w-[20px] border-none bg-transparent p-0 text-base leading-none text-teal-300"
                           aria-label={`Remove keyword ${kw}`}
                         >
                           x
@@ -714,11 +446,11 @@ export default function OnboardPage() {
                   </div>
                 )}
               </div>
-              <div style={styles.hint} role="status">
+              <div className="mt-3 rounded-lg border border-teal-500/20 bg-teal-500/[0.08] px-3.5 py-2.5 text-[0.85rem] text-teal-300" role="status">
                 We will auto-generate your lead capture system based on your niche.
               </div>
-              <div style={styles.buttonRow}>
-                <button type="button" onClick={handleBack} style={styles.secondaryButton} aria-label="Go back to previous step">Back</button>
+              <div className="mt-8 flex justify-between gap-3">
+                <button type="button" onClick={handleBack} className="min-h-[44px] min-w-[120px] rounded-lg border border-slate-400/30 bg-transparent px-7 py-3 text-[0.9rem] font-semibold text-muted-foreground transition-opacity duration-200" aria-label="Go back to previous step">Back</button>
                 <button
                   type="button"
                   onClick={() => handleAdvanceStep({
@@ -727,8 +459,9 @@ export default function OnboardPage() {
                     keywords: niche.keywords.length > 0 ? niche.keywords : undefined,
                   })}
                   disabled={loading || niche.name.trim().length < 2}
-                  style={{ ...styles.primaryButton, opacity: loading || niche.name.trim().length < 2 ? 0.6 : 1 }}
+                  className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading}
+                  style={{ opacity: loading || niche.name.trim().length < 2 ? 0.6 : 1 }}
                 >
                   {loading ? "Saving..." : "Next"}
                 </button>
@@ -739,11 +472,11 @@ export default function OnboardPage() {
 
         {step === "plan" && (
           <main>
-            <div style={styles.card}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 20px" }}>
+            <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
                 Choose Your Plan
               </h2>
-              <div style={styles.planGrid} role="radiogroup" aria-label="Plan selection">
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4" role="radiogroup" aria-label="Plan selection">
                 {PLANS.map((plan) => (
                   <div
                     key={plan.id}
@@ -752,28 +485,35 @@ export default function OnboardPage() {
                     tabIndex={0}
                     onClick={() => setSelectedPlan(plan.id)}
                     onKeyDown={(e) => e.key === "Enter" && setSelectedPlan(plan.id)}
-                    style={styles.planCard(selectedPlan === plan.id, plan.recommended)}
+                    className={`relative cursor-pointer rounded-xl p-6 transition-all duration-200 ${
+                      selectedPlan === plan.id
+                        ? "border-2 border-teal-500 bg-teal-500/10"
+                        : plan.recommended
+                        ? "border-2 border-teal-500/30 bg-white/[0.03]"
+                        : "border-2 border-slate-400/10 bg-white/[0.03]"
+                    }`}
                   >
-                    {plan.recommended && <span style={styles.badge}>Recommended</span>}
-                    <h3 style={styles.planName}>{plan.name}</h3>
-                    <p style={styles.planPrice}>{plan.price}</p>
-                    <ul style={styles.planFeatureList}>
+                    {plan.recommended && <span className="absolute -top-2.5 right-4 rounded-full bg-teal-500 px-2.5 py-[3px] text-[0.7rem] font-bold uppercase tracking-wide text-[#0a0f1a]">Recommended</span>}
+                    <h3 className="mb-1 text-[1.1rem] font-bold text-slate-50">{plan.name}</h3>
+                    <p className="mb-4 text-[1.5rem] font-extrabold text-teal-500">{plan.price}</p>
+                    <ul className="mb-3 list-none p-0">
                       {plan.features.map((f) => (
-                        <li key={f} style={styles.planFeature}>{f}</li>
+                        <li key={f} className="py-[3px] text-[0.82rem] text-muted-foreground">{f}</li>
                       ))}
                     </ul>
-                    <p style={styles.planLimits}>{plan.limits}</p>
+                    <p className="mt-2 border-t border-slate-400/10 pt-3 text-[0.78rem] text-muted-foreground">{plan.limits}</p>
                   </div>
                 ))}
               </div>
-              <div style={styles.buttonRow}>
-                <button type="button" onClick={handleBack} style={styles.secondaryButton} aria-label="Go back to previous step">Back</button>
+              <div className="mt-8 flex justify-between gap-3">
+                <button type="button" onClick={handleBack} className="min-h-[44px] min-w-[120px] rounded-lg border border-slate-400/30 bg-transparent px-7 py-3 text-[0.9rem] font-semibold text-muted-foreground transition-opacity duration-200" aria-label="Go back to previous step">Back</button>
                 <button
                   type="button"
                   onClick={() => handleAdvanceStep({ planId: selectedPlan })}
                   disabled={loading}
-                  style={{ ...styles.primaryButton, opacity: loading ? 0.6 : 1 }}
+                  className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading}
+                  style={{ opacity: loading ? 0.6 : 1 }}
                 >
                   {loading ? "Saving..." : "Next"}
                 </button>
@@ -784,30 +524,30 @@ export default function OnboardPage() {
 
         {step === "branding" && (
           <main>
-            <div style={styles.card}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 20px" }}>
+            <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
                 Brand Your Platform
               </h2>
-              <div style={styles.fieldGroup}>
-                <label htmlFor="brand-name" style={styles.label}>Brand Name</label>
+              <div className="mb-5">
+                <label htmlFor="brand-name" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Brand Name</label>
                 <input
                   id="brand-name"
                   type="text"
                   value={branding.name}
                   onChange={(e) => setBranding((prev) => ({ ...prev, name: e.target.value }))}
                   placeholder="Your Company Name"
-                  style={styles.input}
+                  className="w-full rounded-lg border border-slate-400/20 bg-muted px-3.5 py-2.5 text-[0.9rem] text-foreground outline-none"
                   aria-required="true"
                 />
               </div>
-              <div style={styles.fieldGroup}>
-                <label htmlFor="brand-accent" style={styles.label}>Accent Color</label>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <div className="mb-5">
+                <label htmlFor="brand-accent" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Accent Color</label>
+                <div className="flex items-center gap-2">
                   <input
                     type="color"
                     value={branding.accent}
                     onChange={(e) => setBranding((prev) => ({ ...prev, accent: e.target.value }))}
-                    style={{ width: 44, height: 44, padding: 2, border: "1px solid rgba(148, 163, 184, 0.2)", borderRadius: 8, background: "transparent", cursor: "pointer" }}
+                    className="h-11 w-11 cursor-pointer rounded-lg border border-slate-400/20 bg-transparent p-0.5"
                     aria-label="Accent color picker"
                   />
                   <input
@@ -816,47 +556,47 @@ export default function OnboardPage() {
                     value={branding.accent}
                     onChange={(e) => setBranding((prev) => ({ ...prev, accent: e.target.value }))}
                     placeholder="#14b8a6"
-                    style={{ ...styles.input, flex: 1 }}
+                    className="flex-1 rounded-lg border border-slate-400/20 bg-muted px-3.5 py-2.5 text-[0.9rem] text-foreground outline-none"
                     maxLength={7}
                   />
                 </div>
               </div>
-              <div style={styles.fieldGroup}>
-                <label htmlFor="brand-logo" style={styles.label}>Logo URL (optional)</label>
+              <div className="mb-5">
+                <label htmlFor="brand-logo" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Logo URL (optional)</label>
                 <input
                   id="brand-logo"
                   type="url"
                   value={branding.logoUrl}
                   onChange={(e) => setBranding((prev) => ({ ...prev, logoUrl: e.target.value }))}
                   placeholder="https://yoursite.com/logo.png"
-                  style={styles.input}
+                  className="w-full rounded-lg border border-slate-400/20 bg-muted px-3.5 py-2.5 text-[0.9rem] text-foreground outline-none"
                 />
               </div>
-              <div style={styles.fieldGroup}>
-                <label htmlFor="brand-site" style={styles.label}>Website URL (optional)</label>
+              <div className="mb-5">
+                <label htmlFor="brand-site" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Website URL (optional)</label>
                 <input
                   id="brand-site"
                   type="url"
                   value={branding.siteUrl}
                   onChange={(e) => setBranding((prev) => ({ ...prev, siteUrl: e.target.value }))}
                   placeholder="https://yoursite.com"
-                  style={styles.input}
+                  className="w-full rounded-lg border border-slate-400/20 bg-muted px-3.5 py-2.5 text-[0.9rem] text-foreground outline-none"
                 />
               </div>
-              <div style={styles.fieldGroup}>
-                <label htmlFor="brand-support-email" style={styles.label}>Support Email (optional)</label>
+              <div className="mb-5">
+                <label htmlFor="brand-support-email" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Support Email (optional)</label>
                 <input
                   id="brand-support-email"
                   type="email"
                   value={branding.supportEmail}
                   onChange={(e) => setBranding((prev) => ({ ...prev, supportEmail: e.target.value }))}
                   placeholder="support@yoursite.com"
-                  style={styles.input}
+                  className="w-full rounded-lg border border-slate-400/20 bg-muted px-3.5 py-2.5 text-[0.9rem] text-foreground outline-none"
                   autoComplete="email"
                 />
               </div>
-              <div style={styles.buttonRow}>
-                <button type="button" onClick={handleBack} style={styles.secondaryButton} aria-label="Go back to previous step">Back</button>
+              <div className="mt-8 flex justify-between gap-3">
+                <button type="button" onClick={handleBack} className="min-h-[44px] min-w-[120px] rounded-lg border border-slate-400/30 bg-transparent px-7 py-3 text-[0.9rem] font-semibold text-muted-foreground transition-opacity duration-200" aria-label="Go back to previous step">Back</button>
                 <button
                   type="button"
                   onClick={() => handleAdvanceStep({
@@ -867,8 +607,9 @@ export default function OnboardPage() {
                     supportEmail: branding.supportEmail || undefined,
                   })}
                   disabled={loading || !branding.name.trim()}
-                  style={{ ...styles.primaryButton, opacity: loading || !branding.name.trim() ? 0.6 : 1 }}
+                  className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading}
+                  style={{ opacity: loading || !branding.name.trim() ? 0.6 : 1 }}
                 >
                   {loading ? "Saving..." : "Next"}
                 </button>
@@ -879,16 +620,16 @@ export default function OnboardPage() {
 
         {step === "integrations" && (
           <main>
-            <div style={styles.card}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 20px" }}>
+            <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
                 Enable Integrations
               </h2>
               <div role="group" aria-label="Available integrations">
                 {INTEGRATIONS.map((integration) => (
-                  <div key={integration.key} style={styles.toggleRow}>
+                  <div key={integration.key} className="flex items-center justify-between border-b border-slate-400/[0.08] py-3.5">
                     <div>
-                      <div style={styles.toggleLabel}>{integration.label}</div>
-                      <div style={styles.toggleDesc}>{integration.description}</div>
+                      <div className="text-[0.9rem] font-semibold text-foreground">{integration.label}</div>
+                      <div className="mt-0.5 text-[0.78rem] text-muted-foreground">{integration.description}</div>
                     </div>
                     <button
                       type="button"
@@ -896,21 +637,24 @@ export default function OnboardPage() {
                       aria-checked={enabledProviders.has(integration.key)}
                       aria-label={`Toggle ${integration.label}`}
                       onClick={() => toggleProvider(integration.key)}
-                      style={styles.toggle(enabledProviders.has(integration.key))}
+                      className={`relative flex min-h-[44px] w-11 shrink-0 items-center rounded-xl border-none px-0.5 transition-colors duration-200 ${
+                        enabledProviders.has(integration.key) ? "bg-teal-500" : "bg-slate-400/20"
+                      }`}
                     >
-                      <div style={styles.toggleKnob(enabledProviders.has(integration.key))} />
+                      <div className={`h-5 w-5 rounded-full bg-white transition-transform duration-200 ${enabledProviders.has(integration.key) ? "translate-x-5" : "translate-x-0"}`} />
                     </button>
                   </div>
                 ))}
               </div>
-              <div style={styles.buttonRow}>
-                <button type="button" onClick={handleBack} style={styles.secondaryButton} aria-label="Go back to previous step">Back</button>
+              <div className="mt-8 flex justify-between gap-3">
+                <button type="button" onClick={handleBack} className="min-h-[44px] min-w-[120px] rounded-lg border border-slate-400/30 bg-transparent px-7 py-3 text-[0.9rem] font-semibold text-muted-foreground transition-opacity duration-200" aria-label="Go back to previous step">Back</button>
                 <button
                   type="button"
                   onClick={() => handleAdvanceStep({ enabledProviders: [...enabledProviders] })}
                   disabled={loading}
-                  style={{ ...styles.primaryButton, opacity: loading ? 0.6 : 1 }}
+                  className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading}
+                  style={{ opacity: loading ? 0.6 : 1 }}
                 >
                   {loading ? "Saving..." : "Next"}
                 </button>
@@ -921,61 +665,57 @@ export default function OnboardPage() {
 
         {step === "review" && (
           <main>
-            <div style={styles.card}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 24px" }}>
+            <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h2 className="mb-6 text-[1.25rem] font-bold text-slate-50">
                 Review and Launch
               </h2>
-              <div style={styles.summaryRow}>
-                <span style={styles.summaryLabel}>Niche</span>
-                <span style={styles.summaryValue}>{niche.name}{niche.industry ? ` (${niche.industry})` : ""}</span>
+              <div className="flex justify-between border-b border-slate-400/[0.08] py-2.5">
+                <span className="text-[0.85rem] text-muted-foreground">Niche</span>
+                <span className="text-[0.85rem] font-semibold text-foreground">{niche.name}{niche.industry ? ` (${niche.industry})` : ""}</span>
               </div>
-              <div style={styles.summaryRow}>
-                <span style={styles.summaryLabel}>Plan</span>
-                <span style={styles.summaryValue}>{PLANS.find((p) => p.id === selectedPlan)?.name ?? selectedPlan} - {PLANS.find((p) => p.id === selectedPlan)?.price ?? ""}</span>
+              <div className="flex justify-between border-b border-slate-400/[0.08] py-2.5">
+                <span className="text-[0.85rem] text-muted-foreground">Plan</span>
+                <span className="text-[0.85rem] font-semibold text-foreground">{PLANS.find((p) => p.id === selectedPlan)?.name ?? selectedPlan} - {PLANS.find((p) => p.id === selectedPlan)?.price ?? ""}</span>
               </div>
-              <div style={styles.summaryRow}>
-                <span style={styles.summaryLabel}>Brand Name</span>
-                <span style={styles.summaryValue}>{branding.name}</span>
+              <div className="flex justify-between border-b border-slate-400/[0.08] py-2.5">
+                <span className="text-[0.85rem] text-muted-foreground">Brand Name</span>
+                <span className="text-[0.85rem] font-semibold text-foreground">{branding.name}</span>
               </div>
-              <div style={styles.summaryRow}>
-                <span style={styles.summaryLabel}>Accent Color</span>
-                <span style={styles.summaryValue}>
-                  <span style={{ display: "inline-block", width: 14, height: 14, borderRadius: 3, background: branding.accent, marginRight: 6, verticalAlign: "middle" }} />
+              <div className="flex justify-between border-b border-slate-400/[0.08] py-2.5">
+                <span className="text-[0.85rem] text-muted-foreground">Accent Color</span>
+                <span className="text-[0.85rem] font-semibold text-foreground">
+                  <span className="mr-1.5 inline-block h-3.5 w-3.5 rounded align-middle" style={{ background: branding.accent }} />
                   {branding.accent}
                 </span>
               </div>
               {branding.siteUrl && (
-                <div style={styles.summaryRow}>
-                  <span style={styles.summaryLabel}>Website</span>
-                  <span style={styles.summaryValue}>{branding.siteUrl}</span>
+                <div className="flex justify-between border-b border-slate-400/[0.08] py-2.5">
+                  <span className="text-[0.85rem] text-muted-foreground">Website</span>
+                  <span className="text-[0.85rem] font-semibold text-foreground">{branding.siteUrl}</span>
                 </div>
               )}
-              <div style={styles.summaryRow}>
-                <span style={styles.summaryLabel}>Integrations</span>
-                <span style={styles.summaryValue}>{[...enabledProviders].join(", ")}</span>
+              <div className="flex justify-between border-b border-slate-400/[0.08] py-2.5">
+                <span className="text-[0.85rem] text-muted-foreground">Integrations</span>
+                <span className="text-[0.85rem] font-semibold text-foreground">{[...enabledProviders].join(", ")}</span>
               </div>
               {(() => {
                 const currentPlan = PLANS.find((p) => p.id === selectedPlan);
                 const isPaidPlan = currentPlan && currentPlan.priceValue > 0;
                 return isPaidPlan ? (
-                  <div style={styles.hint} role="status">
+                  <div className="mt-3 rounded-lg border border-teal-500/20 bg-teal-500/[0.08] px-3.5 py-2.5 text-[0.85rem] text-teal-300" role="status">
                     You will be redirected to Stripe to complete payment for the {currentPlan.name} plan ({currentPlan.price}).
                   </div>
                 ) : null;
               })()}
-              <div style={styles.buttonRow}>
-                <button type="button" onClick={handleBack} style={styles.secondaryButton} aria-label="Go back to previous step">Back</button>
+              <div className="mt-8 flex justify-between gap-3">
+                <button type="button" onClick={handleBack} className="min-h-[44px] min-w-[120px] rounded-lg border border-slate-400/30 bg-transparent px-7 py-3 text-[0.9rem] font-semibold text-muted-foreground transition-opacity duration-200" aria-label="Go back to previous step">Back</button>
                 <button
                   type="button"
                   onClick={() => handleAdvanceStep({})}
                   disabled={loading || paymentPending}
-                  style={{
-                    ...styles.primaryButton,
-                    opacity: loading || paymentPending ? 0.6 : 1,
-                    padding: "14px 36px",
-                    fontSize: "1rem",
-                  }}
+                  className="min-h-[44px] rounded-lg border-none bg-teal-500 px-9 py-3.5 text-base font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading || paymentPending}
+                  style={{ opacity: loading || paymentPending ? 0.6 : 1 }}
                 >
                   {loading ? "Launching..." : paymentPending ? "Redirecting to payment..." : (() => {
                     const currentPlan = PLANS.find((p) => p.id === selectedPlan);
@@ -989,11 +729,11 @@ export default function OnboardPage() {
 
         {step === "complete" && loading && (
           <main>
-            <div style={styles.successCard}>
-              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#14b8a6", margin: "0 0 8px" }}>
+            <div className="mb-6 rounded-xl border border-teal-500/30 bg-teal-500/[0.08] p-8 text-center">
+              <h2 className="mb-2 text-[1.5rem] font-bold text-teal-500">
                 Verifying Payment
               </h2>
-              <p style={{ color: "#94a3b8", margin: 0 }}>
+              <p className="text-muted-foreground">
                 Please wait while we confirm your subscription...
               </p>
             </div>
@@ -1002,62 +742,50 @@ export default function OnboardPage() {
 
         {step === "complete" && !loading && session?.provisioningResult && (
           <main>
-            <div style={styles.successCard}>
-              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#14b8a6", margin: "0 0 8px" }}>
+            <div className="mb-6 rounded-xl border border-teal-500/30 bg-teal-500/[0.08] p-8 text-center">
+              <h2 className="mb-2 text-[1.5rem] font-bold text-teal-500">
                 Your Lead System is Live
               </h2>
-              <p style={{ color: "#94a3b8", margin: 0 }}>
+              <p className="text-muted-foreground">
                 {stripeSessionId
                   ? "Payment confirmed. Your platform has been provisioned and is ready to capture leads."
                   : "Your platform has been provisioned and is ready to capture leads."}
               </p>
             </div>
 
-            <div style={styles.card}>
-              <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 12px" }}>
+            <div className="mb-6 rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h3 className="mb-3 text-base font-bold text-slate-50">
                 Embed Script
               </h3>
-              <p style={{ fontSize: "0.85rem", color: "#94a3b8", margin: "0 0 12px" }}>
+              <p className="mb-3 text-[0.85rem] text-muted-foreground">
                 Add this script to your website to activate lead capture:
               </p>
-              <code style={styles.codeBlock}>
+              <code className="mb-4 block overflow-x-auto whitespace-pre-wrap break-all rounded-lg border border-slate-400/15 bg-black/40 p-4 font-mono text-[0.82rem] text-teal-300">
                 {session.provisioningResult.embedScript}
               </code>
             </div>
 
-            <div style={styles.card}>
-              <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 12px" }}>
+            <div className="mb-6 rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h3 className="mb-3 text-base font-bold text-slate-50">
                 Dashboard
               </h3>
-              <p style={{ fontSize: "0.85rem", color: "#94a3b8", margin: "0 0 12px" }}>
+              <p className="mb-3 text-[0.85rem] text-muted-foreground">
                 Access your operator dashboard to manage leads and settings:
               </p>
               <a
                 href={session.provisioningResult.dashboardUrl}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  padding: "10px 20px",
-                  borderRadius: 8,
-                  background: "rgba(20, 184, 166, 0.12)",
-                  border: "1px solid rgba(20, 184, 166, 0.3)",
-                  color: "#14b8a6",
-                  fontWeight: 600,
-                  fontSize: "0.9rem",
-                  textDecoration: "none",
-                  minHeight: 44,
-                }}
+                className="inline-flex min-h-[44px] items-center rounded-lg border border-teal-500/30 bg-teal-500/10 px-5 py-2.5 text-[0.9rem] font-semibold text-teal-500 no-underline"
               >
                 Open Dashboard
               </a>
             </div>
 
-            <div style={styles.card}>
-              <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 8px" }}>
+            <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h3 className="mb-2 text-base font-bold text-slate-50">
                 Check Your Email
               </h3>
-              <p style={{ fontSize: "0.85rem", color: "#94a3b8", margin: 0 }}>
-                We sent a login link to <strong style={{ color: "#f1f5f9" }}>{session.email}</strong>. Use it to access your dashboard.
+              <p className="text-[0.85rem] text-muted-foreground">
+                We sent a login link to <strong className="text-foreground">{session.email}</strong>. Use it to access your dashboard.
               </p>
             </div>
           </main>
@@ -1065,19 +793,20 @@ export default function OnboardPage() {
 
         {step === "complete" && !loading && session && !session.provisioningResult && !stripeSessionId && (
           <main>
-            <div style={styles.card}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 16px" }}>
+            <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h2 className="mb-4 text-[1.25rem] font-bold text-slate-50">
                 Complete Payment
               </h2>
-              <p style={{ fontSize: "0.9rem", color: "#94a3b8", margin: "0 0 24px" }}>
+              <p className="mb-6 text-[0.9rem] text-muted-foreground">
                 Your system is ready to launch. Complete payment to activate your subscription.
               </p>
               <button
                 type="button"
                 onClick={() => session.id && redirectToStripeCheckout(session.id)}
                 disabled={paymentPending}
-                style={{ ...styles.primaryButton, opacity: paymentPending ? 0.6 : 1, padding: "14px 36px", fontSize: "1rem" }}
+                className="min-h-[44px] rounded-lg border-none bg-teal-500 px-9 py-3.5 text-base font-bold text-[#0a0f1a] transition-opacity duration-200"
                 aria-busy={paymentPending}
+                style={{ opacity: paymentPending ? 0.6 : 1 }}
               >
                 {paymentPending ? "Redirecting to payment..." : "Complete Payment"}
               </button>
@@ -1087,17 +816,17 @@ export default function OnboardPage() {
 
         {step === "complete" && !loading && !session && (
           <main>
-            <div style={styles.card}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#f8fafc", margin: "0 0 16px" }}>
+            <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h2 className="mb-4 text-[1.25rem] font-bold text-slate-50">
                 Session Expired
               </h2>
-              <p style={{ fontSize: "0.9rem", color: "#94a3b8", margin: "0 0 24px" }}>
+              <p className="mb-6 text-[0.9rem] text-muted-foreground">
                 Your onboarding session could not be found. This may happen if the session expired. Please start a new onboarding session or contact support if you already completed payment.
               </p>
               <button
                 type="button"
                 onClick={() => { setStep("email"); setError(null); }}
-                style={styles.primaryButton}
+                className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
               >
                 Start Over
               </button>

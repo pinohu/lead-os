@@ -136,7 +136,7 @@ export default function ChangelogPage() {
   return (
     <main id="main-content" className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-2xl font-extrabold mb-2">Changelog</h1>
-      <p className="text-muted-foreground mb-12">
+      <p className="text-foreground mb-12">
         New features, improvements, and fixes in Lead OS.
       </p>
 

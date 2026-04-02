@@ -245,22 +245,12 @@ function QualityBar({ score, height = 6 }: QualityBarProps) {
     <div
       role="img"
       aria-label={`Quality score: ${score} out of 100`}
-      style={{
-        width: "100%",
-        height,
-        borderRadius: 999,
-        background: "rgba(34, 95, 84, 0.1)",
-        overflow: "hidden",
-      }}
+      className="w-full overflow-hidden rounded-full"
+      style={{ height, background: "rgba(34, 95, 84, 0.1)" }}
     >
       <div
-        style={{
-          width: `${score}%`,
-          height: "100%",
-          background: qualityColor(score),
-          borderRadius: 999,
-          transition: "width 0.4s ease",
-        }}
+        className="h-full rounded-full transition-[width] duration-400 ease-in-out"
+        style={{ width: `${score}%`, background: qualityColor(score) }}
       />
     </div>
   );
@@ -277,7 +267,7 @@ function FieldControl({ id, label, children }: FieldControlProps) {
     <div>
       <label
         htmlFor={id}
-        style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: 4 }}
+        className="mb-1 block text-[0.78rem] font-semibold"
       >
         {label}
       </label>
@@ -285,24 +275,6 @@ function FieldControl({ id, label, children }: FieldControlProps) {
     </div>
   );
 }
-
-const SELECT_STYLE: React.CSSProperties = {
-  padding: "8px 12px",
-  borderRadius: 6,
-  border: "1px solid rgba(34, 95, 84, 0.2)",
-  background: "rgba(255, 255, 255, 0.8)",
-  fontSize: "0.85rem",
-  minWidth: 160,
-  minHeight: 38,
-};
-
-const INPUT_STYLE: React.CSSProperties = {
-  padding: "8px 12px",
-  borderRadius: 6,
-  border: "1px solid rgba(34, 95, 84, 0.2)",
-  background: "rgba(255, 255, 255, 0.8)",
-  fontSize: "0.85rem",
-};
 
 // ---------------------------------------------------------------------------
 // Lead Preview Modal
@@ -356,38 +328,21 @@ function LeadPreviewModal({ lead, onClose, onClaimStart }: LeadPreviewModalProps
       onClick={handleBackdropClick}
       aria-labelledby="modal-title"
       aria-modal="true"
-      style={{
-        padding: 0,
-        border: "none",
-        borderRadius: 16,
-        maxWidth: 560,
-        width: "calc(100vw - 48px)",
-        boxShadow: "0 24px 64px rgba(0,0,0,0.18)",
-        background: "#fff",
-      }}
+      className="w-[calc(100vw-48px)] max-w-[560px] rounded-2xl border-none bg-card p-0 shadow-2xl"
     >
       {lead && (
-        <div style={{ padding: 28 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+        <div className="p-7">
+          <div className="mb-4 flex items-start justify-between">
             <div>
               <span
-                style={{
-                  display: "inline-block",
-                  padding: "2px 10px",
-                  borderRadius: 999,
-                  background: temperatureBg(lead.temperature),
-                  color: temperatureColor(lead.temperature),
-                  fontSize: "0.75rem",
-                  fontWeight: 700,
-                  textTransform: "capitalize",
-                  marginBottom: 6,
-                }}
+                className="mb-1.5 inline-block rounded-full px-2.5 py-0.5 text-[0.75rem] font-bold capitalize"
+                style={{ background: temperatureBg(lead.temperature), color: temperatureColor(lead.temperature) }}
               >
                 {lead.temperature}
               </span>
               <h2
                 id="modal-title"
-                style={{ fontSize: "1.1rem", fontWeight: 800, margin: 0, color: "var(--accent, #225f54)" }}
+                className="text-[1.1rem] font-extrabold text-[var(--accent,#225f54)]"
               >
                 {lead.niche}
                 {lead.city && lead.state ? ` — ${lead.city}, ${lead.state}` : ""}
@@ -397,28 +352,18 @@ function LeadPreviewModal({ lead, onClose, onClaimStart }: LeadPreviewModalProps
               type="button"
               onClick={onClose}
               aria-label="Close lead preview"
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "1.4rem",
-                lineHeight: 1,
-                color: "rgba(34, 95, 84, 0.5)",
-                padding: 4,
-                minWidth: 32,
-                minHeight: 32,
-              }}
+              className="min-h-[32px] min-w-[32px] border-none bg-transparent p-1 text-[1.4rem] leading-none text-[rgba(34,95,84,0.5)]"
             >
               ×
             </button>
           </div>
 
-          <p style={{ fontSize: "0.9rem", lineHeight: 1.55, marginBottom: 20 }}>{lead.summary}</p>
+          <p className="mb-5 text-[0.9rem] leading-relaxed">{lead.summary}</p>
 
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-              <span style={{ fontSize: "0.82rem", fontWeight: 700 }}>Quality Score</span>
-              <span style={{ fontSize: "0.82rem", fontWeight: 800, color: qualityColor(lead.qualityScore) }}>
+          <div className="mb-5">
+            <div className="mb-1.5 flex justify-between">
+              <span className="text-[0.82rem] font-bold">Quality Score</span>
+              <span className="text-[0.82rem] font-extrabold" style={{ color: qualityColor(lead.qualityScore) }}>
                 {lead.qualityScore}/100
               </span>
             </div>
@@ -426,47 +371,29 @@ function LeadPreviewModal({ lead, onClose, onClaimStart }: LeadPreviewModalProps
           </div>
 
           <div
-            style={{
-              padding: "12px 14px",
-              borderRadius: 8,
-              background: temperatureBg(lead.temperature),
-              border: `1px solid ${temperatureColor(lead.temperature)}33`,
-              marginBottom: 20,
-            }}
+            className="mb-5 rounded-lg p-3.5"
+            style={{ background: temperatureBg(lead.temperature), border: `1px solid ${temperatureColor(lead.temperature)}33` }}
           >
             <p
-              style={{
-                fontSize: "0.78rem",
-                fontWeight: 700,
-                color: temperatureColor(lead.temperature),
-                marginBottom: 4,
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
-              }}
+              className="mb-1 text-[0.78rem] font-bold uppercase tracking-wide"
+              style={{ color: temperatureColor(lead.temperature) }}
             >
               Temperature: {lead.temperature}
             </p>
-            <p style={{ fontSize: "0.85rem", margin: 0, lineHeight: 1.4 }}>
+            <p className="text-[0.85rem] leading-snug">
               {temperatureExplanation(lead.temperature)}
             </p>
           </div>
 
-          <div style={{ marginBottom: 20 }}>
-            <p style={{ fontSize: "0.78rem", fontWeight: 700, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.04em", color: "rgba(34,95,84,0.6)" }}>
+          <div className="mb-5">
+            <p className="mb-2 text-[0.78rem] font-bold uppercase tracking-wide text-[rgba(34,95,84,0.6)]">
               Available contact fields
             </p>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            <div className="flex flex-wrap gap-1.5">
               {lead.contactFields.map((field) => (
                 <span
                   key={field}
-                  style={{
-                    padding: "3px 10px",
-                    borderRadius: 999,
-                    background: "rgba(34, 95, 84, 0.08)",
-                    color: "var(--accent, #225f54)",
-                    fontSize: "0.78rem",
-                    fontWeight: 600,
-                  }}
+                  className="rounded-full bg-[rgba(34,95,84,0.08)] px-2.5 py-[3px] text-[0.78rem] font-semibold text-[var(--accent,#225f54)]"
                 >
                   {field}
                 </span>
@@ -474,20 +401,12 @@ function LeadPreviewModal({ lead, onClose, onClaimStart }: LeadPreviewModalProps
             </div>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingTop: 16,
-              borderTop: "1px solid rgba(34,95,84,0.1)",
-            }}
-          >
+          <div className="flex items-center justify-between border-t border-[rgba(34,95,84,0.1)] pt-4">
             <div>
-              <p style={{ fontSize: "0.78rem", color: "rgba(34,95,84,0.5)", margin: 0, marginBottom: 2 }}>
+              <p className="mb-0.5 text-[0.78rem] text-[rgba(34,95,84,0.5)]">
                 {lead.niche} · Quality {lead.qualityScore}/100
               </p>
-              <p style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--accent, #225f54)", margin: 0 }}>
+              <p className="text-[1.5rem] font-black text-[var(--accent,#225f54)]">
                 {formatCents(lead.price)}
               </p>
             </div>
@@ -497,17 +416,7 @@ function LeadPreviewModal({ lead, onClose, onClaimStart }: LeadPreviewModalProps
                 onClose();
                 onClaimStart(lead.id);
               }}
-              style={{
-                padding: "12px 24px",
-                borderRadius: 8,
-                border: "none",
-                background: "var(--accent, #225f54)",
-                color: "#fff",
-                fontSize: "0.9rem",
-                fontWeight: 700,
-                cursor: "pointer",
-                minHeight: 44,
-              }}
+              className="min-h-[44px] rounded-lg border-none bg-[var(--accent,#225f54)] px-6 py-3 text-[0.9rem] font-bold text-white"
             >
               Claim this lead
             </button>
@@ -545,87 +454,60 @@ function LeadCard({
   onClaimCancel,
   onPreview,
 }: LeadCardProps) {
-  const [hovered, setHovered] = useState(false);
   const isClaiming = claimingId === lead.id;
   const isClaimTarget = claimTargetId === lead.id;
 
   return (
     <article
-      style={{
-        padding: 20,
-        borderRadius: 12,
-        border: `1px solid ${hovered ? "rgba(34, 95, 84, 0.28)" : "rgba(34, 95, 84, 0.12)"}`,
-        background: hovered ? "rgba(255, 255, 255, 0.95)" : "rgba(255, 255, 255, 0.7)",
-        transition: "border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease",
-        boxShadow: hovered ? "0 4px 20px rgba(34, 95, 84, 0.1)" : "none",
-        display: "flex",
-        flexDirection: "column",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className="flex flex-col rounded-xl border border-[rgba(34,95,84,0.12)] bg-white/70 p-5 transition-all duration-150 hover:border-[rgba(34,95,84,0.28)] hover:bg-white/95 hover:shadow-lg"
     >
       <button
         type="button"
         onClick={() => onPreview(lead)}
         aria-label={`Preview lead: ${lead.niche}${lead.city ? ` in ${lead.city}` : ""}`}
-        style={{
-          background: "none",
-          border: "none",
-          padding: 0,
-          textAlign: "left",
-          cursor: "pointer",
-          flex: 1,
-        }}
+        className="flex-1 border-none bg-transparent p-0 text-left"
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+        <div className="mb-2 flex items-start justify-between">
           <span
-            style={{
-              display: "inline-block",
-              padding: "2px 10px",
-              borderRadius: 999,
-              background: temperatureBg(lead.temperature),
-              color: temperatureColor(lead.temperature),
-              fontSize: "0.75rem",
-              fontWeight: 700,
-              textTransform: "capitalize",
-            }}
+            className="inline-block rounded-full px-2.5 py-0.5 text-[0.75rem] font-bold capitalize"
+            style={{ background: temperatureBg(lead.temperature), color: temperatureColor(lead.temperature) }}
           >
             {lead.temperature}
           </span>
-          <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--accent, #225f54)" }}>
+          <span className="text-[1.2rem] font-extrabold text-[var(--accent,#225f54)]">
             {formatCents(lead.price)}
           </span>
         </div>
 
-        <p style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(34, 95, 84, 0.6)", marginBottom: 4 }}>
+        <p className="mb-1 text-[0.78rem] font-semibold text-[rgba(34,95,84,0.6)]">
           {lead.niche}
           {lead.city && lead.state ? ` — ${lead.city}, ${lead.state}` : ""}
         </p>
 
-        <p style={{ fontSize: "0.88rem", lineHeight: 1.4, marginBottom: 12, color: "#1a1a1a" }}>
+        <p className="mb-3 text-[0.88rem] leading-snug text-[#1a1a1a]">
           {lead.summary}
         </p>
 
-        <div style={{ marginBottom: 10 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-            <span style={{ fontSize: "0.78rem", fontWeight: 700 }}>
+        <div className="mb-2.5">
+          <div className="mb-1 flex justify-between">
+            <span className="text-[0.78rem] font-bold">
               Quality: {lead.qualityScore}/100
             </span>
-            <span style={{ fontSize: "0.75rem", color: "rgba(34, 95, 84, 0.5)" }}>
+            <span className="text-[0.75rem] text-[rgba(34,95,84,0.5)]">
               {formatRelativeTime(lead.createdAt)}
             </span>
           </div>
           <QualityBar score={lead.qualityScore} />
         </div>
 
-        <div style={{ fontSize: "0.75rem", color: "rgba(34, 95, 84, 0.5)", marginBottom: 12 }}>
+        <div className="mb-3 text-[0.75rem] text-[rgba(34,95,84,0.5)]">
           Contact: {lead.contactFields.join(", ")}
         </div>
       </button>
 
       {isClaimTarget ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <label htmlFor={`buyer-email-${lead.id}`} style={{ fontSize: "0.82rem", fontWeight: 600 }}>
+        <div className="flex flex-col gap-2">
+          <label htmlFor={`buyer-email-${lead.id}`} className="text-[0.82rem] font-semibold">
             Your email to claim this lead
           </label>
           <input
@@ -635,49 +517,23 @@ function LeadCard({
             onChange={(e) => onBuyerEmailChange(e.target.value)}
             placeholder="you@company.com"
             autoComplete="email"
-            style={{
-              padding: "10px 12px",
-              borderRadius: 8,
-              border: "1px solid rgba(34, 95, 84, 0.2)",
-              fontSize: "0.88rem",
-              minHeight: 44,
-            }}
+            className="min-h-[44px] rounded-lg border border-[rgba(34,95,84,0.2)] px-3 py-2.5 text-[0.88rem]"
           />
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className="flex gap-2">
             <button
               type="button"
               onClick={onClaimConfirm}
               disabled={isClaiming || !buyerEmail.trim()}
-              style={{
-                flex: 1,
-                padding: "10px 16px",
-                borderRadius: 8,
-                border: "none",
-                background: "var(--accent, #225f54)",
-                color: "#fff",
-                fontSize: "0.88rem",
-                fontWeight: 700,
-                cursor: isClaiming ? "wait" : "pointer",
-                opacity: isClaiming || !buyerEmail.trim() ? 0.6 : 1,
-                minHeight: 44,
-              }}
+              className="min-h-[44px] flex-1 rounded-lg border-none bg-[var(--accent,#225f54)] px-4 py-2.5 text-[0.88rem] font-bold text-white"
               aria-busy={isClaiming}
+              style={{ cursor: isClaiming ? "wait" : "pointer", opacity: isClaiming || !buyerEmail.trim() ? 0.6 : 1 }}
             >
               {isClaiming ? "Claiming..." : "Confirm claim"}
             </button>
             <button
               type="button"
               onClick={onClaimCancel}
-              style={{
-                padding: "10px 16px",
-                borderRadius: 8,
-                border: "1px solid rgba(34, 95, 84, 0.2)",
-                background: "transparent",
-                fontSize: "0.88rem",
-                fontWeight: 600,
-                cursor: "pointer",
-                minHeight: 44,
-              }}
+              className="min-h-[44px] rounded-lg border border-[rgba(34,95,84,0.2)] bg-transparent px-4 py-2.5 text-[0.88rem] font-semibold"
             >
               Cancel
             </button>
@@ -688,20 +544,9 @@ function LeadCard({
           type="button"
           onClick={() => onClaimStart(lead.id)}
           disabled={isClaiming}
-          style={{
-            width: "100%",
-            padding: "10px 16px",
-            borderRadius: 8,
-            border: "none",
-            background: "var(--accent, #225f54)",
-            color: "#fff",
-            fontSize: "0.88rem",
-            fontWeight: 700,
-            cursor: isClaiming ? "wait" : "pointer",
-            opacity: isClaiming ? 0.6 : 1,
-            minHeight: 44,
-          }}
+          className="min-h-[44px] w-full rounded-lg border-none bg-[var(--accent,#225f54)] px-4 py-2.5 text-[0.88rem] font-bold text-white"
           aria-busy={isClaiming}
+          style={{ cursor: isClaiming ? "wait" : "pointer", opacity: isClaiming ? 0.6 : 1 }}
         >
           Claim lead
         </button>
@@ -727,27 +572,13 @@ function ClaimedLeadsSection({ claimedLeads, onOutcome, submittingOutcome }: Cla
 
   return (
     <section
-      style={{
-        marginTop: 48,
-        borderTop: "2px solid rgba(34, 95, 84, 0.15)",
-        paddingTop: 32,
-      }}
+      className="mt-12 border-t-2 border-[rgba(34,95,84,0.15)] pt-8"
       aria-labelledby="claimed-leads-heading"
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <h2 id="claimed-leads-heading" style={{ fontSize: "1.1rem", fontWeight: 800, margin: 0 }}>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 id="claimed-leads-heading" className="text-[1.1rem] font-extrabold">
           Your Claimed Leads
-          <span
-            style={{
-              marginLeft: 10,
-              padding: "2px 10px",
-              borderRadius: 999,
-              background: "rgba(34, 95, 84, 0.1)",
-              color: "var(--accent, #225f54)",
-              fontSize: "0.78rem",
-              fontWeight: 700,
-            }}
-          >
+          <span className="ml-2.5 rounded-full bg-[rgba(34,95,84,0.1)] px-2.5 py-0.5 text-[0.78rem] font-bold text-[var(--accent,#225f54)]">
             {claimedLeads.length}
           </span>
         </h2>
@@ -756,16 +587,7 @@ function ClaimedLeadsSection({ claimedLeads, onOutcome, submittingOutcome }: Cla
           onClick={() => setExpanded((v) => !v)}
           aria-expanded={expanded}
           aria-controls="claimed-leads-list"
-          style={{
-            background: "none",
-            border: "1px solid rgba(34, 95, 84, 0.2)",
-            borderRadius: 6,
-            padding: "6px 14px",
-            fontSize: "0.82rem",
-            fontWeight: 600,
-            cursor: "pointer",
-            color: "var(--accent, #225f54)",
-          }}
+          className="rounded-md border border-[rgba(34,95,84,0.2)] bg-transparent px-3.5 py-1.5 text-[0.82rem] font-semibold text-[var(--accent,#225f54)]"
         >
           {expanded ? "Collapse" : "Expand"}
         </button>
@@ -774,45 +596,32 @@ function ClaimedLeadsSection({ claimedLeads, onOutcome, submittingOutcome }: Cla
       <div
         id="claimed-leads-list"
         hidden={!expanded}
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-          gap: 14,
-        }}
+        className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-3.5"
       >
         {claimedLeads.map((lead) => (
           <div
             key={lead.id}
-            style={{
-              padding: 16,
-              borderRadius: 10,
-              border: "1px solid rgba(34, 95, 84, 0.12)",
-              background: "rgba(34, 95, 84, 0.03)",
-            }}
+            className="rounded-[10px] border border-[rgba(34,95,84,0.12)] bg-[rgba(34,95,84,0.03)] p-4"
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-              <p style={{ fontSize: "0.82rem", fontWeight: 700, margin: 0 }}>
+            <div className="mb-1.5 flex items-start justify-between">
+              <p className="text-[0.82rem] font-bold">
                 {lead.niche}
                 {lead.city && lead.state ? ` — ${lead.city}, ${lead.state}` : ""}
               </p>
-              <span style={{ fontSize: "0.75rem", color: "rgba(34,95,84,0.5)" }}>
+              <span className="text-[0.75rem] text-[rgba(34,95,84,0.5)]">
                 Claimed {formatRelativeTime(lead.claimedAt)}
               </span>
             </div>
 
-            <p style={{ fontSize: "0.82rem", color: "rgba(0,0,0,0.6)", marginBottom: 12, lineHeight: 1.4 }}>
+            <p className="mb-3 text-[0.82rem] leading-snug text-[rgba(0,0,0,0.6)]">
               {lead.summary.length > 100 ? `${lead.summary.slice(0, 100)}…` : lead.summary}
             </p>
 
             {lead.outcome ? (
               <div
+                className="inline-block rounded-md px-3 py-1.5 text-[0.78rem] font-bold"
                 style={{
-                  padding: "6px 12px",
-                  borderRadius: 6,
                   background: `${OUTCOME_OPTIONS.find((o) => o.value === lead.outcome)?.color ?? "#6b7280"}18`,
-                  display: "inline-block",
-                  fontSize: "0.78rem",
-                  fontWeight: 700,
                   color: OUTCOME_OPTIONS.find((o) => o.value === lead.outcome)?.color ?? "#6b7280",
                 }}
               >
@@ -820,10 +629,10 @@ function ClaimedLeadsSection({ claimedLeads, onOutcome, submittingOutcome }: Cla
               </div>
             ) : (
               <div>
-                <p style={{ fontSize: "0.75rem", fontWeight: 600, marginBottom: 6, color: "rgba(34,95,84,0.6)" }}>
+                <p className="mb-1.5 text-[0.75rem] font-semibold text-[rgba(34,95,84,0.6)]">
                   Report outcome:
                 </p>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                <div className="flex flex-wrap gap-1.5">
                   {OUTCOME_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}
@@ -831,17 +640,13 @@ function ClaimedLeadsSection({ claimedLeads, onOutcome, submittingOutcome }: Cla
                       disabled={submittingOutcome === lead.id}
                       onClick={() => onOutcome(lead.id, opt.value)}
                       aria-label={`Mark lead as ${opt.label}`}
+                      className="min-h-[32px] rounded-md px-[11px] py-[5px] text-[0.75rem] font-bold"
                       style={{
-                        padding: "5px 11px",
-                        borderRadius: 6,
                         border: `1px solid ${opt.color}44`,
                         background: `${opt.color}12`,
                         color: opt.color,
-                        fontSize: "0.75rem",
-                        fontWeight: 700,
                         cursor: submittingOutcome === lead.id ? "wait" : "pointer",
                         opacity: submittingOutcome === lead.id ? 0.5 : 1,
-                        minHeight: 32,
                       }}
                     >
                       {opt.label}
@@ -862,7 +667,6 @@ function ClaimedLeadsSection({ claimedLeads, onOutcome, submittingOutcome }: Cla
 // ---------------------------------------------------------------------------
 
 export default function PublicMarketplacePage() {
-  // -- Original state --
   const [leads, setLeads] = useState<MarketplaceLead[]>([]);
   const [totalLeads, setTotalLeads] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -876,7 +680,6 @@ export default function PublicMarketplacePage() {
   const [buyerEmail, setBuyerEmail] = useState("");
   const [claimTargetId, setClaimTargetId] = useState<string | null>(null);
 
-  // -- New state --
   const [sortKey, setSortKey] = useState<SortKey>("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -886,19 +689,16 @@ export default function PublicMarketplacePage() {
   const [submittingOutcome, setSubmittingOutcome] = useState<string | null>(null);
   const [isDemo, setIsDemo] = useState(false);
 
-  // Unique niches derived from all loaded leads
   const uniqueNiches = useMemo(
     () => Array.from(new Set(leads.map((l) => l.niche))).sort(),
     [leads],
   );
 
-  // Client-side filtered + sorted view
   const processedLeads = useMemo(() => {
     const filtered = filterBySearch(leads, searchQuery);
     return sortLeads(filtered, sortKey);
   }, [leads, searchQuery, sortKey]);
 
-  // Paginated slice for display
   const displayedLeads = useMemo(
     () => processedLeads.slice(0, page * PAGE_SIZE),
     [processedLeads, page],
@@ -906,10 +706,6 @@ export default function PublicMarketplacePage() {
 
   const hasMore = displayedLeads.length < processedLeads.length;
   const serverHasMore = leads.length < totalLeads;
-
-  // -----------------------------------------------------------------------
-  // Fetch leads (initial + filter changes reset to first page)
-  // -----------------------------------------------------------------------
 
   const fetchLeads = useCallback(
     (offset: number, append: boolean) => {
@@ -922,7 +718,7 @@ export default function PublicMarketplacePage() {
 
       const params = new URLSearchParams();
       params.set("status", "available");
-      params.set("limit", String(PAGE_SIZE * 3)); // fetch 3 client pages per server request
+      params.set("limit", String(PAGE_SIZE * 3));
       params.set("offset", String(offset));
       if (nicheFilter) params.set("niche", nicheFilter);
       if (tempFilter) params.set("temperature", tempFilter);
@@ -947,7 +743,6 @@ export default function PublicMarketplacePage() {
           setLoadingMore(false);
         })
         .catch(() => {
-          // API unavailable (no database, network error, etc.) — show demo leads
           setError(null);
           setLeads(DEMO_LEADS);
           setTotalLeads(DEMO_LEADS.length);
@@ -959,12 +754,10 @@ export default function PublicMarketplacePage() {
     [nicheFilter, tempFilter, minPrice, maxPrice],
   );
 
-  // Re-fetch from scratch when filters change
   useEffect(() => {
     fetchLeads(0, false);
   }, [fetchLeads]);
 
-  // Loading timeout: if still loading after 3s, fall back to demo leads
   useEffect(() => {
     if (!loading) return;
     const timer = setTimeout(() => {
@@ -979,10 +772,6 @@ export default function PublicMarketplacePage() {
     return () => clearTimeout(timer);
   }, [loading]);
 
-  // -----------------------------------------------------------------------
-  // Load more: try client-side pagination first; fetch from server if needed
-  // -----------------------------------------------------------------------
-
   function handleLoadMore() {
     const nextPage = page + 1;
     const clientHasData = nextPage * PAGE_SIZE <= processedLeads.length;
@@ -996,10 +785,6 @@ export default function PublicMarketplacePage() {
       setPage(nextPage);
     }
   }
-
-  // -----------------------------------------------------------------------
-  // Claim workflow (unchanged logic, same API)
-  // -----------------------------------------------------------------------
 
   function handleClaimStart(leadId: string) {
     setClaimTargetId(leadId);
@@ -1029,7 +814,6 @@ export default function PublicMarketplacePage() {
           setClaimResult(`Error: ${json.error.message}`);
         } else {
           setClaimResult("Lead claimed successfully! Contact details have been sent to your email.");
-          // Track claimed lead for outcome reporting
           const claimedLead = leads.find((l) => l.id === claimTargetId);
           if (claimedLead) {
             setClaimedLeads((prev) => [
@@ -1054,10 +838,6 @@ export default function PublicMarketplacePage() {
     setBuyerEmail("");
   }
 
-  // -----------------------------------------------------------------------
-  // Outcome reporting
-  // -----------------------------------------------------------------------
-
   function handleOutcome(leadId: string, outcome: OutcomeKey) {
     setSubmittingOutcome(leadId);
 
@@ -1078,18 +858,8 @@ export default function PublicMarketplacePage() {
       });
   }
 
-  // -----------------------------------------------------------------------
-  // Render
-  // -----------------------------------------------------------------------
-
   return (
-    <main
-      style={{
-        maxWidth: 1180,
-        margin: "0 auto",
-        padding: "40px 24px",
-      }}
-    >
+    <main className="mx-auto max-w-[1180px] px-6 py-10">
       <section className="experience-hero">
         <div className="hero-copy">
           <p className="eyebrow">Lead marketplace</p>
@@ -1103,15 +873,13 @@ export default function PublicMarketplacePage() {
 
       {/* Filters + Sort + Search */}
       <section
-        className="panel"
-        style={{ marginTop: 24 }}
+        className="panel mt-6"
         role="search"
         aria-label="Filter and sort marketplace leads"
       >
         <p className="eyebrow">Filters</p>
 
-        {/* Search */}
-        <div style={{ marginBottom: 14 }}>
+        <div className="mb-3.5">
           <FieldControl id="lead-search" label="Search">
             <input
               id="lead-search"
@@ -1120,24 +888,18 @@ export default function PublicMarketplacePage() {
               onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
               placeholder="Search by summary, niche, or location…"
               aria-label="Search leads by summary, niche, or location"
-              style={{
-                ...INPUT_STYLE,
-                width: "100%",
-                maxWidth: 440,
-                minHeight: 38,
-                boxSizing: "border-box",
-              }}
+              className="min-h-[38px] w-full max-w-[440px] rounded-md border border-[rgba(34,95,84,0.2)] bg-white/80 px-3 py-2 text-[0.85rem]"
             />
           </FieldControl>
         </div>
 
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div className="flex flex-wrap gap-3">
           <FieldControl id="niche-filter" label="Niche">
             <select
               id="niche-filter"
               value={nicheFilter}
               onChange={(e) => setNicheFilter(e.target.value)}
-              style={SELECT_STYLE}
+              className="min-h-[38px] min-w-[160px] rounded-md border border-[rgba(34,95,84,0.2)] bg-white/80 px-3 py-2 text-[0.85rem]"
             >
               <option value="">All niches</option>
               {uniqueNiches.map((n) => (
@@ -1151,7 +913,7 @@ export default function PublicMarketplacePage() {
               id="temp-filter"
               value={tempFilter}
               onChange={(e) => setTempFilter(e.target.value)}
-              style={{ ...SELECT_STYLE, minWidth: 140 }}
+              className="min-h-[38px] min-w-[140px] rounded-md border border-[rgba(34,95,84,0.2)] bg-white/80 px-3 py-2 text-[0.85rem]"
             >
               {TEMPERATURES.map((t) => (
                 <option key={t} value={t}>{t || "All temperatures"}</option>
@@ -1168,7 +930,7 @@ export default function PublicMarketplacePage() {
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
               placeholder="0"
-              style={{ ...INPUT_STYLE, width: 100, minHeight: 38 }}
+              className="min-h-[38px] w-[100px] rounded-md border border-[rgba(34,95,84,0.2)] bg-white/80 px-3 py-2 text-[0.85rem]"
             />
           </FieldControl>
 
@@ -1181,7 +943,7 @@ export default function PublicMarketplacePage() {
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
               placeholder="No limit"
-              style={{ ...INPUT_STYLE, width: 100, minHeight: 38 }}
+              className="min-h-[38px] w-[100px] rounded-md border border-[rgba(34,95,84,0.2)] bg-white/80 px-3 py-2 text-[0.85rem]"
             />
           </FieldControl>
 
@@ -1190,7 +952,7 @@ export default function PublicMarketplacePage() {
               id="sort-leads"
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as SortKey)}
-              style={SELECT_STYLE}
+              className="min-h-[38px] min-w-[160px] rounded-md border border-[rgba(34,95,84,0.2)] bg-white/80 px-3 py-2 text-[0.85rem]"
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -1205,17 +967,11 @@ export default function PublicMarketplacePage() {
         <div
           role="status"
           aria-live="polite"
-          style={{
-            marginTop: 16,
-            padding: "12px 16px",
-            borderRadius: 8,
-            background: claimResult.startsWith("Error")
-              ? "rgba(239, 68, 68, 0.1)"
-              : "rgba(34, 197, 94, 0.1)",
-            border: `1px solid ${claimResult.startsWith("Error") ? "rgba(239, 68, 68, 0.3)" : "rgba(34, 197, 94, 0.3)"}`,
-            fontSize: "0.88rem",
-            fontWeight: 600,
-          }}
+          className={`mt-4 rounded-lg px-4 py-3 text-[0.88rem] font-semibold ${
+            claimResult.startsWith("Error")
+              ? "border border-red-500/30 bg-red-500/10"
+              : "border border-green-500/30 bg-green-500/10"
+          }`}
         >
           {claimResult}
         </div>
@@ -1225,16 +981,7 @@ export default function PublicMarketplacePage() {
       {isDemo && (
         <div
           role="status"
-          style={{
-            marginTop: 16,
-            padding: "12px 16px",
-            borderRadius: 8,
-            background: "rgba(234, 179, 8, 0.1)",
-            border: "1px solid rgba(234, 179, 8, 0.3)",
-            fontSize: "0.85rem",
-            fontWeight: 600,
-            color: "#92400e",
-          }}
+          className="mt-4 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-[0.85rem] font-semibold text-amber-800"
         >
           Demo mode — Showing sample leads. Live leads will appear once the system is connected to a database.
         </div>
@@ -1242,16 +989,16 @@ export default function PublicMarketplacePage() {
 
       {/* Lead grid */}
       {loading ? (
-        <section className="panel" style={{ marginTop: 24 }}>
+        <section className="panel mt-6">
           <p className="muted">Loading available leads…</p>
         </section>
       ) : error ? (
-        <section className="panel" style={{ marginTop: 24 }}>
+        <section className="panel mt-6">
           <p className="eyebrow">Error</p>
           <p className="muted">{error}</p>
         </section>
       ) : processedLeads.length === 0 ? (
-        <section className="panel" style={{ marginTop: 24 }}>
+        <section className="panel mt-6">
           <p className="muted">
             {searchQuery || nicheFilter || tempFilter || minPrice || maxPrice
               ? "No leads match your filters. Try adjusting your criteria."
@@ -1264,26 +1011,13 @@ export default function PublicMarketplacePage() {
           <div
             aria-live="polite"
             aria-atomic="true"
-            style={{
-              marginTop: 20,
-              marginBottom: 4,
-              fontSize: "0.82rem",
-              color: "rgba(34, 95, 84, 0.6)",
-              fontWeight: 600,
-            }}
+            className="mb-1 mt-5 text-[0.82rem] font-semibold text-[rgba(34,95,84,0.6)]"
           >
             Showing {Math.min(displayedLeads.length, processedLeads.length)} of {processedLeads.length} lead{processedLeads.length !== 1 ? "s" : ""}
             {searchQuery && ` matching "${searchQuery}"`}
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              gap: 16,
-              marginTop: 8,
-            }}
-          >
+          <div className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
             {displayedLeads.map((lead) => (
               <LeadCard
                 key={lead.id}
@@ -1302,36 +1036,18 @@ export default function PublicMarketplacePage() {
 
           {/* Load more */}
           {(hasMore || serverHasMore) && (
-            <div
-              style={{
-                marginTop: 32,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
+            <div className="mt-8 flex flex-col items-center gap-2">
               <button
                 type="button"
                 onClick={handleLoadMore}
                 disabled={loadingMore}
                 aria-busy={loadingMore}
-                style={{
-                  padding: "12px 32px",
-                  borderRadius: 8,
-                  border: "1px solid rgba(34, 95, 84, 0.25)",
-                  background: "transparent",
-                  color: "var(--accent, #225f54)",
-                  fontSize: "0.9rem",
-                  fontWeight: 700,
-                  cursor: loadingMore ? "wait" : "pointer",
-                  opacity: loadingMore ? 0.6 : 1,
-                  minHeight: 44,
-                }}
+                className="min-h-[44px] rounded-lg border border-[rgba(34,95,84,0.25)] bg-transparent px-8 py-3 text-[0.9rem] font-bold text-[var(--accent,#225f54)]"
+                style={{ cursor: loadingMore ? "wait" : "pointer", opacity: loadingMore ? 0.6 : 1 }}
               >
                 {loadingMore ? "Loading…" : "Load more leads"}
               </button>
-              <span style={{ fontSize: "0.78rem", color: "rgba(34, 95, 84, 0.5)" }}>
+              <span className="text-[0.78rem] text-[rgba(34,95,84,0.5)]">
                 {displayedLeads.length} of {processedLeads.length} shown
               </span>
             </div>

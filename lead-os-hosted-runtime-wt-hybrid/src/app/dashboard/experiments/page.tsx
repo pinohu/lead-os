@@ -131,7 +131,7 @@ export default function ExperimentsPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div className="bg-amber-100 border-b border-amber-300 px-6 py-2.5 text-sm text-amber-800">
+        <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-300 dark:border-amber-800 px-6 py-2.5 text-sm text-amber-800 dark:text-amber-200">
           Demo data — Connect your tenant to see live experiment results.{" "}
           <Link href="/auth/sign-in" className="text-amber-800 underline">Sign in</Link>
         </div>
@@ -168,7 +168,7 @@ export default function ExperimentsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ExperimentStatus | "all")}
-              className="min-h-[36px] px-3 py-1.5 rounded-xl border border-border/60 bg-white/90 text-foreground text-sm"
+              className="min-h-[36px] px-3 py-1.5 rounded-xl border border-border/60 bg-background text-foreground text-sm"
             >
               <option value="all">All statuses</option>
               <option value="running">Running</option>

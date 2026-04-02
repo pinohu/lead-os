@@ -167,7 +167,7 @@ export default function AttributionPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div className="bg-amber-100 border-b border-amber-300 px-6 py-2.5 text-sm text-amber-800">
+        <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-300 dark:border-amber-800 px-6 py-2.5 text-sm text-amber-800 dark:text-amber-200">
           Demo data — Connect your analytics integration to see live attribution.{" "}
           <Link href="/dashboard/credentials" className="text-amber-800 underline">Set up credentials</Link>
         </div>
@@ -176,7 +176,7 @@ export default function AttributionPage() {
         <div className="hero-copy">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Attribution</p>
           <h1>Channel attribution</h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-foreground">
             Understand which channels drive lead capture and conversion. Compare attribution
             models to see how credit shifts across the customer journey.
           </p>
@@ -199,12 +199,12 @@ export default function AttributionPage() {
                 aria-pressed={selectedModel === model}
                 className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl border-none text-sm text-left cursor-pointer transition-colors ${
                   selectedModel === model
-                    ? "bg-orange-700/20 text-white font-extrabold"
-                    : "bg-white/5 text-white/75 font-semibold"
+                    ? "bg-orange-700/20 text-foreground font-extrabold"
+                    : "bg-white/5 text-muted-foreground font-semibold"
                 }`}
               >
                 <span className={`inline-block w-2 h-2 rounded-full ${
-                  selectedModel === model ? "bg-[var(--accent)]" : "bg-white/30"
+                  selectedModel === model ? "bg-[var(--accent)]" : "bg-muted-foreground/30"
                 }`} />
                 {model.replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase())}
               </button>

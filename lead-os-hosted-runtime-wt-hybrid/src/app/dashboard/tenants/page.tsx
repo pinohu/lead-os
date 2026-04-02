@@ -24,7 +24,7 @@ const STATUS_CLASSES: Record<string, string> = {
   active: "border-green-500/30 bg-green-500/10 text-green-400",
   provisioning: "border-yellow-400/30 bg-yellow-400/10 text-yellow-400",
   suspended: "border-red-500/30 bg-red-500/10 text-red-400",
-  cancelled: "border-slate-400/30 bg-slate-400/10 text-slate-400",
+  cancelled: "border-slate-400/30 bg-slate-400/10 text-muted-foreground",
 };
 
 const DEMO_TENANTS: TenantRecord[] = [
@@ -64,11 +64,11 @@ export default function TenantsPage() {
 
   if (loading) {
     return (
-      <main className="experience-page min-h-screen bg-[#0a0f1a] font-sans text-slate-200">
+      <main className="experience-page min-h-screen bg-background font-sans text-foreground">
         <div className="mx-auto max-w-[1100px] px-6 py-8">
-          <section className="panel rounded-xl border border-slate-500/10 bg-white/[0.04]">
+          <section className="panel rounded-xl border border-border bg-muted">
             <div className="p-8">
-              <p className="text-sm text-slate-500">Loading tenants...</p>
+              <p className="text-sm text-foreground0">Loading tenants...</p>
             </div>
           </section>
         </div>
@@ -80,39 +80,39 @@ export default function TenantsPage() {
     Object.entries(channels).filter(([, v]) => v).map(([k]) => k);
 
   return (
-    <main className="experience-page min-h-screen bg-[#0a0f1a] font-sans text-slate-200">
+    <main className="experience-page min-h-screen bg-background font-sans text-foreground">
       {isDemo && (
-        <div className="border-b border-indigo-800 bg-[#1e1a3f] px-6 py-2.5 text-sm text-indigo-300">
+        <div className="border-b border-indigo-300 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/30 px-6 py-2.5 text-sm text-indigo-800 dark:text-indigo-200">
           Demo tenants — Sign in as a super-operator to manage live tenant provisioning.
         </div>
       )}
       <div className="mx-auto max-w-[1100px] px-6 py-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <h1 className="m-0 text-2xl font-bold text-slate-50">Tenants</h1>
-          <Link href="/onboard" className="inline-flex min-h-11 items-center rounded-lg bg-teal-500 px-5 py-2.5 text-sm font-bold text-[#0a0f1a] no-underline">
+          <h1 className="m-0 text-2xl font-bold text-foreground">Tenants</h1>
+          <Link href="/onboard" className="inline-flex min-h-11 items-center rounded-lg bg-teal-500 px-5 py-2.5 text-sm font-bold text-primary-foreground no-underline">
             Provision New Tenant
           </Link>
         </div>
 
         {tenants.length === 0 ? (
-          <div className="rounded-xl border border-slate-500/10 bg-white/[0.04] p-12 text-center">
-            <p className="mb-4 text-base text-slate-400">No tenants yet</p>
+          <div className="rounded-xl border border-border bg-muted p-12 text-center">
+            <p className="mb-4 text-base text-muted-foreground">No tenants yet</p>
             <Link href="/onboard" className="font-semibold text-teal-400 no-underline">
               Provision your first tenant
             </Link>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-slate-500/10 bg-white/[0.04]">
+          <div className="overflow-hidden rounded-xl border border-border bg-muted">
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr>
-                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Slug</th>
-                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Brand</th>
-                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Niche</th>
-                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Plan</th>
-                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Model</th>
-                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Status</th>
-                  <th scope="col" className="border-b border-slate-500/15 px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-400">Created</th>
+                  <th scope="col" className="border-b border-border px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Slug</th>
+                  <th scope="col" className="border-b border-border px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Brand</th>
+                  <th scope="col" className="border-b border-border px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Niche</th>
+                  <th scope="col" className="border-b border-border px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Plan</th>
+                  <th scope="col" className="border-b border-border px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Model</th>
+                  <th scope="col" className="border-b border-border px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
+                  <th scope="col" className="border-b border-border px-3.5 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Created</th>
                 </tr>
               </thead>
               <tbody>
@@ -120,43 +120,43 @@ export default function TenantsPage() {
                   <>
                     <tr
                       key={tenant.tenantId}
-                      className={`cursor-pointer transition-colors duration-150 ${expandedId === tenant.tenantId ? "bg-white/[0.03]" : "bg-transparent"}`}
+                      className={`cursor-pointer transition-colors duration-150 ${expandedId === tenant.tenantId ? "bg-muted/50" : "bg-transparent"}`}
                       onClick={() => toggleExpand(tenant.tenantId)}
                       tabIndex={0}
                       onKeyDown={(e) => e.key === "Enter" && toggleExpand(tenant.tenantId)}
                       aria-expanded={expandedId === tenant.tenantId}
                     >
-                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">
+                      <td className="border-b border-border/50 px-3.5 py-3 text-foreground">
                         <code className="text-xs text-teal-300">{tenant.slug}</code>
                       </td>
-                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">{tenant.brandName}</td>
-                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">{tenant.defaultNiche}</td>
-                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">{tenant.plan}</td>
-                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">{tenant.revenueModel}</td>
-                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">
+                      <td className="border-b border-border/50 px-3.5 py-3 text-foreground">{tenant.brandName}</td>
+                      <td className="border-b border-border/50 px-3.5 py-3 text-foreground">{tenant.defaultNiche}</td>
+                      <td className="border-b border-border/50 px-3.5 py-3 text-foreground">{tenant.plan}</td>
+                      <td className="border-b border-border/50 px-3.5 py-3 text-foreground">{tenant.revenueModel}</td>
+                      <td className="border-b border-border/50 px-3.5 py-3 text-foreground">
                         <span className={`inline-block rounded-full border px-2.5 py-0.5 text-[0.72rem] font-semibold ${STATUS_CLASSES[tenant.status] ?? STATUS_CLASSES.cancelled}`}>{tenant.status}</span>
                       </td>
-                      <td className="border-b border-slate-500/[0.08] px-3.5 py-3 text-slate-200">{new Date(tenant.createdAt).toLocaleDateString()}</td>
+                      <td className="border-b border-border/50 px-3.5 py-3 text-foreground">{new Date(tenant.createdAt).toLocaleDateString()}</td>
                     </tr>
                     {expandedId === tenant.tenantId && (
-                      <tr key={`${tenant.tenantId}-expanded`} className="bg-white/[0.02]">
+                      <tr key={`${tenant.tenantId}-expanded`} className="bg-muted/30">
                         <td colSpan={7} className="p-0">
                           <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 px-3.5 py-4 text-xs">
                             <div>
-                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Site URL</div>
-                              <div className="text-sm text-slate-300">{tenant.siteUrl || "Not set"}</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-foreground0">Site URL</div>
+                              <div className="text-sm text-foreground">{tenant.siteUrl || "Not set"}</div>
                             </div>
                             <div>
-                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Operator Emails</div>
-                              <div className="text-sm text-slate-300">{tenant.operatorEmails.join(", ") || "None"}</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-foreground0">Operator Emails</div>
+                              <div className="text-sm text-foreground">{tenant.operatorEmails.join(", ") || "None"}</div>
                             </div>
                             <div>
-                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Enabled Funnels</div>
-                              <div className="text-sm text-slate-300">{tenant.enabledFunnels.join(", ") || "None"}</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-foreground0">Enabled Funnels</div>
+                              <div className="text-sm text-foreground">{tenant.enabledFunnels.join(", ") || "None"}</div>
                             </div>
                             <div>
-                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Active Channels</div>
-                              <div className="text-sm text-slate-300">{activeChannels(tenant.channels).join(", ") || "None"}</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-foreground0">Active Channels</div>
+                              <div className="text-sm text-foreground">{activeChannels(tenant.channels).join(", ") || "None"}</div>
                             </div>
                           </div>
                         </td>

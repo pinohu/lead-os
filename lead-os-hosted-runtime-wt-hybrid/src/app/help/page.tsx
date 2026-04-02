@@ -109,7 +109,7 @@ export default function HelpCenterPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(helpFaqJsonLd) }} />
       <main id="main-content" className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-2xl font-extrabold mb-2">Help Center</h1>
-      <p className="text-muted-foreground mb-8">
+      <p className="text-foreground mb-8">
         Find answers to common questions about Lead OS.
       </p>
 
@@ -152,7 +152,7 @@ export default function HelpCenterPage() {
                   </span>
                 </button>
                 {isOpen && (
-                  <div className="px-4 py-3 text-sm text-muted-foreground leading-relaxed">
+                  <div className="px-4 py-3 text-sm text-foreground leading-relaxed">
                     {item.answer}
                   </div>
                 )}
@@ -166,7 +166,7 @@ export default function HelpCenterPage() {
         <h2 className="text-xl font-bold mb-2">
           Still need help?
         </h2>
-        <p className="text-muted-foreground mb-4">
+        <p className="text-foreground mb-4">
           Contact our support team and we will get back to you within 24 hours.
         </p>
         <Link

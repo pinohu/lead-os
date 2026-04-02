@@ -52,11 +52,11 @@ interface KPITarget {
 function severityColor(severity: string): { bg: string; color: string; border: string } {
   switch (severity) {
     case "critical":
-      return { bg: "bg-red-50", color: "text-red-800", border: "border-red-200" };
+      return { bg: "bg-red-50 dark:bg-red-950/30", color: "text-red-800 dark:text-red-200", border: "border-red-200 dark:border-red-800" };
     case "warning":
-      return { bg: "bg-amber-50", color: "text-amber-800", border: "border-amber-200" };
+      return { bg: "bg-amber-50 dark:bg-amber-950/30", color: "text-amber-800 dark:text-amber-200", border: "border-amber-200 dark:border-amber-800" };
     default:
-      return { bg: "bg-blue-50", color: "text-blue-800", border: "border-blue-200" };
+      return { bg: "bg-blue-50 dark:bg-blue-950/30", color: "text-blue-800 dark:text-blue-200", border: "border-blue-200 dark:border-blue-800" };
   }
 }
 
@@ -79,10 +79,10 @@ function typeIcon(type: string): string {
 
 function statusBadgeClass(status: string): string {
   switch (status) {
-    case "applied": return "bg-green-100 text-green-800";
-    case "analyzed": return "bg-blue-100 text-blue-800";
-    case "pending": return "bg-amber-100 text-amber-800";
-    default: return "bg-gray-100 text-gray-700";
+    case "applied": return "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200";
+    case "analyzed": return "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200";
+    case "pending": return "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200";
+    default: return "bg-muted text-foreground";
   }
 }
 
@@ -95,12 +95,12 @@ function GaugeBar({ label, current, target, unit }: KPITarget) {
   return (
     <div className="mb-4">
       <div className="flex justify-between text-[13px] mb-1">
-        <span className="font-semibold text-gray-700">{label}</span>
-        <span className={isGood ? "text-green-800" : "text-amber-800"}>
+        <span className="font-semibold text-foreground">{label}</span>
+        <span className={isGood ? "text-green-800" : "text-amber-800 dark:text-amber-200"}>
           {current}{unit} / {target}{unit}
         </span>
       </div>
-      <div className="bg-gray-200 rounded h-2 overflow-hidden">
+      <div className="bg-muted rounded h-2 overflow-hidden">
         <div
           className={`h-full rounded transition-all duration-300 ${barColor}`}
           style={{ width: `${percentage}%` }}
@@ -195,7 +195,7 @@ export default function FeedbackPage() {
   if (loading) {
     return (
       <main className="max-w-[1180px] mx-auto px-6 py-8">
-        <p className="text-gray-500 text-sm">Loading feedback data...</p>
+        <p className="text-muted-foreground text-sm">Loading feedback data...</p>
       </main>
     );
   }
@@ -213,12 +213,12 @@ export default function FeedbackPage() {
   return (
     <main className="max-w-[1180px] mx-auto px-6 py-8">
       {isDemo && (
-        <div className="bg-amber-100 border border-amber-300 rounded-lg px-4 py-2.5 text-sm text-amber-800 mb-6">
+        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 rounded-lg px-4 py-2.5 text-sm text-amber-800 dark:text-amber-200 mb-6">
           Demo data — Connect your tenant to see live feedback and performance metrics.
         </div>
       )}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 m-0">
+        <h1 className="text-2xl font-bold text-foreground m-0">
           Feedback Loop
         </h1>
         <div className="flex gap-2">
@@ -229,7 +229,7 @@ export default function FeedbackPage() {
               onClick={() => handleRunCycle(type)}
               disabled={running}
               className={`border-none rounded-lg px-4 py-2 text-[13px] font-semibold min-h-[36px] ${
-                running ? "bg-gray-300 text-white cursor-not-allowed" : "bg-teal-500 text-white cursor-pointer"
+                running ? "bg-muted text-white cursor-not-allowed" : "bg-teal-500 text-white cursor-pointer"
               }`}
             >
               Run {type}
@@ -245,25 +245,25 @@ export default function FeedbackPage() {
       )}
 
       <section aria-label="KPI Performance" className="mb-8">
-        <h2 className="text-base font-semibold text-gray-700 mb-4">
+        <h2 className="text-base font-semibold text-foreground mb-4">
           Performance vs KPI Targets
         </h2>
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
+        <div className="bg-card border border-border rounded-xl p-5">
           {kpis.map((kpi) => (
             <GaugeBar key={kpi.label} {...kpi} />
           ))}
           {kpis.length === 0 && (
-            <p className="text-gray-400 text-[13px] m-0">No metrics available yet.</p>
+            <p className="text-muted-foreground text-[13px] m-0">No metrics available yet.</p>
           )}
         </div>
       </section>
 
       <section aria-label="Current Insights" className="mb-8">
-        <h2 className="text-base font-semibold text-gray-700 mb-4">
+        <h2 className="text-base font-semibold text-foreground mb-4">
           Insights ({insights.length})
         </h2>
         {insights.length === 0 && (
-          <p className="text-gray-400 text-[13px]">No insights generated yet. Run a feedback cycle to generate insights.</p>
+          <p className="text-muted-foreground text-[13px]">No insights generated yet. Run a feedback cycle to generate insights.</p>
         )}
         <div className="flex flex-col gap-2">
           {insights.map((insight, i) => {
@@ -283,14 +283,14 @@ export default function FeedbackPage() {
                   <span className={`text-[13px] font-semibold ${colors.color}`}>
                     {insight.severity.toUpperCase()}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-muted-foreground">
                     {insight.metric}
                   </span>
                 </div>
-                <p className="mb-1 text-sm text-gray-900">
+                <p className="mb-1 text-sm text-foreground">
                   {insight.message}
                 </p>
-                <p className="m-0 text-xs text-gray-500">
+                <p className="m-0 text-xs text-muted-foreground">
                   {insight.recommendation}
                 </p>
               </div>
@@ -300,11 +300,11 @@ export default function FeedbackPage() {
       </section>
 
       <section aria-label="Feedback Cycle History" className="mb-8">
-        <h2 className="text-base font-semibold text-gray-700 mb-4">
+        <h2 className="text-base font-semibold text-foreground mb-4">
           Cycle History
         </h2>
         {history.length === 0 && (
-          <p className="text-gray-400 text-[13px]">No feedback cycles run yet.</p>
+          <p className="text-muted-foreground text-[13px]">No feedback cycles run yet.</p>
         )}
         <div className="flex flex-col gap-3">
           {history.map((cycle) => {
@@ -314,32 +314,32 @@ export default function FeedbackPage() {
             return (
               <div
                 key={cycle.id}
-                className="bg-white border border-gray-200 rounded-xl p-4"
+                className="bg-card border border-border rounded-xl p-4"
               >
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-gray-900">
+                    <span className="text-sm font-semibold text-foreground">
                       {cycle.type.charAt(0).toUpperCase() + cycle.type.slice(1)} Cycle
                     </span>
                     <span className={`inline-block text-[11px] font-bold px-2 py-0.5 rounded-full ${statusBadgeClass(cycle.status)}`}>
                       {cycle.status}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     {new Date(cycle.createdAt).toLocaleDateString()}
                   </span>
                 </div>
 
-                <p className="mb-2 text-xs text-gray-500">
+                <p className="mb-2 text-xs text-muted-foreground">
                   Period: {cycle.period} | Insights: {cycle.insights.length} | Adjustments: {cycle.adjustments.length}
                 </p>
 
                 {cycle.adjustments.length > 0 && (
                   <div className="mt-2">
-                    <p className="text-xs font-semibold text-gray-700 mb-1">
+                    <p className="text-xs font-semibold text-foreground mb-1">
                       Adjustments:
                     </p>
-                    <ul className="m-0 pl-4 text-xs text-gray-500">
+                    <ul className="m-0 pl-4 text-xs text-muted-foreground">
                       {cycle.adjustments.slice(0, 5).map((adj, i) => (
                         <li key={i} className="mb-0.5">
                           <span className="font-semibold">{adj.type}</span>: {adj.reason}

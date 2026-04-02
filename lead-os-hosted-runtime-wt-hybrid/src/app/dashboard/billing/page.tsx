@@ -166,10 +166,10 @@ export default function BillingPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
+      <main className="min-h-screen bg-background text-foreground">
         <div className="max-w-[1100px] mx-auto px-6 py-8">
-          <section className="rounded-xl bg-white/5 border border-slate-700/40 p-6">
-            <p className="text-slate-500 text-sm">Loading billing data...</p>
+          <section className="rounded-xl bg-muted border border-border p-6">
+            <p className="text-foreground0 text-sm">Loading billing data...</p>
           </section>
         </div>
       </main>
@@ -186,32 +186,32 @@ export default function BillingPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
+    <main className="min-h-screen bg-background text-foreground">
       {isDemo && (
-        <div className="bg-[#1e3a5f] border-b border-[#2d5a8e] px-6 py-2.5 text-sm text-blue-300">
+        <div className="bg-blue-50 dark:bg-blue-950/30 border-b border-blue-300 dark:border-blue-800 px-6 py-2.5 text-sm text-blue-800 dark:text-blue-200">
           Demo data — Sign in to view your live usage and billing details.{" "}
-          <Link href="/auth/sign-in" className="text-blue-400 underline">Sign in</Link>
+          <Link href="/auth/sign-in" className="text-blue-600 dark:text-blue-400 underline">Sign in</Link>
         </div>
       )}
       {error && (
-        <div className="bg-[#3b1a1a] border-b border-red-900 px-6 py-2.5 text-sm text-red-300">
+        <div className="bg-red-50 dark:bg-red-950/30 border-b border-red-300 dark:border-red-800 px-6 py-2.5 text-sm text-red-800 dark:text-red-200">
           {error}
         </div>
       )}
       <div className="max-w-[1100px] mx-auto px-6 py-8">
-        <h1 className="text-2xl font-bold text-slate-50 mb-6">Billing</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-6">Billing</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5 mb-6">
-          <div className="rounded-xl bg-white/5 border border-slate-700/40 p-6">
-            <h2 className="text-sm font-bold text-slate-50 mb-4">Current Period Usage</h2>
+          <div className="rounded-xl bg-muted border border-border p-6">
+            <h2 className="text-sm font-bold text-foreground mb-4">Current Period Usage</h2>
             {meters.map((meter) => {
               const pct = usagePercent(meter.used, meter.limit);
               const limitLabel = meter.limit < 0 ? "Unlimited" : meter.limit.toLocaleString();
               return (
                 <div key={meter.label} className="mb-4">
                   <div className="flex justify-between text-sm mb-1.5">
-                    <span className="text-slate-300 font-semibold">{meter.label}</span>
-                    <span className="text-slate-400">
+                    <span className="text-foreground font-semibold">{meter.label}</span>
+                    <span className="text-muted-foreground">
                       {meter.used.toLocaleString()} / {limitLabel}
                       {meter.limit > 0 ? ` (${pct}%)` : ""}
                     </span>
@@ -224,56 +224,56 @@ export default function BillingPage() {
             })}
           </div>
 
-          <div className="rounded-xl bg-white/5 border border-slate-700/40 p-6">
-            <h2 className="text-sm font-bold text-slate-50 mb-4">Plan Details</h2>
-            <div className="flex justify-between py-2 border-b border-slate-700/30 text-sm">
-              <span className="text-slate-400">Plan</span>
-              <span className="text-slate-100 font-semibold">{plan.name}</span>
+          <div className="rounded-xl bg-muted border border-border p-6">
+            <h2 className="text-sm font-bold text-foreground mb-4">Plan Details</h2>
+            <div className="flex justify-between py-2 border-b border-border/50 text-sm">
+              <span className="text-muted-foreground">Plan</span>
+              <span className="text-foreground font-semibold">{plan.name}</span>
             </div>
-            <div className="flex justify-between py-2 border-b border-slate-700/30 text-sm">
-              <span className="text-slate-400">Monthly Price</span>
-              <span className="text-slate-100 font-semibold">{formatCurrency(plan.monthlyPrice)}/mo</span>
+            <div className="flex justify-between py-2 border-b border-border/50 text-sm">
+              <span className="text-muted-foreground">Monthly Price</span>
+              <span className="text-foreground font-semibold">{formatCurrency(plan.monthlyPrice)}/mo</span>
             </div>
-            <div className="flex justify-between py-2 border-b border-slate-700/30 text-sm">
-              <span className="text-slate-400">Lead Limit</span>
-              <span className="text-slate-100 font-semibold">{plan.limits.leadsPerMonth < 0 ? "Unlimited" : plan.limits.leadsPerMonth.toLocaleString()}</span>
+            <div className="flex justify-between py-2 border-b border-border/50 text-sm">
+              <span className="text-muted-foreground">Lead Limit</span>
+              <span className="text-foreground font-semibold">{plan.limits.leadsPerMonth < 0 ? "Unlimited" : plan.limits.leadsPerMonth.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between py-2 border-b border-slate-700/30 text-sm">
-              <span className="text-slate-400">Email Limit</span>
-              <span className="text-slate-100 font-semibold">{plan.limits.emailsPerMonth < 0 ? "Unlimited" : plan.limits.emailsPerMonth.toLocaleString()}</span>
+            <div className="flex justify-between py-2 border-b border-border/50 text-sm">
+              <span className="text-muted-foreground">Email Limit</span>
+              <span className="text-foreground font-semibold">{plan.limits.emailsPerMonth < 0 ? "Unlimited" : plan.limits.emailsPerMonth.toLocaleString()}</span>
             </div>
             <ul className="list-none p-0 mt-3">
               {plan.features.map((f) => (
-                <li key={f} className="text-sm text-slate-300 py-0.5">{f}</li>
+                <li key={f} className="text-sm text-foreground py-0.5">{f}</li>
               ))}
             </ul>
           </div>
         </div>
 
-        <div className="rounded-xl bg-white/5 border border-slate-700/40 p-6 mb-6">
-          <h2 className="text-sm font-bold text-slate-50 mb-4">Usage History</h2>
+        <div className="rounded-xl bg-muted border border-border p-6 mb-6">
+          <h2 className="text-sm font-bold text-foreground mb-4">Usage History</h2>
           {historyRecords.length === 0 ? (
-            <p className="text-slate-500 text-sm">No usage history available</p>
+            <p className="text-foreground0 text-sm">No usage history available</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr>
-                    <th scope="col" className="text-left px-3.5 py-2.5 text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-700/50">Period</th>
-                    <th scope="col" className="text-left px-3.5 py-2.5 text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-700/50">Leads</th>
-                    <th scope="col" className="text-left px-3.5 py-2.5 text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-700/50">Emails</th>
-                    <th scope="col" className="text-left px-3.5 py-2.5 text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-700/50">SMS</th>
-                    <th scope="col" className="text-left px-3.5 py-2.5 text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-700/50">WhatsApp</th>
+                    <th scope="col" className="text-left px-3.5 py-2.5 text-muted-foreground font-semibold text-xs uppercase tracking-wider border-b border-border">Period</th>
+                    <th scope="col" className="text-left px-3.5 py-2.5 text-muted-foreground font-semibold text-xs uppercase tracking-wider border-b border-border">Leads</th>
+                    <th scope="col" className="text-left px-3.5 py-2.5 text-muted-foreground font-semibold text-xs uppercase tracking-wider border-b border-border">Emails</th>
+                    <th scope="col" className="text-left px-3.5 py-2.5 text-muted-foreground font-semibold text-xs uppercase tracking-wider border-b border-border">SMS</th>
+                    <th scope="col" className="text-left px-3.5 py-2.5 text-muted-foreground font-semibold text-xs uppercase tracking-wider border-b border-border">WhatsApp</th>
                   </tr>
                 </thead>
                 <tbody>
                   {historyRecords.map((record) => (
                     <tr key={record.period}>
-                      <td className="px-3.5 py-2.5 border-b border-slate-700/30 text-slate-200">{record.period}</td>
-                      <td className="px-3.5 py-2.5 border-b border-slate-700/30 text-slate-200">{record.leads.toLocaleString()}</td>
-                      <td className="px-3.5 py-2.5 border-b border-slate-700/30 text-slate-200">{record.emails.toLocaleString()}</td>
-                      <td className="px-3.5 py-2.5 border-b border-slate-700/30 text-slate-200">{record.sms.toLocaleString()}</td>
-                      <td className="px-3.5 py-2.5 border-b border-slate-700/30 text-slate-200">{record.whatsapp.toLocaleString()}</td>
+                      <td className="px-3.5 py-2.5 border-b border-border/50 text-foreground">{record.period}</td>
+                      <td className="px-3.5 py-2.5 border-b border-border/50 text-foreground">{record.leads.toLocaleString()}</td>
+                      <td className="px-3.5 py-2.5 border-b border-border/50 text-foreground">{record.emails.toLocaleString()}</td>
+                      <td className="px-3.5 py-2.5 border-b border-border/50 text-foreground">{record.sms.toLocaleString()}</td>
+                      <td className="px-3.5 py-2.5 border-b border-border/50 text-foreground">{record.whatsapp.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -287,7 +287,7 @@ export default function BillingPage() {
             type="button"
             onClick={handleManageBilling}
             disabled={portalLoading}
-            className={`px-5 py-2.5 rounded-lg border border-slate-600/50 bg-transparent text-slate-400 text-sm font-semibold cursor-pointer min-h-[44px] ${portalLoading ? "opacity-60" : ""}`}
+            className={`px-5 py-2.5 rounded-lg border border-border bg-transparent text-muted-foreground text-sm font-semibold cursor-pointer min-h-[44px] ${portalLoading ? "opacity-60" : ""}`}
             aria-busy={portalLoading}
           >
             {portalLoading ? "Opening..." : "Manage Billing"}
@@ -312,7 +312,7 @@ export default function BillingPage() {
                 setError("Failed to start checkout");
               }
             }}
-            className="px-5 py-2.5 rounded-lg border-none bg-teal-500 text-[#0a0f1a] text-sm font-bold cursor-pointer min-h-[44px]"
+            className="px-5 py-2.5 rounded-lg border-none bg-teal-500 text-primary-foreground text-sm font-bold cursor-pointer min-h-[44px]"
           >
             Upgrade Plan
           </button>

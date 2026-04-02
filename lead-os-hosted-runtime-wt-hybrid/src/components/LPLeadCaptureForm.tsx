@@ -29,34 +29,6 @@ function isValidEmail(value: string): boolean {
   return EMAIL_PATTERN.test(value.trim());
 }
 
-// ─── Style constants ──────────────────────────────────────────────────────────
-
-const LABEL_STYLE: React.CSSProperties = {
-  display: "block",
-  fontSize: "0.9rem",
-  fontWeight: 600,
-  color: "#385145",
-  marginBottom: "6px",
-};
-
-const FIELD_STYLE: React.CSSProperties = {
-  display: "block",
-  width: "100%",
-  padding: "12px 16px",
-  borderRadius: "10px",
-  border: "1px solid #cbd5e1",
-  background: "#fff",
-  fontSize: "1rem",
-  color: "#14211d",
-  boxSizing: "border-box",
-  fontFamily: "inherit",
-};
-
-const FIELD_ERROR_STYLE: React.CSSProperties = {
-  ...FIELD_STYLE,
-  border: "1px solid #dc2626",
-};
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function LPLeadCaptureForm({
@@ -144,42 +116,20 @@ export function LPLeadCaptureForm({
       <div
         role="status"
         aria-live="polite"
-        style={{
-          padding: "36px 28px",
-          borderRadius: "16px",
-          background: "rgba(29,111,81,0.08)",
-          border: "1px solid rgba(29,111,81,0.22)",
-          textAlign: "center",
-        }}
+        className="rounded-2xl border border-primary/20 bg-primary/10 px-7 py-9 text-center"
       >
         <div
           aria-hidden="true"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "52px",
-            height: "52px",
-            borderRadius: "999px",
-            background: "#1d6f51",
-            color: "#fff",
-            fontSize: "1.5rem",
-            marginBottom: "16px",
-          }}
+          className="mb-4 inline-flex h-[52px] w-[52px] items-center justify-center rounded-full bg-primary text-2xl text-white"
         >
           ✓
         </div>
         <h3
-          style={{
-            margin: "0 0 8px",
-            fontFamily: "'Palatino Linotype', 'Book Antiqua', Georgia, serif",
-            fontSize: "1.25rem",
-            color: "#14211d",
-          }}
+          className="mb-2 font-serif text-xl text-foreground"
         >
           You are all set
         </h3>
-        <p style={{ color: "#385145", margin: 0, lineHeight: 1.6 }}>
+        <p className="leading-relaxed text-foreground">
           We received your request and someone from {businessName} will be in touch shortly.
         </p>
       </div>
@@ -195,17 +145,10 @@ export function LPLeadCaptureForm({
       aria-label="Contact form"
       aria-describedby={statusId}
     >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "16px",
-          marginBottom: "16px",
-        }}
-      >
+      <div className="mb-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
         {/* First name */}
         <div>
-          <label htmlFor={firstNameId} style={LABEL_STYLE}>
+          <label htmlFor={firstNameId} className="mb-1.5 block text-[0.9rem] font-semibold text-foreground">
             First name{" "}
             <span aria-hidden="true" style={{ color: accentColor }}>*</span>
           </label>
@@ -217,13 +160,13 @@ export function LPLeadCaptureForm({
             aria-required="true"
             value={fields.firstName}
             onChange={setField("firstName")}
-            style={FIELD_STYLE}
+            className="block w-full rounded-[10px] border border-border bg-card px-4 py-3 font-inherit text-base text-foreground"
           />
         </div>
 
         {/* Last name */}
         <div>
-          <label htmlFor={lastNameId} style={LABEL_STYLE}>
+          <label htmlFor={lastNameId} className="mb-1.5 block text-[0.9rem] font-semibold text-foreground">
             Last name{" "}
             <span aria-hidden="true" style={{ color: accentColor }}>*</span>
           </label>
@@ -235,13 +178,13 @@ export function LPLeadCaptureForm({
             aria-required="true"
             value={fields.lastName}
             onChange={setField("lastName")}
-            style={FIELD_STYLE}
+            className="block w-full rounded-[10px] border border-border bg-card px-4 py-3 font-inherit text-base text-foreground"
           />
         </div>
 
         {/* Email */}
         <div>
-          <label htmlFor={emailId} style={LABEL_STYLE}>
+          <label htmlFor={emailId} className="mb-1.5 block text-[0.9rem] font-semibold text-foreground">
             Email address{" "}
             <span aria-hidden="true" style={{ color: accentColor }}>*</span>
           </label>
@@ -257,13 +200,13 @@ export function LPLeadCaptureForm({
             value={fields.email}
             onChange={setField("email")}
             onBlur={() => setEmailTouched(true)}
-            style={emailInvalid ? FIELD_ERROR_STYLE : FIELD_STYLE}
+            className={`block w-full rounded-[10px] border bg-card px-4 py-3 font-inherit text-base text-foreground ${emailInvalid ? "border-destructive" : "border-border"}`}
           />
           {emailInvalid ? (
             <span
               id={emailErrorId}
               role="alert"
-              style={{ fontSize: "0.82rem", color: "#dc2626", marginTop: "4px", display: "block" }}
+              className="mt-1 block text-[0.82rem] text-destructive"
             >
               Please enter a valid email address.
             </span>
@@ -272,9 +215,9 @@ export function LPLeadCaptureForm({
 
         {/* Phone (optional) */}
         <div>
-          <label htmlFor={phoneId} style={LABEL_STYLE}>
+          <label htmlFor={phoneId} className="mb-1.5 block text-[0.9rem] font-semibold text-foreground">
             Phone number{" "}
-            <span style={{ fontWeight: 400, color: "#64748b" }}>(optional)</span>
+            <span className="font-normal text-muted-foreground">(optional)</span>
           </label>
           <input
             id={phoneId}
@@ -283,15 +226,15 @@ export function LPLeadCaptureForm({
             inputMode="tel"
             value={fields.phone}
             onChange={setField("phone")}
-            style={FIELD_STYLE}
+            className="block w-full rounded-[10px] border border-border bg-card px-4 py-3 font-inherit text-base text-foreground"
           />
         </div>
 
         {/* Service */}
-        <div style={{ gridColumn: "1 / -1" }}>
-          <label htmlFor={serviceId} style={LABEL_STYLE}>
+        <div className="col-span-full">
+          <label htmlFor={serviceId} className="mb-1.5 block text-[0.9rem] font-semibold text-foreground">
             Service needed{" "}
-            <span style={{ fontWeight: 400, color: "#64748b" }}>(optional)</span>
+            <span className="font-normal text-muted-foreground">(optional)</span>
           </label>
           <input
             id={serviceId}
@@ -300,7 +243,7 @@ export function LPLeadCaptureForm({
             placeholder={`e.g. ${niche} service`}
             value={fields.service}
             onChange={setField("service")}
-            style={FIELD_STYLE}
+            className="block w-full rounded-[10px] border border-border bg-card px-4 py-3 font-inherit text-base text-foreground"
           />
         </div>
       </div>
@@ -310,37 +253,19 @@ export function LPLeadCaptureForm({
         id={statusId}
         role="alert"
         aria-live="polite"
-        style={{ minHeight: "24px", marginBottom: errorMessage ? "16px" : "0" }}
+        className={`min-h-[24px] ${errorMessage ? "mb-4" : ""}`}
       >
         {errorMessage ? (
-          <p
-            style={{
-              margin: 0,
-              padding: "12px 16px",
-              borderRadius: "10px",
-              background: "rgba(220,38,38,0.08)",
-              border: "1px solid rgba(220,38,38,0.2)",
-              color: "#dc2626",
-              fontSize: "0.92rem",
-              fontWeight: 600,
-            }}
-          >
+          <p className="rounded-[10px] border border-destructive/20 bg-destructive/10 px-4 py-3 text-[0.92rem] font-semibold text-destructive">
             {errorMessage}
           </p>
         ) : null}
       </div>
 
       {/* Privacy notice */}
-      <p
-        style={{
-          fontSize: "0.78rem",
-          color: "#64748b",
-          marginBottom: "20px",
-          lineHeight: 1.5,
-        }}
-      >
+      <p className="mb-5 text-[0.78rem] leading-relaxed text-muted-foreground">
         By submitting, you agree to our{" "}
-        <a href="/privacy" style={{ color: "inherit", textDecoration: "underline" }}>
+        <a href="/privacy" className="text-inherit underline">
           Privacy Policy
         </a>
         . We may send follow-up communications related to your inquiry. You can unsubscribe at any time.
@@ -351,22 +276,12 @@ export function LPLeadCaptureForm({
         type="submit"
         disabled={isSubmitting}
         aria-busy={isSubmitting ? "true" : undefined}
+        className="inline-flex min-h-[52px] items-center justify-center rounded-full px-8 py-3.5 font-inherit text-base font-bold text-white"
         style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "52px",
-          padding: "14px 32px",
-          borderRadius: "999px",
-          border: "none",
           background: accentColor,
-          color: "#fff",
-          fontWeight: 700,
-          fontSize: "1rem",
           cursor: isSubmitting ? "wait" : "pointer",
           opacity: isSubmitting ? 0.75 : 1,
           boxShadow: `0 12px 24px ${accentColor}38`,
-          fontFamily: "inherit",
         }}
       >
         {isSubmitting ? "Submitting\u2026" : "Get My Free Quote"}

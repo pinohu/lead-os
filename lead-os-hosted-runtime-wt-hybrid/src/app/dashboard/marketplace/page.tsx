@@ -146,7 +146,7 @@ export default function MarketplaceDashboardPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div className="border-b border-amber-300 bg-amber-50 px-6 py-2.5 text-sm text-amber-800">
+        <div className="border-b border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-6 py-2.5 text-sm text-amber-800 dark:text-amber-200">
           Demo marketplace data — Connect your tenant to manage live lead inventory.{" "}
           <Link href="/auth/sign-in" className="text-amber-800 underline">Sign in</Link>
         </div>

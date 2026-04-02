@@ -98,7 +98,7 @@ export default function DemoPage() {
         <h1 className="text-2xl font-extrabold mb-3">
           See Lead OS in Action
         </h1>
-        <p className="text-muted-foreground max-w-xl mx-auto mb-6">
+        <p className="text-foreground max-w-xl mx-auto mb-6">
           Explore the capabilities of a complete lead generation platform. No signup required — the system runs entirely in dry-run mode for demos.
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
@@ -126,7 +126,7 @@ export default function DemoPage() {
             <h2 className="text-lg font-bold mb-2">
               {demo.title}
             </h2>
-            <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+            <p className="text-foreground text-sm mb-4 leading-relaxed">
               {demo.description}
             </p>
             <ul className="pl-5 text-xs text-muted-foreground leading-7 flex-1">
@@ -142,7 +142,7 @@ export default function DemoPage() {
         <h2 className="text-xl font-bold mb-3">
           Ready to deploy your own?
         </h2>
-        <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
+        <p className="text-foreground mb-6 max-w-lg mx-auto">
           Lead OS runs entirely in-memory with dry-run mode for development. No environment variables required. Clone, install, and start in under 2 minutes.
         </p>
         <div className="flex gap-4 justify-center flex-wrap">

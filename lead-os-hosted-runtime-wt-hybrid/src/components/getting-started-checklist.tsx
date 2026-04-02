@@ -123,31 +123,15 @@ interface StepRowProps {
 function StepRow({ step, complete, index }: StepRowProps) {
   return (
     <li
-      style={{
-        display: "flex",
-        alignItems: "flex-start",
-        gap: "12px",
-        padding: "12px 0",
-        borderBottom: "1px solid #f1f5f9",
-        opacity: complete ? 0.6 : 1,
-      }}
+      className={`flex items-start gap-3 py-3 border-b border-border ${complete ? "opacity-60" : ""}`}
     >
       {/* Checkbox indicator */}
       <span
         role="img"
         aria-label={complete ? "Complete" : "Incomplete"}
-        style={{
-          flexShrink: 0,
-          marginTop: "2px",
-          width: "20px",
-          height: "20px",
-          borderRadius: "50%",
-          border: complete ? "none" : "2px solid #cbd5e1",
-          background: complete ? "#4f46e5" : "transparent",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+          complete ? "bg-primary" : "border-2 border-border"
+        }`}
       >
         {complete && (
           <svg
@@ -169,44 +153,21 @@ function StepRow({ step, complete, index }: StepRowProps) {
       </span>
 
       {/* Step body */}
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div className="min-w-0 flex-1">
         <p
-          style={{
-            margin: "0 0 2px",
-            fontWeight: 600,
-            fontSize: "14px",
-            color: "#0f172a",
-            textDecoration: complete ? "line-through" : "none",
-          }}
+          className={`mb-0.5 text-sm font-semibold text-foreground ${complete ? "line-through" : ""}`}
           id={`checklist-step-${index}`}
         >
           Step {index + 1}: {step.title}
         </p>
-        <p
-          style={{
-            margin: "0 0 6px",
-            fontSize: "13px",
-            color: "#64748b",
-            lineHeight: 1.5,
-          }}
-        >
+        <p className="mb-1.5 text-[13px] leading-relaxed text-muted-foreground">
           {step.description}
         </p>
         {!complete && step.href && step.linkLabel && (
           <Link
             href={step.href}
             aria-label={`${step.linkLabel} — ${step.title}`}
-            style={{
-              display: "inline-block",
-              fontSize: "13px",
-              fontWeight: 600,
-              color: "#4f46e5",
-              textDecoration: "none",
-              padding: "4px 10px",
-              borderRadius: "6px",
-              border: "1px solid #4f46e5",
-              lineHeight: 1.4,
-            }}
+            className="inline-block rounded-md border border-primary px-2.5 py-1 text-[13px] font-semibold leading-snug text-primary no-underline"
           >
             {step.linkLabel}
           </Link>
@@ -295,41 +256,23 @@ export function GettingStartedChecklist() {
     <section
       aria-labelledby="checklist-heading"
       onKeyDown={handleKeyDown}
-      style={{
-        background: "#fff",
-        border: "1px solid #e2e8f0",
-        borderRadius: "12px",
-        padding: collapsed ? "16px 20px" : "20px",
-        marginBottom: "24px",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-        maxWidth: "720px",
-      }}
+      className={`mb-6 max-w-[720px] rounded-xl border border-border bg-card shadow-sm ${collapsed ? "px-5 py-4" : "p-5"}`}
     >
       {/* Header row */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "12px",
-        }}
-      >
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p
-            className="eyebrow"
-            style={{ margin: "0 0 2px", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#64748b", fontWeight: 600 }}
-          >
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Getting started
           </p>
           <h2
             id="checklist-heading"
-            style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "#0f172a" }}
+            className="text-base font-bold text-foreground"
           >
             {completedCount} of {totalCount} steps complete
           </h2>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div className="flex items-center gap-2">
           {/* Collapse toggle */}
           <button
             type="button"
@@ -337,16 +280,7 @@ export function GettingStartedChecklist() {
             aria-expanded={!collapsed}
             aria-controls="checklist-body"
             aria-label={collapsed ? "Expand getting started checklist" : "Collapse getting started checklist"}
-            style={{
-              background: "none",
-              border: "1px solid #e2e8f0",
-              borderRadius: "6px",
-              padding: "4px 10px",
-              cursor: "pointer",
-              fontSize: "13px",
-              color: "#64748b",
-              fontWeight: 600,
-            }}
+            className="rounded-md border border-border px-2.5 py-1 text-[13px] font-semibold text-muted-foreground"
           >
             {collapsed ? "Show" : "Hide"}
           </button>
@@ -357,16 +291,7 @@ export function GettingStartedChecklist() {
             type="button"
             onClick={handleDismiss}
             aria-label="Dismiss getting started checklist"
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: "4px 6px",
-              color: "#94a3b8",
-              fontSize: "18px",
-              lineHeight: 1,
-              borderRadius: "4px",
-            }}
+            className="rounded px-1.5 py-1 text-lg leading-none text-muted-foreground"
           >
             &times;
           </button>
@@ -380,24 +305,12 @@ export function GettingStartedChecklist() {
         aria-valuemin={0}
         aria-valuemax={totalCount}
         aria-label={`${completedCount} of ${totalCount} onboarding steps complete`}
-        style={{ marginTop: "12px" }}
+        className="mt-3"
       >
-        <div
-          style={{
-            height: "6px",
-            borderRadius: "99px",
-            background: "#f1f5f9",
-            overflow: "hidden",
-          }}
-        >
+        <div className="h-1.5 overflow-hidden rounded-full bg-muted">
           <div
-            style={{
-              height: "100%",
-              width: `${progressPercent}%`,
-              background: "#4f46e5",
-              borderRadius: "99px",
-              transition: "width 0.3s ease",
-            }}
+            className="h-full rounded-full bg-primary transition-[width] duration-300 ease-in-out"
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
@@ -406,11 +319,11 @@ export function GettingStartedChecklist() {
       <div
         id="checklist-body"
         aria-live="polite"
-        style={{ display: collapsed ? "none" : "block" }}
+        className={collapsed ? "hidden" : "block"}
       >
         <ol
           aria-label="Onboarding steps"
-          style={{ listStyle: "none", margin: "8px 0 0", padding: 0 }}
+          className="mt-2 list-none p-0"
         >
           {STEPS.map((step, i) => (
             <StepRow

@@ -159,7 +159,7 @@ export default function LeadMagnetsPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div className="border-b border-amber-300 bg-amber-50 px-6 py-2.5 text-sm text-amber-800">
+        <div className="border-b border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-6 py-2.5 text-sm text-amber-800 dark:text-amber-200">
           Demo data — Sign in to manage your live lead magnets.{" "}
           <Link href="/auth/sign-in" className="text-amber-800 underline">Sign in</Link>
         </div>
@@ -203,7 +203,7 @@ export default function LeadMagnetsPage() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="min-h-9 rounded-xl border border-border/40 bg-white/90 px-3 py-1.5 text-sm text-foreground"
+              className="min-h-9 rounded-xl border border-border/40 bg-background px-3 py-1.5 text-sm text-foreground"
             >
               <option value="all">All categories</option>
               {allCategories.map((cat) => (
@@ -216,7 +216,7 @@ export default function LeadMagnetsPage() {
             <select
               value={nicheFilter}
               onChange={(e) => setNicheFilter(e.target.value)}
-              className="min-h-9 rounded-xl border border-border/40 bg-white/90 px-3 py-1.5 text-sm text-foreground"
+              className="min-h-9 rounded-xl border border-border/40 bg-background px-3 py-1.5 text-sm text-foreground"
             >
               <option value="all">All niches</option>
               {allNiches.map((niche) => (

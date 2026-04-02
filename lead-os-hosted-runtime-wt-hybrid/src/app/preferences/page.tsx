@@ -60,10 +60,10 @@ function PreferencesContent() {
 
   if (!isValid) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#f9fafb", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-        <main style={{ maxWidth: 520, padding: 48, background: "#fff", borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.08)", textAlign: "center", margin: 24 }}>
-          <h1 style={{ fontSize: 24, color: "#111827", margin: "0 0 16px" }}>Email Preferences</h1>
-          <p style={{ fontSize: 16, color: "#6b7280", lineHeight: 1.6 }}>
+      <div className="flex min-h-screen items-center justify-center bg-muted font-sans">
+        <main className="m-6 max-w-[520px] rounded-xl bg-card p-12 text-center shadow-md">
+          <h1 className="mb-4 text-2xl text-foreground">Email Preferences</h1>
+          <p className="text-base leading-relaxed text-muted-foreground">
             This page requires a valid link from your email. Look for the &quot;Manage Preferences&quot; link in the footer of any email you received from us.
           </p>
         </main>
@@ -72,64 +72,64 @@ function PreferencesContent() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "flex-start", backgroundColor: "#f9fafb", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", padding: "48px 16px" }}>
-      <main style={{ maxWidth: 560, width: "100%", background: "#fff", borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.08)", padding: 40 }} role="main">
-        <h1 style={{ fontSize: 24, color: "#111827", margin: "0 0 8px" }}>Email Preferences</h1>
-        <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 32px" }}>
+    <div className="flex min-h-screen items-start justify-center bg-muted px-4 py-12 font-sans">
+      <main className="w-full max-w-[560px] rounded-xl bg-card p-10 shadow-md" role="main">
+        <h1 className="mb-2 text-2xl text-foreground">Email Preferences</h1>
+        <p className="mb-8 text-sm text-muted-foreground">
           Manage email preferences for <strong>{email}</strong>
         </p>
 
         {error && (
-          <div role="alert" style={{ padding: "12px 16px", backgroundColor: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, color: "#991b1b", fontSize: 14, marginBottom: 24 }}>
+          <div role="alert" className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {error}
           </div>
         )}
 
         {success && (
-          <div role="status" style={{ padding: "12px 16px", backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 8, color: "#166534", fontSize: 14, marginBottom: 24 }}>
+          <div role="status" className="mb-6 rounded-lg border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-800">
             {success}
           </div>
         )}
 
         {loading && (
-          <div style={{ textAlign: "center", padding: 48 }}>
-            <p style={{ color: "#6b7280", fontSize: 14 }}>Loading your preferences...</p>
+          <div className="p-12 text-center">
+            <p className="text-sm text-muted-foreground">Loading your preferences...</p>
           </div>
         )}
 
         {!loading && preferences && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <fieldset style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: 24, margin: 0 }}>
-              <legend style={{ fontSize: 16, fontWeight: 600, color: "#111827", padding: "0 8px" }}>Email Types</legend>
+          <div className="flex flex-col gap-4">
+            <fieldset className="rounded-lg border border-border p-6">
+              <legend className="px-2 text-base font-semibold text-foreground">Email Types</legend>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 20, marginTop: 8 }}>
-                <label style={{ display: "flex", alignItems: "flex-start", gap: 12, cursor: "pointer" }}>
+              <div className="mt-2 flex flex-col gap-5">
+                <label className="flex cursor-pointer items-start gap-3">
                   <input
                     type="checkbox"
                     checked={preferences.allEmails}
                     onChange={(e) => setPreferences({ ...preferences, allEmails: e.target.checked, nurture: e.target.checked, marketing: e.target.checked })}
                     disabled={saving}
-                    style={{ marginTop: 3, width: 18, height: 18, accentColor: "#4f46e5" }}
+                    className="mt-[3px] h-[18px] w-[18px] accent-primary"
                   />
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: "#111827" }}>Marketing &amp; Nurture Emails</div>
-                    <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}>
+                    <div className="text-sm font-medium text-foreground">Marketing &amp; Nurture Emails</div>
+                    <div className="mt-0.5 text-[13px] text-muted-foreground">
                       Tips, guides, case studies, and personalized recommendations to help you grow.
                     </div>
                   </div>
                 </label>
 
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 12, opacity: 0.6 }}>
+                <div className="flex items-start gap-3 opacity-60">
                   <input
                     type="checkbox"
                     checked={true}
                     disabled
-                    style={{ marginTop: 3, width: 18, height: 18 }}
+                    className="mt-[3px] h-[18px] w-[18px]"
                     aria-label="Transactional emails (always enabled)"
                   />
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: "#111827" }}>Transactional Emails</div>
-                    <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}>
+                    <div className="text-sm font-medium text-foreground">Transactional Emails</div>
+                    <div className="mt-0.5 text-[13px] text-muted-foreground">
                       Booking confirmations, account updates, and security alerts. These cannot be disabled.
                     </div>
                   </div>
@@ -137,27 +137,29 @@ function PreferencesContent() {
               </div>
             </fieldset>
 
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => handleSave(preferences.allEmails)}
                 disabled={saving}
-                style={{ padding: "10px 24px", backgroundColor: "#4f46e5", color: "#fff", border: "none", borderRadius: 6, fontSize: 14, fontWeight: 500, cursor: saving ? "wait" : "pointer", opacity: saving ? 0.7 : 1 }}
+                className="rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground"
+                style={{ cursor: saving ? "wait" : "pointer", opacity: saving ? 0.7 : 1 }}
               >
                 {saving ? "Saving..." : "Save Preferences"}
               </button>
               <button
                 onClick={() => handleSave(false)}
                 disabled={saving}
-                style={{ padding: "10px 24px", backgroundColor: "#fff", color: "#dc2626", border: "1px solid #fecaca", borderRadius: 6, fontSize: 14, fontWeight: 500, cursor: saving ? "wait" : "pointer" }}
+                className="rounded-md border border-destructive/30 bg-card px-6 py-2.5 text-sm font-medium text-destructive"
+                style={{ cursor: saving ? "wait" : "pointer" }}
               >
                 Unsubscribe from All
               </button>
             </div>
 
-            <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 16, marginTop: 8 }}>
+            <div className="mt-2 border-t border-border pt-4">
               <a
                 href={`/manage-data?email=${encodeURIComponent(email)}&tenant=${encodeURIComponent(tenant)}&token=${encodeURIComponent(token)}`}
-                style={{ fontSize: 13, color: "#6b7280", textDecoration: "underline" }}
+                className="text-[13px] text-muted-foreground underline"
               >
                 Manage all my data (export or delete)
               </a>
@@ -172,8 +174,8 @@ function PreferencesContent() {
 export default function PreferencesPage() {
   return (
     <Suspense fallback={
-      <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#f9fafb" }}>
-        <p style={{ color: "#6b7280", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>Loading...</p>
+      <div className="flex min-h-screen items-center justify-center bg-muted">
+        <p className="font-sans text-muted-foreground">Loading...</p>
       </div>
     }>
       <PreferencesContent />

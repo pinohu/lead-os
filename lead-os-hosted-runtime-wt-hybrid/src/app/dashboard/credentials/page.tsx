@@ -207,10 +207,10 @@ export default function CredentialsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
+      <main className="min-h-screen bg-background text-foreground">
         <div className="max-w-[1100px] mx-auto px-6 py-8">
-          <div className="rounded-xl bg-white/5 border border-slate-700/40 p-6">
-            <p className="text-slate-500 text-sm">Loading credentials...</p>
+          <div className="rounded-xl bg-muted border border-border p-6">
+            <p className="text-foreground0 text-sm">Loading credentials...</p>
           </div>
         </div>
       </main>
@@ -235,10 +235,10 @@ export default function CredentialsPage() {
   const grouped = groupByCategory(filteredProviders);
 
   return (
-    <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
+    <main className="min-h-screen bg-background text-foreground">
       <div className="max-w-[1100px] mx-auto px-6 py-8">
-        <h1 className="text-2xl font-bold text-slate-50 mb-1">Credentials Vault</h1>
-        <p className="text-slate-400 text-sm mb-6 max-w-[640px] leading-relaxed">
+        <h1 className="text-2xl font-bold text-foreground mb-1">Credentials Vault</h1>
+        <p className="text-muted-foreground text-sm mb-6 max-w-[640px] leading-relaxed">
           Connect your tools to unlock capabilities. Each provider enables specific
           features across the platform. Credentials are encrypted at rest with AES-256-GCM.
         </p>
@@ -253,22 +253,22 @@ export default function CredentialsPage() {
         </nav>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-6">
-          <div className="rounded-xl bg-white/5 border border-slate-700/40 px-6 py-5">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Connected</p>
-            <p className="text-2xl font-bold text-slate-50">
+          <div className="rounded-xl bg-muted border border-border px-6 py-5">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Connected</p>
+            <p className="text-2xl font-bold text-foreground">
               {connectedCount} / {providers.length}
             </p>
           </div>
-          <div className="rounded-xl bg-white/5 border border-slate-700/40 px-6 py-5">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Capabilities</p>
-            <p className="text-2xl font-bold text-slate-50">
+          <div className="rounded-xl bg-muted border border-border px-6 py-5">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Capabilities</p>
+            <p className="text-2xl font-bold text-foreground">
               {allCapabilities.size} active
             </p>
           </div>
         </div>
 
         <div className="mb-6">
-          <label htmlFor="credential-search" className="block text-xs font-semibold text-slate-300 mb-1">
+          <label htmlFor="credential-search" className="block text-xs font-semibold text-foreground mb-1">
             Search providers
           </label>
           <input
@@ -277,14 +277,14 @@ export default function CredentialsPage() {
             placeholder="Filter by name or capability..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full max-w-[400px] px-4 py-2.5 rounded-lg border border-slate-700/40 bg-white/5 text-slate-200 text-sm outline-none min-h-[44px]"
+            className="w-full max-w-[400px] px-4 py-2.5 rounded-lg border border-border bg-muted text-foreground text-sm outline-none min-h-[44px]"
             aria-label="Search providers by name or capability"
           />
         </div>
 
         {Object.keys(grouped).length === 0 && (
-          <div className="rounded-xl bg-white/5 border border-slate-700/40 p-6">
-            <p className="text-slate-500 text-sm">No providers match your search.</p>
+          <div className="rounded-xl bg-muted border border-border p-6">
+            <p className="text-foreground0 text-sm">No providers match your search.</p>
           </div>
         )}
 
@@ -292,7 +292,7 @@ export default function CredentialsPage() {
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([category, categoryProviders]) => (
             <section key={category} className="mb-8" aria-label={`${CATEGORY_LABELS[category] || category} providers`}>
-              <h2 className="text-lg font-bold text-slate-50 mb-3">
+              <h2 className="text-lg font-bold text-foreground mb-3">
                 {CATEGORY_LABELS[category] || category}
               </h2>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-4">
@@ -307,24 +307,24 @@ export default function CredentialsPage() {
                   return (
                     <article
                       key={provider.provider}
-                      className="rounded-xl bg-white/5 border border-slate-700/40 p-6"
+                      className="rounded-xl bg-muted border border-border p-6"
                       aria-label={`${provider.provider.replace(/_/g, " ")} provider`}
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-[0.95rem] font-bold text-slate-50 capitalize">
+                        <h3 className="text-[0.95rem] font-bold text-foreground capitalize">
                           {provider.provider.replace(/_/g, " ")}
                         </h3>
-                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${connected ? "bg-emerald-600/15 text-emerald-400" : "bg-slate-700/40 text-slate-500"}`}>
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${connected ? "bg-emerald-600/15 text-emerald-400" : "bg-slate-700/40 text-foreground0"}`}>
                           {connected ? "Connected" : "Not connected"}
                         </span>
                       </div>
 
-                      <p className="text-slate-400 text-sm mt-1 leading-snug">
+                      <p className="text-muted-foreground text-sm mt-1 leading-snug">
                         Enables: {provider.enables.join(", ")}
                       </p>
 
                       {cred?.lastVerified && (
-                        <p className="text-slate-500 text-xs mt-1.5">
+                        <p className="text-foreground0 text-xs mt-1.5">
                           Last verified: {new Date(cred.lastVerified).toLocaleDateString()}
                         </p>
                       )}
@@ -344,7 +344,7 @@ export default function CredentialsPage() {
                           <>
                             <button
                               type="button"
-                              className={`px-4 py-2 rounded-lg border border-slate-600/50 bg-transparent text-slate-400 text-sm font-semibold cursor-pointer min-h-[44px] min-w-[44px] ${isBusy ? "opacity-60" : ""}`}
+                              className={`px-4 py-2 rounded-lg border border-border bg-transparent text-muted-foreground text-sm font-semibold cursor-pointer min-h-[44px] min-w-[44px] ${isBusy ? "opacity-60" : ""}`}
                               onClick={() => handleVerify(provider.provider)}
                               disabled={isBusy}
                               aria-busy={isBusy}
@@ -366,7 +366,7 @@ export default function CredentialsPage() {
                         ) : (
                           <button
                             type="button"
-                            className="px-4 py-2 rounded-lg border-none bg-teal-500 text-[#0a0f1a] text-sm font-bold cursor-pointer min-h-[44px] min-w-[44px]"
+                            className="px-4 py-2 rounded-lg border-none bg-teal-500 text-primary-foreground text-sm font-bold cursor-pointer min-h-[44px] min-w-[44px]"
                             onClick={() => handleConnect(provider)}
                             aria-expanded={isExpanded}
                             aria-controls={`form-${providerId}`}
@@ -380,7 +380,7 @@ export default function CredentialsPage() {
                       {isExpanded && !connected && (
                         <div
                           id={`form-${providerId}`}
-                          className="mt-3 p-4 bg-white/[0.02] border border-slate-700/30 rounded-lg"
+                          className="mt-3 p-4 bg-muted/30 border border-border/50 rounded-lg"
                           role="form"
                           aria-label={`${provider.provider.replace(/_/g, " ")} credentials form`}
                         >
@@ -388,7 +388,7 @@ export default function CredentialsPage() {
                             const fieldId = `${providerId}-${field}`;
                             return (
                               <div key={field} className="mb-3">
-                                <label htmlFor={fieldId} className="block text-xs font-semibold text-slate-300 mb-1">
+                                <label htmlFor={fieldId} className="block text-xs font-semibold text-foreground mb-1">
                                   {field.replace(/_/g, " ")}
                                 </label>
                                 <input
@@ -398,7 +398,7 @@ export default function CredentialsPage() {
                                   onChange={(e) =>
                                     setFormValues((prev) => ({ ...prev, [field]: e.target.value }))
                                   }
-                                  className="w-full px-3 py-2 rounded-md border border-slate-700/40 bg-white/5 text-slate-200 text-sm outline-none min-h-[44px] box-border"
+                                  className="w-full px-3 py-2 rounded-md border border-border bg-muted text-foreground text-sm outline-none min-h-[44px] box-border"
                                   autoComplete="off"
                                   aria-label={`${provider.provider.replace(/_/g, " ")} ${field.replace(/_/g, " ")}`}
                                 />
@@ -407,7 +407,7 @@ export default function CredentialsPage() {
                           })}
                           <button
                             type="button"
-                            className={`px-4 py-2 rounded-lg border-none bg-teal-500 text-[#0a0f1a] text-sm font-bold cursor-pointer min-h-[44px] min-w-[44px] mt-1 ${isBusy ? "opacity-60" : ""}`}
+                            className={`px-4 py-2 rounded-lg border-none bg-teal-500 text-primary-foreground text-sm font-bold cursor-pointer min-h-[44px] min-w-[44px] mt-1 ${isBusy ? "opacity-60" : ""}`}
                             onClick={() => handleSave(provider)}
                             disabled={isBusy}
                             aria-busy={isBusy}

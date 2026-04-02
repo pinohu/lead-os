@@ -27,13 +27,13 @@ export default function DashboardError({
       <div className="flex justify-center gap-3">
         <button
           onClick={reset}
-          className="cursor-pointer rounded-md bg-indigo-600 px-4 py-2 text-white"
+          className="cursor-pointer rounded-md bg-primary px-4 py-2 text-primary-foreground"
         >
           Retry
         </button>
         <a
           href="/dashboard"
-          className="rounded-md bg-gray-100 px-4 py-2 text-gray-700 no-underline"
+          className="rounded-md bg-muted px-4 py-2 text-foreground no-underline"
         >
           Return to Dashboard
         </a>

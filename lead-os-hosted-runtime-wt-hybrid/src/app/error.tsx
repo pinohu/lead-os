@@ -17,7 +17,7 @@ export default function GlobalError({
       <h1 className="text-2xl font-bold mb-3">
         Something went wrong
       </h1>
-      <p className="text-muted-foreground mb-6 max-w-lg">
+      <p className="text-foreground mb-6 max-w-lg">
         An unexpected error occurred. Please try again or return to the home page.
       </p>
       {process.env.NODE_ENV === "development" && error.message && (

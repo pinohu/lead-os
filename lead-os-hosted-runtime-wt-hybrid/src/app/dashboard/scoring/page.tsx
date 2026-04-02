@@ -146,7 +146,7 @@ export default function ScoringPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div className="flex items-center gap-2 border-b border-amber-300 bg-amber-50 px-6 py-2.5 text-sm">
+        <div className="flex items-center gap-2 border-b border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-6 py-2.5 text-sm">
           <span className="font-bold">Demo data</span>
           <span className="text-amber-800">— Connect your database to see live scoring. <a href="/setup" className="underline">Configure now &rarr;</a></span>
         </div>
@@ -198,7 +198,7 @@ export default function ScoringPage() {
             <select
               value={temperatureFilter}
               onChange={(e) => setTemperatureFilter(e.target.value as Temperature | "all")}
-              className="min-h-9 rounded-xl border border-border/40 bg-white/90 px-3 py-1.5 text-sm text-foreground"
+              className="min-h-9 rounded-xl border border-border/40 bg-background px-3 py-1.5 text-sm text-foreground"
             >
               <option value="all">All</option>
               <option value="burning">Burning</option>
@@ -212,7 +212,7 @@ export default function ScoringPage() {
             <select
               value={nicheFilter}
               onChange={(e) => setNicheFilter(e.target.value)}
-              className="min-h-9 rounded-xl border border-border/40 bg-white/90 px-3 py-1.5 text-sm text-foreground"
+              className="min-h-9 rounded-xl border border-border/40 bg-background px-3 py-1.5 text-sm text-foreground"
             >
               <option value="all">All niches</option>
               {allNiches.map((niche) => (

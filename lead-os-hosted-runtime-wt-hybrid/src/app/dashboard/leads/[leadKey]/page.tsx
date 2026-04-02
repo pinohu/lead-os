@@ -131,7 +131,7 @@ function Tag({ label, color }: { label: string; color: string }) {
 
 function Card({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`rounded-xl border border-white/[0.06] bg-white/[0.04] px-7 py-6 ${className ?? ""}`}>
+    <div className={`rounded-xl border border-border bg-muted px-7 py-6 ${className ?? ""}`}>
       {children}
     </div>
   );
@@ -147,7 +147,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="mb-5 text-base font-bold text-white/90">
+    <h2 className="mb-5 text-base font-bold text-foreground">
       {children}
     </h2>
   );
@@ -173,7 +173,7 @@ function ActivityCard({
   mode?: string;
 }) {
   return (
-    <div className="flex flex-col gap-1.5 rounded-lg border border-white/[0.06] bg-white/[0.03] px-4 py-3.5">
+    <div className="flex flex-col gap-1.5 rounded-lg border border-border bg-white/[0.03] px-4 py-3.5">
       <div className="flex items-center justify-between gap-2">
         <span className="text-[11px] font-bold uppercase tracking-wider text-blue-500">
           {eyebrow}
@@ -186,13 +186,13 @@ function ActivityCard({
             />
           )}
           {mode && (
-            <span className="rounded bg-white/[0.06] px-1.5 py-px text-[11px] text-white/35">
+            <span className="rounded bg-muted px-1.5 py-px text-[11px] text-white/35">
               {mode}
             </span>
           )}
         </div>
       </div>
-      <span className="text-sm font-semibold text-white/90">{title}</span>
+      <span className="text-sm font-semibold text-foreground">{title}</span>
       {detail && <span className="text-xs leading-relaxed text-white/55">{detail}</span>}
       <span className="text-[11px] text-white/35">{formatShortDate(date)}</span>
     </div>
@@ -252,7 +252,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const fullName = [lead.firstName, lead.lastName].filter(Boolean).join(" ") || decodedLeadKey;
 
   return (
-    <main className="min-h-screen bg-[#0a0f1a] px-6 py-8 pb-16 font-sans">
+    <main className="min-h-screen bg-background px-6 py-8 pb-16 font-sans">
       <div className="mx-auto flex max-w-[1200px] flex-col gap-6">
 
         {/* Back nav */}
@@ -270,7 +270,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex flex-col gap-2.5">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="m-0 text-[26px] font-extrabold text-white/90">
+                <h1 className="m-0 text-[26px] font-extrabold text-foreground">
                   {fullName}
                 </h1>
                 <Tag label={temperature} color={tempColor} />
@@ -339,7 +339,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               <div className="flex gap-2">
                 <Link
                   href="/dashboard"
-                  className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-4 py-2 text-[13px] font-semibold text-white/55 no-underline"
+                  className="rounded-lg border border-border bg-muted px-4 py-2 text-[13px] font-semibold text-white/55 no-underline"
                 >
                   Dashboard
                 </Link>
@@ -365,7 +365,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
             <SectionTitle>Score breakdown</SectionTitle>
             <div className="flex flex-col gap-4">
               <ScoreBar label="Composite" score={compositeFromLead} />
-              <hr className="my-5 border-t border-white/[0.06]" />
+              <hr className="my-5 border-t border-border" />
               <ScoreBar label="Intent" score={intentScore.score} />
               <ScoreBar label="Fit" score={fitScore.score} />
               <ScoreBar label="Engagement" score={engagementScore.score} />
@@ -378,7 +378,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
               <div className="mb-1 text-[11px] font-bold uppercase tracking-wider" style={{ color: tempColor }}>
                 Temperature
               </div>
-              <div className="text-sm font-semibold capitalize text-white/90">
+              <div className="text-sm font-semibold capitalize text-foreground">
                 {temperature}
                 <span className="ml-2 font-normal text-white/55">
                   {temperature === "burning" && "Ready to close \u2014 reach out immediately"}
@@ -406,12 +406,12 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                 ].map(({ label, value, bold }) => (
                   <div key={label}>
                     <div className="mb-1 text-[11px] uppercase tracking-wider text-white/35">{label}</div>
-                    <div className={`text-sm ${bold ? "font-bold text-white/90" : "text-white/55"}`}>{value}</div>
+                    <div className={`text-sm ${bold ? "font-bold text-foreground" : "text-white/55"}`}>{value}</div>
                   </div>
                 ))}
               </div>
 
-              <hr className="my-5 border-t border-white/[0.06]" />
+              <hr className="my-5 border-t border-border" />
 
               <div>
                 <div className="mb-1.5 text-[11px] uppercase tracking-wider text-white/35">CTA</div>
@@ -497,7 +497,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                       </div>
                       <div className="flex flex-1 flex-col gap-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-sm font-bold text-white/90">
+                          <span className="text-sm font-bold text-foreground">
                             {event.eventType}
                           </span>
                           <span

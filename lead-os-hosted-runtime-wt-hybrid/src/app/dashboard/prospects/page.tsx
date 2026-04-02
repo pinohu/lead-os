@@ -179,7 +179,7 @@ function ConfidenceBar({ value }: { value: number }) {
       aria-label={`Confidence ${value}%`}
       className="flex items-center gap-2"
     >
-      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.08]">
+      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
         <div
           className="h-full rounded-full transition-[width] duration-500 ease-out"
           style={{ width: `${value}%`, background: color }}
@@ -216,16 +216,16 @@ function ProspectCard({
 
   return (
     <article
-      className="mb-3 rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5"
+      className="mb-3 rounded-xl border border-border bg-muted px-6 py-5"
       aria-label={`Prospect: ${prospect.businessName}`}
     >
       {/* Card header */}
       <div className="mb-3 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h3 className="mb-1 truncate text-base font-bold text-slate-50">
+          <h3 className="mb-1 truncate text-base font-bold text-foreground">
             {prospect.businessName}
           </h3>
-          <p className="m-0 text-xs text-white/40">
+          <p className="m-0 text-xs text-muted-foreground">
             {prospect.niche}
             {prospect.geo ? ` \u00b7 ${prospect.geo}` : ""}
             {prospect.website ? (
@@ -255,25 +255,25 @@ function ProspectCard({
       {/* Metrics row */}
       <div className="mb-3.5 grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3">
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Confidence</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Confidence</p>
           <ConfidenceBar value={prospect.confidence} />
         </div>
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Est. Monthly Value</p>
-          <p className="m-0 text-lg font-bold text-slate-50">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Est. Monthly Value</p>
+          <p className="m-0 text-lg font-bold text-foreground">
             {formatCurrency(prospect.estimatedMonthlyValue)}
           </p>
         </div>
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Opportunity Score</p>
-          <p className="m-0 text-lg font-bold text-slate-50">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Opportunity Score</p>
+          <p className="m-0 text-lg font-bold text-foreground">
             {prospect.opportunityScore}
-            <span className="ml-0.5 text-[0.72rem] text-white/35">/100</span>
+            <span className="ml-0.5 text-[0.72rem] text-muted-foreground">/100</span>
           </p>
         </div>
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Contact Attempts</p>
-          <p className="m-0 text-lg font-bold text-slate-50">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Contact Attempts</p>
+          <p className="m-0 text-lg font-bold text-foreground">
             {prospect.contactAttempts}
           </p>
         </div>
@@ -281,7 +281,7 @@ function ProspectCard({
 
       {/* Suggested action */}
       {prospect.suggestedAction && (
-        <p className="mb-3.5 m-0 text-xs italic text-white/60">
+        <p className="mb-3.5 m-0 text-xs italic text-foreground">
           {prospect.suggestedAction}
         </p>
       )}
@@ -301,10 +301,10 @@ function ProspectCard({
       )}
 
       {/* Action row */}
-      <div className="flex flex-wrap items-center gap-2.5 border-t border-white/[0.06] pt-3.5">
+      <div className="flex flex-wrap items-center gap-2.5 border-t border-border pt-3.5">
         <label
           htmlFor={`status-${prospect.id}`}
-          className="whitespace-nowrap text-xs font-semibold text-white/40"
+          className="whitespace-nowrap text-xs font-semibold text-muted-foreground"
         >
           Status
         </label>
@@ -314,7 +314,7 @@ function ProspectCard({
           onChange={(e) => onStatusChange(prospect.id, e.target.value as ProspectStatus)}
           disabled={isUpdating}
           aria-busy={isUpdating}
-          className="min-h-9 cursor-pointer rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1.5 font-[inherit] text-xs text-slate-100 outline-none"
+          className="min-h-9 cursor-pointer rounded-lg border border-border bg-muted px-2.5 py-1.5 font-[inherit] text-xs text-foreground outline-none"
           style={{ opacity: isUpdating ? 0.6 : 1 }}
           aria-label={`Update status for ${prospect.businessName}`}
         >
@@ -342,12 +342,12 @@ function ProspectCard({
           onClick={() => setExpanded((prev) => !prev)}
           aria-expanded={expanded}
           aria-controls={`outreach-${prospect.id}`}
-          className="min-h-9 cursor-pointer rounded-lg border border-slate-400/30 bg-transparent px-3.5 py-1.5 font-[inherit] text-xs font-semibold text-slate-400"
+          className="min-h-9 cursor-pointer rounded-lg border border-border bg-transparent px-3.5 py-1.5 font-[inherit] text-xs font-semibold text-muted-foreground"
         >
           {expanded ? "Hide template" : "View template"}
         </button>
 
-        <span className="ml-auto text-[0.72rem] text-white/25">
+        <span className="ml-auto text-[0.72rem] text-muted-foreground">
           Added {formatDate(prospect.createdAt)}
           {prospect.lastContactedAt
             ? ` \u00b7 Last contacted ${formatDate(prospect.lastContactedAt)}`
@@ -361,12 +361,12 @@ function ProspectCard({
           id={`outreach-${prospect.id}`}
           role="region"
           aria-label={`Outreach template for ${prospect.businessName}`}
-          className="mt-3.5 rounded-lg border border-white/[0.06] bg-black/30 px-4 py-3.5"
+          className="mt-3.5 rounded-lg border border-border bg-black/30 px-4 py-3.5"
         >
-          <p className="mb-2 text-[0.72rem] font-bold uppercase tracking-wider text-white/35">
+          <p className="mb-2 text-[0.72rem] font-bold uppercase tracking-wider text-muted-foreground">
             Outreach Template
           </p>
-          <pre className="m-0 whitespace-pre-wrap break-words font-[inherit] text-xs leading-relaxed text-white/65">
+          <pre className="m-0 whitespace-pre-wrap break-words font-[inherit] text-xs leading-relaxed text-foreground">
             {prospect.outreachTemplate}
           </pre>
         </div>
@@ -544,7 +544,7 @@ export default function ProspectsPage() {
   });
 
   return (
-    <main className="min-h-screen bg-[#0a0f1a] font-sans text-slate-200">
+    <main className="min-h-screen bg-background font-sans text-foreground">
       <div className="mx-auto max-w-[1100px] px-6 py-8">
 
         {/* Page header */}
@@ -552,10 +552,10 @@ export default function ProspectsPage() {
           <Link href="/dashboard" className="text-xs text-blue-400 no-underline">
             &larr; Dashboard
           </Link>
-          <h1 className="mb-1.5 mt-3 text-2xl font-bold text-slate-50">
+          <h1 className="mb-1.5 mt-3 text-2xl font-bold text-foreground">
             Prospect Discovery
           </h1>
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-muted-foreground">
             Automatically discover high-value businesses, classify opportunities, and feed them
             into your lead pipeline.
           </p>
@@ -567,22 +567,22 @@ export default function ProspectsPage() {
           role="region"
           aria-label="Prospect summary statistics"
         >
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Total Prospects</p>
-            <p className="m-0 text-2xl font-bold text-slate-50">{stats.total}</p>
+          <div className="rounded-xl border border-border bg-muted px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total Prospects</p>
+            <p className="m-0 text-2xl font-bold text-foreground">{stats.total}</p>
           </div>
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Hot Prospects</p>
+          <div className="rounded-xl border border-border bg-muted px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Hot Prospects</p>
             <p className="m-0 text-2xl font-bold text-red-400">{stats.hot}</p>
           </div>
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Est. Monthly Value</p>
+          <div className="rounded-xl border border-border bg-muted px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Est. Monthly Value</p>
             <p className="m-0 text-2xl font-bold text-emerald-400">
               {formatCurrency(stats.estimatedMonthlyValue)}
             </p>
           </div>
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Pipeline Leads</p>
+          <div className="rounded-xl border border-border bg-muted px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Pipeline Leads</p>
             <p className="m-0 text-2xl font-bold text-blue-400">{stats.pipelineLeads}</p>
           </div>
         </div>
@@ -596,16 +596,16 @@ export default function ProspectsPage() {
 
         {/* Scout form */}
         <section
-          className="mb-6 rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5"
+          className="mb-6 rounded-xl border border-border bg-muted px-6 py-5"
           aria-labelledby="scout-form-heading"
         >
-          <h2 id="scout-form-heading" className="mb-4 text-sm font-bold text-slate-50">
+          <h2 id="scout-form-heading" className="mb-4 text-sm font-bold text-foreground">
             Scout New Prospects
           </h2>
           <form onSubmit={handleScout} noValidate>
             <div className="mb-4 grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="scout-niche" className="text-xs font-semibold text-white/50">
+                <label htmlFor="scout-niche" className="text-xs font-semibold text-muted-foreground">
                   Niche
                   <span className="ml-0.5 text-red-400" aria-hidden="true">*</span>
                 </label>
@@ -618,12 +618,12 @@ export default function ProspectsPage() {
                   required
                   aria-required="true"
                   aria-describedby={scoutError ? "scout-error" : undefined}
-                  className="min-h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 font-[inherit] text-sm text-slate-100 outline-none"
+                  className="min-h-11 w-full rounded-lg border border-border bg-muted px-3.5 py-2.5 font-[inherit] text-sm text-foreground outline-none"
                   disabled={scoutLoading}
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="scout-geo" className="text-xs font-semibold text-white/50">
+                <label htmlFor="scout-geo" className="text-xs font-semibold text-muted-foreground">
                   Location / Geo
                 </label>
                 <input
@@ -632,14 +632,14 @@ export default function ProspectsPage() {
                   value={scoutGeo}
                   onChange={(e) => setScoutGeo(e.target.value)}
                   placeholder="e.g. Austin TX, Chicago, New York"
-                  className="min-h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 font-[inherit] text-sm text-slate-100 outline-none"
+                  className="min-h-11 w-full rounded-lg border border-border bg-muted px-3.5 py-2.5 font-[inherit] text-sm text-foreground outline-none"
                   disabled={scoutLoading}
                 />
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-4">
-              <label className="flex cursor-pointer select-none items-center gap-2 text-sm font-semibold text-white/65">
+              <label className="flex cursor-pointer select-none items-center gap-2 text-sm font-semibold text-foreground">
                 <input
                   type="checkbox"
                   checked={scoutAutoIngest}
@@ -650,7 +650,7 @@ export default function ProspectsPage() {
                 />
                 Auto-ingest to pipeline
               </label>
-              <span id="auto-ingest-hint" className="text-xs text-white/30">
+              <span id="auto-ingest-hint" className="text-xs text-muted-foreground">
                 Automatically adds discovered prospects to your lead pipeline
               </span>
 
@@ -682,11 +682,11 @@ export default function ProspectsPage() {
               <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400">
                 Scout Complete
               </p>
-              <p className="m-0 text-sm text-white/65">
+              <p className="m-0 text-sm text-foreground">
                 {scoutResult.summary}
               </p>
               {scoutResult.prospects.length > 0 && (
-                <p className="mt-1.5 text-xs text-white/40">
+                <p className="mt-1.5 text-xs text-muted-foreground">
                   {scoutResult.prospects.length} prospect
                   {scoutResult.prospects.length !== 1 ? "s" : ""} discovered
                   {scoutAutoIngest ? " and ingested to pipeline." : "."}
@@ -698,22 +698,22 @@ export default function ProspectsPage() {
 
         {/* Filters */}
         <section
-          className="mb-5 rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5"
+          className="mb-5 rounded-xl border border-border bg-muted px-6 py-5"
           aria-labelledby="filters-heading"
         >
-          <h2 id="filters-heading" className="mb-4 text-sm font-bold text-slate-50">
+          <h2 id="filters-heading" className="mb-4 text-sm font-bold text-foreground">
             Filter Prospects
           </h2>
           <div className="flex flex-wrap items-end gap-3.5">
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="filter-status" className="text-xs font-semibold text-white/50">
+              <label htmlFor="filter-status" className="text-xs font-semibold text-muted-foreground">
                 Status
               </label>
               <select
                 id="filter-status"
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as ProspectStatus | "all")}
-                className="min-h-10 cursor-pointer rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 font-[inherit] text-xs text-slate-100 outline-none"
+                className="min-h-10 cursor-pointer rounded-lg border border-border bg-muted px-3 py-2 font-[inherit] text-xs text-foreground outline-none"
               >
                 {STATUS_FILTER_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -722,14 +722,14 @@ export default function ProspectsPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="filter-opportunity" className="text-xs font-semibold text-white/50">
+              <label htmlFor="filter-opportunity" className="text-xs font-semibold text-muted-foreground">
                 Opportunity Type
               </label>
               <select
                 id="filter-opportunity"
                 value={filterOpportunity}
                 onChange={(e) => setFilterOpportunity(e.target.value as OpportunityType | "all")}
-                className="min-h-10 cursor-pointer rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 font-[inherit] text-xs text-slate-100 outline-none"
+                className="min-h-10 cursor-pointer rounded-lg border border-border bg-muted px-3 py-2 font-[inherit] text-xs text-foreground outline-none"
               >
                 {OPPORTUNITY_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -738,14 +738,14 @@ export default function ProspectsPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="filter-priority" className="text-xs font-semibold text-white/50">
+              <label htmlFor="filter-priority" className="text-xs font-semibold text-muted-foreground">
                 Priority
               </label>
               <select
                 id="filter-priority"
                 value={filterPriority}
                 onChange={(e) => setFilterPriority(e.target.value as Priority | "all")}
-                className="min-h-10 cursor-pointer rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 font-[inherit] text-xs text-slate-100 outline-none"
+                className="min-h-10 cursor-pointer rounded-lg border border-border bg-muted px-3 py-2 font-[inherit] text-xs text-foreground outline-none"
               >
                 {PRIORITY_FILTER_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -753,7 +753,7 @@ export default function ProspectsPage() {
               </select>
             </div>
 
-            <span className="pb-2.5 text-xs text-white/35" aria-live="polite">
+            <span className="pb-2.5 text-xs text-muted-foreground" aria-live="polite">
               {filteredProspects.length} of {prospects.length} shown
             </span>
           </div>
@@ -763,19 +763,19 @@ export default function ProspectsPage() {
         <section aria-labelledby="prospects-list-heading">
           <h2
             id="prospects-list-heading"
-            className="mb-4 flex items-center gap-2.5 text-sm font-bold text-slate-50"
+            className="mb-4 flex items-center gap-2.5 text-sm font-bold text-foreground"
           >
             Discovered Prospects
             {!listLoading && (
-              <span className="text-xs font-normal text-white/35">
+              <span className="text-xs font-normal text-muted-foreground">
                 ({filteredProspects.length})
               </span>
             )}
           </h2>
 
           {listLoading && (
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-10 text-center">
-              <p className="text-sm text-white/40" aria-busy="true">
+            <div className="rounded-xl border border-border bg-muted p-10 text-center">
+              <p className="text-sm text-muted-foreground" aria-busy="true">
                 Loading prospects...
               </p>
             </div>
@@ -790,7 +790,7 @@ export default function ProspectsPage() {
               <button
                 type="button"
                 onClick={loadProspects}
-                className="mt-2.5 min-h-11 cursor-pointer rounded-lg border border-slate-400/30 bg-transparent px-3.5 py-2 font-[inherit] text-xs font-semibold text-slate-400"
+                className="mt-2.5 min-h-11 cursor-pointer rounded-lg border border-border bg-transparent px-3.5 py-2 font-[inherit] text-xs font-semibold text-muted-foreground"
               >
                 Retry
               </button>
@@ -798,11 +798,11 @@ export default function ProspectsPage() {
           )}
 
           {!listLoading && !listError && filteredProspects.length === 0 && (
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-10 text-center">
-              <p className="mb-2 text-base font-bold text-slate-50">
+            <div className="rounded-xl border border-border bg-muted p-10 text-center">
+              <p className="mb-2 text-base font-bold text-foreground">
                 No prospects found.
               </p>
-              <p className="m-0 text-sm text-white/40">
+              <p className="m-0 text-sm text-muted-foreground">
                 {prospects.length === 0
                   ? "Use the Scout form above to discover new business opportunities."
                   : "Try adjusting your filters to see more results."}

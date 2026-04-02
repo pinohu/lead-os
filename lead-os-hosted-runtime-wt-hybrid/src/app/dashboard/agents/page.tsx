@@ -128,7 +128,7 @@ function TaskCard({ task, onCancel }: { task: AgentTask; onCancel: (id: string) 
   const agentLabel = AGENT_TYPES.find((a) => a.value === task.agentType)?.label ?? task.agentType;
 
   return (
-    <article className="border border-border/50 rounded-[10px] bg-white/70 overflow-hidden">
+    <article className="border border-border/50 rounded-[10px] bg-card/70 overflow-hidden">
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
@@ -273,7 +273,7 @@ export default function AgentsPage() {
       {/* Launch controls */}
       <section
         aria-label="Launch agent"
-        className="flex flex-wrap gap-2.5 items-end mb-6 p-4 rounded-[10px] border border-border/50 bg-white/70"
+        className="flex flex-wrap gap-2.5 items-end mb-6 p-4 rounded-[10px] border border-border/50 bg-card/70"
       >
         <div className="flex flex-col gap-1">
           <label
@@ -286,7 +286,7 @@ export default function AgentsPage() {
             id="agent-type-select"
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="px-3 py-2 rounded-md border border-border/60 bg-white text-sm font-semibold min-w-[200px] min-h-[44px]"
+            className="px-3 py-2 rounded-md border border-border/60 bg-background text-sm font-semibold min-w-[200px] min-h-[44px]"
           >
             {AGENT_TYPES.map((at) => (
               <option key={at.value} value={at.value}>

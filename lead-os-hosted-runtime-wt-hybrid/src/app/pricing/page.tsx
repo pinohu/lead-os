@@ -140,7 +140,7 @@ export default function PricingPage() {
         <h1 className="text-4xl font-extrabold tracking-tight mb-3">
           Replace 15-20 Tools With One Platform
         </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+        <p className="text-foreground max-w-2xl mx-auto text-lg">
           Every plan includes a 14-day free trial. Start in dry-run mode with zero risk.
           Upgrade, downgrade, or cancel anytime.
         </p>
@@ -219,7 +219,7 @@ export default function PricingPage() {
               <CardContent className="pt-6">
                 <div className="text-3xl font-extrabold text-primary mb-2">{item.metric}</div>
                 <p className="text-sm font-semibold mb-1">{item.title}</p>
-                <p className="text-xs text-muted-foreground">{item.desc}</p>
+                <p className="text-xs text-foreground">{item.desc}</p>
               </CardContent>
             </Card>
           ))}
@@ -255,7 +255,7 @@ export default function PricingPage() {
                 {faq.q}
                 <span className="text-muted-foreground group-open:rotate-180 transition-transform">&#9662;</span>
               </summary>
-              <p className="text-sm text-muted-foreground leading-relaxed mt-2">
+              <p className="text-sm text-foreground leading-relaxed mt-2">
                 {faq.a}
               </p>
             </details>

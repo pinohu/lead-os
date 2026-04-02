@@ -51,24 +51,15 @@ export async function generateMetadata({ params }: LPPageProps): Promise<Metadat
 
 // ─── Style constants ──────────────────────────────────────────────────────────
 
-const SECTION_PADDING: React.CSSProperties["padding"] = "64px 24px";
-const MAX_WIDTH = "1080px";
-const CARD_BG = "#f8fafc";
-const CARD_BORDER = "1px solid #e2e8f0";
-const CARD_RADIUS = "12px";
 const SERIF = "'Palatino Linotype', 'Book Antiqua', Georgia, serif";
 
-// ─── Shared heading style ─────────────────────────────────────────────────────
+/** Shared Tailwind classes for section containers */
+const SECTION_CLASSES = "py-16 px-6";
+const MAX_W_CLASSES = "max-w-[1080px] mx-auto";
+const CARD_CLASSES = "bg-slate-50 border border-slate-200 rounded-xl";
 
-function sectionHeadingStyle(): React.CSSProperties {
-  return {
-    fontFamily: SERIF,
-    fontSize: "clamp(1.7rem, 3vw, 2.4rem)",
-    letterSpacing: "-0.02em",
-    marginBottom: "32px",
-    textAlign: "center",
-  };
-}
+/** Shared heading className */
+const HEADING_CLASSES = "mb-8 text-center -tracking-[0.02em]";
 
 // ─── Section: Hero ────────────────────────────────────────────────────────────
 
@@ -101,41 +92,26 @@ function HeroSection({
   const clampedRating = Math.min(Math.max(Math.round(rating), 0), 5);
   const stars = "★".repeat(clampedRating) + "☆".repeat(5 - clampedRating);
 
-  const heroStyle: React.CSSProperties = {
-    backgroundImage: bgImage
-      ? `linear-gradient(135deg, ${accent}e6 0%, ${accent}b3 100%), url(${bgImage})`
-      : `linear-gradient(135deg, ${accent} 0%, ${accent}cc 100%)`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    padding: "80px 24px",
-    textAlign: "center",
-    color: "#fff",
-  };
-
   return (
-    <div style={heroStyle}>
-      <div style={{ maxWidth: MAX_WIDTH, margin: "0 auto" }}>
+    <div
+      className="bg-cover bg-center py-20 px-6 text-center text-white"
+      style={{
+        backgroundImage: bgImage
+          ? `linear-gradient(135deg, ${accent}e6 0%, ${accent}b3 100%), url(${bgImage})`
+          : `linear-gradient(135deg, ${accent} 0%, ${accent}cc 100%)`,
+      }}
+    >
+      <div className={MAX_W_CLASSES}>
         <h1
-          style={{
-            fontFamily: SERIF,
-            fontSize: "clamp(2.2rem, 5vw, 4rem)",
-            lineHeight: 1.08,
-            letterSpacing: "-0.02em",
-            color: "#fff",
-            marginBottom: "20px",
-          }}
+          className="mb-5 leading-[1.08] -tracking-[0.02em] text-white"
+          style={{ fontFamily: SERIF, fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
         >
           {headline}
         </h1>
         {subheadline ? (
           <p
-            style={{
-              fontSize: "clamp(1.05rem, 2vw, 1.3rem)",
-              color: "rgba(255,255,255,0.9)",
-              maxWidth: "62ch",
-              margin: "0 auto 24px",
-              lineHeight: 1.6,
-            }}
+            className="text-white/90 max-w-[62ch] mx-auto mb-6 leading-relaxed"
+            style={{ fontSize: "clamp(1.05rem, 2vw, 1.3rem)" }}
           >
             {subheadline}
           </p>
@@ -143,20 +119,12 @@ function HeroSection({
         {reviewCount > 0 ? (
           <div
             aria-label={`Rated ${rating.toFixed(1)} out of 5 stars from ${reviewCount} reviews`}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              marginBottom: "28px",
-              background: "rgba(255,255,255,0.15)",
-              padding: "6px 16px",
-              borderRadius: "999px",
-            }}
+            className="inline-flex items-center gap-2 mb-7 bg-white/15 py-1.5 px-4 rounded-full"
           >
-            <span aria-hidden="true" style={{ color: "#fcd34d", fontSize: "1.1rem", letterSpacing: "2px" }}>
+            <span aria-hidden="true" className="text-amber-300 text-[1.1rem] tracking-[2px]">
               {stars}
             </span>
-            <span style={{ fontSize: "0.9rem", fontWeight: 600, color: "rgba(255,255,255,0.95)" }}>
+            <span className="text-[0.9rem] font-semibold text-white/95">
               {rating.toFixed(1)} ({reviewCount.toLocaleString()} reviews)
             </span>
           </div>
@@ -164,20 +132,8 @@ function HeroSection({
         <div>
           <a
             href="#lead-capture"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              minHeight: "52px",
-              padding: "14px 32px",
-              borderRadius: "999px",
-              background: "#fff",
-              color: accent,
-              fontWeight: 700,
-              fontSize: "1rem",
-              textDecoration: "none",
-              boxShadow: "0 12px 28px rgba(0,0,0,0.18)",
-            }}
+            className="inline-flex items-center justify-center min-h-[52px] py-3.5 px-8 rounded-full bg-white font-bold text-base no-underline shadow-[0_12px_28px_rgba(0,0,0,0.18)]"
+            style={{ color: accent }}
           >
             {ctaLabel}
           </a>
@@ -206,58 +162,30 @@ function TrustBarSection({ content }: { content: Record<string, unknown> }) {
   const stars = "★".repeat(clampedRating);
 
   return (
-    <div style={{ padding: "24px", background: CARD_BG, borderBottom: CARD_BORDER }}>
-      <div
-        style={{
-          maxWidth: MAX_WIDTH,
-          margin: "0 auto",
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          gap: "16px",
-          justifyContent: "center",
-        }}
-      >
+    <div className="p-6 bg-slate-50 border-b border-slate-200">
+      <div className={`${MAX_W_CLASSES} flex flex-wrap items-center gap-4 justify-center`}>
         {reviewCount > 0 ? (
           <div
-            style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            className="flex items-center gap-1.5"
             aria-label={`Rated ${rating} out of 5 stars from ${reviewCount} reviews`}
           >
-            <span aria-hidden="true" style={{ color: "#f59e0b", fontSize: "1.1rem", letterSpacing: "1px" }}>
+            <span aria-hidden="true" className="text-amber-500 text-[1.1rem] tracking-[1px]">
               {stars}
             </span>
-            <span style={{ fontSize: "0.9rem", fontWeight: 600, color: "#385145" }}>
+            <span className="text-[0.9rem] font-semibold text-[#385145]">
               {reviewCount.toLocaleString()} reviews
             </span>
           </div>
         ) : null}
         {serviceArea ? (
-          <span
-            style={{
-              padding: "6px 14px",
-              borderRadius: "999px",
-              background: "rgba(34,95,84,0.1)",
-              border: "1px solid rgba(34,95,84,0.18)",
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              color: "#225f54",
-            }}
-          >
+          <span className="py-1.5 px-3.5 rounded-full bg-[rgba(34,95,84,0.1)] border border-[rgba(34,95,84,0.18)] text-[0.85rem] font-semibold text-[#225f54]">
             {serviceArea}
           </span>
         ) : null}
         {badges.map((badge) => (
           <span
             key={badge}
-            style={{
-              padding: "6px 14px",
-              borderRadius: "999px",
-              background: "#fff",
-              border: CARD_BORDER,
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              color: "#385145",
-            }}
+            className="py-1.5 px-3.5 rounded-full bg-white border border-slate-200 text-[0.85rem] font-semibold text-[#385145]"
           >
             {badge}
           </span>
@@ -285,41 +213,23 @@ function ServicesSection({ content }: { content: Record<string, unknown> }) {
       : [];
 
   return (
-    <div style={{ padding: SECTION_PADDING }}>
-      <div style={{ maxWidth: MAX_WIDTH, margin: "0 auto" }}>
-        <h2 style={sectionHeadingStyle()}>Our Services</h2>
-        <ul
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: "16px",
-            listStyle: "none",
-            padding: 0,
-            margin: 0,
-          }}
-        >
+    <div className={SECTION_CLASSES}>
+      <div className={MAX_W_CLASSES}>
+        <h2 className={HEADING_CLASSES} style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>Our Services</h2>
+        <ul className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 list-none p-0 m-0">
           {items.map((item, index) => (
             <li
               key={`${item.name ?? "service"}-${index}`}
-              style={{
-                padding: "22px 24px",
-                borderRadius: CARD_RADIUS,
-                background: CARD_BG,
-                border: CARD_BORDER,
-              }}
+              className={`${CARD_CLASSES} py-[22px] px-6`}
             >
               <h3
-                style={{
-                  margin: "0 0 6px",
-                  fontFamily: SERIF,
-                  fontSize: "1.15rem",
-                  color: "#14211d",
-                }}
+                className="mb-1.5 text-[1.15rem] text-foreground"
+                style={{ fontFamily: SERIF }}
               >
                 {item.name ?? "Service"}
               </h3>
               {item.description ? (
-                <p style={{ margin: 0, fontSize: "0.92rem", color: "#64748b", lineHeight: 1.55 }}>
+                <p className="m-0 text-[0.92rem] text-slate-500 leading-[1.55]">
                   {item.description}
                 </p>
               ) : null}
@@ -355,16 +265,10 @@ function SocialProofSection({ content }: { content: Record<string, unknown> }) {
   const reviews = Array.isArray(c.reviews) ? c.reviews : [];
 
   return (
-    <div style={{ padding: SECTION_PADDING, background: CARD_BG }}>
-      <div style={{ maxWidth: MAX_WIDTH, margin: "0 auto" }}>
-        <h2 style={sectionHeadingStyle()}>What Our Customers Say</h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "20px",
-          }}
-        >
+    <div className={`${SECTION_CLASSES} bg-slate-50`}>
+      <div className={MAX_W_CLASSES}>
+        <h2 className={HEADING_CLASSES} style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>What Our Customers Say</h2>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
           {reviews.map((review, index) => {
             const rating = typeof review.rating === "number" ? review.rating : 5;
             const clampedRating = Math.min(Math.max(Math.round(rating), 0), 5);
@@ -375,78 +279,38 @@ function SocialProofSection({ content }: { content: Record<string, unknown> }) {
             return (
               <figure
                 key={`review-${index}`}
-                style={{
-                  margin: 0,
-                  padding: "24px",
-                  borderRadius: CARD_RADIUS,
-                  background: "#fff",
-                  border: CARD_BORDER,
-                }}
+                className="m-0 p-6 rounded-xl bg-white border border-slate-200"
               >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    marginBottom: "14px",
-                  }}
-                >
+                <div className="flex items-center gap-3 mb-3.5">
                   <div
                     aria-hidden="true"
-                    style={{
-                      flexShrink: 0,
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "999px",
-                      background: "#e2e8f0",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontWeight: 700,
-                      fontSize: "1rem",
-                      color: "#385145",
-                    }}
+                    className="shrink-0 w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-base text-[#385145]"
                   >
                     {initial}
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: "0.92rem", color: "#14211d" }}>
+                    <div className="font-bold text-[0.92rem] text-foreground">
                       {review.author ?? "Customer"}
                     </div>
                     {timeAgo ? (
-                      <div style={{ fontSize: "0.8rem", color: "#64748b" }}>{timeAgo}</div>
+                      <div className="text-[0.8rem] text-slate-500">{timeAgo}</div>
                     ) : null}
                   </div>
                 </div>
                 <div
                   aria-label={`${clampedRating} out of 5 stars`}
-                  style={{ color: "#f59e0b", fontSize: "1rem", marginBottom: "10px" }}
+                  className="text-amber-500 text-base mb-2.5"
                 >
                   <span aria-hidden="true">{stars}</span>
                 </div>
-                <blockquote
-                  style={{
-                    margin: 0,
-                    fontStyle: "italic",
-                    color: "#385145",
-                    lineHeight: 1.65,
-                    fontSize: "0.97rem",
-                  }}
-                >
+                <blockquote className="m-0 italic text-[#385145] leading-[1.65] text-[0.97rem]">
                   &ldquo;{review.text ?? ""}&rdquo;
                 </blockquote>
               </figure>
             );
           })}
         </div>
-        <p
-          style={{
-            marginTop: "28px",
-            textAlign: "center",
-            fontSize: "0.82rem",
-            color: "#94a3b8",
-          }}
-        >
+        <p className="mt-7 text-center text-[0.82rem] text-muted-foreground">
           Reviews sourced from Google
         </p>
       </div>
@@ -480,61 +344,36 @@ function AboutSection({
   const address = c.address ?? (c.contact as ContactInfo | undefined)?.address;
   const website = typeof c.website === "string" ? c.website : null;
 
+  const DT_CLASSES = "text-[0.82rem] font-bold text-slate-500 uppercase tracking-[0.08em]";
+
   return (
-    <div style={{ padding: SECTION_PADDING }}>
-      <div style={{ maxWidth: MAX_WIDTH, margin: "0 auto" }}>
+    <div className={SECTION_CLASSES}>
+      <div className={MAX_W_CLASSES}>
         <h2
-          style={{
-            fontFamily: SERIF,
-            fontSize: "clamp(1.7rem, 3vw, 2.4rem)",
-            letterSpacing: "-0.02em",
-            marginBottom: "20px",
-          }}
+          className="mb-5 -tracking-[0.02em]"
+          style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}
         >
           About {businessName}
         </h2>
         {description ? (
-          <p
-            style={{
-              fontSize: "1.05rem",
-              color: "#385145",
-              lineHeight: 1.7,
-              maxWidth: "68ch",
-              marginBottom: "32px",
-            }}
-          >
+          <p className="text-[1.05rem] text-[#385145] leading-[1.7] max-w-[68ch] mb-8">
             {description}
           </p>
         ) : null}
         {(phone || email || address || website) ? (
-          <div
-            style={{
-              padding: "24px",
-              borderRadius: CARD_RADIUS,
-              background: CARD_BG,
-              border: CARD_BORDER,
-              display: "inline-block",
-              minWidth: "260px",
-            }}
-          >
+          <div className={`${CARD_CLASSES} p-6 inline-block min-w-[260px]`}>
             <h3
-              style={{
-                fontFamily: SERIF,
-                fontSize: "1.15rem",
-                margin: "0 0 16px",
-              }}
+              className="text-[1.15rem] mb-4"
+              style={{ fontFamily: SERIF }}
             >
               Contact Information
             </h3>
-            <dl style={{ margin: 0, display: "grid", gap: "10px" }}>
+            <dl className="m-0 grid gap-2.5">
               {phone ? (
                 <>
-                  <dt style={{ fontSize: "0.82rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em" }}>Phone</dt>
-                  <dd style={{ margin: 0 }}>
-                    <a
-                      href={`tel:${phone.replace(/\D/g, "")}`}
-                      style={{ color: "#14211d", fontWeight: 600, textDecoration: "none" }}
-                    >
+                  <dt className={DT_CLASSES}>Phone</dt>
+                  <dd className="m-0">
+                    <a href={`tel:${phone.replace(/\D/g, "")}`} className="text-foreground font-semibold no-underline">
                       {phone}
                     </a>
                   </dd>
@@ -542,12 +381,9 @@ function AboutSection({
               ) : null}
               {email ? (
                 <>
-                  <dt style={{ fontSize: "0.82rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em" }}>Email</dt>
-                  <dd style={{ margin: 0 }}>
-                    <a
-                      href={`mailto:${email}`}
-                      style={{ color: "#14211d", fontWeight: 600, textDecoration: "none" }}
-                    >
+                  <dt className={DT_CLASSES}>Email</dt>
+                  <dd className="m-0">
+                    <a href={`mailto:${email}`} className="text-foreground font-semibold no-underline">
                       {email}
                     </a>
                   </dd>
@@ -555,20 +391,15 @@ function AboutSection({
               ) : null}
               {address ? (
                 <>
-                  <dt style={{ fontSize: "0.82rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em" }}>Address</dt>
-                  <dd style={{ margin: 0, color: "#385145" }}>{address}</dd>
+                  <dt className={DT_CLASSES}>Address</dt>
+                  <dd className="m-0 text-[#385145]">{address}</dd>
                 </>
               ) : null}
               {website ? (
                 <>
-                  <dt style={{ fontSize: "0.82rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em" }}>Website</dt>
-                  <dd style={{ margin: 0 }}>
-                    <a
-                      href={website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: "#14211d", fontWeight: 600, textDecoration: "none" }}
-                    >
+                  <dt className={DT_CLASSES}>Website</dt>
+                  <dd className="m-0">
+                    <a href={website} target="_blank" rel="noopener noreferrer" className="text-foreground font-semibold no-underline">
                       {website}
                     </a>
                   </dd>
@@ -601,46 +432,30 @@ function HoursSection({ content }: { content: Record<string, unknown> }) {
   if (hours.length === 0) return null;
 
   return (
-    <div style={{ padding: SECTION_PADDING, background: CARD_BG }}>
-      <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-        <h2 style={sectionHeadingStyle()}>Hours of Operation</h2>
-        <div
-          style={{
-            padding: "24px",
-            borderRadius: CARD_RADIUS,
-            background: "#fff",
-            border: CARD_BORDER,
-          }}
-        >
+    <div className={`${SECTION_CLASSES} bg-slate-50`}>
+      <div className="max-w-[600px] mx-auto">
+        <h2 className={HEADING_CLASSES} style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>Hours of Operation</h2>
+        <div className="p-6 rounded-xl bg-white border border-slate-200">
           <table
-            style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.95rem" }}
+            className="w-full border-collapse text-[0.95rem]"
             aria-label="Hours of operation"
           >
             <thead>
               <tr>
-                <th scope="col" style={{ textAlign: "left", padding: "0 0 12px", fontWeight: 700, color: "#14211d", fontSize: "0.82rem", textTransform: "uppercase", letterSpacing: "0.08em", paddingRight: "24px" }}>Day</th>
-                <th scope="col" style={{ textAlign: "left", padding: "0 0 12px", fontWeight: 700, color: "#14211d", fontSize: "0.82rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Hours</th>
+                <th scope="col" className="text-left pb-3 pr-6 font-bold text-foreground text-[0.82rem] uppercase tracking-[0.08em]">Day</th>
+                <th scope="col" className="text-left pb-3 font-bold text-foreground text-[0.82rem] uppercase tracking-[0.08em]">Hours</th>
               </tr>
             </thead>
             <tbody>
               {hours.map((row, index) => (
                 <tr
                   key={`hour-${index}`}
-                  style={{ borderTop: "1px solid #e2e8f0" }}
+                  className="border-t border-slate-200"
                 >
-                  <th
-                    scope="row"
-                    style={{
-                      padding: "10px 24px 10px 0",
-                      fontWeight: 600,
-                      color: "#14211d",
-                      textAlign: "left",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                  <th scope="row" className="py-2.5 pr-6 font-semibold text-foreground text-left whitespace-nowrap">
                     {row.day ?? ""}
                   </th>
-                  <td style={{ padding: "10px 0", color: "#385145" }}>
+                  <td className="py-2.5 text-[#385145]">
                     {row.hours ?? ""}
                   </td>
                 </tr>
@@ -672,50 +487,18 @@ function AttributesSection({ content }: { content: Record<string, unknown> }) {
   if (items.length === 0) return null;
 
   return (
-    <div style={{ padding: SECTION_PADDING }}>
-      <div style={{ maxWidth: MAX_WIDTH, margin: "0 auto" }}>
-        <h2 style={sectionHeadingStyle()}>Why Choose Us</h2>
-        <ul
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "12px",
-            listStyle: "none",
-            padding: 0,
-            margin: 0,
-          }}
-        >
+    <div className={SECTION_CLASSES}>
+      <div className={MAX_W_CLASSES}>
+        <h2 className={HEADING_CLASSES} style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>Why Choose Us</h2>
+        <ul className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3 list-none p-0 m-0">
           {items.map((attr, index) => (
             <li
               key={`attr-${index}`}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "14px 18px",
-                borderRadius: CARD_RADIUS,
-                background: CARD_BG,
-                border: CARD_BORDER,
-                fontSize: "0.95rem",
-                fontWeight: 600,
-                color: "#14211d",
-              }}
+              className={`${CARD_CLASSES} flex items-center gap-2.5 py-3.5 px-[18px] text-[0.95rem] font-semibold text-foreground`}
             >
               <span
                 aria-hidden="true"
-                style={{
-                  flexShrink: 0,
-                  width: "22px",
-                  height: "22px",
-                  borderRadius: "999px",
-                  background: "#dcfce7",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "0.8rem",
-                  color: "#16a34a",
-                  fontWeight: 700,
-                }}
+                className="shrink-0 w-[22px] h-[22px] rounded-full bg-green-100 flex items-center justify-center text-[0.8rem] text-green-600 font-bold"
               >
                 ✓
               </span>
@@ -748,45 +531,20 @@ function FAQSection({ content }: { content: Record<string, unknown> }) {
   if (items.length === 0) return null;
 
   return (
-    <div style={{ padding: SECTION_PADDING, background: CARD_BG }}>
-      <div style={{ maxWidth: "760px", margin: "0 auto" }}>
-        <h2 style={sectionHeadingStyle()}>Frequently Asked Questions</h2>
-        <div style={{ display: "grid", gap: "8px" }}>
+    <div className={`${SECTION_CLASSES} bg-slate-50`}>
+      <div className="max-w-[760px] mx-auto">
+        <h2 className={HEADING_CLASSES} style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>Frequently Asked Questions</h2>
+        <div className="grid gap-2">
           {items.map((item, index) => (
             <details
               key={`faq-${index}`}
-              style={{
-                borderRadius: CARD_RADIUS,
-                background: "#fff",
-                border: CARD_BORDER,
-                overflow: "hidden",
-              }}
+              className="rounded-xl bg-white border border-slate-200 overflow-hidden"
             >
-              <summary
-                style={{
-                  padding: "18px 22px",
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                  color: "#14211d",
-                  cursor: "pointer",
-                  listStyle: "none",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: "12px",
-                }}
-              >
+              <summary className="py-[18px] px-[22px] font-semibold text-base text-foreground cursor-pointer list-none flex justify-between items-center gap-3">
                 {item.question ?? ""}
-                <span aria-hidden="true" style={{ flexShrink: 0, fontSize: "1.2rem", color: "#64748b" }}>+</span>
+                <span aria-hidden="true" className="shrink-0 text-[1.2rem] text-slate-500">+</span>
               </summary>
-              <div
-                style={{
-                  padding: "0 22px 18px",
-                  color: "#385145",
-                  lineHeight: 1.7,
-                  fontSize: "0.97rem",
-                }}
-              >
+              <div className="px-[22px] pb-[18px] text-[#385145] leading-[1.7] text-[0.97rem]">
                 {item.answer ?? ""}
               </div>
             </details>
@@ -821,31 +579,16 @@ function LeadMagnetSection({
   const headline = c.headline ?? "Get in Touch";
 
   return (
-    <div id="lead-capture" style={{ padding: SECTION_PADDING, background: CARD_BG }}>
-      <div
-        style={{
-          maxWidth: "640px",
-          margin: "0 auto",
-          padding: "40px 32px",
-          borderRadius: "20px",
-          background: "#fff",
-          border: CARD_BORDER,
-          boxShadow: "0 18px 60px rgba(24,33,29,0.08)",
-        }}
-      >
+    <div id="lead-capture" className={`${SECTION_CLASSES} bg-slate-50`}>
+      <div className="max-w-[640px] mx-auto py-10 px-8 rounded-[20px] bg-white border border-slate-200 shadow-[0_18px_60px_rgba(24,33,29,0.08)]">
         <h2
-          style={{
-            fontFamily: SERIF,
-            fontSize: "clamp(1.5rem, 2.5vw, 2rem)",
-            letterSpacing: "-0.02em",
-            marginBottom: "10px",
-            color: "#14211d",
-          }}
+          className="mb-2.5 -tracking-[0.02em] text-foreground"
+          style={{ fontFamily: SERIF, fontSize: "clamp(1.5rem, 2.5vw, 2rem)" }}
         >
           {headline}
         </h2>
         {c.description ? (
-          <p style={{ color: "#385145", marginBottom: "28px", lineHeight: 1.6 }}>
+          <p className="text-[#385145] mb-7 leading-relaxed">
             {c.description}
           </p>
         ) : null}
@@ -883,65 +626,27 @@ function CTABannerSection({
   const phone = typeof c.phone === "string" && c.phone ? c.phone : null;
 
   return (
-    <div style={{ padding: "48px 24px", background: accent, textAlign: "center" }}>
-      <div style={{ maxWidth: MAX_WIDTH, margin: "0 auto" }}>
+    <div className="py-12 px-6 text-center" style={{ background: accent }}>
+      <div className={MAX_W_CLASSES}>
         <h2
-          style={{
-            fontFamily: SERIF,
-            fontSize: "clamp(1.5rem, 3vw, 2.2rem)",
-            letterSpacing: "-0.02em",
-            color: "#fff",
-            marginBottom: "20px",
-          }}
+          className="mb-5 -tracking-[0.02em] text-white"
+          style={{ fontFamily: SERIF, fontSize: "clamp(1.5rem, 3vw, 2.2rem)" }}
         >
           {headline}
         </h2>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "16px",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <div className="flex flex-wrap gap-4 justify-center items-center">
           {phone ? (
             <a
               href={`tel:${phone.replace(/\D/g, "")}`}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: "52px",
-                padding: "14px 28px",
-                borderRadius: "999px",
-                background: "#fff",
-                color: accent,
-                fontWeight: 700,
-                fontSize: "1rem",
-                textDecoration: "none",
-                boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
-              }}
+              className="inline-flex items-center justify-center min-h-[52px] py-3.5 px-7 rounded-full bg-white font-bold text-base no-underline shadow-[0_8px_20px_rgba(0,0,0,0.15)]"
+              style={{ color: accent }}
             >
               {phone}
             </a>
           ) : null}
           <a
             href={ctaHref}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              minHeight: "52px",
-              padding: "14px 28px",
-              borderRadius: "999px",
-              background: "rgba(255,255,255,0.18)",
-              border: "2px solid rgba(255,255,255,0.6)",
-              color: "#fff",
-              fontWeight: 700,
-              fontSize: "1rem",
-              textDecoration: "none",
-            }}
+            className="inline-flex items-center justify-center min-h-[52px] py-3.5 px-7 rounded-full bg-white/[0.18] border-2 border-white/60 text-white font-bold text-base no-underline"
           >
             {ctaLabel}
           </a>
@@ -1008,22 +713,13 @@ export default async function LandingPage({ params }: LPPageProps) {
   const year = new Date().getFullYear();
 
   return (
-    <main style={{ maxWidth: "100%", padding: 0, margin: 0 }}>
+    <main className="max-w-full p-0 m-0">
       {/* Skip-to-content — visible only on keyboard focus */}
       {/* eslint-disable-next-line react/no-danger */}
       <style dangerouslySetInnerHTML={{ __html: ".lp-skip-link{position:absolute;top:-48px;left:16px;z-index:9999;transition:top 150ms ease}.lp-skip-link:focus-visible{top:0}" }} />
       <a
         href="#lead-capture"
-        className="lp-skip-link"
-        style={{
-          padding: "10px 18px",
-          background: "#14211d",
-          color: "#fff",
-          borderRadius: "0 0 8px 8px",
-          fontSize: "0.9rem",
-          fontWeight: 600,
-          textDecoration: "none",
-        }}
+        className="lp-skip-link py-2.5 px-[18px] bg-[#14211d] text-white rounded-b-lg text-[0.9rem] font-semibold no-underline"
       >
         Skip to contact form
       </a>
@@ -1034,16 +730,8 @@ export default async function LandingPage({ params }: LPPageProps) {
         </section>
       ))}
 
-      <footer
-        style={{
-          textAlign: "center",
-          padding: "24px",
-          color: "#94a3b8",
-          fontSize: "0.82rem",
-          borderTop: CARD_BORDER,
-        }}
-      >
-        <p style={{ margin: 0 }}>
+      <footer className="text-center p-6 text-muted-foreground text-[0.82rem] border-t border-slate-200">
+        <p className="m-0">
           Business information sourced from Google. &copy; {year} {page.businessName}. Powered by LeadOS.
         </p>
       </footer>

@@ -121,7 +121,7 @@ function FactorBar({ label, value }: { label: string; value: number }) {
         <span>{label}</span>
         <span className="font-semibold">{value}%</span>
       </div>
-      <div className="h-2 bg-gray-200 rounded overflow-hidden">
+      <div className="h-2 bg-muted rounded overflow-hidden">
         <div
           className={`h-full rounded transition-all duration-300 ${barColor}`}
           style={{ width: `${value}%` }}
@@ -180,7 +180,7 @@ export default function HealthDashboardPage() {
   return (
     <main className="experience-page">
       {isDemo && (
-        <div className="bg-amber-100 border-b border-amber-300 px-6 py-2.5 text-sm text-amber-800">
+        <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-300 dark:border-amber-800 px-6 py-2.5 text-sm text-amber-800 dark:text-amber-200">
           Demo data — Sign in as an operator to see live tenant health scores.{" "}
           <Link href="/auth/sign-in" className="text-amber-800 underline">Sign in</Link>
         </div>
@@ -202,7 +202,7 @@ export default function HealthDashboardPage() {
             value={inputTenantId}
             onChange={(e) => setInputTenantId(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") handleLookup(); }}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+            className="flex-1 px-3 py-2 border border-border rounded-md text-sm"
           />
           <button
             type="button"
@@ -238,16 +238,16 @@ export default function HealthDashboardPage() {
                 return (
                   <div
                     key={feature}
-                    className={`px-4 py-3 rounded-lg border ${isUsed ? "border-green-500 bg-green-50" : "border-gray-200 bg-gray-50"}`}
+                    className={`px-4 py-3 rounded-lg border ${isUsed ? "border-green-500 bg-green-50 dark:bg-green-950/20" : "border-border bg-muted"}`}
                   >
                     <div className="flex justify-between items-center">
                       <span className="text-[13px] font-medium">{feature}</span>
-                      <span className={`text-[11px] font-semibold ${isUsed ? "text-green-500" : "text-gray-400"}`}>
+                      <span className={`text-[11px] font-semibold ${isUsed ? "text-green-500" : "text-muted-foreground"}`}>
                         {isUsed ? "Active" : "Unused"}
                       </span>
                     </div>
                     {usage && (
-                      <div className="text-[11px] text-gray-500 mt-1">
+                      <div className="text-[11px] text-muted-foreground mt-1">
                         {usage.usageCount} uses, {usage.uniqueUsers} user{usage.uniqueUsers !== 1 ? "s" : ""}
                       </div>
                     )}
@@ -271,16 +271,16 @@ export default function HealthDashboardPage() {
                 return (
                   <li
                     key={item.feature}
-                    className="flex items-center gap-2.5 py-2 border-b border-gray-100"
+                    className="flex items-center gap-2.5 py-2 border-b border-border/50"
                   >
                     <span
-                      className={`w-5 h-5 rounded inline-flex items-center justify-center text-xs font-bold text-white shrink-0 ${done ? "bg-green-500" : "bg-gray-200"}`}
+                      className={`w-5 h-5 rounded inline-flex items-center justify-center text-xs font-bold text-white shrink-0 ${done ? "bg-green-500" : "bg-muted"}`}
                       role="img"
                       aria-label={done ? "Completed" : "Not completed"}
                     >
                       {done ? "\u2713" : ""}
                     </span>
-                    <span className={`text-sm ${done ? "text-gray-900" : "text-gray-400"}`}>{item.label}</span>
+                    <span className={`text-sm ${done ? "text-foreground" : "text-muted-foreground"}`}>{item.label}</span>
                   </li>
                 );
               })}
@@ -296,7 +296,7 @@ export default function HealthDashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="border-b-2 border-gray-200 text-left">
+                <tr className="border-b-2 border-border text-left">
                   <th scope="col" className="px-3 py-2">Tenant ID</th>
                   <th scope="col" className="px-3 py-2">Score</th>
                   <th scope="col" className="px-3 py-2">Risk Level</th>
@@ -307,7 +307,7 @@ export default function HealthDashboardPage() {
               </thead>
               <tbody>
                 {atRisk.atRiskTenants.map((tenant) => (
-                  <tr key={tenant.tenantId} className="border-b border-gray-100">
+                  <tr key={tenant.tenantId} className="border-b border-border/50">
                     <td className="px-3 py-2 font-mono text-xs">
                       {tenant.tenantId.slice(0, 12)}...
                     </td>

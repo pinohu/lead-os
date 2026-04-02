@@ -147,7 +147,7 @@ export default function AnalyticsPage() {
         <div className="lg:col-span-2 space-y-4">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Analytics</p>
           <h1 className="text-2xl font-bold tracking-tight">Lead performance analytics</h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-foreground">
             Funnel progression, channel performance, scoring distributions, and trend analysis
             across all captured leads.
           </p>
@@ -162,19 +162,19 @@ export default function AnalyticsPage() {
           <ul className="space-y-3">
             <li className="space-y-0.5">
               <strong className="text-sm font-semibold">Total leads</strong>
-              <span className="block text-sm text-muted-foreground">{data.metrics.totalLeads}</span>
+              <span className="block text-sm font-semibold text-foreground">{data.metrics.totalLeads}</span>
             </li>
             <li className="space-y-0.5">
               <strong className="text-sm font-semibold">Conversion rate</strong>
-              <span className="block text-sm text-muted-foreground">{data.metrics.conversionRate}%</span>
+              <span className="block text-sm font-semibold text-foreground">{data.metrics.conversionRate}%</span>
             </li>
             <li className="space-y-0.5">
               <strong className="text-sm font-semibold">Average score</strong>
-              <span className="block text-sm text-muted-foreground">{data.metrics.avgScore}</span>
+              <span className="block text-sm font-semibold text-foreground">{data.metrics.avgScore}</span>
             </li>
             <li className="space-y-0.5">
               <strong className="text-sm font-semibold">Hot leads</strong>
-              <span className="block text-sm text-muted-foreground">{data.metrics.hotLeads}</span>
+              <span className="block text-sm font-semibold text-foreground">{data.metrics.hotLeads}</span>
             </li>
           </ul>
         </aside>

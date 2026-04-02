@@ -14,7 +14,7 @@
  *   <DynastyLandingPage config={config} />
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   DynastyLandingConfig,
   Feature,
@@ -147,35 +147,8 @@ function SkipToContent({ colors }: { colors: ThemeColors }) {
   return (
     <a
       href="#main-content"
-      style={{
-        position: "absolute",
-        left: "-9999px",
-        top: "auto",
-        width: "1px",
-        height: "1px",
-        overflow: "hidden",
-        zIndex: 9999,
-        background: colors.accent,
-        color: "#fff",
-        padding: "12px 24px",
-        fontFamily: FONT_STACK,
-        fontWeight: 700,
-        fontSize: "16px",
-        textDecoration: "none",
-        borderRadius: "0 0 8px 0",
-      }}
-      onFocus={(e) => {
-        const el = e.currentTarget;
-        el.style.left = "0";
-        el.style.width = "auto";
-        el.style.height = "auto";
-      }}
-      onBlur={(e) => {
-        const el = e.currentTarget;
-        el.style.left = "-9999px";
-        el.style.width = "1px";
-        el.style.height = "1px";
-      }}
+      className="absolute -left-[9999px] top-auto w-px h-px overflow-hidden z-[9999] text-white py-3 px-6 font-bold text-base no-underline rounded-br-lg focus:left-0 focus:w-auto focus:h-auto"
+      style={{ background: colors.accent, fontFamily: FONT_STACK }}
     >
       Skip to main content
     </a>
@@ -199,55 +172,35 @@ function HeroSection({ hero, colors, prefersReducedMotion }: HeroSectionProps) {
     <header
       id="hero"
       aria-labelledby="hero-headline"
+      className="relative overflow-hidden text-center"
       style={{
-        position: "relative",
-        overflow: "hidden",
         background: colors.bg,
         padding: "clamp(64px, 10vw, 120px) clamp(16px, 5vw, 80px)",
-        textAlign: "center",
       }}
     >
       {/* Decorative gradient orb */}
       <div
         aria-hidden="true"
+        className="absolute -top-[20%] left-1/2 -translate-x-1/2 rounded-full pointer-events-none z-0"
         style={{
-          position: "absolute",
-          top: "-20%",
-          left: "50%",
-          transform: "translateX(-50%)",
           width: "clamp(400px, 70vw, 900px)",
           height: "clamp(400px, 70vw, 900px)",
-          borderRadius: "50%",
           background: `radial-gradient(circle, ${colors.accentGlow} 0%, transparent 70%)`,
-          pointerEvents: "none",
-          zIndex: 0,
         }}
       />
 
       <div
         ref={ref as React.RefObject<HTMLDivElement>}
-        style={{
-          position: "relative",
-          zIndex: 1,
-          maxWidth: "860px",
-          margin: "0 auto",
-          ...revealStyle(isVisible, prefersReducedMotion),
-        }}
+        className="relative z-[1] max-w-[860px] mx-auto"
+        style={revealStyle(isVisible, prefersReducedMotion)}
       >
         {hero.eyebrow && (
           <p
+            className="inline-block mb-5 px-4 py-1.5 rounded-full text-[13px] font-bold tracking-[0.06em] uppercase"
             style={{
-              display: "inline-block",
-              margin: "0 0 20px",
-              padding: "6px 16px",
-              borderRadius: "99px",
               border: `1px solid ${colors.border}`,
               background: colors.surfaceLight,
               color: colors.accent,
-              fontSize: "13px",
-              fontWeight: 700,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
               fontFamily: FONT_STACK,
             }}
           >
@@ -257,60 +210,36 @@ function HeroSection({ hero, colors, prefersReducedMotion }: HeroSectionProps) {
 
         <h1
           id="hero-headline"
+          className="mb-6 font-extrabold leading-[1.1] -tracking-[0.02em]"
           style={{
-            margin: "0 0 24px",
             fontSize: "clamp(36px, 5.5vw, 64px)",
-            fontWeight: 800,
-            lineHeight: 1.1,
             color: colors.text,
             fontFamily: FONT_STACK,
-            letterSpacing: "-0.02em",
           }}
         >
           {hero.headline}
         </h1>
 
         <p
+          className="mb-10 leading-relaxed max-w-[680px] mx-auto"
           style={{
-            margin: "0 0 40px",
             fontSize: "clamp(17px, 2.2vw, 22px)",
-            lineHeight: 1.6,
             color: colors.textMuted,
             fontFamily: FONT_STACK,
-            maxWidth: "680px",
-            marginLeft: "auto",
-            marginRight: "auto",
           }}
         >
           {hero.subheadline}
         </p>
 
         {/* CTA row */}
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "16px",
-            justifyContent: "center",
-            alignItems: "center",
-            marginBottom: "48px",
-          }}
-        >
-          <div style={{ textAlign: "center" }}>
+        <div className="flex flex-wrap gap-4 justify-center items-center mb-12">
+          <div className="text-center">
             <a
               href={hero.primaryCta.url}
+              className="inline-block py-4 px-10 min-h-[44px] min-w-[44px] text-white rounded-[10px] text-lg font-bold no-underline"
               style={{
-                display: "inline-block",
-                padding: "16px 40px",
-                minHeight: "44px",
-                minWidth: "44px",
                 background: `linear-gradient(135deg, ${colors.accent}, ${colors.accentHover})`,
-                color: "#fff",
-                borderRadius: "10px",
                 fontFamily: FONT_STACK,
-                fontSize: "18px",
-                fontWeight: 700,
-                textDecoration: "none",
                 boxShadow: `0 4px 24px ${colors.accentGlow}`,
                 transition: prefersReducedMotion
                   ? "none"
@@ -331,12 +260,8 @@ function HeroSection({ hero, colors, prefersReducedMotion }: HeroSectionProps) {
             </a>
             {hero.primaryCta.subtext && (
               <p
-                style={{
-                  margin: "8px 0 0",
-                  fontSize: "13px",
-                  color: colors.textDim,
-                  fontFamily: FONT_STACK,
-                }}
+                className="mt-2 text-[13px]"
+                style={{ color: colors.textDim, fontFamily: FONT_STACK }}
               >
                 {hero.primaryCta.subtext}
               </p>
@@ -346,18 +271,10 @@ function HeroSection({ hero, colors, prefersReducedMotion }: HeroSectionProps) {
           {hero.secondaryCta && (
             <a
               href={hero.secondaryCta.url}
+              className="inline-block py-4 px-10 min-h-[44px] min-w-[44px] bg-transparent rounded-[10px] text-lg font-semibold no-underline"
               style={{
-                display: "inline-block",
-                padding: "16px 40px",
-                minHeight: "44px",
-                minWidth: "44px",
-                background: "transparent",
                 color: colors.text,
-                borderRadius: "10px",
                 fontFamily: FONT_STACK,
-                fontSize: "18px",
-                fontWeight: 600,
-                textDecoration: "none",
                 border: `2px solid ${colors.border}`,
                 transition: prefersReducedMotion
                   ? "none"
@@ -383,44 +300,24 @@ function HeroSection({ hero, colors, prefersReducedMotion }: HeroSectionProps) {
         {hero.trustBar.length > 0 && (
           <ul
             aria-label="Trust indicators"
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "clamp(16px, 3vw, 40px)",
-              justifyContent: "center",
-              alignItems: "center",
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-            }}
+            className="flex flex-wrap justify-center items-center list-none m-0 p-0"
+            style={{ gap: "clamp(16px, 3vw, 40px)" }}
           >
             {hero.trustBar.map((item, i) => (
-              <li
-                key={i}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "4px",
-                }}
-              >
+              <li key={i} className="flex flex-col items-center gap-1">
                 <span
+                  className="font-extrabold leading-none"
                   style={{
                     fontSize: "clamp(20px, 2.5vw, 28px)",
-                    fontWeight: 800,
                     color: colors.accent,
                     fontFamily: FONT_STACK,
-                    lineHeight: 1,
                   }}
                 >
                   {item.value}
                 </span>
                 <span
-                  style={{
-                    fontSize: "13px",
-                    color: colors.textMuted,
-                    fontFamily: FONT_STACK,
-                  }}
+                  className="text-[13px]"
+                  style={{ color: colors.textMuted, fontFamily: FONT_STACK }}
                 >
                   {item.label}
                 </span>
@@ -458,22 +355,16 @@ function ProblemSection({
     >
       <div
         ref={ref as React.RefObject<HTMLDivElement>}
-        style={{
-          maxWidth: "1100px",
-          margin: "0 auto",
-          ...revealStyle(isVisible, prefersReducedMotion),
-        }}
+        className="max-w-[1100px] mx-auto"
+        style={revealStyle(isVisible, prefersReducedMotion)}
       >
         <h2
           id="problem-heading"
+          className="text-center mb-12 font-extrabold -tracking-[0.02em]"
           style={{
-            textAlign: "center",
-            margin: "0 0 48px",
             fontSize: "clamp(28px, 4vw, 44px)",
-            fontWeight: 800,
             color: colors.text,
             fontFamily: FONT_STACK,
-            letterSpacing: "-0.02em",
           }}
         >
           {problem.headline}
@@ -482,50 +373,26 @@ function ProblemSection({
         {/* Pain point cards */}
         <ul
           aria-label="Common pain points"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "24px",
-            listStyle: "none",
-            margin: "0 0 40px",
-            padding: 0,
-          }}
+          className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6 list-none mb-10 p-0"
         >
           {problem.painPoints.map((point, i) => (
             <li
               key={i}
+              className="rounded-xl p-6"
               style={{
                 background: colors.surfaceLight,
                 border: `1px solid ${colors.border}`,
-                borderRadius: "12px",
-                padding: "24px",
               }}
             >
               <p
-                style={{
-                  display: "inline-block",
-                  margin: "0 0 12px",
-                  padding: "3px 10px",
-                  borderRadius: "6px",
-                  background: "rgba(239,68,68,0.12)",
-                  color: "#ef4444",
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  letterSpacing: "0.05em",
-                  textTransform: "uppercase",
-                  fontFamily: FONT_STACK,
-                }}
+                className="inline-block mb-3 px-2.5 py-0.5 rounded-md bg-red-500/[0.12] text-destructive text-xs font-bold tracking-[0.05em] uppercase"
+                style={{ fontFamily: FONT_STACK }}
               >
                 {point.emotion}
               </p>
               <p
-                style={{
-                  margin: 0,
-                  fontSize: "16px",
-                  lineHeight: 1.6,
-                  color: colors.textMuted,
-                  fontFamily: FONT_STACK,
-                }}
+                className="m-0 text-base leading-relaxed"
+                style={{ color: colors.textMuted, fontFamily: FONT_STACK }}
               >
                 {point.scenario}
               </p>
@@ -536,25 +403,13 @@ function ProblemSection({
         {/* Agitation callout */}
         <div
           role="note"
-          style={{
-            borderLeft: "4px solid #ef4444",
-            background: "rgba(239,68,68,0.07)",
-            borderRadius: "0 10px 10px 0",
-            padding: "20px 24px",
-            maxWidth: "760px",
-            margin: "0 auto",
-          }}
+          className="border-l-4 border-destructive bg-red-500/[0.07] rounded-r-[10px] py-5 px-6 max-w-[760px] mx-auto"
         >
           <p
-            style={{
-              margin: 0,
-              fontSize: "17px",
-              lineHeight: 1.65,
-              color: colors.text,
-              fontFamily: FONT_STACK,
-            }}
+            className="m-0 text-[17px] leading-[1.65]"
+            style={{ color: colors.text, fontFamily: FONT_STACK }}
           >
-            <span aria-hidden="true" style={{ marginRight: "8px" }}>
+            <span aria-hidden="true" className="mr-2">
               ⚠️
             </span>
             {problem.agitation}
@@ -586,39 +441,33 @@ function SolutionSection({
     <section
       id="solution"
       aria-labelledby="solution-heading"
+      className="text-center"
       style={{
         background: colors.bg,
         padding: "clamp(56px, 8vw, 96px) clamp(16px, 5vw, 80px)",
-        textAlign: "center",
       }}
     >
       <div
         ref={ref as React.RefObject<HTMLDivElement>}
-        style={{
-          maxWidth: "760px",
-          margin: "0 auto",
-          ...revealStyle(isVisible, prefersReducedMotion),
-        }}
+        className="max-w-[760px] mx-auto"
+        style={revealStyle(isVisible, prefersReducedMotion)}
       >
         <h2
           id="solution-heading"
+          className="mb-6 font-extrabold -tracking-[0.02em]"
           style={{
-            margin: "0 0 24px",
             fontSize: "clamp(28px, 4vw, 44px)",
-            fontWeight: 800,
             color: colors.text,
             fontFamily: FONT_STACK,
-            letterSpacing: "-0.02em",
           }}
         >
           {solution.headline}
         </h2>
 
         <p
+          className="mb-8 leading-[1.7]"
           style={{
-            margin: "0 0 32px",
             fontSize: "clamp(16px, 1.8vw, 19px)",
-            lineHeight: 1.7,
             color: colors.textMuted,
             fontFamily: FONT_STACK,
           }}
@@ -627,19 +476,10 @@ function SolutionSection({
         </p>
 
         <p
-          style={{
-            display: "inline-block",
-            padding: "10px 24px",
-            borderRadius: "99px",
-            background: "rgba(34,197,94,0.12)",
-            border: "1px solid rgba(34,197,94,0.3)",
-            color: "#22c55e",
-            fontSize: "16px",
-            fontWeight: 700,
-            fontFamily: FONT_STACK,
-          }}
+          className="inline-block py-2.5 px-6 rounded-full bg-green-500/[0.12] border border-green-500/30 text-green-500 text-base font-bold"
+          style={{ fontFamily: FONT_STACK }}
         >
-          <span aria-hidden="true" style={{ marginRight: "8px" }}>
+          <span aria-hidden="true" className="mr-2">
             ✓
           </span>
           {solution.transformation}
@@ -674,22 +514,16 @@ function HowItWorksSection({
     >
       <div
         ref={ref as React.RefObject<HTMLDivElement>}
-        style={{
-          maxWidth: "1100px",
-          margin: "0 auto",
-          ...revealStyle(isVisible, prefersReducedMotion),
-        }}
+        className="max-w-[1100px] mx-auto"
+        style={revealStyle(isVisible, prefersReducedMotion)}
       >
         <h2
           id="how-it-works-heading"
+          className="text-center mb-14 font-extrabold -tracking-[0.02em]"
           style={{
-            textAlign: "center",
-            margin: "0 0 56px",
             fontSize: "clamp(28px, 4vw, 44px)",
-            fontWeight: 800,
             color: colors.text,
             fontFamily: FONT_STACK,
-            letterSpacing: "-0.02em",
           }}
         >
           {howItWorks.headline}
@@ -697,75 +531,39 @@ function HowItWorksSection({
 
         <ol
           aria-label="How it works steps"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "32px",
-            listStyle: "none",
-            margin: 0,
-            padding: 0,
-          }}
+          className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-8 list-none m-0 p-0"
         >
           {howItWorks.steps.map((step, i) => (
             <li
               key={i}
+              className="rounded-2xl py-8 px-7 flex flex-col gap-4"
               style={{
                 background: colors.surfaceLight,
                 border: `1px solid ${colors.border}`,
-                borderRadius: "16px",
-                padding: "32px 28px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "16px",
               }}
             >
               {/* Number badge */}
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div className="flex items-center gap-3">
                 <span
                   aria-label={`Step ${step.number}`}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "50%",
-                    background: colors.accent,
-                    color: "#fff",
-                    fontSize: "15px",
-                    fontWeight: 800,
-                    fontFamily: FONT_STACK,
-                    flexShrink: 0,
-                  }}
+                  className="inline-flex items-center justify-center w-9 h-9 rounded-full text-white text-[15px] font-extrabold shrink-0"
+                  style={{ background: colors.accent, fontFamily: FONT_STACK }}
                 >
                   {step.number}
                 </span>
-                <span
-                  aria-hidden="true"
-                  style={{ fontSize: "28px", lineHeight: 1 }}
-                >
+                <span aria-hidden="true" className="text-[28px] leading-none">
                   {step.icon}
                 </span>
               </div>
               <h3
-                style={{
-                  margin: 0,
-                  fontSize: "20px",
-                  fontWeight: 700,
-                  color: colors.text,
-                  fontFamily: FONT_STACK,
-                }}
+                className="m-0 text-xl font-bold"
+                style={{ color: colors.text, fontFamily: FONT_STACK }}
               >
                 {step.title}
               </h3>
               <p
-                style={{
-                  margin: 0,
-                  fontSize: "15px",
-                  lineHeight: 1.65,
-                  color: colors.textMuted,
-                  fontFamily: FONT_STACK,
-                }}
+                className="m-0 text-[15px] leading-[1.65]"
+                style={{ color: colors.textMuted, fontFamily: FONT_STACK }}
               >
                 {step.description}
               </p>
@@ -802,22 +600,16 @@ function FeaturesSection({
     >
       <div
         ref={ref as React.RefObject<HTMLDivElement>}
-        style={{
-          maxWidth: "1100px",
-          margin: "0 auto",
-          ...revealStyle(isVisible, prefersReducedMotion),
-        }}
+        className="max-w-[1100px] mx-auto"
+        style={revealStyle(isVisible, prefersReducedMotion)}
       >
         <h2
           id="features-heading"
+          className="text-center mb-14 font-extrabold -tracking-[0.02em]"
           style={{
-            textAlign: "center",
-            margin: "0 0 56px",
             fontSize: "clamp(28px, 4vw, 44px)",
-            fontWeight: 800,
             color: colors.text,
             fontFamily: FONT_STACK,
-            letterSpacing: "-0.02em",
           }}
         >
           Everything you need
@@ -825,14 +617,7 @@ function FeaturesSection({
 
         <ul
           aria-label="Features"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: "24px",
-            listStyle: "none",
-            margin: 0,
-            padding: 0,
-          }}
+          className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6 list-none m-0 p-0"
         >
           {features.map((feature, i) => (
             <FeatureCard
@@ -859,46 +644,27 @@ function FeatureCard({ feature, colors, prefersReducedMotion }: FeatureCardProps
 
   return (
     <li
+      className="rounded-[14px] p-7"
       style={{
         background: colors.surface,
         border: `1px solid ${hovered ? colors.accent : colors.border}`,
-        borderRadius: "14px",
-        padding: "28px",
         transition: prefersReducedMotion ? "none" : "border-color 0.2s ease",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <span
-        aria-hidden="true"
-        style={{
-          display: "block",
-          fontSize: "32px",
-          marginBottom: "16px",
-          lineHeight: 1,
-        }}
-      >
+      <span aria-hidden="true" className="block text-[32px] mb-4 leading-none">
         {feature.icon}
       </span>
       <h3
-        style={{
-          margin: "0 0 10px",
-          fontSize: "18px",
-          fontWeight: 700,
-          color: colors.text,
-          fontFamily: FONT_STACK,
-        }}
+        className="mb-2.5 text-lg font-bold"
+        style={{ color: colors.text, fontFamily: FONT_STACK }}
       >
         {feature.title}
       </h3>
       <p
-        style={{
-          margin: 0,
-          fontSize: "15px",
-          lineHeight: 1.65,
-          color: colors.textMuted,
-          fontFamily: FONT_STACK,
-        }}
+        className="m-0 text-[15px] leading-[1.65]"
+        style={{ color: colors.textMuted, fontFamily: FONT_STACK }}
       >
         {feature.benefit}
       </p>
@@ -924,7 +690,7 @@ function StarRating({ rating }: { rating: number }) {
         <span
           key={i}
           aria-hidden="true"
-          style={{ color: i < clamped ? "#fbbf24" : "#cbd5e1", fontSize: "16px" }}
+          className={`text-base ${i < clamped ? "text-yellow-400" : "text-slate-300"}`}
         >
           ★
         </span>
@@ -942,72 +708,38 @@ function TestimonialCard({
 }) {
   return (
     <li
+      className="rounded-[14px] p-7 flex flex-col gap-4"
       style={{
         background: colors.surfaceLight,
         border: `1px solid ${colors.border}`,
-        borderRadius: "14px",
-        padding: "28px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
       }}
     >
       <StarRating rating={testimonial.rating} />
-      <blockquote
-        style={{
-          margin: 0,
-          padding: 0,
-          position: "relative",
-        }}
-      >
+      <blockquote className="m-0 p-0 relative">
         <span
           aria-hidden="true"
-          style={{
-            position: "absolute",
-            top: "-8px",
-            left: "-4px",
-            fontSize: "48px",
-            lineHeight: 1,
-            color: colors.accent,
-            opacity: 0.25,
-            fontFamily: "Georgia, serif",
-          }}
+          className="absolute -top-2 -left-1 text-5xl leading-none opacity-25 font-serif"
+          style={{ color: colors.accent }}
         >
-          "
+          &ldquo;
         </span>
         <p
-          style={{
-            margin: 0,
-            paddingTop: "16px",
-            fontSize: "15px",
-            lineHeight: 1.7,
-            color: colors.text,
-            fontFamily: FONT_STACK,
-            fontStyle: "italic",
-          }}
+          className="m-0 pt-4 text-[15px] leading-[1.7] italic"
+          style={{ color: colors.text, fontFamily: FONT_STACK }}
         >
           {testimonial.quote}
         </p>
       </blockquote>
-      <footer style={{ marginTop: "auto" }}>
+      <footer className="mt-auto">
         <p
-          style={{
-            margin: 0,
-            fontWeight: 700,
-            fontSize: "14px",
-            color: colors.text,
-            fontFamily: FONT_STACK,
-          }}
+          className="m-0 font-bold text-sm"
+          style={{ color: colors.text, fontFamily: FONT_STACK }}
         >
           {testimonial.name}
         </p>
         <p
-          style={{
-            margin: "2px 0 0",
-            fontSize: "13px",
-            color: colors.textMuted,
-            fontFamily: FONT_STACK,
-          }}
+          className="mt-0.5 text-[13px]"
+          style={{ color: colors.textMuted, fontFamily: FONT_STACK }}
         >
           {testimonial.title}
         </p>
@@ -1031,22 +763,16 @@ function SocialProofSection({
     >
       <div
         ref={ref as React.RefObject<HTMLDivElement>}
-        style={{
-          maxWidth: "1100px",
-          margin: "0 auto",
-          ...revealStyle(isVisible, prefersReducedMotion),
-        }}
+        className="max-w-[1100px] mx-auto"
+        style={revealStyle(isVisible, prefersReducedMotion)}
       >
         <h2
           id="social-proof-heading"
+          className="text-center mb-12 font-extrabold -tracking-[0.02em]"
           style={{
-            textAlign: "center",
-            margin: "0 0 48px",
             fontSize: "clamp(28px, 4vw, 44px)",
-            fontWeight: 800,
             color: colors.text,
             fontFamily: FONT_STACK,
-            letterSpacing: "-0.02em",
           }}
         >
           {socialProof.headline}
@@ -1056,45 +782,27 @@ function SocialProofSection({
         {socialProof.stats.length > 0 && (
           <ul
             aria-label="Key statistics"
+            className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-6 list-none mb-14 p-6 rounded-2xl"
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              gap: "24px",
-              listStyle: "none",
-              margin: "0 0 56px",
-              padding: "24px",
               background: colors.surfaceLight,
-              borderRadius: "16px",
               border: `1px solid ${colors.border}`,
             }}
           >
             {socialProof.stats.map((stat, i) => (
-              <li
-                key={i}
-                style={{
-                  textAlign: "center",
-                  padding: "8px 0",
-                }}
-              >
+              <li key={i} className="text-center py-2">
                 <p
+                  className="mb-1 font-extrabold leading-none"
                   style={{
-                    margin: "0 0 4px",
                     fontSize: "clamp(24px, 3vw, 36px)",
-                    fontWeight: 800,
                     color: colors.accent,
                     fontFamily: FONT_STACK,
-                    lineHeight: 1,
                   }}
                 >
                   {stat.value}
                 </p>
                 <p
-                  style={{
-                    margin: 0,
-                    fontSize: "14px",
-                    color: colors.textMuted,
-                    fontFamily: FONT_STACK,
-                  }}
+                  className="m-0 text-sm"
+                  style={{ color: colors.textMuted, fontFamily: FONT_STACK }}
                 >
                   {stat.label}
                 </p>
@@ -1106,14 +814,7 @@ function SocialProofSection({
         {/* Testimonials */}
         <ul
           aria-label="Customer testimonials"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: "24px",
-            listStyle: "none",
-            margin: 0,
-            padding: 0,
-          }}
+          className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6 list-none m-0 p-0"
         >
           {socialProof.testimonials.map((t, i) => (
             <TestimonialCard key={i} testimonial={t} colors={colors} />
@@ -1143,56 +844,29 @@ function FaqItemRow({
 }) {
   return (
     <details
+      className="rounded-xl overflow-hidden"
       style={{
         background: colors.surfaceLight,
         border: `1px solid ${colors.border}`,
-        borderRadius: "12px",
-        overflow: "hidden",
       }}
     >
       <summary
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "20px 24px",
-          cursor: "pointer",
-          listStyle: "none",
-          fontSize: "17px",
-          fontWeight: 600,
-          color: colors.text,
-          fontFamily: FONT_STACK,
-          minHeight: "44px",
-          gap: "16px",
-          userSelect: "none",
-        }}
+        className="flex justify-between items-center py-5 px-6 cursor-pointer list-none text-[17px] font-semibold min-h-[44px] gap-4 select-none"
+        style={{ color: colors.text, fontFamily: FONT_STACK }}
       >
         <span>{item.question}</span>
-        {/* CSS-driven chevron via ::marker pseudo-element alternative */}
         <span
           aria-hidden="true"
-          className="faq-chevron"
+          className="faq-chevron shrink-0 inline-block w-5 h-5 rotate-45 transition-transform duration-[250ms] ease-in-out mb-1"
           style={{
-            flexShrink: 0,
-            display: "inline-block",
-            width: "20px",
-            height: "20px",
             borderRight: `2px solid ${colors.textMuted}`,
             borderBottom: `2px solid ${colors.textMuted}`,
-            transform: "rotate(45deg)",
-            transition: "transform 0.25s ease",
-            marginBottom: "4px",
           }}
         />
       </summary>
       <div
-        style={{
-          padding: "0 24px 20px",
-          fontSize: "15px",
-          lineHeight: 1.7,
-          color: colors.textMuted,
-          fontFamily: FONT_STACK,
-        }}
+        className="px-6 pb-5 text-[15px] leading-[1.7]"
+        style={{ color: colors.textMuted, fontFamily: FONT_STACK }}
       >
         {item.answer}
       </div>
@@ -1215,29 +889,23 @@ function ObjectionsSection({
     >
       <div
         ref={ref as React.RefObject<HTMLDivElement>}
-        style={{
-          maxWidth: "760px",
-          margin: "0 auto",
-          ...revealStyle(isVisible, prefersReducedMotion),
-        }}
+        className="max-w-[760px] mx-auto"
+        style={revealStyle(isVisible, prefersReducedMotion)}
       >
         <h2
           id="faq-heading"
+          className="text-center mb-12 font-extrabold -tracking-[0.02em]"
           style={{
-            textAlign: "center",
-            margin: "0 0 48px",
             fontSize: "clamp(28px, 4vw, 44px)",
-            fontWeight: 800,
             color: colors.text,
             fontFamily: FONT_STACK,
-            letterSpacing: "-0.02em",
           }}
         >
           {objections.headline}
         </h2>
 
         <div
-          style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+          className="flex flex-col gap-3"
           role="list"
           aria-label="Frequently asked questions"
         >
@@ -1277,37 +945,31 @@ function FinalCtaSection({
     >
       <div
         ref={ref as React.RefObject<HTMLDivElement>}
+        className="max-w-[760px] mx-auto rounded-[20px] text-center"
         style={{
-          maxWidth: "760px",
-          margin: "0 auto",
           background: colors.surfaceLight,
           border: `1px solid ${colors.border}`,
-          borderRadius: "20px",
           padding: "clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px)",
-          textAlign: "center",
           boxShadow: `0 0 80px ${colors.accentGlow}`,
           ...revealStyle(isVisible, prefersReducedMotion),
         }}
       >
         <h2
           id="final-cta-heading"
+          className="mb-5 font-extrabold -tracking-[0.02em]"
           style={{
-            margin: "0 0 20px",
             fontSize: "clamp(28px, 4vw, 44px)",
-            fontWeight: 800,
             color: colors.text,
             fontFamily: FONT_STACK,
-            letterSpacing: "-0.02em",
           }}
         >
           {finalCta.headline}
         </h2>
 
         <p
+          className="mb-8 leading-[1.65]"
           style={{
-            margin: "0 0 32px",
             fontSize: "clamp(16px, 1.8vw, 19px)",
-            lineHeight: 1.65,
             color: colors.textMuted,
             fontFamily: FONT_STACK,
           }}
@@ -1317,40 +979,20 @@ function FinalCtaSection({
 
         {/* Urgency */}
         <p
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            margin: "0 0 32px",
-            padding: "8px 16px",
-            borderRadius: "8px",
-            background: "rgba(251,191,36,0.1)",
-            border: "1px solid rgba(251,191,36,0.3)",
-            color: "#fbbf24",
-            fontSize: "14px",
-            fontWeight: 600,
-            fontFamily: FONT_STACK,
-          }}
+          className="inline-flex items-center gap-2 mb-8 py-2 px-4 rounded-lg bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 text-sm font-semibold"
+          style={{ fontFamily: FONT_STACK }}
         >
           <span aria-hidden="true">🕐</span>
           {finalCta.urgency}
         </p>
 
-        <div style={{ marginBottom: "24px" }}>
+        <div className="mb-6">
           <a
             href={finalCta.primaryCta.url}
+            className="inline-block py-[18px] px-12 min-h-[44px] min-w-[44px] text-white rounded-[10px] text-lg font-bold no-underline"
             style={{
-              display: "inline-block",
-              padding: "18px 48px",
-              minHeight: "44px",
-              minWidth: "44px",
               background: `linear-gradient(135deg, ${colors.accent}, ${colors.accentHover})`,
-              color: "#fff",
-              borderRadius: "10px",
               fontFamily: FONT_STACK,
-              fontSize: "18px",
-              fontWeight: 700,
-              textDecoration: "none",
               boxShadow: `0 4px 24px ${colors.accentGlow}`,
               transition: prefersReducedMotion
                 ? "none"
@@ -1372,14 +1014,10 @@ function FinalCtaSection({
         </div>
 
         <p
-          style={{
-            margin: 0,
-            fontSize: "14px",
-            color: colors.textDim,
-            fontFamily: FONT_STACK,
-          }}
+          className="m-0 text-sm"
+          style={{ color: colors.textDim, fontFamily: FONT_STACK }}
         >
-          <span aria-hidden="true" style={{ marginRight: "6px" }}>
+          <span aria-hidden="true" className="mr-1.5">
             🛡️
           </span>
           {finalCta.guarantee}
@@ -1402,39 +1040,26 @@ function FooterSection({ footer, colors }: FooterSectionProps) {
   return (
     <footer
       aria-label={`${footer.brandName} site footer`}
+      className="text-center"
       style={{
         background: colors.bg,
         borderTop: `1px solid ${colors.border}`,
         padding: "32px clamp(16px, 5vw, 80px)",
-        textAlign: "center",
       }}
     >
       {footer.badges.length > 0 && (
         <ul
           aria-label="Trust badges"
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "12px",
-            justifyContent: "center",
-            listStyle: "none",
-            margin: "0 0 20px",
-            padding: 0,
-          }}
+          className="flex flex-wrap gap-3 justify-center list-none mb-5 p-0"
         >
           {footer.badges.map((badge, i) => (
             <li
               key={i}
+              className="py-1 px-3.5 rounded-md text-xs font-semibold tracking-[0.04em] uppercase"
               style={{
-                padding: "5px 14px",
-                borderRadius: "6px",
                 border: `1px solid ${colors.border}`,
-                fontSize: "12px",
-                fontWeight: 600,
                 color: colors.textMuted,
                 fontFamily: FONT_STACK,
-                letterSpacing: "0.04em",
-                textTransform: "uppercase",
               }}
             >
               {badge}
@@ -1444,12 +1069,8 @@ function FooterSection({ footer, colors }: FooterSectionProps) {
       )}
 
       <p
-        style={{
-          margin: 0,
-          fontSize: "13px",
-          color: colors.textDim,
-          fontFamily: FONT_STACK,
-        }}
+        className="m-0 text-[13px]"
+        style={{ color: colors.textDim, fontFamily: FONT_STACK }}
       >
         {footer.copyright}
       </p>
@@ -1535,14 +1156,14 @@ export function DynastyLandingPage({ config }: DynastyLandingPageProps) {
       <SkipToContent colors={colors} />
 
       <div
+        className="min-h-screen"
         style={{
           background: colors.bg,
           color: colors.text,
           fontFamily: FONT_STACK,
-          minHeight: "100vh",
         }}
       >
-        <main id="main-content" tabIndex={-1} style={{ outline: "none" }}>
+        <main id="main-content" tabIndex={-1} className="outline-none">
           <HeroSection hero={config.hero} {...sharedProps} />
           <ProblemSection problem={config.problem} {...sharedProps} />
           <SolutionSection solution={config.solution} {...sharedProps} />

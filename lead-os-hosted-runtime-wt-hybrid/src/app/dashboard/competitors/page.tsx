@@ -91,7 +91,7 @@ function lastAnalyzedDate(details: CompetitorWithSnapshot[]): string {
 function statusBadgeClass(status: string): string {
   if (status === "active") return "bg-teal-500/15 text-teal-500";
   if (status === "error") return "bg-red-500/15 text-red-400";
-  return "bg-slate-500/15 text-slate-400";
+  return "bg-slate-500/15 text-muted-foreground";
 }
 
 export default function CompetitorsPage() {
@@ -252,10 +252,10 @@ export default function CompetitorsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
+      <main className="min-h-screen bg-background text-foreground">
         <div className="max-w-[1100px] mx-auto px-6 py-8">
-          <div className="rounded-xl bg-white/5 border border-white/10 p-6">
-            <p className="text-white/40 text-sm">Loading competitor data...</p>
+          <div className="rounded-xl bg-muted border border-border p-6">
+            <p className="text-muted-foreground text-sm">Loading competitor data...</p>
           </div>
         </div>
       </main>
@@ -263,31 +263,31 @@ export default function CompetitorsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0f1a] text-slate-200">
+    <main className="min-h-screen bg-background text-foreground">
       {isDemo && (
-        <div className="bg-[#1e1a3f] border-b border-indigo-800 px-6 py-2.5 text-sm text-indigo-300">
+        <div className="bg-indigo-50 dark:bg-indigo-950/30 border-b border-indigo-300 dark:border-indigo-800 px-6 py-2.5 text-sm text-indigo-800 dark:text-indigo-200">
           Demo competitors — Sign in to track and analyze your real competitors.{" "}
         </div>
       )}
       <div className="max-w-[1100px] mx-auto px-6 py-8">
-        <h1 className="text-2xl font-bold text-slate-50 mb-6">Competitor Intelligence</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-6">Competitor Intelligence</h1>
 
         {/* Summary cards */}
         <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-6" role="region" aria-label="Summary statistics">
-          <div className="rounded-xl bg-white/5 border border-white/10 px-6 py-5">
-            <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Total Tracked</p>
-            <p className="text-3xl font-bold text-slate-50">{details.length}</p>
+          <div className="rounded-xl bg-muted border border-border px-6 py-5">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total Tracked</p>
+            <p className="text-3xl font-bold text-foreground">{details.length}</p>
           </div>
-          <div className="rounded-xl bg-white/5 border border-white/10 px-6 py-5">
-            <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Last Analyzed</p>
-            <p className="text-3xl font-bold text-slate-50" aria-label={`Last analyzed: ${lastAnalyzedDate(details)}`}>
+          <div className="rounded-xl bg-muted border border-border px-6 py-5">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Last Analyzed</p>
+            <p className="text-3xl font-bold text-foreground" aria-label={`Last analyzed: ${lastAnalyzedDate(details)}`}>
               {lastAnalyzedDate(details)}
             </p>
           </div>
-          <div className="rounded-xl bg-white/5 border border-white/10 px-6 py-5">
-            <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Avg Confidence</p>
-            <p className="text-3xl font-bold text-slate-50">{details.length > 0 ? `${avgConfidence(details)}%` : "\u2014"}</p>
-            <p className="text-xs text-white/40 mt-1">based on analyzed competitors</p>
+          <div className="rounded-xl bg-muted border border-border px-6 py-5">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Avg Confidence</p>
+            <p className="text-3xl font-bold text-foreground">{details.length > 0 ? `${avgConfidence(details)}%` : "\u2014"}</p>
+            <p className="text-xs text-muted-foreground mt-1">based on analyzed competitors</p>
           </div>
         </div>
 
@@ -301,13 +301,13 @@ export default function CompetitorsPage() {
         </div>
 
         {/* Add competitor form */}
-        <section className="rounded-xl bg-white/5 border border-white/10 p-6 mb-6" aria-labelledby="add-competitor-heading">
-          <h2 id="add-competitor-heading" className="text-sm font-bold text-slate-50 mb-4">Add Competitor</h2>
+        <section className="rounded-xl bg-muted border border-border p-6 mb-6" aria-labelledby="add-competitor-heading">
+          <h2 id="add-competitor-heading" className="text-sm font-bold text-foreground mb-4">Add Competitor</h2>
           <form onSubmit={handleAddCompetitor} noValidate>
             <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-3 items-end">
               <fieldset className="border-none p-0 m-0">
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="competitor-url" className="text-xs font-semibold text-white/50">
+                  <label htmlFor="competitor-url" className="text-xs font-semibold text-muted-foreground">
                     URL
                   </label>
                   <input
@@ -317,7 +317,7 @@ export default function CompetitorsPage() {
                     onChange={(e) => setFormUrl(e.target.value)}
                     placeholder="https://competitor.com"
                     required
-                    className="bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 text-slate-100 text-sm outline-none min-h-[44px] w-full box-border"
+                    className="bg-muted border border-border rounded-lg px-3.5 py-2.5 text-foreground text-sm outline-none min-h-[44px] w-full box-border"
                     aria-required="true"
                     aria-describedby={formError ? "form-error" : undefined}
                   />
@@ -325,7 +325,7 @@ export default function CompetitorsPage() {
               </fieldset>
               <fieldset className="border-none p-0 m-0">
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="competitor-name" className="text-xs font-semibold text-white/50">
+                  <label htmlFor="competitor-name" className="text-xs font-semibold text-muted-foreground">
                     Name
                   </label>
                   <input
@@ -335,21 +335,21 @@ export default function CompetitorsPage() {
                     onChange={(e) => setFormName(e.target.value)}
                     placeholder="Acme Corp"
                     required
-                    className="bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 text-slate-100 text-sm outline-none min-h-[44px] w-full box-border"
+                    className="bg-muted border border-border rounded-lg px-3.5 py-2.5 text-foreground text-sm outline-none min-h-[44px] w-full box-border"
                     aria-required="true"
                   />
                 </div>
               </fieldset>
               <fieldset className="border-none p-0 m-0">
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="competitor-niche" className="text-xs font-semibold text-white/50">
+                  <label htmlFor="competitor-niche" className="text-xs font-semibold text-muted-foreground">
                     Niche (optional)
                   </label>
                   <select
                     id="competitor-niche"
                     value={formNiche}
                     onChange={(e) => setFormNiche(e.target.value)}
-                    className="bg-white/5 border border-white/10 rounded-lg px-3.5 py-2.5 text-slate-100 text-sm outline-none min-h-[44px] cursor-pointer"
+                    className="bg-muted border border-border rounded-lg px-3.5 py-2.5 text-foreground text-sm outline-none min-h-[44px] cursor-pointer"
                   >
                     {NICHE_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -363,7 +363,7 @@ export default function CompetitorsPage() {
                 <button
                   type="submit"
                   disabled={formSubmitting}
-                  className={`px-5 py-2.5 rounded-lg border-none bg-teal-500 text-[#0a0f1a] text-sm font-bold cursor-pointer min-h-[44px] whitespace-nowrap ${formSubmitting ? "opacity-60" : ""}`}
+                  className={`px-5 py-2.5 rounded-lg border-none bg-teal-500 text-primary-foreground text-sm font-bold cursor-pointer min-h-[44px] whitespace-nowrap ${formSubmitting ? "opacity-60" : ""}`}
                   aria-busy={formSubmitting}
                 >
                   {formSubmitting ? "Adding..." : "Add Competitor"}
@@ -380,39 +380,39 @@ export default function CompetitorsPage() {
 
         {/* Competitor list */}
         <section aria-labelledby="competitor-list-heading">
-          <h2 id="competitor-list-heading" className="text-sm font-bold text-slate-50 mb-3">
+          <h2 id="competitor-list-heading" className="text-sm font-bold text-foreground mb-3">
             Tracked Competitors
             {details.length > 0 && (
-              <span className="font-normal text-white/40 ml-2 text-xs">
+              <span className="font-normal text-muted-foreground ml-2 text-xs">
                 ({details.length})
               </span>
             )}
           </h2>
 
           {details.length === 0 ? (
-            <div className="rounded-xl bg-white/5 border border-white/10 p-6">
-              <p className="text-white/40 text-sm">No competitors tracked yet. Add one above to get started.</p>
+            <div className="rounded-xl bg-muted border border-border p-6">
+              <p className="text-muted-foreground text-sm">No competitors tracked yet. Add one above to get started.</p>
             </div>
           ) : (
             <ul className="list-none p-0 m-0">
               {details.map(({ competitor, latestSnapshot }) => (
-                <li key={competitor.id} className="rounded-xl bg-white/5 border border-white/10 p-5 mb-3">
+                <li key={competitor.id} className="rounded-xl bg-muted border border-border p-5 mb-3">
                   <div className="flex justify-between items-start mb-3">
                     <div>
-                      <h3 className="text-base font-bold text-slate-50 mb-1">{competitor.name}</h3>
-                      <p className="text-xs text-white/40 m-0 break-all">
+                      <h3 className="text-base font-bold text-foreground mb-1">{competitor.name}</h3>
+                      <p className="text-xs text-muted-foreground m-0 break-all">
                         <a
                           href={competitor.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-white/40 no-underline"
+                          className="text-muted-foreground no-underline"
                           aria-label={`Visit ${competitor.name} website`}
                         >
                           {competitor.url}
                         </a>
                       </p>
                       {competitor.nicheSlug && (
-                        <p className="text-xs text-white/40 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Niche: {competitor.nicheSlug}
                         </p>
                       )}
@@ -430,26 +430,26 @@ export default function CompetitorsPage() {
 
                   {latestSnapshot ? (
                     <>
-                      <div className="flex flex-wrap gap-4 py-3 border-t border-white/10 text-xs text-white/50" aria-label="Latest snapshot statistics">
+                      <div className="flex flex-wrap gap-4 py-3 border-t border-border text-xs text-muted-foreground" aria-label="Latest snapshot statistics">
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[0.7rem] text-white/30 uppercase tracking-wider">Sections</span>
-                          <span className="text-sm font-semibold text-white/80">{latestSnapshot.sectionCount}</span>
+                          <span className="text-[0.7rem] text-muted-foreground uppercase tracking-wider">Sections</span>
+                          <span className="text-sm font-semibold text-foreground">{latestSnapshot.sectionCount}</span>
                         </div>
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[0.7rem] text-white/30 uppercase tracking-wider">Headlines</span>
-                          <span className="text-sm font-semibold text-white/80">{latestSnapshot.headlineCount}</span>
+                          <span className="text-[0.7rem] text-muted-foreground uppercase tracking-wider">Headlines</span>
+                          <span className="text-sm font-semibold text-foreground">{latestSnapshot.headlineCount}</span>
                         </div>
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[0.7rem] text-white/30 uppercase tracking-wider">CTAs</span>
-                          <span className="text-sm font-semibold text-white/80">{latestSnapshot.ctaCount}</span>
+                          <span className="text-[0.7rem] text-muted-foreground uppercase tracking-wider">CTAs</span>
+                          <span className="text-sm font-semibold text-foreground">{latestSnapshot.ctaCount}</span>
                         </div>
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[0.7rem] text-white/30 uppercase tracking-wider">Confidence</span>
-                          <span className="text-sm font-semibold text-white/80">{latestSnapshot.confidence}%</span>
+                          <span className="text-[0.7rem] text-muted-foreground uppercase tracking-wider">Confidence</span>
+                          <span className="text-sm font-semibold text-foreground">{latestSnapshot.confidence}%</span>
                         </div>
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[0.7rem] text-white/30 uppercase tracking-wider">Analyzed</span>
-                          <span className="text-sm font-semibold text-white/80">{formatDate(latestSnapshot.scrapedAt)}</span>
+                          <span className="text-[0.7rem] text-muted-foreground uppercase tracking-wider">Analyzed</span>
+                          <span className="text-sm font-semibold text-foreground">{formatDate(latestSnapshot.scrapedAt)}</span>
                         </div>
                       </div>
                       <div className="flex gap-2 flex-wrap mb-1" aria-label="Detected features">
@@ -464,17 +464,17 @@ export default function CompetitorsPage() {
                             className={`inline-block px-2 py-0.5 rounded-full text-[0.7rem] font-semibold border ${
                               feat.active
                                 ? "bg-teal-500/10 text-teal-500 border-teal-500/20"
-                                : "bg-white/5 text-white/25 border-white/10"
+                                : "bg-muted text-muted-foreground border-border"
                             }`}
                           >
                             {feat.label}
                           </span>
                         ))}
                       </div>
-                      <p className="text-xs text-white/50 mt-2 italic">{latestSnapshot.summary}</p>
+                      <p className="text-xs text-muted-foreground mt-2 italic">{latestSnapshot.summary}</p>
                     </>
                   ) : (
-                    <p className="text-white/40 text-sm mt-2">
+                    <p className="text-muted-foreground text-sm mt-2">
                       Not yet analyzed. Click &quot;Analyze&quot; to scrape this competitor.
                     </p>
                   )}
@@ -484,7 +484,7 @@ export default function CompetitorsPage() {
                       type="button"
                       onClick={() => handleAnalyze(competitor.id)}
                       disabled={analyzingIds.has(competitor.id)}
-                      className={`px-3.5 py-2 rounded-lg border border-slate-600/50 bg-transparent text-slate-400 text-xs font-semibold cursor-pointer min-h-[44px] ${analyzingIds.has(competitor.id) ? "opacity-60" : ""}`}
+                      className={`px-3.5 py-2 rounded-lg border border-border bg-transparent text-muted-foreground text-xs font-semibold cursor-pointer min-h-[44px] ${analyzingIds.has(competitor.id) ? "opacity-60" : ""}`}
                       aria-busy={analyzingIds.has(competitor.id)}
                       aria-label={`Analyze ${competitor.name}`}
                     >

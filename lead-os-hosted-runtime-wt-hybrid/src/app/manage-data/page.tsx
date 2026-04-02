@@ -74,10 +74,10 @@ function ManageDataContent() {
 
   if (!isValid) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#f9fafb", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-        <main style={{ maxWidth: 520, padding: 48, background: "#fff", borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.08)", textAlign: "center", margin: 24 }}>
-          <h1 style={{ fontSize: 24, color: "#111827", margin: "0 0 16px" }}>Manage Your Data</h1>
-          <p style={{ fontSize: 16, color: "#6b7280", lineHeight: 1.6 }}>
+      <div className="flex min-h-screen items-center justify-center bg-muted font-sans">
+        <main className="m-6 max-w-[520px] rounded-xl bg-card p-12 text-center shadow-md">
+          <h1 className="mb-4 text-2xl text-foreground">Manage Your Data</h1>
+          <p className="text-base leading-relaxed text-muted-foreground">
             This page requires a valid link from your email. Please use the &quot;Manage My Data&quot; link found in the footer of any email you received from us.
           </p>
         </main>
@@ -87,13 +87,13 @@ function ManageDataContent() {
 
   if (action === "done") {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#f9fafb", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-        <main style={{ maxWidth: 520, padding: 48, background: "#fff", borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.08)", textAlign: "center", margin: 24 }}>
-          <h1 style={{ fontSize: 24, color: "#111827", margin: "0 0 16px" }}>Deletion Request Submitted</h1>
-          <p style={{ fontSize: 16, color: "#6b7280", lineHeight: 1.6 }}>
+      <div className="flex min-h-screen items-center justify-center bg-muted font-sans">
+        <main className="m-6 max-w-[520px] rounded-xl bg-card p-12 text-center shadow-md">
+          <h1 className="mb-4 text-2xl text-foreground">Deletion Request Submitted</h1>
+          <p className="text-base leading-relaxed text-muted-foreground">
             Your data deletion request has been received and is being processed. All personal information associated with <strong>{email}</strong> will be removed within 30 days as required by GDPR.
           </p>
-          <p style={{ fontSize: 14, color: "#9ca3af", marginTop: 16 }}>
+          <p className="mt-4 text-sm text-muted-foreground">
             You may close this page.
           </p>
         </main>
@@ -102,75 +102,77 @@ function ManageDataContent() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "flex-start", backgroundColor: "#f9fafb", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", padding: "48px 16px" }}>
-      <main style={{ maxWidth: 640, width: "100%", background: "#fff", borderRadius: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.08)", padding: 40 }} role="main">
-        <h1 style={{ fontSize: 24, color: "#111827", margin: "0 0 8px" }}>Manage Your Data</h1>
-        <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 32px" }}>
+    <div className="flex min-h-screen items-start justify-center bg-muted px-4 py-12 font-sans">
+      <main className="w-full max-w-[640px] rounded-xl bg-card p-10 shadow-md" role="main">
+        <h1 className="mb-2 text-2xl text-foreground">Manage Your Data</h1>
+        <p className="mb-8 text-sm text-muted-foreground">
           Data associated with <strong>{email}</strong>
         </p>
 
         {error && (
-          <div role="alert" style={{ padding: "12px 16px", backgroundColor: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, color: "#991b1b", fontSize: 14, marginBottom: 24 }}>
+          <div role="alert" className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {error}
           </div>
         )}
 
         {action === "view" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <section style={{ padding: 24, border: "1px solid #e5e7eb", borderRadius: 8 }}>
-              <h2 style={{ fontSize: 18, color: "#111827", margin: "0 0 8px" }}>Export Your Data</h2>
-              <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 16px", lineHeight: 1.5 }}>
+          <div className="flex flex-col gap-4">
+            <section className="rounded-lg border border-border p-6">
+              <h2 className="mb-2 text-lg text-foreground">Export Your Data</h2>
+              <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
                 Download a copy of all data we have associated with your email address. This includes contact information, interaction history, and any scores or classifications.
               </p>
               <button
                 onClick={handleExport}
                 disabled={loading}
-                style={{ padding: "10px 20px", backgroundColor: "#4f46e5", color: "#fff", border: "none", borderRadius: 6, fontSize: 14, fontWeight: 500, cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}
+                className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground"
+                style={{ cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}
               >
                 {loading ? "Loading..." : "Export My Data"}
               </button>
             </section>
 
-            <section style={{ padding: 24, border: "1px solid #e5e7eb", borderRadius: 8 }}>
-              <h2 style={{ fontSize: 18, color: "#111827", margin: "0 0 8px" }}>Email Preferences</h2>
-              <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 16px", lineHeight: 1.5 }}>
+            <section className="rounded-lg border border-border p-6">
+              <h2 className="mb-2 text-lg text-foreground">Email Preferences</h2>
+              <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
                 Manage what types of emails you receive from us.
               </p>
               <a
                 href={`/preferences?email=${encodeURIComponent(email)}&tenant=${encodeURIComponent(tenant)}&token=${encodeURIComponent(token)}`}
-                style={{ padding: "10px 20px", backgroundColor: "#fff", color: "#4f46e5", border: "1px solid #4f46e5", borderRadius: 6, fontSize: 14, fontWeight: 500, textDecoration: "none", display: "inline-block" }}
+                className="inline-block rounded-md border border-primary bg-card px-5 py-2.5 text-sm font-medium text-primary no-underline"
               >
                 Manage Email Preferences
               </a>
             </section>
 
-            <section style={{ padding: 24, border: "1px solid #fecaca", borderRadius: 8, backgroundColor: "#fef2f2" }}>
-              <h2 style={{ fontSize: 18, color: "#991b1b", margin: "0 0 8px" }}>Delete My Data</h2>
-              <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 16px", lineHeight: 1.5 }}>
+            <section className="rounded-lg border border-destructive/30 bg-destructive/10 p-6">
+              <h2 className="mb-2 text-lg text-destructive">Delete My Data</h2>
+              <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
                 Permanently delete all data associated with your email address. This action cannot be undone. You will be removed from all mailing lists and your data will be erased within 30 days.
               </p>
               {!deleteConfirm ? (
                 <button
                   onClick={() => setDeleteConfirm(true)}
-                  style={{ padding: "10px 20px", backgroundColor: "#dc2626", color: "#fff", border: "none", borderRadius: 6, fontSize: 14, fontWeight: 500, cursor: "pointer" }}
+                  className="rounded-md bg-destructive px-5 py-2.5 text-sm font-medium text-white"
                 >
                   Request Data Deletion
                 </button>
               ) : (
-                <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-                  <p style={{ fontSize: 14, color: "#991b1b", fontWeight: 500, margin: 0 }}>
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="text-sm font-medium text-destructive">
                     Are you sure? This cannot be undone.
                   </p>
                   <button
                     onClick={handleDelete}
                     disabled={loading}
-                    style={{ padding: "10px 20px", backgroundColor: "#dc2626", color: "#fff", border: "none", borderRadius: 6, fontSize: 14, fontWeight: 500, cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}
+                    className="rounded-md bg-destructive px-5 py-2.5 text-sm font-medium text-white"
+                    style={{ cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}
                   >
                     {loading ? "Processing..." : "Yes, Delete Everything"}
                   </button>
                   <button
                     onClick={() => setDeleteConfirm(false)}
-                    style={{ padding: "10px 20px", backgroundColor: "#fff", color: "#6b7280", border: "1px solid #d1d5db", borderRadius: 6, fontSize: 14, cursor: "pointer" }}
+                    className="rounded-md border border-border bg-card px-5 py-2.5 text-sm text-muted-foreground"
                   >
                     Cancel
                   </button>
@@ -182,31 +184,31 @@ function ManageDataContent() {
 
         {action === "export" && exportData && (
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
-              <h2 style={{ fontSize: 18, color: "#111827", margin: 0 }}>Your Data Export</h2>
-              <div style={{ display: "flex", gap: 8 }}>
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg text-foreground">Your Data Export</h2>
+              <div className="flex gap-2">
                 <button
                   onClick={downloadExport}
-                  style={{ padding: "8px 16px", backgroundColor: "#4f46e5", color: "#fff", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: "pointer" }}
+                  className="rounded-md bg-primary px-4 py-2 text-[13px] font-medium text-primary-foreground"
                 >
                   Download JSON
                 </button>
                 <button
                   onClick={() => { setAction("view"); setExportData(null); }}
-                  style={{ padding: "8px 16px", backgroundColor: "#fff", color: "#6b7280", border: "1px solid #d1d5db", borderRadius: 6, fontSize: 13, cursor: "pointer" }}
+                  className="rounded-md border border-border bg-card px-4 py-2 text-[13px] text-muted-foreground"
                 >
                   Back
                 </button>
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div className="flex flex-col gap-3">
               {Object.entries(exportData).map(([key, value]) => (
-                <details key={key} style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden" }}>
-                  <summary style={{ padding: "12px 16px", backgroundColor: "#f9fafb", cursor: "pointer", fontSize: 14, fontWeight: 500, color: "#374151" }}>
+                <details key={key} className="overflow-hidden rounded-lg border border-border">
+                  <summary className="cursor-pointer bg-muted px-4 py-3 text-sm font-medium text-foreground">
                     {key} {Array.isArray(value) ? `(${value.length} records)` : ""}
                   </summary>
-                  <pre style={{ padding: 16, margin: 0, fontSize: 12, color: "#4b5563", overflow: "auto", maxHeight: 300, backgroundColor: "#fff" }}>
+                  <pre className="max-h-[300px] overflow-auto bg-card p-4 font-mono text-xs text-muted-foreground">
                     {JSON.stringify(value, null, 2)}
                   </pre>
                 </details>
@@ -222,8 +224,8 @@ function ManageDataContent() {
 export default function ManageDataPage() {
   return (
     <Suspense fallback={
-      <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#f9fafb" }}>
-        <p style={{ color: "#6b7280", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>Loading...</p>
+      <div className="flex min-h-screen items-center justify-center bg-muted">
+        <p className="font-sans text-muted-foreground">Loading...</p>
       </div>
     }>
       <ManageDataContent />

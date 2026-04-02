@@ -142,10 +142,10 @@ export default function MarketingIngestionPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#0a0f1a] font-sans text-slate-200">
+      <main className="min-h-screen bg-background font-sans text-foreground">
         <div className="mx-auto max-w-[1100px] px-6 py-8">
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-6">
-            <p className="m-0 text-sm text-white/40">Loading marketing intelligence data...</p>
+          <div className="rounded-xl border border-border bg-muted p-6">
+            <p className="m-0 text-sm text-muted-foreground">Loading marketing intelligence data...</p>
           </div>
         </div>
       </main>
@@ -153,26 +153,26 @@ export default function MarketingIngestionPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0f1a] font-sans text-slate-200">
+    <main className="min-h-screen bg-background font-sans text-foreground">
       <div className="mx-auto max-w-[1100px] px-6 py-8">
-        <h1 className="mb-2 text-2xl font-bold text-slate-50">Marketing Intelligence</h1>
-        <p className="mb-6 text-sm text-white/40">
+        <h1 className="mb-2 text-2xl font-bold text-foreground">Marketing Intelligence</h1>
+        <p className="mb-6 text-sm text-muted-foreground">
           Extract proven messaging, offers, and design patterns from real-world marketing materials.
         </p>
 
         {/* Summary cards */}
         <div className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4" role="region" aria-label="Summary statistics">
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Total Artifacts</p>
-            <p className="m-0 text-3xl font-bold text-slate-50">{artifacts.length}</p>
+          <div className="rounded-xl border border-border bg-muted px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total Artifacts</p>
+            <p className="m-0 text-3xl font-bold text-foreground">{artifacts.length}</p>
           </div>
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Avg Confidence</p>
-            <p className="m-0 text-3xl font-bold text-slate-50">{artifacts.length > 0 ? `${avgConfidence(artifacts)}%` : "\u2014"}</p>
+          <div className="rounded-xl border border-border bg-muted px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Avg Confidence</p>
+            <p className="m-0 text-3xl font-bold text-foreground">{artifacts.length > 0 ? `${avgConfidence(artifacts)}%` : "\u2014"}</p>
           </div>
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] px-6 py-5">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-white/50">Top Source Type</p>
-            <p className="m-0 text-xl font-bold text-slate-50">
+          <div className="rounded-xl border border-border bg-muted px-6 py-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Top Source Type</p>
+            <p className="m-0 text-xl font-bold text-foreground">
               {topSourceType(artifacts)}
             </p>
           </div>
@@ -188,11 +188,11 @@ export default function MarketingIngestionPage() {
         </div>
 
         {/* Upload form */}
-        <section className="mb-6 rounded-xl border border-white/[0.06] bg-white/[0.04] p-6" aria-labelledby="upload-form-heading">
-          <h2 id="upload-form-heading" className="mb-4 text-sm font-bold text-slate-50">Analyze Artifact</h2>
+        <section className="mb-6 rounded-xl border border-border bg-muted p-6" aria-labelledby="upload-form-heading">
+          <h2 id="upload-form-heading" className="mb-4 text-sm font-bold text-foreground">Analyze Artifact</h2>
           <form onSubmit={handleSubmit} noValidate>
             <div className="mb-4 flex flex-col gap-1.5">
-              <label htmlFor="artifact-text" className="text-xs font-semibold text-white/50">
+              <label htmlFor="artifact-text" className="text-xs font-semibold text-muted-foreground">
                 Paste extracted text from flyer or ad
               </label>
               <textarea
@@ -201,7 +201,7 @@ export default function MarketingIngestionPage() {
                 onChange={(e) => setFormText(e.target.value)}
                 placeholder={"EMERGENCY PLUMBING SERVICES\nFast. Reliable. Affordable.\nCALL NOW: (555) 123-4567"}
                 required
-                className="min-h-[120px] w-full resize-y rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 font-[inherit] text-sm text-slate-100 outline-none"
+                className="min-h-[120px] w-full resize-y rounded-lg border border-border bg-muted px-3.5 py-2.5 font-[inherit] text-sm text-foreground outline-none"
                 aria-required="true"
                 aria-describedby={formError ? "upload-form-error" : undefined}
               />
@@ -210,14 +210,14 @@ export default function MarketingIngestionPage() {
             <div className="grid grid-cols-3 gap-3">
               <fieldset className="m-0 border-none p-0">
                 <div className="mb-4 flex flex-col gap-1.5">
-                  <label htmlFor="artifact-source-type" className="text-xs font-semibold text-white/50">
+                  <label htmlFor="artifact-source-type" className="text-xs font-semibold text-muted-foreground">
                     Source type
                   </label>
                   <select
                     id="artifact-source-type"
                     value={formSourceType}
                     onChange={(e) => setFormSourceType(e.target.value)}
-                    className="min-h-11 w-full cursor-pointer rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-slate-100 outline-none"
+                    className="min-h-11 w-full cursor-pointer rounded-lg border border-border bg-muted px-3.5 py-2.5 text-sm text-foreground outline-none"
                   >
                     {SOURCE_TYPE_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -230,7 +230,7 @@ export default function MarketingIngestionPage() {
 
               <fieldset className="m-0 border-none p-0">
                 <div className="mb-4 flex flex-col gap-1.5">
-                  <label htmlFor="artifact-niche" className="text-xs font-semibold text-white/50">
+                  <label htmlFor="artifact-niche" className="text-xs font-semibold text-muted-foreground">
                     Niche slug (optional)
                   </label>
                   <input
@@ -239,14 +239,14 @@ export default function MarketingIngestionPage() {
                     value={formNicheSlug}
                     onChange={(e) => setFormNicheSlug(e.target.value)}
                     placeholder="e.g. plumbing, roofing"
-                    className="min-h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-slate-100 outline-none"
+                    className="min-h-11 w-full rounded-lg border border-border bg-muted px-3.5 py-2.5 text-sm text-foreground outline-none"
                   />
                 </div>
               </fieldset>
 
               <fieldset className="m-0 border-none p-0">
                 <div className="mb-4 flex flex-col gap-1.5">
-                  <label htmlFor="artifact-geo" className="text-xs font-semibold text-white/50">
+                  <label htmlFor="artifact-geo" className="text-xs font-semibold text-muted-foreground">
                     City or region hint (optional)
                   </label>
                   <input
@@ -255,7 +255,7 @@ export default function MarketingIngestionPage() {
                     value={formGeoHint}
                     onChange={(e) => setFormGeoHint(e.target.value)}
                     placeholder="e.g. Denver, CO"
-                    className="min-h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm text-slate-100 outline-none"
+                    className="min-h-11 w-full rounded-lg border border-border bg-muted px-3.5 py-2.5 text-sm text-foreground outline-none"
                   />
                 </div>
               </fieldset>
@@ -283,28 +283,28 @@ export default function MarketingIngestionPage() {
 
         {/* Artifact list */}
         <section aria-labelledby="artifact-list-heading">
-          <h2 id="artifact-list-heading" className="mb-3 text-sm font-bold text-slate-50">
+          <h2 id="artifact-list-heading" className="mb-3 text-sm font-bold text-foreground">
             Analyzed Artifacts
             {artifacts.length > 0 && (
-              <span className="ml-2 text-xs font-normal text-white/40">
+              <span className="ml-2 text-xs font-normal text-muted-foreground">
                 ({artifacts.length})
               </span>
             )}
           </h2>
 
           {artifacts.length === 0 ? (
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-6">
-              <p className="text-sm text-white/40">
+            <div className="rounded-xl border border-border bg-muted p-6">
+              <p className="text-sm text-muted-foreground">
                 No artifacts yet. Paste text from a flyer or ad above to get started.
               </p>
             </div>
           ) : (
             <ul className="m-0 list-none p-0">
               {artifacts.map((artifact) => (
-                <li key={artifact.id} className="mb-3 rounded-xl border border-white/[0.06] bg-white/[0.04] p-5">
+                <li key={artifact.id} className="mb-3 rounded-xl border border-border bg-muted p-5">
                   <div className="mb-3 flex items-start justify-between">
                     <div>
-                      <h3 className="mb-1 text-base font-bold text-slate-50">
+                      <h3 className="mb-1 text-base font-bold text-foreground">
                         {artifact.headline ?? artifact.extractedText.slice(0, 50).trim()}
                         {!artifact.headline && artifact.extractedText.length > 50 ? "\u2026" : ""}
                       </h3>
@@ -337,10 +337,10 @@ export default function MarketingIngestionPage() {
                   </div>
 
                   {artifact.offer?.primaryOffer && (
-                    <p className="mt-2 text-xs italic text-white/50">{artifact.offer.primaryOffer}</p>
+                    <p className="mt-2 text-xs italic text-muted-foreground">{artifact.offer.primaryOffer}</p>
                   )}
 
-                  <div className="flex flex-wrap gap-4 border-t border-white/[0.06] py-3 text-xs text-white/50" aria-label="Artifact statistics">
+                  <div className="flex flex-wrap gap-4 border-t border-border py-3 text-xs text-muted-foreground" aria-label="Artifact statistics">
                     <div className="flex flex-col gap-0.5">
                       <span className="text-[0.7rem] uppercase tracking-wider text-white/30">Urgency</span>
                       <span className="text-sm font-semibold text-white/80">{artifact.urgencySignals.length}</span>
@@ -388,7 +388,7 @@ export default function MarketingIngestionPage() {
                     <button
                       type="button"
                       disabled
-                      className="min-h-11 cursor-not-allowed rounded-lg border border-white/[0.06] bg-transparent px-3.5 py-2 text-xs font-semibold text-white/20"
+                      className="min-h-11 cursor-not-allowed rounded-lg border border-border bg-transparent px-3.5 py-2 text-xs font-semibold text-white/20"
                       aria-label="Use as Template — coming soon"
                       aria-disabled="true"
                     >
