@@ -5,6 +5,7 @@
 import Stripe from "stripe";
 import { prisma } from "@/lib/db";
 import { cityConfig } from "@/lib/city-config";
+import { logger } from "@/lib/logger";
 
 // ── Public Interfaces ──────────────────────────────────────────────
 
@@ -188,7 +189,7 @@ export async function createTerritoryCheckoutSession(
   });
 
   if (process.env.NODE_ENV === "development") {
-    console.log(`[Stripe DRY-RUN] Checkout session created: ${sessionId}`);
+    logger.info("stripe", `DRY-RUN Checkout session created: ${sessionId}`);
   }
 
   return {
@@ -263,7 +264,7 @@ export async function createLeadPurchaseCheckout(
         niche,
         providerEmail: buyerEmail.toLowerCase(),
         leadId,
-        temperature: temperature as any, // enum cast
+        temperature: temperature as LeadTemperature,
         price,
         status: "pending",
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
@@ -291,7 +292,7 @@ export async function createLeadPurchaseCheckout(
       niche,
       providerEmail: buyerEmail.toLowerCase(),
       leadId,
-      temperature: temperature as any,
+      temperature: temperature as LeadTemperature,
       price,
       status: "pending",
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
@@ -299,7 +300,7 @@ export async function createLeadPurchaseCheckout(
   });
 
   if (process.env.NODE_ENV === "development") {
-    console.log(`[Stripe DRY-RUN] Lead purchase session: ${sessionId}`);
+    logger.info("stripe", `DRY-RUN Lead purchase session: ${sessionId}`);
   }
 
   return {
