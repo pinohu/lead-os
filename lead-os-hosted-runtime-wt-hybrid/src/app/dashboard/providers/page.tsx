@@ -14,27 +14,27 @@ export default async function ProviderHealthPage() {
     .sort(([left], [right]) => left.localeCompare(right));
 
   return (
-    <main className="experience-page">
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Provider health</p>
+    <main className="min-h-screen">
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Provider health</p>
           <h1>{tenantConfig.brandName} integration readiness</h1>
-          <p className="lede">
+          <p className="text-lg text-foreground">
             This view shows which providers are configured, which channels are live, and where the
             runtime can act without human cleanup.
           </p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Back to dashboard
             </Link>
-            <Link href="/dashboard/settings" className="secondary">
+            <Link href="/dashboard/settings" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Runtime settings
             </Link>
           </div>
         </div>
-        <aside className="hero-rail">
-          <p className="eyebrow">Channel readiness</p>
-          <p className="muted">Persistence: {persistenceMode}</p>
+        <aside className="hidden md:block">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Channel readiness</p>
+          <p className="text-muted-foreground">Persistence: {persistenceMode}</p>
           <ul className="journey-rail">
             {Object.entries(health.channels).map(([channel, ready]) => (
               <li key={channel}>
@@ -55,15 +55,15 @@ export default async function ProviderHealthPage() {
       </section>
 
       {!configSummary.envOnlyReady ? (
-        <section className="panel">
-          <p className="eyebrow">Config hardening</p>
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Config hardening</p>
           <h2>Embedded fallback still in use</h2>
-          <p className="muted">
+          <p className="text-muted-foreground">
             The runtime is still depending on embedded fallback credentials for some providers.
             Production will be fully hardened only after those values are moved into Railway env
             vars and the embedded fallbacks are removed.
           </p>
-          <ul className="check-list">
+          <ul className="space-y-2">
             {configSummary.embeddedFallbacks.map((provider) => (
               <li key={provider}>{provider}</li>
             ))}
@@ -74,7 +74,7 @@ export default async function ProviderHealthPage() {
       <section className="stack-grid">
         {providerEntries.map(([provider, status]) => (
           <article key={provider} className="stack-card">
-            <p className="eyebrow">{provider}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{provider}</p>
             <h2>
               {status.status === "configured"
                 ? "Configured"
@@ -82,15 +82,15 @@ export default async function ProviderHealthPage() {
                 ? "Configured / dry-run"
                 : "Missing"}
             </h2>
-            <p className="muted">{status.live ? "Live" : "Prepared"}</p>
-            <p className="muted">{status.owner}</p>
+            <p className="text-muted-foreground">{status.live ? "Live" : "Prepared"}</p>
+            <p className="text-muted-foreground">{status.owner}</p>
             {(() => {
               const config = configSummary.providers.find((entry) => entry.key === provider);
               if (!config) return null;
               return (
                 <>
-                  <p className="muted">Credential source: {config.source}</p>
-                  {config.notes ? <p className="muted">{config.notes}</p> : null}
+                  <p className="text-muted-foreground">Credential source: {config.source}</p>
+                  {config.notes ? <p className="text-muted-foreground">{config.notes}</p> : null}
                 </>
               );
             })()}

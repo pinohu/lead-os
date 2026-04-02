@@ -64,9 +64,9 @@ export default function TenantsPage() {
 
   if (loading) {
     return (
-      <main className="experience-page min-h-screen bg-background font-sans text-foreground">
+      <main className="min-h-screen bg-background font-sans text-foreground">
         <div className="mx-auto max-w-[1100px] px-6 py-8">
-          <section className="panel rounded-xl border border-border bg-muted">
+          <section className="rounded-xl border border-border bg-card p-6">
             <div className="p-8">
               <p className="text-sm text-foreground0">Loading tenants...</p>
             </div>
@@ -80,7 +80,7 @@ export default function TenantsPage() {
     Object.entries(channels).filter(([, v]) => v).map(([k]) => k);
 
   return (
-    <main className="experience-page min-h-screen bg-background font-sans text-foreground">
+    <main className="min-h-screen bg-background font-sans text-foreground">
       {isDemo && (
         <div className="border-b border-indigo-300 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/30 px-6 py-2.5 text-sm text-indigo-800 dark:text-indigo-200">
           Demo tenants — Sign in as a super-operator to manage live tenant provisioning.

@@ -116,9 +116,9 @@ export default function ExperimentsPage() {
 
   if (loading) {
     return (
-      <main className="experience-page">
+      <main className="min-h-screen">
         <section className="rounded-xl border border-border bg-card p-6">
-          <p className="muted">Loading experiment data...</p>
+          <p className="text-muted-foreground">Loading experiment data...</p>
         </section>
       </main>
     );
@@ -129,27 +129,27 @@ export default function ExperimentsPage() {
   const completedCount = experiments.filter((e) => e.status === "completed").length;
 
   return (
-    <main className="experience-page">
+    <main className="min-h-screen">
       {isDemo && (
         <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-300 dark:border-amber-800 px-6 py-2.5 text-sm text-amber-800 dark:text-amber-200">
           Demo data — Connect your tenant to see live experiment results.{" "}
           <Link href="/auth/sign-in" className="text-amber-800 underline">Sign in</Link>
         </div>
       )}
-      <section className="experience-hero">
-        <div className="hero-copy">
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Experiment performance</p>
           <h1>Variant reporting</h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-foreground">
             Compare headline, mode, and device-level experience variants by milestone progression
             instead of just raw capture volume. Statistical significance is calculated when
             sample sizes allow.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Back to dashboard</Link>
           </div>
         </div>
-        <aside className="hero-rail">
+        <aside className="hidden md:block">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Experiment summary</p>
           <ul className="journey-rail">
             <li><strong>Experiments</strong><span>{experiments.length}</span></li>
@@ -185,7 +185,7 @@ export default function ExperimentsPage() {
       <section className="stack-grid">
         {filteredExperiments.length === 0 ? (
           <article className="rounded-xl border border-border bg-card p-6">
-            <p className="muted">No experiments match the selected filter.</p>
+            <p className="text-muted-foreground">No experiments match the selected filter.</p>
           </article>
         ) : (
           filteredExperiments.map((experiment) => {
@@ -215,14 +215,14 @@ export default function ExperimentsPage() {
                   </div>
                   <div className="text-right text-sm">
                     <p className="m-0">Hot: {experiment.hotRate}%</p>
-                    <p className="muted m-0">Conv: {experiment.conversionRate}%</p>
+                    <p className="text-muted-foreground m-0">Conv: {experiment.conversionRate}%</p>
                   </div>
                 </div>
 
                 <div className="mt-2">
                   <div className="flex justify-between text-xs mb-1">
                     <span className="font-bold">Sample progress</span>
-                    <span className="muted">{experiment.entries}/{targetSampleSize}</span>
+                    <span className="text-muted-foreground">{experiment.entries}/{targetSampleSize}</span>
                   </div>
                   <div className="h-2 bg-teal-900/10 rounded overflow-hidden">
                     <div
@@ -235,7 +235,7 @@ export default function ExperimentsPage() {
                   </div>
                 </div>
 
-                <p className="muted mt-2 text-sm">
+                <p className="text-muted-foreground mt-2 text-sm">
                   M1 to M2: {experiment.m1ToM2}% | M1 to M3: {experiment.m1ToM3}% | Conversion: {experiment.conversionRate}%
                 </p>
 
@@ -244,7 +244,7 @@ export default function ExperimentsPage() {
                     type="button"
                     onClick={() => setExpandedExperiment(isExpanded ? null : experiment.experimentId)}
                     aria-expanded={isExpanded}
-                    className="secondary min-h-[36px] px-3.5 py-1.5 text-sm"
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-h-[36px] px-3.5 py-1.5"
                   >
                     {isExpanded ? "Hide analysis" : "View analysis"}
                   </button>
@@ -308,7 +308,7 @@ export default function ExperimentsPage() {
                                         {sig.confidence}%
                                       </span>
                                     ) : (
-                                      <span className="muted">baseline</span>
+                                      <span className="text-muted-foreground">baseline</span>
                                     )}
                                   </td>
                                   <td className="px-3 py-2.5 border-b border-border/30">

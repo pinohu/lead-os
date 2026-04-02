@@ -148,36 +148,36 @@ export default function LeadMagnetsPage() {
 
   if (loading) {
     return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="muted">Loading lead magnet data...</p>
+      <main className="min-h-screen">
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-muted-foreground">Loading lead magnet data...</p>
         </section>
       </main>
     );
   }
 
   return (
-    <main className="experience-page">
+    <main className="min-h-screen">
       {isDemo && (
         <div className="border-b border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-6 py-2.5 text-sm text-amber-800 dark:text-amber-200">
           Demo data — Sign in to manage your live lead magnets.{" "}
           <Link href="/auth/sign-in" className="text-amber-800 underline">Sign in</Link>
         </div>
       )}
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Lead magnets</p>
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead magnets</p>
           <h1>Lead magnet management</h1>
-          <p className="lede">
+          <p className="text-lg text-foreground">
             Track delivery performance, conversion rates, and engagement across all lead
             magnets organized by category and niche.
           </p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Back to dashboard</Link>
           </div>
         </div>
-        <aside className="hero-rail">
-          <p className="eyebrow">Summary</p>
+        <aside className="hidden md:block">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Summary</p>
           <ul className="journey-rail">
             <li>
               <strong>Total magnets</strong>
@@ -195,8 +195,8 @@ export default function LeadMagnetsPage() {
         </aside>
       </section>
 
-      <section className="panel">
-        <p className="eyebrow">Filters</p>
+      <section className="rounded-xl border border-border bg-card p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Filters</p>
         <div className="flex flex-wrap items-center gap-3">
           <label className="flex items-center gap-2 text-sm font-bold">
             Category
@@ -232,13 +232,13 @@ export default function LeadMagnetsPage() {
 
       <section className="stack-grid">
         {filteredMagnets.length === 0 ? (
-          <article className="panel">
-            <p className="muted">No lead magnets match the selected filters.</p>
+          <article className="rounded-xl border border-border bg-card p-6">
+            <p className="text-muted-foreground">No lead magnets match the selected filters.</p>
           </article>
         ) : (
           filteredMagnets.map((magnet) => (
             <article key={`${magnet.family}::${magnet.niche}`} className="stack-card">
-              <p className="eyebrow">{magnet.family}</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{magnet.family}</p>
               <h3>{magnet.niche}</h3>
               <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-3">
                 <div>
@@ -281,11 +281,11 @@ export default function LeadMagnetsPage() {
         )}
       </section>
 
-      <section className="panel">
-        <p className="eyebrow">Recent deliveries</p>
+      <section className="rounded-xl border border-border bg-card p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Recent deliveries</p>
         <h2>Latest lead magnet activity</h2>
         {recentDeliveries.length === 0 ? (
-          <p className="muted">No recent deliveries to show.</p>
+          <p className="text-muted-foreground">No recent deliveries to show.</p>
         ) : (
           <div className="mt-4 overflow-x-auto">
             <table className="w-full border-collapse text-sm">

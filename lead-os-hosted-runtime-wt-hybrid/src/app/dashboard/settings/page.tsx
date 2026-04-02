@@ -18,27 +18,27 @@ export default async function RuntimeSettingsPage() {
   const summary = buildRuntimeConfigSummary(config);
 
   return (
-    <main className="experience-page">
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Runtime settings</p>
+    <main className="min-h-screen">
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Runtime settings</p>
           <h1>{tenantConfig.brandName} executable provider mappings</h1>
-          <p className="lede">
+          <p className="text-lg text-foreground">
             This is the operator-facing layer for non-secret provider configuration. Template IDs,
             service IDs, and fallback URLs live here so the runtime can become more executable
             without another code deploy.
           </p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Back to dashboard
             </Link>
-            <Link href="/dashboard/providers" className="secondary">
+            <Link href="/dashboard/providers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Provider health
             </Link>
           </div>
         </div>
-        <aside className="hero-rail">
-          <p className="eyebrow">Coverage summary</p>
+        <aside className="hidden md:block">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Coverage summary</p>
           <ul className="journey-rail">
             <li>
               <strong>Trafft mappings</strong>
@@ -60,14 +60,14 @@ export default async function RuntimeSettingsPage() {
         </aside>
       </section>
 
-      <section className="grid two">
-        <article className="panel">
-          <p className="eyebrow">Documentero discovery</p>
+      <section className="grid md:grid-cols-2 gap-6">
+        <article className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Documentero discovery</p>
           <h2>Available templates detected from the account API</h2>
           {templateCatalog.length === 0 ? (
-            <p className="muted">No account templates were discovered yet. If you only see the sample template in Documentero, create your real proposal/agreement/onboarding templates there first.</p>
+            <p className="text-muted-foreground">No account templates were discovered yet. If you only see the sample template in Documentero, create your real proposal/agreement/onboarding templates there first.</p>
           ) : (
-            <ul className="check-list">
+            <ul className="space-y-2">
               {templateCatalog.map((template) => (
                 <li key={template.value}>
                   {template.label}: {template.value}
@@ -77,17 +77,17 @@ export default async function RuntimeSettingsPage() {
           )}
         </article>
 
-        <article className="panel">
-          <p className="eyebrow">Trafft discovery</p>
+        <article className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Trafft discovery</p>
           <h2>Booking tenant visibility</h2>
           {trafftTenant ? (
-            <ul className="check-list">
+            <ul className="space-y-2">
               <li>Tenant name: {trafftTenant.tenantName ?? "Unknown"}</li>
               <li>Tenant id: {trafftTenant.tenantId ?? "Unknown"}</li>
               <li>Note: service IDs still need to be mapped before LeadOS can auto-resolve public slot lookups consistently.</li>
             </ul>
           ) : (
-            <p className="muted">Trafft tenant data could not be read from the runtime right now.</p>
+            <p className="text-muted-foreground">Trafft tenant data could not be read from the runtime right now.</p>
           )}
         </article>
       </section>

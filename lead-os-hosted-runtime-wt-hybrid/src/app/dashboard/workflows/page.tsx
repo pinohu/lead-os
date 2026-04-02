@@ -20,26 +20,26 @@ export default async function WorkflowRunsPage() {
   );
 
   return (
-    <main className="experience-page">
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Workflow history</p>
+    <main className="min-h-screen">
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Workflow history</p>
           <h1>{tenantConfig.brandName} workflow runs</h1>
-          <p className="lede">
+          <p className="text-lg text-foreground">
             This view shows which runtime emissions reached n8n or related workflow providers and
             where operators may need to inspect downstream automations.
           </p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Back to dashboard
             </Link>
-            <Link href="/dashboard/providers" className="secondary">
+            <Link href="/dashboard/providers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Provider health
             </Link>
           </div>
         </div>
-        <aside className="hero-rail">
-          <p className="eyebrow">Queue summary</p>
+        <aside className="hidden md:block">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Queue summary</p>
           <ul className="journey-rail">
             <li>
               <strong>Total runs</strong>
@@ -64,44 +64,44 @@ export default async function WorkflowRunsPage() {
       <section className="stack-grid">
         {registry.length === 0 ? null : registry.map((workflow) => (
           <article key={workflow.slug} className="stack-card">
-            <p className="eyebrow">Starter workflow</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Starter workflow</p>
             <h2>{workflow.workflowName}</h2>
-            <p className="muted">
+            <p className="text-muted-foreground">
               Status: {workflow.status} | Active: {workflow.active ? "yes" : "no"}
             </p>
-            <p className="muted">
+            <p className="text-muted-foreground">
               Manifest: {workflow.manifestVersion.slice(0, 12)} | Hash: {workflow.manifestHash.slice(0, 12)}
             </p>
-            <p className="muted">
+            <p className="text-muted-foreground">
               Last provisioned: {workflow.lastProvisionedAt}
             </p>
-            {workflow.detail ? <p className="muted">{workflow.detail}</p> : null}
+            {workflow.detail ? <p className="text-muted-foreground">{workflow.detail}</p> : null}
           </article>
         ))}
       </section>
 
       <section className="stack-grid">
         {runsWithLead.length === 0 ? (
-          <article className="panel">
-            <p className="muted">No workflow runs have been recorded yet.</p>
+          <article className="rounded-xl border border-border bg-card p-6">
+            <p className="text-muted-foreground">No workflow runs have been recorded yet.</p>
           </article>
         ) : (
           runsWithLead.map(({ run, lead }) => (
             <article key={run.id} className="stack-card">
-              <p className="eyebrow">{run.provider}</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{run.provider}</p>
               <h2>{run.eventName}</h2>
-              <p className="muted">{run.detail}</p>
-              <p className="muted">
+              <p className="text-muted-foreground">{run.detail}</p>
+              <p className="text-muted-foreground">
                 Mode: {run.mode} | Success: {run.ok ? "yes" : "no"}
               </p>
-              <p className="muted">
+              <p className="text-muted-foreground">
                 Lead: {run.leadKey ?? "not tied to a lead"}
                 {lead ? ` | Family: ${lead.family}` : ""}
               </p>
-              <p className="muted">Created: {run.createdAt}</p>
+              <p className="text-muted-foreground">Created: {run.createdAt}</p>
               {run.leadKey ? (
-                <div className="cta-row">
-                  <Link href={`/dashboard/leads/${encodeURIComponent(run.leadKey)}`} className="secondary">
+                <div className="flex flex-wrap gap-3">
+                  <Link href={`/dashboard/leads/${encodeURIComponent(run.leadKey)}`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     Open lead detail
                   </Link>
                 </div>

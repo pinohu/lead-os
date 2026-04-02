@@ -156,24 +156,24 @@ export default function AttributionPage() {
 
   if (loading) {
     return (
-      <main className="experience-page">
+      <main className="min-h-screen">
         <section className="rounded-xl border border-border bg-card p-6">
-          <p className="muted">Loading attribution data...</p>
+          <p className="text-muted-foreground">Loading attribution data...</p>
         </section>
       </main>
     );
   }
 
   return (
-    <main className="experience-page">
+    <main className="min-h-screen">
       {isDemo && (
         <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-300 dark:border-amber-800 px-6 py-2.5 text-sm text-amber-800 dark:text-amber-200">
           Demo data — Connect your analytics integration to see live attribution.{" "}
           <Link href="/dashboard/credentials" className="text-amber-800 underline">Set up credentials</Link>
         </div>
       )}
-      <section className="experience-hero">
-        <div className="hero-copy">
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Attribution</p>
           <h1>Channel attribution</h1>
           <p className="text-lg text-foreground">
@@ -181,13 +181,13 @@ export default function AttributionPage() {
             models to see how credit shifts across the customer journey.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
-            <Link href="/dashboard/analytics" className="secondary">Full analytics</Link>
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Back to dashboard</Link>
+            <Link href="/dashboard/analytics" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Full analytics</Link>
           </div>
         </div>
-        <aside className="hero-rail">
+        <aside className="hidden md:block">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Attribution model</p>
-          <p className="muted text-sm mb-3">
+          <p className="text-muted-foreground text-sm mb-3">
             {MODEL_DESCRIPTIONS[selectedModel]}
           </p>
           <div className="grid gap-1.5">
@@ -217,7 +217,7 @@ export default function AttributionPage() {
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Channel performance ({selectedModel.replace("-", " ")})</p>
         <h2>Attributed channel breakdown</h2>
         {attributedChannels.length === 0 ? (
-          <p className="muted">No channel data available.</p>
+          <p className="text-muted-foreground">No channel data available.</p>
         ) : (
           <div className="overflow-x-auto mt-4">
             <table className="w-full text-sm border-collapse">
@@ -246,12 +246,12 @@ export default function AttributionPage() {
         )}
       </section>
 
-      <section className="grid two">
+      <section className="grid md:grid-cols-2 gap-6">
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Campaign performance</p>
           <h2>Funnel family breakdown</h2>
           {!analyticsData?.funnelPerformance?.length ? (
-            <p className="muted">No funnel data available.</p>
+            <p className="text-muted-foreground">No funnel data available.</p>
           ) : (
             <div className="overflow-x-auto mt-4">
               <table className="w-full text-sm border-collapse">
@@ -282,7 +282,7 @@ export default function AttributionPage() {
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Source / niche breakdown</p>
           <h2>Combined attribution</h2>
           {sourceMediumBreakdown.length === 0 ? (
-            <p className="muted">No source data available.</p>
+            <p className="text-muted-foreground">No source data available.</p>
           ) : (
             <div className="overflow-x-auto mt-4">
               <table className="w-full text-sm border-collapse">
@@ -314,7 +314,7 @@ export default function AttributionPage() {
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Touch journey</p>
         <h2>Converted lead journeys</h2>
         {convertedLeads.length === 0 ? (
-          <p className="muted">No converted leads to show touch journeys for.</p>
+          <p className="text-muted-foreground">No converted leads to show touch journeys for.</p>
         ) : (
           <div className="stack-grid mt-4">
             {convertedLeads.map((lead) => {
@@ -326,7 +326,7 @@ export default function AttributionPage() {
                       <h3 className="text-base m-0">
                         {lead.firstName} {lead.lastName}
                       </h3>
-                      <p className="muted text-sm">
+                      <p className="text-muted-foreground text-sm">
                         {lead.source} | {lead.niche} | {lead.family}
                       </p>
                     </div>
@@ -338,7 +338,7 @@ export default function AttributionPage() {
                     type="button"
                     onClick={() => setExpandedLead(isExpanded ? null : lead.leadKey)}
                     aria-expanded={isExpanded}
-                    className="secondary mt-2 min-h-[36px] px-3.5 py-1.5 text-sm"
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mt-2 min-h-[36px] px-3.5 py-1.5"
                   >
                     {isExpanded ? "Hide journey" : "View journey"}
                   </button>
@@ -361,7 +361,7 @@ export default function AttributionPage() {
                           {lead.stage}
                         </span>
                       </div>
-                      <p className="muted mt-2 text-sm">
+                      <p className="text-muted-foreground mt-2 text-sm">
                         Created: {new Date(lead.createdAt).toLocaleDateString()} |
                         Score: {lead.score}
                       </p>

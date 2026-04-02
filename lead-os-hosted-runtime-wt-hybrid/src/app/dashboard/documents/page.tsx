@@ -14,26 +14,26 @@ export default async function DocumentJobsPage() {
   );
 
   return (
-    <main className="experience-page">
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Document queue</p>
+    <main className="min-h-screen">
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Document queue</p>
           <h1>{tenantConfig.brandName} document jobs</h1>
-          <p className="lede">
+          <p className="text-lg text-foreground">
             Monitor proposal, agreement, and onboarding document generation so operators can spot
             template gaps before they cost momentum.
           </p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Back to dashboard
             </Link>
-            <Link href="/dashboard/providers" className="secondary">
+            <Link href="/dashboard/providers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Provider health
             </Link>
           </div>
         </div>
-        <aside className="hero-rail">
-          <p className="eyebrow">Queue summary</p>
+        <aside className="hidden md:block">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Queue summary</p>
           <ul className="journey-rail">
             <li>
               <strong>Total jobs</strong>
@@ -53,22 +53,22 @@ export default async function DocumentJobsPage() {
 
       <section className="stack-grid">
         {jobsWithLead.length === 0 ? (
-          <article className="panel">
-            <p className="muted">No document jobs have been recorded yet.</p>
+          <article className="rounded-xl border border-border bg-card p-6">
+            <p className="text-muted-foreground">No document jobs have been recorded yet.</p>
           </article>
         ) : (
           jobsWithLead.map(({ job, lead }) => (
             <article key={job.id} className="stack-card">
-              <p className="eyebrow">{job.provider}</p>
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{job.provider}</p>
               <h2>{job.status}</h2>
-              <p className="muted">{job.detail}</p>
-              <p className="muted">
+              <p className="text-muted-foreground">{job.detail}</p>
+              <p className="text-muted-foreground">
                 Lead: {job.leadKey}
                 {lead ? ` | Family: ${lead.family} | Stage: ${lead.stage}` : ""}
               </p>
-              <p className="muted">Updated: {job.updatedAt}</p>
-              <div className="cta-row">
-                <Link href={`/dashboard/leads/${encodeURIComponent(job.leadKey)}`} className="secondary">
+              <p className="text-muted-foreground">Updated: {job.updatedAt}</p>
+              <div className="flex flex-wrap gap-3">
+                <Link href={`/dashboard/leads/${encodeURIComponent(job.leadKey)}`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                   Open lead detail
                 </Link>
               </div>

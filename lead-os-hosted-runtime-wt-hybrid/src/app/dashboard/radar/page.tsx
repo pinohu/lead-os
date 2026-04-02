@@ -187,9 +187,9 @@ export default function RadarPage() {
 
   if (loading) {
     return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="muted">Loading radar data...</p>
+      <main className="min-h-screen">
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-muted-foreground">Loading radar data...</p>
         </section>
       </main>
     );
@@ -197,12 +197,12 @@ export default function RadarPage() {
 
   if (!data) {
     return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="eyebrow">Error</p>
+      <main className="min-h-screen">
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Error</p>
           <h2>Failed to load radar</h2>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Back to dashboard</Link>
           </div>
         </section>
       </main>
@@ -212,35 +212,35 @@ export default function RadarPage() {
   const filteredHotLeads = data.hotLeads.filter((lead) => lead.score >= alertThreshold);
 
   return (
-    <main className="experience-page">
+    <main className="min-h-screen">
       {isDemo && (
         <div className="flex items-center gap-2 border-b border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-6 py-2.5 text-sm">
           <span className="font-bold">Demo data</span>
           <span className="text-amber-800">— Connect your database to see live radar. <a href="/setup" className="underline">Configure now &rarr;</a></span>
         </div>
       )}
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Hot lead radar</p>
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Hot lead radar</p>
           <h1>Real-time monitoring</h1>
-          <p className="lede">
+          <p className="text-lg text-foreground">
             Live view of hot leads, high-intent events, and the full activity feed.
             Updates in real time via SSE.
           </p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
-            <Link href="/dashboard/scoring" className="secondary">Scoring dashboard</Link>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Back to dashboard</Link>
+            <Link href="/dashboard/scoring" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Scoring dashboard</Link>
             <button
               type="button"
-              className="secondary min-h-9"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-h-9"
               onClick={fetchData}
             >
               Refresh now
             </button>
           </div>
         </div>
-        <aside className="hero-rail">
-          <p className="eyebrow">Radar status</p>
+        <aside className="hidden md:block">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Radar status</p>
           <ul className="journey-rail">
             <li>
               <strong>Hot leads</strong>
@@ -258,8 +258,8 @@ export default function RadarPage() {
         </aside>
       </section>
 
-      <section className="panel">
-        <p className="eyebrow">Alert configuration</p>
+      <section className="rounded-xl border border-border bg-card p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Alert configuration</p>
         <div className="flex flex-wrap items-center gap-4">
           <label className="flex items-center gap-2 text-sm font-bold">
             Score threshold
@@ -283,7 +283,7 @@ export default function RadarPage() {
         </div>
       </section>
 
-      <section className="panel overflow-hidden p-0">
+      <section className="rounded-xl border border-border bg-card overflow-hidden">
         <div
           role="tablist"
           aria-label="Radar views"
@@ -316,7 +316,7 @@ export default function RadarPage() {
           {activeTab === "hot" && (
             <div role="tabpanel" id="panel-hot" aria-label="Hot leads panel">
               {filteredHotLeads.length === 0 ? (
-                <p className="muted">No leads above the current threshold ({alertThreshold}).</p>
+                <p className="text-muted-foreground">No leads above the current threshold ({alertThreshold}).</p>
               ) : (
                 <div className="grid gap-3">
                   {filteredHotLeads.map((lead) => (
@@ -335,7 +335,7 @@ export default function RadarPage() {
                             {lead.firstName} {lead.lastName}
                           </Link>
                         </h3>
-                        <p className="muted mt-0.5 text-xs">
+                        <p className="text-muted-foreground mt-0.5 text-xs">
                           {lead.email ?? lead.leadKey} | {lead.niche} | {lead.source}
                         </p>
                         <div className="mt-1.5 flex flex-wrap gap-1">
@@ -349,7 +349,7 @@ export default function RadarPage() {
                       <div className="flex flex-wrap gap-1.5">
                         <button
                           type="button"
-                          className="secondary min-h-8 px-2.5 py-1 text-xs"
+                          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-h-8 px-2.5 py-1 text-xs"
                           aria-label={`Schedule call with ${lead.firstName} ${lead.lastName}`}
                           disabled={actionStatus[`${lead.leadKey}:schedule`] === "pending"}
                           onClick={() => handleAction(lead.leadKey, "schedule", `${lead.firstName} ${lead.lastName}`)}
@@ -358,7 +358,7 @@ export default function RadarPage() {
                         </button>
                         <button
                           type="button"
-                          className="secondary min-h-8 px-2.5 py-1 text-xs"
+                          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-h-8 px-2.5 py-1 text-xs"
                           aria-label={`Send email to ${lead.firstName} ${lead.lastName}`}
                           disabled={actionStatus[`${lead.leadKey}:email`] === "pending"}
                           onClick={() => handleAction(lead.leadKey, "email", `${lead.firstName} ${lead.lastName}`)}
@@ -367,7 +367,7 @@ export default function RadarPage() {
                         </button>
                         <button
                           type="button"
-                          className="secondary min-h-8 px-2.5 py-1 text-xs"
+                          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-h-8 px-2.5 py-1 text-xs"
                           aria-label={`Assign ${lead.firstName} ${lead.lastName} to sales`}
                           disabled={actionStatus[`${lead.leadKey}:assign`] === "pending"}
                           onClick={() => handleAction(lead.leadKey, "assign", `${lead.firstName} ${lead.lastName}`)}
@@ -385,7 +385,7 @@ export default function RadarPage() {
           {activeTab === "events" && (
             <div role="tabpanel" id="panel-events" aria-label="High-intent events panel">
               {data.recentHighIntentEvents.length === 0 ? (
-                <p className="muted">No high-intent events in the last 24 hours.</p>
+                <p className="text-muted-foreground">No high-intent events in the last 24 hours.</p>
               ) : (
                 <div className="grid gap-2">
                   {data.recentHighIntentEvents.map((event) => (
@@ -402,7 +402,7 @@ export default function RadarPage() {
                             {event.leadKey}
                           </Link>
                         </p>
-                        <p className="muted mt-0.5 text-xs">
+                        <p className="text-muted-foreground mt-0.5 text-xs">
                           {event.channel} | {event.niche}
                         </p>
                       </div>
@@ -419,7 +419,7 @@ export default function RadarPage() {
           {activeTab === "feed" && (
             <div role="tabpanel" id="panel-feed" aria-label="Activity feed panel">
               {data.activityFeed.length === 0 ? (
-                <p className="muted">No activity recorded yet.</p>
+                <p className="text-muted-foreground">No activity recorded yet.</p>
               ) : (
                 <div className="grid gap-1">
                   {data.activityFeed.map((event) => (
@@ -437,7 +437,7 @@ export default function RadarPage() {
                         >
                           {event.leadKey}
                         </Link>
-                        <span className="muted text-xs">
+                        <span className="text-muted-foreground text-xs">
                           {event.channel} | {event.source}
                         </span>
                       </div>

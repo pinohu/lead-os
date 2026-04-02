@@ -111,9 +111,9 @@ export default function ScoringPage() {
 
   if (loading) {
     return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="muted">Loading scoring data...</p>
+      <main className="min-h-screen">
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-muted-foreground">Loading scoring data...</p>
         </section>
       </main>
     );
@@ -121,12 +121,12 @@ export default function ScoringPage() {
 
   if (!data) {
     return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="eyebrow">Error</p>
+      <main className="min-h-screen">
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Error</p>
           <h2>Failed to load scoring</h2>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Back to dashboard</Link>
           </div>
         </section>
       </main>
@@ -144,28 +144,28 @@ export default function ScoringPage() {
     data.temperatureDistribution.hot + data.temperatureDistribution.burning;
 
   return (
-    <main className="experience-page">
+    <main className="min-h-screen">
       {isDemo && (
         <div className="flex items-center gap-2 border-b border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-6 py-2.5 text-sm">
           <span className="font-bold">Demo data</span>
           <span className="text-amber-800">— Connect your database to see live scoring. <a href="/setup" className="underline">Configure now &rarr;</a></span>
         </div>
       )}
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Lead scoring</p>
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead scoring</p>
           <h1>Scoring dashboard</h1>
-          <p className="lede">
+          <p className="text-lg text-foreground">
             Composite scores with breakdown by intent, fit, engagement, and urgency.
             Filter by temperature and niche to focus on the leads that matter.
           </p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
-            <Link href="/dashboard/radar" className="secondary">Hot lead radar</Link>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Back to dashboard</Link>
+            <Link href="/dashboard/radar" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Hot lead radar</Link>
           </div>
         </div>
-        <aside className="hero-rail">
-          <p className="eyebrow">Temperature distribution</p>
+        <aside className="hidden md:block">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Temperature distribution</p>
           <ul className="journey-rail">
             {(["burning", "hot", "warm", "cold"] as Temperature[]).map((temp) => (
               <li key={temp}>
@@ -190,8 +190,8 @@ export default function ScoringPage() {
         </aside>
       </section>
 
-      <section className="panel">
-        <p className="eyebrow">Filters</p>
+      <section className="rounded-xl border border-border bg-card p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Filters</p>
         <div className="flex flex-wrap items-center gap-3">
           <label className="flex items-center gap-2 text-sm font-bold">
             Temperature
@@ -228,8 +228,8 @@ export default function ScoringPage() {
 
       <section className="stack-grid">
         {filteredLeads.length === 0 ? (
-          <article className="panel">
-            <p className="muted">No leads match the selected filters.</p>
+          <article className="rounded-xl border border-border bg-card p-6">
+            <p className="text-muted-foreground">No leads match the selected filters.</p>
           </article>
         ) : (
           filteredLeads.slice(0, 50).map((lead) => {
@@ -238,7 +238,7 @@ export default function ScoringPage() {
               <article key={lead.leadKey} className="stack-card">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <p className="eyebrow flex items-center gap-2">
+                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                       <span
                         className="inline-block h-2 w-2 rounded-full"
                         style={{ background: TEMP_COLORS[lead.temperature] }}
@@ -248,7 +248,7 @@ export default function ScoringPage() {
                     <h3 className="m-0">
                       {lead.firstName} {lead.lastName}
                     </h3>
-                    <p className="muted text-xs">
+                    <p className="text-muted-foreground text-xs">
                       {lead.email ?? lead.leadKey} | {lead.niche} | {lead.source}
                     </p>
                   </div>
@@ -269,7 +269,7 @@ export default function ScoringPage() {
                   type="button"
                   onClick={() => setExpandedLead(isExpanded ? null : lead.leadKey)}
                   aria-expanded={isExpanded}
-                  className="secondary mt-2 min-h-9 px-3.5 py-1.5 text-xs"
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mt-2 min-h-9 px-3.5 py-1.5 text-xs"
                 >
                   {isExpanded ? "Hide breakdown" : "Show breakdown"}
                 </button>
@@ -284,7 +284,7 @@ export default function ScoringPage() {
                     </div>
                     <div>
                       <p className="mb-1.5 text-xs font-bold">Recommended actions</p>
-                      <ul className="check-list">
+                      <ul className="space-y-2">
                         {lead.recommendedActions.map((action, i) => (
                           <li key={i}>{action}</li>
                         ))}
@@ -299,8 +299,8 @@ export default function ScoringPage() {
       </section>
 
       {data.scoreByNiche.length > 0 && (
-        <section className="panel">
-          <p className="eyebrow">Niche averages</p>
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Niche averages</p>
           <h2>Score by niche</h2>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full border-collapse text-sm">

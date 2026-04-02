@@ -120,9 +120,9 @@ export default function MarketplaceDashboardPage() {
 
   if (loading) {
     return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="muted">Loading marketplace data...</p>
+      <main className="min-h-screen">
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-muted-foreground">Loading marketplace data...</p>
         </section>
       </main>
     );
@@ -144,27 +144,27 @@ export default function MarketplaceDashboardPage() {
     : [];
 
   return (
-    <main className="experience-page">
+    <main className="min-h-screen">
       {isDemo && (
         <div className="border-b border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-6 py-2.5 text-sm text-amber-800 dark:text-amber-200">
           Demo marketplace data — Connect your tenant to manage live lead inventory.{" "}
           <Link href="/auth/sign-in" className="text-amber-800 underline">Sign in</Link>
         </div>
       )}
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Marketplace</p>
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Marketplace</p>
           <h1>Lead marketplace</h1>
-          <p className="lede">
+          <p className="text-lg text-foreground">
             Publish, sell, and track lead inventory across niches and buyer accounts.
           </p>
-          <div className="cta-row">
-            <Link href="/dashboard" className="secondary">Back to dashboard</Link>
-            <Link href="/marketplace" className="secondary">Public marketplace</Link>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Back to dashboard</Link>
+            <Link href="/marketplace" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Public marketplace</Link>
           </div>
         </div>
-        <aside className="hero-rail">
-          <p className="eyebrow">Summary</p>
+        <aside className="hidden md:block">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Summary</p>
           <ul className="journey-rail">
             <li>
               <strong>Total leads</strong>
@@ -186,34 +186,34 @@ export default function MarketplaceDashboardPage() {
         </aside>
       </section>
 
-      <section className="metric-grid">
-        <article className="metric-card">
-          <p className="eyebrow">Total revenue</p>
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <article className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Total revenue</p>
           <h2>{formatCents(revenue?.total ?? 0)}</h2>
-          <p className="muted">Revenue from all sold leads.</p>
+          <p className="text-muted-foreground">Revenue from all sold leads.</p>
         </article>
-        <article className="metric-card">
-          <p className="eyebrow">Leads sold</p>
+        <article className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Leads sold</p>
           <h2>{revenue?.leadsSold ?? 0}</h2>
-          <p className="muted">Total leads with completed sales.</p>
+          <p className="text-muted-foreground">Total leads with completed sales.</p>
         </article>
-        <article className="metric-card">
-          <p className="eyebrow">Avg price</p>
+        <article className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Avg price</p>
           <h2>{formatCents(revenue?.avgPrice ?? 0)}</h2>
-          <p className="muted">Average price per lead.</p>
+          <p className="text-muted-foreground">Average price per lead.</p>
         </article>
-        <article className="metric-card">
-          <p className="eyebrow">Active buyers</p>
+        <article className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Active buyers</p>
           <h2>{buyers.filter((b) => b.status === "active").length}</h2>
-          <p className="muted">Buyer accounts currently active.</p>
+          <p className="text-muted-foreground">Buyer accounts currently active.</p>
         </article>
       </section>
 
-      <section className="panel">
-        <p className="eyebrow">Revenue by niche</p>
+      <section className="rounded-xl border border-border bg-card p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Revenue by niche</p>
         <h2>Top niches</h2>
         {nicheEntries.length === 0 ? (
-          <p className="muted">No revenue data yet.</p>
+          <p className="text-muted-foreground">No revenue data yet.</p>
         ) : (
           <div className="mt-4 grid gap-2">
             {nicheEntries.map(([niche, data]) => {
@@ -241,11 +241,11 @@ export default function MarketplaceDashboardPage() {
         )}
       </section>
 
-      <section className="panel">
-        <p className="eyebrow">Quality distribution</p>
+      <section className="rounded-xl border border-border bg-card p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Quality distribution</p>
         <h2>Lead temperature</h2>
         {Object.keys(temperatureDist).length === 0 ? (
-          <p className="muted">No leads published yet.</p>
+          <p className="text-muted-foreground">No leads published yet.</p>
         ) : (
           <div className="mt-4 flex flex-wrap gap-4">
             {(["burning", "hot", "warm", "cold"] as const).map((temp) => (
@@ -266,11 +266,11 @@ export default function MarketplaceDashboardPage() {
         )}
       </section>
 
-      <section className="panel">
-        <p className="eyebrow">Recent activity</p>
+      <section className="rounded-xl border border-border bg-card p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Recent activity</p>
         <h2>Recent sales</h2>
         {soldLeads.length === 0 && claimedLeads.length === 0 ? (
-          <p className="muted">No sales activity yet.</p>
+          <p className="text-muted-foreground">No sales activity yet.</p>
         ) : (
           <div className="mt-4 overflow-x-auto">
             <table className="w-full border-collapse text-sm">
@@ -307,11 +307,11 @@ export default function MarketplaceDashboardPage() {
         )}
       </section>
 
-      <section className="panel">
-        <p className="eyebrow">Accounts</p>
+      <section className="rounded-xl border border-border bg-card p-6">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Accounts</p>
         <h2>Buyer accounts</h2>
         {buyers.length === 0 ? (
-          <p className="muted">No buyer accounts created yet.</p>
+          <p className="text-muted-foreground">No buyer accounts created yet.</p>
         ) : (
           <div className="mt-4 overflow-x-auto">
             <table className="w-full border-collapse text-sm">

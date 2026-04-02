@@ -57,41 +57,41 @@ export default function JoyDashboard() {
 
   if (loading)
     return (
-      <main className="experience-page">
-        <section className="panel">
-          <p className="muted">Preparing your briefing...</p>
+      <main className="min-h-screen">
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-muted-foreground">Preparing your briefing...</p>
         </section>
       </main>
     );
 
   if (!briefing)
     return (
-      <main className="experience-page">
-        <section className="panel">
+      <main className="min-h-screen">
+        <section className="rounded-xl border border-border bg-card p-6">
           <p>Could not load your briefing. Try refreshing.</p>
         </section>
       </main>
     );
 
   return (
-    <main className="experience-page">
+    <main className="min-h-screen">
       {/* -- Greeting ------------------------------------------------- */}
-      <section className="experience-hero text-center">
-        <div className="hero-copy mx-auto max-w-[700px]">
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24 text-center">
+        <div className="max-w-2xl mx-auto max-w-[700px]">
           <h1 className="text-[clamp(1.6rem,4vw,2.4rem)]">
             {briefing.greeting}
           </h1>
-          <p className="lede">{briefing.summary}</p>
+          <p className="text-lg text-foreground">{briefing.summary}</p>
         </div>
       </section>
 
       {/* -- Time Saved -- hero metric -------------------------------- */}
-      <section className="panel text-center border-2 border-[var(--accent)] bg-[var(--accent-soft)]">
-        <p className="eyebrow">Time you got back</p>
+      <section className="rounded-xl border border-border bg-card p-6 text-center border-2 border-[var(--accent)] bg-[var(--accent-soft)]">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Time you got back</p>
         <h2 className="my-2 text-[clamp(2rem,5vw,3.5rem)] text-[var(--accent)]">
           {briefing.timeSaved.totalHoursSaved.toFixed(1)} hours
         </h2>
-        <p className="muted">{briefing.timeSaved.personalMessage}</p>
+        <p className="text-muted-foreground">{briefing.timeSaved.personalMessage}</p>
         <p className="mt-2 text-sm font-bold">
           Worth ${briefing.timeSaved.equivalentValue.toLocaleString()} at
           $150/hr
@@ -101,12 +101,12 @@ export default function JoyDashboard() {
       {/* -- Wins ----------------------------------------------------- */}
       {briefing.wins.length > 0 && (
         <section>
-          <p className="eyebrow">Your wins</p>
-          <div className="grid two">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Your wins</p>
+          <div className="grid md:grid-cols-2 gap-6">
             {briefing.wins.map((win, i) => (
               <article
                 key={i}
-                className="panel border-l-4 border-l-[var(--success)]"
+                className="rounded-xl border border-border bg-card p-6 border-l-4 border-l-[var(--success)]"
               >
                 <p className="m-0 text-sm">{win}</p>
               </article>
@@ -118,15 +118,15 @@ export default function JoyDashboard() {
       {/* -- Milestones ----------------------------------------------- */}
       {briefing.milestones.length > 0 && (
         <section>
-          <p className="eyebrow">Milestones reached</p>
-          <div className="grid three">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Milestones reached</p>
+          <div className="grid md:grid-cols-3 gap-6">
             {briefing.milestones.map((m) => (
               <article
                 key={m.id}
-                className="panel text-center border-t-4 border-t-[var(--accent)]"
+                className="rounded-xl border border-border bg-card p-6 text-center border-t-4 border-t-[var(--accent)]"
               >
                 <h3 className="mb-1 text-base">{m.title}</h3>
-                <p className="muted text-sm">{m.message}</p>
+                <p className="text-muted-foreground text-sm">{m.message}</p>
                 <span className="mt-2 inline-block rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-bold text-[var(--accent-strong)]">
                   {m.metric}
                 </span>
@@ -139,13 +139,13 @@ export default function JoyDashboard() {
       {/* -- Attention Items ------------------------------------------ */}
       {briefing.attentionItems.length > 0 ? (
         <section>
-          <p className="eyebrow">Needs your attention</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Needs your attention</p>
           <div className="flex flex-col gap-2">
             {briefing.attentionItems.map((item, i) => (
               <Link
                 key={i}
                 href={item.actionUrl}
-                className={`panel flex items-center gap-3 no-underline border-l-4 ${
+                className={`rounded-xl border border-border bg-card p-6 flex items-center gap-3 no-underline border-l-4 ${
                   item.priority === "high"
                     ? "border-l-[var(--danger)]"
                     : item.priority === "medium"
@@ -162,19 +162,19 @@ export default function JoyDashboard() {
           </div>
         </section>
       ) : (
-        <section className="panel text-center">
+        <section className="rounded-xl border border-border bg-card p-6 text-center">
           <h2 className="mb-2">
             Nothing needs your attention right now
           </h2>
-          <p className="muted">
+          <p className="text-muted-foreground">
             Seriously. Go enjoy your coffee. The system is handling it.
           </p>
         </section>
       )}
 
       {/* -- Today's Recommendation ----------------------------------- */}
-      <section className="panel border-l-4 border-l-[var(--secondary)] bg-[var(--secondary-soft)]">
-        <p className="eyebrow">Your one thing for today</p>
+      <section className="rounded-xl border border-border bg-card p-6 border-l-4 border-l-[var(--secondary)] bg-[var(--secondary-soft)]">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Your one thing for today</p>
         <p className="m-0 text-base font-semibold">
           {briefing.recommendation}
         </p>
@@ -182,15 +182,15 @@ export default function JoyDashboard() {
 
       {/* -- Time Saved Breakdown ------------------------------------- */}
       <section>
-        <p className="eyebrow">Where your time was saved</p>
-        <div className="grid two">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Where your time was saved</p>
+        <div className="grid md:grid-cols-2 gap-6">
           {briefing.timeSaved.breakdown.map((item) => (
-            <article key={item.category} className="panel">
+            <article key={item.category} className="rounded-xl border border-border bg-card p-6">
               <h3 className="mb-1 text-sm">{item.category}</h3>
               <p className="m-0 text-xl font-extrabold text-[var(--accent)]">
                 {item.hoursSaved.toFixed(1)} hrs
               </p>
-              <p className="muted text-xs">{item.description}</p>
+              <p className="text-muted-foreground text-xs">{item.description}</p>
             </article>
           ))}
         </div>
@@ -198,7 +198,7 @@ export default function JoyDashboard() {
 
       {/* -- Footer --------------------------------------------------- */}
       <section className="py-10 text-center">
-        <Link href="/dashboard" className="secondary">
+        <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
           Back to dashboard
         </Link>
       </section>

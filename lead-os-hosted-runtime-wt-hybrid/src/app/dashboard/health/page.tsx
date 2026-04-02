@@ -167,9 +167,9 @@ export default function HealthDashboardPage() {
 
   if (loading && !data && !atRisk) {
     return (
-      <main className="experience-page">
+      <main className="min-h-screen">
         <section className="rounded-xl border border-border bg-card p-6">
-          <p className="muted">Loading health data...</p>
+          <p className="text-muted-foreground">Loading health data...</p>
         </section>
       </main>
     );
@@ -178,7 +178,7 @@ export default function HealthDashboardPage() {
   const usedFeatures = new Set(data?.featureUsage.map((f) => f.feature) ?? []);
 
   return (
-    <main className="experience-page">
+    <main className="min-h-screen">
       {isDemo && (
         <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-300 dark:border-amber-800 px-6 py-2.5 text-sm text-amber-800 dark:text-amber-200">
           Demo data — Sign in as an operator to see live tenant health scores.{" "}
@@ -188,7 +188,7 @@ export default function HealthDashboardPage() {
       <section className="rounded-xl border border-border bg-card p-6">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Product Analytics</p>
         <h1>Tenant Health</h1>
-        <p className="muted">Monitor tenant engagement, feature adoption, and churn risk.</p>
+        <p className="text-muted-foreground">Monitor tenant engagement, feature adoption, and churn risk.</p>
       </section>
 
       <section className="rounded-xl border border-border bg-card p-6 mt-6">
@@ -218,7 +218,7 @@ export default function HealthDashboardPage() {
         <>
           <section className="rounded-xl border border-border bg-card p-6 mt-6">
             <h2>Health Score</h2>
-            <p className="muted mb-4">Tenant: {tenantId}</p>
+            <p className="text-muted-foreground mb-4">Tenant: {tenantId}</p>
             <div className="flex gap-10 flex-wrap items-start">
               <ScoreGauge score={data.healthScore.score} riskLevel={data.healthScore.riskLevel} />
               <div className="flex-1 min-w-[240px]">
@@ -292,7 +292,7 @@ export default function HealthDashboardPage() {
       {atRisk && atRisk.atRiskTenants.length > 0 && (
         <section className="rounded-xl border border-border bg-card p-6 mt-6">
           <h2>At-Risk Tenants</h2>
-          <p className="muted mb-3">Tenants with health score below 40 that may churn.</p>
+          <p className="text-muted-foreground mb-3">Tenants with health score below 40 that may churn.</p>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>
@@ -334,7 +334,7 @@ export default function HealthDashboardPage() {
       {atRisk && atRisk.atRiskTenants.length === 0 && !data && (
         <section className="rounded-xl border border-border bg-card p-6 mt-6">
           <h2>All Tenants Healthy</h2>
-          <p className="muted">No tenants are currently at risk of churning. Enter a tenant ID above to view detailed health data.</p>
+          <p className="text-muted-foreground">No tenants are currently at risk of churning. Enter a tenant ID above to view detailed health data.</p>
         </section>
       )}
     </main>
