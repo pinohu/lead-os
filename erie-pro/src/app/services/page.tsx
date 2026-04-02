@@ -132,6 +132,12 @@ export default function ServicesPage() {
                         </Link>
                       </Button>
                       <Button asChild size="sm" variant="ghost">
+                        <Link href={`/${niche.slug}/directory`}>Directory</Link>
+                      </Button>
+                      <Button asChild size="sm" variant="ghost">
+                        <Link href={`/${niche.slug}/reviews`}>Reviews</Link>
+                      </Button>
+                      <Button asChild size="sm" variant="ghost">
                         <Link href={`/${niche.slug}/pricing`}>Pricing</Link>
                       </Button>
                       <Button asChild size="sm" variant="ghost">

@@ -72,6 +72,14 @@ export function MobileNav() {
           )}
 
           <Link
+            href="/directory"
+            onClick={close}
+            className="rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+          >
+            Directory
+          </Link>
+
+          <Link
             href="/areas"
             onClick={close}
             className="rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"

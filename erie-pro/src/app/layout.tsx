@@ -185,6 +185,17 @@ export default function RootLayout({
                     <NavigationMenuItem>
                       <NavigationMenuLink asChild>
                         <Link
+                          href="/directory"
+                          className="inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                        >
+                          Directory
+                        </Link>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+
+                    <NavigationMenuItem>
+                      <NavigationMenuLink asChild>
+                        <Link
                           href="/areas"
                           className="inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
                         >
@@ -290,6 +301,12 @@ export default function RootLayout({
                 <div>
                   <h4 className="mb-3 text-sm font-semibold">Company</h4>
                   <div className="space-y-2">
+                    <Link
+                      href="/directory"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Directory
+                    </Link>
                     <Link
                       href="/about"
                       className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
