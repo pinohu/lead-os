@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Loader2, Building, Shield, Flame, Lock } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, Building, Shield, Flame, Lock, Save } from "lucide-react";
 import { niches } from "@/lib/niches";
 import { cityConfig } from "@/lib/city-config";
 import {
@@ -64,9 +64,46 @@ export default function ClaimPage() {
   const [license, setLicense] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [tosAccepted, setTosAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<ClaimResult | null>(null);
   const [nicheStatus, setNicheStatus] = useState<NicheStatus | null>(null);
+  const [draftSaved, setDraftSaved] = useState(false);
+
+  const wasCancelled = searchParams.get("cancelled") === "true";
+
+  // ── localStorage draft restore on mount ───────────────────────────
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("claim-draft");
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (draft.niche && niches.some((n) => n.slug === draft.niche)) setNiche(draft.niche);
+        if (draft.tier && TIER_ORDER.includes(draft.tier)) setTier(draft.tier);
+        if (draft.businessName) setBusinessName(draft.businessName);
+        if (draft.email) setEmail(draft.email);
+        if (draft.phone) setPhone(draft.phone);
+        if (draft.description) setDescription(draft.description);
+        if (draft.license) setLicense(draft.license);
+      }
+    } catch { /* ignore corrupt localStorage */ }
+  }, []);
+
+  // ── Debounced draft save on field changes ─────────────────────────
+  const saveDraft = useCallback(() => {
+    const draft = { niche, tier, businessName, email, phone, description, license };
+    const hasContent = businessName || email || phone || description || license || niche;
+    if (hasContent) {
+      localStorage.setItem("claim-draft", JSON.stringify(draft));
+      setDraftSaved(true);
+      setTimeout(() => setDraftSaved(false), 2000);
+    }
+  }, [niche, tier, businessName, email, phone, description, license]);
+
+  useEffect(() => {
+    const timeout = setTimeout(saveDraft, 500);
+    return () => clearTimeout(timeout);
+  }, [saveDraft]);
 
   // Fetch niche status whenever niche selection changes
   useEffect(() => {
@@ -93,6 +130,10 @@ export default function ClaimPage() {
       setResult({ success: false, error: "Passwords do not match." });
       return;
     }
+    if (!tosAccepted) {
+      setResult({ success: false, error: "You must agree to the Terms of Service and Privacy Policy." });
+      return;
+    }
 
     setSubmitting(true);
     setResult(null);
@@ -110,6 +151,7 @@ export default function ClaimPage() {
           password,
           description: description || undefined,
           license: license || undefined,
+          tosAccepted: true,
         }),
       });
 
@@ -117,8 +159,8 @@ export default function ClaimPage() {
       setResult(data);
 
       if (data.success && data.checkoutUrl) {
-        // In production, this redirects to Stripe Checkout
-        // In dry-run, it shows the success state
+        // Clear draft on successful submission before redirect
+        localStorage.removeItem("claim-draft");
         window.location.href = data.checkoutUrl;
       }
     } catch {
@@ -151,6 +193,15 @@ export default function ClaimPage() {
           directed to complete payment to activate your exclusive territory.
         </p>
       </div>
+
+      {wasCancelled && (
+        <div className="rounded-lg border border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-800/50 p-4 mb-6">
+          <p className="font-semibold text-foreground">Payment was cancelled</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Your territory claim is saved. Complete payment to activate your territory.
+          </p>
+        </div>
+      )}
 
       {result?.success ? (
         <Card className="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/30" role="alert" aria-live="polite">
@@ -417,12 +468,43 @@ export default function ClaimPage() {
             </div>
           )}
 
+          {/* ToS Agreement */}
+          <div className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              id="tosAccepted"
+              checked={tosAccepted}
+              onChange={(e) => setTosAccepted(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-border"
+              required
+            />
+            <Label htmlFor="tosAccepted" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+              I agree to the{" "}
+              <Link href="/terms" className="underline text-foreground hover:text-primary" target="_blank">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="underline text-foreground hover:text-primary" target="_blank">
+                Privacy Policy
+              </Link>
+              . I understand that I can cancel my subscription at any time.
+            </Label>
+          </div>
+
+          {/* Draft saved indicator */}
+          {draftSaved && (
+            <p className="flex items-center gap-1.5 text-xs text-muted-foreground animate-in fade-in-0 duration-300">
+              <Save className="h-3 w-3" />
+              Draft saved
+            </p>
+          )}
+
           {/* Submit */}
           <Button
             type="submit"
             size="lg"
             className="w-full text-base"
-            disabled={submitting || !niche || !businessName || !email || !phone || !password || !confirmPassword || nicheStatus?.claimed === true}
+            disabled={submitting || !niche || !businessName || !email || !phone || !password || !confirmPassword || !tosAccepted || nicheStatus?.claimed === true}
           >
             {submitting ? (
               <>
@@ -435,18 +517,6 @@ export default function ClaimPage() {
               </>
             )}
           </Button>
-
-          <p className="text-center text-xs text-muted-foreground">
-            By submitting, you agree to our{" "}
-            <Link href="/terms" className="underline">
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link href="/privacy" className="underline">
-              Privacy Policy
-            </Link>
-            . You can cancel your subscription at any time.
-          </p>
         </form>
       )}
     </main>

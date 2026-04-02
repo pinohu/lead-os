@@ -42,6 +42,22 @@ export async function POST(request: NextRequest) {
 
     const { firstName, lastName, phone, email, message, niche, city, provider } = parsed.data
 
+    // ── Suppression list check (TCPA/CAN-SPAM compliance) ──────
+    const suppressed = await prisma.suppression.findFirst({
+      where: {
+        OR: [
+          { email },
+          ...(phone ? [{ phone }] : []),
+        ],
+      },
+    })
+    if (suppressed) {
+      return NextResponse.json(
+        { success: false, error: "This contact has opted out of communications" },
+        { status: 403 }
+      )
+    }
+
     // ── Self-dealing prevention ─────────────────────────────────
     const leadDomain = email.split("@")[1]?.toLowerCase()
     if (leadDomain) {

@@ -93,6 +93,9 @@ export const ClaimRequestSchema = z.object({
     .max(100, "License number too long")
     .transform(sanitizeText)
     .optional(),
+  tosAccepted: z.literal(true, {
+    error: "You must agree to the Terms of Service and Privacy Policy.",
+  }),
 });
 export type ClaimRequest = z.infer<typeof ClaimRequestSchema>;
 

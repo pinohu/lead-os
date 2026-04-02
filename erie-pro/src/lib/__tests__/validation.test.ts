@@ -88,6 +88,7 @@ describe("ClaimRequestSchema", () => {
     providerEmail: "JOE@example.com",
     phone: "(814) 555-0101",
     password: "SecurePass123!",
+    tosAccepted: true as const,
   };
 
   it("accepts valid claim data", () => {

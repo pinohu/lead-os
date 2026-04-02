@@ -23,6 +23,13 @@ interface EmailOptions {
 }
 
 const FROM_ADDRESS = `${cityConfig.name} Pro <noreply@${cityConfig.domain}>`;
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || `https://${cityConfig.domain}`;
+const PHYSICAL_ADDRESS = `123 State St, Erie, PA 16501`;
+
+/** Build the CAN-SPAM compliant unsubscribe URL for a recipient */
+function getUnsubscribeUrl(recipientEmail: string): string {
+  return `${SITE_URL}/api/unsubscribe?email=${encodeURIComponent(recipientEmail)}`;
+}
 
 /**
  * Send an email. Returns true on success.
@@ -30,6 +37,7 @@ const FROM_ADDRESS = `${cityConfig.name} Pro <noreply@${cityConfig.domain}>`;
  */
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   const apiKey = process.env.EMAILIT_API_KEY;
+  const unsubscribeUrl = getUnsubscribeUrl(options.to);
 
   if (!apiKey) {
     logger.info("email", `[DRY RUN] Would send to ${options.to}: ${options.subject}`);
@@ -53,7 +61,8 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
         html: options.html,
         reply_to: options.replyTo,
         headers: {
-          "List-Unsubscribe": `<mailto:unsubscribe@${cityConfig.domain}?subject=unsubscribe>`,
+          "List-Unsubscribe": `<${unsubscribeUrl}>`,
+          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
         },
       }),
     });
@@ -73,7 +82,8 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 
 // ── Email Templates ──────────────────────────────────────────────────
 
-function baseTemplate(content: string): string {
+function baseTemplate(content: string, recipientEmail?: string): string {
+  const unsubLink = recipientEmail ? getUnsubscribeUrl(recipientEmail) : `${SITE_URL}/api/unsubscribe`;
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -85,8 +95,9 @@ function baseTemplate(content: string): string {
     </div>
     <div style="text-align:center;margin-top:24px;font-size:12px;color:#9ca3af">
       <p style="margin:0">${cityConfig.name} Pro &middot; <a href="https://${cityConfig.domain}" style="color:#9ca3af">${cityConfig.domain}</a></p>
-      <p style="margin:4px 0 0">Erie, PA 16501</p>
+      <p style="margin:4px 0 0">${PHYSICAL_ADDRESS}</p>
       <p style="margin:8px 0 0"><a href="mailto:hello@${cityConfig.domain}" style="color:#9ca3af">hello@${cityConfig.domain}</a> &middot; <a href="https://${cityConfig.domain}/privacy" style="color:#9ca3af">Privacy Policy</a></p>
+      <p style="margin:8px 0 0"><a href="${unsubLink}" style="color:#9ca3af">Unsubscribe</a></p>
     </div>
   </div>
 </body>
@@ -117,7 +128,7 @@ export async function sendConsumerConfirmation(
         <li style="margin:8px 0">You are under no obligation — get a quote and decide</li>
       </ul>
       <p style="color:#6b7280;font-size:13px;margin:0">You consented to be contacted when you submitted this request. If you no longer wish to be contacted, reply to this email with &quot;cancel&quot; and we will remove your request.</p>
-    `),
+    `, consumerEmail),
     replyTo: `hello@${cityConfig.domain}`,
   });
 }
@@ -145,7 +156,7 @@ export async function sendNewLeadNotification(
       </table>
       <a href="https://${cityConfig.domain}/dashboard/leads" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">View in Dashboard</a>
       <p style="margin:16px 0 0;font-size:13px;color:#9ca3af">Respond within 5 minutes for the best conversion rates.</p>
-    `),
+    `, providerEmail),
   });
 }
 
@@ -182,7 +193,7 @@ export async function sendAdminLeadAlert(
         ${details.message ? `<tr><td style="padding:8px 0;color:#6b7280;vertical-align:top">Message:</td><td style="padding:8px 0;color:#111827">${escapeHtml(details.message)}</td></tr>` : ""}
       </table>
       <a href="https://${cityConfig.domain}/admin" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">View in Admin Dashboard</a>
-    `),
+    `, adminEmail),
   });
 }
 
@@ -207,7 +218,7 @@ export async function sendWelcomeEmail(
         <li style="margin:8px 0">Dispute bad leads for account credit</li>
       </ol>
       <a href="https://${cityConfig.domain}/dashboard" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">Go to Dashboard</a>
-    `),
+    `, providerEmail),
   });
 }
 
@@ -225,7 +236,7 @@ export async function sendSlaWarningEmail(
       <p style="color:#374151;margin:0 0 16px">Your lead <strong>${escapeHtml(leadName)}</strong> has been waiting <strong>${minutesElapsed} minutes</strong> without a response.</p>
       <p style="color:#374151;margin:0 0 24px">Leads that aren't responded to within 15 minutes may be routed to a backup provider.</p>
       <a href="https://${cityConfig.domain}/dashboard/leads" style="display:inline-block;background:#dc2626;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">Respond Now</a>
-    `),
+    `, providerEmail),
   });
 }
 
@@ -253,7 +264,7 @@ export async function sendAdminContactAlert(
         ${details.message ? `<tr><td style="padding:8px 0;color:#6b7280;vertical-align:top">Message:</td><td style="padding:8px 0;color:#111827">${escapeHtml(details.message)}</td></tr>` : ""}
       </table>
       <a href="https://${cityConfig.domain}/admin/messages" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">View in Admin</a>
-    `),
+    `, adminEmail),
     replyTo: details.email,
   });
 }
@@ -285,7 +296,7 @@ export async function sendListingOutreach(
       </ul>
       <a href="${escapeHtml(details.claimUrl)}" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">Claim Your Listing</a>
       <p style="margin:16px 0 0;font-size:13px;color:#9ca3af">If you did not expect this email, you can safely ignore it. Your listing was created from publicly available Google business data.</p>
-    `),
+    `, businessEmail),
   });
 }
 
@@ -303,6 +314,6 @@ export async function sendEmailVerification(
       <p style="color:#374151;margin:0 0 24px">Click the button below to verify your email address and activate your provider account.</p>
       <a href="${verifyUrl}" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">Verify Email</a>
       <p style="margin:16px 0 0;font-size:13px;color:#9ca3af">This link expires in 24 hours. If you didn't request this, you can ignore this email.</p>
-    `),
+    `, email),
   });
 }

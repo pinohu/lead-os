@@ -127,7 +127,11 @@ model Provider {
   stripeCustomerId    String?
   stripeSubscriptionId String?
   emailVerified       Boolean            @default(false)
+  emailVerifyToken    String?
   passwordHash        String?
+  tosAcceptedAt       DateTime?
+  gracePeriodEndsAt   DateTime?
+  notificationPrefs   Json?              @default("{}")
 
   // Performance metrics (denormalized for fast reads)
   totalLeads          Int                @default(0)
@@ -469,4 +473,18 @@ model DirectoryListing {
   @@index([niche, addressCity])
   @@index([slug])
   @@map("directory_listings")
+}
+
+// ── Suppression List (TCPA/CAN-SPAM compliance) ───────────────────
+
+model Suppression {
+  id        String   @id @default(cuid())
+  email     String?
+  phone     String?
+  reason    String   @default("unsubscribe")
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([phone])
+  @@map("suppressions")
 }

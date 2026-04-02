@@ -10,6 +10,7 @@ import { MobileNav } from "@/components/mobile-nav"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { LocalSeoFooter } from "@/components/local-seo-footer"
+import { CookieBanner } from "@/components/cookie-banner"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -334,6 +335,9 @@ export default function RootLayout({
               </div>
             </div>
           </footer>
+
+          {/* ── Cookie Consent Banner ─────────────────────────── */}
+          <CookieBanner />
         </ThemeProvider>
       </body>
     </html>

@@ -94,10 +94,10 @@ export async function POST(req: NextRequest) {
       lastLeadAt: undefined,
     });
 
-    // ── Store password hash on the provider profile ────────────────
+    // ── Store password hash + ToS acceptance on the provider profile ──
     await prisma.provider.update({
       where: { id: provider.id },
-      data: { passwordHash },
+      data: { passwordHash, tosAcceptedAt: new Date() },
     });
 
     // ── Create Stripe Checkout Session ────────────────────────────
