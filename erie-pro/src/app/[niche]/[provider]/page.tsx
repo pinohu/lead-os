@@ -432,7 +432,7 @@ export default async function ProviderPage({ params }: Props) {
               {data!.photoRefs.slice(0, 5).map((ref, i) => (
                 <img
                   key={i}
-                  src={`/api/places-photo?ref=${encodeURIComponent(ref)}&w=400`}
+                  src={ref.startsWith("http") ? ref : `/api/places-photo?ref=${encodeURIComponent(ref)}&w=400`}
                   alt={`${providerName} — ${niche.label} in ${cityConfig.name} (photo ${i + 1})`}
                   className="h-48 w-72 flex-shrink-0 rounded-lg object-cover shadow-sm"
                   loading={i === 0 ? "eager" : "lazy"}
@@ -820,7 +820,7 @@ export default async function ProviderPage({ params }: Props) {
                   itemOffered: { "@type": "Service", name: service, provider: { "@type": "LocalBusiness", name: providerName } },
                 })),
                 priceRange: niche.avgProjectValue,
-                image: hasPhotos ? `/api/places-photo?ref=${encodeURIComponent(data!.photoRefs[0])}&w=800` : `/api/og/${niche.slug}/${data?.slug ?? providerSlug}`,
+                image: hasPhotos ? (data!.photoRefs[0].startsWith("http") ? data!.photoRefs[0] : `/api/places-photo?ref=${encodeURIComponent(data!.photoRefs[0])}&w=800`) : `/api/og/${niche.slug}/${data?.slug ?? providerSlug}`,
               },
               {
                 "@type": "BreadcrumbList",
