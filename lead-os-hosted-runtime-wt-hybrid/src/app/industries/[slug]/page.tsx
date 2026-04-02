@@ -133,9 +133,9 @@ export default async function IndustryPage({ params, searchParams }: Props) {
         {/* ---------- Pain Points ---------- */}
         <section>
           <h2>Challenges {niche.label} businesses face every day</h2>
-          <div className="grid two">
+          <div className="grid md:grid-cols-2 gap-6">
             {painPoints.map((point, i) => (
-              <article key={i} className="panel">
+              <article key={i} className="rounded-xl border border-border bg-card p-6">
                 <p>{point}</p>
               </article>
             ))}
@@ -145,7 +145,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
         {/* ---------- Offers ---------- */}
         <section>
           <h2>What we build for {niche.label} teams</h2>
-          <ul className="check-list">
+          <ul className="space-y-2">
             {offers.map((offer, i) => (
               <li key={i}>{offer}</li>
             ))}
@@ -153,15 +153,15 @@ export default async function IndustryPage({ params, searchParams }: Props) {
         </section>
 
         {/* ---------- Assessment Teaser ---------- */}
-        <section className="panel">
-          <p className="eyebrow">Free diagnostic</p>
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Free diagnostic</p>
           <h2>Find out where your {niche.label} pipeline leaks revenue</h2>
           <p>
             Our two-minute assessment scores your current funnel against
             benchmarks from hundreds of {niche.label.toLowerCase()} businesses
             and returns a prioritized action plan.
           </p>
-          <div className="cta-row">
+          <div className="flex flex-wrap gap-3">
             <Link href={`/assess/${niche.slug}`} className="primary">
               {coldHeadline.ctaText.replace(/\{\{niche\}\}/g, niche.label)}
             </Link>
@@ -171,43 +171,43 @@ export default async function IndustryPage({ params, searchParams }: Props) {
         {/* ---------- Cross-Links ---------- */}
         <section>
           <h2>Explore more for {niche.label}</h2>
-          <div className="grid three">
-            <article className="panel">
-              <p className="eyebrow">Assessment</p>
+          <div className="grid md:grid-cols-3 gap-6">
+            <article className="rounded-xl border border-border bg-card p-6">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Assessment</p>
               <h3>Score your {niche.label} funnel</h3>
               <p>
                 Take a two-minute diagnostic and get a prioritized action plan
                 built for {niche.label.toLowerCase()} businesses.
               </p>
-              <div className="cta-row">
+              <div className="flex flex-wrap gap-3">
                 <Link href={`/assess/${niche.slug}`} className="primary">
                   Take the assessment
                 </Link>
               </div>
             </article>
 
-            <article className="panel">
-              <p className="eyebrow">Resources</p>
+            <article className="rounded-xl border border-border bg-card p-6">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Resources</p>
               <h3>The complete {niche.label} guide</h3>
               <p>
                 Strategies, benchmarks, and playbooks written specifically for
                 the {niche.label.toLowerCase()} industry.
               </p>
-              <div className="cta-row">
+              <div className="flex flex-wrap gap-3">
                 <Link href={`/resources/${niche.slug}`} className="secondary">
                   Read the complete guide
                 </Link>
               </div>
             </article>
 
-            <article className="panel">
-              <p className="eyebrow">For your role</p>
+            <article className="rounded-xl border border-border bg-card p-6">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">For your role</p>
               <h3>Built for agencies &amp; operators</h3>
               <p>
                 See how Lead&nbsp;OS fits your workflow — whether you run an
                 agency, a franchise, or an in-house growth team.
               </p>
-              <div className="cta-row">
+              <div className="flex flex-wrap gap-3">
                 <Link href="/for/agencies" className="secondary">
                   Built for your role
                 </Link>
@@ -222,16 +222,16 @@ export default async function IndustryPage({ params, searchParams }: Props) {
           if (testimonials.length === 0) return null;
           return (
             <section>
-              <p className="eyebrow">What {niche.label.toLowerCase()} leaders are saying</p>
-              <div className="grid three">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What {niche.label.toLowerCase()} leaders are saying</p>
+              <div className="grid md:grid-cols-3 gap-6">
                 {testimonials.map((t) => (
-                  <article key={t.author} className="panel flex flex-col gap-3">
+                  <article key={t.author} className="rounded-xl border border-border bg-card p-6 flex flex-col gap-3">
                     <p className="italic text-sm leading-relaxed flex-1">
                       &ldquo;{t.quote}&rdquo;
                     </p>
                     <div>
                       <strong className="block text-sm">{t.author}</strong>
-                      <span className="muted text-xs">{t.role}, {t.company}</span>
+                      <span className="text-muted-foreground text-xs">{t.role}, {t.company}</span>
                     </div>
                     <span className="inline-block px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-bold w-fit">
                       {t.metric}
@@ -249,12 +249,12 @@ export default async function IndustryPage({ params, searchParams }: Props) {
           return (
             <>
               <section>
-                <p className="eyebrow">What triggers {niche.label.toLowerCase()} buyers to act</p>
-                <div className="grid two">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What triggers {niche.label.toLowerCase()} buyers to act</p>
+                <div className="grid md:grid-cols-2 gap-6">
                   {intel.buyingTriggers.slice(0, 4).map((trigger) => (
-                    <article key={trigger.event} className="panel" style={{ borderLeft: `4px solid ${trigger.urgency === "immediate" ? "var(--danger)" : "var(--accent)"}` }}>
+                    <article key={trigger.event} className="rounded-xl border border-border bg-card p-6" style={{ borderLeft: `4px solid ${trigger.urgency === "immediate" ? "var(--danger)" : "var(--accent)"}` }}>
                       <h3 className="m-0 mb-1.5 text-sm">{trigger.event}</h3>
-                      <p className="muted text-xs m-0 mb-1">{trigger.searchBehavior}</p>
+                      <p className="text-muted-foreground text-xs m-0 mb-1">{trigger.searchBehavior}</p>
                       <span className="text-xs italic text-muted-foreground">{trigger.emotionalState}</span>
                     </article>
                   ))}
@@ -262,10 +262,10 @@ export default async function IndustryPage({ params, searchParams }: Props) {
               </section>
 
               <section>
-                <p className="eyebrow">Common objections — and how we address them</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Common objections — and how we address them</p>
                 <div className="flex flex-col gap-3">
                   {intel.objections.map((obj) => (
-                    <details key={obj.objection} className="panel cursor-pointer">
+                    <details key={obj.objection} className="rounded-xl border border-border bg-card p-6 cursor-pointer">
                       <summary className="font-bold text-sm">&ldquo;{obj.objection}&rdquo;</summary>
                       <div className="mt-3 pl-4 border-l-[3px] border-accent/20">
                         <p className="m-0 mb-1.5 text-sm"><strong>The real concern:</strong> {obj.underlyingFear}</p>
@@ -276,14 +276,14 @@ export default async function IndustryPage({ params, searchParams }: Props) {
                 </div>
               </section>
 
-              <section className="panel bg-secondary/5">
-                <p className="eyebrow">Decision journey for {niche.label.toLowerCase()} buyers</p>
+              <section className="rounded-xl border border-border bg-card p-6 bg-secondary/5">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Decision journey for {niche.label.toLowerCase()} buyers</p>
                 <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
                   {intel.decisionJourney.stages.map((stage, i) => (
                     <div key={stage.name} className="text-center">
                       <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-accent text-white font-extrabold text-sm mb-2">{i + 1}</span>
                       <h4 className="m-0 mb-1 text-sm">{stage.name}</h4>
-                      <p className="muted text-xs m-0">{stage.primaryAction}</p>
+                      <p className="text-muted-foreground text-xs m-0">{stage.primaryAction}</p>
                     </div>
                   ))}
                 </div>

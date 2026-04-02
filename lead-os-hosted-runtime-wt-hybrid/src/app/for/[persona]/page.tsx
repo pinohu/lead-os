@@ -244,9 +244,9 @@ export default async function PersonaPage({ params, searchParams }: Props) {
       >
         {/* ---------- Built for You ---------- */}
         <section>
-          <p className="eyebrow">Built for you</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Built for you</p>
           <h2>Core capabilities for {bp.label}</h2>
-          <ul className="check-list">
+          <ul className="space-y-2">
             {bp.idealServices.map((svc) => (
               <li key={svc}>{svc.replace(/-/g, " ")}</li>
             ))}
@@ -256,9 +256,9 @@ export default async function PersonaPage({ params, searchParams }: Props) {
         {/* ---------- Pain Points ---------- */}
         <section>
           <h2>Problems you are probably solving manually</h2>
-          <div className="grid two">
+          <div className="grid md:grid-cols-2 gap-6">
             {bp.painPoints.map((point, i) => (
-              <article key={i} className="panel">
+              <article key={i} className="rounded-xl border border-border bg-card p-6">
                 <p>{point}</p>
               </article>
             ))}
@@ -266,15 +266,15 @@ export default async function PersonaPage({ params, searchParams }: Props) {
         </section>
 
         {/* ---------- Recommended Approach ---------- */}
-        <section className="panel">
-          <p className="eyebrow">Your growth path</p>
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Your growth path</p>
           <h2>How {bp.label} succeed with Lead OS</h2>
           <ol className="journey-rail">
             {bp.approachSteps.map((step, i) => (
               <li key={i}>{step}</li>
             ))}
           </ol>
-          <div className="cta-row">
+          <div className="flex flex-wrap gap-3">
             <Link href={`/assess/${niche.slug}`} className="primary">
               {bp.ctaText}
             </Link>
@@ -285,17 +285,17 @@ export default async function PersonaPage({ params, searchParams }: Props) {
         </section>
 
         {/* ---------- Cross-Links ---------- */}
-        <section className="panel">
-          <p className="eyebrow">Go deeper</p>
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Go deeper</p>
           <h2>Resources for {bp.label}</h2>
-          <div className="grid three">
-            <article className="panel">
+          <div className="grid md:grid-cols-3 gap-6">
+            <article className="rounded-xl border border-border bg-card p-6">
               <h3>Industry Page</h3>
               <p>
                 Explore solutions built for{" "}
                 {niche.label.toLowerCase()} businesses.
               </p>
-              <div className="cta-row">
+              <div className="flex flex-wrap gap-3">
                 <Link
                   href={`/industries/${bp.recommendedNiche}`}
                   className="secondary"
@@ -304,12 +304,12 @@ export default async function PersonaPage({ params, searchParams }: Props) {
                 </Link>
               </div>
             </article>
-            <article className="panel">
+            <article className="rounded-xl border border-border bg-card p-6">
               <h3>Growth Assessment</h3>
               <p>
                 Score your readiness in two minutes and get an action plan.
               </p>
-              <div className="cta-row">
+              <div className="flex flex-wrap gap-3">
                 <Link
                   href={`/assess/${bp.recommendedNiche}`}
                   className="secondary"
@@ -318,13 +318,13 @@ export default async function PersonaPage({ params, searchParams }: Props) {
                 </Link>
               </div>
             </article>
-            <article className="panel">
+            <article className="rounded-xl border border-border bg-card p-6">
               <h3>Resource Guide</h3>
               <p>
                 Read the complete {niche.label.toLowerCase()} playbook
                 with pain points, solutions, and FAQs.
               </p>
-              <div className="cta-row">
+              <div className="flex flex-wrap gap-3">
                 <Link
                   href={`/resources/${bp.recommendedNiche}`}
                   className="secondary"

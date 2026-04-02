@@ -26,7 +26,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
   return (
     <main>
       {/* Confirmation hero */}
-      <section className="hero" aria-labelledby="check-email-heading">
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24" aria-labelledby="check-email-heading">
         {/* Email illustration */}
         <div
           aria-hidden="true"
@@ -35,11 +35,11 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
           ✉
         </div>
 
-        <p className="eyebrow">Check your inbox</p>
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Check your inbox</p>
         <h1 id="check-email-heading" className="text-[clamp(2rem,4vw,3.6rem)]">
           Magic link sent
         </h1>
-        <p className="lede hero-support">
+        <p className="text-lg text-muted-foreground">
           {email ? (
             <>
               We sent a secure sign-in link to{" "}
@@ -52,7 +52,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
       </section>
 
       {/* Tips panel */}
-      <section className="panel auth-panel" aria-label="What to do next">
+      <section className="rounded-xl border border-border bg-card p-6" aria-label="What to do next">
         <h2 className="text-base font-bold mb-4">
           What to do next
         </h2>
@@ -72,7 +72,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
               >
                 {index + 1}
               </span>
-              <span className="muted text-[0.95rem] pt-0.5">
+              <span className="text-muted-foreground text-[0.95rem] pt-0.5">
                 {step}
               </span>
             </li>
@@ -85,13 +85,13 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
             Didn&apos;t receive it?
           </h2>
           <ul className="list-none p-0 mb-5 grid gap-2">
-            <li className="muted flex items-start gap-2 text-sm">
+            <li className="text-muted-foreground flex items-start gap-2 text-sm">
               <span aria-hidden="true" className="text-muted-foreground shrink-0">
                 •
               </span>
               Make sure you used an approved operator email address.
             </li>
-            <li className="muted flex items-start gap-2 text-sm">
+            <li className="text-muted-foreground flex items-start gap-2 text-sm">
               <span aria-hidden="true" className="text-muted-foreground shrink-0">
                 •
               </span>

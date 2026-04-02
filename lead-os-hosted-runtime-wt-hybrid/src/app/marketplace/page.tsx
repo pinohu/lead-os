@@ -860,11 +860,11 @@ export default function PublicMarketplacePage() {
 
   return (
     <main className="mx-auto max-w-[1180px] px-6 py-10">
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Lead marketplace</p>
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead marketplace</p>
           <h1>Browse available leads</h1>
-          <p className="lede">
+          <p className="text-lg text-muted-foreground">
             Find and claim high-quality, pre-scored leads across multiple industries and niches.
             All leads are anonymized until purchase.
           </p>
@@ -873,11 +873,11 @@ export default function PublicMarketplacePage() {
 
       {/* Filters + Sort + Search */}
       <section
-        className="panel mt-6"
+        className="rounded-xl border border-border bg-card p-6 mt-6"
         role="search"
         aria-label="Filter and sort marketplace leads"
       >
-        <p className="eyebrow">Filters</p>
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Filters</p>
 
         <div className="mb-3.5">
           <FieldControl id="lead-search" label="Search">
@@ -989,17 +989,17 @@ export default function PublicMarketplacePage() {
 
       {/* Lead grid */}
       {loading ? (
-        <section className="panel mt-6">
-          <p className="muted">Loading available leads…</p>
+        <section className="rounded-xl border border-border bg-card p-6 mt-6">
+          <p className="text-muted-foreground">Loading available leads…</p>
         </section>
       ) : error ? (
-        <section className="panel mt-6">
-          <p className="eyebrow">Error</p>
-          <p className="muted">{error}</p>
+        <section className="rounded-xl border border-border bg-card p-6 mt-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Error</p>
+          <p className="text-muted-foreground">{error}</p>
         </section>
       ) : processedLeads.length === 0 ? (
-        <section className="panel mt-6">
-          <p className="muted">
+        <section className="rounded-xl border border-border bg-card p-6 mt-6">
+          <p className="text-muted-foreground">
             {searchQuery || nicheFilter || tempFilter || minPrice || maxPrice
               ? "No leads match your filters. Try adjusting your criteria."
               : "No leads available yet. Leads appear here as they enter the system through intake forms, assessments, and chat."}

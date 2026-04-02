@@ -37,12 +37,12 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   return (
     <main>
       {/* Brand header */}
-      <section className="hero" aria-labelledby="auth-heading">
-        <p className="eyebrow">Operator access</p>
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24" aria-labelledby="auth-heading">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Operator access</p>
         <h1 id="auth-heading" className="text-[clamp(2rem,4vw,3.6rem)]">
           {brandName}
         </h1>
-        <p className="lede hero-support">
+        <p className="text-lg text-muted-foreground">
           Your lead generation command center. Enter your email to receive a
           secure sign-in link.
         </p>
@@ -52,7 +52,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       <div className="auth-sign-in-layout grid gap-[18px] items-start grid-cols-1">
         {/* Auth form panel */}
         <section
-          className="panel auth-panel w-full"
+          className="rounded-xl border border-border bg-card p-6 w-full"
           aria-label="Sign-in form"
         >
           {error ? (
@@ -85,7 +85,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
               />
             </label>
 
-            <p id="email-help" className="muted form-help">
+            <p id="email-help" className="text-muted-foreground text-sm mt-1">
               Enter your email and we will send a secure sign-in link. No
               password needed.
             </p>
@@ -103,7 +103,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             {TRUST_ITEMS.map((item) => (
               <li
                 key={item}
-                className="muted flex items-start gap-2.5 text-sm"
+                className="text-muted-foreground flex items-start gap-2.5 text-sm"
               >
                 <span
                   aria-hidden="true"
@@ -118,7 +118,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
 
           {/* New-account link */}
           <div className="mt-7 pt-6 border-t border-border text-center">
-            <p className="muted mb-3 text-[0.95rem]">
+            <p className="text-muted-foreground mb-3 text-[0.95rem]">
               New to {brandName}?
             </p>
             <a href="/onboard" className="secondary inline-block">
@@ -129,7 +129,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
 
         {/* Feature panel — rendered below form on mobile, inline on wide screens via CSS */}
         <aside
-          className="panel"
+          className="rounded-xl border border-border bg-card p-6"
           aria-label="Platform features"
           style={{
             background:

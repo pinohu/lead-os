@@ -136,9 +136,9 @@ export default async function ResourcePage({ params, searchParams }: Props) {
         {/* ---------- Pain Points ---------- */}
         <section>
           <h2>The biggest challenges in {niche.label} today</h2>
-          <div className="grid two">
+          <div className="grid md:grid-cols-2 gap-6">
             {painPoints.map((point, i) => (
-              <article key={i} className="panel">
+              <article key={i} className="rounded-xl border border-border bg-card p-6">
                 <p>{point}</p>
               </article>
             ))}
@@ -148,17 +148,17 @@ export default async function ResourcePage({ params, searchParams }: Props) {
         {/* ---------- Problem-to-Solution Mapping ---------- */}
         <section>
           <h2>From problem to solution</h2>
-          <p className="lede">
+          <p className="text-lg text-muted-foreground">
             Every pain point above maps to a concrete system you can deploy.
             Here is what top-performing {niche.label.toLowerCase()} organizations
             put in place.
           </p>
-          <div className="grid two">
+          <div className="grid md:grid-cols-2 gap-6">
             {painPoints.slice(0, offers.length).map((point, i) => (
-              <article key={i} className="panel">
-                <p className="eyebrow">Challenge</p>
+              <article key={i} className="rounded-xl border border-border bg-card p-6">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Challenge</p>
                 <p>{point}</p>
-                <p className="eyebrow mt-3">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mt-3">
                   Solution
                 </p>
                 <p>{offers[i]}</p>
@@ -171,7 +171,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
         <section>
           <h2>Frequently asked questions about {niche.label}</h2>
           {faqItems.map((item, i) => (
-            <details key={i} className="panel mb-2">
+            <details key={i} className="rounded-xl border border-border bg-card p-6 mb-2">
               <summary>
                 <strong>{item.question}</strong>
               </summary>
@@ -181,15 +181,15 @@ export default async function ResourcePage({ params, searchParams }: Props) {
         </section>
 
         {/* ---------- CTA: Assessment ---------- */}
-        <section className="panel">
-          <p className="eyebrow">Take the next step</p>
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Take the next step</p>
           <h2>Score your {niche.label} growth readiness in two minutes</h2>
           <p>
             Our diagnostic assessment benchmarks your current funnel against
             hundreds of {niche.label.toLowerCase()} businesses and returns a
             prioritized action plan you can execute this week.
           </p>
-          <div className="cta-row">
+          <div className="flex flex-wrap gap-3">
             <Link href={`/assess/${niche.slug}`} className="primary">
               Start the Assessment
             </Link>
@@ -200,17 +200,17 @@ export default async function ResourcePage({ params, searchParams }: Props) {
         </section>
 
         {/* ---------- Cross-Links ---------- */}
-        <section className="panel">
-          <p className="eyebrow">Keep exploring</p>
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Keep exploring</p>
           <h2>More {niche.label} resources</h2>
-          <div className="grid two">
-            <article className="panel">
+          <div className="grid md:grid-cols-2 gap-6">
+            <article className="rounded-xl border border-border bg-card p-6">
               <h3>Industry Solutions</h3>
               <p>
                 See how Lead OS is configured specifically for{" "}
                 {niche.label.toLowerCase()} businesses.
               </p>
-              <div className="cta-row">
+              <div className="flex flex-wrap gap-3">
                 <Link
                   href={`/industries/${niche.slug}`}
                   className="secondary"
@@ -219,13 +219,13 @@ export default async function ResourcePage({ params, searchParams }: Props) {
                 </Link>
               </div>
             </article>
-            <article className="panel">
+            <article className="rounded-xl border border-border bg-card p-6">
               <h3>Growth Assessment</h3>
               <p>
                 Benchmark your {niche.label.toLowerCase()} operations in two
                 minutes and get a prioritized action plan.
               </p>
-              <div className="cta-row">
+              <div className="flex flex-wrap gap-3">
                 <Link href={`/assess/${niche.slug}`} className="secondary">
                   Take the assessment
                 </Link>

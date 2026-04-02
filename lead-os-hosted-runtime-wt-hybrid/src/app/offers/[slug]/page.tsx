@@ -76,20 +76,20 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
         { label: "Post-purchase", value: "Onboarding ready", detail: "Portal invite, activation, and continuity can begin immediately." },
       ]}
     >
-      <section className="grid two">
-        <article className="panel">
-          <p className="eyebrow">Why this offer page feels lighter</p>
+      <section className="grid md:grid-cols-2 gap-6">
+        <article className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Why this offer page feels lighter</p>
           <h2>One ask, one fallback, one reassurance</h2>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>Primary CTA stays singular so purchase intent does not fragment.</li>
             <li>Support CTA stays human and non-threatening for slower deciders.</li>
             <li>Proof and risk-reduction sit next to the ask instead of below the fold.</li>
           </ul>
         </article>
-        <article className="panel">
-          <p className="eyebrow">What happens after the decision</p>
+        <article className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What happens after the decision</p>
           <h2>No dead ends after purchase or hesitation</h2>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>Checkout success triggers onboarding, portal invite, and activation logic.</li>
             <li>Hesitation triggers recovery, coupon rescue, and second-touch re-entry.</li>
             <li>Returning visitors get a lighter path instead of repeating the same pitch.</li>
@@ -103,40 +103,40 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
         if (!offerTemplate) return null;
         return (
           <section>
-            <p className="eyebrow">Why this offer works for {niche.label}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Why this offer works for {niche.label}</p>
             <h2>Niche-specific offer blueprint</h2>
-            <div className="grid two">
-              <article className="panel">
-                <p className="eyebrow">Services included</p>
-                <ul className="check-list">
+            <div className="grid md:grid-cols-2 gap-6">
+              <article className="rounded-xl border border-border bg-card p-6">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Services included</p>
+                <ul className="space-y-2">
                   {offerTemplate.services.map((svc) => (
                     <li key={svc}>{svc}</li>
                   ))}
                 </ul>
               </article>
-              <article className="panel">
-                <p className="eyebrow">Pain points addressed</p>
-                <ul className="check-list">
+              <article className="rounded-xl border border-border bg-card p-6">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Pain points addressed</p>
+                <ul className="space-y-2">
                   {offerTemplate.language.painPoints.map((pp) => (
                     <li key={pp}>{pp}</li>
                   ))}
                 </ul>
               </article>
-              <article className="panel">
-                <p className="eyebrow">Desired outcomes</p>
-                <ul className="check-list">
+              <article className="rounded-xl border border-border bg-card p-6">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Desired outcomes</p>
+                <ul className="space-y-2">
                   {offerTemplate.language.desiredOutcomes.map((outcome) => (
                     <li key={outcome}>{outcome}</li>
                   ))}
                 </ul>
               </article>
-              <article className="panel">
-                <p className="eyebrow">Guarantee &amp; social proof</p>
+              <article className="rounded-xl border border-border bg-card p-6">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Guarantee &amp; social proof</p>
                 <p className="text-sm leading-relaxed">
                   <strong>{offerTemplate.guaranteeType.replace(/-/g, " ")} guarantee</strong>{" "}
                   &mdash; {offerTemplate.guaranteeDays} days
                 </p>
-                <p className="muted text-sm mt-2">
+                <p className="text-muted-foreground text-sm mt-2">
                   {offerTemplate.language.socialProofTemplate
                     .replace("{{count}}", "100+")
                     .replace("{{rating}}", "4.8")}
@@ -153,16 +153,16 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
         if (testimonials.length === 0) return null;
         return (
           <section>
-            <p className="eyebrow">What {niche.label.toLowerCase()} leaders are saying</p>
-            <div className="grid three">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What {niche.label.toLowerCase()} leaders are saying</p>
+            <div className="grid md:grid-cols-3 gap-6">
               {testimonials.map((t) => (
-                <article key={t.author} className="panel flex flex-col gap-3">
+                <article key={t.author} className="rounded-xl border border-border bg-card p-6 flex flex-col gap-3">
                   <p className="italic text-sm leading-relaxed flex-1">
                     &ldquo;{t.quote}&rdquo;
                   </p>
                   <div>
                     <strong className="block text-sm">{t.author}</strong>
-                    <span className="muted text-xs">{t.role}, {t.company}</span>
+                    <span className="text-muted-foreground text-xs">{t.role}, {t.company}</span>
                   </div>
                   <span className="inline-block px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-bold w-fit">
                     {t.metric}
@@ -178,17 +178,17 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
         const intel = getCustomerIntelligenceOrDefault(niche.slug);
         return (
           <section>
-            <p className="eyebrow">Addressing your concerns</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Addressing your concerns</p>
             <div className="flex flex-col gap-3">
               {intel.objections.map((obj) => (
-                <article key={obj.objection} className="panel border-l-4 border-l-emerald-500">
+                <article key={obj.objection} className="rounded-xl border border-border bg-card p-6 border-l-4 border-l-emerald-500">
                   <p className="m-0 mb-1.5 font-bold text-sm">&ldquo;{obj.objection}&rdquo;</p>
                   <p className="m-0 text-sm">{obj.evidenceBasedResponse}</p>
                 </article>
               ))}
             </div>
-            <div className="panel mt-4 bg-accent/10">
-              <p className="eyebrow">Our guarantee</p>
+            <div className="rounded-xl border border-border bg-card p-6 mt-4 bg-accent/10">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Our guarantee</p>
               <p className="m-0 text-sm font-semibold">
                 {intel.conversionPsychology.guaranteePreference === "money-back" ? "Full money-back guarantee if you don't see results." :
                  intel.conversionPsychology.guaranteePreference === "results-based" ? "Results guaranteed — or you don't pay." :

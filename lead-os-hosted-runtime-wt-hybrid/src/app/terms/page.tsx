@@ -24,12 +24,12 @@ export default function TermsOfServicePage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(termsJsonLd) }} />
-    <main id="main-content" className="experience-page">
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Legal</p>
+    <main id="main-content" className="min-h-screen">
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Legal</p>
           <h1>Terms of Service</h1>
-          <p className="lede">
+          <p className="text-lg text-muted-foreground">
             Last updated: March 28, 2026. Please read these terms carefully before using Lead OS.
           </p>
         </div>

@@ -101,9 +101,9 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
       ]}
     >
       {/* ── Quick Navigation ── */}
-      <section className="panel text-center">
-        <p className="eyebrow">Jump to a resource</p>
-        <div className="cta-row justify-center flex-wrap">
+      <section className="rounded-xl border border-border bg-card p-6 text-center">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Jump to a resource</p>
+        <div className="flex flex-wrap gap-3 justify-center">
           <Link href={`/industries/${niche.slug}`} className="primary">Industry Overview</Link>
           <Link href={`/assess/${niche.slug}`} className="secondary">Take Assessment</Link>
           <Link href={`/resources/${niche.slug}`} className="secondary">Read the Guide</Link>
@@ -114,10 +114,10 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
       {/* ── Pain Points ── */}
       {painPoints.length > 0 && (
         <section>
-          <p className="eyebrow">Common {niche.label.toLowerCase()} challenges</p>
-          <div className="grid two">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Common {niche.label.toLowerCase()} challenges</p>
+          <div className="grid md:grid-cols-2 gap-6">
             {painPoints.map((pain) => (
-              <article key={pain} className="panel">
+              <article key={pain} className="rounded-xl border border-border bg-card p-6">
                 <p className="m-0 text-sm leading-relaxed">{pain}</p>
               </article>
             ))}
@@ -128,10 +128,10 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
       {/* ── Solutions ── */}
       {offers.length > 0 && (
         <section>
-          <p className="eyebrow">Available {niche.label.toLowerCase()} solutions</p>
-          <div className="grid two">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Available {niche.label.toLowerCase()} solutions</p>
+          <div className="grid md:grid-cols-2 gap-6">
             {offers.map((offer) => (
-              <article key={offer} className="panel">
+              <article key={offer} className="rounded-xl border border-border bg-card p-6">
                 <p className="m-0 text-sm leading-relaxed">{offer}</p>
               </article>
             ))}
@@ -142,16 +142,16 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
       {/* ── Testimonials ── */}
       {testimonials.length > 0 && (
         <section>
-          <p className="eyebrow">What {niche.label.toLowerCase()} leaders say</p>
-          <div className="grid three">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What {niche.label.toLowerCase()} leaders say</p>
+          <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((t) => (
-              <article key={t.author} className="panel flex flex-col gap-3">
+              <article key={t.author} className="rounded-xl border border-border bg-card p-6 flex flex-col gap-3">
                 <p className="italic text-sm leading-relaxed flex-1">
                   &ldquo;{t.quote}&rdquo;
                 </p>
                 <div>
                   <strong className="text-sm">{t.author}</strong>
-                  <span className="muted block text-xs">{t.role}, {t.company}</span>
+                  <span className="text-muted-foreground block text-xs">{t.role}, {t.company}</span>
                 </div>
                 <span className="inline-block px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-bold w-fit">
                   {t.metric}
@@ -164,14 +164,14 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
 
       {/* ── Calculator Preview ── */}
       {calcPreset && (
-        <section className="panel">
-          <p className="eyebrow">{niche.label} ROI estimator</p>
+        <section className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{niche.label} ROI estimator</p>
           <h2>{calcPreset.resultLabel}</h2>
-          <p className="muted">{calcPreset.formula}</p>
+          <p className="text-muted-foreground">{calcPreset.formula}</p>
           <p className="mt-3 px-4 py-3 rounded-md bg-accent/10 font-bold text-sm">
             {calcPreset.proofPoint}
           </p>
-          <div className="cta-row">
+          <div className="flex flex-wrap gap-3">
             <Link href={`/calculator?niche=${niche.slug}`} className="primary">Open the full calculator</Link>
           </div>
         </section>
@@ -179,14 +179,14 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
 
       {/* ── Recommended Funnels ── */}
       <section>
-        <p className="eyebrow">Recommended funnel blueprints</p>
-        <div className="grid two">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Recommended funnel blueprints</p>
+        <div className="grid md:grid-cols-2 gap-6">
           {niche.recommendedFunnels.map((funnel) => (
-            <article key={funnel} className="panel">
+            <article key={funnel} className="rounded-xl border border-border bg-card p-6">
               <h3 className="m-0 text-base capitalize">
                 {funnel.replace(/-/g, " ")} funnel
               </h3>
-              <p className="muted text-sm">
+              <p className="text-muted-foreground text-sm">
                 Pre-built blueprint optimized for {niche.label.toLowerCase()} businesses.
               </p>
               <Link href={`/funnel/${funnel}?niche=${niche.slug}`} className="text-sm text-primary">
@@ -202,9 +202,9 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
         const intel = getCustomerIntelligenceOrDefault(niche.slug);
         return (
           <section>
-            <p className="eyebrow">How we compare</p>
-            <div className="grid two">
-              <article className="panel">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">How we compare</p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <article className="rounded-xl border border-border bg-card p-6">
                 <h3 className="m-0 mb-2 text-sm">Alternatives you may be considering</h3>
                 <ul className="m-0 pl-5 text-sm leading-loose">
                   {intel.competitors.alternatives.map((alt) => (
@@ -212,7 +212,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
                   ))}
                 </ul>
               </article>
-              <article className="panel">
+              <article className="rounded-xl border border-border bg-card p-6">
                 <h3 className="m-0 mb-2 text-sm">What makes Lead OS different</h3>
                 <ul className="m-0 pl-5 text-sm leading-loose">
                   {intel.competitors.differentiators.map((diff) => (
@@ -221,7 +221,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
                 </ul>
               </article>
             </div>
-            <p className="muted text-center mt-3 text-xs">
+            <p className="text-muted-foreground text-center mt-3 text-xs">
               Switching costs: {intel.competitors.switchingCosts}
             </p>
           </section>

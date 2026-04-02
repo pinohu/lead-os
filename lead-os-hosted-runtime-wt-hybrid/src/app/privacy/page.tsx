@@ -24,12 +24,12 @@ export default function PrivacyPolicyPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(privacyJsonLd) }} />
-    <main id="main-content" className="experience-page">
-      <section className="experience-hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Legal</p>
+    <main id="main-content" className="min-h-screen">
+      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Legal</p>
           <h1>Privacy Policy</h1>
-          <p className="lede">
+          <p className="text-lg text-muted-foreground">
             Last updated: January 15, 2026. This policy explains how Lead OS collects, uses, shares,
             and protects your personal information, and the rights you have over that data.
           </p>
@@ -37,7 +37,7 @@ export default function PrivacyPolicyPage() {
       </section>
 
       <article
-        className="panel max-w-4xl mx-auto leading-relaxed"
+        className="rounded-xl border border-border bg-card p-6 max-w-4xl mx-auto leading-relaxed"
       >
         <section aria-labelledby="controller-heading" className="mb-10">
           <h2 id="controller-heading">1. Data Controller</h2>
@@ -64,7 +64,7 @@ export default function PrivacyPolicyPage() {
           <p>We collect the following categories of personal data:</p>
 
           <h3 className="mt-5">2.1 Data You Provide Directly</h3>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>
               <strong>Contact information:</strong> Name, email address, phone number, and postal
               address submitted through lead capture forms.
@@ -84,7 +84,7 @@ export default function PrivacyPolicyPage() {
           </ul>
 
           <h3 className="mt-5">2.2 Data Collected Automatically</h3>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>
               <strong>Usage data:</strong> Pages visited, time spent, click patterns, funnel stage
               progression, and milestone events.
@@ -104,7 +104,7 @@ export default function PrivacyPolicyPage() {
           </ul>
 
           <h3 className="mt-5">2.3 Data from Third Parties</h3>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>
               <strong>Partner programs:</strong> Referral identifiers from affiliate and partner
               networks such as Partnero.
@@ -122,7 +122,7 @@ export default function PrivacyPolicyPage() {
             If you are located in the European Economic Area (EEA) or United Kingdom, we process
             your personal data under the following legal bases:
           </p>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>
               <strong>Consent (Art. 6(1)(a)):</strong> Where you have given explicit consent, such
               as submitting a lead capture form or opting into communications.
@@ -145,7 +145,7 @@ export default function PrivacyPolicyPage() {
 
         <section aria-labelledby="use-heading" className="mb-10">
           <h2 id="use-heading">4. How We Use Your Data</h2>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>Capture and qualify leads on behalf of platform operators.</li>
             <li>Score leads based on engagement signals, behavior, and qualification responses.</li>
             <li>Route leads to appropriate operator workflows, CRMs, and follow-up sequences.</li>
@@ -163,7 +163,7 @@ export default function PrivacyPolicyPage() {
           <p>
             We do not sell your personal data. We share data only in the following circumstances:
           </p>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>
               <strong>Platform operators:</strong> Lead data is shared with the operator (business)
               whose form or funnel captured the lead, as this is the core function of the service.
@@ -193,7 +193,7 @@ export default function PrivacyPolicyPage() {
         <section aria-labelledby="cookies-heading" className="mb-10">
           <h2 id="cookies-heading">6. Cookies and Tracking Technologies</h2>
           <p>We use the following categories of cookies and similar technologies:</p>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>
               <strong>Strictly necessary:</strong> Session management, authentication tokens, and
               security cookies required for the platform to function.
@@ -220,7 +220,7 @@ export default function PrivacyPolicyPage() {
         <section aria-labelledby="retention-heading" className="mb-10">
           <h2 id="retention-heading">7. Data Retention</h2>
           <p>We retain personal data for the following periods:</p>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>
               <strong>Lead records:</strong> Retained for the duration of the operator account plus
               90 days following account termination, or as required by applicable law.
@@ -249,7 +249,7 @@ export default function PrivacyPolicyPage() {
             or Switzerland, your personal data may be transferred to and processed in the United
             States. We implement appropriate safeguards for these transfers, including:
           </p>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>
               Standard Contractual Clauses (SCCs) approved by the European Commission.
             </li>
@@ -267,7 +267,7 @@ export default function PrivacyPolicyPage() {
 
           <h3 className="mt-5">9.1 GDPR Rights (EEA and UK Residents)</h3>
           <p>If you are located in the EEA or UK, you have the following rights:</p>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>
               <strong>Right of access (Art. 15):</strong> Request a copy of the personal data we
               hold about you. Exercise this right at{" "}
@@ -306,7 +306,7 @@ export default function PrivacyPolicyPage() {
             Under the California Consumer Privacy Act (CCPA) and California Privacy Rights Act
             (CPRA), California residents have the following rights:
           </p>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>
               <strong>Right to know:</strong> Request disclosure of the categories and specific
               pieces of personal information collected about you.
@@ -346,7 +346,7 @@ export default function PrivacyPolicyPage() {
             We implement industry-standard technical and organizational security measures to protect
             your personal data, including:
           </p>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>Encryption of data in transit using TLS 1.2 or higher.</li>
             <li>Encryption of sensitive data at rest.</li>
             <li>Passwordless authentication (magic link) for operator accounts.</li>
@@ -377,7 +377,7 @@ export default function PrivacyPolicyPage() {
             Our platform integrates with third-party services at the operator&apos;s direction.
             These may include:
           </p>
-          <ul className="check-list">
+          <ul className="space-y-2">
             <li>Email marketing and CRM platforms (e.g., ActiveCampaign, HubSpot, GoHighLevel).</li>
             <li>Scheduling tools (e.g., Calendly, Cal.com).</li>
             <li>Payment processors (governed by their own privacy policies).</li>
