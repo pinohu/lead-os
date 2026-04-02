@@ -272,7 +272,7 @@ export default function AttributionPage() {
         <article className="panel">
           <p className="eyebrow">Campaign performance</p>
           <h2>Funnel family breakdown</h2>
-          {analyticsData.funnelPerformance.length === 0 ? (
+          {!analyticsData?.funnelPerformance?.length ? (
             <p className="muted">No funnel data available.</p>
           ) : (
             <div style={{ overflowX: "auto", marginTop: 16 }}>
