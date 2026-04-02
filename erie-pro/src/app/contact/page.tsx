@@ -3,13 +3,11 @@ import type { Metadata } from "next"
 import {
   Mail,
   MapPin,
-  Send,
   MessageSquare,
   Phone,
   Clock,
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -18,9 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import ContactForm from "@/components/contact-form"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -33,7 +29,7 @@ import {
 export const metadata: Metadata = {
   title: `Contact ${cityConfig.domain} — Get in Touch`,
   description: `Contact the ${cityConfig.domain} team. Questions about finding a provider, listing your business, or feedback about the platform.`,
-  alternates: { canonical: 'https://erie.pro/contact' },
+  alternates: { canonical: `https://${cityConfig.domain}/contact` },
 }
 
 export default function ContactPage() {
@@ -90,83 +86,7 @@ export default function ContactPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form className="space-y-6" action="/api/contact" method="POST" aria-label="Contact form">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName">First name <span className="text-destructive" aria-label="required">*</span></Label>
-                      <Input
-                        id="firstName"
-                        name="firstName"
-                        type="text"
-                        required
-                        aria-required="true"
-                        placeholder="John"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">Last name</Label>
-                      <Input
-                        id="lastName"
-                        name="lastName"
-                        type="text"
-                        placeholder="Smith"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email <span className="text-destructive" aria-label="required">*</span></Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      aria-required="true"
-                      placeholder="john@example.com"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone (optional)</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="(814) 555-0199"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="subject">Subject <span className="text-destructive" aria-label="required">*</span></Label>
-                    <Input
-                      id="subject"
-                      name="subject"
-                      type="text"
-                      required
-                      aria-required="true"
-                      placeholder="What is this about?"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="message">Message <span className="text-destructive" aria-label="required">*</span></Label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      required
-                      aria-required="true"
-                      rows={5}
-                      placeholder="Tell us how we can help..."
-                    />
-                  </div>
-
-                  <div role="alert" className="empty:hidden text-sm font-medium text-destructive" />
-
-                  <Button type="submit" className="w-full" size="lg">
-                    <Send className="mr-2 h-4 w-4" />
-                    Send Message
-                  </Button>
-                </form>
+                <ContactForm submitLabel="Send Message" />
               </CardContent>
             </Card>
           </div>

@@ -62,6 +62,8 @@ export default function ClaimPage() {
   const [phone, setPhone] = useState("");
   const [description, setDescription] = useState("");
   const [license, setLicense] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<ClaimResult | null>(null);
   const [nicheStatus, setNicheStatus] = useState<NicheStatus | null>(null);
@@ -82,6 +84,16 @@ export default function ClaimPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (password.length < 8) {
+      setResult({ success: false, error: "Password must be at least 8 characters." });
+      return;
+    }
+    if (password !== confirmPassword) {
+      setResult({ success: false, error: "Passwords do not match." });
+      return;
+    }
+
     setSubmitting(true);
     setResult(null);
 
@@ -95,6 +107,7 @@ export default function ClaimPage() {
           providerName: businessName,
           providerEmail: email,
           phone,
+          password,
           description: description || undefined,
           license: license || undefined,
         }),
@@ -314,6 +327,36 @@ export default function ClaimPage() {
                 </div>
               </div>
 
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="password">Dashboard Password *</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Min. 8 characters"
+                    minLength={8}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password"
+                    minLength={8}
+                    required
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                You&apos;ll use this password to log into your provider dashboard after payment.
+              </p>
+
               <div className="space-y-2">
                 <Label htmlFor="description">Business Description</Label>
                 <Textarea
@@ -379,7 +422,7 @@ export default function ClaimPage() {
             type="submit"
             size="lg"
             className="w-full text-base"
-            disabled={submitting || !niche || !businessName || !email || !phone || nicheStatus?.claimed === true}
+            disabled={submitting || !niche || !businessName || !email || !phone || !password || !confirmPassword || nicheStatus?.claimed === true}
           >
             {submitting ? (
               <>

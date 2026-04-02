@@ -19,8 +19,11 @@ import {
   BarChart3,
   Award,
   Activity,
+  FileWarning,
+  ScrollText,
 } from "lucide-react"
-import { getAllProviders, getProvider } from "@/lib/provider-store"
+import { getProvider } from "@/lib/provider-store"
+import { prisma } from "@/lib/db"
 import { cityConfig } from "@/lib/city-config"
 import { getNicheBySlug } from "@/lib/niches"
 import { getBadgeLabel, getTierColor } from "@/lib/premium-rewards"
@@ -45,13 +48,11 @@ import {
 
 type Props = { params: Promise<{ id: string }> }
 
-export function generateStaticParams() {
-  return getAllProviders().map((p) => ({ id: p.id }))
-}
+export const dynamic = "force-dynamic"
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
-  const provider = getProvider(id)
+  const provider = await getProvider(id)
   if (!provider) return { title: "Provider Not Found" }
   return {
     title: `${provider.businessName} -- Admin -- ${cityConfig.domain}`,
@@ -59,104 +60,95 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-// Sample lead history for the provider
-function getSampleLeads(providerName: string) {
-  return [
-    {
-      id: "lead-001",
-      customer: "Mike Henderson",
-      message: "Water heater leaking urgently",
-      status: "converted",
-      value: "$1,200",
-      date: "2026-03-28",
-      responseTime: "7 min",
-    },
-    {
-      id: "lead-002",
-      customer: "Sarah Collins",
-      message: "Annual maintenance check needed",
-      status: "converted",
-      value: "$250",
-      date: "2026-03-25",
-      responseTime: "12 min",
-    },
-    {
-      id: "lead-003",
-      customer: "Tom Richards",
-      message: "New construction rough-in quote",
-      status: "responded",
-      value: "Pending",
-      date: "2026-03-22",
-      responseTime: "22 min",
-    },
-    {
-      id: "lead-004",
-      customer: "Linda Park",
-      message: "Bathroom remodel plumbing",
-      status: "converted",
-      value: "$3,800",
-      date: "2026-03-18",
-      responseTime: "5 min",
-    },
-    {
-      id: "lead-005",
-      customer: "James Wright",
-      message: "Emergency pipe burst",
-      status: "converted",
-      value: "$850",
-      date: "2026-03-15",
-      responseTime: "3 min",
-    },
-    {
-      id: "lead-006",
-      customer: "Amy Chen",
-      message: "Drain cleaning appointment",
-      status: "no-response",
-      value: "Lost",
-      date: "2026-03-12",
-      responseTime: "N/A",
-    },
-    {
-      id: "lead-007",
-      customer: "Robert Davis",
-      message: "Kitchen faucet replacement",
-      status: "responded",
-      value: "Pending",
-      date: "2026-03-10",
-      responseTime: "15 min",
-    },
-    {
-      id: "lead-008",
-      customer: "Jennifer Smith",
-      message: "Sewer line inspection request",
-      status: "converted",
-      value: "$2,400",
-      date: "2026-03-05",
-      responseTime: "9 min",
-    },
-  ]
+function getTemperatureColor(temp: string) {
+  switch (temp) {
+    case "burning":
+      return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+    case "hot":
+      return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+    case "warm":
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+    case "cold":
+      return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+    default:
+      return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+  }
 }
 
-function getStatusColor(status: string) {
-  switch (status) {
+function getOutcomeColor(outcome: string) {
+  switch (outcome) {
     case "converted":
       return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
     case "responded":
       return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-    case "no-response":
+    case "no_response":
       return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+    case "declined":
+      return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+    case "cancelled":
+      return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
     default:
-      return "bg-gray-100 text-gray-800"
+      return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
   }
+}
+
+function getDisputeStatusColor(status: string) {
+  switch (status) {
+    case "approved":
+      return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+    case "denied":
+      return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+    case "pending":
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+    default:
+      return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+  }
+}
+
+function formatResponseTime(seconds: number | null | undefined): string {
+  if (seconds == null || seconds <= 0) return "N/A"
+  if (seconds < 60) return `${Math.round(seconds)}s`
+  return `${Math.round(seconds / 60)}m`
 }
 
 export default async function ProviderDetailPage({ params }: Props) {
   const { id } = await params
-  const provider = getProvider(id)
+  const provider = await getProvider(id)
   if (!provider) notFound()
 
   const niche = getNicheBySlug(provider.niche)
-  const leads = getSampleLeads(provider.businessName)
+
+  // Fetch real data from database in parallel
+  const [leads, disputes, auditEntries] = await Promise.all([
+    prisma.lead.findMany({
+      where: { routedToId: id },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      include: {
+        outcomes: {
+          select: { outcome: true, responseTimeSeconds: true },
+          take: 1,
+          orderBy: { createdAt: "desc" },
+        },
+      },
+    }),
+    prisma.leadDispute.findMany({
+      where: { providerId: id },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      include: {
+        lead: {
+          select: { firstName: true, lastName: true, email: true },
+        },
+      },
+    }),
+    prisma.auditLog.findMany({
+      where: { providerId: id },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    }),
+  ])
+
   const convRate =
     provider.totalLeads > 0
       ? Math.round((provider.convertedLeads / provider.totalLeads) * 100)
@@ -167,12 +159,12 @@ export default async function ProviderDetailPage({ params }: Props) {
       : 0
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <>
       {/* ── Back link ──────────────────────────────────────── */}
       <Button asChild variant="ghost" size="sm" className="mb-6">
-        <Link href="/admin">
+        <Link href="/admin/providers">
           <ArrowLeft className="mr-1 h-4 w-4" />
-          Back to Dashboard
+          Back to Providers
         </Link>
       </Button>
 
@@ -434,72 +426,274 @@ export default async function ProviderDetailPage({ params }: Props) {
       </div>
 
       {/* ── Lead History ───────────────────────────────────── */}
-      <Card>
+      <Card className="mb-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5 text-primary" />
             Lead History
           </CardTitle>
           <CardDescription>
-            Recent leads routed to {provider.businessName}
+            Recent leads routed to {provider.businessName} ({leads.length} shown)
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Lead ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Request</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Value</TableHead>
-                <TableHead>Response Time</TableHead>
-                <TableHead>Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {leads.map((lead) => (
-                <TableRow key={lead.id}>
-                  <TableCell className="font-mono text-xs">
-                    {lead.id}
-                  </TableCell>
-                  <TableCell className="text-sm font-medium">
-                    {lead.customer}
-                  </TableCell>
-                  <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground">
-                    {lead.message}
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${getStatusColor(
-                        lead.status
-                      )}`}
-                    >
-                      {lead.status.replace("-", " ")}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-sm font-medium">
-                    {lead.value}
-                  </TableCell>
-                  <TableCell className="text-xs">
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3 text-muted-foreground" />
-                      {lead.responseTime}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {new Date(lead.date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          {leads.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              No leads have been routed to this provider yet.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Lead ID</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Message</TableHead>
+                    <TableHead>Temperature</TableHead>
+                    <TableHead>Outcome</TableHead>
+                    <TableHead>Response Time</TableHead>
+                    <TableHead>Date</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {leads.map((lead) => {
+                    const outcome = lead.outcomes[0]?.outcome ?? "pending"
+                    const responseSeconds =
+                      lead.outcomes[0]?.responseTimeSeconds ?? null
+
+                    return (
+                      <TableRow key={lead.id}>
+                        <TableCell className="font-mono text-xs">
+                          {lead.id.slice(0, 8)}...
+                        </TableCell>
+                        <TableCell className="text-sm font-medium whitespace-nowrap">
+                          {[lead.firstName, lead.lastName]
+                            .filter(Boolean)
+                            .join(" ") || "Unknown"}
+                        </TableCell>
+                        <TableCell className="text-xs">
+                          <a
+                            href={`mailto:${lead.email}`}
+                            className="text-primary hover:underline"
+                          >
+                            {lead.email}
+                          </a>
+                        </TableCell>
+                        <TableCell className="text-xs whitespace-nowrap">
+                          {lead.phone || "N/A"}
+                        </TableCell>
+                        <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground">
+                          {lead.message || "No message"}
+                        </TableCell>
+                        <TableCell>
+                          <span
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${getTemperatureColor(
+                              lead.temperature
+                            )}`}
+                          >
+                            {lead.temperature}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${getOutcomeColor(
+                              outcome
+                            )}`}
+                          >
+                            {outcome.replace("_", " ")}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-xs whitespace-nowrap">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3 text-muted-foreground" />
+                            {formatResponseTime(responseSeconds)}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                          {new Date(lead.createdAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
-    </main>
+
+      {/* ── Disputes ───────────────────────────────────────── */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileWarning className="h-5 w-5 text-orange-500" />
+            Disputes
+          </CardTitle>
+          <CardDescription>
+            Lead disputes filed by {provider.businessName} ({disputes.length}{" "}
+            shown)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {disputes.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              No disputes filed by this provider.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Dispute ID</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Reason</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Credit</TableHead>
+                    <TableHead>Filed</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {disputes.map((dispute) => (
+                    <TableRow key={dispute.id}>
+                      <TableCell className="font-mono text-xs">
+                        {dispute.id.slice(0, 8)}...
+                      </TableCell>
+                      <TableCell className="text-sm font-medium whitespace-nowrap">
+                        {[dispute.lead.firstName, dispute.lead.lastName]
+                          .filter(Boolean)
+                          .join(" ") || "Unknown"}
+                      </TableCell>
+                      <TableCell className="text-xs">
+                        {dispute.lead.email ? (
+                          <a
+                            href={`mailto:${dispute.lead.email}`}
+                            className="text-primary hover:underline"
+                          >
+                            {dispute.lead.email}
+                          </a>
+                        ) : (
+                          "N/A"
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="capitalize text-xs">
+                          {dispute.reason.replace("_", " ")}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground">
+                        {dispute.description || "No description"}
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${getDisputeStatusColor(
+                            dispute.status
+                          )}`}
+                        >
+                          {dispute.status}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {dispute.creditAmount != null
+                          ? `$${dispute.creditAmount.toFixed(2)}`
+                          : "--"}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                        {new Date(dispute.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ── Audit Trail ────────────────────────────────────── */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ScrollText className="h-5 w-5 text-muted-foreground" />
+            Audit Trail
+          </CardTitle>
+          <CardDescription>
+            Recent activity for {provider.businessName} ({auditEntries.length}{" "}
+            shown)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {auditEntries.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              No audit log entries for this provider.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Action</TableHead>
+                    <TableHead>Entity Type</TableHead>
+                    <TableHead>Entity ID</TableHead>
+                    <TableHead>IP Address</TableHead>
+                    <TableHead>Metadata</TableHead>
+                    <TableHead>Date</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {auditEntries.map((entry) => (
+                    <TableRow key={entry.id}>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">
+                          {entry.action}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm capitalize">
+                        {entry.entityType}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {entry.entityId
+                          ? `${entry.entityId.slice(0, 8)}...`
+                          : "--"}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {entry.ipAddress || "--"}
+                      </TableCell>
+                      <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground">
+                        {entry.metadata
+                          ? JSON.stringify(entry.metadata).slice(0, 80)
+                          : "--"}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                        {new Date(entry.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}{" "}
+                        {new Date(entry.createdAt).toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </>
   )
 }
-

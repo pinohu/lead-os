@@ -1,5 +1,3 @@
-"use client"
-
 import Link from "next/link"
 import { Star, Phone, Shield, Award, CheckCircle2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -18,9 +16,16 @@ interface FeaturedProviderProps {
   city: string
 }
 
-export function FeaturedProvider({ niche, city }: FeaturedProviderProps) {
+export async function FeaturedProvider({ niche, city }: FeaturedProviderProps) {
   // ── Perk-based check: is there an active subscription with featured badge? ──
-  const perkStatus = getPerkStatus(niche, city)
+  // Wrapped in try/catch so SSG builds succeed without a database connection.
+  let perkStatus;
+  try {
+    perkStatus = await getPerkStatus(niche, city)
+  } catch {
+    // DB unavailable (e.g. during static build) — skip featured provider
+    return null
+  }
 
   // No active subscription or no featured badge perk → don't render
   if (!perkStatus.subscriptionActive || !perkStatus.perks.featuredBadge) {
@@ -28,7 +33,7 @@ export function FeaturedProvider({ niche, city }: FeaturedProviderProps) {
   }
 
   // Fetch the full provider profile for display details
-  const provider = getProviderByNicheAndCity(niche, city)
+  const provider = await getProviderByNicheAndCity(niche, city)
 
   // Graceful handling: subscription is active in perk-manager but provider
   // record might have been removed or changed — don't crash, just skip

@@ -5,13 +5,14 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { cityConfig } from "@/lib/city-config";
 import { getNicheBySlug } from "@/lib/niches";
+import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const session = await auth();
-  if (!session?.user) return null;
+  if (!session?.user) redirect("/login?callbackUrl=/dashboard");
 
   // Look up the provider linked to this user
   const user = await prisma.user.findUnique({
@@ -44,7 +45,7 @@ export default async function DashboardPage() {
     },
   });
 
-  if (!provider) return null;
+  if (!provider) notFound();
 
   // Fetch recent leads (last 30 days)
   const thirtyDaysAgo = new Date();

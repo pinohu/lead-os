@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Costs in ${cityConfig.name}, ${cityConfig.stateCode} — Pricing Guide`,
     description: `How much does ${content.serviceLabel} cost in ${cityConfig.name}? See average prices for common services and get a free quote.`,
-    alternates: { canonical: `https://erie.pro/${slug}/pricing` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}/pricing` },
   }
 }
 
@@ -65,7 +65,7 @@ export default async function NichePricingPage({ params }: Props) {
   const pricingJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "@id": `https://erie.pro/${slug}/pricing#pricelist`,
+    "@id": `https://${cityConfig.domain}/${slug}/pricing#pricelist`,
     name: `${niche.label} Pricing in ${cityConfig.name}, ${cityConfig.stateCode}`,
     description: `Average prices for ${content.serviceLabel} in ${cityConfig.name}. Updated for ${new Date().getFullYear()}.`,
     numberOfItems: content.pricingRanges.length,

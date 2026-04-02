@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
             entityId: result.leadId,
             providerId: result.routedTo?.id,
             metadata: { niche, city, ...(result.routedTo ? {} : { status: "banked" }) },
-          }).catch(() => {})
+          }).catch((err) => { logger.error("lead", "Audit log failed", err) })
         )
 
         await Promise.allSettled(tasks)

@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Certifications — What to Look for in ${cityConfig.name}, ${cityConfig.stateCode}`,
     description: `Essential ${content.serviceLabel} certifications and licenses to verify when hiring in ${cityConfig.name}. What each certification means, why it matters, and how to verify.`,
-    alternates: { canonical: `https://erie.pro/${slug}/certifications` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}/certifications` },
   }
 }
 
@@ -135,7 +135,7 @@ export default async function NicheCertificationsPage({ params }: Props) {
   const certJsonLd = certDetails.length > 0 ? {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "@id": `https://erie.pro/${slug}/certifications#certlist`,
+    "@id": `https://${cityConfig.domain}/${slug}/certifications#certlist`,
     name: `${niche.label} Certifications to Look For in ${cityConfig.name}, ${cityConfig.stateCode}`,
     description: `Essential ${content.serviceLabel} certifications and licenses to verify when hiring in ${cityConfig.name}.`,
     numberOfItems: certDetails.length,

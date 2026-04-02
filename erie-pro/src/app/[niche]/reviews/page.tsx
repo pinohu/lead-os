@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Reviews — ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
     description: `Read and leave reviews for ${content.pluralLabel.toLowerCase()} in ${cityConfig.name}, ${cityConfig.stateCode}. Verified reviews from real customers help you make the right hiring decision.`,
-    alternates: { canonical: `https://erie.pro/${slug}/reviews` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}/reviews` },
   }
 }
 
@@ -65,33 +65,11 @@ export default async function NicheReviewsPage({ params }: Props) {
   const content = getNicheContent(slug)
   if (!niche || !content) notFound()
 
-  const avgRating = (SAMPLE_REVIEWS.reduce((sum, r) => sum + r.rating, 0) / SAMPLE_REVIEWS.length).toFixed(1)
-  const reviewJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "@id": `https://erie.pro/${slug}/#business`,
-    name: `${niche.label} in ${cityConfig.name}, ${cityConfig.stateCode}`,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: avgRating,
-      reviewCount: String(SAMPLE_REVIEWS.length),
-      bestRating: "5",
-      worstRating: "1",
-    },
-    review: SAMPLE_REVIEWS.map((r) => ({
-      "@type": "Review",
-      author: { "@type": "Person", name: r.name },
-      reviewRating: { "@type": "Rating", ratingValue: String(r.rating), bestRating: "5", worstRating: "1" },
-      reviewBody: r.text,
-    })),
-  }
+  // Note: Schema.org review markup intentionally omitted — sample reviews
+  // should not be presented as real structured data to search engines.
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewJsonLd) }}
-      />
       <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div className="border-b bg-muted/30">
@@ -179,9 +157,12 @@ export default async function NicheReviewsPage({ params }: Props) {
 
       {/* ── Sample Reviews ────────────────────────────────────── */}
       <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-        <h2 className="text-xl font-bold mb-6">
+        <h2 className="text-xl font-bold mb-4">
           Recent {niche.label} Reviews
         </h2>
+        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-300">
+          <strong>Note:</strong> The reviews below are sample reviews to illustrate our review format. Real reviews from verified customers will appear here as providers join {cityConfig.domain}.
+        </div>
         <div className="space-y-4">
           {SAMPLE_REVIEWS.map((review, i) => (
             <Card key={i}>

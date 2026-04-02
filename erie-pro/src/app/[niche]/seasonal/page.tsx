@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Seasonal Guide — Year-Round Maintenance for ${cityConfig.name} Homes`,
     description: `Season-by-season ${content.serviceLabel} maintenance guide for ${cityConfig.name}, ${cityConfig.stateCode}. Lake effect snow prep, freeze-thaw protection, spring flooding prevention, and summer storm readiness.`,
-    alternates: { canonical: `https://erie.pro/${slug}/seasonal` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}/seasonal` },
   }
 }
 
@@ -84,7 +84,7 @@ export default async function NicheSeasonalPage({ params }: Props) {
   const seasonalJsonLd = {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    "@id": `https://erie.pro/${slug}/seasonal#guide`,
+    "@id": `https://${cityConfig.domain}/${slug}/seasonal#guide`,
     name: `${niche.label} Seasonal Maintenance Guide for ${cityConfig.name}, ${cityConfig.stateCode}`,
     description: `Year-round ${content.serviceLabel} maintenance schedule for ${cityConfig.name} homes. Season-by-season tasks covering lake effect winter prep and spring flood prevention.`,
     step: (["spring", "summer", "fall", "winter"] as const).map((season) => ({

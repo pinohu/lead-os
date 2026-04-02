@@ -1,63 +1,65 @@
 // ── National Authority Linking System ────────────────────────────────
-// SEO backlink architecture connecting erie.pro to national domain sites.
-// Each national site points back to erie.pro/[niche] with relevant anchor text.
+// SEO backlink architecture connecting the local domain to national directory sites.
+// Each national site points back to the local domain's niche pages with relevant anchor text.
+
+import { cityConfig } from "./city-config";
 
 export interface NationalAuthoritySite {
   domain: string;
   niche: string;
   trustScore: number; // 0-100
-  backlinkUrl: string; // URL pointing back to erie.pro/[niche]
+  backlinkUrl: string; // URL pointing back to local domain/[niche]
   anchorText: string;
 }
 
 export const NATIONAL_SITES: NationalAuthoritySite[] = [
   // Plumbing
-  { domain: "bestplumbers.guide", niche: "plumbing", trustScore: 85, backlinkUrl: "https://erie.pro/plumbing", anchorText: "Erie plumbing services" },
-  { domain: "plumbingpros.directory", niche: "plumbing", trustScore: 72, backlinkUrl: "https://erie.pro/plumbing", anchorText: "Erie PA plumber directory" },
+  { domain: "bestplumbers.guide", niche: "plumbing", trustScore: 85, backlinkUrl: `https://${cityConfig.domain}/plumbing`, anchorText: "Erie plumbing services" },
+  { domain: "plumbingpros.directory", niche: "plumbing", trustScore: 72, backlinkUrl: `https://${cityConfig.domain}/plumbing`, anchorText: "Erie PA plumber directory" },
 
   // HVAC
-  { domain: "hvacpros.directory", niche: "hvac", trustScore: 80, backlinkUrl: "https://erie.pro/hvac", anchorText: "Erie HVAC services" },
-  { domain: "heatingcooling.guide", niche: "hvac", trustScore: 74, backlinkUrl: "https://erie.pro/hvac", anchorText: "Erie heating and cooling" },
+  { domain: "hvacpros.directory", niche: "hvac", trustScore: 80, backlinkUrl: `https://${cityConfig.domain}/hvac`, anchorText: "Erie HVAC services" },
+  { domain: "heatingcooling.guide", niche: "hvac", trustScore: 74, backlinkUrl: `https://${cityConfig.domain}/hvac`, anchorText: "Erie heating and cooling" },
 
   // Electrical
-  { domain: "findanelectrician.pro", niche: "electrical", trustScore: 78, backlinkUrl: "https://erie.pro/electrical", anchorText: "Erie electrician services" },
-  { domain: "electriciansdirectory.com", niche: "electrical", trustScore: 70, backlinkUrl: "https://erie.pro/electrical", anchorText: "Erie PA electrical contractors" },
+  { domain: "findanelectrician.pro", niche: "electrical", trustScore: 78, backlinkUrl: `https://${cityConfig.domain}/electrical`, anchorText: "Erie electrician services" },
+  { domain: "electriciansdirectory.com", niche: "electrical", trustScore: 70, backlinkUrl: `https://${cityConfig.domain}/electrical`, anchorText: "Erie PA electrical contractors" },
 
   // Roofing
-  { domain: "roofersnearme.pro", niche: "roofing", trustScore: 75, backlinkUrl: "https://erie.pro/roofing", anchorText: "Erie roofing contractors" },
-  { domain: "bestroofing.guide", niche: "roofing", trustScore: 68, backlinkUrl: "https://erie.pro/roofing", anchorText: "Erie roof repair services" },
+  { domain: "roofersnearme.pro", niche: "roofing", trustScore: 75, backlinkUrl: `https://${cityConfig.domain}/roofing`, anchorText: "Erie roofing contractors" },
+  { domain: "bestroofing.guide", niche: "roofing", trustScore: 68, backlinkUrl: `https://${cityConfig.domain}/roofing`, anchorText: "Erie roof repair services" },
 
   // Landscaping
-  { domain: "landscapingpros.directory", niche: "landscaping", trustScore: 73, backlinkUrl: "https://erie.pro/landscaping", anchorText: "Erie landscaping services" },
-  { domain: "lawncareguide.pro", niche: "landscaping", trustScore: 65, backlinkUrl: "https://erie.pro/landscaping", anchorText: "Erie lawn care professionals" },
+  { domain: "landscapingpros.directory", niche: "landscaping", trustScore: 73, backlinkUrl: `https://${cityConfig.domain}/landscaping`, anchorText: "Erie landscaping services" },
+  { domain: "lawncareguide.pro", niche: "landscaping", trustScore: 65, backlinkUrl: `https://${cityConfig.domain}/landscaping`, anchorText: "Erie lawn care professionals" },
 
   // Dental
-  { domain: "findadentist.pro", niche: "dental", trustScore: 82, backlinkUrl: "https://erie.pro/dental", anchorText: "Erie dental care" },
-  { domain: "dentistdirectory.guide", niche: "dental", trustScore: 76, backlinkUrl: "https://erie.pro/dental", anchorText: "Erie PA dentists" },
+  { domain: "findadentist.pro", niche: "dental", trustScore: 82, backlinkUrl: `https://${cityConfig.domain}/dental`, anchorText: "Erie dental care" },
+  { domain: "dentistdirectory.guide", niche: "dental", trustScore: 76, backlinkUrl: `https://${cityConfig.domain}/dental`, anchorText: "Erie PA dentists" },
 
   // Legal
-  { domain: "localattorneys.guide", niche: "legal", trustScore: 84, backlinkUrl: "https://erie.pro/legal", anchorText: "Erie legal services" },
-  { domain: "findlawyer.directory", niche: "legal", trustScore: 79, backlinkUrl: "https://erie.pro/legal", anchorText: "Erie PA attorneys" },
+  { domain: "localattorneys.guide", niche: "legal", trustScore: 84, backlinkUrl: `https://${cityConfig.domain}/legal`, anchorText: "Erie legal services" },
+  { domain: "findlawyer.directory", niche: "legal", trustScore: 79, backlinkUrl: `https://${cityConfig.domain}/legal`, anchorText: "Erie PA attorneys" },
 
   // Cleaning
-  { domain: "cleaningservices.directory", niche: "cleaning", trustScore: 70, backlinkUrl: "https://erie.pro/cleaning", anchorText: "Erie cleaning services" },
-  { domain: "housecleaning.guide", niche: "cleaning", trustScore: 62, backlinkUrl: "https://erie.pro/cleaning", anchorText: "Erie house cleaning" },
+  { domain: "cleaningservices.directory", niche: "cleaning", trustScore: 70, backlinkUrl: `https://${cityConfig.domain}/cleaning`, anchorText: "Erie cleaning services" },
+  { domain: "housecleaning.guide", niche: "cleaning", trustScore: 62, backlinkUrl: `https://${cityConfig.domain}/cleaning`, anchorText: "Erie house cleaning" },
 
   // Auto Repair
-  { domain: "automechanics.directory", niche: "auto-repair", trustScore: 76, backlinkUrl: "https://erie.pro/auto-repair", anchorText: "Erie auto repair shops" },
-  { domain: "carrepair.guide", niche: "auto-repair", trustScore: 69, backlinkUrl: "https://erie.pro/auto-repair", anchorText: "Erie PA mechanics" },
+  { domain: "automechanics.directory", niche: "auto-repair", trustScore: 76, backlinkUrl: `https://${cityConfig.domain}/auto-repair`, anchorText: "Erie auto repair shops" },
+  { domain: "carrepair.guide", niche: "auto-repair", trustScore: 69, backlinkUrl: `https://${cityConfig.domain}/auto-repair`, anchorText: "Erie PA mechanics" },
 
   // Pest Control
-  { domain: "pestcontrolpros.directory", niche: "pest-control", trustScore: 71, backlinkUrl: "https://erie.pro/pest-control", anchorText: "Erie pest control services" },
-  { domain: "exterminators.guide", niche: "pest-control", trustScore: 64, backlinkUrl: "https://erie.pro/pest-control", anchorText: "Erie PA exterminators" },
+  { domain: "pestcontrolpros.directory", niche: "pest-control", trustScore: 71, backlinkUrl: `https://${cityConfig.domain}/pest-control`, anchorText: "Erie pest control services" },
+  { domain: "exterminators.guide", niche: "pest-control", trustScore: 64, backlinkUrl: `https://${cityConfig.domain}/pest-control`, anchorText: "Erie PA exterminators" },
 
   // Painting
-  { domain: "housepainters.directory", niche: "painting", trustScore: 69, backlinkUrl: "https://erie.pro/painting", anchorText: "Erie painting contractors" },
-  { domain: "paintingpros.guide", niche: "painting", trustScore: 63, backlinkUrl: "https://erie.pro/painting", anchorText: "Erie house painters" },
+  { domain: "housepainters.directory", niche: "painting", trustScore: 69, backlinkUrl: `https://${cityConfig.domain}/painting`, anchorText: "Erie painting contractors" },
+  { domain: "paintingpros.guide", niche: "painting", trustScore: 63, backlinkUrl: `https://${cityConfig.domain}/painting`, anchorText: "Erie house painters" },
 
   // Real Estate
-  { domain: "localrealtors.directory", niche: "real-estate", trustScore: 81, backlinkUrl: "https://erie.pro/real-estate", anchorText: "Erie real estate agents" },
-  { domain: "findrealtors.guide", niche: "real-estate", trustScore: 77, backlinkUrl: "https://erie.pro/real-estate", anchorText: "Erie PA realtors" },
+  { domain: "localrealtors.directory", niche: "real-estate", trustScore: 81, backlinkUrl: `https://${cityConfig.domain}/real-estate`, anchorText: "Erie real estate agents" },
+  { domain: "findrealtors.guide", niche: "real-estate", trustScore: 77, backlinkUrl: `https://${cityConfig.domain}/real-estate`, anchorText: "Erie PA realtors" },
 ];
 
 /**

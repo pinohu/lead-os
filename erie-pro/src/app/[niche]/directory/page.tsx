@@ -1,11 +1,12 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { Building2, ArrowRight, MapPin, Star, Clock, ShieldCheck, Phone, Flame, Lock } from "lucide-react"
+import { Building2, ArrowRight, MapPin, Star, Clock, ShieldCheck, Phone, Flame, Lock, ExternalLink } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { getNicheBySlug } from "@/lib/niches"
 import { getNicheContent, getAllNicheSlugs } from "@/lib/niche-content"
 import { getProviderByNicheAndCity } from "@/lib/provider-store"
+import { getDirectoryListingsByNiche } from "@/lib/directory-store"
 import { getBankedLeadsByNiche } from "@/lib/lead-routing"
 import { LEAD_PRICES } from "@/lib/stripe-integration"
 import { Button } from "@/components/ui/button"
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${content.pluralLabel} Directory — ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
     description: `Browse verified ${content.pluralLabel.toLowerCase()} in ${cityConfig.name}, ${cityConfig.stateCode}. Licensed, insured professionals with reviews. Claim your listing today.`,
-    alternates: { canonical: `https://erie.pro/${slug}/directory` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}/directory` },
   }
 }
 
@@ -51,32 +52,87 @@ const PLACEHOLDER_SLOTS = [
   { area: "Girard", specialty: "20+ years experience", featured: false },
 ]
 
+function getTodayHours(hoursJson: unknown): string | null {
+  if (!hoursJson || typeof hoursJson !== "object") return null
+  const hours = hoursJson as { weekdayDescriptions?: string[] }
+  if (!Array.isArray(hours.weekdayDescriptions)) return null
+  const dayIndex = new Date().getDay()
+  // Google weekdayDescriptions: Mon(0) → Sun(6), JS getDay: Sun(0) → Sat(6)
+  const mappedIndex = dayIndex === 0 ? 6 : dayIndex - 1
+  const todayStr = hours.weekdayDescriptions[mappedIndex]
+  if (!todayStr) return null
+  // Strip the day name prefix (e.g., "Monday: 8:00 AM – 5:00 PM" → "8:00 AM – 5:00 PM")
+  const colonIdx = todayStr.indexOf(":")
+  return colonIdx > -1 ? todayStr.slice(colonIdx + 1).trim() : todayStr
+}
+
 export default async function NicheDirectoryPage({ params }: Props) {
   const { niche: slug } = await params
   const niche = getNicheBySlug(slug)
   const content = getNicheContent(slug)
   if (!niche || !content) notFound()
 
-  const claimedProvider = getProviderByNicheAndCity(slug, cityConfig.slug)
+  // DB calls wrapped in try/catch so SSG builds succeed without a database.
+  let claimedProvider;
+  let bankedLeads = 0;
+  let listings: Awaited<ReturnType<typeof getDirectoryListingsByNiche>> = [];
+  try {
+    [claimedProvider, bankedLeads, listings] = await Promise.all([
+      getProviderByNicheAndCity(slug, cityConfig.slug),
+      getBankedLeadsByNiche(slug),
+      getDirectoryListingsByNiche(slug, { limit: 50 }),
+    ]);
+  } catch {
+    // DB unavailable during static build — treat as unclaimed with no banked leads
+    claimedProvider = undefined
+  }
   const isClaimed = claimedProvider !== undefined
-  const bankedLeads = getBankedLeadsByNiche(slug)
+  const hasListings = listings.length > 0
   const highUrgency = bankedLeads >= 10
   const medUrgency = bankedLeads >= 3
+  const totalCount = listings.length + (isClaimed ? 1 : 0)
 
   const directoryJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "@id": `https://erie.pro/${slug}/directory#directory`,
+    "@id": `https://${cityConfig.domain}/${slug}/directory#directory`,
     name: `${content.pluralLabel} Directory — ${cityConfig.name}, ${cityConfig.stateCode}`,
-    description: `Verified ${content.pluralLabel.toLowerCase()} serving the ${cityConfig.name} metro area. Licensed, insured professionals with reviews.`,
-    numberOfItems: PLACEHOLDER_SLOTS.length,
-    itemListElement: PLACEHOLDER_SLOTS.map((slot, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: `${niche.label} Provider — ${slot.area}, ${cityConfig.stateCode}`,
-      description: slot.specialty,
-      url: `https://erie.pro/${slug}`,
-    })),
+    description: `${content.pluralLabel} serving the ${cityConfig.name} metro area. Licensed, insured professionals with reviews.`,
+    numberOfItems: totalCount,
+    itemListElement: [
+      ...(claimedProvider ? [{
+        "@type": "ListItem" as const,
+        position: 1,
+        item: {
+          "@type": "LocalBusiness" as const,
+          name: claimedProvider.businessName,
+          url: `https://${cityConfig.domain}/${slug}/${claimedProvider.slug}`,
+          telephone: claimedProvider.phone,
+          aggregateRating: claimedProvider.reviewCount > 0 ? {
+            "@type": "AggregateRating" as const,
+            ratingValue: claimedProvider.avgRating,
+            reviewCount: claimedProvider.reviewCount,
+          } : undefined,
+        },
+      }] : []),
+      ...listings.map((l, i) => ({
+        "@type": "ListItem" as const,
+        position: (isClaimed ? 2 : 1) + i,
+        item: {
+          "@type": "LocalBusiness" as const,
+          name: l.businessName,
+          url: `https://${cityConfig.domain}/${slug}/${l.slug}`,
+          telephone: l.phone,
+          ...(l.rating && l.reviewCount > 0 ? {
+            aggregateRating: {
+              "@type": "AggregateRating" as const,
+              ratingValue: l.rating,
+              reviewCount: l.reviewCount,
+            },
+          } : {}),
+        },
+      })),
+    ],
   }
 
   return (
@@ -151,16 +207,12 @@ export default async function NicheDirectoryPage({ params }: Props) {
           <h2 className="text-xl font-bold">
             {content.pluralLabel} — {cityConfig.name} Area
           </h2>
-          <Badge variant={isClaimed ? "default" : "outline"}>
-            {isClaimed ? (
-              <><Lock className="mr-1 h-3 w-3" /> Territory Claimed</>
-            ) : (
-              `${PLACEHOLDER_SLOTS.length} Territories Open`
-            )}
+          <Badge variant="secondary">
+            {totalCount} {totalCount === 1 ? "provider" : "providers"}
           </Badge>
         </div>
 
-        {/* Claimed: show the active provider prominently */}
+        {/* Featured: show the paying provider at the top */}
         {isClaimed && claimedProvider && (
           <Card className="mb-6 border-primary/30 bg-primary/5">
             <CardContent className="flex items-center gap-4 py-5">
@@ -169,7 +221,9 @@ export default async function NicheDirectoryPage({ params }: Props) {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <p className="font-semibold">{claimedProvider.businessName}</p>
+                  <Link href={`/${slug}/${claimedProvider.slug}`} className="font-semibold hover:underline">
+                    {claimedProvider.businessName}
+                  </Link>
                   <Badge className="text-xs">
                     <ShieldCheck className="mr-1 h-3 w-3" /> Verified
                   </Badge>
@@ -179,7 +233,7 @@ export default async function NicheDirectoryPage({ params }: Props) {
                     <MapPin className="h-3.5 w-3.5" />{cityConfig.name}, {cityConfig.stateCode}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Star className="h-3.5 w-3.5" />{claimedProvider.avgRating.toFixed(1)} ({claimedProvider.reviewCount} reviews)
+                    <Star className="h-3.5 w-3.5 text-amber-500" />{claimedProvider.avgRating.toFixed(1)} ({claimedProvider.reviewCount} reviews)
                   </span>
                   <span className="flex items-center gap-1">
                     <Clock className="h-3.5 w-3.5" />Responds in ~{Math.round(claimedProvider.avgResponseTime / 60)} min
@@ -187,14 +241,102 @@ export default async function NicheDirectoryPage({ params }: Props) {
                 </div>
               </div>
               <Button asChild size="sm" className="shrink-0">
-                <Link href={`/${slug}#quote`}>Get a Quote</Link>
+                <Link href={`/${slug}/${claimedProvider.slug}`}>
+                  View Profile
+                  <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                </Link>
               </Button>
             </CardContent>
           </Card>
         )}
 
-        {/* Unclaimed: show open slots */}
-        {!isClaimed && (
+        {/* Real listings from Google Places */}
+        {hasListings && (
+          <div className="grid gap-3">
+            {listings.map((listing) => {
+              const todayHours = getTodayHours(listing.hoursJson)
+              return (
+                <Card key={listing.id} className="hover:border-primary/30 transition-colors">
+                  <CardContent className="flex items-center gap-4 py-4">
+                    <Avatar className="h-12 w-12 bg-muted">
+                      <AvatarFallback className="text-sm">
+                        {listing.businessName.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Link
+                          href={`/${slug}/${listing.slug}`}
+                          className="font-semibold hover:underline truncate"
+                        >
+                          {listing.businessName}
+                        </Link>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                        {listing.rating && (
+                          <span className="flex items-center gap-1">
+                            <Star className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
+                            <span aria-label={`${listing.rating} out of 5 stars`}>
+                              {listing.rating.toFixed(1)}
+                            </span>
+                            {listing.reviewCount > 0 && (
+                              <span className="text-muted-foreground/60">
+                                ({listing.reviewCount})
+                              </span>
+                            )}
+                          </span>
+                        )}
+                        {listing.addressCity && (
+                          <span className="flex items-center gap-1">
+                            <MapPin className="h-3.5 w-3.5" />
+                            {listing.addressCity}, {listing.addressState ?? cityConfig.stateCode}
+                          </span>
+                        )}
+                        {listing.phone && (
+                          <a
+                            href={`tel:${listing.phone.replace(/\D/g, "")}`}
+                            className="flex items-center gap-1 hover:text-primary"
+                          >
+                            <Phone className="h-3.5 w-3.5" />
+                            {listing.phone}
+                          </a>
+                        )}
+                        {todayHours && (
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3.5 w-3.5" />
+                            {todayHours}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <Button asChild variant="outline" size="sm" className="shrink-0">
+                      <Link href={`/${slug}/${listing.slug}`}>
+                        View Profile
+                        <ExternalLink className="ml-1 h-3 w-3" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Claim CTA below real listings */}
+        {hasListings && (
+          <div className="mt-6 rounded-lg border-2 border-dashed border-primary/20 bg-primary/5 p-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              Are you a {niche.label.toLowerCase()} provider in {cityConfig.name}?{" "}
+              <Link href={`/for-business/claim?niche=${slug}`} className="font-semibold text-primary hover:underline">
+                Claim your listing
+              </Link>{" "}
+              to manage your info, receive leads, and get a Verified badge.
+            </p>
+          </div>
+        )}
+
+        {/* Fallback: show placeholder slots when no real data exists */}
+        {!hasListings && !isClaimed && (
           <div className="grid gap-4">
             {PLACEHOLDER_SLOTS.map((slot, i) => (
               <Card
@@ -226,10 +368,6 @@ export default async function NicheDirectoryPage({ params }: Props) {
                       <span className="flex items-center gap-1">
                         <Star className="h-3.5 w-3.5" />
                         {slot.specialty}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5" />
-                        Unclaimed
                       </span>
                     </div>
                   </div>

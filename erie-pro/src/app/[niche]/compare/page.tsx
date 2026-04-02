@@ -87,7 +87,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `How to Compare ${content.pluralLabel} in ${cityConfig.name}, ${cityConfig.stateCode}`,
     description: `What to look for when choosing a ${niche.label.toLowerCase()} provider in ${cityConfig.name}. Compare licensing, pricing, reviews, and more.`,
-    alternates: { canonical: `https://erie.pro/${slug}/compare` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}/compare` },
   }
 }
 
@@ -100,13 +100,13 @@ export default async function NicheComparePage({ params }: Props) {
   const compareJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    "@id": `https://erie.pro/${slug}/compare#article`,
+    "@id": `https://${cityConfig.domain}/${slug}/compare#article`,
     headline: `How to Choose the Right ${niche.label} Provider in ${cityConfig.name}, ${cityConfig.stateCode}`,
     description: `What to look for, what to ask, and red flags to avoid when comparing ${content.pluralLabel.toLowerCase()} in the Erie area.`,
-    url: `https://erie.pro/${slug}/compare`,
+    url: `https://${cityConfig.domain}/${slug}/compare`,
     publisher: {
       "@type": "Organization",
-      "@id": "https://erie.pro/#organization",
+      "@id": `https://${cityConfig.domain}/#organization`,
       name: cityConfig.domain,
     },
     about: {

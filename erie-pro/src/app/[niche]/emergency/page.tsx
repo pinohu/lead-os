@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `Emergency ${niche.label} in ${cityConfig.name}, ${cityConfig.stateCode} — 24/7 Service`,
     description: `Need emergency ${content.serviceLabel} in ${cityConfig.name}? Get fast response from verified providers. Available 24/7 for urgent situations.`,
-    alternates: { canonical: `https://erie.pro/${slug}/emergency` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}/emergency` },
   }
 }
 
@@ -64,12 +64,12 @@ export default async function NicheEmergencyPage({ params }: Props) {
   const emergencyJsonLd = {
     "@context": "https://schema.org",
     "@type": "EmergencyService",
-    "@id": `https://erie.pro/${slug}/emergency#service`,
+    "@id": `https://${cityConfig.domain}/${slug}/emergency#service`,
     name: `Emergency ${niche.label} in ${cityConfig.name}, ${cityConfig.stateCode}`,
     description: `24/7 emergency ${content.serviceLabel} in ${cityConfig.name}. Fast response from verified, licensed providers.`,
     provider: {
       "@type": "LocalBusiness",
-      "@id": `https://erie.pro/${slug}/#business`,
+      "@id": `https://${cityConfig.domain}/${slug}/#business`,
       name: cityConfig.domain,
       telephone: "+18142000328",
       address: {
@@ -82,7 +82,7 @@ export default async function NicheEmergencyPage({ params }: Props) {
     areaServed: { "@type": "City", name: cityConfig.name },
     availableChannel: {
       "@type": "ServiceChannel",
-      serviceUrl: `https://erie.pro/${slug}#quote`,
+      serviceUrl: `https://${cityConfig.domain}/${slug}#quote`,
       availableLanguage: "English",
     },
     openingHoursSpecification: {

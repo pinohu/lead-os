@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Costs in ${cityConfig.name}, ${cityConfig.stateCode} — Complete Pricing Guide`,
     description: `Detailed ${content.serviceLabel} cost breakdown for ${cityConfig.name}. Average prices, factors that affect cost, DIY vs. professional comparison, and tips for getting the best value.`,
-    alternates: { canonical: `https://erie.pro/${slug}/costs` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}/costs` },
   }
 }
 
@@ -245,11 +245,11 @@ export default async function NicheCostsPage({ params }: Props) {
   const costsJsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
-    "@id": `https://erie.pro/${slug}/costs#service`,
+    "@id": `https://${cityConfig.domain}/${slug}/costs#service`,
     name: `${niche.label} Services in ${cityConfig.name}, ${cityConfig.stateCode}`,
     provider: {
       "@type": "LocalBusiness",
-      "@id": `https://erie.pro/${slug}/#business`,
+      "@id": `https://${cityConfig.domain}/${slug}/#business`,
       name: cityConfig.domain,
       address: {
         "@type": "PostalAddress",

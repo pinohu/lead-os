@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Guides — Comprehensive Resources for ${cityConfig.name}`,
     description: `In-depth ${niche.label.toLowerCase()} guides for ${cityConfig.name}, ${cityConfig.stateCode}. Costs, hiring tips, and everything you need to know.`,
-    alternates: { canonical: `https://erie.pro/${slug}/guides` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}/guides` },
   }
 }
 
@@ -120,7 +120,7 @@ export default async function NicheGuidesPage({ params }: Props) {
     "@type": "HowTo",
     name: primaryGuide,
     description: `Step-by-step guide to ${content.serviceLabel} in ${cityConfig.name}, ${cityConfig.stateCode}.`,
-    image: `https://erie.pro/og-${slug}.jpg`,
+    image: `https://${cityConfig.domain}/og-${slug}.jpg`,
     totalTime: "PT30M",
     step: primarySteps.map((stepText, i) => ({
       "@type": "HowToStep",

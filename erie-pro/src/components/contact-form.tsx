@@ -31,6 +31,8 @@ interface ContactFormProps {
   nicheSlug?: string;
   providerSlug?: string;
   citySlug?: string;
+  /** When set, this form is on an unclaimed directory listing page */
+  listingId?: string;
   /** Label for submit button */
   submitLabel?: string;
   /** Placeholder for the message field */
@@ -41,6 +43,7 @@ export default function ContactForm({
   nicheSlug,
   providerSlug,
   citySlug,
+  listingId,
   submitLabel = "Send Message",
   messagePlaceholder = "Tell us how we can help...",
 }: ContactFormProps) {
@@ -118,6 +121,7 @@ export default function ContactForm({
           phone: ph || undefined,
           message: formData.get("message"),
           niche: nicheSlug ?? formData.get("niche") ?? undefined,
+          listingId: listingId ?? undefined,
         }),
       });
 

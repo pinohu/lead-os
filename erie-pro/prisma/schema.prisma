@@ -427,3 +427,46 @@ model ContactMessage {
 
   @@map("contact_messages")
 }
+
+// ── Directory Listing ─────────────────────────────────────────────
+// Scraped Google Places data for the "Build First, Sell Later" model.
+// Many listings per niche (unlike Territory which is 1:1).
+// When a business claims their listing, claimedByProviderId links them.
+
+model DirectoryListing {
+  id                  String    @id @default(cuid())
+  slug                String    @unique
+  googlePlaceId       String?   @unique
+  businessName        String
+  niche               String
+  phone               String?
+  email               String?
+  website             String?
+  addressStreet       String?
+  addressCity         String?
+  addressState        String?
+  addressZip          String?
+  addressFormatted    String?
+  latitude            Float?
+  longitude           Float?
+  description         String?
+  rating              Float?
+  reviewCount         Int       @default(0)
+  priceLevel          Int?
+  hoursJson           Json?
+  categories          String[]  @default([])
+  photoRefs           String[]  @default([])
+  reviewsJson         Json?
+  servicesOffered     String[]  @default([])
+  isActive            Boolean   @default(true)
+  claimedByProviderId String?
+  source              String    @default("google_places")
+  lastScrapedAt       DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([niche])
+  @@index([niche, addressCity])
+  @@index([slug])
+  @@map("directory_listings")
+}

@@ -1,7 +1,14 @@
 // ── Call Tracking System ────────────────────────────────────────────
 // Phone-based lead tracking with call routing and outcome recording.
-// Dry-run mode assigns placeholder tracking numbers.
-// In production, integrates with CallScaler or similar service.
+// Persistent via Prisma/Postgres. Dry-run mode with placeholder numbers.
+
+import { prisma } from "@/lib/db";
+import type {
+  TrackedCall as PrismaTrackedCall,
+  CallOutcome,
+} from "@/generated/prisma";
+
+// ── Public Interfaces ──────────────────────────────────────────────
 
 export interface TrackedCall {
   id: string;
@@ -9,8 +16,8 @@ export interface TrackedCall {
   city: string;
   callerPhone: string;
   trackingNumber: string;
-  routedTo: string; // provider phone
-  duration: number; // seconds
+  routedTo: string;
+  duration: number;
   recordingUrl?: string;
   outcome: "connected" | "voicemail" | "missed" | "busy";
   timestamp: string;
@@ -26,24 +33,13 @@ export interface CallStats {
   connectionRate: number;
 }
 
-// ── Configuration ───────────────────────────────────────────────────
+// ── Configuration ──────────────────────────────────────────────────
 
 const CALLSCALER_API_KEY = process.env.CALLSCALER_API_KEY ?? "";
 const isDryRun = !CALLSCALER_API_KEY;
 
-// ── In-Memory Stores ────────────────────────────────────────────────
+// ── Mock Tracking Numbers ──────────────────────────────────────────
 
-const trackingNumbers: Map<string, string> = new Map();
-const callLog: Map<string, TrackedCall> = new Map();
-const providerCalls: Map<string, string[]> = new Map(); // providerId -> callIds
-
-function generateCallId(): string {
-  return `call-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 8)}`;
-}
-
-// ── Tracking Number Management ──────────────────────────────────────
-
-// Pre-assigned mock tracking numbers for each niche
 const MOCK_TRACKING_NUMBERS: Record<string, string> = {
   "plumbing-erie": "(814) 900-0101",
   "hvac-erie": "(814) 900-0102",
@@ -59,125 +55,137 @@ const MOCK_TRACKING_NUMBERS: Record<string, string> = {
   "real-estate-erie": "(814) 900-0112",
 };
 
-// Provider phone routing table — providerPhone values are fictional 555-XXXX demo numbers.
-const PROVIDER_ROUTES: Record<string, { providerPhone: string; providerId: string }> = {
-  "(814) 900-0101": { providerPhone: "(814) 555-0101", providerId: "prov-plumb-001" },
-  "(814) 900-0102": { providerPhone: "(814) 555-0301", providerId: "prov-hvac-001" },
-  "(814) 900-0103": { providerPhone: "(814) 555-0401", providerId: "prov-elec-001" },
-  "(814) 900-0104": { providerPhone: "(814) 555-0701", providerId: "prov-roof-001" },
-  "(814) 900-0106": { providerPhone: "(814) 555-0501", providerId: "prov-dental-001" },
-  "(814) 900-0107": { providerPhone: "(814) 555-0601", providerId: "prov-legal-001" },
-};
+// In-memory tracking number cache (for dry-run)
+const trackingNumberCache: Map<string, string> = new Map();
+let nextMockNumber = 200;
+
+// ── Mapper ─────────────────────────────────────────────────────────
+
+function toTrackedCall(c: PrismaTrackedCall): TrackedCall {
+  return {
+    id: c.id,
+    niche: c.niche,
+    city: c.city,
+    callerPhone: c.callerPhone,
+    trackingNumber: c.trackingNumber,
+    routedTo: c.routedTo,
+    duration: c.duration,
+    recordingUrl: c.recordingUrl ?? undefined,
+    outcome: c.outcome as TrackedCall["outcome"],
+    timestamp: c.createdAt.toISOString(),
+  };
+}
+
+// ── Core Functions ─────────────────────────────────────────────────
 
 /**
  * Get the tracking number for a niche + city combination.
- * In dry-run mode, returns a pre-assigned mock number.
  */
 export function getTrackingNumber(niche: string, city: string): string {
   const key = `${niche}-${city}`;
 
-  // Check if already assigned
-  const existing = trackingNumbers.get(key);
-  if (existing) return existing;
+  // Check cache
+  const cached = trackingNumberCache.get(key);
+  if (cached) return cached;
 
-  if (isDryRun) {
-    const mockNumber = MOCK_TRACKING_NUMBERS[key] ?? `(814) 900-${String(trackingNumbers.size + 200).padStart(4, "0")}`;
-    trackingNumbers.set(key, mockNumber);
-    console.log(`[CallTracking DRY-RUN] Assigned tracking number: ${mockNumber} for ${key}`);
-    return mockNumber;
+  // Check mock numbers
+  const mock = MOCK_TRACKING_NUMBERS[key];
+  if (mock) {
+    trackingNumberCache.set(key, mock);
+    return mock;
   }
 
-  // Production: provision from CallScaler
-  // const number = await callscaler.provisionNumber({ areaCode: "814", ... });
-  const fallback = `(814) 900-${String(trackingNumbers.size + 200).padStart(4, "0")}`;
-  trackingNumbers.set(key, fallback);
-  return fallback;
+  // Generate a new mock number
+  const number = `(814) 900-${String(nextMockNumber++).padStart(4, "0")}`;
+  trackingNumberCache.set(key, number);
+  return number;
 }
 
 /**
  * Route an incoming call to the appropriate provider.
+ * In production, queries DB for the provider assigned to the niche.
  */
-export function routeCall(trackingNumber: string): { providerPhone: string; providerId: string } {
-  const route = PROVIDER_ROUTES[trackingNumber];
-  if (route) {
-    console.log(
-      isDryRun ? "[CallTracking DRY-RUN]" : "[CallTracking]",
-      `Routing ${trackingNumber} -> ${route.providerPhone} (${route.providerId})`
-    );
-    return route;
+export async function routeCall(
+  trackingNumber: string
+): Promise<{ providerPhone: string; providerId: string }> {
+  // Find the provider for this tracking number's niche
+  // For now, use a simple lookup approach
+  for (const [key, number] of Object.entries(MOCK_TRACKING_NUMBERS)) {
+    if (number === trackingNumber) {
+      const [niche, city] = key.split("-");
+      const provider = await prisma.provider.findFirst({
+        where: {
+          niche,
+          city: { equals: city, mode: "insensitive" },
+          tier: "primary",
+          subscriptionStatus: "active",
+        },
+        select: { id: true, phone: true },
+      });
+      if (provider) {
+        return { providerPhone: provider.phone, providerId: provider.id };
+      }
+    }
   }
 
-  // Default fallback
-  console.log(
-    isDryRun ? "[CallTracking DRY-RUN]" : "[CallTracking]",
-    `No route for ${trackingNumber}, using default`
-  );
   return { providerPhone: "(814) 555-9999", providerId: "unknown" };
 }
 
 /**
  * Record the outcome of a tracked call.
  */
-export function recordCallOutcome(
+export async function recordCallOutcome(
   callId: string,
   outcome: TrackedCall["outcome"],
   duration: number
-): TrackedCall | undefined {
-  const call = callLog.get(callId);
-  if (!call) return undefined;
-
-  call.outcome = outcome;
-  call.duration = duration;
-  callLog.set(callId, call);
-
-  console.log(
-    isDryRun ? "[CallTracking DRY-RUN]" : "[CallTracking]",
-    `Call ${callId}: ${outcome}, ${duration}s`
-  );
-
-  return call;
+): Promise<TrackedCall | undefined> {
+  try {
+    const updated = await prisma.trackedCall.update({
+      where: { id: callId },
+      data: {
+        outcome: outcome as CallOutcome,
+        duration,
+      },
+    });
+    return toTrackedCall(updated);
+  } catch {
+    return undefined;
+  }
 }
 
 /**
  * Log a new incoming call.
  */
-export function logIncomingCall(
+export async function logIncomingCall(
   niche: string,
   city: string,
   callerPhone: string
-): TrackedCall {
+): Promise<TrackedCall> {
   const trackingNumber = getTrackingNumber(niche, city);
-  const route = routeCall(trackingNumber);
-  const callId = generateCallId();
+  const route = await routeCall(trackingNumber);
 
-  const call: TrackedCall = {
-    id: callId,
-    niche,
-    city,
-    callerPhone,
-    trackingNumber,
-    routedTo: route.providerPhone,
-    duration: 0,
-    outcome: "connected",
-    timestamp: new Date().toISOString(),
-  };
+  const call = await prisma.trackedCall.create({
+    data: {
+      niche,
+      city: city.toLowerCase(),
+      callerPhone,
+      trackingNumber,
+      routedTo: route.providerPhone,
+      providerId: route.providerId !== "unknown" ? route.providerId : null,
+      outcome: "connected",
+    },
+  });
 
-  callLog.set(callId, call);
-
-  // Index by provider
-  const existing = providerCalls.get(route.providerId) ?? [];
-  existing.push(callId);
-  providerCalls.set(route.providerId, existing);
-
-  return call;
+  return toTrackedCall(call);
 }
 
 /**
  * Get call statistics for a provider.
  */
-export function getCallStats(providerId: string): CallStats {
-  const callIds = providerCalls.get(providerId) ?? [];
-  const calls = callIds.map((id) => callLog.get(id)).filter(Boolean) as TrackedCall[];
+export async function getCallStats(providerId: string): Promise<CallStats> {
+  const calls = await prisma.trackedCall.findMany({
+    where: { providerId },
+  });
 
   const total = calls.length;
   const connected = calls.filter((c) => c.outcome === "connected").length;
@@ -205,15 +213,23 @@ export function getCallStats(providerId: string): CallStats {
 /**
  * Get all tracked calls (admin).
  */
-export function getAllCalls(): TrackedCall[] {
-  return Array.from(callLog.values());
+export async function getAllCalls(): Promise<TrackedCall[]> {
+  const calls = await prisma.trackedCall.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 500,
+  });
+  return calls.map(toTrackedCall);
 }
 
 /**
  * Get calls for a specific niche.
  */
-export function getCallsByNiche(niche: string): TrackedCall[] {
-  return Array.from(callLog.values()).filter((c) => c.niche === niche);
+export async function getCallsByNiche(niche: string): Promise<TrackedCall[]> {
+  const calls = await prisma.trackedCall.findMany({
+    where: { niche },
+    orderBy: { createdAt: "desc" },
+  });
+  return calls.map(toTrackedCall);
 }
 
 /**

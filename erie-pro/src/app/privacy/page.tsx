@@ -132,6 +132,31 @@ export default function PrivacyPage() {
 
           <Separator />
 
+          {/* ── Third-Party Data Processors ────────────────── */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold mb-3">Third-Party Data Processors</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              We use the following third-party services to operate our platform. Each processes data on our behalf in accordance with their own privacy policies:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li><strong>Stripe, Inc.</strong> — Payment processing. When you subscribe to a territory, Stripe processes your payment information (credit card, billing address). Stripe&apos;s privacy policy: <a href="https://stripe.com/privacy" className="underline hover:text-foreground" target="_blank" rel="noopener noreferrer">stripe.com/privacy</a></li>
+              <li><strong>Emailit</strong> — Transactional email delivery. We use Emailit to send lead notifications, welcome emails, and service confirmations. Your email address is shared with Emailit for delivery purposes only.</li>
+              <li><strong>Neon (Neon Tech, Inc.)</strong> — Database hosting. All platform data is stored in a PostgreSQL database hosted by Neon with encryption at rest and in transit.</li>
+              <li><strong>Vercel, Inc.</strong> — Application hosting and CDN. Vercel serves our website and processes web requests. Server logs (IP addresses, request URLs) may be stored temporarily for up to 30 days.</li>
+            </ul>
+
+            <h3 className="text-lg font-semibold mt-6 mb-2">Data Retention</h3>
+            <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+              <li><strong>Lead data:</strong> Retained for 2 years from submission, then anonymized or deleted.</li>
+              <li><strong>Provider accounts:</strong> Retained while the subscription is active and for 1 year after cancellation.</li>
+              <li><strong>Payment records:</strong> Retained for 7 years as required by tax and financial regulations.</li>
+              <li><strong>Server logs:</strong> Retained for up to 30 days for security and debugging purposes.</li>
+              <li><strong>Deletion requests:</strong> Processed within 45 days as required by law.</li>
+            </ul>
+          </div>
+
+          <Separator />
+
           <div>
             <h2 className="text-xl font-bold mb-3">Cookie Policy</h2>
             <p className="text-muted-foreground leading-relaxed">

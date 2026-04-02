@@ -1,5 +1,18 @@
 // ── Lead Routing Engine ────────────────────────────────────────────────
 // Controlled exclusivity lead distribution with SLA timers and failover.
+// Persistent via Prisma/Postgres — all functions are async.
+
+import { prisma } from "@/lib/db";
+import type {
+  Lead as PrismaLead,
+  LeadOutcome as PrismaLeadOutcome,
+  Provider as PrismaProvider,
+  LeadRouteType,
+  LeadOutcomeType,
+} from "@/generated/prisma";
+
+// ── Public Interfaces ──────────────────────────────────────────────
+// Kept for backward compatibility with the rest of the codebase.
 
 export interface Provider {
   id: string;
@@ -10,11 +23,11 @@ export interface Provider {
   tier: "primary" | "backup" | "overflow";
   phone?: string;
   email?: string;
-  responseTimeAvg: number; // seconds
-  conversionRate: number; // 0-1
-  satisfactionScore: number; // 0-5
+  responseTimeAvg: number;
+  conversionRate: number;
+  satisfactionScore: number;
   isActive: boolean;
-  slaTimeoutSeconds: number; // max time to respond before failover
+  slaTimeoutSeconds: number;
 }
 
 export interface LeadRouteResult {
@@ -34,7 +47,7 @@ export interface ProviderPerformance {
   converted: number;
   avgResponseTime: number;
   avgSatisfaction: number;
-  performanceScore: number; // 0-100
+  performanceScore: number;
   tier: "gold" | "silver" | "bronze" | "probation";
 }
 
@@ -47,245 +60,235 @@ export interface LeadOutcome {
   timestamp: string;
 }
 
-// ── In-Memory Stores ──────────────────────────────────────────────────
+// ── Mappers ────────────────────────────────────────────────────────
 
-// Demo provider data — phone numbers are fictional 555-XXXX placeholders for development/testing only.
-const providers: Provider[] = [
-  {
-    id: "prov-plumb-001",
-    slug: "johnson-plumbing-erie",
-    businessName: "Johnson Plumbing & Drain",
-    niche: "plumbing",
-    city: "erie",
-    tier: "primary",
-    phone: "(814) 555-0101",
-    email: "leads@johnsonplumbing-erie.com",
-    responseTimeAvg: 420, // 7 minutes
-    conversionRate: 0.68,
-    satisfactionScore: 4.7,
-    isActive: true,
-    slaTimeoutSeconds: 1800, // 30 minutes
-  },
-  {
-    id: "prov-plumb-002",
-    slug: "great-lakes-plumbing",
-    businessName: "Great Lakes Plumbing Co.",
-    niche: "plumbing",
-    city: "erie",
-    tier: "backup",
-    phone: "(814) 555-0202",
-    email: "service@greatlakesplumbing.com",
-    responseTimeAvg: 900, // 15 minutes
-    conversionRate: 0.55,
-    satisfactionScore: 4.3,
-    isActive: true,
-    slaTimeoutSeconds: 3600, // 60 minutes
-  },
-  {
-    id: "prov-hvac-001",
-    slug: "erie-comfort-hvac",
-    businessName: "Erie Comfort HVAC",
-    niche: "hvac",
-    city: "erie",
-    tier: "primary",
-    phone: "(814) 555-0301",
-    email: "leads@eriecomforthvac.com",
-    responseTimeAvg: 600,
-    conversionRate: 0.62,
-    satisfactionScore: 4.5,
-    isActive: true,
-    slaTimeoutSeconds: 1800,
-  },
-  {
-    id: "prov-elec-001",
-    slug: "bayfront-electric",
-    businessName: "Bayfront Electric Services",
-    niche: "electrical",
-    city: "erie",
-    tier: "primary",
-    phone: "(814) 555-0401",
-    email: "leads@bayfrontelectric.com",
-    responseTimeAvg: 540,
-    conversionRate: 0.60,
-    satisfactionScore: 4.4,
-    isActive: true,
-    slaTimeoutSeconds: 2400,
-  },
-];
-
-const leadResults: Map<string, LeadRouteResult> = new Map();
-const leadOutcomes: Map<string, LeadOutcome[]> = new Map();
-
-// ── Helper ────────────────────────────────────────────────────────────
-
-function generateLeadId(): string {
-  const ts = Date.now().toString(36);
-  const rand = Math.random().toString(36).substring(2, 8);
-  return `lead-${ts}-${rand}`;
+function providerToRouting(p: PrismaProvider): Provider {
+  const totalLeads = p.totalLeads || 1;
+  return {
+    id: p.id,
+    slug: p.slug,
+    businessName: p.businessName,
+    niche: p.niche,
+    city: p.city,
+    tier: p.tier as Provider["tier"],
+    phone: p.phone,
+    email: p.email,
+    responseTimeAvg: p.avgResponseTime,
+    conversionRate: totalLeads > 0 ? p.convertedLeads / totalLeads : 0,
+    satisfactionScore: p.avgRating,
+    isActive: p.subscriptionStatus === "active",
+    slaTimeoutSeconds: 1800, // default 30 minutes
+  };
 }
 
-// ── Core Functions ────────────────────────────────────────────────────
+function leadToRouteResult(
+  lead: PrismaLead & { routedTo?: PrismaProvider | null }
+): LeadRouteResult {
+  return {
+    leadId: lead.id,
+    niche: lead.niche,
+    city: lead.city,
+    routedTo: lead.routedTo ? providerToRouting(lead.routedTo) : null,
+    routeType: lead.routeType as LeadRouteResult["routeType"],
+    timestamp: lead.createdAt.toISOString(),
+    slaDeadline: lead.slaDeadline?.toISOString() ?? lead.createdAt.toISOString(),
+  };
+}
+
+// ── Core Functions ─────────────────────────────────────────────────
 
 /**
  * Route a lead to the best available provider.
- * Priority: primary (active + within SLA) -> backup -> overflow -> unmatched.
+ * Priority: primary (active) -> backup -> overflow (same city) -> unmatched.
  */
-export function routeLead(
+export async function routeLead(
   niche: string,
   city: string,
   leadData: Record<string, unknown>
-): LeadRouteResult {
-  const leadId = generateLeadId();
+): Promise<LeadRouteResult> {
   const now = new Date();
 
   // Find matching providers sorted by tier priority
-  const candidates = getProvidersByNiche(niche, city);
+  const candidates = await prisma.provider.findMany({
+    where: {
+      niche,
+      city: { equals: city, mode: "insensitive" },
+      subscriptionStatus: "active",
+    },
+    orderBy: { tier: "asc" }, // primary < backup < overflow
+  });
+
+  // Determine routing
+  let routedToId: string | null = null;
+  let routeType: LeadRouteType = "unmatched";
+  let slaDeadline = now;
+  let routedProvider: PrismaProvider | null = null;
 
   // Try primary first
-  const primary = candidates.find(
-    (p) => p.tier === "primary" && p.isActive
-  );
+  const primary = candidates.find((p) => p.tier === "primary");
   if (primary) {
-    const deadline = new Date(
-      now.getTime() + primary.slaTimeoutSeconds * 1000
-    );
-    const result: LeadRouteResult = {
-      leadId,
-      niche,
-      city,
-      routedTo: primary,
-      routeType: "primary",
-      timestamp: now.toISOString(),
-      slaDeadline: deadline.toISOString(),
-    };
-    leadResults.set(leadId, result);
-    return result;
+    routedToId = primary.id;
+    routeType = "primary";
+    slaDeadline = new Date(now.getTime() + 1800 * 1000); // 30 min
+    routedProvider = primary;
   }
 
   // Failover to backup
-  const backup = candidates.find(
-    (p) => p.tier === "backup" && p.isActive
-  );
-  if (backup) {
-    const deadline = new Date(
-      now.getTime() + backup.slaTimeoutSeconds * 1000
-    );
-    const result: LeadRouteResult = {
-      leadId,
-      niche,
-      city,
-      routedTo: backup,
-      routeType: "failover",
-      timestamp: now.toISOString(),
-      slaDeadline: deadline.toISOString(),
-    };
-    leadResults.set(leadId, result);
-    return result;
+  if (!routedToId) {
+    const backup = candidates.find((p) => p.tier === "backup");
+    if (backup) {
+      routedToId = backup.id;
+      routeType = "failover";
+      slaDeadline = new Date(now.getTime() + 3600 * 1000); // 60 min
+      routedProvider = backup;
+    }
   }
 
-  // Overflow — any active provider in the niche regardless of city
-  const overflow = providers.find(
-    (p) => p.niche === niche && p.isActive
-  );
-  if (overflow) {
-    const deadline = new Date(
-      now.getTime() + overflow.slaTimeoutSeconds * 1000
-    );
-    const result: LeadRouteResult = {
-      leadId,
-      niche,
-      city,
-      routedTo: overflow,
-      routeType: "overflow",
-      timestamp: now.toISOString(),
-      slaDeadline: deadline.toISOString(),
-    };
-    leadResults.set(leadId, result);
-    return result;
+  // Overflow — any active provider in same niche AND same city (fixed geographic mismatch)
+  if (!routedToId) {
+    const overflow = candidates.find((p) => p.tier === "overflow");
+    if (overflow) {
+      routedToId = overflow.id;
+      routeType = "overflow";
+      slaDeadline = new Date(now.getTime() + 3600 * 1000);
+      routedProvider = overflow;
+    }
   }
 
-  // Unmatched — no provider available
-  const result: LeadRouteResult = {
-    leadId,
+  // Create the lead record
+  const lead = await prisma.lead.create({
+    data: {
+      niche,
+      city: city.toLowerCase(),
+      firstName: (leadData.firstName as string) ?? null,
+      lastName: (leadData.lastName as string) ?? null,
+      email: ((leadData.email as string) ?? "").toLowerCase(),
+      phone: (leadData.phone as string) ?? null,
+      message: (leadData.message as string) ?? null,
+      routeType,
+      routedToId,
+      slaDeadline,
+      tcpaConsent: (leadData.tcpaConsent as boolean) ?? false,
+      tcpaConsentText: (leadData.tcpaConsentText as string) ?? null,
+      tcpaIpAddress: (leadData.tcpaIpAddress as string) ?? null,
+      tcpaConsentAt: leadData.tcpaConsent ? now : null,
+    },
+  });
+
+  // Update provider's lead count if routed
+  if (routedToId) {
+    await prisma.provider.update({
+      where: { id: routedToId },
+      data: {
+        totalLeads: { increment: 1 },
+        lastLeadAt: now,
+      },
+    });
+  }
+
+  return {
+    leadId: lead.id,
     niche,
     city,
-    routedTo: null,
-    routeType: "unmatched",
+    routedTo: routedProvider ? providerToRouting(routedProvider) : null,
+    routeType: routeType as LeadRouteResult["routeType"],
     timestamp: now.toISOString(),
-    slaDeadline: now.toISOString(), // no deadline
+    slaDeadline: slaDeadline.toISOString(),
   };
-  leadResults.set(leadId, result);
-  return result;
 }
 
 /**
  * Get providers for a niche+city, sorted by tier (primary first).
  */
-export function getProvidersByNiche(niche: string, city: string): Provider[] {
-  const tierOrder: Record<string, number> = {
-    primary: 0,
-    backup: 1,
-    overflow: 2,
-  };
-
-  return providers
-    .filter(
-      (p) =>
-        p.niche === niche &&
-        p.city.toLowerCase() === city.toLowerCase()
-    )
-    .sort((a, b) => tierOrder[a.tier] - tierOrder[b.tier]);
+export async function getProvidersByNiche(
+  niche: string,
+  city: string
+): Promise<Provider[]> {
+  const providers = await prisma.provider.findMany({
+    where: {
+      niche,
+      city: { equals: city, mode: "insensitive" },
+    },
+    orderBy: { tier: "asc" },
+  });
+  return providers.map(providerToRouting);
 }
 
 /**
  * Record the outcome of a lead (response, conversion, no-response, etc.).
  */
-export function recordLeadOutcome(
+export async function recordLeadOutcome(
   leadId: string,
   outcome: LeadOutcome["outcome"],
   details?: {
     responseTimeSeconds?: number;
     satisfactionRating?: number;
   }
-): LeadOutcome | null {
-  const routeResult = leadResults.get(leadId);
-  if (!routeResult || !routeResult.routedTo) return null;
+): Promise<LeadOutcome | null> {
+  const lead = await prisma.lead.findUnique({
+    where: { id: leadId },
+    include: { routedTo: true },
+  });
+  if (!lead || !lead.routedToId) return null;
 
-  const record: LeadOutcome = {
-    leadId,
-    providerId: routeResult.routedTo.id,
-    outcome,
-    responseTimeSeconds: details?.responseTimeSeconds,
-    satisfactionRating: details?.satisfactionRating,
-    timestamp: new Date().toISOString(),
+  // Map hyphenated outcome to enum
+  const outcomeMap: Record<string, LeadOutcomeType> = {
+    "responded": "responded",
+    "converted": "converted",
+    "no-response": "no_response",
+    "declined": "declined",
+    "cancelled": "cancelled",
   };
 
-  const existing = leadOutcomes.get(routeResult.routedTo.id) ?? [];
-  existing.push(record);
-  leadOutcomes.set(routeResult.routedTo.id, existing);
+  const record = await prisma.leadOutcome.create({
+    data: {
+      leadId,
+      providerId: lead.routedToId,
+      outcome: outcomeMap[outcome] ?? "responded",
+      responseTimeSeconds: details?.responseTimeSeconds,
+      satisfactionRating: details?.satisfactionRating,
+    },
+  });
 
-  return record;
+  // If converted, update provider's converted count
+  if (outcome === "converted") {
+    await prisma.provider.update({
+      where: { id: lead.routedToId },
+      data: { convertedLeads: { increment: 1 } },
+    });
+  }
+
+  return {
+    leadId: record.leadId,
+    providerId: record.providerId,
+    outcome,
+    responseTimeSeconds: record.responseTimeSeconds ?? undefined,
+    satisfactionRating: record.satisfactionRating ?? undefined,
+    timestamp: record.createdAt.toISOString(),
+  };
 }
 
 /**
  * Calculate performance metrics for a provider.
  */
-export function getProviderPerformance(
+export async function getProviderPerformance(
   providerId: string
-): ProviderPerformance {
-  const outcomes = leadOutcomes.get(providerId) ?? [];
-  const provider = providers.find((p) => p.id === providerId);
-  const slaTimeout = provider?.slaTimeoutSeconds ?? 1800;
+): Promise<ProviderPerformance> {
+  const [provider, outcomes] = await Promise.all([
+    prisma.provider.findUnique({ where: { id: providerId } }),
+    prisma.leadOutcome.findMany({ where: { providerId } }),
+  ]);
 
+  const slaTimeout = 1800; // 30 min default
   const totalLeads = outcomes.length;
+
   const respondedWithinSla = outcomes.filter(
     (o) =>
       (o.outcome === "responded" || o.outcome === "converted") &&
       (o.responseTimeSeconds ?? Infinity) <= slaTimeout
   ).length;
-  const converted = outcomes.filter(
-    (o) => o.outcome === "converted"
-  ).length;
+
+  const converted = outcomes.filter((o) => o.outcome === "converted").length;
 
   const responseTimes = outcomes
     .filter((o) => o.responseTimeSeconds != null)
@@ -301,18 +304,13 @@ export function getProviderPerformance(
   const avgSatisfaction =
     ratings.length > 0
       ? ratings.reduce((a, b) => a + b, 0) / ratings.length
-      : provider?.satisfactionScore ?? 0;
+      : provider?.avgRating ?? 0;
 
-  // Performance score: weighted combination
-  // 40% SLA compliance, 30% conversion rate, 30% satisfaction
   const slaRate = totalLeads > 0 ? respondedWithinSla / totalLeads : 1;
   const convRate = totalLeads > 0 ? converted / totalLeads : 0;
-  const satNorm = avgSatisfaction / 5; // normalize to 0-1
-  const performanceScore = Math.round(
-    slaRate * 40 + convRate * 30 + satNorm * 30
-  );
+  const satNorm = avgSatisfaction / 5;
+  const performanceScore = Math.round(slaRate * 40 + convRate * 30 + satNorm * 30);
 
-  // Tier assignment based on score
   let tier: ProviderPerformance["tier"];
   if (performanceScore >= 80) tier = "gold";
   else if (performanceScore >= 60) tier = "silver";
@@ -333,41 +331,33 @@ export function getProviderPerformance(
 
 /**
  * Check whether a provider is currently meeting their SLA.
- * Returns true if their average response time is within SLA timeout.
  */
-export function evaluateProviderSla(
+export async function evaluateProviderSla(
   providerId: string
-): {
+): Promise<{
   providerId: string;
   meetsSla: boolean;
   avgResponseTime: number;
   slaTimeout: number;
   slaComplianceRate: number;
-} {
-  const provider = providers.find((p) => p.id === providerId);
+}> {
+  const provider = await prisma.provider.findUnique({ where: { id: providerId } });
   if (!provider) {
-    return {
-      providerId,
-      meetsSla: false,
-      avgResponseTime: 0,
-      slaTimeout: 0,
-      slaComplianceRate: 0,
-    };
+    return { providerId, meetsSla: false, avgResponseTime: 0, slaTimeout: 0, slaComplianceRate: 0 };
   }
 
-  const performance = getProviderPerformance(providerId);
+  const performance = await getProviderPerformance(providerId);
+  const slaTimeout = 1800;
   const slaComplianceRate =
     performance.totalLeads > 0
       ? performance.respondedWithinSla / performance.totalLeads
-      : 1; // new providers assumed compliant
+      : 1;
 
   return {
     providerId,
-    meetsSla:
-      performance.avgResponseTime <= provider.slaTimeoutSeconds &&
-      slaComplianceRate >= 0.8,
+    meetsSla: performance.avgResponseTime <= slaTimeout && slaComplianceRate >= 0.8,
     avgResponseTime: performance.avgResponseTime,
-    slaTimeout: provider.slaTimeoutSeconds,
+    slaTimeout,
     slaComplianceRate,
   };
 }
@@ -375,90 +365,103 @@ export function evaluateProviderSla(
 /**
  * Get all registered providers (admin utility).
  */
-export function getAllProviders(): Provider[] {
-  return [...providers];
+export async function getAllProviders(): Promise<Provider[]> {
+  const providers = await prisma.provider.findMany();
+  return providers.map(providerToRouting);
 }
 
 /**
  * Get a specific lead route result by ID.
  */
-export function getLeadResult(leadId: string): LeadRouteResult | undefined {
-  return leadResults.get(leadId);
+export async function getLeadResult(leadId: string): Promise<LeadRouteResult | undefined> {
+  const lead = await prisma.lead.findUnique({
+    where: { id: leadId },
+    include: { routedTo: true },
+  });
+  if (!lead) return undefined;
+  return leadToRouteResult(lead);
 }
 
 /**
  * Count banked (unmatched) leads for a given niche.
- * These are real leads with no provider to receive them — the pitch inventory.
  */
-export function getBankedLeadsByNiche(niche: string): number {
-  let count = 0;
-  for (const result of leadResults.values()) {
-    if (result.niche === niche && result.routeType === "unmatched") {
-      count++;
-    }
-  }
-  return count;
+export async function getBankedLeadsByNiche(niche: string): Promise<number> {
+  return prisma.lead.count({
+    where: { niche, routeType: "unmatched" },
+  });
 }
 
 /**
- * Get banked lead counts for ALL niches — used for the admin dashboard
- * and for surfacing urgency on the claim/directory pages.
+ * Get banked lead counts for ALL niches.
  */
-export function getAllBankedLeadCounts(): Record<string, number> {
+export async function getAllBankedLeadCounts(): Promise<Record<string, number>> {
+  const results = await prisma.lead.groupBy({
+    by: ["niche"],
+    where: { routeType: "unmatched" },
+    _count: true,
+  });
+
   const counts: Record<string, number> = {};
-  for (const result of leadResults.values()) {
-    if (result.routeType === "unmatched") {
-      counts[result.niche] = (counts[result.niche] ?? 0) + 1;
-    }
+  for (const r of results) {
+    counts[r.niche] = r._count;
   }
   return counts;
 }
 
 /**
- * Get the full list of unmatched lead records for a niche
- * (used by pay-per-lead purchase flow to select which lead to sell).
+ * Get unmatched lead records for a niche (for pay-per-lead flow).
  */
-export function getUnmatchedLeadsForNiche(niche: string): LeadRouteResult[] {
-  const results: LeadRouteResult[] = [];
-  for (const result of leadResults.values()) {
-    if (result.niche === niche && result.routeType === "unmatched") {
-      results.push(result);
-    }
-  }
-  return results.sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  );
+export async function getUnmatchedLeadsForNiche(niche: string): Promise<LeadRouteResult[]> {
+  const leads = await prisma.lead.findMany({
+    where: { niche, routeType: "unmatched" },
+    include: { routedTo: true },
+    orderBy: { createdAt: "desc" },
+  });
+  return leads.map(leadToRouteResult);
 }
 
 /**
- * Mark an unmatched lead as routed to a pay-per-lead buyer.
- * Called after successful Stripe payment confirmation.
+ * Mark an unmatched lead as purchased (pay-per-lead).
  */
-export function assignLeadToBuyer(
+export async function assignLeadToBuyer(
   leadId: string,
   buyerEmail: string
-): LeadRouteResult | null {
-  const result = leadResults.get(leadId);
-  if (!result || result.routeType !== "unmatched") return null;
+): Promise<LeadRouteResult | null> {
+  const lead = await prisma.lead.findUnique({
+    where: { id: leadId },
+    include: { routedTo: true },
+  });
+  if (!lead || lead.routeType !== "unmatched") return null;
 
-  const updated: LeadRouteResult = {
-    ...result,
-    routeType: "overflow",
-    routedTo: {
-      id: `buyer-${Date.now()}`,
-      slug: "pay-per-lead-buyer",
-      businessName: buyerEmail,
-      niche: result.niche,
-      city: result.city,
-      tier: "overflow",
-      email: buyerEmail,
-      responseTimeAvg: 0,
-      conversionRate: 0,
-      satisfactionScore: 0,
-      isActive: true,
-      slaTimeoutSeconds: 86400,
+  const updated = await prisma.lead.update({
+    where: { id: leadId },
+    data: { routeType: "overflow" },
+    include: { routedTo: true },
+  });
+
+  return leadToRouteResult(updated);
+}
+
+/**
+ * Re-route banked leads to a newly activated provider.
+ * Called when a provider claims a previously unclaimed territory.
+ */
+export async function deliverBankedLeads(
+  niche: string,
+  city: string,
+  providerId: string
+): Promise<number> {
+  const result = await prisma.lead.updateMany({
+    where: {
+      niche,
+      city: { equals: city, mode: "insensitive" },
+      routeType: "unmatched",
     },
-  };
-  leadResults.set(leadId, updated);
-  return updated;
+    data: {
+      routedToId: providerId,
+      routeType: "primary",
+      slaDeadline: new Date(Date.now() + 1800 * 1000),
+    },
+  });
+  return result.count;
 }

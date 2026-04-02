@@ -1,23 +1,20 @@
-export interface CityConfig {
-  slug: string;
-  name: string;
-  state: string;
-  stateCode: string;
-  domain: string;
-  population: number;
-  coordinates: { lat: number; lng: number };
-  serviceArea: string[];
-  tagline: string;
+// ── City Configuration ────────────────────────────────────────────────
+// Single source of truth for the current city deployment.
+// Multi-city: set CITY_SLUG env var to deploy a different city instance.
+// The city registry lives in city-registry.ts — add new cities there.
+
+import { getCityBySlug, type CityConfig } from "./city-registry";
+
+export type { CityConfig };
+
+const slug = process.env.CITY_SLUG ?? "erie";
+const resolved = getCityBySlug(slug);
+
+if (!resolved) {
+  throw new Error(
+    `Unknown CITY_SLUG: "${slug}". Add it to src/lib/city-registry.ts first.`
+  );
 }
 
-export const cityConfig: CityConfig = {
-  slug: "erie",
-  name: "Erie",
-  state: "Pennsylvania",
-  stateCode: "PA",
-  domain: "erie.pro",
-  population: 95000,
-  coordinates: { lat: 42.1292, lng: -80.0851 },
-  serviceArea: ["Erie", "Millcreek", "Harborcreek", "Fairview", "Summit Township", "McKean", "Edinboro", "Waterford", "North East", "Girard"],
-  tagline: "Erie's local business directory powered by AI",
-};
+/** Active city for this deployment */
+export const cityConfig: CityConfig = resolved;

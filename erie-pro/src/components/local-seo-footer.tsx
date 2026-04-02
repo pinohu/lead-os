@@ -1,5 +1,6 @@
 import { MapPin, Shield, FileText } from "lucide-react"
 import { ERIE_LOCAL_SEO } from "@/lib/local-seo"
+import { cityConfig } from "@/lib/city-config"
 
 /**
  * Local SEO Footer — renders on every page with deep local signals.
@@ -82,9 +83,9 @@ export function LocalSeoFooter() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
-            name: "erie.pro",
+            name: cityConfig.domain,
             description: `Find verified local service providers in ${seo.city}, ${seo.stateCode}. Free quotes, no obligation.`,
-            url: "https://erie.pro",
+            url: `https://${cityConfig.domain}`,
             telephone: "+1-814-200-0328",
             address: {
               "@type": "PostalAddress",
@@ -102,7 +103,7 @@ export function LocalSeoFooter() {
               "@type": "Place",
               name: n,
             })),
-            sameAs: ["https://erie.pro"],
+            sameAs: [`https://${cityConfig.domain}`],
           }),
         }}
       />

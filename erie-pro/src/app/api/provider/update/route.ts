@@ -18,6 +18,8 @@ const UpdateProfileSchema = z.object({
   website: z.string().url().max(500).optional().nullable(),
   serviceAreas: z.array(z.string().max(100)).max(20).optional(),
   employeeCount: z.string().max(20).optional(),
+  license: z.string().max(100).transform(sanitizeText).optional(),
+  insurance: z.boolean().optional(),
 });
 
 export async function PATCH(req: NextRequest) {
@@ -75,6 +77,8 @@ export async function PATCH(req: NextRequest) {
     if (parsed.data.website !== undefined) updates.website = parsed.data.website;
     if (parsed.data.serviceAreas !== undefined) updates.serviceAreas = parsed.data.serviceAreas;
     if (parsed.data.employeeCount !== undefined) updates.employeeCount = parsed.data.employeeCount;
+    if (parsed.data.license !== undefined) updates.license = parsed.data.license;
+    if (parsed.data.insurance !== undefined) updates.insurance = parsed.data.insurance;
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json(

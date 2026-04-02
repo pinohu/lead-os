@@ -10,6 +10,7 @@ import {
   getCheckoutSession,
 } from "@/lib/stripe-integration";
 import { prisma } from "@/lib/db";
+import type { SubscriptionStatus } from "@/generated/prisma";
 import { activatePerks, deactivatePerks } from "@/lib/perk-manager";
 import { deliverBankedLeads } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Handle mock checkout.session.completed
+      // Handle mock events in dry-run mode
       if (mockEvent.type === "checkout.session.completed") {
         const sessionId = mockEvent.data?.object?.id;
         if (sessionId) {
@@ -114,6 +115,70 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Handle subscription status changes (trial→active, active→past_due, etc.)
+    if (event.type === "customer.subscription.updated") {
+      const sub = event.data.object;
+      if (sub && "customer" in sub) {
+        const customerId = sub.customer as string;
+        const status = "status" in sub ? (sub.status as string) : null;
+        const cancelAtPeriodEnd = "cancel_at_period_end" in sub ? (sub.cancel_at_period_end as boolean) : false;
+
+        const provider = await prisma.provider.findFirst({
+          where: { stripeCustomerId: customerId },
+          select: { id: true, email: true, businessName: true, subscriptionStatus: true },
+        });
+
+        if (provider && status) {
+          // Map Stripe status to our subscription status
+          const statusMap: Record<string, SubscriptionStatus> = {
+            active: "active",
+            trialing: "trial",
+            past_due: "past_due",
+            canceled: "cancelled",
+            unpaid: "past_due",
+            incomplete: "trial",
+            incomplete_expired: "expired",
+          };
+
+          const newStatus: SubscriptionStatus = statusMap[status] ?? provider.subscriptionStatus;
+
+          if (newStatus !== provider.subscriptionStatus || cancelAtPeriodEnd) {
+            await prisma.provider.update({
+              where: { id: provider.id },
+              data: { subscriptionStatus: newStatus },
+            });
+
+            await audit({
+              action: "subscription.status_changed",
+              entityType: "subscription",
+              providerId: provider.id,
+              metadata: {
+                stripeEventId: event.id,
+                oldStatus: provider.subscriptionStatus,
+                newStatus,
+                cancelAtPeriodEnd,
+              },
+            });
+
+            logger.info("webhook/stripe", `Subscription updated for ${provider.id}: ${provider.subscriptionStatus} → ${newStatus}`);
+
+            // Notify provider if subscription is at risk
+            if (newStatus === "past_due") {
+              sendEmail({
+                to: provider.email,
+                subject: "Your subscription is past due — action required",
+                html: `
+                  <p>Hi ${provider.businessName},</p>
+                  <p>Your Erie Pro territory subscription is now past due. Your territory may be deactivated if payment is not received.</p>
+                  <p><a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro"}/dashboard/settings">Update Payment Info</a></p>
+                `,
+              }).catch((err) => { logger.error("stripe-webhook", "Past due notification failed", err) });
+            }
+          }
+        }
+      }
+    }
+
     // Handle subscription cancellation — deactivate perks
     if (event.type === "customer.subscription.deleted") {
       const sub = event.data.object;
@@ -168,36 +233,50 @@ async function handleCheckoutCompleted(
     });
 
     if (provider) {
-      // Activate provider subscription
-      await prisma.provider.update({
-        where: { id: provider.id },
-        data: {
-          subscriptionStatus: "active",
-          stripeSubscriptionId: stripeSessionId,
-        },
-      });
-
-      // ── Create or link User account for dashboard access ──────
-      const existingUser = await prisma.user.findUnique({
-        where: { email: provider.email },
-      });
-
-      if (!existingUser) {
-        await prisma.user.create({
+      // Wrap critical DB operations in a transaction for atomicity
+      const deliveredCount = await prisma.$transaction(async (tx) => {
+        // Activate provider subscription
+        await tx.provider.update({
+          where: { id: provider.id },
           data: {
-            email: provider.email,
-            name: provider.businessName,
-            role: "provider",
-            providerId: provider.id,
+            subscriptionStatus: "active",
+            stripeSubscriptionId: stripeSessionId,
           },
         });
-        logger.info("webhook/stripe", "Created user account for provider:", provider.id);
-      } else if (!existingUser.providerId) {
-        await prisma.user.update({
-          where: { id: existingUser.id },
-          data: { providerId: provider.id },
+
+        // Create or link User account for dashboard access
+        const existingUser = await tx.user.findUnique({
+          where: { email: provider.email },
         });
-      }
+
+        if (!existingUser) {
+          await tx.user.create({
+            data: {
+              email: provider.email,
+              name: provider.businessName,
+              role: "provider",
+              providerId: provider.id,
+            },
+          });
+          logger.info("webhook/stripe", "Created user account for provider:", provider.id);
+        } else if (!existingUser.providerId) {
+          await tx.user.update({
+            where: { id: existingUser.id },
+            data: { providerId: provider.id },
+          });
+        }
+
+        // Mark checkout session as completed (inside transaction)
+        await tx.checkoutSession.updateMany({
+          where: { stripeSessionId },
+          data: { status: "completed", completedAt: new Date() },
+        });
+
+        return 0; // deliverBankedLeads runs outside transaction (it has its own logic)
+      });
+
+      // These run after the transaction succeeds — they have side effects
+      // (external APIs, email sends) that shouldn't be in a DB transaction
 
       // Activate territory and perks
       await activatePerks(
@@ -209,7 +288,7 @@ async function handleCheckoutCompleted(
       );
 
       // Deliver any banked leads to the new provider
-      const deliveredCount = await deliverBankedLeads(
+      const actualDelivered = await deliverBankedLeads(
         checkoutSession.niche,
         checkoutSession.city,
         provider.id
@@ -223,7 +302,7 @@ async function handleCheckoutCompleted(
         metadata: {
           niche: checkoutSession.niche,
           city: checkoutSession.city,
-          bankedLeadsDelivered: deliveredCount,
+          bankedLeadsDelivered: actualDelivered,
           stripeEventId,
         },
       });
@@ -233,19 +312,19 @@ async function handleCheckoutCompleted(
         provider.email,
         provider.businessName,
         checkoutSession.niche,
-        deliveredCount
+        actualDelivered
       ).catch((err) => { logger.error("stripe-webhook", "Failed to process webhook task", err) });
 
       logger.info("webhook/stripe", `Territory claimed: ${checkoutSession.niche}/${checkoutSession.city}`, {
         providerId: provider.id,
-        deliveredLeads: deliveredCount,
+        deliveredLeads: actualDelivered,
       });
     }
+  } else {
+    // Non-territory-claim sessions: just mark as completed
+    await prisma.checkoutSession.updateMany({
+      where: { stripeSessionId },
+      data: { status: "completed", completedAt: new Date() },
+    });
   }
-
-  // Mark checkout session as completed
-  await prisma.checkoutSession.updateMany({
-    where: { stripeSessionId },
-    data: { status: "completed", completedAt: new Date() },
-  });
 }

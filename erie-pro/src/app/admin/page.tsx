@@ -18,6 +18,7 @@ import {
   Inbox,
 } from "lucide-react"
 import { getAllProviders, getProviderStats } from "@/lib/provider-store"
+import { getDirectoryListingCount } from "@/lib/directory-store"
 import { prisma } from "@/lib/db"
 import { cityConfig } from "@/lib/city-config"
 import { niches } from "@/lib/niches"
@@ -80,6 +81,7 @@ export default async function AdminDashboard() {
     pendingDisputes,
     overdueDisputes,
     unreadMessages,
+    directoryListingCount,
   ] = await Promise.all([
     prisma.lead.findMany({
       where: { createdAt: { gte: thirtyDaysAgo } },
@@ -100,6 +102,7 @@ export default async function AdminDashboard() {
       },
     }),
     prisma.contactMessage.count({ where: { status: "unread" } }),
+    getDirectoryListingCount(),
   ])
 
   const activeProviders = providers.filter((p) => p.subscriptionStatus === "active")
@@ -297,60 +300,62 @@ export default async function AdminDashboard() {
           {recentLeads.length === 0 ? (
             <p className="text-sm text-gray-500 dark:text-gray-400 py-8 text-center">No leads yet. Leads will appear here as they come in.</p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Niche</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Routed To</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentLeads.map((lead) => {
-                  const leadName = `${lead.firstName ?? ""} ${lead.lastName ?? ""}`.trim() || "Unknown"
-                  const outcome = lead.outcomes[0]?.outcome
-                  const status = outcome ?? (lead.routedToId ? "pending" : "unmatched")
-                  return (
-                    <TableRow key={lead.id}>
-                      <TableCell className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                        {lead.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })}{" "}
-                        {lead.createdAt.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="capitalize">{lead.niche}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Link href={`/admin/leads/${lead.id}`} className="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline">
-                          {leadName}
-                        </Link>
-                        {lead.message && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]">{lead.message}</p>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <p className="text-xs"><a href={`mailto:${lead.email}`} className="text-blue-600 dark:text-blue-400 hover:underline">{lead.email}</a></p>
-                        {lead.phone && <p className="text-xs text-gray-500 dark:text-gray-400">{lead.phone}</p>}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {lead.routedTo?.businessName ? (
-                          <span className="text-gray-900 dark:text-white">{lead.routedTo.businessName}</span>
-                        ) : (
-                          <span className="text-red-600 dark:text-red-400 font-medium">Unmatched</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${getStatusColor(status)}`}>
-                          {status.replace("_", " ")}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Time</TableHead>
+                    <TableHead>Niche</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Contact</TableHead>
+                    <TableHead>Routed To</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentLeads.map((lead) => {
+                    const leadName = `${lead.firstName ?? ""} ${lead.lastName ?? ""}`.trim() || "Unknown"
+                    const outcome = lead.outcomes[0]?.outcome
+                    const status = outcome ?? (lead.routedToId ? "pending" : "unmatched")
+                    return (
+                      <TableRow key={lead.id}>
+                        <TableCell className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                          {lead.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })}{" "}
+                          {lead.createdAt.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="capitalize">{lead.niche}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Link href={`/admin/leads/${lead.id}`} className="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline">
+                            {leadName}
+                          </Link>
+                          {lead.message && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]">{lead.message}</p>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-xs"><a href={`mailto:${lead.email}`} className="text-blue-600 dark:text-blue-400 hover:underline">{lead.email}</a></p>
+                          {lead.phone && <p className="text-xs text-gray-500 dark:text-gray-400">{lead.phone}</p>}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {lead.routedTo?.businessName ? (
+                            <span className="text-gray-900 dark:text-white">{lead.routedTo.businessName}</span>
+                          ) : (
+                            <span className="text-red-600 dark:text-red-400 font-medium">Unmatched</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${getStatusColor(status)}`}>
+                            {status.replace("_", " ")}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -374,18 +379,20 @@ export default async function AdminDashboard() {
           countColor="text-blue-600 dark:text-blue-400"
         />
         <QuickLink
+          href="/admin/listings"
+          icon="🏢"
+          label="Directory Listings"
+          description="Scraped Google Places listings"
+          count={directoryListingCount}
+          countColor="text-purple-600 dark:text-purple-400"
+        />
+        <QuickLink
           href="/admin/territories?filter=available"
           icon="📍"
           label="Available Territories"
           description="Unclaimed niches for sale"
           count={niches.length - claimedNiches.size}
           countColor="text-amber-600 dark:text-amber-400"
-        />
-        <QuickLink
-          href="/admin/audit-log"
-          icon="📜"
-          label="Audit Log"
-          description="System event trail"
         />
       </div>
 
@@ -450,50 +457,52 @@ export default async function AdminDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Provider</TableHead>
-                  <TableHead>Niche</TableHead>
-                  <TableHead className="text-right">MRR</TableHead>
-                  <TableHead className="text-right">Leads</TableHead>
-                  <TableHead className="text-right">Rating</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {providers.slice(0, 10).map((p) => (
-                  <TableRow key={p.id}>
-                    <TableCell>
-                      <Link href={`/admin/providers/${p.id}`} className="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline">
-                        {p.businessName}
-                      </Link>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{p.email}</p>
-                    </TableCell>
-                    <TableCell><Badge variant="outline" className="capitalize">{p.niche}</Badge></TableCell>
-                    <TableCell className="text-right font-medium text-green-600 dark:text-green-400">${p.monthlyFee}</TableCell>
-                    <TableCell className="text-right font-medium">{p.totalLeads}</TableCell>
-                    <TableCell className="text-right">
-                      <span className="flex items-center justify-end gap-1">
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        {p.avgRating > 0 ? p.avgRating.toFixed(1) : "N/A"}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={p.subscriptionStatus === "active" ? "default" : p.subscriptionStatus === "trial" ? "secondary" : "destructive"} className="capitalize">
-                        {p.subscriptionStatus}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button asChild variant="ghost" size="sm">
-                        <Link href={`/admin/providers/${p.id}`}><ChevronRight className="h-4 w-4" /></Link>
-                      </Button>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Provider</TableHead>
+                    <TableHead>Niche</TableHead>
+                    <TableHead className="text-right">MRR</TableHead>
+                    <TableHead className="text-right">Leads</TableHead>
+                    <TableHead className="text-right">Rating</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead />
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {providers.slice(0, 10).map((p) => (
+                    <TableRow key={p.id}>
+                      <TableCell>
+                        <Link href={`/admin/providers/${p.id}`} className="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline">
+                          {p.businessName}
+                        </Link>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{p.email}</p>
+                      </TableCell>
+                      <TableCell><Badge variant="outline" className="capitalize">{p.niche}</Badge></TableCell>
+                      <TableCell className="text-right font-medium text-green-600 dark:text-green-400">${p.monthlyFee}</TableCell>
+                      <TableCell className="text-right font-medium">{p.totalLeads}</TableCell>
+                      <TableCell className="text-right">
+                        <span className="flex items-center justify-end gap-1">
+                          <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                          {p.avgRating > 0 ? p.avgRating.toFixed(1) : "N/A"}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={p.subscriptionStatus === "active" ? "default" : p.subscriptionStatus === "trial" ? "secondary" : "destructive"} className="capitalize">
+                          {p.subscriptionStatus}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button asChild variant="ghost" size="sm">
+                          <Link href={`/admin/providers/${p.id}`}><ChevronRight className="h-4 w-4" /></Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       )}

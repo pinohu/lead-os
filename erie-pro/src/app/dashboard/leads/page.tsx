@@ -3,7 +3,9 @@
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { redirect } from "next/navigation";
 import Link from "next/link";
+import LeadOutcomeButton from "./lead-outcome-button";
 
 export const dynamic = "force-dynamic";
 
@@ -13,12 +15,12 @@ export default async function LeadsPage({
   searchParams: Promise<{ page?: string; temp?: string }>;
 }) {
   const session = await auth();
-  if (!session?.user) return null;
+  if (!session?.user) redirect("/login?callbackUrl=/dashboard/leads");
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
   });
-  if (!user?.providerId) return null;
+  if (!user?.providerId) redirect("/dashboard");
 
   const params = await searchParams;
   const page = Math.max(1, parseInt(params.page ?? "1", 10));
@@ -88,7 +90,7 @@ export default async function LeadsPage({
                   <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Email</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Phone</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Temp</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Status</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Outcome</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Date</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Actions</th>
                 </tr>
@@ -130,21 +132,10 @@ export default async function LeadsPage({
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        {outcome ? (
-                          <span
-                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                              outcome.outcome === "converted"
-                                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                                : outcome.outcome === "responded"
-                                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                                  : "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400"
-                            }`}
-                          >
-                            {outcome.outcome.replace("_", " ")}
-                          </span>
-                        ) : (
-                          <span className="text-xs text-gray-400 dark:text-gray-500">Pending</span>
-                        )}
+                        <LeadOutcomeButton
+                          leadId={lead.id}
+                          currentOutcome={outcome?.outcome ?? null}
+                        />
                       </td>
                       <td className="py-3 px-4 text-gray-600 dark:text-gray-400 whitespace-nowrap">
                         {lead.createdAt.toLocaleDateString()}

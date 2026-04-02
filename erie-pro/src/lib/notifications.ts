@@ -1,6 +1,18 @@
 // ── Notification System ─────────────────────────────────────────────
 // Lead notification delivery to providers via email and SMS.
-// Dry-run mode when no API keys are set.
+// Persistent via Prisma/Postgres. Dry-run mode when no API keys are set.
+
+import { prisma } from "@/lib/db";
+import { cityConfig } from "@/lib/city-config";
+import { logger } from "@/lib/logger";
+import type {
+  Notification as PrismaNotification,
+  NotificationType,
+  NotificationChannel,
+  DeliveryStatus,
+} from "@/generated/prisma";
+
+// ── Public Interface ───────────────────────────────────────────────
 
 export interface Notification {
   id: string;
@@ -12,31 +24,39 @@ export interface Notification {
   deliveryStatus: "pending" | "sent" | "delivered" | "failed";
 }
 
-// ── Configuration ───────────────────────────────────────────────────
+// ── Configuration ──────────────────────────────────────────────────
 
 const EMAILIT_API_KEY = process.env.EMAILIT_API_KEY ?? "";
 const SINOSEND_API_KEY = process.env.SINOSEND_API_KEY ?? "";
-const FROM_EMAIL = process.env.NOTIFICATION_FROM_EMAIL ?? "leads@erie.pro";
-const FROM_NAME = process.env.NOTIFICATION_FROM_NAME ?? "Erie.pro Leads";
+const FROM_EMAIL = process.env.NOTIFICATION_FROM_EMAIL ?? `leads@${cityConfig.domain}`;
+const FROM_NAME = process.env.NOTIFICATION_FROM_NAME ?? `${cityConfig.domain} Leads`;
 
 const isDryRun = !EMAILIT_API_KEY && !SINOSEND_API_KEY;
 
-// ── In-Memory Log ───────────────────────────────────────────────────
+// ── Mapper ─────────────────────────────────────────────────────────
 
-const notificationLog: Notification[] = [];
-
-function generateNotificationId(): string {
-  return `notif-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 8)}`;
+function toNotification(n: PrismaNotification): Notification {
+  return {
+    id: n.id,
+    type: n.type.replace(/_/g, "_") as Notification["type"],
+    providerId: n.providerId,
+    channel: n.channel as Notification["channel"],
+    message: n.message,
+    sentAt: n.sentAt.toISOString(),
+    deliveryStatus: n.deliveryStatus as Notification["deliveryStatus"],
+  };
 }
 
-// ── Email Templates ─────────────────────────────────────────────────
+// ── Email Templates ────────────────────────────────────────────────
 
 function buildNewLeadEmail(
   providerName: string,
   leadData: Record<string, unknown>
 ): { subject: string; body: string } {
   const niche = (leadData.niche as string) ?? "service";
-  const name = (leadData.name as string) ?? "A potential customer";
+  const firstName = (leadData.firstName as string) ?? "";
+  const lastName = (leadData.lastName as string) ?? "";
+  const name = [firstName, lastName].filter(Boolean).join(" ") || "A potential customer";
   const phone = (leadData.phone as string) ?? "";
   const message = (leadData.message as string) ?? "";
 
@@ -83,7 +103,7 @@ function buildSlaWarningEmail(
   };
 }
 
-// ── Delivery Functions ──────────────────────────────────────────────
+// ── Delivery Functions ─────────────────────────────────────────────
 
 async function sendEmail(
   to: string,
@@ -91,15 +111,17 @@ async function sendEmail(
   body: string
 ): Promise<boolean> {
   if (isDryRun) {
-    console.log(`[Notifications DRY-RUN] Email to: ${to}`);
-    console.log(`  Subject: ${subject}`);
-    console.log(`  Body: ${body.substring(0, 120)}...`);
+    if (process.env.NODE_ENV === "development") {
+      logger.info("notifications", `DRY-RUN Email to: ${to.substring(0, 3)}***`);
+      logger.info("notifications", `  Subject: ${subject}`);
+    }
     return true;
   }
 
+  // Emailit integration (primary)
   if (EMAILIT_API_KEY) {
     try {
-      const res = await fetch("https://api.emailit.com/v1/emails", {
+      const res = await fetch("https://api.emailit.com/v2/emails", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${EMAILIT_API_KEY}`,
@@ -113,8 +135,7 @@ async function sendEmail(
         }),
       });
       return res.ok;
-    } catch (err) {
-      console.error("[Notifications] Email send failed:", err);
+    } catch {
       return false;
     }
   }
@@ -127,8 +148,9 @@ async function sendSms(
   message: string
 ): Promise<boolean> {
   if (isDryRun) {
-    console.log(`[Notifications DRY-RUN] SMS to: ${phone}`);
-    console.log(`  Message: ${message.substring(0, 100)}...`);
+    if (process.env.NODE_ENV === "development") {
+      logger.info("notifications", `DRY-RUN SMS to: ***${phone.slice(-4)}`);
+    }
     return true;
   }
 
@@ -140,14 +162,10 @@ async function sendSms(
           Authorization: `Bearer ${SINOSEND_API_KEY}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          to: phone,
-          message,
-        }),
+        body: JSON.stringify({ to: phone, message }),
       });
       return res.ok;
-    } catch (err) {
-      console.error("[Notifications] SMS send failed:", err);
+    } catch {
       return false;
     }
   }
@@ -155,7 +173,7 @@ async function sendSms(
   return false;
 }
 
-// ── Public API ──────────────────────────────────────────────────────
+// ── Public API ─────────────────────────────────────────────────────
 
 /**
  * Notify a provider about a new lead.
@@ -170,14 +188,11 @@ export async function notifyProvider(
 
   const { subject, body } = buildNewLeadEmail(providerName, leadData);
 
-  let channel: Notification["channel"] = "email";
-  let status: Notification["deliveryStatus"] = "pending";
+  let channel: NotificationChannel = "email";
+  let status: DeliveryStatus = "pending";
 
-  // Send email
   const emailSent = providerEmail ? await sendEmail(providerEmail, subject, body) : false;
-
-  // Send SMS
-  const smsMessage = `New ${(leadData.niche as string) ?? "service"} lead from Erie.pro! Check your email for details. Respond quickly for best results.`;
+  const smsMessage = `New ${(leadData.niche as string) ?? "service"} lead from Erie.pro! Check your email for details.`;
   const smsSent = providerPhone ? await sendSms(providerPhone, smsMessage) : false;
 
   if (emailSent && smsSent) {
@@ -193,18 +208,17 @@ export async function notifyProvider(
     status = isDryRun ? "sent" : "failed";
   }
 
-  const notification: Notification = {
-    id: generateNotificationId(),
-    type: "new_lead",
-    providerId,
-    channel,
-    message: body,
-    sentAt: new Date().toISOString(),
-    deliveryStatus: status,
-  };
+  const notification = await prisma.notification.create({
+    data: {
+      type: "new_lead" as NotificationType,
+      providerId,
+      channel,
+      message: body,
+      deliveryStatus: status,
+    },
+  });
 
-  notificationLog.push(notification);
-  return notification;
+  return toNotification(notification);
 }
 
 /**
@@ -215,37 +229,57 @@ export async function sendSlaWarning(
   leadId: string,
   secondsRemaining: number
 ): Promise<Notification> {
-  const { subject, body } = buildSlaWarningEmail("Provider", leadId, secondsRemaining);
+  // Fetch provider contact info from DB
+  const provider = await prisma.provider.findUnique({
+    where: { id: providerId },
+    select: { email: true, businessName: true },
+  });
 
-  // In production, fetch provider contact from store
-  const emailSent = await sendEmail("", subject, body);
+  const { subject, body } = buildSlaWarningEmail(
+    provider?.businessName ?? "Provider",
+    leadId,
+    secondsRemaining
+  );
 
-  const notification: Notification = {
-    id: generateNotificationId(),
-    type: "sla_warning",
-    providerId,
-    channel: "email",
-    message: body,
-    sentAt: new Date().toISOString(),
-    deliveryStatus: emailSent || isDryRun ? "sent" : "failed",
-  };
+  const emailSent = provider?.email
+    ? await sendEmail(provider.email, subject, body)
+    : false;
 
-  notificationLog.push(notification);
-  return notification;
+  const notification = await prisma.notification.create({
+    data: {
+      type: "sla_warning" as NotificationType,
+      providerId,
+      channel: "email",
+      message: body,
+      deliveryStatus: emailSent || isDryRun ? "sent" : "failed",
+    },
+  });
+
+  return toNotification(notification);
 }
 
 /**
  * Get all notifications for a provider.
  */
-export function getProviderNotifications(providerId: string): Notification[] {
-  return notificationLog.filter((n) => n.providerId === providerId);
+export async function getProviderNotifications(
+  providerId: string
+): Promise<Notification[]> {
+  const notifications = await prisma.notification.findMany({
+    where: { providerId },
+    orderBy: { sentAt: "desc" },
+  });
+  return notifications.map(toNotification);
 }
 
 /**
  * Get all notifications (admin).
  */
-export function getAllNotifications(): Notification[] {
-  return [...notificationLog];
+export async function getAllNotifications(): Promise<Notification[]> {
+  const notifications = await prisma.notification.findMany({
+    orderBy: { sentAt: "desc" },
+    take: 500,
+  });
+  return notifications.map(toNotification);
 }
 
 /**

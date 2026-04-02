@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} FAQ — Common Questions for ${cityConfig.name} Residents`,
     description: `Frequently asked questions about ${content.serviceLabel} in ${cityConfig.name}, ${cityConfig.stateCode}. Costs, licensing, hiring tips, and more.`,
-    alternates: { canonical: `https://erie.pro/${slug}/faq` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}/faq` },
   }
 }
 

@@ -34,7 +34,7 @@ import {
 export const metadata: Metadata = {
   title: `About ${cityConfig.domain} — Erie's Local Service Directory`,
   description: `Learn about ${cityConfig.domain}, Erie's trusted platform for finding verified local service providers. Our mission, our model, and our commitment to the community.`,
-  alternates: { canonical: 'https://erie.pro/about' },
+  alternates: { canonical: `https://${cityConfig.domain}/about` },
 }
 
 export default function AboutPage() {

@@ -26,11 +26,10 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { InternalLinks } from "@/components/internal-links"
 import { FeaturedProvider } from "@/components/featured-provider"
+import LeadForm from "@/components/lead-form"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -56,13 +55,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     openGraph: {
       type: "website",
-      siteName: "erie.pro",
+      siteName: cityConfig.domain,
       locale: "en_US",
       title: `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode} — Get a Free Quote`,
       description,
       url: `https://${cityConfig.domain}/${slug}`,
     },
-    alternates: { canonical: `https://erie.pro/${slug}` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}` },
   }
 }
 
@@ -198,73 +197,12 @@ export default async function NichePage({ params }: Props) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4" action="/api/lead" method="POST">
-              <input type="hidden" name="niche" value={niche.slug} />
-              <input type="hidden" name="city" value={cityConfig.slug} />
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First name</Label>
-                  <Input
-                    id="firstName"
-                    type="text"
-                    name="firstName"
-                    required
-                    aria-required="true"
-                    placeholder="John"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last name</Label>
-                  <Input
-                    id="lastName"
-                    type="text"
-                    name="lastName"
-                    placeholder="Smith"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  name="phone"
-                  required
-                  aria-required="true"
-                  placeholder="(814) 555-0199"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  name="email"
-                  required
-                  aria-required="true"
-                  placeholder="john@example.com"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="message">
-                  What do you need?
-                </Label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={3}
-                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder={`Describe your ${niche.label.toLowerCase()} needs...`}
-                />
-              </div>
-              <Button type="submit" className="w-full" size="lg">
-                Get My Free Quote
-              </Button>
-              <p className="text-center text-xs text-muted-foreground">
-                No obligation. Your info goes only to verified{" "}
-                {cityConfig.name} providers.
-              </p>
-            </form>
+            <LeadForm
+              nicheSlug={niche.slug}
+              nicheLabel={niche.label}
+              citySlug={cityConfig.slug}
+              cityName={cityConfig.name}
+            />
           </CardContent>
         </Card>
       </section>

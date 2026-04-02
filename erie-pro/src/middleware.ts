@@ -1,27 +1,25 @@
 import { NextRequest, NextResponse } from "next/server"
+import { niches } from "@/lib/niches"
 
-const VALID_NICHES = new Set([
-  "plumbing",
-  "hvac",
-  "electrical",
-  "roofing",
-  "landscaping",
-  "dental",
-  "legal",
-  "cleaning",
-  "auto-repair",
-  "pest-control",
-  "painting",
-  "real-estate",
-])
+const VALID_NICHES = new Set(niches.map((n) => n.slug))
 
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
   const hostname = request.headers.get("host") ?? ""
   const url = request.nextUrl.clone()
 
+  // ── www → non-www redirect ─────────────────────────────────────
+  if (hostname.startsWith("www.")) {
+    const newHost = hostname.replace(/^www\./, "")
+    return NextResponse.redirect(
+      new URL(`https://${newHost}${pathname}${url.search}`),
+      301
+    )
+  }
+
+  // ── Subdomain rewriting ────────────────────────────────────────
   // Check for dev-mode query param first: ?subdomain=plumbing
   const subdomainParam = url.searchParams.get("subdomain")
-
   const subdomain = subdomainParam ?? extractSubdomain(hostname)
 
   if (subdomain && VALID_NICHES.has(subdomain)) {
@@ -60,5 +58,8 @@ function extractSubdomain(hostname: string): string | null {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    // Match all routes except static assets
+    "/((?!_next/static|_next/image|favicon.ico|icon.svg|apple-touch-icon.png|manifest.json|og-default.png).*)",
+  ],
 }

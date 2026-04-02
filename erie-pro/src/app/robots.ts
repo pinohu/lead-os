@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next"
+import { cityConfig } from "@/lib/city-config"
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,9 +7,28 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/api/"],
+        disallow: [
+          "/admin",
+          "/admin/*",
+          "/api/",
+          "/dashboard",
+          "/dashboard/*",
+          "/login",
+          "/for-business/claim/success",
+          "/for-business/leads/success",
+          "/setup-admin",
+        ],
+      },
+      // Block aggressive crawlers that waste bandwidth
+      {
+        userAgent: "GPTBot",
+        disallow: "/",
+      },
+      {
+        userAgent: "CCBot",
+        disallow: "/",
       },
     ],
-    sitemap: "https://erie.pro/sitemap.xml",
+    sitemap: `https://${cityConfig.domain}/sitemap.xml`,
   }
 }

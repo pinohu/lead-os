@@ -1,5 +1,17 @@
 // ── Provider Data Management ────────────────────────────────────────
-// In-memory store for service provider profiles with full CRUD operations.
+// Persistent store for service provider profiles using Prisma/Postgres.
+// All functions are async — callers must await.
+
+import { prisma } from "@/lib/db";
+import type {
+  Provider as PrismaProvider,
+  ProviderTier,
+  SubscriptionStatus,
+} from "@/generated/prisma";
+
+// ── Public Interface ───────────────────────────────────────────────
+// Kept for backward compatibility — maps Prisma model to the shape
+// the rest of the codebase already expects.
 
 export interface ProviderProfile {
   id: string;
@@ -7,334 +19,264 @@ export interface ProviderProfile {
   businessName: string;
   niche: string;
   city: string;
-  // Contact
   phone: string;
   email: string;
   website?: string;
-  // Location
   address: { street: string; city: string; state: string; zip: string };
   serviceAreas: string[];
-  // Business details
   description: string;
   yearEstablished: number;
   employeeCount: string;
   license?: string;
   insurance: boolean;
-  // Subscription
   tier: "primary" | "backup" | "overflow";
   subscriptionStatus: "active" | "trial" | "expired" | "cancelled";
   monthlyFee: number;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
-  // Performance
   totalLeads: number;
   convertedLeads: number;
-  avgResponseTime: number; // seconds
+  avgResponseTime: number;
   avgRating: number;
   reviewCount: number;
-  // Timestamps
   claimedAt: string;
   lastLeadAt?: string;
 }
 
-// ── In-Memory Store ─────────────────────────────────────────────────
+// ── Mapper ─────────────────────────────────────────────────────────
 
-function generateId(): string {
-  return `prov-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 8)}`;
+function toProfile(p: PrismaProvider): ProviderProfile {
+  return {
+    id: p.id,
+    slug: p.slug,
+    businessName: p.businessName,
+    niche: p.niche,
+    city: p.city,
+    phone: p.phone,
+    email: p.email,
+    website: p.website ?? undefined,
+    address: {
+      street: p.addressStreet ?? "",
+      city: p.addressCity ?? "",
+      state: p.addressState ?? "",
+      zip: p.addressZip ?? "",
+    },
+    serviceAreas: p.serviceAreas,
+    description: p.description,
+    yearEstablished: p.yearEstablished ?? 0,
+    employeeCount: p.employeeCount ?? "",
+    license: p.license ?? undefined,
+    insurance: p.insurance,
+    tier: p.tier as ProviderProfile["tier"],
+    subscriptionStatus: p.subscriptionStatus as ProviderProfile["subscriptionStatus"],
+    monthlyFee: p.monthlyFee,
+    stripeCustomerId: p.stripeCustomerId ?? undefined,
+    stripeSubscriptionId: p.stripeSubscriptionId ?? undefined,
+    totalLeads: p.totalLeads,
+    convertedLeads: p.convertedLeads,
+    avgResponseTime: p.avgResponseTime,
+    avgRating: p.avgRating,
+    reviewCount: p.reviewCount,
+    claimedAt: p.claimedAt.toISOString(),
+    lastLeadAt: p.lastLeadAt?.toISOString(),
+  };
 }
 
-function slugify(name: string): string {
-  return name
+// ── Helpers ────────────────────────────────────────────────────────
+
+function slugify(name: string, city: string): string {
+  return (name + "-" + city)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
 
-const providers: Map<string, ProviderProfile> = new Map();
+// ── CRUD Operations ────────────────────────────────────────────────
 
-// ── Seed Data ───────────────────────────────────────────────────────
-
-// Demo provider data — phone numbers are fictional 555-XXXX placeholders for development/testing only.
-const seedProviders: ProviderProfile[] = [
-  {
-    id: "prov-plumb-001",
-    slug: "johnson-plumbing-erie",
-    businessName: "Johnson Plumbing & Drain",
-    niche: "plumbing",
-    city: "erie",
-    phone: "(814) 555-0101",
-    email: "leads@johnsonplumbing-erie.com",
-    website: "https://erie.pro/plumbing/johnson-plumbing-erie",
-    address: { street: "1420 Peach St", city: "Erie", state: "PA", zip: "16501" },
-    serviceAreas: ["Erie", "Millcreek", "Harborcreek", "Fairview"],
-    description: "Full-service plumbing company specializing in emergency repairs, drain cleaning, water heater installation, and residential remodeling plumbing. Family-owned since 2005.",
-    yearEstablished: 2005,
-    employeeCount: "6-10",
-    license: "PA-PLB-039271",
-    insurance: true,
-    tier: "primary",
-    subscriptionStatus: "active",
-    monthlyFee: 500,
-    stripeCustomerId: "cus_mock_johnson",
-    stripeSubscriptionId: "sub_mock_johnson",
-    totalLeads: 147,
-    convertedLeads: 98,
-    avgResponseTime: 420,
-    avgRating: 4.7,
-    reviewCount: 63,
-    claimedAt: "2024-06-15T10:00:00Z",
-    lastLeadAt: "2026-03-28T14:30:00Z",
-  },
-  {
-    id: "prov-hvac-001",
-    slug: "erie-comfort-hvac",
-    businessName: "Erie Comfort HVAC",
-    niche: "hvac",
-    city: "erie",
-    phone: "(814) 555-0301",
-    email: "leads@eriecomforthvac.com",
-    website: "https://erie.pro/hvac/erie-comfort-hvac",
-    address: { street: "3205 W 26th St", city: "Erie", state: "PA", zip: "16506" },
-    serviceAreas: ["Erie", "Millcreek", "Summit Township", "McKean"],
-    description: "Heating, cooling, and indoor air quality experts. We service all makes and models. 24/7 emergency service available. EPA-certified technicians.",
-    yearEstablished: 2010,
-    employeeCount: "11-20",
-    license: "PA-HVAC-051842",
-    insurance: true,
-    tier: "primary",
-    subscriptionStatus: "active",
-    monthlyFee: 500,
-    stripeCustomerId: "cus_mock_eriecomfort",
-    stripeSubscriptionId: "sub_mock_eriecomfort",
-    totalLeads: 112,
-    convertedLeads: 71,
-    avgResponseTime: 600,
-    avgRating: 4.5,
-    reviewCount: 48,
-    claimedAt: "2024-07-01T09:00:00Z",
-    lastLeadAt: "2026-03-27T11:15:00Z",
-  },
-  {
-    id: "prov-elec-001",
-    slug: "bayfront-electric",
-    businessName: "Bayfront Electric Services",
-    niche: "electrical",
-    city: "erie",
-    phone: "(814) 555-0401",
-    email: "leads@bayfrontelectric.com",
-    address: { street: "855 E 12th St", city: "Erie", state: "PA", zip: "16503" },
-    serviceAreas: ["Erie", "Harborcreek", "North East"],
-    description: "Licensed electricians providing panel upgrades, rewiring, lighting installation, and code compliance inspections. Commercial and residential.",
-    yearEstablished: 2012,
-    employeeCount: "6-10",
-    license: "PA-ELEC-028374",
-    insurance: true,
-    tier: "primary",
-    subscriptionStatus: "active",
-    monthlyFee: 500,
-    totalLeads: 89,
-    convertedLeads: 54,
-    avgResponseTime: 540,
-    avgRating: 4.4,
-    reviewCount: 37,
-    claimedAt: "2024-08-10T14:00:00Z",
-    lastLeadAt: "2026-03-26T16:45:00Z",
-  },
-  {
-    id: "prov-dental-001",
-    slug: "lakeshore-dental",
-    businessName: "Lakeshore Family Dental",
-    niche: "dental",
-    city: "erie",
-    phone: "(814) 555-0501",
-    email: "appointments@lakeshoredental.com",
-    website: "https://erie.pro/dental/lakeshore-dental",
-    address: { street: "2500 Peach St Suite 200", city: "Erie", state: "PA", zip: "16502" },
-    serviceAreas: ["Erie", "Millcreek", "Fairview", "Edinboro"],
-    description: "Comprehensive family dental care including cleanings, cosmetic dentistry, Invisalign, dental implants, and emergency services. Accepting new patients.",
-    yearEstablished: 1998,
-    employeeCount: "11-20",
-    license: "PA-DDS-018293",
-    insurance: true,
-    tier: "primary",
-    subscriptionStatus: "active",
-    monthlyFee: 800,
-    stripeCustomerId: "cus_mock_lakeshore",
-    stripeSubscriptionId: "sub_mock_lakeshore",
-    totalLeads: 201,
-    convertedLeads: 162,
-    avgResponseTime: 300,
-    avgRating: 4.8,
-    reviewCount: 124,
-    claimedAt: "2024-05-20T08:00:00Z",
-    lastLeadAt: "2026-03-29T10:00:00Z",
-  },
-  {
-    id: "prov-legal-001",
-    slug: "erie-law-partners",
-    businessName: "Erie Law Partners LLC",
-    niche: "legal",
-    city: "erie",
-    phone: "(814) 555-0601",
-    email: "intake@erielawpartners.com",
-    website: "https://erie.pro/legal/erie-law-partners",
-    address: { street: "100 State St Suite 400", city: "Erie", state: "PA", zip: "16501" },
-    serviceAreas: ["Erie", "Millcreek", "Harborcreek", "Fairview", "Summit Township"],
-    description: "Full-service law firm specializing in personal injury, family law, criminal defense, and estate planning. Free initial consultations.",
-    yearEstablished: 2001,
-    employeeCount: "6-10",
-    license: "PA-BAR-204857",
-    insurance: true,
-    tier: "primary",
-    subscriptionStatus: "active",
-    monthlyFee: 1000,
-    stripeCustomerId: "cus_mock_erielaw",
-    stripeSubscriptionId: "sub_mock_erielaw",
-    totalLeads: 95,
-    convertedLeads: 58,
-    avgResponseTime: 480,
-    avgRating: 4.6,
-    reviewCount: 41,
-    claimedAt: "2024-06-01T12:00:00Z",
-    lastLeadAt: "2026-03-28T09:20:00Z",
-  },
-  {
-    id: "prov-roof-001",
-    slug: "great-lakes-roofing",
-    businessName: "Great Lakes Roofing Co.",
-    niche: "roofing",
-    city: "erie",
-    phone: "(814) 555-0701",
-    email: "estimates@greatlakesroofing.com",
-    address: { street: "4010 W Ridge Rd", city: "Erie", state: "PA", zip: "16506" },
-    serviceAreas: ["Erie", "Millcreek", "Fairview", "Girard", "McKean"],
-    description: "Trusted roofers serving Erie County for over 15 years. Shingle, metal, and flat roof installation. Storm damage restoration and insurance claim assistance.",
-    yearEstablished: 2008,
-    employeeCount: "11-20",
-    license: "PA-ROOF-043918",
-    insurance: true,
-    tier: "primary",
-    subscriptionStatus: "active",
-    monthlyFee: 400,
-    totalLeads: 76,
-    convertedLeads: 49,
-    avgResponseTime: 720,
-    avgRating: 4.3,
-    reviewCount: 32,
-    claimedAt: "2024-09-01T10:00:00Z",
-    lastLeadAt: "2026-03-25T13:00:00Z",
-  },
-];
-
-// Initialize store with seed data
-for (const p of seedProviders) {
-  providers.set(p.id, p);
+export async function getProvider(id: string): Promise<ProviderProfile | undefined> {
+  const p = await prisma.provider.findUnique({ where: { id } });
+  return p ? toProfile(p) : undefined;
 }
 
-// ── CRUD Operations ─────────────────────────────────────────────────
-
-export function getProvider(id: string): ProviderProfile | undefined {
-  return providers.get(id);
+export async function getProviderBySlug(slug: string): Promise<ProviderProfile | undefined> {
+  const p = await prisma.provider.findUnique({ where: { slug } });
+  return p ? toProfile(p) : undefined;
 }
 
-export function getProviderBySlug(slug: string): ProviderProfile | undefined {
-  for (const p of providers.values()) {
-    if (p.slug === slug) return p;
-  }
-  return undefined;
+export async function getProviderByNicheAndCity(
+  niche: string,
+  city: string
+): Promise<ProviderProfile | undefined> {
+  const p = await prisma.provider.findFirst({
+    where: {
+      niche,
+      city: { equals: city, mode: "insensitive" },
+      tier: "primary",
+      subscriptionStatus: "active",
+    },
+  });
+  return p ? toProfile(p) : undefined;
 }
 
-export function getProviderByNicheAndCity(niche: string, city: string): ProviderProfile | undefined {
-  for (const p of providers.values()) {
-    if (
-      p.niche === niche &&
-      p.city.toLowerCase() === city.toLowerCase() &&
-      p.tier === "primary" &&
-      p.subscriptionStatus === "active"
-    ) {
-      return p;
-    }
-  }
-  return undefined;
+export async function getProvidersByNiche(niche: string): Promise<ProviderProfile[]> {
+  const providers = await prisma.provider.findMany({ where: { niche } });
+  return providers.map(toProfile);
 }
 
-export function getProvidersByNiche(niche: string): ProviderProfile[] {
-  return Array.from(providers.values()).filter((p) => p.niche === niche);
+export async function getAllProviders(): Promise<ProviderProfile[]> {
+  const providers = await prisma.provider.findMany();
+  return providers.map(toProfile);
 }
 
-export function getAllProviders(): ProviderProfile[] {
-  return Array.from(providers.values());
+export async function getActiveProviders(): Promise<ProviderProfile[]> {
+  const providers = await prisma.provider.findMany({
+    where: { subscriptionStatus: "active" },
+  });
+  return providers.map(toProfile);
 }
 
-export function getActiveProviders(): ProviderProfile[] {
-  return Array.from(providers.values()).filter(
-    (p) => p.subscriptionStatus === "active"
-  );
-}
-
-export function createProvider(
+export async function createProvider(
   data: Omit<ProviderProfile, "id" | "claimedAt">
-): ProviderProfile {
-  const id = generateId();
-  const profile: ProviderProfile = {
-    ...data,
-    id,
-    slug: data.slug || slugify(data.businessName + "-" + data.city),
-    claimedAt: new Date().toISOString(),
-  };
-  providers.set(id, profile);
-  return profile;
+): Promise<ProviderProfile> {
+  const slug = data.slug || slugify(data.businessName, data.city);
+
+  const p = await prisma.provider.create({
+    data: {
+      slug,
+      businessName: data.businessName,
+      niche: data.niche,
+      city: data.city,
+      phone: data.phone,
+      email: data.email.toLowerCase(),
+      website: data.website,
+      addressStreet: data.address.street,
+      addressCity: data.address.city,
+      addressState: data.address.state,
+      addressZip: data.address.zip,
+      serviceAreas: data.serviceAreas,
+      description: data.description,
+      yearEstablished: data.yearEstablished,
+      employeeCount: data.employeeCount,
+      license: data.license,
+      insurance: data.insurance,
+      tier: data.tier as ProviderTier,
+      subscriptionStatus: data.subscriptionStatus as SubscriptionStatus,
+      monthlyFee: data.monthlyFee,
+      stripeCustomerId: data.stripeCustomerId,
+      stripeSubscriptionId: data.stripeSubscriptionId,
+      totalLeads: data.totalLeads,
+      convertedLeads: data.convertedLeads,
+      avgResponseTime: data.avgResponseTime,
+      avgRating: data.avgRating,
+      reviewCount: data.reviewCount,
+      lastLeadAt: data.lastLeadAt ? new Date(data.lastLeadAt) : undefined,
+    },
+  });
+
+  return toProfile(p);
 }
 
-export function updateProvider(
+export async function updateProvider(
   id: string,
   updates: Partial<ProviderProfile>
-): ProviderProfile | undefined {
-  const existing = providers.get(id);
-  if (!existing) return undefined;
+): Promise<ProviderProfile | undefined> {
+  try {
+    // Build the Prisma-compatible update data
+    const data: Record<string, unknown> = {};
 
-  const updated = { ...existing, ...updates, id: existing.id };
-  providers.set(id, updated);
-  return updated;
+    if (updates.businessName !== undefined) data.businessName = updates.businessName;
+    if (updates.niche !== undefined) data.niche = updates.niche;
+    if (updates.city !== undefined) data.city = updates.city;
+    if (updates.phone !== undefined) data.phone = updates.phone;
+    if (updates.email !== undefined) data.email = updates.email.toLowerCase();
+    if (updates.website !== undefined) data.website = updates.website;
+    if (updates.description !== undefined) data.description = updates.description;
+    if (updates.yearEstablished !== undefined) data.yearEstablished = updates.yearEstablished;
+    if (updates.employeeCount !== undefined) data.employeeCount = updates.employeeCount;
+    if (updates.license !== undefined) data.license = updates.license;
+    if (updates.insurance !== undefined) data.insurance = updates.insurance;
+    if (updates.tier !== undefined) data.tier = updates.tier as ProviderTier;
+    if (updates.subscriptionStatus !== undefined)
+      data.subscriptionStatus = updates.subscriptionStatus as SubscriptionStatus;
+    if (updates.monthlyFee !== undefined) data.monthlyFee = updates.monthlyFee;
+    if (updates.stripeCustomerId !== undefined) data.stripeCustomerId = updates.stripeCustomerId;
+    if (updates.stripeSubscriptionId !== undefined)
+      data.stripeSubscriptionId = updates.stripeSubscriptionId;
+    if (updates.totalLeads !== undefined) data.totalLeads = updates.totalLeads;
+    if (updates.convertedLeads !== undefined) data.convertedLeads = updates.convertedLeads;
+    if (updates.avgResponseTime !== undefined) data.avgResponseTime = updates.avgResponseTime;
+    if (updates.avgRating !== undefined) data.avgRating = updates.avgRating;
+    if (updates.reviewCount !== undefined) data.reviewCount = updates.reviewCount;
+    if (updates.serviceAreas !== undefined) data.serviceAreas = updates.serviceAreas;
+    if (updates.lastLeadAt !== undefined)
+      data.lastLeadAt = updates.lastLeadAt ? new Date(updates.lastLeadAt) : null;
+
+    if (updates.address) {
+      if (updates.address.street !== undefined) data.addressStreet = updates.address.street;
+      if (updates.address.city !== undefined) data.addressCity = updates.address.city;
+      if (updates.address.state !== undefined) data.addressState = updates.address.state;
+      if (updates.address.zip !== undefined) data.addressZip = updates.address.zip;
+    }
+
+    const p = await prisma.provider.update({ where: { id }, data });
+    return toProfile(p);
+  } catch {
+    return undefined;
+  }
 }
 
-export function deleteProvider(id: string): boolean {
-  return providers.delete(id);
+export async function deleteProvider(id: string): Promise<boolean> {
+  try {
+    await prisma.provider.delete({ where: { id } });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-// ── Query Helpers ───────────────────────────────────────────────────
+// ── Query Helpers ──────────────────────────────────────────────────
 
-export function getProviderStats(): {
+export async function getProviderStats(): Promise<{
   total: number;
   active: number;
   totalLeads: number;
   totalConverted: number;
   avgRating: number;
-} {
-  const all = getAllProviders();
-  const active = all.filter((p) => p.subscriptionStatus === "active");
-  const totalLeads = all.reduce((sum, p) => sum + p.totalLeads, 0);
-  const totalConverted = all.reduce((sum, p) => sum + p.convertedLeads, 0);
-  const avgRating =
-    all.length > 0
-      ? Math.round((all.reduce((sum, p) => sum + p.avgRating, 0) / all.length) * 10) / 10
-      : 0;
+}> {
+  const [total, active, agg] = await Promise.all([
+    prisma.provider.count(),
+    prisma.provider.count({ where: { subscriptionStatus: "active" } }),
+    prisma.provider.aggregate({
+      _sum: { totalLeads: true, convertedLeads: true },
+      _avg: { avgRating: true },
+    }),
+  ]);
 
-  return { total: all.length, active: active.length, totalLeads, totalConverted, avgRating };
+  return {
+    total,
+    active,
+    totalLeads: agg._sum.totalLeads ?? 0,
+    totalConverted: agg._sum.convertedLeads ?? 0,
+    avgRating: Math.round((agg._avg.avgRating ?? 0) * 10) / 10,
+  };
 }
 
-export function getClaimedNiches(city: string): string[] {
-  return Array.from(providers.values())
-    .filter(
-      (p) =>
-        p.city.toLowerCase() === city.toLowerCase() &&
-        p.subscriptionStatus === "active" &&
-        p.tier === "primary"
-    )
-    .map((p) => p.niche);
+export async function getClaimedNiches(city: string): Promise<string[]> {
+  const providers = await prisma.provider.findMany({
+    where: {
+      city: { equals: city, mode: "insensitive" },
+      subscriptionStatus: "active",
+      tier: "primary",
+    },
+    select: { niche: true },
+  });
+  return providers.map((p) => p.niche);
 }
 
-export function getAvailableNiches(city: string, allNicheSlugs: string[]): string[] {
-  const claimed = new Set(getClaimedNiches(city));
+export async function getAvailableNiches(
+  city: string,
+  allNicheSlugs: string[]
+): Promise<string[]> {
+  const claimed = new Set(await getClaimedNiches(city));
   return allNicheSlugs.filter((slug) => !claimed.has(slug));
 }

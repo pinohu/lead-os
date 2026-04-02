@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${niche.label} Hiring Checklist for ${cityConfig.name} Homeowners`,
     description: `Interactive checklist for hiring a ${niche.label.toLowerCase()} provider in ${cityConfig.name}, ${cityConfig.stateCode}. Verify licenses, insurance, estimates, and warranties before signing.`,
-    alternates: { canonical: `https://erie.pro/${slug}/checklist` },
+    alternates: { canonical: `https://${cityConfig.domain}/${slug}/checklist` },
   }
 }
 

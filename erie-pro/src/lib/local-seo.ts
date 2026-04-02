@@ -4,6 +4,7 @@
 // regulations, and niche-specific context paragraphs.
 
 import { getNicheBySlug } from "./niches";
+import { cityConfig } from "./city-config";
 
 // ── Niche-category local context ─────────────────────────────────
 // Returns a contextual sentence appropriate for the niche category,
@@ -247,7 +248,7 @@ export function getLocalSchemaOrg(niche: string): object {
     "@type": "Service",
     name: `${label} in ${seo.city}, ${seo.stateCode}`,
     description: `${description} ${getLocalSeoSnippet(niche)}`,
-    url: `https://erie.pro/${niche}`,
+    url: `https://${cityConfig.domain}/${niche}`,
     areaServed: [
       {
         "@type": "City",
@@ -273,8 +274,8 @@ export function getLocalSchemaOrg(niche: string): object {
     },
     provider: {
       "@type": "LocalBusiness",
-      name: "erie.pro",
-      url: "https://erie.pro",
+      name: cityConfig.domain,
+      url: `https://${cityConfig.domain}`,
       address: {
         "@type": "PostalAddress",
         addressLocality: seo.city,
@@ -294,7 +295,7 @@ export function getLocalSchemaOrg(niche: string): object {
     },
     availableChannel: {
       "@type": "ServiceChannel",
-      serviceUrl: `https://erie.pro/${niche}`,
+      serviceUrl: `https://${cityConfig.domain}/${niche}`,
       serviceLocation: {
         "@type": "Place",
         name: `${seo.city}, ${seo.stateCode}`,

@@ -3248,8 +3248,29 @@ export const NICHE_CONTENT: Record<string, LocalNicheContent> = {
 /**
  * Get niche content by slug. Returns undefined if the niche doesn't exist.
  */
+/**
+ * Get niche content with city-aware domain substitution.
+ * Replaces hardcoded "erie.pro" in meta titles/descriptions with the active domain.
+ */
 export function getNicheContent(slug: string): LocalNicheContent | undefined {
-  return NICHE_CONTENT[slug];
+  const content = NICHE_CONTENT[slug];
+  if (!content) return undefined;
+
+  // Lazy-load cityConfig to avoid circular imports at module init
+  try {
+    const { cityConfig } = require("@/lib/city-config");
+    if (cityConfig.domain !== "erie.pro") {
+      return {
+        ...content,
+        metaTitle: content.metaTitle.replace(/erie\.pro/g, cityConfig.domain),
+        metaDescription: content.metaDescription.replace(/erie\.pro/g, cityConfig.domain),
+      };
+    }
+  } catch {
+    // During build or if city-config isn't available, return as-is
+  }
+
+  return content;
 }
 
 /**

@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Send, CheckCircle2 } from "lucide-react";
+import { cityConfig } from "@/lib/city-config";
 
-const TCPA_TEXT =
-  "By submitting this form, I consent to be contacted by phone, text message, or email by a service provider regarding my service request. I understand that message and data rates may apply for text messages. I can opt out at any time by replying STOP to any text message or contacting us at hello@erie.pro.";
+const TCPA_TEXT = `By submitting this form, I consent to be contacted by phone, text message, or email by a service provider regarding my service request. I understand that message and data rates may apply for text messages. I can opt out at any time by replying STOP to any text message or contacting us at hello@${cityConfig.domain}.`;
 
 // ── Validation helpers ──────────────────────────────────────────────
 function isValidEmail(v: string) {

@@ -12,21 +12,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
-
-const niches = [
-  { slug: "plumbing", label: "Plumbing", icon: "\uD83D\uDD27" },
-  { slug: "hvac", label: "HVAC", icon: "\u2744\uFE0F" },
-  { slug: "electrical", label: "Electrical", icon: "\u26A1" },
-  { slug: "roofing", label: "Roofing", icon: "\uD83C\uDFE0" },
-  { slug: "landscaping", label: "Landscaping", icon: "\uD83C\uDF3F" },
-  { slug: "dental", label: "Dental", icon: "\uD83E\uDDB7" },
-  { slug: "legal", label: "Legal", icon: "\u2696\uFE0F" },
-  { slug: "cleaning", label: "Cleaning", icon: "\u2728" },
-  { slug: "auto-repair", label: "Auto Repair", icon: "\uD83D\uDE97" },
-  { slug: "pest-control", label: "Pest Control", icon: "\uD83D\uDC1B" },
-  { slug: "painting", label: "Painting", icon: "\uD83C\uDFA8" },
-  { slug: "real-estate", label: "Real Estate", icon: "\uD83C\uDFE1" },
-]
+import { niches } from "@/lib/niches"
+import { cityConfig } from "@/lib/city-config"
 
 export function MobileNav() {
   const [open, setOpen] = useState(false)
@@ -43,7 +30,7 @@ export function MobileNav() {
       </SheetTrigger>
       <SheetContent side="right" className="w-[300px] overflow-y-auto sm:w-[360px]">
         <SheetHeader>
-          <SheetTitle className="text-left">erie.pro</SheetTitle>
+          <SheetTitle className="text-left">{cityConfig.domain}</SheetTitle>
         </SheetHeader>
 
         <nav aria-label="Mobile navigation" className="mt-6 flex flex-col gap-1">

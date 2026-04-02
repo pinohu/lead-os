@@ -95,6 +95,7 @@ export default function TermsPage() {
               <li>You will not misrepresent your qualifications, experience, pricing, or service capabilities.</li>
               <li>You agree to abide by the listing terms, exclusivity agreements, and payment obligations in your service agreement.</li>
               <li>You understand that your listing may be suspended or removed for failure to maintain standards or comply with these Terms.</li>
+              <li>You are solely responsible for compliance with the National Do Not Call Registry, the Telephone Consumer Protection Act (TCPA), CAN-SPAM Act, and all other applicable federal, state, and local telemarketing and communication laws when contacting leads received through the platform. {cityConfig.domain} provides leads based on consumer-initiated requests with TCPA consent; however, providers must independently verify compliance with all applicable regulations before initiating contact, including scrubbing phone numbers against the National DNC Registry where required.</li>
             </ul>
           </div>
 
