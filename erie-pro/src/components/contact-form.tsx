@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { CheckCircle2 } from "lucide-react";
 
 // ── Validation helpers ──────────────────────────────────────────────
 function isValidEmail(v: string) {
@@ -51,6 +52,8 @@ export default function ContactForm({
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [phoneDisplay, setPhoneDisplay] = useState("");
+  const [canResubmit, setCanResubmit] = useState(true);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const clearError = useCallback((field: keyof FieldErrors) => {
     setErrors((prev) => {
@@ -130,11 +133,13 @@ export default function ContactForm({
       if (data.success) {
         setResult({
           success: true,
-          message: data.message ?? "Thank you! We'll be in touch within 24 hours.",
+          message: "A verified provider will contact you within 4 hours.",
         });
-        e.currentTarget.reset();
+        formRef.current?.reset();
         setPhoneDisplay("");
         setErrors({});
+        setCanResubmit(false);
+        setTimeout(() => setCanResubmit(true), 5000);
       } else {
         setResult({
           success: false,
@@ -148,22 +153,44 @@ export default function ContactForm({
     }
   }
 
+  if (result?.success) {
+    return (
+      <div
+        role="alert"
+        aria-live="polite"
+        className="animate-in fade-in-0 duration-300 rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-6 text-center"
+      >
+        <CheckCircle2 className="mx-auto h-10 w-10 text-green-600 dark:text-green-400" />
+        <p className="mt-3 text-lg font-bold text-green-800 dark:text-green-300">
+          Request Submitted!
+        </p>
+        <p className="mt-1 text-sm text-green-700 dark:text-green-400">
+          {result.message}
+        </p>
+        <button
+          type="button"
+          disabled={!canResubmit}
+          onClick={() => setResult(null)}
+          className="mt-4 inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Submit Another Request
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <form className="space-y-4" onSubmit={handleSubmit} aria-label="Contact form">
+    <form className="space-y-4" onSubmit={handleSubmit} ref={formRef} aria-label="Contact form">
       {/* Hidden fields for routing */}
       {nicheSlug && <input type="hidden" name="niche" value={nicheSlug} />}
       {providerSlug && <input type="hidden" name="provider" value={providerSlug} />}
       {citySlug && <input type="hidden" name="city" value={citySlug} />}
 
-      {result && (
+      {result && !result.success && (
         <div
           role="alert"
           aria-live="polite"
-          className={`rounded-md p-3 text-sm ${
-            result.success
-              ? "bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-400"
-              : "bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-400"
-          }`}
+          className="rounded-md p-3 text-sm bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-400"
         >
           {result.message}
         </div>
