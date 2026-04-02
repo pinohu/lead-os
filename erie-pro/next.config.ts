@@ -26,9 +26,9 @@ const config: NextConfig = {
               // TODO: Replace 'unsafe-inline' with nonce-based CSP once Next.js nonce infrastructure is configured
               "script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.posthog.com https://*.sentry.io",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https://*.stripe.com",
+              "img-src 'self' data: https://*.stripe.com https://*.googleusercontent.com https://*.googleapis.com https://*.gstatic.com",
               "connect-src 'self' https://api.stripe.com https://*.posthog.com https://*.sentry.io https://*.ingest.sentry.io",
-              "frame-src https://js.stripe.com https://hooks.stripe.com",
+              "frame-src https://js.stripe.com https://hooks.stripe.com https://www.google.com",
               "font-src 'self'",
               "object-src 'none'",
               "base-uri 'self'",

@@ -39,14 +39,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
 import ContactForm from "@/components/contact-form"
 
 type Props = { params: Promise<{ niche: string; provider: string }> }
@@ -80,6 +72,7 @@ interface ProviderData {
   insurance: boolean
   license: string | null
   yearEstablished: number | null
+  categories: string[]
 }
 
 async function resolveProvider(
@@ -117,6 +110,7 @@ async function resolveProvider(
         insurance: provider.insurance,
         license: provider.license ?? null,
         yearEstablished: provider.yearEstablished ?? null,
+        categories: [],
       }
     }
   } catch {
@@ -154,6 +148,7 @@ async function resolveProvider(
         insurance: false,
         license: null,
         yearEstablished: null,
+        categories: listing.categories,
       }
     }
   } catch {
@@ -212,13 +207,14 @@ function getFAQsForNiche(nicheLabel: string, providerName: string): { question: 
 
 /* ── Stars component ─────────────────────────────────────────── */
 
-function Stars({ count, label }: { count: number; label?: string }) {
+function Stars({ count, size = "sm", label }: { count: number; size?: "sm" | "lg"; label?: string }) {
+  const cls = size === "lg" ? "h-5 w-5" : "h-4 w-4"
   return (
     <div className="flex gap-0.5" role="img" aria-label={label ?? `${count} out of 5 stars`}>
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
-          className={`h-4 w-4 ${i < Math.round(count) ? "fill-yellow-400 text-yellow-400" : "fill-muted text-muted"}`}
+          className={`${cls} ${i < Math.round(count) ? "fill-yellow-400 text-yellow-400" : "fill-muted text-muted"}`}
           aria-hidden="true"
         />
       ))}
@@ -251,6 +247,45 @@ function parseReviewsFromJson(reviewsJson: unknown): ParsedReview[] {
     text: r.text ?? "",
     relativeTime: r.relativeTime ?? "",
   }))
+}
+
+/* ── Rating distribution helper ──────────────────────────────── */
+
+function computeRatingDistribution(reviews: ParsedReview[]): { star: number; count: number; pct: number }[] {
+  const counts = [0, 0, 0, 0, 0] // index 0 = 1-star, index 4 = 5-star
+  for (const r of reviews) {
+    const idx = Math.min(Math.max(Math.round(r.rating) - 1, 0), 4)
+    counts[idx]++
+  }
+  const total = reviews.length || 1
+  return [5, 4, 3, 2, 1].map((star) => ({
+    star,
+    count: counts[star - 1],
+    pct: Math.round((counts[star - 1] / total) * 100),
+  }))
+}
+
+/* ── Photo src helper ────────────────────────────────────────── */
+
+function getPhotoSrc(ref: string, width: number = 400): string {
+  if (ref.startsWith("http://") || ref.startsWith("https://")) return ref
+  return `/api/places-photo?ref=${encodeURIComponent(ref)}&w=${width}`
+}
+
+/* ── Schema.org hours helper ─────────────────────────────────── */
+
+function buildOpeningHoursSpec(parsedHours: { day: string; hours: string }[] | null) {
+  if (!parsedHours) return undefined
+  const dayMap: Record<string, string> = {
+    monday: "Mo", tuesday: "Tu", wednesday: "We", thursday: "Th",
+    friday: "Fr", saturday: "Sa", sunday: "Su",
+  }
+  return parsedHours
+    .filter((h) => h.hours && h.hours.toLowerCase() !== "closed")
+    .map((h) => {
+      const dayCode = dayMap[h.day.toLowerCase()] ?? h.day.slice(0, 2)
+      return { "@type": "OpeningHoursSpecification", dayOfWeek: dayCode, opens: h.hours.split("–")[0]?.trim() ?? "", closes: h.hours.split("–")[1]?.trim() ?? "" }
+    })
 }
 
 /* ── Static Params ───────────────────────────────────────────── */
@@ -300,7 +335,6 @@ export default async function ProviderPage({ params }: Props) {
 
   const data = await resolveProvider(nicheSlug, providerSlug)
 
-  // Fallback: if no DB data, derive from slug (for backwards compatibility during builds)
   const providerName = data?.businessName ?? providerSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
 
   const services = getServicesForNiche(niche.slug, niche.label)
@@ -309,6 +343,7 @@ export default async function ProviderPage({ params }: Props) {
   const parsedHours = data ? parseHoursFromJson(data.hoursJson) : null
   const parsedReviews = data ? parseReviewsFromJson(data.reviewsJson) : []
   const localSeo = getLocalSeoSnippet(niche.slug)
+  const ratingDist = computeRatingDistribution(parsedReviews)
 
   const phone = data?.phone ?? null
   const website = data?.website ?? null
@@ -317,139 +352,231 @@ export default async function ProviderPage({ params }: Props) {
   const isVerified = data?.isVerified ?? false
   const isListing = data?.type === "listing"
   const hasPhotos = (data?.photoRefs?.length ?? 0) > 0
+  const heroPhoto = hasPhotos ? getPhotoSrc(data!.photoRefs[0], 1200) : null
 
   const mapsUrl = data?.latitude && data?.longitude
     ? `https://maps.google.com/?q=${data.latitude},${data.longitude}`
     : `https://maps.google.com/?q=${encodeURIComponent(`${providerName} ${cityConfig.name} ${cityConfig.stateCode}`)}`
 
+  const mapsEmbedUrl = data?.latitude && data?.longitude
+    ? `https://www.google.com/maps?q=${data.latitude},${data.longitude}&z=14&output=embed`
+    : null
+
+  // Determine if "open now" based on parsed hours
+  const todayName = new Date().toLocaleDateString("en-US", { weekday: "long" })
+  const todayHours = parsedHours?.find((h) => h.day.toLowerCase() === todayName.toLowerCase())
+  const isOpenToday = todayHours ? todayHours.hours.toLowerCase() !== "closed" && todayHours.hours.length > 0 : false
+
   return (
-    <main className="pb-16">
-      {/* ── Breadcrumb ───────────────────────────────────────── */}
-      <div className="border-b bg-muted/20">
-        <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild><Link href="/">Home</Link></BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild><Link href={`/${niche.slug}`}>{niche.label}</Link></BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{providerName}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </div>
+    <main className="pb-20 lg:pb-0">
 
-      {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="border-b bg-gradient-to-b from-primary/5 to-background pb-12 pt-10">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
-            <div className="flex-1">
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                {isVerified ? (
-                  <Badge variant="success" className="text-xs">
-                    <Shield className="mr-1 h-3 w-3" aria-hidden="true" />
-                    Verified Provider
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary" className="text-xs">
-                    <Building2 className="mr-1 h-3 w-3" aria-hidden="true" />
-                    Listed on {cityConfig.domain}
-                  </Badge>
-                )}
-                <Badge variant="secondary" className="text-xs">
-                  {niche.icon} {niche.label}
-                </Badge>
-                <Badge variant="outline" className="text-xs">
-                  <MapPin className="mr-1 h-3 w-3" aria-hidden="true" />
-                  {data?.addressCity ?? cityConfig.name}, {data?.addressState ?? cityConfig.stateCode}
-                </Badge>
-              </div>
+      {/* ══════════════════════════════════════════════════════════
+          SECTION 1 — IMMERSIVE PHOTO HERO
+          ══════════════════════════════════════════════════════════ */}
+      <section className="relative min-h-[400px] md:min-h-[500px] flex flex-col justify-end overflow-hidden">
+        {/* Background */}
+        {heroPhoto ? (
+          <>
+            <img
+              src={heroPhoto}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="eager"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/20" />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-background" />
+        )}
 
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-                {providerName}
-              </h1>
+        {/* Content overlay */}
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 pb-8 pt-16">
+          {/* Breadcrumb */}
+          <nav aria-label="Breadcrumb" className={`mb-8 text-sm ${heroPhoto ? "text-white/70" : "text-muted-foreground"}`}>
+            <ol className="flex items-center gap-1.5">
+              <li><Link href="/" className="hover:underline">Home</Link></li>
+              <li aria-hidden="true">/</li>
+              <li><Link href={`/${niche.slug}`} className="hover:underline">{niche.label}</Link></li>
+              <li aria-hidden="true">/</li>
+              <li className={heroPhoto ? "text-white" : "text-foreground"}>{providerName}</li>
+            </ol>
+          </nav>
 
-              <p className="mt-2 text-lg text-muted-foreground">
-                {niche.label} services in {data?.addressCity ?? cityConfig.name}, {data?.addressState ?? cityConfig.stateCode}
-              </p>
+          {/* Badges row */}
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            {isVerified ? (
+              <Badge className="bg-green-600 text-white border-green-500 text-xs">
+                <Shield className="mr-1 h-3 w-3" aria-hidden="true" />
+                Verified Provider
+              </Badge>
+            ) : (
+              <Badge variant="secondary" className="text-xs backdrop-blur-sm bg-white/10 text-white border-white/20">
+                <Building2 className="mr-1 h-3 w-3" aria-hidden="true" />
+                Listed on {cityConfig.domain}
+              </Badge>
+            )}
+            {rating !== null && (
+              <span className="flex items-center gap-1.5">
+                <Stars count={rating} size="lg" label={`${rating} out of 5 stars based on ${reviewCount} reviews`} />
+                <span className={`font-semibold ${heroPhoto ? "text-white" : "text-foreground"}`}>{rating.toFixed(1)}</span>
+                <span className={`text-sm ${heroPhoto ? "text-white/70" : "text-muted-foreground"}`}>({reviewCount})</span>
+              </span>
+            )}
+          </div>
 
-              <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                {rating !== null && (
-                  <span className="flex items-center gap-1">
-                    <Stars count={rating} label={`${rating} out of 5 stars based on ${reviewCount} reviews`} />
-                    <span className="ml-1 font-medium text-foreground">{rating.toFixed(1)}</span>
-                    ({reviewCount} reviews)
-                  </span>
-                )}
-                {rating !== null && (data?.avgResponseTime || phone) && (
-                  <Separator orientation="vertical" className="h-4" />
-                )}
-                {data?.avgResponseTime ? (
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" aria-hidden="true" />
-                    Responds in ~{Math.round(data.avgResponseTime / 60)} min
-                  </span>
-                ) : phone ? (
-                  <span className="flex items-center gap-1">
-                    <Phone className="h-4 w-4" aria-hidden="true" />
-                    Available for estimates
-                  </span>
-                ) : null}
-              </div>
-            </div>
+          {/* Business name */}
+          <h1 className={`text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl ${heroPhoto ? "text-white" : "text-foreground"}`}>
+            {providerName}
+          </h1>
+          <p className={`mt-2 text-lg ${heroPhoto ? "text-white/80" : "text-muted-foreground"}`}>
+            {niche.icon} {niche.label} &middot; {data?.addressCity ?? cityConfig.name}, {data?.addressState ?? cityConfig.stateCode}
+          </p>
 
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Button asChild size="lg">
-                <a href="#quote">
-                  Get a Free Quote
-                  <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+          {/* CTAs */}
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button asChild size="lg" className="text-base px-6">
+              <a href="#quote">
+                Get a Free Quote
+                <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+              </a>
+            </Button>
+            {phone && (
+              <Button asChild size="lg" variant={heroPhoto ? "secondary" : "outline"} className={`text-base px-6 ${heroPhoto ? "bg-white/15 text-white border-white/25 hover:bg-white/25 backdrop-blur-sm" : ""}`}>
+                <a href={`tel:${phone.replace(/\D/g, "")}`} aria-label={`Call ${providerName} at ${phone}`}>
+                  <Phone className="mr-2 h-4 w-4" aria-hidden="true" />
+                  {phone}
                 </a>
               </Button>
-              {phone && (
-                <Button asChild variant="outline" size="lg">
-                  <a href={`tel:${phone.replace(/\D/g, "")}`} aria-label={`Call ${providerName} at ${phone}`}>
-                    <Phone className="mr-2 h-4 w-4" aria-hidden="true" />
-                    {phone}
-                  </a>
-                </Button>
-              )}
-            </div>
+            )}
           </div>
-        </div>
-      </section>
 
-      {/* ── Photo Gallery ────────────────────────────────────── */}
-      {hasPhotos && (
-        <section className="border-b bg-muted/10 py-6">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {data!.photoRefs.slice(0, 5).map((ref, i) => (
+          {/* Photo thumbnails */}
+          {hasPhotos && data!.photoRefs.length > 1 && (
+            <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
+              {data!.photoRefs.slice(1, 6).map((ref, i) => (
                 <img
                   key={i}
-                  src={ref.startsWith("http") ? ref : `/api/places-photo?ref=${encodeURIComponent(ref)}&w=400`}
-                  alt={`${providerName} — ${niche.label} in ${cityConfig.name} (photo ${i + 1})`}
-                  className="h-48 w-72 flex-shrink-0 rounded-lg object-cover shadow-sm"
-                  loading={i === 0 ? "eager" : "lazy"}
+                  src={getPhotoSrc(ref)}
+                  alt={`${providerName} photo ${i + 2}`}
+                  className="h-16 w-24 flex-shrink-0 rounded-md object-cover ring-2 ring-white/30"
+                  loading="lazy"
                 />
               ))}
             </div>
+          )}
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════
+          SECTION 2 — TRUST BAR (sticky)
+          ══════════════════════════════════════════════════════════ */}
+      <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur-sm shadow-sm">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 sm:px-6">
+          {rating !== null && (
+            <span className="flex items-center gap-1.5 text-sm font-medium">
+              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+              {rating.toFixed(1)} Rating
+            </span>
+          )}
+          {isVerified ? (
+            <span className="flex items-center gap-1.5 text-sm font-medium text-green-700">
+              <Shield className="h-4 w-4" aria-hidden="true" />
+              Verified
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Building2 className="h-4 w-4" aria-hidden="true" />
+              Listed
+            </span>
+          )}
+          {data?.avgResponseTime ? (
+            <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Clock className="h-4 w-4" aria-hidden="true" />
+              ~{Math.round(data.avgResponseTime / 60)} min response
+            </span>
+          ) : isOpenToday ? (
+            <span className="flex items-center gap-1.5 text-sm text-green-700">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
+              </span>
+              Available today
+            </span>
+          ) : null}
+          {data?.yearEstablished && (
+            <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Award className="h-4 w-4" aria-hidden="true" />
+              Est. {data.yearEstablished}
+            </span>
+          )}
+          <div className="ml-auto hidden sm:block">
+            <Button asChild size="sm">
+              <a href="#quote">
+                Get Quote
+                <ArrowRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
+              </a>
+            </Button>
           </div>
-        </section>
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════
+          UNCLAIMED LISTING BANNER
+          ══════════════════════════════════════════════════════════ */}
+      {isListing && (
+        <div className="border-b bg-amber-50 dark:bg-amber-950/20">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-2.5 sm:px-6 text-sm">
+            <p className="text-amber-800 dark:text-amber-200">
+              This listing was created from public business data.{" "}
+              <strong>Is this your business?</strong>
+            </p>
+            <Button asChild size="sm" variant="outline" className="border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-200 dark:hover:bg-amber-900/40">
+              <Link href={`/for-business/claim?niche=${niche.slug}&listing=${data!.id}`}>
+                Claim it free
+                <ArrowRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
+              </Link>
+            </Button>
+          </div>
+        </div>
       )}
 
+      {/* ══════════════════════════════════════════════════════════
+          SECTION 3 — SECTION NAV TABS
+          ══════════════════════════════════════════════════════════ */}
+      <nav className="sticky top-[53px] z-30 border-b bg-background" aria-label="Page sections">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex gap-0 overflow-x-auto -mb-px">
+            {[
+              { id: "about", label: "About" },
+              { id: "reviews", label: `Reviews${reviewCount ? ` (${reviewCount})` : ""}` },
+              { id: "services", label: "Services" },
+              { id: "area", label: "Service Area" },
+              { id: "faq", label: "FAQ" },
+            ].map((tab) => (
+              <a
+                key={tab.id}
+                href={`#${tab.id}`}
+                className="whitespace-nowrap border-b-2 border-transparent px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+              >
+                {tab.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      {/* ══════════════════════════════════════════════════════════
+          SECTION 4 — MAIN CONTENT + SIDEBAR
+          ══════════════════════════════════════════════════════════ */}
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="grid gap-8 py-12 lg:grid-cols-3">
+        <div className="grid gap-8 py-10 lg:grid-cols-3">
+
           {/* ── Main content (left 2/3) ────────────────────────── */}
           <div className="space-y-10 lg:col-span-2">
 
             {/* ── About ────────────────────────────────────────── */}
-            <section>
+            <section id="about" className="scroll-mt-28">
               <h2 className="mb-4 text-2xl font-bold tracking-tight">About {providerName}</h2>
               {data?.description ? (
                 <p className="leading-relaxed text-muted-foreground">{data.description}</p>
@@ -463,6 +590,17 @@ export default async function ProviderPage({ params }: Props) {
               {localSeo && (
                 <p className="mt-3 leading-relaxed text-muted-foreground text-sm">{localSeo}</p>
               )}
+
+              {/* Category badges */}
+              {data?.categories && data.categories.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {data.categories.slice(0, 6).map((cat) => (
+                    <Badge key={cat} variant="outline" className="text-xs">{cat}</Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* Business details badges */}
               {(data?.yearEstablished || data?.insurance || data?.license) && (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {data.yearEstablished && (
@@ -480,8 +618,109 @@ export default async function ProviderPage({ params }: Props) {
 
             <Separator />
 
+            {/* ── Reviews (PROMOTED to #2) ─────────────────────── */}
+            <section id="reviews" className="scroll-mt-28">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-2xl font-bold tracking-tight">Customer Reviews</h2>
+                {rating !== null && (
+                  <Badge variant="secondary" className="text-xs">
+                    <Star className="mr-1 h-3 w-3 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+                    {rating.toFixed(1)} ({reviewCount})
+                  </Badge>
+                )}
+              </div>
+
+              {/* Rating distribution summary */}
+              {rating !== null && (
+                <Card className="mb-6">
+                  <CardContent className="pt-6">
+                    <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+                      {/* Big rating number */}
+                      <div className="flex flex-col items-center gap-1 sm:min-w-[120px]">
+                        <span className="text-5xl font-bold tracking-tight">{rating.toFixed(1)}</span>
+                        <Stars count={rating} size="lg" />
+                        <span className="text-sm text-muted-foreground">{reviewCount} reviews</span>
+                      </div>
+                      {/* Distribution bars */}
+                      <div className="flex-1 space-y-1.5">
+                        {ratingDist.map(({ star, count, pct }) => (
+                          <div key={star} className="flex items-center gap-2 text-sm">
+                            <span className="w-6 text-right font-medium text-muted-foreground">{star}</span>
+                            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+                            <div className="flex-1 h-2.5 rounded-full bg-muted overflow-hidden">
+                              <div
+                                className="h-full rounded-full bg-yellow-400 transition-all"
+                                style={{ width: `${parsedReviews.length > 0 ? pct : (star === Math.round(rating) ? 100 : 0)}%` }}
+                              />
+                            </div>
+                            <span className="w-8 text-right text-xs text-muted-foreground">
+                              {parsedReviews.length > 0 ? count : ""}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Individual reviews */}
+              {parsedReviews.length > 0 ? (
+                <div className="space-y-4">
+                  {parsedReviews.slice(0, 6).map((review, idx) => (
+                    <Card key={idx}>
+                      <CardContent className="pt-6">
+                        <div className="flex items-start gap-4">
+                          <Avatar className="h-10 w-10">
+                            <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                              {review.author.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2">
+                              <div>
+                                <p className="font-medium">{review.author}</p>
+                                <Stars count={review.rating} />
+                              </div>
+                              {review.relativeTime && (
+                                <span className="flex-shrink-0 text-xs text-muted-foreground">{review.relativeTime}</span>
+                              )}
+                            </div>
+                            <p className="mt-2 text-sm text-muted-foreground line-clamp-4">{review.text}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  {reviewCount > parsedReviews.length && (
+                    <div className="text-center pt-2">
+                      <Button asChild variant="outline" size="sm">
+                        <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                          See all {reviewCount} reviews on Google
+                          <ExternalLink className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                        </a>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ) : rating !== null ? (
+                <p className="text-sm text-muted-foreground py-4">
+                  Rated {rating.toFixed(1)}/5 based on {reviewCount} Google reviews.{" "}
+                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                    See reviews on Google
+                  </a>
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground py-4">
+                  No reviews yet. Be the first to work with {providerName} and share your experience.
+                </p>
+              )}
+            </section>
+
+            <Separator />
+
             {/* ── Services ─────────────────────────────────────── */}
-            <section>
+            <section id="services" className="scroll-mt-28">
               <h2 className="mb-4 text-2xl font-bold tracking-tight">Services Offered</h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 {services.map((service) => (
@@ -495,9 +734,26 @@ export default async function ProviderPage({ params }: Props) {
 
             <Separator />
 
-            {/* ── Service area ─────────────────────────────────── */}
-            <section>
+            {/* ── Service Area ─────────────────────────────────── */}
+            <section id="area" className="scroll-mt-28">
               <h2 className="mb-4 text-2xl font-bold tracking-tight">Service Area</h2>
+
+              {/* Google Maps Embed */}
+              {mapsEmbedUrl && (
+                <div className="mb-4 overflow-hidden rounded-lg border">
+                  <iframe
+                    src={mapsEmbedUrl}
+                    width="100%"
+                    height="300"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title={`${providerName} location on Google Maps`}
+                  />
+                </div>
+              )}
+
               <Card className="overflow-hidden">
                 <div className="bg-muted/50 p-6">
                   {data?.addressFormatted && (
@@ -518,81 +774,19 @@ export default async function ProviderPage({ params }: Props) {
                       </div>
                     ))}
                   </div>
-                  <div className="mt-4">
-                    <Button asChild variant="outline" size="sm">
-                      <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-                        <MapPin className="mr-2 h-4 w-4" aria-hidden="true" />
-                        View on Google Maps
-                        <ExternalLink className="ml-2 h-3 w-3" aria-hidden="true" />
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            </section>
-
-            <Separator />
-
-            {/* ── Reviews ──────────────────────────────────────── */}
-            <section>
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-2xl font-bold tracking-tight">Customer Reviews</h2>
-                {rating !== null && (
-                  <Badge variant="secondary" className="text-xs">
-                    <Star className="mr-1 h-3 w-3 fill-yellow-400 text-yellow-400" aria-hidden="true" />
-                    {rating.toFixed(1)} ({reviewCount} reviews)
-                  </Badge>
-                )}
-              </div>
-
-              {parsedReviews.length > 0 ? (
-                <div className="space-y-4">
-                  {parsedReviews.map((review, idx) => (
-                    <Card key={idx}>
-                      <CardContent className="pt-6">
-                        <div className="flex items-start gap-4">
-                          <Avatar>
-                            <AvatarFallback className="bg-primary/10 text-primary">
-                              {review.author.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="font-medium">{review.author}</p>
-                                <Stars count={review.rating} />
-                              </div>
-                              {review.relativeTime && (
-                                <span className="text-xs text-muted-foreground">{review.relativeTime}</span>
-                              )}
-                            </div>
-                            <p className="mt-2 text-sm text-muted-foreground">{review.text}</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                  {reviewCount > parsedReviews.length && (
-                    <p className="text-center text-sm text-muted-foreground">
-                      Based on {reviewCount} Google reviews.{" "}
-                      <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline">
-                        See all reviews
-                      </a>
-                    </p>
+                  {!mapsEmbedUrl && (
+                    <div className="mt-4">
+                      <Button asChild variant="outline" size="sm">
+                        <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                          <MapPin className="mr-2 h-4 w-4" aria-hidden="true" />
+                          View on Google Maps
+                          <ExternalLink className="ml-2 h-3 w-3" aria-hidden="true" />
+                        </a>
+                      </Button>
+                    </div>
                   )}
                 </div>
-              ) : rating !== null ? (
-                <p className="text-sm text-muted-foreground py-4">
-                  Rated {rating.toFixed(1)}/5 based on {reviewCount} Google reviews.{" "}
-                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline">
-                    See reviews on Google
-                  </a>
-                </p>
-              ) : (
-                <p className="text-sm text-muted-foreground py-4">
-                  No reviews yet. Be the first to work with {providerName} and share your experience.
-                </p>
-              )}
+              </Card>
             </section>
 
             <Separator />
@@ -613,7 +807,7 @@ export default async function ProviderPage({ params }: Props) {
             <Separator />
 
             {/* ── FAQ ──────────────────────────────────────────── */}
-            <section>
+            <section id="faq" className="scroll-mt-28">
               <h2 className="mb-4 text-2xl font-bold tracking-tight">Frequently Asked Questions</h2>
               <Accordion type="single" collapsible className="w-full">
                 {faqs.map((faq, idx) => (
@@ -659,17 +853,29 @@ export default async function ProviderPage({ params }: Props) {
           {/* ── Sidebar (right 1/3) ────────────────────────────── */}
           <div className="space-y-6">
             {/* ── Quote form ───────────────────────────────────── */}
-            <Card id="quote" className="sticky top-20 shadow-lg">
+            <Card id="quote" className="sticky top-28 shadow-lg scroll-mt-28">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="h-5 w-5 text-primary" aria-hidden="true" />
                   Request a Free Quote
                 </CardTitle>
                 <CardDescription>
-                  Send your request directly to {providerName}. No obligation.
+                  {isVerified
+                    ? `Send your request directly to ${providerName}. No obligation.`
+                    : `Request forwarded to ${providerName}. No obligation.`}
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {/* Urgency signal */}
+                {isOpenToday && (
+                  <div className="mb-4 flex items-center gap-2 rounded-md bg-green-50 dark:bg-green-950/20 px-3 py-2 text-sm text-green-700 dark:text-green-400">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
+                    </span>
+                    Available today
+                  </div>
+                )}
                 <ContactForm
                   nicheSlug={niche.slug}
                   providerSlug={data?.slug ?? providerSlug}
@@ -685,19 +891,29 @@ export default async function ProviderPage({ params }: Props) {
             {parsedHours ? (
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Clock className="h-4 w-4 text-primary" aria-hidden="true" />
-                    Business Hours
+                  <CardTitle className="flex items-center justify-between text-base">
+                    <span className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-primary" aria-hidden="true" />
+                      Business Hours
+                    </span>
+                    {isOpenToday ? (
+                      <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs">Open</Badge>
+                    ) : (
+                      <Badge variant="secondary" className="text-xs">Closed today</Badge>
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <table className="w-full">
                     <tbody>
                       {parsedHours.map(({ day, hours }) => {
-                        const isToday = new Date().toLocaleDateString("en-US", { weekday: "long" }).toLowerCase().startsWith(day.toLowerCase().slice(0, 3))
+                        const isToday = day.toLowerCase() === todayName.toLowerCase()
                         return (
-                          <tr key={day} className={`text-sm ${isToday ? "font-medium text-foreground" : "text-muted-foreground"}`}>
-                            <th scope="row" className="py-1.5 text-left font-medium">{day}</th>
+                          <tr key={day} className={`text-sm ${isToday ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
+                            <th scope="row" className="py-1.5 text-left font-medium">
+                              {day}
+                              {isToday && <span className="ml-1.5 text-xs text-primary">(Today)</span>}
+                            </th>
                             <td className="py-1.5 text-right">{hours || "Closed"}</td>
                           </tr>
                         )
@@ -784,7 +1000,40 @@ export default async function ProviderPage({ params }: Props) {
         </div>
       </div>
 
-      {/* ── Schema.org JSON-LD ──────────────────────────────── */}
+      {/* ══════════════════════════════════════════════════════════
+          MOBILE STICKY CTA BAR
+          ══════════════════════════════════════════════════════════ */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background p-3 shadow-[0_-4px_12px_rgba(0,0,0,0.1)] lg:hidden">
+        <div className="mx-auto flex max-w-lg gap-2">
+          {phone ? (
+            <>
+              <Button asChild variant="outline" className="flex-1">
+                <a href={`tel:${phone.replace(/\D/g, "")}`}>
+                  <Phone className="mr-2 h-4 w-4" aria-hidden="true" />
+                  Call
+                </a>
+              </Button>
+              <Button asChild className="flex-1">
+                <a href="#quote">
+                  <MessageSquare className="mr-2 h-4 w-4" aria-hidden="true" />
+                  Get Free Quote
+                </a>
+              </Button>
+            </>
+          ) : (
+            <Button asChild className="flex-1">
+              <a href="#quote">
+                <MessageSquare className="mr-2 h-4 w-4" aria-hidden="true" />
+                Get a Free Quote
+              </a>
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════
+          SCHEMA.ORG JSON-LD (Enhanced)
+          ══════════════════════════════════════════════════════════ */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -811,16 +1060,33 @@ export default async function ProviderPage({ params }: Props) {
                 } : {
                   geo: { "@type": "GeoCoordinates", latitude: cityConfig.coordinates.lat, longitude: cityConfig.coordinates.lng },
                 }),
+                hasMap: mapsUrl,
                 areaServed: cityConfig.serviceArea.map((area) => ({ "@type": "City", name: area })),
                 ...(rating !== null ? {
                   aggregateRating: { "@type": "AggregateRating", ratingValue: rating.toString(), reviewCount: reviewCount.toString(), bestRating: "5" },
                 } : {}),
+                // Individual reviews for rich snippets
+                ...(parsedReviews.length > 0 ? {
+                  review: parsedReviews.slice(0, 5).map((r) => ({
+                    "@type": "Review",
+                    author: { "@type": "Person", name: r.author },
+                    reviewRating: { "@type": "Rating", ratingValue: r.rating.toString(), bestRating: "5" },
+                    reviewBody: r.text,
+                  })),
+                } : {}),
+                // Opening hours
+                ...(buildOpeningHoursSpec(parsedHours) ? { openingHoursSpecification: buildOpeningHoursSpec(parsedHours) } : {}),
                 makesOffer: services.map((service) => ({
                   "@type": "Offer",
                   itemOffered: { "@type": "Service", name: service, provider: { "@type": "LocalBusiness", name: providerName } },
                 })),
+                potentialAction: {
+                  "@type": "CommunicateAction",
+                  target: `https://${cityConfig.domain}/${niche.slug}/${data?.slug ?? providerSlug}#quote`,
+                  name: "Request a Free Quote",
+                },
                 priceRange: niche.avgProjectValue,
-                image: hasPhotos ? (data!.photoRefs[0].startsWith("http") ? data!.photoRefs[0] : `/api/places-photo?ref=${encodeURIComponent(data!.photoRefs[0])}&w=800`) : `/api/og/${niche.slug}/${data?.slug ?? providerSlug}`,
+                image: hasPhotos ? getPhotoSrc(data!.photoRefs[0], 800) : `/api/og/${niche.slug}/${data?.slug ?? providerSlug}`,
               },
               {
                 "@type": "BreadcrumbList",
