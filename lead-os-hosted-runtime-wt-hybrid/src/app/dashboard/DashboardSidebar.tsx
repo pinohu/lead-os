@@ -2,7 +2,42 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  LayoutDashboard,
+  Radar,
+  Users,
+  ArrowRightToLine,
+  Star,
+  Diamond,
+  BarChart3,
+  GitBranch,
+  DollarSign,
+  FlaskConical,
+  Workflow,
+  Bot,
+  CalendarCheck,
+  FileText,
+  Sparkles,
+  Share2,
+  Building2,
+  KeyRound,
+  Settings,
+  CreditCard,
+  Store,
+  UsersRound,
+  MessageSquare,
+  HeartPulse,
+  Eye,
+  CircleDot,
+  TrendingUp,
+  Zap,
+  Briefcase,
+  PanelLeft,
+  ChevronDown,
+  Menu,
+  X,
+} from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -11,12 +46,12 @@ import { useEffect, useRef, useState } from "react";
 interface NavItem {
   href: string;
   label: string;
-  icon: string;
+  icon: ReactNode;
 }
 
 interface NavGroup {
   label: string;
-  icon: string;
+  icon: ReactNode;
   items: NavItem[];
 }
 
@@ -24,65 +59,67 @@ interface NavGroup {
 // Navigation structure
 // ---------------------------------------------------------------------------
 
+const ICON_SIZE = 16;
+
 const NAV_GROUPS: NavGroup[] = [
   {
     label: "Overview",
-    icon: "⊞",
+    icon: <Eye size={ICON_SIZE} />,
     items: [
-      { href: "/dashboard", label: "Dashboard", icon: "◈" },
-      { href: "/dashboard/radar", label: "Radar", icon: "◎" },
+      { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={ICON_SIZE} /> },
+      { href: "/dashboard/radar", label: "Radar", icon: <Radar size={ICON_SIZE} /> },
     ],
   },
   {
     label: "Leads",
-    icon: "◉",
+    icon: <CircleDot size={ICON_SIZE} />,
     items: [
-      { href: "/dashboard/leads", label: "All Leads", icon: "≡" },
-      { href: "/dashboard/pipeline", label: "Pipeline", icon: "⇢" },
-      { href: "/dashboard/scoring", label: "Scoring", icon: "★" },
-      { href: "/dashboard/lead-magnets", label: "Lead Magnets", icon: "◆" },
+      { href: "/dashboard/leads", label: "All Leads", icon: <Users size={ICON_SIZE} /> },
+      { href: "/dashboard/pipeline", label: "Pipeline", icon: <ArrowRightToLine size={ICON_SIZE} /> },
+      { href: "/dashboard/scoring", label: "Scoring", icon: <Star size={ICON_SIZE} /> },
+      { href: "/dashboard/lead-magnets", label: "Lead Magnets", icon: <Diamond size={ICON_SIZE} /> },
     ],
   },
   {
     label: "Analytics",
-    icon: "▲",
+    icon: <TrendingUp size={ICON_SIZE} />,
     items: [
-      { href: "/dashboard/analytics", label: "Analytics", icon: "▦" },
-      { href: "/dashboard/attribution", label: "Attribution", icon: "⤳" },
-      { href: "/dashboard/revenue", label: "Revenue", icon: "$" },
-      { href: "/dashboard/experiments", label: "Experiments", icon: "⚗" },
+      { href: "/dashboard/analytics", label: "Analytics", icon: <BarChart3 size={ICON_SIZE} /> },
+      { href: "/dashboard/attribution", label: "Attribution", icon: <GitBranch size={ICON_SIZE} /> },
+      { href: "/dashboard/revenue", label: "Revenue", icon: <DollarSign size={ICON_SIZE} /> },
+      { href: "/dashboard/experiments", label: "Experiments", icon: <FlaskConical size={ICON_SIZE} /> },
     ],
   },
   {
     label: "Automation",
-    icon: "⚙",
+    icon: <Zap size={ICON_SIZE} />,
     items: [
-      { href: "/dashboard/workflows", label: "Workflows", icon: "⟳" },
-      { href: "/dashboard/agents", label: "Agents", icon: "⬡" },
-      { href: "/dashboard/bookings", label: "Bookings", icon: "▣" },
-      { href: "/dashboard/documents", label: "Documents", icon: "▤" },
-      { href: "/dashboard/creative", label: "Creative", icon: "✦" },
-      { href: "/dashboard/distribution", label: "Distribution", icon: "⊕" },
+      { href: "/dashboard/workflows", label: "Workflows", icon: <Workflow size={ICON_SIZE} /> },
+      { href: "/dashboard/agents", label: "Agents", icon: <Bot size={ICON_SIZE} /> },
+      { href: "/dashboard/bookings", label: "Bookings", icon: <CalendarCheck size={ICON_SIZE} /> },
+      { href: "/dashboard/documents", label: "Documents", icon: <FileText size={ICON_SIZE} /> },
+      { href: "/dashboard/creative", label: "Creative", icon: <Sparkles size={ICON_SIZE} /> },
+      { href: "/dashboard/distribution", label: "Distribution", icon: <Share2 size={ICON_SIZE} /> },
     ],
   },
   {
     label: "Configuration",
-    icon: "◩",
+    icon: <Settings size={ICON_SIZE} />,
     items: [
-      { href: "/dashboard/providers", label: "Providers", icon: "⬟" },
-      { href: "/dashboard/credentials", label: "Credentials", icon: "⬠" },
-      { href: "/dashboard/settings", label: "Settings", icon: "⚙" },
+      { href: "/dashboard/providers", label: "Providers", icon: <Building2 size={ICON_SIZE} /> },
+      { href: "/dashboard/credentials", label: "Credentials", icon: <KeyRound size={ICON_SIZE} /> },
+      { href: "/dashboard/settings", label: "Settings", icon: <Settings size={ICON_SIZE} /> },
     ],
   },
   {
     label: "Business",
-    icon: "◫",
+    icon: <Briefcase size={ICON_SIZE} />,
     items: [
-      { href: "/dashboard/billing", label: "Billing", icon: "◈" },
-      { href: "/dashboard/marketplace", label: "Marketplace", icon: "◎" },
-      { href: "/dashboard/tenants", label: "Tenants", icon: "⊞" },
-      { href: "/dashboard/feedback", label: "Feedback", icon: "◉" },
-      { href: "/dashboard/health", label: "Health", icon: "♥" },
+      { href: "/dashboard/billing", label: "Billing", icon: <CreditCard size={ICON_SIZE} /> },
+      { href: "/dashboard/marketplace", label: "Marketplace", icon: <Store size={ICON_SIZE} /> },
+      { href: "/dashboard/tenants", label: "Tenants", icon: <UsersRound size={ICON_SIZE} /> },
+      { href: "/dashboard/feedback", label: "Feedback", icon: <MessageSquare size={ICON_SIZE} /> },
+      { href: "/dashboard/health", label: "Health", icon: <HeartPulse size={ICON_SIZE} /> },
     ],
   },
 ];
@@ -138,19 +175,18 @@ function NavGroupSection({ group, pathname, isCollapsed }: NavGroupSectionProps)
           }}
         >
           <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span aria-hidden="true" style={{ fontSize: "0.85rem" }}>{group.icon}</span>
+            <span aria-hidden="true" style={{ display: "inline-flex" }}>{group.icon}</span>
             {group.label}
           </span>
           <span
             aria-hidden="true"
             style={{
-              fontSize: "0.7rem",
               transform: isOpen ? "rotate(0deg)" : "rotate(-90deg)",
               transition: "transform 180ms ease",
-              display: "inline-block",
+              display: "inline-flex",
             }}
           >
-            ▾
+            <ChevronDown size={12} />
           </span>
         </button>
       )}
@@ -204,9 +240,10 @@ function NavGroupSection({ group, pathname, isCollapsed }: NavGroupSectionProps)
                 <span
                   aria-hidden="true"
                   style={{
-                    fontSize: isCollapsed ? "1.1rem" : "0.9rem",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     width: isCollapsed ? "auto" : 18,
-                    textAlign: "center",
                     flexShrink: 0,
                     color: active ? ACCENT : "#9ca3af",
                   }}
@@ -396,8 +433,8 @@ export function DashboardSidebar() {
             fontWeight: 500,
           }}
         >
-          <span aria-hidden="true" style={{ fontSize: "0.9rem", transform: isCollapsed ? "scaleX(-1)" : "none", display: "inline-block" }}>
-            ◁
+          <span aria-hidden="true" style={{ display: "inline-flex", transform: isCollapsed ? "scaleX(-1)" : "none" }}>
+            <PanelLeft size={16} />
           </span>
           {!isCollapsed && "Collapse"}
         </button>
@@ -435,7 +472,7 @@ export function DashboardSidebar() {
         }}
         className="sidebar-hamburger"
       >
-        ☰
+        <Menu size={20} />
       </button>
 
       {/* ------------------------------------------------------------------ */}
@@ -520,7 +557,7 @@ export function DashboardSidebar() {
             borderRadius: 6,
           }}
         >
-          ✕
+          <X size={18} />
         </button>
         {sidebarContent}
       </aside>

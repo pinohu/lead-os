@@ -1,6 +1,12 @@
 // ── Stripe Integration — Territory Claim Payment System ─────────────
-// Dry-run implementation that simulates Stripe checkout flow.
-// When STRIPE_SECRET_KEY is set, uses the real Stripe SDK.
+// Uses the real Stripe SDK when STRIPE_SECRET_KEY is set.
+// Falls back to dry-run mode for development without Stripe keys.
+
+import Stripe from "stripe";
+import { prisma } from "@/lib/db";
+import { cityConfig } from "@/lib/city-config";
+
+// ── Public Interfaces ──────────────────────────────────────────────
 
 export interface TerritoryCheckout {
   niche: string;
@@ -18,123 +24,174 @@ export interface StripeWebhookResult {
   message: string;
 }
 
-// ── Configuration ───────────────────────────────────────────────────
+// ── Configuration ──────────────────────────────────────────────────
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY ?? "";
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET ?? "";
-const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
+const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL ?? `https://${cityConfig.domain}`;
 
-const isDryRun = !STRIPE_SECRET_KEY;
+// Production guard: Stripe keys MUST be present when running in production.
+// Dry-run mode is NEVER allowed in production — it would silently skip real payments.
+if (process.env.NODE_ENV === "production" && !STRIPE_SECRET_KEY) {
+  throw new Error(
+    "[stripe-integration] STRIPE_SECRET_KEY is required in production. " +
+    "Set the STRIPE_SECRET_KEY environment variable to your Stripe secret key."
+  );
+}
 
-// ── Niche pricing ───────────────────────────────────────────────────
+const isProduction = process.env.NODE_ENV === "production";
+const isDryRun = isProduction ? false : !STRIPE_SECRET_KEY;
+
+// Initialize Stripe SDK (only when key is set)
+const stripe = isDryRun ? null : new Stripe(STRIPE_SECRET_KEY);
+
+// ── Niche pricing ──────────────────────────────────────────────────
 
 const NICHE_PRICING: Record<string, number> = {
-  plumbing: 750,
-  hvac: 750,
-  electrical: 700,
-  roofing: 400,
-  landscaping: 400,
-  dental: 1200,
-  legal: 1500,
-  cleaning: 300,
-  "auto-repair": 400,
-  "pest-control": 350,
-  painting: 350,
-  "real-estate": 900,
-  "garage-door": 450,
-  fencing: 400,
-  flooring: 800,
-  "windows-doors": 800,
-  moving: 350,
-  "tree-service": 500,
-  "appliance-repair": 350,
-  foundation: 1000,
-  "home-security": 800,
-  concrete: 500,
-  septic: 500,
-  chimney: 400,
-  "pool-spa": 600,
-  locksmith: 400,
-  towing: 500,
-  "carpet-cleaning": 400,
-  "pressure-washing": 450,
-  drywall: 400,
-  insulation: 500,
-  solar: 900,
-  gutters: 400,
-  handyman: 350,
-  veterinary: 800,
-  chiropractic: 700,
-  accounting: 900,
-  photography: 400,
-  "pet-grooming": 350,
-  "snow-removal": 500,
-  restoration: 800,
-  glass: 500,
-  irrigation: 450,
-  demolition: 600,
+  // ── Tier 1: Premium ($1,200-$1,500/mo) ───────────────────────────
+  legal: 1500,          // avg case $3.5K-$50K+, CLV $5K-$20K
+  solar: 1500,          // avg project $20K-$35K, one deal = 14-23x ROI
+  "real-estate": 1300,  // avg commission $8K-$12K, CLV $15K-$25K
+  foundation: 1300,     // avg project $5.5K-$12K, competitors $1.5K-$3.5K/mo
+  dental: 1200,         // CLV $8K-$12K per patient over 10 years
+  "windows-doors": 1200, // avg project $6K-$12K, Modernize $35-$85/shared lead
+  restoration: 1200,    // emergency niche, avg job $3.5K-$7.5K
+
+  // ── Tier 2: Standard-High ($700-$1,000/mo) ──────────────────────
+  roofing: 1000,        // avg project $8.5K-$14K — was $400, severely underpriced
+  flooring: 1000,       // avg project $3.5K-$6K
+  accounting: 900,      // CLV $7.5K-$15K, 65-80% gross margins
+  "pool-spa": 900,      // new pool builds $35K-$65K
+  demolition: 900,      // avg project $3K-$10K, contractor repeat work
+  "home-security": 800, // CLV $3K-$6K from monitoring contracts
+  veterinary: 800,      // CLV $5K-$10K per pet, 35-50% close rate
+  hvac: 750,            // maintenance contracts + $5.5K-$8.5K installs
+  plumbing: 750,        // high repeat CLV $2.8K-$4.5K
+  electrical: 700,      // slightly lower project values than plumbing/HVAC
+  chiropractic: 700,    // CLV $3K-$7K, ongoing care relationship
+  concrete: 700,        // avg project $3K-$6K, one driveway = 4-8 months
+
+  // ── Tier 3: Standard ($400-$650/mo) ──────────────────────────────
+  fencing: 600,         // avg project $3.5K-$5.5K
+  painting: 550,        // avg project $3K-$4.5K exterior
+  insulation: 500,      // avg project $2K-$4.5K
+  "tree-service": 500,  // avg job $750-$3K, 20-30% close rate
+  septic: 500,          // mix of $400 pumping and $4K-$8K repairs
+  towing: 500,          // high volume (40-55% close), low ticket
+  "snow-removal": 500,  // critical in Erie (120+ in/yr)
+  glass: 500,           // emergency window repairs drive urgency
+  irrigation: 450,      // seasonal with winterization repeats
+  "garage-door": 450,   // emergency service = 25-40% close rate
+  photography: 400,     // wedding season boosts value
+  landscaping: 400,     // recurring maintenance contracts
+  "auto-repair": 400,   // 30-45% close rate, strong repeat
+  chimney: 400,         // annual service creates recurring revenue
+  locksmith: 400,       // highest close rates (35-50%), 60-75% margins
+  drywall: 400,         // remodel-driven demand
+  gutters: 400,         // moderate volume and margins
+  "pressure-washing": 375, // low per-job value ($250-$800)
+
+  // ── Tier 4: Entry ($275-$350/mo) ─────────────────────────────────
+  "pest-control": 350,  // recurring contracts save CLV $1.8K-$3.6K
+  handyman: 350,        // repeat home maintenance, volume-based
+  "appliance-repair": 350, // urgent need = 30-45% close rate
+  moving: 350,          // low repeat frequency limits CLV
+  "carpet-cleaning": 325, // low per-job value ($200-$350)
+  cleaning: 300,        // entry price drives adoption, recurring revenue
+  "pet-grooming": 300,  // very low per-visit ($50-$90), CLV from repeats
 };
 
 export function getMonthlyFee(niche: string): number {
   return NICHE_PRICING[niche] ?? 400;
 }
 
-// ── Mock Session Store ──────────────────────────────────────────────
-
-const mockSessions: Map<string, TerritoryCheckout> = new Map();
-
-function generateSessionId(): string {
-  return `cs_mock_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 10)}`;
-}
-
-// ── Core Functions ──────────────────────────────────────────────────
+// ── Core Functions ─────────────────────────────────────────────────
 
 /**
  * Create a Stripe checkout session for territory claim.
- * In dry-run mode, returns a mock checkout URL.
- * With a real STRIPE_SECRET_KEY, would create a real Stripe Checkout session.
+ * In dry-run mode, creates a mock session and returns a success URL directly.
+ * With a real STRIPE_SECRET_KEY, creates a real Stripe Checkout session.
  */
-export function createTerritoryCheckoutSession(
+export async function createTerritoryCheckoutSession(
   niche: string,
   city: string,
   providerEmail: string,
   providerName: string
-): TerritoryCheckout {
+): Promise<TerritoryCheckout> {
   const monthlyFee = getMonthlyFee(niche);
-  const sessionId = generateSessionId();
 
-  if (isDryRun) {
-    const checkout: TerritoryCheckout = {
+  if (!isDryRun && stripe) {
+    // Production: Real Stripe Checkout
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      customer_email: providerEmail,
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: Math.round(monthlyFee * 100), // cents
+            recurring: { interval: "month" },
+            product_data: {
+              name: `Erie Pro — ${niche} Territory (${city})`,
+              description: `Exclusive ${niche} lead generation territory in ${city}`,
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${APP_DOMAIN}/for-business/claim/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${APP_DOMAIN}/for-business/claim?cancelled=true`,
+      metadata: { niche, city, providerName },
+    });
+
+    // Store checkout session in DB
+    await prisma.checkoutSession.create({
+      data: {
+        sessionType: "territory_claim",
+        stripeSessionId: session.id,
+        niche,
+        city,
+        providerEmail: providerEmail.toLowerCase(),
+        providerName,
+        monthlyFee,
+        status: "pending",
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
+      },
+    });
+
+    return {
       niche,
       city,
       providerName,
       providerEmail,
       monthlyFee,
-      checkoutUrl: `${APP_DOMAIN}/for-business/claim/success?session_id=${sessionId}&niche=${niche}&city=${city}`,
-      sessionId,
+      checkoutUrl: session.url ?? `${APP_DOMAIN}/for-business/claim/success?session_id=${session.id}`,
+      sessionId: session.id,
     };
-    mockSessions.set(sessionId, checkout);
-
-    console.log(
-      `[Stripe DRY-RUN] Checkout session created: ${sessionId}`,
-      { niche, city, providerEmail, monthlyFee }
-    );
-
-    return checkout;
   }
 
-  // Production: would use Stripe SDK
-  // const stripe = new Stripe(STRIPE_SECRET_KEY);
-  // const session = await stripe.checkout.sessions.create({
-  //   mode: "subscription",
-  //   customer_email: providerEmail,
-  //   line_items: [{ price: getPriceId(niche), quantity: 1 }],
-  //   success_url: `${APP_DOMAIN}/for-business/claim/success?session_id={CHECKOUT_SESSION_ID}`,
-  //   cancel_url: `${APP_DOMAIN}/for-business/claim?cancelled=true`,
-  //   metadata: { niche, city, providerName },
-  // });
+  // Dry-run mode: mock session
+  const sessionId = `cs_mock_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 10)}`;
 
-  const checkout: TerritoryCheckout = {
+  await prisma.checkoutSession.create({
+    data: {
+      sessionType: "territory_claim",
+      stripeSessionId: sessionId,
+      niche,
+      city,
+      providerEmail: providerEmail.toLowerCase(),
+      providerName,
+      monthlyFee,
+      status: "pending",
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    },
+  });
+
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[Stripe DRY-RUN] Checkout session created: ${sessionId}`);
+  }
+
+  return {
     niche,
     city,
     providerName,
@@ -143,11 +200,9 @@ export function createTerritoryCheckoutSession(
     checkoutUrl: `${APP_DOMAIN}/for-business/claim/success?session_id=${sessionId}&niche=${niche}&city=${city}`,
     sessionId,
   };
-  mockSessions.set(sessionId, checkout);
-  return checkout;
 }
 
-// ── Pay-Per-Lead Pricing ────────────────────────────────────────────
+// ── Pay-Per-Lead Pricing ───────────────────────────────────────────
 
 export type LeadTemperature = "cold" | "warm" | "hot" | "burning";
 
@@ -170,25 +225,81 @@ export interface LeadPurchaseCheckout {
 
 /**
  * Create a one-time Stripe checkout for a single pay-per-lead purchase.
- * Tier 1 monetization: zero commitment, proof-of-value before subscription.
  */
-export function createLeadPurchaseCheckout(
+export async function createLeadPurchaseCheckout(
   leadId: string,
   niche: string,
   temperature: LeadTemperature,
   buyerEmail: string
-): LeadPurchaseCheckout {
+): Promise<LeadPurchaseCheckout> {
   const price = LEAD_PRICES[temperature];
-  const sessionId = generateSessionId();
 
-  if (isDryRun) {
-    console.log(`[Stripe DRY-RUN] Lead purchase session: ${sessionId}`, {
+  if (!isDryRun && stripe) {
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      customer_email: buyerEmail,
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: Math.round(price * 100),
+            product_data: {
+              name: `Erie Pro — ${temperature} ${niche} Lead`,
+              description: `One-time purchase of a ${temperature} lead in ${niche}`,
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${APP_DOMAIN}/for-business/leads/success?session_id={CHECKOUT_SESSION_ID}&lead_id=${leadId}&niche=${niche}`,
+      cancel_url: `${APP_DOMAIN}/for-business/leads?cancelled=true`,
+      metadata: { leadId, niche, temperature },
+    });
+
+    await prisma.checkoutSession.create({
+      data: {
+        sessionType: "lead_purchase",
+        stripeSessionId: session.id,
+        niche,
+        providerEmail: buyerEmail.toLowerCase(),
+        leadId,
+        temperature: temperature as any, // enum cast
+        price,
+        status: "pending",
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+    });
+
+    return {
       leadId,
       niche,
       temperature,
       price,
       buyerEmail,
-    });
+      checkoutUrl: session.url ?? `${APP_DOMAIN}/for-business/leads/success?session_id=${session.id}`,
+      sessionId: session.id,
+    };
+  }
+
+  // Dry-run mode
+  const sessionId = `cs_mock_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 10)}`;
+
+  await prisma.checkoutSession.create({
+    data: {
+      sessionType: "lead_purchase",
+      stripeSessionId: sessionId,
+      niche,
+      providerEmail: buyerEmail.toLowerCase(),
+      leadId,
+      temperature: temperature as any,
+      price,
+      status: "pending",
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    },
+  });
+
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[Stripe DRY-RUN] Lead purchase session: ${sessionId}`);
   }
 
   return {
@@ -204,70 +315,165 @@ export function createLeadPurchaseCheckout(
 
 /**
  * Handle Stripe webhook events.
- * In dry-run mode, logs the event.
  */
-export function handleStripeWebhook(event: unknown): StripeWebhookResult {
-  const evt = event as { type?: string; data?: { object?: Record<string, unknown> } };
-  const eventType = evt?.type ?? "unknown";
+export async function handleStripeWebhook(
+  event: Stripe.Event
+): Promise<StripeWebhookResult> {
+  const eventType = event.type;
 
-  if (isDryRun) {
-    console.log(`[Stripe DRY-RUN] Webhook received: ${eventType}`, evt?.data?.object);
-    return {
-      handled: true,
-      eventType,
-      message: `[DRY-RUN] Event ${eventType} logged successfully`,
-    };
-  }
-
-  // Production webhook handling
   switch (eventType) {
     case "checkout.session.completed": {
-      const session = evt?.data?.object;
-      console.log("[Stripe] Checkout completed:", session);
-      return { handled: true, eventType, message: "Checkout session completed, provider activated" };
+      const session = event.data.object as Stripe.Checkout.Session;
+
+      // Mark checkout session as completed in DB
+      if (session.id) {
+        await prisma.checkoutSession.updateMany({
+          where: { stripeSessionId: session.id },
+          data: { status: "completed", completedAt: new Date() },
+        });
+      }
+
+      return {
+        handled: true,
+        eventType,
+        message: "Checkout session completed, provider activation pending",
+      };
     }
+
     case "invoice.payment_succeeded": {
-      console.log("[Stripe] Payment succeeded:", evt?.data?.object);
-      return { handled: true, eventType, message: "Payment succeeded, subscription renewed" };
+      return {
+        handled: true,
+        eventType,
+        message: "Payment succeeded, subscription renewed",
+      };
     }
+
     case "invoice.payment_failed": {
-      console.log("[Stripe] Payment failed:", evt?.data?.object);
-      return { handled: true, eventType, message: "Payment failed, provider notified" };
+      const invoice = event.data.object as Stripe.Invoice;
+      const customerId = invoice.customer as string;
+
+      // Mark provider as past_due
+      if (customerId) {
+        await prisma.provider.updateMany({
+          where: { stripeCustomerId: customerId },
+          data: { subscriptionStatus: "past_due" },
+        });
+      }
+
+      return {
+        handled: true,
+        eventType,
+        message: "Payment failed, provider marked past_due",
+      };
     }
+
     case "customer.subscription.deleted": {
-      console.log("[Stripe] Subscription cancelled:", evt?.data?.object);
-      return { handled: true, eventType, message: "Subscription cancelled, territory released" };
+      const subscription = event.data.object as Stripe.Subscription;
+      const customerId = subscription.customer as string;
+
+      // Deactivate provider and release territory
+      if (customerId) {
+        const provider = await prisma.provider.findFirst({
+          where: { stripeCustomerId: customerId },
+        });
+
+        if (provider) {
+          await prisma.provider.update({
+            where: { id: provider.id },
+            data: {
+              subscriptionStatus: "cancelled",
+              churnedAt: new Date(),
+            },
+          });
+
+          // Deactivate territory
+          await prisma.territory.updateMany({
+            where: { providerId: provider.id, deactivatedAt: null },
+            data: { deactivatedAt: new Date() },
+          });
+
+          // Re-bank unresponded leads so they can be delivered to the next provider
+          await prisma.lead.updateMany({
+            where: {
+              routedToId: provider.id,
+              routeType: "primary",
+              outcomes: { none: {} },
+            },
+            data: {
+              routedToId: null,
+              routeType: "unmatched",
+            },
+          });
+        }
+      }
+
+      return {
+        handled: true,
+        eventType,
+        message: "Subscription cancelled, territory released, unresponded leads re-banked",
+      };
     }
+
     default:
-      return { handled: false, eventType, message: `Unhandled event type: ${eventType}` };
+      return {
+        handled: false,
+        eventType,
+        message: `Unhandled event type: ${eventType}`,
+      };
   }
 }
 
 /**
- * Get subscription status (mock or real).
+ * Construct and verify a Stripe webhook event from raw body.
  */
-export function getSubscriptionStatus(
+export function constructWebhookEvent(
+  rawBody: string,
+  signature: string
+): Stripe.Event | null {
+  if (!stripe || !STRIPE_WEBHOOK_SECRET) return null;
+
+  try {
+    return stripe.webhooks.constructEvent(rawBody, signature, STRIPE_WEBHOOK_SECRET);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Get subscription status (real or dry-run).
+ */
+export async function getSubscriptionStatus(
   stripeSubscriptionId: string
-): "active" | "past_due" | "cancelled" {
-  if (isDryRun) {
-    // In dry-run, all mock subscriptions are active
-    console.log(`[Stripe DRY-RUN] Status check for: ${stripeSubscriptionId}`);
-    return "active";
+): Promise<"active" | "past_due" | "cancelled"> {
+  if (!isDryRun && stripe) {
+    try {
+      const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+      if (sub.status === "active") return "active";
+      if (sub.status === "past_due") return "past_due";
+      return "cancelled";
+    } catch {
+      return "cancelled";
+    }
   }
 
-  // Production: would query Stripe
-  // const stripe = new Stripe(STRIPE_SECRET_KEY);
-  // const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
-  // return sub.status;
+  // Dry-run: check DB
+  const provider = await prisma.provider.findFirst({
+    where: { stripeSubscriptionId },
+    select: { subscriptionStatus: true },
+  });
 
-  return "active";
+  if (provider?.subscriptionStatus === "active") return "active";
+  if (provider?.subscriptionStatus === "past_due") return "past_due";
+  return "cancelled";
 }
 
 /**
- * Get a mock checkout session by ID.
+ * Get a checkout session by Stripe session ID.
  */
-export function getCheckoutSession(sessionId: string): TerritoryCheckout | undefined {
-  return mockSessions.get(sessionId);
+export async function getCheckoutSession(sessionId: string) {
+  return prisma.checkoutSession.findFirst({
+    where: { stripeSessionId: sessionId },
+  });
 }
 
 /**
@@ -277,4 +483,4 @@ export function isStripeDryRun(): boolean {
   return isDryRun;
 }
 
-export { STRIPE_WEBHOOK_SECRET };
+export { STRIPE_WEBHOOK_SECRET, NICHE_PRICING };

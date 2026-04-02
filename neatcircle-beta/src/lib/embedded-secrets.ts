@@ -1,57 +1,66 @@
+// ── Environment-based secrets ─────────────────────────────────────────
+// All secrets are read from environment variables. NO hardcoded values.
+// See .env.sample for the full list of required env vars.
+// ──────────────────────────────────────────────────────────────────────
+
+function env(key: string, fallback = ""): string {
+  return process.env[key] ?? fallback;
+}
+
 export const embeddedSecrets = {
   suitedash: {
-    publicId: "265a7c79-6d86-44de-9cb8-e5b88b840be6",
-    secretKey: "$2y$13$V9esKjFesFfb0BO.0K5ewOK9SCBwqZnErjYO2RvFsl3kBz2eqUV/S",
+    publicId: env("SUITEDASH_PUBLIC_ID"),
+    secretKey: env("SUITEDASH_SECRET_KEY"),
   },
   emailit: {
-    apiKey: "secret_4lQqUaweMC1pmyCpwqdRy3ktjl9hzd6m",
+    apiKey: env("EMAILIT_API_KEY"),
   },
   aitable: {
-    apiToken: "usk8wYBrRgsc6RHxkZP9VAN",
-    datasheetId: "dstBicDQKC6gpLAMYj",
+    apiToken: env("AITABLE_API_TOKEN"),
+    datasheetId: env("AITABLE_DATASHEET_ID"),
   },
   wbiztool: {
-    apiKey: "54140a11389a13031a2eb19070ce35c5ce769a30",
-    instanceId: "12316",
+    apiKey: env("WBIZTOOL_API_KEY"),
+    instanceId: env("WBIZTOOL_INSTANCE_ID"),
   },
   discord: {
-    newLeadsWebhook: "https://discord.com/api/webhooks/1480429578047717449/7bF_noLBXwykgIVye6hxYQ_e61-eDKS_OEyER_OpL8L0yxObOMDkCmqifgHPuEI3LoTp",
-    errorsWebhook: "https://discord.com/api/webhooks/1480423483207975066/ZWeuxptsElvzpj8Fzrd-Q3pPDGkL3StUpuNJybNwKlJwyVkGm8D6k_qjz6mdsSHZ7J4n",
-    winsWebhook: "https://discord.com/api/webhooks/1480429754963333252/9tlYfvzLOon6LVB3juh3eN_BelV_V_DJzF6lMYrv_JccxnKjRNvqY2n_htd8r2-jshyw",
-    highValueWebhook: "https://discord.com/api/webhooks/1480429897263480962/e-vvArec6HCRc_HpzxmWOpz3GbJ7ncekeLBD7hSnKHm4v-zXTwt8fm6DjrY7TUBeo6Ct",
+    newLeadsWebhook: env("DISCORD_NEW_LEADS_WEBHOOK"),
+    errorsWebhook: env("DISCORD_ERRORS_WEBHOOK"),
+    winsWebhook: env("DISCORD_WINS_WEBHOOK"),
+    highValueWebhook: env("DISCORD_HIGH_VALUE_WEBHOOK"),
   },
   telegram: {
-    botToken: "8739229269:AAGYs6jIIjDa87y4TAVwn4QtTWBqliohDQI",
-    newLeadsChat: "-1003809646667",
-    errorsChat: "-1003751399010",
-    winsChat: "-1003899173545",
-    highValueChat: "-1003862266875",
+    botToken: env("TELEGRAM_BOT_TOKEN"),
+    newLeadsChat: env("TELEGRAM_NEW_LEADS_CHAT"),
+    errorsChat: env("TELEGRAM_ERRORS_CHAT"),
+    winsChat: env("TELEGRAM_WINS_CHAT"),
+    highValueChat: env("TELEGRAM_HIGH_VALUE_CHAT"),
   },
   cron: {
-    secret: "leadoscron2026neatcircle",
+    secret: env("CRON_SECRET"),
   },
   dashboard: {
-    secret: "",
+    secret: env("DASHBOARD_SECRET"),
   },
   stripe: {
-    secretKey: "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",
-    publishableKey: "pk_live_51RZLN8LeZEBBH8L7JMp1sHr4gW7bruO9uwdAtCltwCm6BDu8GxRegfZvfURSFT4NfTfDTSM9SOXVhTiFlU4K0gHG00lVRADfXm",
+    secretKey: env("STRIPE_SECRET_KEY"),
+    publishableKey: env("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"),
   },
   callscaler: {
-    apiKey: "113|0AHOPtnKGbqipXH2MoI3o6fKpyEkjuOa34aIxq1X",
+    apiKey: env("CALLSCALER_API_KEY"),
   },
   upviral: {
-    apiKey: "bG4ds99OjXvzAduIQ7x+pqyxb/goS7niK6dc2xE0aLg=",
-    campaignUrl: "https://refer.neatcircle.com",
+    apiKey: env("UPVIRAL_API_KEY"),
+    campaignUrl: env("UPVIRAL_CAMPAIGN_URL"),
   },
   agenticflow: {
-    apiKey: "a9w_SNlebBN8edQmcYJGX7DGbFOfOc8fkH8PLFP0cQ14UG0",
+    apiKey: env("AGENTICFLOW_API_KEY"),
   },
   boost: {
-    apiKey: "299d6ec856d6df794a547361dfb6a4dbcf56c9ed019d94804fc3125bd719226e",
-    makeApiToken: "24595d5e-9b7f-48f9-ab61-9644c46ed7f9",
+    apiKey: env("BOOST_API_KEY"),
+    makeApiToken: env("MAKE_API_TOKEN"),
   },
   automation: {
-    apiSecret: "",
+    apiSecret: env("AUTOMATION_API_SECRET"),
   },
-} as const;
+};

@@ -22,7 +22,7 @@ import {
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://erie.pro'),
+  metadataBase: new URL(`https://${cityConfig.domain}`),
   title: {
     default: `Find Local Services in ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
     template: `%s | ${cityConfig.domain}`,
@@ -30,12 +30,25 @@ export const metadata: Metadata = {
   description: `Find the best local service providers in ${cityConfig.name}, ${cityConfig.state}. Verified businesses, free quotes, no obligation. Serving ${cityConfig.serviceArea.slice(0, 5).join(", ")} and surrounding areas.`,
   openGraph: {
     type: "website",
-    siteName: "erie.pro",
+    siteName: cityConfig.domain,
     locale: "en_US",
     title: `Find Local Services in ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
     description: `Find the best local service providers in ${cityConfig.name}, ${cityConfig.state}. Verified businesses, free quotes, no obligation.`,
     url: `https://${cityConfig.domain}`,
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `Find Local Services in ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
+    description: `Find the best local service providers in ${cityConfig.name}, ${cityConfig.state}. Verified businesses, free quotes, no obligation.`,
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/manifest.json",
 }
 
 export default function RootLayout({
@@ -203,7 +216,7 @@ export default function RootLayout({
                 <ThemeToggle />
 
                 <Button asChild size="sm" className="ml-2">
-                  <Link href="/#services">Get a Free Quote</Link>
+                  <Link href="/#get-quote">Get a Free Quote</Link>
                 </Button>
               </div>
 
@@ -312,9 +325,12 @@ export default function RootLayout({
 
               <Separator className="my-8" />
 
-              <div className="text-center text-xs text-muted-foreground">
-                &copy; {new Date().getFullYear()} {cityConfig.domain}. All
-                rights reserved. Powered by Lead OS.
+              <div className="text-center text-xs text-muted-foreground space-y-1">
+                <p>
+                  &copy; {new Date().getFullYear()} {cityConfig.domain}. All
+                  rights reserved. Powered by Lead OS.
+                </p>
+                <p>Erie, PA 16501 &middot; <a href={`mailto:hello@${cityConfig.domain}`} className="underline hover:text-foreground">hello@{cityConfig.domain}</a></p>
               </div>
             </div>
           </footer>

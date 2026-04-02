@@ -1,52 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { ContactRequestSchema, formatZodErrors, MAX_BODY_SIZE } from "@/lib/validation";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json().catch(() => null);
+    // ── Rate limit: 5 contacts per minute per IP ─────────────────
+    const rateLimited = await checkRateLimit(req, "contact");
+    if (rateLimited) return rateLimited;
 
+    // ── Body size check ──────────────────────────────────────────
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
+    }
+
+    const body = await req.json().catch(() => null);
     if (!body) {
       return NextResponse.json(
-        { success: false, message: "Invalid request body." },
+        { success: false, error: "Invalid request body" },
         { status: 400 }
       );
     }
 
-    const { name, email, phone, message, niche } = body as {
-      name?: string;
-      email?: string;
-      phone?: string;
-      message?: string;
-      niche?: string;
-    };
-
-    // Email is required
-    if (!email || typeof email !== "string") {
+    // ── Zod validation (sanitizes text, lowercases email) ────────
+    const parsed = ContactRequestSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Email is required." },
+        { success: false, error: formatZodErrors(parsed.error) },
         { status: 400 }
       );
     }
 
-    // Basic email format validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { success: false, message: "Please provide a valid email address." },
-        { status: 400 }
-      );
-    }
+    const { name, email, phone, message, niche } = parsed.data;
 
-    // Dry-run mode — log receipt without PII
-    console.log("[contact] Lead received:", { niche: niche ?? "general", hasPhone: !!phone, hasMessage: !!message });
+    // Store contact message in database (Phase 1.5.11 fix)
+    await prisma.contactMessage.create({
+      data: {
+        name: name ?? null,
+        email,
+        phone: phone ?? null,
+        message: message ?? null,
+        niche: niche ?? null,
+      },
+    });
 
     return NextResponse.json({
       success: true,
       message:
         "Thank you for contacting us. We'll be in touch within 24 hours.",
     });
-  } catch {
+  } catch (err) {
+    logger.error("/api/contact", "Error:", err);
     return NextResponse.json(
-      { success: false, message: "Something went wrong. Please try again." },
+      { success: false, error: "Internal server error" },
       { status: 500 }
     );
   }

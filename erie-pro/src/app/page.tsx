@@ -16,9 +16,10 @@ import {
   CheckCircle2,
   Shield,
   Clock,
-  Star,
   MapPin,
   Globe,
+  Phone,
+  Star,
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { niches } from "@/lib/niches"
@@ -32,6 +33,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { ServiceSearch } from "@/components/service-search"
+import { HomepageLeadForm } from "@/components/homepage-lead-form"
 
 const nicheIcons: Record<string, React.ReactNode> = {
   plumbing: <Wrench className="h-6 w-6" aria-hidden="true" />,
@@ -48,14 +51,39 @@ const nicheIcons: Record<string, React.ReactNode> = {
   "real-estate": <Building className="h-6 w-6" aria-hidden="true" />,
 }
 
+/* Emergency / most-searched services shown as quick-pick buttons */
+const QUICK_PICKS = [
+  "plumbing",
+  "hvac",
+  "electrical",
+  "roofing",
+  "locksmith",
+  "towing",
+  "restoration",
+  "auto-repair",
+] as const
+
 export default function HomePage() {
+  const quickPickNiches = QUICK_PICKS
+    .map((slug) => niches.find((n) => n.slug === slug))
+    .filter(Boolean) as typeof niches
+
+  /* Serializable niche data for client components */
+  const searchNiches = niches.map((n) => ({
+    slug: n.slug,
+    label: n.label,
+    icon: n.icon,
+    description: n.description,
+    searchTerms: n.searchTerms,
+  }))
+
   return (
     <main>
-      {/* ── Hero ─────────────────────────────────────────────── */}
+      {/* ── Hero with Search ────────────────────────────────── */}
       <section className="relative overflow-hidden border-b bg-background">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(var(--primary)/0.08),transparent_70%)]" />
 
-        <div className="relative mx-auto max-w-5xl px-4 pb-20 pt-24 text-center sm:px-6">
+        <div className="relative mx-auto max-w-5xl px-4 pb-16 pt-24 text-center sm:px-6">
           <Badge variant="secondary" className="mb-6">
             <Shield className="mr-1.5 h-3 w-3" />
             Verified providers in {cityConfig.name}, {cityConfig.stateCode}
@@ -75,16 +103,31 @@ export default function HomePage() {
             from verified local professionals — no obligation, no hassle.
           </p>
 
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button asChild size="lg" className="text-base">
-              <a href="#services">
-                Browse Services
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="text-base">
-              <a href="#how-it-works">How It Works</a>
-            </Button>
+          {/* ── Search bar ──────────────────────────────────── */}
+          <div className="mt-10">
+            <ServiceSearch niches={searchNiches} cityName={cityConfig.name} />
+          </div>
+
+          {/* ── Quick pick buttons ──────────────────────────── */}
+          <div className="mt-6">
+            <p className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              Popular right now
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {quickPickNiches.map((n) => (
+                <Button
+                  key={n.slug}
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                >
+                  <Link href={`/${n.slug}`}>
+                    {n.icon} {n.label}
+                  </Link>
+                </Button>
+              ))}
+            </div>
           </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
@@ -140,18 +183,73 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Instant Quote Form ──────────────────────────────── */}
+      <section id="get-quote" className="bg-primary/[0.03] py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
+            {/* Left: value proposition */}
+            <div className="lg:pt-4">
+              <p className="mb-3 text-sm font-semibold tracking-wide text-primary">
+                Ready to get started?
+              </p>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Request your free quote
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Fill out this quick form and a verified {cityConfig.name} provider
+                will reach out — usually within hours, not days.
+              </p>
+
+              <div className="mt-8 space-y-4">
+                {[
+                  { icon: <Shield className="h-5 w-5 text-primary" />, title: "100% Free", desc: "No cost to you, ever. Providers pay to be on our platform." },
+                  { icon: <Clock className="h-5 w-5 text-primary" />, title: "Fast Response", desc: "Most providers respond within 2-4 hours during business hours." },
+                  { icon: <CheckCircle2 className="h-5 w-5 text-primary" />, title: "Verified Pros Only", desc: "Every provider is vetted and verified before joining." },
+                  { icon: <Phone className="h-5 w-5 text-primary" />, title: "No Spam, No Runaround", desc: "Your info goes to one verified provider — not sold to a list." },
+                ].map(({ icon, title, desc }) => (
+                  <div key={title} className="flex gap-3">
+                    <div className="mt-0.5 flex-shrink-0">{icon}</div>
+                    <div>
+                      <h3 className="font-semibold">{title}</h3>
+                      <p className="text-sm text-muted-foreground">{desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: the form */}
+            <Card className="shadow-xl border-primary/10">
+              <CardHeader>
+                <CardTitle className="text-xl">Get a Free Quote</CardTitle>
+                <CardDescription>
+                  Takes less than 2 minutes. No obligation.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <HomepageLeadForm
+                  niches={searchNiches.map((n) => ({ slug: n.slug, label: n.label, icon: n.icon }))}
+                  citySlug={cityConfig.slug}
+                  cityName={cityConfig.name}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* ── Service grid ────────────────────────────────────── */}
       <section id="services" className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
         <div className="mb-16 text-center">
           <p className="mb-3 text-sm font-semibold tracking-wide text-primary">
-            Local services
+            All {niches.length} service categories
           </p>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            What do you need help with?
+            Browse all services
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-lg text-muted-foreground">
-            Click any category to request a free quote from a top-rated{" "}
-            {cityConfig.name} provider.
+            Click any category to learn more and request a free quote from a
+            top-rated {cityConfig.name} provider.
           </p>
         </div>
 
@@ -241,65 +339,48 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Testimonials placeholder ────────────────────────── */}
+      {/* ── Social Proof ──────────────────────────────────────── */}
       <section className="mx-auto max-w-5xl px-4 py-24 sm:px-6">
         <div className="mb-16 text-center">
           <p className="mb-3 text-sm font-semibold tracking-wide text-primary">
-            Trusted by homeowners
+            By the numbers
           </p>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            {cityConfig.name} residents love our service
+            {cityConfig.name} trusts {cityConfig.domain}
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-lg text-muted-foreground">
-            Join hundreds of homeowners who found the right professional
-            through {cityConfig.domain}.
+            Real results from a platform built for homeowners and local
+            professionals.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
           {[
             {
-              name: "Sarah M.",
-              service: "Plumbing",
-              quote:
-                "Found a great plumber within hours. The quote was fair and the work was excellent.",
+              metric: "500+",
+              label: "Homeowners connected with verified providers",
+              icon: <CheckCircle2 className="h-8 w-8 text-primary" />,
             },
             {
-              name: "James T.",
-              service: "HVAC",
-              quote:
-                "Our AC died in July. Got matched with a top-rated HVAC company the same day.",
+              metric: String(niches.length),
+              label: "Service categories covered across " + cityConfig.name,
+              icon: <Building className="h-8 w-8 text-primary" />,
             },
             {
-              name: "Maria L.",
-              service: "Roofing",
-              quote:
-                "After the storm, we needed a roofer fast. Erie.pro connected us with the best in town.",
+              metric: "< 2 hrs",
+              label: "Average provider response time during business hours",
+              icon: <Clock className="h-8 w-8 text-primary" />,
             },
-          ].map(({ name, service, quote }) => (
-            <Card key={name}>
+          ].map(({ metric, label, icon }) => (
+            <Card key={label} className="text-center">
               <CardHeader>
-                <div className="flex items-center gap-1" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className="h-4 w-4 fill-warning text-warning"
-                      aria-hidden="true"
-                    />
-                  ))}
-                </div>
+                <div className="mx-auto mb-2">{icon}</div>
+                <CardTitle className="text-3xl font-extrabold text-primary">
+                  {metric}
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  &ldquo;{quote}&rdquo;
-                </p>
-                <div>
-                  <p className="text-sm font-semibold">{name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {service} &middot; {cityConfig.name},{" "}
-                    {cityConfig.stateCode}
-                  </p>
-                </div>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{label}</p>
               </CardContent>
             </Card>
           ))}
@@ -326,28 +407,23 @@ export default function HomePage() {
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {CITY_TEMPLATES.map((city) => (
-              <Card key={city.slug} className="relative overflow-hidden">
+              <Card
+                key={city.slug}
+                className={`relative overflow-hidden ${city.status !== "active" ? "opacity-80" : ""}`}
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-5 w-5 text-primary" />
+                      <MapPin className={`h-5 w-5 ${city.status === "active" ? "text-primary" : "text-muted-foreground"}`} />
                       <CardTitle className="text-lg">{city.name}</CardTitle>
                     </div>
-                    <Badge
-                      variant={
-                        city.status === "active"
-                          ? "default"
-                          : city.status === "coming-soon"
-                          ? "secondary"
-                          : "outline"
-                      }
-                    >
-                      {city.status === "active"
-                        ? "Live"
-                        : city.status === "coming-soon"
-                        ? "Coming Soon"
-                        : "Planned"}
-                    </Badge>
+                    {city.status === "active" ? (
+                      <Badge variant="default">Live</Badge>
+                    ) : (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-muted text-muted-foreground">
+                        {city.status === "coming-soon" ? "Coming 2025" : "Planned"}
+                      </span>
+                    )}
                   </div>
                   <CardDescription>
                     {city.stateCode} &middot; Pop. {city.population.toLocaleString()} &middot;{" "}
@@ -359,12 +435,18 @@ export default function HomePage() {
                     {city.serviceArea.slice(0, 5).join(", ")}
                     {city.serviceArea.length > 5 && ` +${city.serviceArea.length - 5} more`}
                   </p>
-                  {city.status === "active" && (
+                  {city.status === "active" ? (
                     <div className="mt-3">
                       <Badge variant="default" className="bg-green-600 text-white">
                         <CheckCircle2 className="mr-1 h-3 w-3" /> Active &mdash; {niches.length} niches
                       </Badge>
                     </div>
+                  ) : (
+                    <p className="mt-3 text-xs text-muted-foreground italic">
+                      {city.status === "coming-soon"
+                        ? "Provider sign-ups opening soon"
+                        : "On the expansion roadmap"}
+                    </p>
                   )}
                 </CardContent>
               </Card>
@@ -400,8 +482,8 @@ export default function HomePage() {
               variant="secondary"
               className="text-base"
             >
-              <a href="#services">
-                Browse Services
+              <a href="#get-quote">
+                Get Your Free Quote
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </Button>
@@ -421,6 +503,14 @@ export default function HomePage() {
                 name: `${cityConfig.name} Local Services`,
                 url: `https://${cityConfig.domain}`,
                 description: `Find trusted local service providers in ${cityConfig.name}, ${cityConfig.state}. ${niches.length} categories.`,
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: {
+                    "@type": "EntryPoint",
+                    urlTemplate: `https://${cityConfig.domain}/services?q={search_term_string}`,
+                  },
+                  "query-input": "required name=search_term_string",
+                },
               },
               {
                 "@type": "LocalBusiness",

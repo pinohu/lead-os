@@ -25,9 +25,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
@@ -44,6 +41,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import ContactForm from "@/components/contact-form"
 
 type Props = { params: Promise<{ niche: string; provider: string }> }
 
@@ -226,32 +224,18 @@ function getFAQsForNiche(
   ]
 }
 
-/* ── Placeholder reviews ─────────────────────────────────────── */
+/* ── Placeholder reviews (empty until real reviews arrive) ──── */
 
-function getPlaceholderReviews(providerName: string, nicheLabel: string) {
-  return [
-    {
-      name: "Sarah M.",
-      initials: "SM",
-      rating: 5,
-      date: "2 weeks ago",
-      text: `${providerName} did an outstanding job on our ${nicheLabel.toLowerCase()} project. Professional, punctual, and the quality of work exceeded our expectations. Highly recommend!`,
-    },
-    {
-      name: "James T.",
-      initials: "JT",
-      rating: 5,
-      date: "1 month ago",
-      text: `We've used ${providerName} twice now and they never disappoint. Fair pricing, great communication, and they always clean up after themselves.`,
-    },
-    {
-      name: "Linda K.",
-      initials: "LK",
-      rating: 4,
-      date: "2 months ago",
-      text: `Good experience overall. ${providerName} was responsive and got the work done on schedule. Would use them again for future ${nicheLabel.toLowerCase()} needs.`,
-    },
-  ]
+interface PlaceholderReview {
+  name: string
+  initials: string
+  rating: number
+  date: string
+  text: string
+}
+
+function getPlaceholderReviews(_providerName: string, _nicheLabel: string): PlaceholderReview[] {
+  return []
 }
 
 /* ── Stars component ─────────────────────────────────────────── */
@@ -487,12 +471,19 @@ export default async function ProviderPage({ params }: Props) {
                 <h2 className="text-2xl font-bold tracking-tight">
                   Customer Reviews
                 </h2>
-                <Badge variant="secondary" className="text-xs">
-                  <Star className="mr-1 h-3 w-3 fill-yellow-400 text-yellow-400" />
-                  4.9 avg ({reviews.length} reviews)
-                </Badge>
+                {reviews.length > 0 && (
+                  <Badge variant="secondary" className="text-xs">
+                    <Star className="mr-1 h-3 w-3 fill-yellow-400 text-yellow-400" />
+                    {reviews.length} reviews
+                  </Badge>
+                )}
               </div>
 
+              {reviews.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4">
+                  No reviews yet. Be the first to work with {providerName} and share your experience.
+                </p>
+              ) : (
               <div className="space-y-4">
                 {reviews.map((review) => (
                   <Card key={review.name}>
@@ -522,6 +513,7 @@ export default async function ProviderPage({ params }: Props) {
                   </Card>
                 ))}
               </div>
+              )}
             </section>
 
             <Separator />
@@ -581,64 +573,13 @@ export default async function ProviderPage({ params }: Props) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form action="/api/contact" method="POST" className="space-y-4">
-                  <input type="hidden" name="niche" value={niche.slug} />
-                  <input type="hidden" name="provider" value={providerSlug} />
-                  <input type="hidden" name="city" value={cityConfig.slug} />
-
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      name="name"
-                      required
-                      placeholder="John Smith"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      name="phone"
-                      required
-                      placeholder="(814) 555-0199"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      name="email"
-                      required
-                      placeholder="john@example.com"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="message">Describe Your Project</Label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      rows={4}
-                      placeholder={`Tell ${providerName} about your ${niche.label.toLowerCase()} needs...`}
-                    />
-                  </div>
-
-                  <Button type="submit" className="w-full" size="lg">
-                    Send Request to {providerName}
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-
-                  <p className="text-center text-xs text-muted-foreground">
-                    Free quote, no obligation. Your info goes only to{" "}
-                    {providerName}.
-                  </p>
-                </form>
+                <ContactForm
+                  nicheSlug={niche.slug}
+                  providerSlug={providerSlug}
+                  citySlug={cityConfig.slug}
+                  submitLabel={`Send Request to ${providerName}`}
+                  messagePlaceholder={`Tell ${providerName} about your ${niche.label.toLowerCase()} needs...`}
+                />
               </CardContent>
             </Card>
 

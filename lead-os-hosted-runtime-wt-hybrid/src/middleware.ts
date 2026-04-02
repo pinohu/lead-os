@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHmac } from "crypto";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
 import { startTrace } from "@/lib/request-tracer";
@@ -24,7 +25,8 @@ const authRateLimiter = createRateLimiter({
 
 const CSP_DIRECTIVES = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  // TODO: Replace 'unsafe-inline' with nonce-based CSP once Next.js nonce infrastructure is configured
+  "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "connect-src 'self' https:",
@@ -86,19 +88,14 @@ interface IdentityHeaders {
 
 // Middleware signature — proves the request went through middleware.
 // Routes should check for this header to prevent header spoofing.
-const MIDDLEWARE_SIGNATURE_KEY = process.env.LEAD_OS_AUTH_SECRET ?? "leados-internal-middleware-v1";
+// LEAD_OS_AUTH_SECRET must be set in all environments; no hardcoded fallback.
+const MIDDLEWARE_SIGNATURE_KEY = process.env.LEAD_OS_AUTH_SECRET ?? "";
 
 function computeMiddlewareSignature(userId: string, tenantId: string, requestId: string): string {
-  // Simple HMAC-like signature using string concatenation + hashing
-  // In production, LEAD_OS_AUTH_SECRET should be a strong random value
-  const payload = `${userId}:${tenantId}:${requestId}:${MIDDLEWARE_SIGNATURE_KEY}`;
-  let hash = 0;
-  for (let i = 0; i < payload.length; i++) {
-    const chr = payload.charCodeAt(i);
-    hash = ((hash << 5) - hash) + chr;
-    hash |= 0;
-  }
-  return `mw1-${Math.abs(hash).toString(36)}`;
+  const payload = `${userId}:${tenantId}:${requestId}`;
+  return createHmac("sha256", MIDDLEWARE_SIGNATURE_KEY)
+    .update(payload)
+    .digest("hex");
 }
 
 function forwardWithIdentity(
@@ -160,6 +157,21 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   if (!pathname.startsWith("/api/")) {
     const response = NextResponse.next();
     return applySecurityHeaders(response, requestId);
+  }
+
+  // Fail-safe: LEAD_OS_AUTH_SECRET must be configured for API routes
+  if (!MIDDLEWARE_SIGNATURE_KEY) {
+    return NextResponse.json(
+      {
+        data: null,
+        error: {
+          code: "SERVER_MISCONFIGURED",
+          message: "Server misconfigured: LEAD_OS_AUTH_SECRET is not set",
+        },
+        meta: { requestId },
+      },
+      { status: 500, headers: { "x-request-id": requestId } },
+    );
   }
 
   // Handle CORS preflight requests globally

@@ -1,0 +1,429 @@
+// ── Erie Pro — Prisma Schema ────────────────────────────────────────
+// Replaces all 7 in-memory JavaScript Map stores with persistent tables.
+// Run: npx prisma migrate dev --name init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Enums ──────────────────────────────────────────────────────────
+
+enum ProviderTier {
+  primary
+  backup
+  overflow
+}
+
+enum SubscriptionStatus {
+  active
+  trial
+  past_due
+  expired
+  cancelled
+}
+
+enum LeadRouteType {
+  primary
+  failover
+  overflow
+  unmatched
+}
+
+enum LeadOutcomeType {
+  responded
+  converted
+  no_response
+  declined
+  cancelled
+}
+
+enum LeadTemperature {
+  cold
+  warm
+  hot
+  burning
+}
+
+enum NotificationType {
+  new_lead
+  sla_warning
+  lead_expired
+  review_received
+  payment_failed
+  subscription_activated
+  subscription_cancelled
+}
+
+enum NotificationChannel {
+  email
+  sms
+  both
+}
+
+enum DeliveryStatus {
+  pending
+  sent
+  delivered
+  failed
+}
+
+enum CallOutcome {
+  connected
+  voicemail
+  missed
+  busy
+}
+
+enum CheckoutSessionType {
+  territory_claim
+  lead_purchase
+}
+
+enum CheckoutSessionStatus {
+  pending
+  completed
+  expired
+  cancelled
+}
+
+enum DisputeStatus {
+  pending
+  approved
+  denied
+}
+
+// ── Provider ───────────────────────────────────────────────────────
+
+model Provider {
+  id                  String             @id @default(cuid())
+  slug                String             @unique
+  businessName        String
+  niche               String
+  city                String             @default("erie")
+  phone               String
+  email               String
+  website             String?
+  addressStreet       String?
+  addressCity         String?
+  addressState        String?
+  addressZip          String?
+  serviceAreas        String[]           @default([])
+  description         String             @default("")
+  yearEstablished     Int?
+  employeeCount       String?
+  license             String?
+  insurance           Boolean            @default(false)
+
+  // Subscription & billing
+  tier                ProviderTier       @default(primary)
+  subscriptionStatus  SubscriptionStatus @default(trial)
+  monthlyFee          Float              @default(400)
+  billingInterval     String             @default("monthly") // "monthly" | "annual"
+  stripeCustomerId    String?
+  stripeSubscriptionId String?
+  emailVerified       Boolean            @default(false)
+  passwordHash        String?
+
+  // Performance metrics (denormalized for fast reads)
+  totalLeads          Int                @default(0)
+  convertedLeads      Int                @default(0)
+  avgResponseTime     Float              @default(0) // seconds
+  avgRating           Float              @default(0) // 0-5
+  reviewCount         Int                @default(0)
+
+  // Timestamps
+  claimedAt           DateTime           @default(now())
+  lastLeadAt          DateTime?
+  churnedAt           DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  // Relations
+  territories         Territory[]
+  leads               Lead[]             @relation("RoutedLeads")
+  leadOutcomes        LeadOutcome[]
+  notifications       Notification[]
+  trackedCalls        TrackedCall[]
+  disputes            LeadDispute[]
+  auditLogs           AuditLog[]
+  checkoutSessions    CheckoutSession[]
+
+  @@index([niche, city])
+  @@index([niche, subscriptionStatus])
+  @@index([email])
+  @@index([stripeCustomerId])
+  @@map("providers")
+}
+
+// ── Lead ───────────────────────────────────────────────────────────
+
+model Lead {
+  id                String          @id @default(cuid())
+  niche             String
+  city              String          @default("erie")
+  firstName         String?
+  lastName          String?
+  email             String
+  phone             String?
+  message           String?
+  routeType         LeadRouteType   @default(unmatched)
+  temperature       LeadTemperature @default(warm)
+  slaDeadline       DateTime?
+
+  // TCPA compliance fields
+  tcpaConsent       Boolean         @default(false)
+  tcpaConsentText   String?
+  tcpaConsentAt     DateTime?
+  tcpaIpAddress     String?
+
+  // Routing
+  routedToId        String?
+  routedTo          Provider?       @relation("RoutedLeads", fields: [routedToId], references: [id], onDelete: SetNull)
+
+  // Timestamps
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relations
+  outcomes          LeadOutcome[]
+  disputes          LeadDispute[]
+
+  @@index([niche, city])
+  @@index([routedToId])
+  @@index([routeType, niche])
+  @@map("leads")
+}
+
+// ── Lead Outcome ───────────────────────────────────────────────────
+
+model LeadOutcome {
+  id                  String         @id @default(cuid())
+  leadId              String
+  lead                Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  providerId          String
+  provider            Provider       @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  outcome             LeadOutcomeType
+  responseTimeSeconds Float?
+  satisfactionRating  Float?         // 0-5
+  createdAt           DateTime       @default(now())
+
+  @@index([leadId])
+  @@index([providerId])
+  @@map("lead_outcomes")
+}
+
+// ── Territory ──────────────────────────────────────────────────────
+
+model Territory {
+  id            String       @id @default(cuid())
+  niche         String
+  city          String       @default("erie")
+  providerId    String
+  provider      Provider     @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  tier          ProviderTier @default(primary)
+  activatedAt   DateTime     @default(now())
+  deactivatedAt DateTime?
+  isPaused      Boolean      @default(false)
+  pausedAt      DateTime?
+
+  @@unique([niche, city]) // Enforces exclusive territory at DB level
+  @@index([providerId])
+  @@map("territories")
+}
+
+// ── Notification ───────────────────────────────────────────────────
+
+model Notification {
+  id             String              @id @default(cuid())
+  type           NotificationType
+  providerId     String
+  provider       Provider            @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  channel        NotificationChannel @default(email)
+  message        String
+  deliveryStatus DeliveryStatus      @default(pending)
+  sentAt         DateTime            @default(now())
+  createdAt      DateTime            @default(now())
+
+  @@index([providerId])
+  @@index([type])
+  @@map("notifications")
+}
+
+// ── Tracked Call ───────────────────────────────────────────────────
+
+model TrackedCall {
+  id             String      @id @default(cuid())
+  niche          String
+  city           String      @default("erie")
+  callerPhone    String
+  trackingNumber String
+  routedTo       String      // provider phone number
+  providerId     String?
+  provider       Provider?   @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  duration       Int         @default(0) // seconds
+  recordingUrl   String?
+  outcome        CallOutcome @default(missed)
+  createdAt      DateTime    @default(now())
+
+  @@index([niche, city])
+  @@index([providerId])
+  @@map("tracked_calls")
+}
+
+// ── Checkout Session ───────────────────────────────────────────────
+
+model CheckoutSession {
+  id                String                @id @default(cuid())
+  sessionType       CheckoutSessionType
+  stripeSessionId   String?               @unique
+  niche             String
+  city              String                @default("erie")
+  providerEmail     String
+  providerName      String?
+  providerId        String?
+  provider          Provider?             @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  monthlyFee        Float?
+  status            CheckoutSessionStatus @default(pending)
+
+  // For lead purchases
+  leadId            String?
+  temperature       LeadTemperature?
+  price             Float?
+
+  createdAt         DateTime              @default(now())
+  expiresAt         DateTime?
+  completedAt       DateTime?
+
+  @@index([stripeSessionId])
+  @@index([providerEmail])
+  @@map("checkout_sessions")
+}
+
+// ── Lead Dispute ───────────────────────────────────────────────────
+
+model LeadDispute {
+  id           String        @id @default(cuid())
+  leadId       String
+  lead         Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  providerId   String
+  provider     Provider      @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  reason       String        // "wrong_number" | "spam" | "out_of_area" | "duplicate" | "other"
+  description  String?
+  status       DisputeStatus @default(pending)
+  creditAmount Float?
+  resolvedAt   DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([leadId])
+  @@index([providerId])
+  @@map("lead_disputes")
+}
+
+// ── Audit Log ──────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String   // "territory.claimed", "provider.login", "subscription.changed", etc.
+  entityType String   // "provider", "lead", "territory", etc.
+  entityId   String?
+  providerId String?
+  provider   Provider? @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  metadata   Json?    // Arbitrary context data
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([action])
+  @@index([providerId])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+// ── Auth (NextAuth v5) ─────────────────────────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("provider") // "provider" | "admin"
+  providerId    String?   // Links user to their provider profile
+
+  accounts Account[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ── Rate Limit ─────────────────────────────────────────────────────
+// Sliding-window rate limiting using Postgres instead of external Redis.
+
+model RateLimitEntry {
+  id        String   @id @default(cuid())
+  key       String   // e.g., "lead:192.168.1.1"
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+  @@map("rate_limit_entries")
+}
+
+// ── Contact Message ────────────────────────────────────────────────
+// Phase 1.5.11: Contact form must actually store messages
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String
+  phone     String?
+  message   String?
+  niche     String?
+  status    String   @default("unread") // "unread" | "read" | "replied"
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}

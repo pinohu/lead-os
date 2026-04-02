@@ -31,10 +31,10 @@ type SortField = "score" | "capturedAt";
 type SortDir = "asc" | "desc";
 
 const TEMP_BADGE: Record<Temperature, { label: string; bg: string; color: string }> = {
-  cold: { label: "Cold", bg: "rgba(74, 144, 217, 0.14)", color: "#2563a8" },
-  warm: { label: "Warm", bg: "rgba(232, 168, 56, 0.16)", color: "#a05a00" },
-  hot: { label: "Hot", bg: "rgba(211, 84, 0, 0.14)", color: "#c04400" },
-  burning: { label: "Burning", bg: "rgba(192, 57, 43, 0.14)", color: "#9b2335" },
+  cold: { label: "Cold", bg: "var(--badge-cold-bg)", color: "var(--badge-cold-text)" },
+  warm: { label: "Warm", bg: "var(--badge-warm-bg)", color: "var(--badge-warm-text)" },
+  hot: { label: "Hot", bg: "var(--badge-hot-bg)", color: "var(--badge-hot-text)" },
+  burning: { label: "Burning", bg: "var(--badge-burning-bg)", color: "var(--badge-burning-text)" },
 };
 
 const PAGE_SIZE = 25;

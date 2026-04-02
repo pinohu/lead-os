@@ -6,45 +6,45 @@ import {
 } from "@/lib/stripe-integration";
 import { getNicheBySlug } from "@/lib/niches";
 import { cityConfig } from "@/lib/city-config";
+import { ClaimRequestSchema, formatZodErrors, MAX_BODY_SIZE } from "@/lib/validation";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { prisma } from "@/lib/db";
+import { logger } from "@/lib/logger";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { niche, providerName, providerEmail, phone, description, license } =
-      body as {
-        niche?: string;
-        providerName?: string;
-        providerEmail?: string;
-        phone?: string;
-        description?: string;
-        license?: string;
-      };
+    // ── Rate limit: 3 claims per hour per IP ─────────────────────
+    const rateLimited = await checkRateLimit(req, "claim");
+    if (rateLimited) return rateLimited;
 
-    // ── Validation ────────────────────────────────────────────────
-    if (!niche || !providerName || !providerEmail || !phone) {
+    // ── Body size check ──────────────────────────────────────────
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Missing required fields: niche, providerName, providerEmail, phone",
-        },
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
+    }
+
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return NextResponse.json(
+        { success: false, error: "Invalid JSON body" },
         { status: 400 }
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(providerEmail)) {
+    // ── Zod validation (sanitizes + normalizes) ──────────────────
+    const parsed = ClaimRequestSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: "Invalid email format" },
+        { success: false, error: formatZodErrors(parsed.error) },
         { status: 400 }
       );
     }
 
-    if (phone.replace(/\D/g, "").length < 10) {
-      return NextResponse.json(
-        { success: false, error: "Phone number must be at least 10 digits" },
-        { status: 400 }
-      );
-    }
+    const { niche, tier, providerName, providerEmail, phone, password, description, license } = parsed.data;
 
     const nicheData = getNicheBySlug(niche);
     if (!nicheData) {
@@ -54,8 +54,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // ── Check territory is not already claimed ───────────────────
+    const existingTerritory = await prisma.territory.findFirst({
+      where: { niche, city: cityConfig.slug, deactivatedAt: null },
+    });
+    if (existingTerritory) {
+      return NextResponse.json(
+        { success: false, error: "This territory is already claimed. Select a different category or contact us about waitlist options." },
+        { status: 409 }
+      );
+    }
+
+    // ── Hash password for dashboard login ────────────────────────
+    const passwordHash = await bcrypt.hash(password, 12);
+
     // ── Create Provider Profile ───────────────────────────────────
-    const provider = createProvider({
+    const provider = await createProvider({
       slug: "",
       businessName: providerName,
       niche,
@@ -69,7 +83,7 @@ export async function POST(req: NextRequest) {
       employeeCount: "1-5",
       license: license ?? undefined,
       insurance: true,
-      tier: "primary",
+      tier: tier === "elite" ? "primary" : tier === "premium" ? "primary" : "primary",
       subscriptionStatus: "trial",
       monthlyFee: getMonthlyFee(niche),
       totalLeads: 0,
@@ -80,8 +94,14 @@ export async function POST(req: NextRequest) {
       lastLeadAt: undefined,
     });
 
+    // ── Store password hash on the provider profile ────────────────
+    await prisma.provider.update({
+      where: { id: provider.id },
+      data: { passwordHash },
+    });
+
     // ── Create Stripe Checkout Session ────────────────────────────
-    const checkout = createTerritoryCheckoutSession(
+    const checkout = await createTerritoryCheckoutSession(
       niche,
       cityConfig.slug,
       providerEmail,
@@ -97,7 +117,7 @@ export async function POST(req: NextRequest) {
       monthlyFee: checkout.monthlyFee,
     });
   } catch (err) {
-    console.error("[/api/claim] Error:", err);
+    logger.error("/api/claim", "Error:", err);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 }

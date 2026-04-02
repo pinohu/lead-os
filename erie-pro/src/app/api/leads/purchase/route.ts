@@ -1,79 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getNicheBySlug } from "@/lib/niches";
 import { getUnmatchedLeadsForNiche } from "@/lib/lead-routing";
 import {
   createLeadPurchaseCheckout,
   LEAD_PRICES,
-  type LeadTemperature,
 } from "@/lib/stripe-integration";
+import { getNicheBySlug } from "@/lib/niches";
+import { LeadPurchaseRequestSchema, formatZodErrors, MAX_BODY_SIZE } from "@/lib/validation";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 /**
  * POST /api/leads/purchase
  *
  * Tier 1 monetization: sell a single banked lead to a buyer.
  * No subscription required — proof of value before commitment.
- *
- * Body:
- * {
- *   niche: string
- *   buyerEmail: string
- *   temperature?: LeadTemperature   // defaults to "warm"
- *   leadId?: string                 // specific lead, or we pick the newest
- * }
- *
- * Response:
- * {
- *   success: true
- *   checkoutUrl: string
- *   sessionId: string
- *   price: number
- *   leadId: string
- * }
  */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { niche, buyerEmail, temperature = "warm", leadId: requestedLeadId } =
-      body as {
-        niche?: string;
-        buyerEmail?: string;
-        temperature?: LeadTemperature;
-        leadId?: string;
-      };
+    // ── Rate limit: 10 purchases per minute per IP ───────────────
+    const rateLimited = await checkRateLimit(req, "leadPurchase");
+    if (rateLimited) return rateLimited;
 
-    // ── Validation ────────────────────────────────────────────────
-    if (!niche || !buyerEmail) {
+    // ── Body size check ──────────────────────────────────────────
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields: niche, buyerEmail" },
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
+    }
+
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return NextResponse.json(
+        { success: false, error: "Invalid JSON body" },
         { status: 400 }
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(buyerEmail)) {
+    // ── Zod validation (sanitizes + normalizes email) ────────────
+    const parsed = LeadPurchaseRequestSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: "Invalid email format" },
+        { success: false, error: formatZodErrors(parsed.error) },
         { status: 400 }
       );
     }
 
-    if (!getNicheBySlug(niche)) {
-      return NextResponse.json(
-        { success: false, error: `Unknown niche: ${niche}` },
-        { status: 400 }
-      );
-    }
-
-    const validTemperatures: LeadTemperature[] = ["cold", "warm", "hot", "burning"];
-    if (!validTemperatures.includes(temperature)) {
-      return NextResponse.json(
-        { success: false, error: "temperature must be cold, warm, hot, or burning" },
-        { status: 400 }
-      );
-    }
+    const { niche, buyerEmail, temperature, leadId: requestedLeadId } = parsed.data;
 
     // ── Find a banked lead to sell ────────────────────────────────
-    const banked = getUnmatchedLeadsForNiche(niche);
+    const banked = await getUnmatchedLeadsForNiche(niche);
     if (banked.length === 0) {
       return NextResponse.json(
         {
@@ -90,7 +67,7 @@ export async function POST(req: NextRequest) {
       : banked[0];
 
     // ── Create checkout ───────────────────────────────────────────
-    const checkout = createLeadPurchaseCheckout(
+    const checkout = await createLeadPurchaseCheckout(
       lead.leadId,
       niche,
       temperature,
@@ -111,7 +88,7 @@ export async function POST(req: NextRequest) {
           : null,
     });
   } catch (err) {
-    console.error("[/api/leads/purchase] Error:", err);
+    logger.error("/api/leads/purchase", "Error:", err);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
       { status: 500 }
@@ -123,7 +100,6 @@ export async function POST(req: NextRequest) {
  * GET /api/leads/purchase?niche=roofing
  *
  * Preview available lead counts and pricing without committing.
- * Used by the directory page to render the pay-per-lead CTA.
  */
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -136,7 +112,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const banked = getUnmatchedLeadsForNiche(niche);
+  const banked = await getUnmatchedLeadsForNiche(niche);
 
   return NextResponse.json({
     niche,

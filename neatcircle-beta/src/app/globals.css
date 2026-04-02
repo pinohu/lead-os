@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-navy: #1B2A4A;
-  --color-navy-light: #2A3F6A;
-  --color-navy-dark: #0F1B33;
-  --color-cyan: #00B4D8;
-  --color-cyan-light: #48CAE4;
-  --color-cyan-dark: #0096B7;
+  --color-navy: var(--nc-navy);
+  --color-navy-light: var(--nc-navy-light);
+  --color-navy-dark: var(--nc-navy-dark);
+  --color-cyan: var(--nc-cyan);
+  --color-cyan-light: var(--nc-cyan-light);
+  --color-cyan-dark: var(--nc-cyan-dark);
   --color-slate-50: #f8fafc;
   --color-slate-100: #f1f5f9;
   --color-slate-200: #e2e8f0;
@@ -17,8 +17,39 @@
   --color-slate-700: #334155;
   --color-slate-800: #1e293b;
   --color-slate-900: #0f172a;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Fira Code", monospace;
+}
+
+/* ── NeatCircle design tokens ─────────────────────────────────── */
+
+:root {
+  --nc-navy: #1B2A4A;
+  --nc-navy-light: #2A3F6A;
+  --nc-navy-dark: #0F1B33;
+  --nc-cyan: #00B4D8;
+  --nc-cyan-light: #48CAE4;
+  --nc-cyan-dark: #0096B7;
+  --nc-bg: #ffffff;
+  --nc-bg-subtle: #f8fafc;
+  --nc-text: #1e293b;
+  --nc-text-soft: #64748b;
+  --nc-border: #e2e8f0;
+  --nc-surface: #ffffff;
+  --nc-success: #10b981;
+  --nc-warning: #f59e0b;
+  --nc-danger: #ef4444;
+}
+
+/* ── Brand override selector ──────────────────────────────────── */
+
+[data-brand="neatcircle"] {
+  --primary: 193 100% 42%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 193 100% 42%;
+  --nc-cyan: #00B4D8;
+  --nc-cyan-light: #48CAE4;
+  --nc-cyan-dark: #0096B7;
 }
 
 html {
@@ -26,7 +57,55 @@ html {
 }
 
 body {
-  background: #ffffff;
-  color: #1e293b;
-  font-family: var(--font-sans), system-ui, sans-serif;
+  background: var(--nc-bg);
+  color: var(--nc-text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* ── Dark mode ────────────────────────────────────────────────── */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --nc-navy: #a8c4f0;
+    --nc-navy-light: #c5d9f7;
+    --nc-navy-dark: #1B2A4A;
+    --nc-cyan: #48CAE4;
+    --nc-cyan-light: #90E0EF;
+    --nc-cyan-dark: #00B4D8;
+    --nc-bg: #0f172a;
+    --nc-bg-subtle: #1e293b;
+    --nc-text: #f1f5f9;
+    --nc-text-soft: #94a3b8;
+    --nc-border: #334155;
+    --nc-surface: #1e293b;
+    --nc-success: #34d399;
+    --nc-warning: #fbbf24;
+    --nc-danger: #f87171;
+  }
+
+  [data-brand="neatcircle"] {
+    --primary: 193 80% 60%;
+    --primary-foreground: 0 0% 0%;
+  }
+
+  body {
+    background: var(--nc-bg);
+    color: var(--nc-text);
+  }
+}
+
+/* ── Reduced motion ───────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

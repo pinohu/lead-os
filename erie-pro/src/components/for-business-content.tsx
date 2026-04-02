@@ -10,8 +10,8 @@ import {
   TrendingUp,
   Lock,
   Award,
-  Star,
   Crown,
+  Star,
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { niches } from "@/lib/niches"
@@ -141,58 +141,44 @@ export function ForBusinessContent() {
         </div>
       </section>
 
-      {/* ── Provider Testimonials ───────────────────────────── */}
+      {/* ── Why Providers Choose Us ─────────────────────────── */}
       <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
         <div className="mb-12 text-center">
           <p className="mb-3 text-sm font-semibold tracking-wide text-primary">
-            From Erie business owners
+            The exclusive advantage
           </p>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            What providers are saying
+            Built for providers who want to grow
           </h2>
+          <p className="mt-3 text-lg text-muted-foreground">
+            No shared leads. No bidding wars. Just your territory, your leads.
+          </p>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {[
             {
-              quote: "I claimed the plumbing territory in month one. Now I get 8 to 12 qualified leads a week with zero ad spend. Best ROI I've ever seen for my business.",
-              author: "Mike R.",
-              title: "Owner, MR Plumbing & Drain",
-              niche: "Plumbing",
-              tier: "Premium",
+              icon: <Lock className="h-8 w-8 text-primary" />,
+              title: "Exclusive territory model",
+              desc: "One provider per niche per city. Your competitors cannot buy their way onto your listing.",
             },
             {
-              quote: "The exclusive model is what sold me. My competitors can't buy their way onto my listing. Every call that comes in is mine. Revenue is up 34% this year.",
-              author: "Sarah T.",
-              title: "Owner, T&J HVAC Services",
-              niche: "HVAC",
-              tier: "Elite",
+              icon: <Zap className="h-8 w-8 text-primary" />,
+              title: "Leads delivered in real-time",
+              desc: "When a homeowner submits a request, you are notified instantly via email and SMS. No delays.",
             },
             {
-              quote: "Setup took 15 minutes. Within the first week I had three booked estimates from homeowners I'd never have reached otherwise. Absolutely worth it.",
-              author: "Dave K.",
-              title: "Owner, Keystone Electrical",
-              niche: "Electrical",
-              tier: "Standard",
+              icon: <Shield className="h-8 w-8 text-primary" />,
+              title: "Cancel anytime, no contracts",
+              desc: "Month-to-month billing with no penalties, no lock-in, and no hidden fees. Full control is yours.",
             },
-          ].map(({ quote, author, title, niche, tier }) => (
-            <Card key={author} className="flex flex-col">
-              <CardHeader className="pb-2">
-                <div className="mb-3 flex items-center gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  &ldquo;{quote}&rdquo;
-                </p>
+          ].map(({ icon, title, desc }) => (
+            <Card key={title} className="flex flex-col text-center">
+              <CardHeader>
+                <div className="mx-auto mb-2">{icon}</div>
+                <CardTitle className="text-lg">{title}</CardTitle>
               </CardHeader>
-              <CardContent className="mt-auto pt-4">
-                <p className="text-sm font-semibold">{author}</p>
-                <p className="text-xs text-muted-foreground">{title}</p>
-                <div className="mt-2 flex gap-2">
-                  <Badge variant="secondary" className="text-xs">{niche}</Badge>
-                  <Badge variant="outline" className="text-xs capitalize">{tier}</Badge>
-                </div>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{desc}</p>
               </CardContent>
             </Card>
           ))}

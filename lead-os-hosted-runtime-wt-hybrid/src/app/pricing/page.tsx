@@ -196,35 +196,30 @@ export default function PricingPage() {
       </div>
 
       <section className="text-center mb-16">
-        <h2 className="text-2xl font-bold mb-8">Trusted by Growing Businesses</h2>
+        <h2 className="text-2xl font-bold mb-8">Why Teams Choose Lead OS</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
           {[
             {
-              quote: "We went from manually tracking leads in spreadsheets to a fully automated pipeline in under a week. Our conversion rate is up 40%.",
-              author: "Sarah M.",
-              role: "Owner, SM Digital Marketing",
+              metric: "8+",
+              title: "SaaS tools replaced",
+              desc: "One platform for funnels, scoring, nurturing, CRM, analytics, and more.",
             },
             {
-              quote: "The niche auto-configuration is brilliant. We onboard new verticals in hours instead of weeks. Our team manages 12 niches from one dashboard.",
-              author: "James R.",
-              role: "Director, LeadFlow Agency",
+              metric: "4,100+",
+              title: "Automated tests",
+              desc: "Reliability you can count on. Every release passes a comprehensive test suite.",
             },
             {
-              quote: "The AI scoring alone is worth the price. We stopped wasting time on cold leads and focus only on prospects ready to buy.",
-              author: "Maria L.",
-              role: "Founder, BuildRight Consulting",
+              metric: "14 days",
+              title: "Free trial, no credit card",
+              desc: "Full access to every feature. Start in dry-run mode with zero risk.",
             },
-          ].map((testimonial) => (
-            <Card key={testimonial.author} className="text-left">
+          ].map((item) => (
+            <Card key={item.title} className="text-center">
               <CardContent className="pt-6">
-                <blockquote className="text-sm text-muted-foreground italic leading-relaxed mb-4">
-                  &ldquo;{testimonial.quote}&rdquo;
-                </blockquote>
-                <div className="text-sm">
-                  <strong>{testimonial.author}</strong>
-                  <br />
-                  <span className="text-muted-foreground">{testimonial.role}</span>
-                </div>
+                <div className="text-3xl font-extrabold text-primary mb-2">{item.metric}</div>
+                <p className="text-sm font-semibold mb-1">{item.title}</p>
+                <p className="text-xs text-muted-foreground">{item.desc}</p>
               </CardContent>
             </Card>
           ))}
@@ -232,10 +227,10 @@ export default function PricingPage() {
 
         <div className="flex justify-center gap-8 flex-wrap">
           {[
-            { metric: "50K+", label: "Leads captured monthly" },
             { metric: "137+", label: "Integrations available" },
-            { metric: "16", label: "Industry niches" },
+            { metric: "78", label: "Funnel node types" },
             { metric: "99.9%", label: "Uptime SLA" },
+            { metric: "0", label: "Contracts required" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-2xl font-extrabold text-primary">{stat.metric}</div>

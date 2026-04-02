@@ -4,71 +4,81 @@
 
 @layer base {
   :root {
+    /* ── shadcn HSL tokens (Tailwind uses hsl(var(--xxx))) ──── */
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 243 75% 59%;
+    --primary: 243 75% 52%;
     --primary-foreground: 0 0% 100%;
     --secondary: 240 5% 96%;
     --secondary-foreground: 240 6% 10%;
     --muted: 240 5% 96%;
     --muted-foreground: 240 4% 35%;
+    --accent: 240 5% 96%;
     --accent-foreground: 240 6% 10%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 6% 90%;
     --input: 240 6% 90%;
-    --ring: 243 75% 59%;
+    --ring: 243 75% 52%;
     --radius: 0.5rem;
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 0%;
+
+    /* ── Kernel semantic tokens (direct color values) ─────── */
+    --bg: #ffffff;
+    --bg-deep: #0a0a0f;
+    --bg-subtle: #f8f9fc;
+    --surface: #ffffff;
+    --surface-strong: #ffffff;
+    --surface-dark: rgba(10, 10, 15, 0.96);
+    --surface-border: rgba(0, 0, 0, 0.06);
+    --text: #111827;
+    --text-soft: #4b5563;
+    --text-inverse: #f9fafb;
+    --brand: hsl(243, 75%, 52%);
+    --brand-strong: hsl(243, 75%, 42%);
+    --brand-soft: hsla(243, 75%, 52%, 0.06);
+    --brand-glow: hsla(243, 75%, 52%, 0.12);
+    --secondary-hex: #1e293b;
+    --secondary-soft: rgba(30, 41, 59, 0.05);
+    --focus: hsl(243, 75%, 52%);
+    --danger: #ef4444;
+    --danger-soft: rgba(239, 68, 68, 0.06);
+    --success-hex: #10b981;
+    --success-soft: rgba(16, 185, 129, 0.06);
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.04);
+    --shadow-card: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-elevated: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.08);
+    --radius-xl: 16px;
+    --radius-lg: 12px;
+    --radius-md: 10px;
+    --radius-sm: 8px;
+    --space-1: 0.5rem;
+    --space-2: 0.75rem;
+    --space-3: 1rem;
+    --space-4: 1.25rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 2.5rem;
+    --space-8: 3rem;
+    --space-9: 4rem;
+
+    /* ── Badge tokens (lead temperature) ─────────────────────── */
+    --badge-cold-bg: hsla(211, 60%, 57%, 0.14);
+    --badge-cold-text: hsl(211, 60%, 33%);
+    --badge-warm-bg: hsla(38, 80%, 56%, 0.16);
+    --badge-warm-text: hsl(32, 100%, 31%);
+    --badge-hot-bg: hsla(22, 100%, 41%, 0.14);
+    --badge-hot-text: hsl(16, 100%, 38%);
+    --badge-burning-bg: hsla(2, 65%, 46%, 0.14);
+    --badge-burning-text: hsl(351, 62%, 37%);
   }
-}
-
-
-:root {
-  --bg: #ffffff;
-  --bg-deep: #0a0a0f;
-  --bg-subtle: #f8f9fc;
-  --surface: #ffffff;
-  --surface-strong: #ffffff;
-  --surface-dark: rgba(10, 10, 15, 0.96);
-  --surface-border: rgba(0, 0, 0, 0.06);
-  --text: #111827;
-  --text-soft: #4b5563;
-  --text-inverse: #f9fafb;
-  --accent: #4f46e5;
-  --accent-strong: #4338ca;
-  --accent-soft: rgba(79, 70, 229, 0.06);
-  --accent-glow: rgba(79, 70, 229, 0.12);
-  --secondary: #1e293b;
-  --secondary-soft: rgba(30, 41, 59, 0.05);
-  --focus: #4f46e5;
-  --danger: #ef4444;
-  --danger-soft: rgba(239, 68, 68, 0.06);
-  --success: #10b981;
-  --success-soft: rgba(16, 185, 129, 0.06);
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.04);
-  --shadow-card: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-elevated: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.08);
-  --radius-xl: 16px;
-  --radius-lg: 12px;
-  --radius-md: 10px;
-  --radius-sm: 8px;
-  --space-1: 0.5rem;
-  --space-2: 0.75rem;
-  --space-3: 1rem;
-  --space-4: 1.25rem;
-  --space-5: 1.5rem;
-  --space-6: 2rem;
-  --space-7: 2.5rem;
-  --space-8: 3rem;
-  --space-9: 4rem;
 }
 
 *,
@@ -222,7 +232,7 @@ main > * + *,
   align-items: center;
   gap: 8px;
   margin-bottom: 14px;
-  color: var(--accent);
+  color: var(--brand);
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -277,14 +287,14 @@ button.secondary {
 }
 
 .primary {
-  background: var(--accent);
+  background: var(--brand);
   color: #ffffff;
   box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2), 0 4px 12px rgba(79, 70, 229, 0.15);
 }
 
 .primary:hover,
 .primary:active {
-  background: var(--accent-strong);
+  background: var(--brand-strong);
   transform: translateY(-1px);
   box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2), 0 8px 20px rgba(79, 70, 229, 0.2);
 }
@@ -345,7 +355,7 @@ button[disabled] {
   position: absolute;
   left: 0;
   top: 0;
-  color: var(--accent);
+  color: var(--brand);
   font-size: 1.2rem;
   line-height: 1.1;
 }
@@ -489,12 +499,12 @@ button[disabled] {
 }
 
 .step-rail li.current {
-  background: var(--accent-soft);
+  background: var(--brand-soft);
 }
 
 .step-rail li.current span,
 .step-rail li.complete span {
-  background: var(--accent);
+  background: var(--brand);
   color: #fff;
 }
 
@@ -756,7 +766,7 @@ button[disabled] {
 
 .site-nav__links a:hover {
   background: var(--secondary-soft);
-  color: var(--secondary);
+  color: var(--secondary-hex);
 }
 
 @media (max-width: 480px) {
@@ -790,13 +800,13 @@ button[disabled] {
   --surface-border: rgba(0, 0, 0, 0.06);
   --text: #111827;
   --text-soft: #4b5563;
-  --accent: #4f46e5;
-  --accent-strong: #4338ca;
-  --accent-soft: rgba(79, 70, 229, 0.06);
-  --accent-glow: rgba(79, 70, 229, 0.12);
-  --secondary: #1e293b;
+  --brand: hsl(243, 75%, 52%);
+  --brand-strong: hsl(243, 75%, 42%);
+  --brand-soft: hsla(243, 75%, 52%, 0.06);
+  --brand-glow: hsla(243, 75%, 52%, 0.12);
+  --secondary-hex: #1e293b;
   --secondary-soft: rgba(30, 41, 59, 0.05);
-  --success: #10b981;
+  --success-hex: #10b981;
   --success-soft: rgba(16, 185, 129, 0.06);
   --danger: #ef4444;
   --danger-soft: rgba(239, 68, 68, 0.06);
@@ -847,15 +857,15 @@ button[disabled] {
     --text: #fafafa;
     --text-soft: #a1a1aa;
     --text-inverse: #09090b;
-    --accent: #3b82f6;
-    --accent-strong: #2563eb;
-    --accent-soft: rgba(59, 130, 246, 0.15);
-    --secondary: #e4e4e7;
+    --brand: #3b82f6;
+    --brand-strong: #2563eb;
+    --brand-soft: rgba(59, 130, 246, 0.15);
+    --secondary-hex: #e4e4e7;
     --secondary-soft: rgba(228, 228, 231, 0.08);
     --focus: #3b82f6;
     --danger: #ef4444;
     --danger-soft: rgba(239, 68, 68, 0.15);
-    --success: #22c55e;
+    --success-hex: #22c55e;
     --success-soft: rgba(34, 197, 94, 0.15);
     --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -923,25 +933,25 @@ button[disabled] {
 /* ── Niche Design Tokens ────────────────────────────────────── */
 
 [data-niche="legal"] {
-  --accent: #14213d;
-  --accent-strong: #0f1a30;
-  --accent-soft: rgba(20, 33, 61, 0.12);
-  --secondary: #264653;
+  --brand: #14213d;
+  --brand-strong: #0f1a30;
+  --brand-soft: rgba(20, 33, 61, 0.12);
+  --secondary-hex: #264653;
 }
 
 [data-niche="health"] {
-  --accent: #2a9d8f;
-  --accent-strong: #1f7a6e;
-  --accent-soft: rgba(42, 157, 143, 0.12);
-  --secondary: #264653;
+  --brand: #2a9d8f;
+  --brand-strong: #1f7a6e;
+  --brand-soft: rgba(42, 157, 143, 0.12);
+  --secondary-hex: #264653;
 }
 
 [data-niche="tech"],
 [data-niche="ecommerce"] {
-  --accent: #00d4aa;
-  --accent-strong: #00a886;
-  --accent-soft: rgba(0, 212, 170, 0.12);
-  --secondary: #1e3a5f;
+  --brand: #00d4aa;
+  --brand-strong: #00a886;
+  --brand-soft: rgba(0, 212, 170, 0.12);
+  --secondary-hex: #1e3a5f;
   --bg: #0a1628;
   --bg-deep: #060e1a;
   --surface: rgba(14, 26, 46, 0.92);
@@ -953,65 +963,65 @@ button[disabled] {
 
 [data-niche="construction"],
 [data-niche="home-services"] {
-  --accent: #e76f51;
-  --accent-strong: #c45a3c;
-  --accent-soft: rgba(231, 111, 81, 0.12);
-  --secondary: #264653;
+  --brand: #e76f51;
+  --brand-strong: #c45a3c;
+  --brand-soft: rgba(231, 111, 81, 0.12);
+  --secondary-hex: #264653;
 }
 
 [data-niche="real-estate"] {
-  --accent: #c4632d;
-  --accent-strong: #9e4616;
-  --accent-soft: rgba(196, 99, 45, 0.12);
-  --secondary: #1b4332;
+  --brand: #c4632d;
+  --brand-strong: #9e4616;
+  --brand-soft: rgba(196, 99, 45, 0.12);
+  --secondary-hex: #1b4332;
 }
 
 [data-niche="education"] {
-  --accent: #457b9d;
-  --accent-strong: #345e78;
-  --accent-soft: rgba(69, 123, 157, 0.12);
-  --secondary: #1d3557;
+  --brand: #457b9d;
+  --brand-strong: #345e78;
+  --brand-soft: rgba(69, 123, 157, 0.12);
+  --secondary-hex: #1d3557;
 }
 
 [data-niche="finance"] {
-  --accent: #415a77;
-  --accent-strong: #2f4259;
-  --accent-soft: rgba(65, 90, 119, 0.12);
-  --secondary: #1b263b;
+  --brand: #415a77;
+  --brand-strong: #2f4259;
+  --brand-soft: rgba(65, 90, 119, 0.12);
+  --secondary-hex: #1b263b;
 }
 
 [data-niche="franchise"] {
-  --accent: #d62828;
-  --accent-strong: #a91e1e;
-  --accent-soft: rgba(214, 40, 40, 0.12);
-  --secondary: #003049;
+  --brand: #d62828;
+  --brand-strong: #a91e1e;
+  --brand-soft: rgba(214, 40, 40, 0.12);
+  --secondary-hex: #003049;
 }
 
 [data-niche="staffing"] {
-  --accent: #0077b6;
-  --accent-strong: #005a8a;
-  --accent-soft: rgba(0, 119, 182, 0.12);
-  --secondary: #023e8a;
+  --brand: #0077b6;
+  --brand-strong: #005a8a;
+  --brand-soft: rgba(0, 119, 182, 0.12);
+  --secondary-hex: #023e8a;
 }
 
 [data-niche="faith"] {
-  --accent: #7b2d8e;
-  --accent-strong: #5e1f6d;
-  --accent-soft: rgba(123, 45, 142, 0.12);
-  --secondary: #4a0e5c;
+  --brand: #7b2d8e;
+  --brand-strong: #5e1f6d;
+  --brand-soft: rgba(123, 45, 142, 0.12);
+  --secondary-hex: #4a0e5c;
 }
 
 [data-niche="creative"],
 [data-niche="fitness"] {
-  --accent: #e63946;
-  --accent-strong: #c12e39;
-  --accent-soft: rgba(230, 57, 70, 0.12);
-  --secondary: #1d3557;
+  --brand: #e63946;
+  --brand-strong: #c12e39;
+  --brand-soft: rgba(230, 57, 70, 0.12);
+  --secondary-hex: #1d3557;
 }
 
 [data-niche="coaching"] {
-  --accent: #264653;
-  --accent-strong: #1a3240;
-  --accent-soft: rgba(38, 70, 83, 0.12);
-  --secondary: #2a9d8f;
+  --brand: #264653;
+  --brand-strong: #1a3240;
+  --brand-soft: rgba(38, 70, 83, 0.12);
+  --secondary-hex: #2a9d8f;
 }
