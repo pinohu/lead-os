@@ -109,13 +109,14 @@ export async function routeLead(
   const now = new Date();
 
   // Find matching providers sorted by tier priority
-  // 2.2: Only route to providers with verified emails
+  // Only route to providers with verified emails AND verified ownership
   const candidates = await prisma.provider.findMany({
     where: {
       niche,
       city: { equals: city, mode: "insensitive" },
       subscriptionStatus: "active",
       emailVerified: true,
+      verificationStatus: { in: ["verified", "auto_verified", "admin_approved"] },
     },
     orderBy: { tier: "asc" }, // primary < backup < overflow
   });

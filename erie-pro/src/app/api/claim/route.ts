@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { niche, tier, providerName, providerEmail, phone, password, description, license } = parsed.data;
+    const { niche, tier, providerName, providerEmail, phone, password, description, license, listingId } = parsed.data;
 
     const nicheData = getNicheBySlug(niche);
     if (!nicheData) {
@@ -63,6 +63,46 @@ export async function POST(req: NextRequest) {
         { success: false, error: "This territory is already claimed. Select a different category or contact us about waitlist options." },
         { status: 409 }
       );
+    }
+
+    // ── If claiming a listing, validate it exists and isn't already claimed ──
+    let listing: { id: string; email: string | null; website: string | null; phone: string | null } | null = null;
+    if (listingId) {
+      listing = await prisma.directoryListing.findUnique({
+        where: { id: listingId },
+        select: { id: true, email: true, website: true, phone: true },
+      });
+      if (!listing) {
+        return NextResponse.json(
+          { success: false, error: "Listing not found." },
+          { status: 404 }
+        );
+      }
+      // Check if listing is already claimed by another provider
+      const alreadyClaimed = await prisma.provider.findFirst({
+        where: { claimedListingId: listingId, subscriptionStatus: { not: "cancelled" } },
+      });
+      if (alreadyClaimed) {
+        return NextResponse.json(
+          { success: false, error: "This listing has already been claimed." },
+          { status: 409 }
+        );
+      }
+    }
+
+    // ── Determine initial verification status ────────────────────
+    // Auto-verify if claimant's email domain matches listing's website domain
+    let initialVerificationStatus: "unverified" | "auto_verified" = "unverified";
+    if (listing?.website) {
+      try {
+        const listingDomain = new URL(listing.website).hostname.replace(/^www\./, "");
+        const claimantDomain = providerEmail.split("@")[1]?.toLowerCase();
+        if (listingDomain && claimantDomain && listingDomain === claimantDomain) {
+          initialVerificationStatus = "auto_verified";
+        }
+      } catch {
+        // Invalid URL, skip auto-verify
+      }
     }
 
     // ── Hash password for dashboard login ────────────────────────
@@ -94,11 +134,24 @@ export async function POST(req: NextRequest) {
       lastLeadAt: undefined,
     });
 
-    // ── Store password hash + ToS acceptance on the provider profile ──
+    // ── Store password hash, ToS, verification status, and listing link ──
     await prisma.provider.update({
       where: { id: provider.id },
-      data: { passwordHash, tosAcceptedAt: new Date() },
+      data: {
+        passwordHash,
+        tosAcceptedAt: new Date(),
+        verificationStatus: initialVerificationStatus,
+        claimedListingId: listing?.id ?? null,
+      },
     });
+
+    // ── Link the directory listing to this provider ──────────────
+    if (listing) {
+      await prisma.directoryListing.update({
+        where: { id: listing.id },
+        data: { claimedByProviderId: provider.id },
+      });
+    }
 
     // ── Create Stripe Checkout Session ────────────────────────────
     const checkout = await createTerritoryCheckoutSession(

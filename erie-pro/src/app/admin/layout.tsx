@@ -25,6 +25,7 @@ const navSections = [
       { href: "/admin/providers", label: "Providers", icon: "👥" },
       { href: "/admin/territories", label: "Territories", icon: "📍" },
       { href: "/admin/listings", label: "Listings", icon: "🏢" },
+      { href: "/admin/claims", label: "Claims", icon: "🛡️", badgeKey: "claims" as const },
       { href: "/admin/disputes", label: "Disputes", icon: "⚖️", badgeKey: "disputes" as const },
       { href: "/admin/messages", label: "Messages", icon: "💬", badgeKey: "messages" as const },
     ],
@@ -69,12 +70,14 @@ export default async function AdminLayout({
   }
 
   // Fetch badge counts for sidebar
-  const [pendingDisputes, unreadMessages] = await Promise.all([
+  const [pendingClaims, pendingDisputes, unreadMessages] = await Promise.all([
+    prisma.provider.count({ where: { verificationStatus: { in: ["unverified", "pending"] } } }),
     prisma.leadDispute.count({ where: { status: "pending" } }),
     prisma.contactMessage.count({ where: { status: "unread" } }),
   ])
 
   const badges: Record<string, number> = {
+    claims: pendingClaims,
     disputes: pendingDisputes,
     messages: unreadMessages,
   }

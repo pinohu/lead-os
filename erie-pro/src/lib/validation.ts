@@ -96,6 +96,8 @@ export const ClaimRequestSchema = z.object({
   tosAccepted: z.literal(true, {
     error: "You must agree to the Terms of Service and Privacy Policy.",
   }),
+  /** Optional: ID of the DirectoryListing being claimed */
+  listingId: z.string().max(100).optional(),
 });
 export type ClaimRequest = z.infer<typeof ClaimRequestSchema>;
 

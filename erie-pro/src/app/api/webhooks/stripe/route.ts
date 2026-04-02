@@ -17,7 +17,7 @@ import { activatePerks, deactivatePerks } from "@/lib/perk-manager";
 import { deliverBankedLeads } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
-import { sendWelcomeEmail, sendEmail, sendEmailVerification } from "@/lib/email";
+import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -417,6 +417,57 @@ async function handleCheckoutCompleted(
       checkoutSession.niche,
       actualDelivered
     ).catch((err) => { logger.error("stripe-webhook", "Failed to process webhook task", err) });
+
+    // ── Ownership Verification Flow ─────────────────────────────
+    // If already auto-verified (email domain matched), skip.
+    // If listing has email, auto-send verification code.
+    // Otherwise, flag for admin review.
+    const freshProvider = await prisma.provider.findUnique({
+      where: { id: provider.id },
+      select: { verificationStatus: true, claimedListingId: true },
+    });
+
+    if (freshProvider && !["verified", "auto_verified", "admin_approved"].includes(freshProvider.verificationStatus)) {
+      if (freshProvider.claimedListingId) {
+        const listing = await prisma.directoryListing.findUnique({
+          where: { id: freshProvider.claimedListingId },
+          select: { email: true, businessName: true },
+        });
+
+        if (listing?.email) {
+          // Auto-send verification code to listing's email
+          const code = crypto.randomInt(100000, 999999).toString();
+          const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+          await prisma.provider.update({
+            where: { id: provider.id },
+            data: {
+              verificationCode: code,
+              verificationCodeExp: expiresAt,
+              verificationStatus: "pending",
+              verificationAttempts: 1,
+            },
+          });
+          sendClaimVerificationCode(listing.email, listing.businessName, code, provider.businessName)
+            .catch((err) => logger.error("stripe-webhook", "Verification code send failed", err));
+          logger.info("webhook/stripe", `Auto-sent verification code for provider ${provider.id}`);
+        } else {
+          // No listing email — flag for admin
+          await prisma.provider.update({
+            where: { id: provider.id },
+            data: { verificationStatus: "pending" },
+          });
+          sendAdminVerificationAlert(provider.businessName, provider.email, checkoutSession.niche, "Listing has no email — needs manual verification")
+            .catch((err) => logger.error("stripe-webhook", "Admin alert failed", err));
+        }
+      } else {
+        // No listing linked (new business, not claiming) — auto-verify
+        // New businesses without a listing aren't impersonating anyone
+        await prisma.provider.update({
+          where: { id: provider.id },
+          data: { verificationStatus: "auto_verified" },
+        });
+      }
+    }
 
     logger.info("webhook/stripe", `Territory claimed: ${checkoutSession.niche}/${checkoutSession.city}`, {
       providerId: provider.id,

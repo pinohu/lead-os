@@ -7,6 +7,7 @@ import { cityConfig } from "@/lib/city-config";
 import { getNicheBySlug } from "@/lib/niches";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
+import VerificationCodeForm from "./verification-code-form";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +71,59 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* ── Verification Banner ──────────────────────────────────── */}
+      {provider.verificationStatus === "unverified" && (
+        <div className="rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 p-6">
+          <div className="flex items-start gap-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 text-lg">!</span>
+            <div>
+              <h2 className="text-lg font-semibold text-amber-900 dark:text-amber-200">Verify Your Business Ownership</h2>
+              <p className="mt-1 text-sm text-amber-800 dark:text-amber-300">
+                Leads are held until you verify ownership of your business. Click below to receive a verification code.
+              </p>
+              <form action="/api/verify-claim/send" method="POST" className="mt-3">
+                <button
+                  type="submit"
+                  className="inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-500"
+                >
+                  Send Verification Code
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {provider.verificationStatus === "pending" && (
+        <div className="rounded-lg border border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20 p-6">
+          <div className="flex items-start gap-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-lg">&#9993;</span>
+            <div className="flex-1">
+              <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-200">Enter Verification Code</h2>
+              <p className="mt-1 text-sm text-blue-800 dark:text-blue-300">
+                A 6-digit code was sent to the business email on file. Enter it below to verify ownership and start receiving leads.
+              </p>
+              <VerificationCodeForm />
+              <p className="mt-2 text-xs text-blue-600 dark:text-blue-400">
+                Didn&apos;t receive it?{" "}
+                <form action="/api/verify-claim/send" method="POST" className="inline">
+                  <button type="submit" className="underline hover:no-underline">Resend code</button>
+                </form>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {provider.verificationStatus === "rejected" && (
+        <div className="rounded-lg border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 p-6">
+          <p className="text-sm text-red-800 dark:text-red-200">
+            <strong>Claim rejected.</strong> Your ownership claim was not approved. Contact{" "}
+            <a href={`mailto:hello@${cityConfig.domain}`} className="underline">hello@{cityConfig.domain}</a> for assistance.
+          </p>
+        </div>
+      )}
+
       {/* ── Header ──────────────────────────────────────────────── */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">

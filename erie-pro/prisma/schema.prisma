@@ -97,6 +97,15 @@ enum DisputeStatus {
   denied
 }
 
+enum VerificationStatus {
+  unverified        // Just claimed, no verification attempted
+  pending           // Verification code sent, awaiting entry
+  verified          // Ownership confirmed
+  auto_verified     // Email domain matched listing website
+  admin_approved    // Manually approved by admin
+  rejected          // Admin rejected claim
+}
+
 // ── Provider ───────────────────────────────────────────────────────
 
 model Provider {
@@ -132,6 +141,13 @@ model Provider {
   tosAcceptedAt       DateTime?
   gracePeriodEndsAt   DateTime?
   notificationPrefs   Json?              @default("{}")
+
+  // Ownership verification (claim anti-fraud)
+  verificationStatus  VerificationStatus @default(unverified)
+  verificationCode    String?            // 6-digit code
+  verificationCodeExp DateTime?          // Code expiry (15 min)
+  verificationAttempts Int               @default(0) // Brute-force protection
+  claimedListingId    String?            // DirectoryListing.id being claimed
 
   // Performance metrics (denormalized for fast reads)
   totalLeads          Int                @default(0)

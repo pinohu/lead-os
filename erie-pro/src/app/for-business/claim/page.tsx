@@ -49,6 +49,7 @@ export default function ClaimPage() {
   const searchParams = useSearchParams();
   const initialNiche = searchParams.get("niche") ?? "";
   const initialTier = searchParams.get("tier") ?? "standard";
+  const listingId = searchParams.get("listing") ?? undefined;
   const validTier = TIER_ORDER.includes(initialTier as ProviderTier)
     ? (initialTier as ProviderTier)
     : "standard";
@@ -151,6 +152,7 @@ export default function ClaimPage() {
           password,
           description: description || undefined,
           license: license || undefined,
+          listingId,
           tosAccepted: true,
         }),
       });

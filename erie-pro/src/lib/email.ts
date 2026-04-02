@@ -347,6 +347,54 @@ export async function sendDisputeResolutionEmail(
   });
 }
 
+/**
+ * Send a 6-digit ownership verification code to a business email.
+ * This goes to the LISTING's email (not the claimant's) to prove ownership.
+ */
+export async function sendClaimVerificationCode(
+  businessEmail: string,
+  businessName: string,
+  code: string,
+  claimantName: string
+): Promise<boolean> {
+  return sendEmail({
+    to: businessEmail,
+    subject: `Verification code for ${escapeHtml(businessName)} on ${cityConfig.domain}`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">Business Ownership Verification</h2>
+      <p style="color:#374151;margin:0 0 8px">Someone is claiming <strong>${escapeHtml(businessName)}</strong> on <a href="https://${cityConfig.domain}" style="color:#2563eb">${cityConfig.domain}</a>.</p>
+      <p style="color:#374151;margin:0 0 24px">If you authorized this claim, enter this code in your dashboard:</p>
+      <div style="text-align:center;margin:0 0 24px">
+        <span style="display:inline-block;background:#f3f4f6;border:2px solid #d1d5db;border-radius:8px;padding:16px 32px;font-size:32px;font-weight:700;letter-spacing:8px;color:#111827">${escapeHtml(code)}</span>
+      </div>
+      <p style="font-size:13px;color:#6b7280;margin:0 0 8px">This code expires in 15 minutes.</p>
+      <p style="font-size:13px;color:#6b7280;margin:0">Claimant: ${escapeHtml(claimantName)}</p>
+      <p style="margin:16px 0 0;font-size:13px;color:#9ca3af">If you did not request this, no action is needed. Your listing remains unchanged.</p>
+    `, businessEmail),
+  });
+}
+
+/**
+ * Notify admin when a claim requires manual verification.
+ */
+export async function sendAdminVerificationAlert(
+  providerName: string,
+  providerEmail: string,
+  niche: string,
+  reason: string
+): Promise<boolean> {
+  return sendEmail({
+    to: `hello@${cityConfig.domain}`,
+    subject: `[Admin] Claim verification needed: ${providerName}`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">Manual Verification Required</h2>
+      <p style="color:#374151;margin:0 0 8px"><strong>${escapeHtml(providerName)}</strong> (${escapeHtml(providerEmail)}) claimed a ${escapeHtml(niche)} territory.</p>
+      <p style="color:#374151;margin:0 0 24px">Reason: ${escapeHtml(reason)}</p>
+      <a href="https://${cityConfig.domain}/admin/claims" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">Review Claims</a>
+    `),
+  });
+}
+
 export async function sendEmailVerification(
   email: string,
   token: string
