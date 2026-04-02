@@ -10,6 +10,7 @@ export type AuditAction =
   | "territory.released"
   | "territory.paused"
   | "territory.resumed"
+  | "territory.reactivated"
   | "provider.created"
   | "provider.login"
   | "provider.logout"
@@ -19,11 +20,13 @@ export type AuditAction =
   | "subscription.payment_failed"
   | "subscription.renewed"
   | "subscription.status_changed"
+  | "subscription.grace_period_expired"
   | "lead.submitted"
   | "lead.routed"
   | "lead.purchased"
   | "lead.disputed"
   | "lead.dispute_resolved"
+  | "lead.archived"
   | "admin.login"
   | "admin.action";
 

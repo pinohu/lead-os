@@ -2,12 +2,14 @@
 // Handles Stripe events for subscription lifecycle management.
 // Signature verification ensures only Stripe can call this endpoint.
 
+import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import {
   constructWebhookEvent,
   handleStripeWebhook,
   isStripeDryRun,
   getCheckoutSession,
+  getMonthlyFee,
 } from "@/lib/stripe-integration";
 import { prisma } from "@/lib/db";
 import type { SubscriptionStatus } from "@/generated/prisma";
@@ -15,7 +17,7 @@ import { activatePerks, deactivatePerks } from "@/lib/perk-manager";
 import { deliverBankedLeads } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
-import { sendWelcomeEmail, sendEmail } from "@/lib/email";
+import { sendWelcomeEmail, sendEmail, sendEmailVerification } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -73,7 +75,7 @@ export async function POST(req: NextRequest) {
     // Handle the event
     const result = await handleStripeWebhook(event);
 
-    // ── Handle payment failure — notify provider ──────────────
+    // ── 2.3: Handle payment failure — set grace period instead of immediate deactivation
     if (event.type === "invoice.payment_failed") {
       const invoice = event.data.object;
       const customerId = invoice && "customer" in invoice ? (invoice.customer as string) : null;
@@ -81,28 +83,40 @@ export async function POST(req: NextRequest) {
       if (customerId) {
         const provider = await prisma.provider.findFirst({
           where: { stripeCustomerId: customerId },
-          select: { id: true, email: true, businessName: true },
+          select: { id: true, email: true, businessName: true, gracePeriodEndsAt: true },
         });
 
         if (provider) {
+          // Set 7-day grace period (only if not already in one)
+          const gracePeriodEndsAt = provider.gracePeriodEndsAt ?? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+          await prisma.provider.update({
+            where: { id: provider.id },
+            data: {
+              subscriptionStatus: "past_due",
+              gracePeriodEndsAt,
+            },
+          });
+
+          const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
           sendEmail({
             to: provider.email,
-            subject: "Payment failed \u2014 action required",
+            subject: "Payment failed \u2014 7-day grace period started",
             html: `
               <p>Hi ${provider.businessName},</p>
               <p>Your most recent payment for your Erie Pro territory subscription has failed.</p>
-              <p>Please update your payment information to avoid service interruption:</p>
-              <p><a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro"}/dashboard/billing">Update Payment Info</a></p>
+              <p>You have a <strong>7-day grace period</strong> to update your payment information before your territory is deactivated.</p>
+              <p><a href="${siteUrl}/dashboard/billing">Update Payment Info</a></p>
               <p>If you have questions, reply to this email or contact our support team.</p>
             `,
-          }).catch((err) => { logger.error("stripe-webhook", "Failed to process webhook task", err) });
+          }).catch((err) => { logger.error("stripe-webhook", "Failed to send dunning email", err) });
 
           await audit({
             action: "subscription.payment_failed",
             entityType: "subscription",
             providerId: provider.id,
-            metadata: { stripeEventId: event.id },
-          }).catch((err) => { logger.error("stripe-webhook", "Failed to process webhook task", err) });
+            metadata: { stripeEventId: event.id, gracePeriodEndsAt: gracePeriodEndsAt.toISOString() },
+          }).catch((err) => { logger.error("stripe-webhook", "Failed to audit payment failure", err) });
         }
       }
     }
@@ -161,6 +175,46 @@ export async function POST(req: NextRequest) {
             });
 
             logger.info("webhook/stripe", `Subscription updated for ${provider.id}: ${provider.subscriptionStatus} → ${newStatus}`);
+
+            // 2.4: Auto-reactivate when payment recovers from past_due → active
+            if (newStatus === "active" && provider.subscriptionStatus === "past_due") {
+              // Clear grace period
+              await prisma.provider.update({
+                where: { id: provider.id },
+                data: { gracePeriodEndsAt: null },
+              });
+
+              // Re-activate territories that were deactivated during grace period
+              const territories = await prisma.territory.findMany({
+                where: { providerId: provider.id, deactivatedAt: { not: null } },
+                orderBy: { deactivatedAt: "desc" },
+                take: 5, // reasonable limit
+              });
+
+              for (const territory of territories) {
+                await activatePerks(
+                  territory.niche,
+                  territory.city,
+                  provider.id,
+                  provider.businessName,
+                  "standard"
+                );
+              }
+
+              const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
+              sendEmail({
+                to: provider.email,
+                subject: "Payment received \u2014 your territory is active again!",
+                html: `
+                  <p>Hi ${provider.businessName},</p>
+                  <p>Great news! Your payment has been processed successfully and your Erie Pro territory is active again.</p>
+                  <p>Leads are now being routed to you. Check your dashboard for any new leads:</p>
+                  <p><a href="${siteUrl}/dashboard">Go to Dashboard</a></p>
+                `,
+              }).catch((err) => { logger.error("stripe-webhook", "Reactivation email failed", err) });
+
+              logger.info("webhook/stripe", `Auto-reactivated territories for provider ${provider.id} after payment recovery`);
+            }
 
             // Notify provider if subscription is at risk
             if (newStatus === "past_due") {
@@ -227,99 +281,147 @@ async function handleCheckoutCompleted(
   if (!checkoutSession) return;
 
   if (checkoutSession.sessionType === "territory_claim") {
-    // Find or create the provider
-    const provider = await prisma.provider.findFirst({
+    // 2.1: Find existing provider OR create one from checkout metadata
+    let provider = await prisma.provider.findFirst({
       where: { email: checkoutSession.providerEmail },
     });
 
-    if (provider) {
-      // Wrap critical DB operations in a transaction for atomicity
-      const deliveredCount = await prisma.$transaction(async (tx) => {
-        // Activate provider subscription
-        await tx.provider.update({
-          where: { id: provider.id },
-          data: {
-            subscriptionStatus: "active",
-            stripeSubscriptionId: stripeSessionId,
-          },
-        });
+    const isNewProvider = !provider;
 
-        // Create or link User account for dashboard access
-        const existingUser = await tx.user.findUnique({
-          where: { email: provider.email },
-        });
+    if (!provider) {
+      // Provider record is missing (e.g., claim form succeeded but provider
+      // creation failed). Create from the checkout session metadata.
+      const slug = (checkoutSession.providerName ?? "provider")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "")
+        + "-" + Date.now().toString(36);
 
-        if (!existingUser) {
-          await tx.user.create({
-            data: {
-              email: provider.email,
-              name: provider.businessName,
-              role: "provider",
-              providerId: provider.id,
-            },
-          });
-          logger.info("webhook/stripe", "Created user account for provider:", provider.id);
-        } else if (!existingUser.providerId) {
-          await tx.user.update({
-            where: { id: existingUser.id },
-            data: { providerId: provider.id },
-          });
-        }
-
-        // Mark checkout session as completed (inside transaction)
-        await tx.checkoutSession.updateMany({
-          where: { stripeSessionId },
-          data: { status: "completed", completedAt: new Date() },
-        });
-
-        return 0; // deliverBankedLeads runs outside transaction (it has its own logic)
-      });
-
-      // These run after the transaction succeeds — they have side effects
-      // (external APIs, email sends) that shouldn't be in a DB transaction
-
-      // Activate territory and perks
-      await activatePerks(
-        checkoutSession.niche,
-        checkoutSession.city,
-        provider.id,
-        provider.businessName,
-        "standard"
-      );
-
-      // Deliver any banked leads to the new provider
-      const actualDelivered = await deliverBankedLeads(
-        checkoutSession.niche,
-        checkoutSession.city,
-        provider.id
-      );
-
-      await audit({
-        action: "territory.claimed",
-        entityType: "territory",
-        entityId: `${checkoutSession.niche}:${checkoutSession.city}`,
-        providerId: provider.id,
-        metadata: {
+      provider = await prisma.provider.create({
+        data: {
+          slug,
+          businessName: checkoutSession.providerName ?? "Unnamed Business",
           niche: checkoutSession.niche,
-          city: checkoutSession.city,
-          bankedLeadsDelivered: actualDelivered,
-          stripeEventId,
+          city: checkoutSession.city ?? "erie",
+          phone: "",
+          email: checkoutSession.providerEmail,
+          monthlyFee: checkoutSession.monthlyFee ?? getMonthlyFee(checkoutSession.niche),
+          subscriptionStatus: "active",
+          stripeSubscriptionId: stripeSessionId,
+          emailVerified: false,
         },
       });
 
-      // Send welcome email (fire-and-forget)
-      sendWelcomeEmail(
-        provider.email,
-        provider.businessName,
-        checkoutSession.niche,
-        actualDelivered
-      ).catch((err) => { logger.error("stripe-webhook", "Failed to process webhook task", err) });
-
-      logger.info("webhook/stripe", `Territory claimed: ${checkoutSession.niche}/${checkoutSession.city}`, {
+      await audit({
+        action: "provider.created",
+        entityType: "provider",
+        entityId: provider.id,
         providerId: provider.id,
-        deliveredLeads: actualDelivered,
+        metadata: { source: "stripe_webhook_recovery", stripeEventId },
       });
+
+      logger.info("webhook/stripe", "Created missing provider from checkout metadata:", provider.id);
     }
+
+    // Wrap critical DB operations in a transaction for atomicity
+    await prisma.$transaction(async (tx) => {
+      // Activate provider subscription
+      await tx.provider.update({
+        where: { id: provider.id },
+        data: {
+          subscriptionStatus: "active",
+          stripeSubscriptionId: stripeSessionId,
+          // 2.2: New providers start unverified
+          ...(isNewProvider ? { emailVerified: false } : {}),
+        },
+      });
+
+      // Create or link User account for dashboard access
+      const existingUser = await tx.user.findUnique({
+        where: { email: provider.email },
+      });
+
+      if (!existingUser) {
+        await tx.user.create({
+          data: {
+            email: provider.email,
+            name: provider.businessName,
+            role: "provider",
+            providerId: provider.id,
+          },
+        });
+        logger.info("webhook/stripe", "Created user account for provider:", provider.id);
+      } else if (!existingUser.providerId) {
+        await tx.user.update({
+          where: { id: existingUser.id },
+          data: { providerId: provider.id },
+        });
+      }
+
+      // Mark checkout session as completed (inside transaction)
+      await tx.checkoutSession.updateMany({
+        where: { stripeSessionId },
+        data: { status: "completed", completedAt: new Date() },
+      });
+    });
+
+    // 2.2: Send email verification if provider is not yet verified
+    if (!provider.emailVerified) {
+      const token = crypto.randomUUID();
+      await prisma.provider.update({
+        where: { id: provider.id },
+        data: { emailVerifyToken: token },
+      });
+      sendEmailVerification(provider.email, token).catch((err) => {
+        logger.error("stripe-webhook", "Failed to send verification email", err);
+      });
+      logger.info("webhook/stripe", "Sent email verification to provider:", provider.id);
+    }
+
+    // These run after the transaction succeeds — they have side effects
+    // (external APIs, email sends) that shouldn't be in a DB transaction
+
+    // Activate territory and perks
+    await activatePerks(
+      checkoutSession.niche,
+      checkoutSession.city,
+      provider.id,
+      provider.businessName,
+      "standard"
+    );
+
+    // Deliver any banked leads to the new provider
+    const actualDelivered = await deliverBankedLeads(
+      checkoutSession.niche,
+      checkoutSession.city,
+      provider.id
+    );
+
+    await audit({
+      action: "territory.claimed",
+      entityType: "territory",
+      entityId: `${checkoutSession.niche}:${checkoutSession.city}`,
+      providerId: provider.id,
+      metadata: {
+        niche: checkoutSession.niche,
+        city: checkoutSession.city,
+        bankedLeadsDelivered: actualDelivered,
+        stripeEventId,
+      },
+    });
+
+    // Send welcome email (fire-and-forget)
+    sendWelcomeEmail(
+      provider.email,
+      provider.businessName,
+      checkoutSession.niche,
+      actualDelivered
+    ).catch((err) => { logger.error("stripe-webhook", "Failed to process webhook task", err) });
+
+    logger.info("webhook/stripe", `Territory claimed: ${checkoutSession.niche}/${checkoutSession.city}`, {
+      providerId: provider.id,
+      deliveredLeads: actualDelivered,
+    });
   } else {
     // Non-territory-claim sessions: just mark as completed
     await prisma.checkoutSession.updateMany({
