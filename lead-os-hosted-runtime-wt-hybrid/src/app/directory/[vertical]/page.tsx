@@ -166,7 +166,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
       {calcPreset && (
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{niche.label} ROI estimator</p>
-          <h2>{calcPreset.resultLabel}</h2>
+          <h2 className="text-foreground">{calcPreset.resultLabel}</h2>
           <p className="text-muted-foreground">{calcPreset.formula}</p>
           <p className="mt-3 px-4 py-3 rounded-md bg-accent/10 font-bold text-sm">
             {calcPreset.proofPoint}
@@ -183,7 +183,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
         <div className="grid md:grid-cols-2 gap-6">
           {niche.recommendedFunnels.map((funnel) => (
             <article key={funnel} className="rounded-xl border border-border bg-card p-6">
-              <h3 className="m-0 text-base capitalize">
+              <h3 className="text-foreground m-0 text-base capitalize">
                 {funnel.replace(/-/g, " ")} funnel
               </h3>
               <p className="text-muted-foreground text-sm">
@@ -205,7 +205,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">How we compare</p>
             <div className="grid md:grid-cols-2 gap-6">
               <article className="rounded-xl border border-border bg-card p-6">
-                <h3 className="m-0 mb-2 text-sm">Alternatives you may be considering</h3>
+                <h3 className="text-foreground m-0 mb-2 text-sm">Alternatives you may be considering</h3>
                 <ul className="m-0 pl-5 text-sm leading-loose">
                   {intel.competitors.alternatives.map((alt) => (
                     <li key={alt}>{alt}</li>
@@ -213,7 +213,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
                 </ul>
               </article>
               <article className="rounded-xl border border-border bg-card p-6">
-                <h3 className="m-0 mb-2 text-sm">What makes Lead OS different</h3>
+                <h3 className="text-foreground m-0 mb-2 text-sm">What makes Lead OS different</h3>
                 <ul className="m-0 pl-5 text-sm leading-loose">
                   {intel.competitors.differentiators.map((diff) => (
                     <li key={diff}>{diff}</li>

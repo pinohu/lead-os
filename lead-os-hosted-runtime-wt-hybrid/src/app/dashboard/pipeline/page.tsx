@@ -172,7 +172,7 @@ export default function PipelinePage() {
       </Link>
 
       <div>
-        <h1 className="text-2xl font-extrabold mt-4 mb-2">Revenue Pipeline</h1>
+        <h1 className="text-foreground text-2xl font-extrabold mt-4 mb-2">Revenue Pipeline</h1>
         <p className="text-sm text-muted-foreground mb-8">
           Run leads through the full engine pipeline, or calibrate with synthetic data.
         </p>
@@ -181,7 +181,7 @@ export default function PipelinePage() {
       {/* Run Pipeline */}
       <Card aria-labelledby="run-pipeline-heading">
         <CardContent className="pt-6 space-y-4">
-          <h2 id="run-pipeline-heading" className="text-lg font-bold">Run Pipeline</h2>
+          <h2 id="run-pipeline-heading" className="text-foreground text-lg font-bold">Run Pipeline</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -237,7 +237,7 @@ export default function PipelinePage() {
       {pipelineResult && (
         <Card aria-labelledby="pipeline-result-heading">
           <CardContent className="pt-6 space-y-4">
-            <h2 id="pipeline-result-heading" className="text-lg font-bold">Pipeline Result</h2>
+            <h2 id="pipeline-result-heading" className="text-foreground text-lg font-bold">Pipeline Result</h2>
 
             <div className="flex gap-3 flex-wrap">
               <span className={`${ROUTE_CLASSES[pipelineResult.route] ?? "bg-gray-500"} text-white px-3.5 py-1.5 rounded-full text-xs font-bold`}>
@@ -251,7 +251,7 @@ export default function PipelinePage() {
               </span>
             </div>
 
-            <h3 className="text-sm font-bold">Stage Results</h3>
+            <h3 className="text-foreground text-sm font-bold">Stage Results</h3>
             <div className="flex flex-wrap gap-2">
               {pipelineResult.stages.map((stage) => (
                 <div
@@ -276,7 +276,7 @@ export default function PipelinePage() {
       {stats && stats.totalRuns > 0 && (
         <Card aria-labelledby="stats-heading">
           <CardContent className="pt-6 space-y-4">
-            <h2 id="stats-heading" className="text-lg font-bold">Pipeline Stats</h2>
+            <h2 id="stats-heading" className="text-foreground text-lg font-bold">Pipeline Stats</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
                 <div className="text-xs text-muted-foreground font-semibold">Total Runs</div>
@@ -305,7 +305,7 @@ export default function PipelinePage() {
       {recentRuns.length > 0 && (
         <Card aria-labelledby="recent-runs-heading">
           <CardContent className="pt-6 space-y-4">
-            <h2 id="recent-runs-heading" className="text-lg font-bold">Recent Runs</h2>
+            <h2 id="recent-runs-heading" className="text-foreground text-lg font-bold">Recent Runs</h2>
             <table className="w-full text-xs border-collapse">
               <thead>
                 <tr className="border-b border-border">
@@ -337,7 +337,7 @@ export default function PipelinePage() {
       {/* Testbed */}
       <Card aria-labelledby="testbed-heading">
         <CardContent className="pt-6 space-y-4">
-          <h2 id="testbed-heading" className="text-lg font-bold">Vertical Testbed</h2>
+          <h2 id="testbed-heading" className="text-foreground text-lg font-bold">Vertical Testbed</h2>
           <p className="text-sm text-muted-foreground">
             Run synthetic leads through the pipeline to calibrate scoring, routing, and offers.
           </p>
@@ -387,7 +387,7 @@ export default function PipelinePage() {
       {testbedReport && (
         <Card aria-labelledby="testbed-report-heading">
           <CardContent className="pt-6 space-y-6">
-            <h2 id="testbed-report-heading" className="text-lg font-bold">
+            <h2 id="testbed-report-heading" className="text-foreground text-lg font-bold">
               Calibration Report: {testbedReport.nicheSlug}
             </h2>
 
@@ -411,7 +411,7 @@ export default function PipelinePage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-bold mb-2">Route Distribution</h3>
+              <h3 className="text-foreground text-sm font-bold mb-2">Route Distribution</h3>
               <div className="flex gap-2 flex-wrap">
                 {Object.entries(testbedReport.routePercentages).map(([route, pct]) => (
                   <div
@@ -425,7 +425,7 @@ export default function PipelinePage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-bold mb-2">Average Scores</h3>
+              <h3 className="text-foreground text-sm font-bold mb-2">Average Scores</h3>
               <div className="flex gap-3 flex-wrap">
                 {Object.entries(testbedReport.averageScores).map(([dim, score]) => (
                   <div key={dim} className="text-center">
@@ -441,7 +441,7 @@ export default function PipelinePage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-bold mb-2">Recommendations</h3>
+              <h3 className="text-foreground text-sm font-bold mb-2">Recommendations</h3>
               <ul className="list-disc pl-5 space-y-1.5">
                 {testbedReport.recommendations.map((rec, i) => (
                   <li key={i} className="text-sm text-muted-foreground">{rec}</li>

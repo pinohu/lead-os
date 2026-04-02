@@ -92,7 +92,7 @@ export default async function AssessmentPage({ params, searchParams }: Assessmen
       <section className="grid md:grid-cols-2 gap-6">
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Questioning principle</p>
-          <h2>Never ask before the value is clear</h2>
+          <h2 className="text-foreground">Never ask before the value is clear</h2>
           <ul className="space-y-2">
             <li>Each question needs a clear reason connected to the visitor&apos;s outcome.</li>
             <li>Progress stays visible so effort never feels ambiguous.</li>
@@ -101,7 +101,7 @@ export default async function AssessmentPage({ params, searchParams }: Assessmen
         </article>
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Result design</p>
-          <h2>Diagnosis first, pressure second</h2>
+          <h2 className="text-foreground">Diagnosis first, pressure second</h2>
           <ul className="space-y-2">
             <li>The output frames what matters, not internal funnel jargon.</li>
             <li>Hot leads shorten into booking or proposal quickly.</li>

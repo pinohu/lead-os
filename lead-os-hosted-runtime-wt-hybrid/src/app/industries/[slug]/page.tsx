@@ -132,7 +132,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
       >
         {/* ---------- Pain Points ---------- */}
         <section>
-          <h2>Challenges {niche.label} businesses face every day</h2>
+          <h2 className="text-foreground">Challenges {niche.label} businesses face every day</h2>
           <div className="grid md:grid-cols-2 gap-6">
             {painPoints.map((point, i) => (
               <article key={i} className="rounded-xl border border-border bg-card p-6">
@@ -144,7 +144,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
 
         {/* ---------- Offers ---------- */}
         <section>
-          <h2>What we build for {niche.label} teams</h2>
+          <h2 className="text-foreground">What we build for {niche.label} teams</h2>
           <ul className="space-y-2">
             {offers.map((offer, i) => (
               <li key={i}>{offer}</li>
@@ -155,7 +155,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
         {/* ---------- Assessment Teaser ---------- */}
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Free diagnostic</p>
-          <h2>Find out where your {niche.label} pipeline leaks revenue</h2>
+          <h2 className="text-foreground">Find out where your {niche.label} pipeline leaks revenue</h2>
           <p>
             Our two-minute assessment scores your current funnel against
             benchmarks from hundreds of {niche.label.toLowerCase()} businesses
@@ -170,11 +170,11 @@ export default async function IndustryPage({ params, searchParams }: Props) {
 
         {/* ---------- Cross-Links ---------- */}
         <section>
-          <h2>Explore more for {niche.label}</h2>
+          <h2 className="text-foreground">Explore more for {niche.label}</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <article className="rounded-xl border border-border bg-card p-6">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Assessment</p>
-              <h3>Score your {niche.label} funnel</h3>
+              <h3 className="text-foreground">Score your {niche.label} funnel</h3>
               <p>
                 Take a two-minute diagnostic and get a prioritized action plan
                 built for {niche.label.toLowerCase()} businesses.
@@ -188,7 +188,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
 
             <article className="rounded-xl border border-border bg-card p-6">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Resources</p>
-              <h3>The complete {niche.label} guide</h3>
+              <h3 className="text-foreground">The complete {niche.label} guide</h3>
               <p>
                 Strategies, benchmarks, and playbooks written specifically for
                 the {niche.label.toLowerCase()} industry.
@@ -202,7 +202,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
 
             <article className="rounded-xl border border-border bg-card p-6">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">For your role</p>
-              <h3>Built for agencies &amp; operators</h3>
+              <h3 className="text-foreground">Built for agencies &amp; operators</h3>
               <p>
                 See how Lead&nbsp;OS fits your workflow — whether you run an
                 agency, a franchise, or an in-house growth team.
@@ -253,7 +253,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
                 <div className="grid md:grid-cols-2 gap-6">
                   {intel.buyingTriggers.slice(0, 4).map((trigger) => (
                     <article key={trigger.event} className="rounded-xl border border-border bg-card p-6" style={{ borderLeft: `4px solid ${trigger.urgency === "immediate" ? "var(--danger)" : "var(--accent)"}` }}>
-                      <h3 className="m-0 mb-1.5 text-sm">{trigger.event}</h3>
+                      <h3 className="text-foreground m-0 mb-1.5 text-sm">{trigger.event}</h3>
                       <p className="text-muted-foreground text-xs m-0 mb-1">{trigger.searchBehavior}</p>
                       <span className="text-xs italic text-muted-foreground">{trigger.emotionalState}</span>
                     </article>
@@ -282,7 +282,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
                   {intel.decisionJourney.stages.map((stage, i) => (
                     <div key={stage.name} className="text-center">
                       <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-accent text-white font-extrabold text-sm mb-2">{i + 1}</span>
-                      <h4 className="m-0 mb-1 text-sm">{stage.name}</h4>
+                      <h4 className="text-foreground m-0 mb-1 text-sm">{stage.name}</h4>
                       <p className="text-muted-foreground text-xs m-0">{stage.primaryAction}</p>
                     </div>
                   ))}

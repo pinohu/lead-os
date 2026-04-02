@@ -18,7 +18,7 @@ export default async function BookingJobsPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Booking queue</p>
-          <h1>{tenantConfig.brandName} scheduling jobs</h1>
+          <h1 className="text-foreground">{tenantConfig.brandName} scheduling jobs</h1>
           <p className="text-lg text-foreground">
             Use this queue to monitor live Trafft availability lookups, booking handoffs, and the
             leads that are closest to a calendar commitment.
@@ -60,7 +60,7 @@ export default async function BookingJobsPage() {
           jobsWithLead.map(({ job, lead }) => (
             <article key={job.id} className="stack-card">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{job.provider}</p>
-              <h2>{job.status}</h2>
+              <h2 className="text-foreground">{job.status}</h2>
               <p className="text-muted-foreground">{job.detail}</p>
               <p className="text-muted-foreground">
                 Lead: {job.leadKey}

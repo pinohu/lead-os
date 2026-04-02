@@ -576,7 +576,7 @@ function ClaimedLeadsSection({ claimedLeads, onOutcome, submittingOutcome }: Cla
       aria-labelledby="claimed-leads-heading"
     >
       <div className="mb-4 flex items-center justify-between">
-        <h2 id="claimed-leads-heading" className="text-[1.1rem] font-extrabold">
+        <h2 id="claimed-leads-heading" className="text-foreground text-[1.1rem] font-extrabold">
           Your Claimed Leads
           <span className="ml-2.5 rounded-full bg-[rgba(34,95,84,0.1)] px-2.5 py-0.5 text-[0.78rem] font-bold text-[var(--accent,#225f54)]">
             {claimedLeads.length}
@@ -863,7 +863,7 @@ export default function PublicMarketplacePage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead marketplace</p>
-          <h1>Browse available leads</h1>
+          <h1 className="text-foreground">Browse available leads</h1>
           <p className="text-lg text-muted-foreground">
             Find and claim high-quality, pre-scored leads across multiple industries and niches.
             All leads are anonymized until purchase.

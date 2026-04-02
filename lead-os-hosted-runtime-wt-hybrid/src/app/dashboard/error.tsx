@@ -13,7 +13,7 @@ export default function DashboardError({
       aria-live="assertive"
       className="mx-auto mt-16 max-w-lg p-8 text-center"
     >
-      <h2 className="mb-2 text-xl font-semibold">
+      <h2 className="text-foreground mb-2 text-xl font-semibold">
         Dashboard Error
       </h2>
       <p className="mb-4 text-muted-foreground">

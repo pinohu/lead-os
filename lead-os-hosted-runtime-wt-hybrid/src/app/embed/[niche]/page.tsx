@@ -26,7 +26,7 @@ export default async function EmbedPage({ params }: Props) {
   // Minimal embed page — no nav, no footer, just the lead capture essentials
   return (
     <main className="max-w-[480px] mx-auto p-6 text-foreground" style={{ fontFamily: "'Trebuchet MS', 'Gill Sans', 'Helvetica Neue', sans-serif" }}>
-      <h2 className="text-lg font-extrabold mb-2">
+      <h2 className="text-foreground text-lg font-extrabold mb-2">
         {niche.assessmentTitle}
       </h2>
       <p className="text-sm text-muted-foreground mb-4">

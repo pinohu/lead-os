@@ -75,7 +75,7 @@ export default function RoadmapPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(roadmapJsonLd) }} />
       <main id="main-content" className="max-w-6xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
-        <h1 className="text-2xl font-extrabold mb-2">Product Roadmap</h1>
+        <h1 className="text-foreground text-2xl font-extrabold mb-2">Product Roadmap</h1>
         <p className="text-foreground max-w-lg mx-auto">
           See what we are building next to help your agency grow. Have a feature request?{" "}
           <Link href="/contact" className="text-primary underline">
@@ -104,7 +104,7 @@ export default function RoadmapPage() {
                   className="border border-border rounded-lg p-4"
                   style={{ borderLeftWidth: 3, borderLeftColor: col.color }}
                 >
-                  <h3 className="text-sm font-semibold mb-1">
+                  <h3 className="text-foreground text-sm font-semibold mb-1">
                     {item.title}
                   </h3>
                   <p className="text-xs text-foreground leading-relaxed">

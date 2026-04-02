@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Legal</p>
-          <h1>Privacy Policy</h1>
+          <h1 className="text-foreground">Privacy Policy</h1>
           <p className="text-lg text-muted-foreground">
             Last updated: January 15, 2026. This policy explains how Lead OS collects, uses, shares,
             and protects your personal information, and the rights you have over that data.
@@ -40,7 +40,7 @@ export default function PrivacyPolicyPage() {
         className="rounded-xl border border-border bg-card p-6 max-w-4xl mx-auto leading-relaxed"
       >
         <section aria-labelledby="controller-heading" className="mb-10">
-          <h2 id="controller-heading">1. Data Controller</h2>
+          <h2 className="text-foreground" id="controller-heading">1. Data Controller</h2>
           <p>
             Lead OS (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is the data
             controller responsible for personal data processed through this platform. You may contact
@@ -60,10 +60,10 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="data-collected-heading" className="mb-10">
-          <h2 id="data-collected-heading">2. Data We Collect</h2>
+          <h2 className="text-foreground" id="data-collected-heading">2. Data We Collect</h2>
           <p>We collect the following categories of personal data:</p>
 
-          <h3 className="mt-5">2.1 Data You Provide Directly</h3>
+          <h3 className="text-foreground mt-5">2.1 Data You Provide Directly</h3>
           <ul className="space-y-2">
             <li>
               <strong>Contact information:</strong> Name, email address, phone number, and postal
@@ -83,7 +83,7 @@ export default function PrivacyPolicyPage() {
             </li>
           </ul>
 
-          <h3 className="mt-5">2.2 Data Collected Automatically</h3>
+          <h3 className="text-foreground mt-5">2.2 Data Collected Automatically</h3>
           <ul className="space-y-2">
             <li>
               <strong>Usage data:</strong> Pages visited, time spent, click patterns, funnel stage
@@ -103,7 +103,7 @@ export default function PrivacyPolicyPage() {
             </li>
           </ul>
 
-          <h3 className="mt-5">2.3 Data from Third Parties</h3>
+          <h3 className="text-foreground mt-5">2.3 Data from Third Parties</h3>
           <ul className="space-y-2">
             <li>
               <strong>Partner programs:</strong> Referral identifiers from affiliate and partner
@@ -117,7 +117,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="legal-basis-heading" className="mb-10">
-          <h2 id="legal-basis-heading">3. Legal Basis for Processing (GDPR)</h2>
+          <h2 className="text-foreground" id="legal-basis-heading">3. Legal Basis for Processing (GDPR)</h2>
           <p>
             If you are located in the European Economic Area (EEA) or United Kingdom, we process
             your personal data under the following legal bases:
@@ -144,7 +144,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="use-heading" className="mb-10">
-          <h2 id="use-heading">4. How We Use Your Data</h2>
+          <h2 className="text-foreground" id="use-heading">4. How We Use Your Data</h2>
           <ul className="space-y-2">
             <li>Capture and qualify leads on behalf of platform operators.</li>
             <li>Score leads based on engagement signals, behavior, and qualification responses.</li>
@@ -159,7 +159,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="sharing-heading" className="mb-10">
-          <h2 id="sharing-heading">5. Data Sharing and Disclosure</h2>
+          <h2 className="text-foreground" id="sharing-heading">5. Data Sharing and Disclosure</h2>
           <p>
             We do not sell your personal data. We share data only in the following circumstances:
           </p>
@@ -191,7 +191,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="cookies-heading" className="mb-10">
-          <h2 id="cookies-heading">6. Cookies and Tracking Technologies</h2>
+          <h2 className="text-foreground" id="cookies-heading">6. Cookies and Tracking Technologies</h2>
           <p>We use the following categories of cookies and similar technologies:</p>
           <ul className="space-y-2">
             <li>
@@ -218,7 +218,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="retention-heading" className="mb-10">
-          <h2 id="retention-heading">7. Data Retention</h2>
+          <h2 className="text-foreground" id="retention-heading">7. Data Retention</h2>
           <p>We retain personal data for the following periods:</p>
           <ul className="space-y-2">
             <li>
@@ -243,7 +243,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="transfers-heading" className="mb-10">
-          <h2 id="transfers-heading">8. International Data Transfers</h2>
+          <h2 className="text-foreground" id="transfers-heading">8. International Data Transfers</h2>
           <p>
             Lead OS operates infrastructure in the United States. If you are located in the EEA, UK,
             or Switzerland, your personal data may be transferred to and processed in the United
@@ -263,9 +263,9 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="gdpr-rights-heading" className="mb-10">
-          <h2 id="gdpr-rights-heading">9. Your Rights</h2>
+          <h2 className="text-foreground" id="gdpr-rights-heading">9. Your Rights</h2>
 
-          <h3 className="mt-5">9.1 GDPR Rights (EEA and UK Residents)</h3>
+          <h3 className="text-foreground mt-5">9.1 GDPR Rights (EEA and UK Residents)</h3>
           <p>If you are located in the EEA or UK, you have the following rights:</p>
           <ul className="space-y-2">
             <li>
@@ -301,7 +301,7 @@ export default function PrivacyPolicyPage() {
             </li>
           </ul>
 
-          <h3 className="mt-5">9.2 CCPA Rights (California Residents)</h3>
+          <h3 className="text-foreground mt-5">9.2 CCPA Rights (California Residents)</h3>
           <p>
             Under the California Consumer Privacy Act (CCPA) and California Privacy Rights Act
             (CPRA), California residents have the following rights:
@@ -341,7 +341,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="security-heading" className="mb-10">
-          <h2 id="security-heading">10. Security Measures</h2>
+          <h2 className="text-foreground" id="security-heading">10. Security Measures</h2>
           <p>
             We implement industry-standard technical and organizational security measures to protect
             your personal data, including:
@@ -361,7 +361,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="children-heading" className="mb-10">
-          <h2 id="children-heading">11. Children&apos;s Privacy</h2>
+          <h2 className="text-foreground" id="children-heading">11. Children&apos;s Privacy</h2>
           <p>
             Lead OS is not directed to individuals under the age of 16. We do not knowingly collect
             personal data from children. If you believe a child has provided personal data to us,
@@ -372,7 +372,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="third-party-heading" className="mb-10">
-          <h2 id="third-party-heading">12. Third-Party Services</h2>
+          <h2 className="text-foreground" id="third-party-heading">12. Third-Party Services</h2>
           <p>
             Our platform integrates with third-party services at the operator&apos;s direction.
             These may include:
@@ -390,7 +390,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="changes-heading" className="mb-10">
-          <h2 id="changes-heading">13. Changes to This Policy</h2>
+          <h2 className="text-foreground" id="changes-heading">13. Changes to This Policy</h2>
           <p>
             We may update this Privacy Policy periodically. Material changes will be communicated
             by updating the &ldquo;Last updated&rdquo; date at the top of this page and, where
@@ -400,7 +400,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section aria-labelledby="contact-heading" className="mb-10">
-          <h2 id="contact-heading">14. Contact Us</h2>
+          <h2 className="text-foreground" id="contact-heading">14. Contact Us</h2>
           <p>
             To exercise your rights, make a complaint, or ask questions about this policy:
           </p>

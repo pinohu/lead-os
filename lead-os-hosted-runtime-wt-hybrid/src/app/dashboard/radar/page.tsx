@@ -200,7 +200,7 @@ export default function RadarPage() {
       <main className="min-h-screen">
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Error</p>
-          <h2>Failed to load radar</h2>
+          <h2 className="text-foreground">Failed to load radar</h2>
           <div className="flex flex-wrap gap-3">
             <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Back to dashboard</Link>
           </div>
@@ -222,7 +222,7 @@ export default function RadarPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Hot lead radar</p>
-          <h1>Real-time monitoring</h1>
+          <h1 className="text-foreground">Real-time monitoring</h1>
           <p className="text-lg text-foreground">
             Live view of hot leads, high-intent events, and the full activity feed.
             Updates in real time via SSE.
@@ -330,7 +330,7 @@ export default function RadarPage() {
                     >
                       <ScoreRing score={lead.score} />
                       <div>
-                        <h3 className="m-0 text-base">
+                        <h3 className="text-foreground m-0 text-base">
                           <Link href={`/dashboard/leads/${encodeURIComponent(lead.leadKey)}`}>
                             {lead.firstName} {lead.lastName}
                           </Link>

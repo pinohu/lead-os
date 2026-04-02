@@ -34,7 +34,7 @@ export default async function SiteViewerPage({
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
           Deployment
         </p>
-        <h1 className="text-3xl font-bold mb-2">
+        <h1 className="text-foreground text-3xl font-bold mb-2">
           {deployment.nicheSlug}
         </h1>
         <div className="flex gap-3 items-center flex-wrap">
@@ -58,7 +58,7 @@ export default async function SiteViewerPage({
 
       {deployment.repoUrl ? (
         <section className="bg-muted p-5 rounded-lg mb-6 border border-border">
-          <h2 className="text-base font-semibold mb-2">URLs</h2>
+          <h2 className="text-foreground text-base font-semibold mb-2">URLs</h2>
           <ul className="list-none p-0 m-0">
             {deployment.repoUrl ? (
               <li className="mb-2">
@@ -102,7 +102,7 @@ export default async function SiteViewerPage({
       ) : null}
 
       <section>
-        <h2 className="text-xl font-bold mb-4">
+        <h2 className="text-foreground text-xl font-bold mb-4">
           Deployed Assets ({deployment.assets.length})
         </h2>
         <div className="flex flex-col gap-3">

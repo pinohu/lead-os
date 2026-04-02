@@ -66,7 +66,7 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
       <section className="grid md:grid-cols-2 gap-6">
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Calculator principle</p>
-          <h2>Show the upside before asking for deeper commitment</h2>
+          <h2 className="text-foreground">Show the upside before asking for deeper commitment</h2>
           <ul className="space-y-2">
             <li>Visitors should understand what they are estimating in under ten seconds.</li>
             <li>The calculation should frame the cost of inaction without manipulative fear.</li>
@@ -75,7 +75,7 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
         </article>
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Adaptive behavior</p>
-          <h2>Calculator-first can still branch into chat or qualification</h2>
+          <h2 className="text-foreground">Calculator-first can still branch into chat or qualification</h2>
           <ul className="space-y-2">
             <li>If the visitor wants speed, we can shorten into a consult path.</li>
             <li>If the visitor wants reassurance, we can route into authority or webinar proof.</li>
@@ -90,7 +90,7 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
         return (
           <section className="rounded-xl border border-border bg-card p-6">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Your {niche.label} ROI estimator</p>
-            <h2>{preset.resultLabel}</h2>
+            <h2 className="text-foreground">{preset.resultLabel}</h2>
             <p className="text-muted-foreground">{preset.formula}</p>
             <fieldset className="border-none p-0 m-0">
               <legend className="sr-only">ROI Calculator Inputs</legend>

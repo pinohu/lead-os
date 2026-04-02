@@ -350,7 +350,7 @@ function AboutSection({
     <div className={SECTION_CLASSES}>
       <div className={MAX_W_CLASSES}>
         <h2
-          className="mb-5 -tracking-[0.02em]"
+          className="text-foreground mb-5 -tracking-[0.02em]"
           style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}
         >
           About {businessName}
@@ -363,7 +363,7 @@ function AboutSection({
         {(phone || email || address || website) ? (
           <div className={`${CARD_CLASSES} p-6 inline-block min-w-[260px]`}>
             <h3
-              className="text-[1.15rem] mb-4"
+              className="text-foreground text-[1.15rem] mb-4"
               style={{ fontFamily: SERIF }}
             >
               Contact Information

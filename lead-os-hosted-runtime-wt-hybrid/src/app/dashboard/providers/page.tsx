@@ -18,7 +18,7 @@ export default async function ProviderHealthPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Provider health</p>
-          <h1>{tenantConfig.brandName} integration readiness</h1>
+          <h1 className="text-foreground">{tenantConfig.brandName} integration readiness</h1>
           <p className="text-lg text-foreground">
             This view shows which providers are configured, which channels are live, and where the
             runtime can act without human cleanup.
@@ -57,7 +57,7 @@ export default async function ProviderHealthPage() {
       {!configSummary.envOnlyReady ? (
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Config hardening</p>
-          <h2>Embedded fallback still in use</h2>
+          <h2 className="text-foreground">Embedded fallback still in use</h2>
           <p className="text-muted-foreground">
             The runtime is still depending on embedded fallback credentials for some providers.
             Production will be fully hardened only after those values are moved into Railway env
@@ -75,7 +75,7 @@ export default async function ProviderHealthPage() {
         {providerEntries.map(([provider, status]) => (
           <article key={provider} className="stack-card">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{provider}</p>
-            <h2>
+            <h2 className="text-foreground">
               {status.status === "configured"
                 ? "Configured"
                 : status.status === "dry-run"

@@ -154,7 +154,7 @@ export default function MarketplaceDashboardPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Marketplace</p>
-          <h1>Lead marketplace</h1>
+          <h1 className="text-foreground">Lead marketplace</h1>
           <p className="text-lg text-foreground">
             Publish, sell, and track lead inventory across niches and buyer accounts.
           </p>
@@ -189,29 +189,29 @@ export default function MarketplaceDashboardPage() {
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Total revenue</p>
-          <h2>{formatCents(revenue?.total ?? 0)}</h2>
+          <h2 className="text-foreground">{formatCents(revenue?.total ?? 0)}</h2>
           <p className="text-muted-foreground">Revenue from all sold leads.</p>
         </article>
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Leads sold</p>
-          <h2>{revenue?.leadsSold ?? 0}</h2>
+          <h2 className="text-foreground">{revenue?.leadsSold ?? 0}</h2>
           <p className="text-muted-foreground">Total leads with completed sales.</p>
         </article>
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Avg price</p>
-          <h2>{formatCents(revenue?.avgPrice ?? 0)}</h2>
+          <h2 className="text-foreground">{formatCents(revenue?.avgPrice ?? 0)}</h2>
           <p className="text-muted-foreground">Average price per lead.</p>
         </article>
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Active buyers</p>
-          <h2>{buyers.filter((b) => b.status === "active").length}</h2>
+          <h2 className="text-foreground">{buyers.filter((b) => b.status === "active").length}</h2>
           <p className="text-muted-foreground">Buyer accounts currently active.</p>
         </article>
       </section>
 
       <section className="rounded-xl border border-border bg-card p-6">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Revenue by niche</p>
-        <h2>Top niches</h2>
+        <h2 className="text-foreground">Top niches</h2>
         {nicheEntries.length === 0 ? (
           <p className="text-muted-foreground">No revenue data yet.</p>
         ) : (
@@ -243,7 +243,7 @@ export default function MarketplaceDashboardPage() {
 
       <section className="rounded-xl border border-border bg-card p-6">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Quality distribution</p>
-        <h2>Lead temperature</h2>
+        <h2 className="text-foreground">Lead temperature</h2>
         {Object.keys(temperatureDist).length === 0 ? (
           <p className="text-muted-foreground">No leads published yet.</p>
         ) : (
@@ -268,7 +268,7 @@ export default function MarketplaceDashboardPage() {
 
       <section className="rounded-xl border border-border bg-card p-6">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Recent activity</p>
-        <h2>Recent sales</h2>
+        <h2 className="text-foreground">Recent sales</h2>
         {soldLeads.length === 0 && claimedLeads.length === 0 ? (
           <p className="text-muted-foreground">No sales activity yet.</p>
         ) : (
@@ -309,7 +309,7 @@ export default function MarketplaceDashboardPage() {
 
       <section className="rounded-xl border border-border bg-card p-6">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Accounts</p>
-        <h2>Buyer accounts</h2>
+        <h2 className="text-foreground">Buyer accounts</h2>
         {buyers.length === 0 ? (
           <p className="text-muted-foreground">No buyer accounts created yet.</p>
         ) : (

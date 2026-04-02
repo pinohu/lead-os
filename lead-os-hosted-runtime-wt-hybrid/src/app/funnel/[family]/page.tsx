@@ -93,12 +93,12 @@ export default async function FunnelFamilyPage({ params, searchParams }: FunnelF
       <section className="grid md:grid-cols-2 gap-6">
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Canonical nodes</p>
-          <h2>Every step has one job</h2>
+          <h2 className="text-foreground">Every step has one job</h2>
           <div className="stack-grid">
             {graph.nodes.map((node) => (
               <article key={node.id} className="stack-card">
                 <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{node.channel}</p>
-                <h3>{node.name}</h3>
+                <h3 className="text-foreground">{node.name}</h3>
                 <p className="text-muted-foreground">
                   {node.type} • {node.purpose}
                 </p>
@@ -108,7 +108,7 @@ export default async function FunnelFamilyPage({ params, searchParams }: FunnelF
         </article>
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Automation recipe</p>
-          <h2>How the runtime engineers visits two and three</h2>
+          <h2 className="text-foreground">How the runtime engineers visits two and three</h2>
           <p className="text-muted-foreground">Trigger: {recipe.trigger}</p>
           <ul className="space-y-2">
             {recipe.actions.map((action) => (

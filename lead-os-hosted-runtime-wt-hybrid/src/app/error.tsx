@@ -14,7 +14,7 @@ export default function GlobalError({
       aria-live="assertive"
       className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center"
     >
-      <h1 className="text-2xl font-bold mb-3">
+      <h1 className="text-foreground text-2xl font-bold mb-3">
         Something went wrong
       </h1>
       <p className="text-foreground mb-6 max-w-lg">

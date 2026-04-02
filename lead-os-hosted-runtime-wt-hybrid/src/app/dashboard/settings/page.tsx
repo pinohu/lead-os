@@ -22,7 +22,7 @@ export default async function RuntimeSettingsPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Runtime settings</p>
-          <h1>{tenantConfig.brandName} executable provider mappings</h1>
+          <h1 className="text-foreground">{tenantConfig.brandName} executable provider mappings</h1>
           <p className="text-lg text-foreground">
             This is the operator-facing layer for non-secret provider configuration. Template IDs,
             service IDs, and fallback URLs live here so the runtime can become more executable
@@ -63,7 +63,7 @@ export default async function RuntimeSettingsPage() {
       <section className="grid md:grid-cols-2 gap-6">
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Documentero discovery</p>
-          <h2>Available templates detected from the account API</h2>
+          <h2 className="text-foreground">Available templates detected from the account API</h2>
           {templateCatalog.length === 0 ? (
             <p className="text-muted-foreground">No account templates were discovered yet. If you only see the sample template in Documentero, create your real proposal/agreement/onboarding templates there first.</p>
           ) : (
@@ -79,7 +79,7 @@ export default async function RuntimeSettingsPage() {
 
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Trafft discovery</p>
-          <h2>Booking tenant visibility</h2>
+          <h2 className="text-foreground">Booking tenant visibility</h2>
           {trafftTenant ? (
             <ul className="space-y-2">
               <li>Tenant name: {trafftTenant.tenantName ?? "Unknown"}</li>

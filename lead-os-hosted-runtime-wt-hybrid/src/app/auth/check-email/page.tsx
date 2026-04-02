@@ -36,7 +36,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
         </div>
 
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Check your inbox</p>
-        <h1 id="check-email-heading" className="text-[clamp(2rem,4vw,3.6rem)]">
+        <h1 id="check-email-heading" className="text-foreground text-[clamp(2rem,4vw,3.6rem)]">
           Magic link sent
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -53,7 +53,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
 
       {/* Tips panel */}
       <section className="rounded-xl border border-border bg-card p-6" aria-label="What to do next">
-        <h2 className="text-base font-bold mb-4">
+        <h2 className="text-foreground text-base font-bold mb-4">
           What to do next
         </h2>
 
@@ -81,7 +81,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
 
         {/* Didn't receive it section */}
         <div className="mt-7 pt-6 border-t border-border">
-          <h2 className="text-[0.95rem] font-bold mb-3">
+          <h2 className="text-foreground text-[0.95rem] font-bold mb-3">
             Didn&apos;t receive it?
           </h2>
           <ul className="list-none p-0 mb-5 grid gap-2">

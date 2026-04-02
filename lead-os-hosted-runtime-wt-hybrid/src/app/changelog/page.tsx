@@ -99,7 +99,7 @@ const releases: Release[] = [
 export default function ChangelogPage() {
   return (
     <main id="main-content" className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-2xl font-extrabold mb-2">What&apos;s New</h1>
+      <h1 className="text-foreground text-2xl font-extrabold mb-2">What&apos;s New</h1>
       <p className="text-foreground mb-12">
         Platform updates, new capabilities, and improvements that help your agency grow.
       </p>
@@ -110,7 +110,7 @@ export default function ChangelogPage() {
           className="mb-12 pb-8 border-b border-border"
         >
           <div className="flex items-baseline gap-4 mb-4">
-            <h2 className="text-2xl font-bold">v{release.version}</h2>
+            <h2 className="text-foreground text-2xl font-bold">v{release.version}</h2>
             <time className="text-muted-foreground text-sm">{release.date}</time>
           </div>
 

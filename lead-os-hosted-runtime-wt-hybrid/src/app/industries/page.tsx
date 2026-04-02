@@ -37,7 +37,7 @@ export default function IndustriesPage() {
     <main id="main-content" className="max-w-6xl mx-auto px-4 py-16">
       <div className="text-center mb-12">
         <Badge variant="secondary" className="mb-4">Industries we serve</Badge>
-        <h1 className="text-4xl font-extrabold tracking-tight mb-4">
+        <h1 className="text-foreground text-4xl font-extrabold tracking-tight mb-4">
           Launch any client in minutes, not weeks
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

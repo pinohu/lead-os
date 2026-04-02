@@ -175,7 +175,7 @@ export default function AttributionPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Attribution</p>
-          <h1>Channel attribution</h1>
+          <h1 className="text-foreground">Channel attribution</h1>
           <p className="text-lg text-foreground">
             Understand which channels drive lead capture and conversion. Compare attribution
             models to see how credit shifts across the customer journey.
@@ -215,7 +215,7 @@ export default function AttributionPage() {
 
       <section className="rounded-xl border border-border bg-card p-6">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Channel performance ({selectedModel.replace("-", " ")})</p>
-        <h2>Attributed channel breakdown</h2>
+        <h2 className="text-foreground">Attributed channel breakdown</h2>
         {attributedChannels.length === 0 ? (
           <p className="text-muted-foreground">No channel data available.</p>
         ) : (
@@ -249,7 +249,7 @@ export default function AttributionPage() {
       <section className="grid md:grid-cols-2 gap-6">
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Campaign performance</p>
-          <h2>Funnel family breakdown</h2>
+          <h2 className="text-foreground">Funnel family breakdown</h2>
           {!analyticsData?.funnelPerformance?.length ? (
             <p className="text-muted-foreground">No funnel data available.</p>
           ) : (
@@ -280,7 +280,7 @@ export default function AttributionPage() {
 
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Source / niche breakdown</p>
-          <h2>Combined attribution</h2>
+          <h2 className="text-foreground">Combined attribution</h2>
           {sourceMediumBreakdown.length === 0 ? (
             <p className="text-muted-foreground">No source data available.</p>
           ) : (
@@ -312,7 +312,7 @@ export default function AttributionPage() {
 
       <section className="rounded-xl border border-border bg-card p-6">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Touch journey</p>
-        <h2>Converted lead journeys</h2>
+        <h2 className="text-foreground">Converted lead journeys</h2>
         {convertedLeads.length === 0 ? (
           <p className="text-muted-foreground">No converted leads to show touch journeys for.</p>
         ) : (
@@ -323,7 +323,7 @@ export default function AttributionPage() {
                 <article key={lead.leadKey} className="stack-card">
                   <div className="flex justify-between items-center flex-wrap gap-2">
                     <div>
-                      <h3 className="text-base m-0">
+                      <h3 className="text-foreground text-base m-0">
                         {lead.firstName} {lead.lastName}
                       </h3>
                       <p className="text-muted-foreground text-sm">

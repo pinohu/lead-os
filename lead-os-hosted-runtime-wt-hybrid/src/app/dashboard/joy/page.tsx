@@ -78,7 +78,7 @@ export default function JoyDashboard() {
       {/* -- Greeting ------------------------------------------------- */}
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24 text-center">
         <div className="max-w-2xl mx-auto max-w-[700px]">
-          <h1 className="text-[clamp(1.6rem,4vw,2.4rem)]">
+          <h1 className="text-foreground text-[clamp(1.6rem,4vw,2.4rem)]">
             {briefing.greeting}
           </h1>
           <p className="text-lg text-foreground">{briefing.summary}</p>
@@ -125,7 +125,7 @@ export default function JoyDashboard() {
                 key={m.id}
                 className="rounded-xl border border-border bg-card p-6 text-center border-t-4 border-t-[var(--accent)]"
               >
-                <h3 className="mb-1 text-base">{m.title}</h3>
+                <h3 className="text-foreground mb-1 text-base">{m.title}</h3>
                 <p className="text-muted-foreground text-sm">{m.message}</p>
                 <span className="mt-2 inline-block rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-bold text-[var(--accent-strong)]">
                   {m.metric}
@@ -163,7 +163,7 @@ export default function JoyDashboard() {
         </section>
       ) : (
         <section className="rounded-xl border border-border bg-card p-6 text-center">
-          <h2 className="mb-2">
+          <h2 className="text-foreground mb-2">
             Nothing needs your attention right now
           </h2>
           <p className="text-muted-foreground">
@@ -186,7 +186,7 @@ export default function JoyDashboard() {
         <div className="grid md:grid-cols-2 gap-6">
           {briefing.timeSaved.breakdown.map((item) => (
             <article key={item.category} className="rounded-xl border border-border bg-card p-6">
-              <h3 className="mb-1 text-sm">{item.category}</h3>
+              <h3 className="text-foreground mb-1 text-sm">{item.category}</h3>
               <p className="m-0 text-xl font-extrabold text-[var(--accent)]">
                 {item.hoursSaved.toFixed(1)} hrs
               </p>

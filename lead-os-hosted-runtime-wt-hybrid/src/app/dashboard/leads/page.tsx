@@ -214,7 +214,7 @@ export default function LeadsPage() {
       <section className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-4">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead list</p>
-          <h1 className="text-2xl font-bold tracking-tight">All leads</h1>
+          <h1 className="text-foreground text-2xl font-bold tracking-tight">All leads</h1>
           <p className="text-lg text-muted-foreground">
             Browse, search, and filter every lead captured by this runtime. Click a row to open the
             full lead detail view.
@@ -241,7 +241,7 @@ export default function LeadsPage() {
         </div>
         <aside className="space-y-3">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Total leads</p>
-          <h2 className="text-3xl font-bold">{data?.total ?? "\u2014"}</h2>
+          <h2 className="text-foreground text-3xl font-bold">{data?.total ?? "\u2014"}</h2>
           <p className="text-sm text-muted-foreground">
             Page {page} of {totalPages} &mdash; {PAGE_SIZE} per page
           </p>

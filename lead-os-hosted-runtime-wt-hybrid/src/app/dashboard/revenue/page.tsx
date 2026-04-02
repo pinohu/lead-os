@@ -175,7 +175,7 @@ export default async function RevenueCommandPage() {
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
           Revenue Command Center
         </p>
-        <h1 className="text-2xl font-extrabold mt-1 mb-2">Revenue Dashboard</h1>
+        <h1 className="text-foreground text-2xl font-extrabold mt-1 mb-2">Revenue Dashboard</h1>
         <p className="text-sm text-muted-foreground">
           Period: {data.period} | Single source of truth for all revenue decisions.
         </p>
@@ -202,13 +202,13 @@ export default async function RevenueCommandPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <Card>
           <CardContent className="pt-6 space-y-3">
-            <h2 className="text-sm font-bold">Revenue by Niche</h2>
+            <h2 className="text-foreground text-sm font-bold">Revenue by Niche</h2>
             <BarChart data={nicheData} maxValue={nicheMax} />
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6 space-y-3">
-            <h2 className="text-sm font-bold">Revenue by Source / Channel</h2>
+            <h2 className="text-foreground text-sm font-bold">Revenue by Source / Channel</h2>
             <BarChart data={sourceData} maxValue={sourceMax} />
           </CardContent>
         </Card>
@@ -218,13 +218,13 @@ export default async function RevenueCommandPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <Card>
           <CardContent className="pt-6 space-y-3">
-            <h2 className="text-sm font-bold">Revenue by Channel Performance</h2>
+            <h2 className="text-foreground text-sm font-bold">Revenue by Channel Performance</h2>
             <BarChart data={channelData} maxValue={channelMax} />
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6 space-y-3">
-            <h2 className="text-sm font-bold">Revenue by Funnel Family</h2>
+            <h2 className="text-foreground text-sm font-bold">Revenue by Funnel Family</h2>
             <BarChart data={funnelData} maxValue={funnelMax} />
           </CardContent>
         </Card>
@@ -234,13 +234,13 @@ export default async function RevenueCommandPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <Card>
           <CardContent className="pt-6 space-y-3">
-            <h2 className="text-sm font-bold">Revenue by Offer Variant</h2>
+            <h2 className="text-foreground text-sm font-bold">Revenue by Offer Variant</h2>
             <BarChart data={offerData} maxValue={offerMax} />
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6 space-y-3">
-            <h2 className="text-sm font-bold">LTV Segments</h2>
+            <h2 className="text-foreground text-sm font-bold">LTV Segments</h2>
             <div role="list" aria-label="LTV segments" className="flex flex-col gap-2.5">
               {data.ltvSegments.map((seg) => (
                 <div key={seg.tier} role="listitem" className="flex justify-between px-3 py-2 bg-muted/30 rounded-lg">
@@ -258,7 +258,7 @@ export default async function RevenueCommandPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <Card>
           <CardContent className="pt-6 space-y-3">
-            <h2 className="text-sm font-bold">Conversion Rate by Lead Score Tier</h2>
+            <h2 className="text-foreground text-sm font-bold">Conversion Rate by Lead Score Tier</h2>
             <div role="list" aria-label="Conversion rates by score tier" className="flex flex-col gap-2">
               {Object.entries(data.conversionByTier).map(([tier, rate]) => {
                 const tierCount = data.scoreTierCounts[tier];
@@ -284,7 +284,7 @@ export default async function RevenueCommandPage() {
 
         <Card>
           <CardContent className="pt-6 space-y-3">
-            <h2 className="text-sm font-bold">Revenue Forecast</h2>
+            <h2 className="text-foreground text-sm font-bold">Revenue Forecast</h2>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between px-4 py-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
                 <span className="font-semibold text-sm">30-day forecast</span>
@@ -305,7 +305,7 @@ export default async function RevenueCommandPage() {
       {/* Top leads by value */}
       <Card>
         <CardContent className="pt-6 space-y-3">
-          <h2 className="text-sm font-bold">Top 10 Leads by Predicted Value</h2>
+          <h2 className="text-foreground text-sm font-bold">Top 10 Leads by Predicted Value</h2>
           {data.topLeadsByValue.length === 0 ? (
             <p className="text-sm text-muted-foreground">No leads with predicted value available.</p>
           ) : (

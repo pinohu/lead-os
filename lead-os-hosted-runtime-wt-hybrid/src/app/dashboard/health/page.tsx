@@ -187,12 +187,12 @@ export default function HealthDashboardPage() {
       )}
       <section className="rounded-xl border border-border bg-card p-6">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Product Analytics</p>
-        <h1>Tenant Health</h1>
+        <h1 className="text-foreground">Tenant Health</h1>
         <p className="text-muted-foreground">Monitor tenant engagement, feature adoption, and churn risk.</p>
       </section>
 
       <section className="rounded-xl border border-border bg-card p-6 mt-6">
-        <h2>Lookup Tenant</h2>
+        <h2 className="text-foreground">Lookup Tenant</h2>
         <div className="flex gap-2 mt-3">
           <label htmlFor="tenant-id-input" className="sr-only">Tenant ID</label>
           <input
@@ -217,7 +217,7 @@ export default function HealthDashboardPage() {
       {data && (
         <>
           <section className="rounded-xl border border-border bg-card p-6 mt-6">
-            <h2>Health Score</h2>
+            <h2 className="text-foreground">Health Score</h2>
             <p className="text-muted-foreground mb-4">Tenant: {tenantId}</p>
             <div className="flex gap-10 flex-wrap items-start">
               <ScoreGauge score={data.healthScore.score} riskLevel={data.healthScore.riskLevel} />
@@ -230,7 +230,7 @@ export default function HealthDashboardPage() {
           </section>
 
           <section className="rounded-xl border border-border bg-card p-6 mt-6">
-            <h2>Feature Adoption</h2>
+            <h2 className="text-foreground">Feature Adoption</h2>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3 mt-3">
               {KNOWN_FEATURES.map((feature) => {
                 const isUsed = usedFeatures.has(feature);
@@ -258,7 +258,7 @@ export default function HealthDashboardPage() {
           </section>
 
           <section className="rounded-xl border border-border bg-card p-6 mt-6">
-            <h2>Config Completeness Checklist</h2>
+            <h2 className="text-foreground">Config Completeness Checklist</h2>
             <ul className="list-none p-0 mt-3">
               {[
                 { label: "Scoring configured", feature: "scoring.configured" },
@@ -291,7 +291,7 @@ export default function HealthDashboardPage() {
 
       {atRisk && atRisk.atRiskTenants.length > 0 && (
         <section className="rounded-xl border border-border bg-card p-6 mt-6">
-          <h2>At-Risk Tenants</h2>
+          <h2 className="text-foreground">At-Risk Tenants</h2>
           <p className="text-muted-foreground mb-3">Tenants with health score below 40 that may churn.</p>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
@@ -333,7 +333,7 @@ export default function HealthDashboardPage() {
 
       {atRisk && atRisk.atRiskTenants.length === 0 && !data && (
         <section className="rounded-xl border border-border bg-card p-6 mt-6">
-          <h2>All Tenants Healthy</h2>
+          <h2 className="text-foreground">All Tenants Healthy</h2>
           <p className="text-muted-foreground">No tenants are currently at risk of churning. Enter a tenant ID above to view detailed health data.</p>
         </section>
       )}

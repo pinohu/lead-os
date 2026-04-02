@@ -137,7 +137,7 @@ export default function PricingPage() {
       <main id="main-content" className="max-w-7xl mx-auto px-4 py-16">
       <div className="text-center mb-12">
         <Badge variant="secondary" className="mb-4">Pricing</Badge>
-        <h1 className="text-4xl font-extrabold tracking-tight mb-3">
+        <h1 className="text-foreground text-4xl font-extrabold tracking-tight mb-3">
           Replace 15-20 Tools With One Platform
         </h1>
         <p className="text-foreground max-w-2xl mx-auto text-lg">
@@ -196,7 +196,7 @@ export default function PricingPage() {
       </div>
 
       <section className="text-center mb-16" aria-labelledby="why-choose-heading">
-        <h2 id="why-choose-heading" className="text-2xl font-bold mb-8">Why Teams Choose Lead OS</h2>
+        <h2 id="why-choose-heading" className="text-foreground text-2xl font-bold mb-8">Why Teams Choose Lead OS</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
           {[
             {
@@ -241,7 +241,7 @@ export default function PricingPage() {
       </section>
 
       <section className="text-center mb-16" aria-labelledby="faq-heading">
-        <h2 id="faq-heading" className="text-2xl font-bold mb-8">Frequently Asked Questions</h2>
+        <h2 id="faq-heading" className="text-foreground text-2xl font-bold mb-8">Frequently Asked Questions</h2>
         <div className="max-w-2xl mx-auto text-left space-y-0">
           {[
             { q: "Can I try Lead OS before committing?", a: "Yes. Every plan starts with a 14-day free trial. You can test everything in sandbox mode before going live." },
@@ -264,7 +264,7 @@ export default function PricingPage() {
       </section>
 
       <section className="text-center" aria-labelledby="all-plans-heading">
-        <h2 id="all-plans-heading" className="text-2xl font-bold mb-6">All Plans Include</h2>
+        <h2 id="all-plans-heading" className="text-foreground text-2xl font-bold mb-6">All Plans Include</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left">
           {[
             "Risk-free testing sandbox",

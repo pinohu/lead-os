@@ -204,7 +204,7 @@ export default function CreativePipelinePage() {
       )}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold m-0">Creative Pipelines</h1>
+          <h1 className="text-foreground text-2xl font-bold m-0">Creative Pipelines</h1>
           <p className="text-muted-foreground mt-1 text-sm">
             Scheduled automation jobs that generate creative assets on a cadence.
           </p>
@@ -233,7 +233,7 @@ export default function CreativePipelinePage() {
 
       {showCreateForm && (
         <section aria-label="Create new creative job" className="rounded-xl bg-card p-6 shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Create New Job</h2>
+          <h2 className="text-foreground text-lg font-semibold mb-4">Create New Job</h2>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3">
             {JOB_TYPE_OPTIONS.map((option) => (
               <button
@@ -276,7 +276,7 @@ export default function CreativePipelinePage() {
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-base font-semibold m-0">
+                    <h3 className="text-foreground text-base font-semibold m-0">
                       {JOB_TYPE_OPTIONS.find((o) => o.type === job.type)?.name ?? job.type}
                     </h3>
                     <span className={`px-2.5 py-0.5 rounded-full text-[0.7rem] font-medium ${getStatusBadgeClass(job.status)}`}>
@@ -321,7 +321,7 @@ export default function CreativePipelinePage() {
 
               {output && (
                 <div className="mt-4 border-t border-muted-foreground/30 pt-4">
-                  <h4 className="text-sm font-semibold mb-2">
+                  <h4 className="text-foreground text-sm font-semibold mb-2">
                     Latest Output ({output.artifacts.length} artifact{output.artifacts.length !== 1 ? "s" : ""})
                   </h4>
                   <div className="flex flex-col gap-2">
@@ -386,7 +386,7 @@ export default function CreativePipelinePage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold m-0">{previewArtifact.name}</h2>
+              <h2 className="text-foreground text-lg font-semibold m-0">{previewArtifact.name}</h2>
               <button
                 type="button"
                 className="px-4 py-2 rounded-lg border border-muted-foreground/30 cursor-pointer text-sm font-semibold bg-transparent text-muted-foreground"

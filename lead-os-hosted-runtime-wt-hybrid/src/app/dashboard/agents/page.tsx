@@ -262,7 +262,7 @@ export default function AgentsPage() {
   return (
     <main className="max-w-[1180px] mx-auto px-6 pt-6 pb-12">
       <header className="mb-6">
-        <h1 className="text-2xl font-extrabold">
+        <h1 className="text-foreground text-2xl font-extrabold">
           Agent Orchestrator
         </h1>
         <p className="mt-1.5 text-muted-foreground text-sm">

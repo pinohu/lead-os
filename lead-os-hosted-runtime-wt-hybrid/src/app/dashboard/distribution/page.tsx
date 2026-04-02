@@ -137,7 +137,7 @@ export default function DistributionDashboardPage() {
     <main className="max-w-[1180px] mx-auto px-6 py-8">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold m-0">Distribution Engine</h1>
+          <h1 className="text-foreground text-2xl font-bold m-0">Distribution Engine</h1>
           <p className="text-muted-foreground mt-1 text-sm">
             Traffic acquisition across SEO, content, social, and paid channels.
           </p>
@@ -165,7 +165,7 @@ export default function DistributionDashboardPage() {
 
       {/* Channel Performance Cards */}
       <section aria-label="Channel performance">
-        <h2 className="text-lg font-semibold mb-3">Channel Performance</h2>
+        <h2 className="text-foreground text-lg font-semibold mb-3">Channel Performance</h2>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4 mb-8">
           {channelData.map((ch) => (
             <div key={ch.channel} className="rounded-xl bg-card p-6 shadow-sm" style={{ borderLeft: `3px solid ${getChannelColor(ch.channel)}` }}>
@@ -195,7 +195,7 @@ export default function DistributionDashboardPage() {
 
       {/* Page Counts */}
       <section aria-label="Page inventory">
-        <h2 className="text-lg font-semibold mb-3">Page Inventory</h2>
+        <h2 className="text-foreground text-lg font-semibold mb-3">Page Inventory</h2>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4 mb-8">
           <div className="rounded-xl bg-card p-6 shadow-sm">
             <div className="text-xs text-muted-foreground mb-1">SEO Pages</div>
@@ -210,7 +210,7 @@ export default function DistributionDashboardPage() {
 
       {/* Content Calendar */}
       <section aria-label="Content calendar">
-        <h2 className="text-lg font-semibold mb-3">Content Calendar</h2>
+        <h2 className="text-foreground text-lg font-semibold mb-3">Content Calendar</h2>
         {schedules.length === 0 ? (
           <div className="rounded-xl bg-card p-12 shadow-sm text-center mb-8">
             <p className="text-muted-foreground m-0">
@@ -253,7 +253,7 @@ export default function DistributionDashboardPage() {
 
       {/* Top Performing Content */}
       <section aria-label="Top performing content">
-        <h2 className="text-lg font-semibold mb-3">Top Performing Content</h2>
+        <h2 className="text-foreground text-lg font-semibold mb-3">Top Performing Content</h2>
         {topContent.length === 0 ? (
           <div className="rounded-xl bg-card p-12 shadow-sm text-center">
             <p className="text-muted-foreground m-0">

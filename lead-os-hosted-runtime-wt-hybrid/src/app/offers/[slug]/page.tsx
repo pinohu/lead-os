@@ -79,7 +79,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
       <section className="grid md:grid-cols-2 gap-6">
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Why this offer page feels lighter</p>
-          <h2>One ask, one fallback, one reassurance</h2>
+          <h2 className="text-foreground">One ask, one fallback, one reassurance</h2>
           <ul className="space-y-2">
             <li>Primary CTA stays singular so purchase intent does not fragment.</li>
             <li>Support CTA stays human and non-threatening for slower deciders.</li>
@@ -88,7 +88,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
         </article>
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What happens after the decision</p>
-          <h2>No dead ends after purchase or hesitation</h2>
+          <h2 className="text-foreground">No dead ends after purchase or hesitation</h2>
           <ul className="space-y-2">
             <li>Checkout success triggers onboarding, portal invite, and activation logic.</li>
             <li>Hesitation triggers recovery, coupon rescue, and second-touch re-entry.</li>
@@ -104,7 +104,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
         return (
           <section>
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Why this offer works for {niche.label}</p>
-            <h2>Niche-specific offer blueprint</h2>
+            <h2 className="text-foreground">Niche-specific offer blueprint</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <article className="rounded-xl border border-border bg-card p-6">
                 <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Services included</p>

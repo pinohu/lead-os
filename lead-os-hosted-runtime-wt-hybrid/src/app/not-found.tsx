@@ -12,7 +12,7 @@ export default function NotFound() {
           >
             404
           </span>
-          <h1 id="not-found-heading" className="text-3xl font-bold">
+          <h1 id="not-found-heading" className="text-foreground text-3xl font-bold">
             Page not found
           </h1>
           <p className="text-lg text-muted-foreground">

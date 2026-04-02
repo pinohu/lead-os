@@ -146,7 +146,7 @@ export default function AnalyticsPage() {
       <section className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-4">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Analytics</p>
-          <h1 className="text-2xl font-bold tracking-tight">Lead performance analytics</h1>
+          <h1 className="text-foreground text-2xl font-bold tracking-tight">Lead performance analytics</h1>
           <p className="text-lg text-foreground">
             Funnel progression, channel performance, scoring distributions, and trend analysis
             across all captured leads.
@@ -185,28 +185,28 @@ export default function AnalyticsPage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Total leads</p>
-            <h2 className="text-2xl font-bold mt-1">{data.metrics.totalLeads}</h2>
+            <h2 className="text-foreground text-2xl font-bold mt-1">{data.metrics.totalLeads}</h2>
             <p className="text-sm text-muted-foreground mt-1">All captured leads in the runtime.</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Conversion rate</p>
-            <h2 className="text-2xl font-bold mt-1">{data.metrics.conversionRate}%</h2>
+            <h2 className="text-foreground text-2xl font-bold mt-1">{data.metrics.conversionRate}%</h2>
             <p className="text-sm text-muted-foreground mt-1">Leads that reached converted stage or beyond.</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Average score</p>
-            <h2 className="text-2xl font-bold mt-1">{data.metrics.avgScore}</h2>
+            <h2 className="text-foreground text-2xl font-bold mt-1">{data.metrics.avgScore}</h2>
             <p className="text-sm text-muted-foreground mt-1">Mean composite score across all leads.</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Hot leads</p>
-            <h2 className="text-2xl font-bold mt-1">{data.metrics.hotLeads}</h2>
+            <h2 className="text-foreground text-2xl font-bold mt-1">{data.metrics.hotLeads}</h2>
             <p className="text-sm text-muted-foreground mt-1">Leads flagged as hot or scoring 75+.</p>
           </CardContent>
         </Card>
@@ -216,7 +216,7 @@ export default function AnalyticsPage() {
       <Card>
         <CardContent className="pt-6 space-y-4">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead funnel</p>
-          <h2 className="text-lg font-semibold">Stage progression</h2>
+          <h2 className="text-foreground text-lg font-semibold">Stage progression</h2>
           {data.funnelStages.length === 0 ? (
             <p className="text-sm text-muted-foreground">No funnel data available yet.</p>
           ) : (
@@ -252,7 +252,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardContent className="pt-6 space-y-4">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Score distribution</p>
-            <h2 className="text-lg font-semibold">Lead score buckets</h2>
+            <h2 className="text-foreground text-lg font-semibold">Lead score buckets</h2>
             {data.scoreDistribution.every((b) => b.count === 0) ? (
               <p className="text-sm text-muted-foreground">No scored leads yet.</p>
             ) : (
@@ -277,7 +277,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardContent className="pt-6 space-y-4">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Weekly captures</p>
-            <h2 className="text-lg font-semibold">Last 30 days</h2>
+            <h2 className="text-foreground text-lg font-semibold">Last 30 days</h2>
             {data.weeklyTimeSeries.every((w) => w.count === 0) ? (
               <p className="text-sm text-muted-foreground">No leads captured in the last 30 days.</p>
             ) : (
@@ -304,7 +304,7 @@ export default function AnalyticsPage() {
       <Card>
         <CardContent className="pt-6 space-y-4">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Channel performance</p>
-          <h2 className="text-lg font-semibold">Source breakdown</h2>
+          <h2 className="text-foreground text-lg font-semibold">Source breakdown</h2>
           {data.channelPerformance.length === 0 ? (
             <p className="text-sm text-muted-foreground">No channel data available yet.</p>
           ) : (
@@ -339,7 +339,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardContent className="pt-6 space-y-4">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Niche performance</p>
-            <h2 className="text-lg font-semibold">Top performing niches</h2>
+            <h2 className="text-foreground text-lg font-semibold">Top performing niches</h2>
             {data.nichePerformance.length === 0 ? (
               <p className="text-sm text-muted-foreground">No niche data available yet.</p>
             ) : (
@@ -372,7 +372,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardContent className="pt-6 space-y-4">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Funnel performance</p>
-            <h2 className="text-lg font-semibold">Top performing funnels</h2>
+            <h2 className="text-foreground text-lg font-semibold">Top performing funnels</h2>
             {data.funnelPerformance.length === 0 ? (
               <p className="text-sm text-muted-foreground">No funnel data available yet.</p>
             ) : (

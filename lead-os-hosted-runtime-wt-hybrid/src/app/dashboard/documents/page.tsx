@@ -18,7 +18,7 @@ export default async function DocumentJobsPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Document queue</p>
-          <h1>{tenantConfig.brandName} document jobs</h1>
+          <h1 className="text-foreground">{tenantConfig.brandName} document jobs</h1>
           <p className="text-lg text-foreground">
             Monitor proposal, agreement, and onboarding document generation so operators can spot
             template gaps before they cost momentum.
@@ -60,7 +60,7 @@ export default async function DocumentJobsPage() {
           jobsWithLead.map(({ job, lead }) => (
             <article key={job.id} className="stack-card">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{job.provider}</p>
-              <h2>{job.status}</h2>
+              <h2 className="text-foreground">{job.status}</h2>
               <p className="text-muted-foreground">{job.detail}</p>
               <p className="text-muted-foreground">
                 Lead: {job.leadKey}

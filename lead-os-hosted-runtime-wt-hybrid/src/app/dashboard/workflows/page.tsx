@@ -24,7 +24,7 @@ export default async function WorkflowRunsPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Workflow history</p>
-          <h1>{tenantConfig.brandName} workflow runs</h1>
+          <h1 className="text-foreground">{tenantConfig.brandName} workflow runs</h1>
           <p className="text-lg text-foreground">
             This view shows which runtime emissions reached n8n or related workflow providers and
             where operators may need to inspect downstream automations.
@@ -65,7 +65,7 @@ export default async function WorkflowRunsPage() {
         {registry.length === 0 ? null : registry.map((workflow) => (
           <article key={workflow.slug} className="stack-card">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Starter workflow</p>
-            <h2>{workflow.workflowName}</h2>
+            <h2 className="text-foreground">{workflow.workflowName}</h2>
             <p className="text-muted-foreground">
               Status: {workflow.status} | Active: {workflow.active ? "yes" : "no"}
             </p>
@@ -89,7 +89,7 @@ export default async function WorkflowRunsPage() {
           runsWithLead.map(({ run, lead }) => (
             <article key={run.id} className="stack-card">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{run.provider}</p>
-              <h2>{run.eventName}</h2>
+              <h2 className="text-foreground">{run.eventName}</h2>
               <p className="text-muted-foreground">{run.detail}</p>
               <p className="text-muted-foreground">
                 Mode: {run.mode} | Success: {run.ok ? "yes" : "no"}

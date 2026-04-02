@@ -167,7 +167,7 @@ export default function LeadMagnetsPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead magnets</p>
-          <h1>Lead magnet management</h1>
+          <h1 className="text-foreground">Lead magnet management</h1>
           <p className="text-lg text-foreground">
             Track delivery performance, conversion rates, and engagement across all lead
             magnets organized by category and niche.
@@ -239,7 +239,7 @@ export default function LeadMagnetsPage() {
           filteredMagnets.map((magnet) => (
             <article key={`${magnet.family}::${magnet.niche}`} className="stack-card">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{magnet.family}</p>
-              <h3>{magnet.niche}</h3>
+              <h3 className="text-foreground">{magnet.niche}</h3>
               <div className="mt-2 grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-3">
                 <div>
                   <p className="mb-0.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
@@ -283,7 +283,7 @@ export default function LeadMagnetsPage() {
 
       <section className="rounded-xl border border-border bg-card p-6">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Recent deliveries</p>
-        <h2>Latest lead magnet activity</h2>
+        <h2 className="text-foreground">Latest lead magnet activity</h2>
         {recentDeliveries.length === 0 ? (
           <p className="text-muted-foreground">No recent deliveries to show.</p>
         ) : (

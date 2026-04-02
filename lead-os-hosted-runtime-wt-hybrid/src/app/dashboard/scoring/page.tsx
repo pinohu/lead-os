@@ -124,7 +124,7 @@ export default function ScoringPage() {
       <main className="min-h-screen">
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Error</p>
-          <h2>Failed to load scoring</h2>
+          <h2 className="text-foreground">Failed to load scoring</h2>
           <div className="flex flex-wrap gap-3">
             <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Back to dashboard</Link>
           </div>
@@ -154,7 +154,7 @@ export default function ScoringPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead scoring</p>
-          <h1>Scoring dashboard</h1>
+          <h1 className="text-foreground">Scoring dashboard</h1>
           <p className="text-lg text-foreground">
             Composite scores with breakdown by intent, fit, engagement, and urgency.
             Filter by temperature and niche to focus on the leads that matter.
@@ -245,7 +245,7 @@ export default function ScoringPage() {
                       />
                       {TEMP_LABELS[lead.temperature]} - {lead.stage}
                     </p>
-                    <h3 className="m-0">
+                    <h3 className="text-foreground m-0">
                       {lead.firstName} {lead.lastName}
                     </h3>
                     <p className="text-muted-foreground text-xs">
@@ -301,7 +301,7 @@ export default function ScoringPage() {
       {data.scoreByNiche.length > 0 && (
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Niche averages</p>
-          <h2>Score by niche</h2>
+          <h2 className="text-foreground">Score by niche</h2>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>

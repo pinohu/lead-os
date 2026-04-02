@@ -95,7 +95,7 @@ export default function DemoPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(demoJsonLd) }} />
     <main id="main-content" className="max-w-5xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
-        <h1 className="text-2xl font-extrabold mb-3">
+        <h1 className="text-foreground text-2xl font-extrabold mb-3">
           See What Your Agency Could Look Like
         </h1>
         <p className="text-foreground max-w-xl mx-auto mb-6">
@@ -123,7 +123,7 @@ export default function DemoPage() {
             key={demo.title}
             className="border border-border rounded-xl p-6 flex flex-col"
           >
-            <h2 className="text-lg font-bold mb-2">
+            <h2 className="text-foreground text-lg font-bold mb-2">
               {demo.title}
             </h2>
             <p className="text-foreground text-sm mb-4 leading-relaxed">
@@ -139,7 +139,7 @@ export default function DemoPage() {
       </div>
 
       <section className="mt-16 text-center p-8 bg-muted rounded-xl">
-        <h2 className="text-xl font-bold mb-3">
+        <h2 className="text-foreground text-xl font-bold mb-3">
           Ready to run your agency on one platform?
         </h2>
         <p className="text-foreground mb-6 max-w-lg mx-auto">

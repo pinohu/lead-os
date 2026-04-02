@@ -108,7 +108,7 @@ export default function HelpCenterPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(helpFaqJsonLd) }} />
       <main id="main-content" className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-2xl font-extrabold mb-2">Help Center</h1>
+      <h1 className="text-foreground text-2xl font-extrabold mb-2">Help Center</h1>
       <p className="text-foreground mb-8">
         Find answers to common questions about Lead OS.
       </p>
@@ -130,7 +130,7 @@ export default function HelpCenterPage() {
 
       {filtered.map((category) => (
         <section key={category.title} className="mb-8">
-          <h2 className="text-xl font-bold mb-3">
+          <h2 className="text-foreground text-xl font-bold mb-3">
             {category.title}
           </h2>
           {category.items.map((item) => {
@@ -163,7 +163,7 @@ export default function HelpCenterPage() {
       ))}
 
       <section className="mt-12 p-8 bg-muted rounded-xl text-center">
-        <h2 className="text-xl font-bold mb-2">
+        <h2 className="text-foreground text-xl font-bold mb-2">
           Still need help?
         </h2>
         <p className="text-foreground mb-4">

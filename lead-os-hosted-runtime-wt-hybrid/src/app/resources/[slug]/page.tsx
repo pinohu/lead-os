@@ -135,7 +135,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
       >
         {/* ---------- Pain Points ---------- */}
         <section>
-          <h2>The biggest challenges in {niche.label} today</h2>
+          <h2 className="text-foreground">The biggest challenges in {niche.label} today</h2>
           <div className="grid md:grid-cols-2 gap-6">
             {painPoints.map((point, i) => (
               <article key={i} className="rounded-xl border border-border bg-card p-6">
@@ -147,7 +147,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
 
         {/* ---------- Problem-to-Solution Mapping ---------- */}
         <section>
-          <h2>From problem to solution</h2>
+          <h2 className="text-foreground">From problem to solution</h2>
           <p className="text-lg text-muted-foreground">
             Every pain point above maps to a concrete system you can deploy.
             Here is what top-performing {niche.label.toLowerCase()} organizations
@@ -169,7 +169,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
 
         {/* ---------- FAQ Section ---------- */}
         <section>
-          <h2>Frequently asked questions about {niche.label}</h2>
+          <h2 className="text-foreground">Frequently asked questions about {niche.label}</h2>
           {faqItems.map((item, i) => (
             <details key={i} className="rounded-xl border border-border bg-card p-6 mb-2">
               <summary>
@@ -183,7 +183,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
         {/* ---------- CTA: Assessment ---------- */}
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Take the next step</p>
-          <h2>Score your {niche.label} growth readiness in two minutes</h2>
+          <h2 className="text-foreground">Score your {niche.label} growth readiness in two minutes</h2>
           <p>
             Our diagnostic assessment benchmarks your current funnel against
             hundreds of {niche.label.toLowerCase()} businesses and returns a
@@ -202,10 +202,10 @@ export default async function ResourcePage({ params, searchParams }: Props) {
         {/* ---------- Cross-Links ---------- */}
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Keep exploring</p>
-          <h2>More {niche.label} resources</h2>
+          <h2 className="text-foreground">More {niche.label} resources</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <article className="rounded-xl border border-border bg-card p-6">
-              <h3>Industry Solutions</h3>
+              <h3 className="text-foreground">Industry Solutions</h3>
               <p>
                 See how Lead OS is configured specifically for{" "}
                 {niche.label.toLowerCase()} businesses.
@@ -220,7 +220,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
               </div>
             </article>
             <article className="rounded-xl border border-border bg-card p-6">
-              <h3>Growth Assessment</h3>
+              <h3 className="text-foreground">Growth Assessment</h3>
               <p>
                 Benchmark your {niche.label.toLowerCase()} operations in two
                 minutes and get a prioritized action plan.

@@ -36,7 +36,7 @@ export default function DirectoryIndexPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Business directory</p>
-          <h1>Find the right growth system for your industry</h1>
+          <h1 className="text-foreground">Find the right growth system for your industry</h1>
           <p className="text-lg text-muted-foreground">
             Browse by vertical to discover assessment tools, authority guides,
             lead capture systems, and proven funnel blueprints designed for your
@@ -48,16 +48,16 @@ export default function DirectoryIndexPage() {
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4" aria-label="Directory stats">
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Industries covered</p>
-          <h2>{niches.length}</h2>
+          <h2 className="text-foreground">{niches.length}</h2>
         </article>
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Pages per vertical</p>
-          <h2>4</h2>
+          <h2 className="text-foreground">4</h2>
           <p className="text-muted-foreground">Industry, Assessment, Guide, Calculator</p>
         </article>
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Personalization depth</p>
-          <h2>4 temperatures</h2>
+          <h2 className="text-foreground">4 temperatures</h2>
           <p className="text-muted-foreground">Cold, Warm, Hot, Burning</p>
         </article>
       </section>
@@ -67,7 +67,7 @@ export default function DirectoryIndexPage() {
           {niches.map((niche) => (
             <article key={niche.slug} className="rounded-xl border border-border bg-card p-6 flex flex-col gap-3">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{niche.slug}</p>
-              <h2 className="text-lg m-0">{niche.label}</h2>
+              <h2 className="text-foreground text-lg m-0">{niche.label}</h2>
               <p className="text-muted-foreground flex-1">{niche.summary}</p>
               <div className="flex flex-col gap-1.5 text-sm">
                 <Link href={`/industries/${niche.slug}`} className="text-primary">
@@ -90,7 +90,7 @@ export default function DirectoryIndexPage() {
 
       <section className="rounded-xl border border-border bg-card p-6 text-center mt-10">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Not sure where to start?</p>
-        <h2>Let us match you to the right vertical</h2>
+        <h2 className="text-foreground">Let us match you to the right vertical</h2>
         <p className="text-muted-foreground">
           Take our general assessment and we will recommend the best niche
           configuration, funnel blueprint, and growth path for your business.

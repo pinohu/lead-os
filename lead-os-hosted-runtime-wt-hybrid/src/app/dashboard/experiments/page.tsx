@@ -139,7 +139,7 @@ export default function ExperimentsPage() {
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Experiment performance</p>
-          <h1>Variant reporting</h1>
+          <h1 className="text-foreground">Variant reporting</h1>
           <p className="text-lg text-foreground">
             Compare headline, mode, and device-level experience variants by milestone progression
             instead of just raw capture volume. Statistical significance is calculated when
@@ -211,7 +211,7 @@ export default function ExperimentsPage() {
                       </span>
                       {experiment.experimentId}
                     </p>
-                    <h3>{experiment.entries} entries</h3>
+                    <h3 className="text-foreground">{experiment.entries} entries</h3>
                   </div>
                   <div className="text-right text-sm">
                     <p className="m-0">Hot: {experiment.hotRate}%</p>
