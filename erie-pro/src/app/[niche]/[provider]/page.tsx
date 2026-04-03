@@ -22,6 +22,8 @@ import { getNicheBySlug } from "@/lib/niches"
 import { getProviderBySlug } from "@/lib/provider-store"
 import { getDirectoryListingBySlug, getAllDirectoryListingSlugs } from "@/lib/directory-store"
 import { getLocalSeoSnippet } from "@/lib/local-seo"
+import { getNicheContent } from "@/lib/niche-content"
+import { getDirectoryListingsByNiche } from "@/lib/directory-store"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -40,6 +42,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import ContactForm from "@/components/contact-form"
+import { PhotoGalleryDialog } from "@/components/photo-gallery-dialog"
 
 type Props = { params: Promise<{ niche: string; provider: string }> }
 
@@ -73,6 +76,7 @@ interface ProviderData {
   license: string | null
   yearEstablished: number | null
   categories: string[]
+  servicesOffered: string[]
 }
 
 async function resolveProvider(
@@ -111,6 +115,7 @@ async function resolveProvider(
         license: provider.license ?? null,
         yearEstablished: provider.yearEstablished ?? null,
         categories: [],
+        servicesOffered: [],
       }
     }
   } catch {
@@ -149,6 +154,7 @@ async function resolveProvider(
         license: null,
         yearEstablished: null,
         categories: listing.categories,
+        servicesOffered: listing.servicesOffered,
       }
     }
   } catch {
@@ -337,13 +343,37 @@ export default async function ProviderPage({ params }: Props) {
 
   const providerName = data?.businessName ?? providerSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
 
-  const services = getServicesForNiche(niche.slug, niche.label)
-  const certifications = getCertificationsForNiche(niche.slug)
-  const faqs = getFAQsForNiche(niche.label, providerName)
+  const nicheContent = getNicheContent(niche.slug)
+
+  // Use provider's actual services, fall back to niche-content, then inline helper
+  const services = (data?.servicesOffered?.length ?? 0) > 0
+    ? data!.servicesOffered
+    : nicheContent?.commonServices ?? getServicesForNiche(niche.slug, niche.label)
+  const certifications = nicheContent?.certifications ?? getCertificationsForNiche(niche.slug)
+  const emergencyServices = nicheContent?.emergencyServices ?? []
+  const pricingRanges = nicheContent?.pricingRanges ?? []
+  const comparisonPoints = nicheContent?.comparisonPoints ?? []
+  const trustSignals = nicheContent?.trustSignals ?? []
+  const seasonalTips = nicheContent?.seasonalTips ?? []
+
+  // Merge niche-content FAQs (richer) with personalized provider FAQs
+  const personalizedFaqs = getFAQsForNiche(niche.label, providerName)
+  const nicheFaqs = nicheContent?.faqItems ?? []
+  const faqs = [...nicheFaqs, ...personalizedFaqs]
+
   const parsedHours = data ? parseHoursFromJson(data.hoursJson) : null
   const parsedReviews = data ? parseReviewsFromJson(data.reviewsJson) : []
   const localSeo = getLocalSeoSnippet(niche.slug)
   const ratingDist = computeRatingDistribution(parsedReviews)
+
+  // Related providers (for cross-links at bottom)
+  let relatedListings: Awaited<ReturnType<typeof getDirectoryListingsByNiche>> = []
+  try {
+    const allListings = await getDirectoryListingsByNiche(niche.slug, { limit: 6 })
+    relatedListings = allListings.filter((l) => l.slug !== (data?.slug ?? providerSlug))
+  } catch {
+    // DB unavailable
+  }
 
   const phone = data?.phone ?? null
   const website = data?.website ?? null
@@ -451,19 +481,13 @@ export default async function ProviderPage({ params }: Props) {
             )}
           </div>
 
-          {/* Photo thumbnails */}
+          {/* Photo Gallery */}
           {hasPhotos && data!.photoRefs.length > 1 && (
-            <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
-              {data!.photoRefs.slice(1, 6).map((ref, i) => (
-                <img
-                  key={i}
-                  src={getPhotoSrc(ref)}
-                  alt={`${providerName} photo ${i + 2}`}
-                  className="h-16 w-24 flex-shrink-0 rounded-md object-cover ring-2 ring-white/30"
-                  loading="lazy"
-                />
-              ))}
-            </div>
+            <PhotoGalleryDialog
+              thumbnailUrls={data!.photoRefs.map((ref) => getPhotoSrc(ref, 400))}
+              fullUrls={data!.photoRefs.map((ref) => getPhotoSrc(ref, 800))}
+              providerName={providerName}
+            />
           )}
         </div>
       </section>
@@ -471,7 +495,7 @@ export default async function ProviderPage({ params }: Props) {
       {/* ══════════════════════════════════════════════════════════
           SECTION 2 — TRUST BAR (sticky)
           ══════════════════════════════════════════════════════════ */}
-      <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur-sm shadow-sm">
+      <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur-sm shadow-sm print:hidden">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 sm:px-6">
           {rating !== null && (
             <span className="flex items-center gap-1.5 text-sm font-medium">
@@ -544,13 +568,14 @@ export default async function ProviderPage({ params }: Props) {
       {/* ══════════════════════════════════════════════════════════
           SECTION 3 — SECTION NAV TABS
           ══════════════════════════════════════════════════════════ */}
-      <nav className="sticky top-[53px] z-30 border-b bg-background" aria-label="Page sections">
+      <nav className="sticky top-[53px] z-30 border-b bg-background print:hidden" aria-label="Page sections">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex gap-0 overflow-x-auto -mb-px">
             {[
               { id: "about", label: "About" },
               { id: "reviews", label: `Reviews${reviewCount ? ` (${reviewCount})` : ""}` },
               { id: "services", label: "Services" },
+              ...(pricingRanges.length > 0 ? [{ id: "pricing", label: "Pricing" }] : []),
               { id: "area", label: "Service Area" },
               { id: "faq", label: "FAQ" },
             ].map((tab) => (
@@ -573,7 +598,7 @@ export default async function ProviderPage({ params }: Props) {
         <div className="grid gap-8 py-10 lg:grid-cols-3">
 
           {/* ── Main content (left 2/3) ────────────────────────── */}
-          <div className="space-y-10 lg:col-span-2">
+          <div className="space-y-10 lg:col-span-2 print:col-span-3">
 
             {/* ── About ────────────────────────────────────────── */}
             <section id="about" className="scroll-mt-28">
@@ -600,23 +625,113 @@ export default async function ProviderPage({ params }: Props) {
                 </div>
               )}
 
-              {/* Business details badges */}
-              {(data?.yearEstablished || data?.insurance || data?.license) && (
+              {/* ── Business Highlights Dashboard ─────────────── */}
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {data?.yearEstablished && (
+                  <Card className="text-center">
+                    <CardContent className="pt-4 pb-3">
+                      <Clock className="mx-auto mb-1.5 h-5 w-5 text-primary" aria-hidden="true" />
+                      <p className="text-2xl font-bold">{new Date().getFullYear() - data.yearEstablished}+</p>
+                      <p className="text-xs text-muted-foreground">Years in Business</p>
+                    </CardContent>
+                  </Card>
+                )}
+                {rating !== null && (
+                  <Card className="text-center">
+                    <CardContent className="pt-4 pb-3">
+                      <Star className="mx-auto mb-1.5 h-5 w-5 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+                      <p className="text-2xl font-bold">{rating.toFixed(1)}</p>
+                      <p className="text-xs text-muted-foreground">{reviewCount} Reviews</p>
+                    </CardContent>
+                  </Card>
+                )}
+                {data?.avgResponseTime ? (
+                  <Card className="text-center">
+                    <CardContent className="pt-4 pb-3">
+                      <MessageSquare className="mx-auto mb-1.5 h-5 w-5 text-primary" aria-hidden="true" />
+                      <p className="text-2xl font-bold">~{Math.round(data.avgResponseTime / 60)} min</p>
+                      <p className="text-xs text-muted-foreground">Avg Response</p>
+                    </CardContent>
+                  </Card>
+                ) : isOpenToday ? (
+                  <Card className="text-center">
+                    <CardContent className="pt-4 pb-3">
+                      <span className="mx-auto mb-1.5 flex justify-center">
+                        <span className="relative flex h-5 w-5">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                          <span className="relative inline-flex h-5 w-5 rounded-full bg-green-500" />
+                        </span>
+                      </span>
+                      <p className="text-lg font-bold text-green-700 dark:text-green-400">Open Now</p>
+                      <p className="text-xs text-muted-foreground">Available Today</p>
+                    </CardContent>
+                  </Card>
+                ) : null}
+                {(data?.insurance || data?.license) && (
+                  <Card className="text-center">
+                    <CardContent className="pt-4 pb-3">
+                      <Shield className="mx-auto mb-1.5 h-5 w-5 text-green-600" aria-hidden="true" />
+                      <p className="text-lg font-bold">
+                        {data.insurance && data.license ? "Yes" : data.insurance ? "Insured" : "Licensed"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {data.insurance && data.license ? "Licensed & Insured" : data.insurance ? "Fully Insured" : "Licensed"}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+
+              {/* Trust signals from niche content (fallback for scraped listings) */}
+              {!(data?.yearEstablished || data?.insurance || data?.license) && trustSignals.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {data.yearEstablished && (
-                    <Badge variant="outline" className="text-xs">Est. {data.yearEstablished}</Badge>
-                  )}
-                  {data.insurance && (
-                    <Badge variant="outline" className="text-xs"><Shield className="mr-1 h-3 w-3" aria-hidden="true" />Insured</Badge>
-                  )}
-                  {data.license && (
-                    <Badge variant="outline" className="text-xs"><Award className="mr-1 h-3 w-3" aria-hidden="true" />Licensed</Badge>
-                  )}
+                  {trustSignals.map((signal) => (
+                    <Badge key={signal} variant="outline" className="text-xs">
+                      <CheckCircle2 className="mr-1 h-3 w-3 text-primary" aria-hidden="true" />
+                      {signal}
+                    </Badge>
+                  ))}
                 </div>
               )}
             </section>
 
             <Separator />
+
+            {/* ── Why Choose This Provider ─────────────────────── */}
+            {(comparisonPoints.length > 0 || trustSignals.length > 0) && (
+              <>
+                <section className="scroll-mt-28">
+                  <h2 className="mb-4 text-2xl font-bold tracking-tight">Why Choose {providerName}?</h2>
+                  {trustSignals.length > 0 && (
+                    <div className="mb-4 flex flex-wrap gap-2">
+                      {trustSignals.map((signal) => (
+                        <Badge key={signal} variant="secondary" className="text-xs">
+                          <CheckCircle2 className="mr-1 h-3 w-3 text-primary" aria-hidden="true" />
+                          {signal}
+                        </Badge>
+                      ))}
+                      {isVerified && (
+                        <Badge className="bg-green-600 text-white text-xs">
+                          <Shield className="mr-1 h-3 w-3" aria-hidden="true" />
+                          Verified on {cityConfig.domain}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                  {comparisonPoints.length > 0 && (
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {comparisonPoints.map((point) => (
+                        <div key={point} className="flex items-start gap-2">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" aria-hidden="true" />
+                          <span className="text-sm">{point}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+                <Separator />
+              </>
+            )}
 
             {/* ── Reviews (PROMOTED to #2) ─────────────────────── */}
             <section id="reviews" className="scroll-mt-28">
@@ -719,20 +834,61 @@ export default async function ProviderPage({ params }: Props) {
 
             <Separator />
 
-            {/* ── Services ─────────────────────────────────────── */}
+            {/* ── Services (Enhanced) ─────────────────────────── */}
             <section id="services" className="scroll-mt-28">
               <h2 className="mb-4 text-2xl font-bold tracking-tight">Services Offered</h2>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {services.map((service) => (
-                  <div key={service} className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" aria-hidden="true" />
-                    <span className="text-sm">{service}</span>
-                  </div>
-                ))}
+              <div className="grid gap-2 sm:grid-cols-2">
+                {services.map((service) => {
+                  const isEmergency = emergencyServices.some((e) => service.toLowerCase().includes(e.toLowerCase().split(" ")[0]))
+                  return (
+                    <Card key={service} className="group">
+                      <CardContent className="flex items-center gap-3 py-3 px-4">
+                        <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-primary" aria-hidden="true" />
+                        <span className="text-sm font-medium flex-1">{service}</span>
+                        {isEmergency && (
+                          <Badge variant="destructive" className="text-[10px] px-1.5 py-0">24/7</Badge>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )
+                })}
               </div>
             </section>
 
             <Separator />
+
+            {/* ── Pricing Guide ───────────────────────────────── */}
+            {pricingRanges.length > 0 && (
+              <>
+                <section id="pricing" className="scroll-mt-28">
+                  <h2 className="mb-4 text-2xl font-bold tracking-tight">Typical Pricing</h2>
+                  <Card>
+                    <CardContent className="pt-4">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b text-left text-sm">
+                            <th className="pb-2 font-semibold">Service</th>
+                            <th className="pb-2 text-right font-semibold">Typical Range</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {pricingRanges.map(({ service, range }) => (
+                            <tr key={service} className="border-b last:border-0 text-sm">
+                              <td className="py-2.5">{service}</td>
+                              <td className="py-2.5 text-right font-medium text-primary">{range}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      <p className="mt-3 text-xs text-muted-foreground">
+                        Prices are estimates for the {cityConfig.name} area. Contact {providerName} for an exact quote tailored to your project.
+                      </p>
+                    </CardContent>
+                  </Card>
+                </section>
+                <Separator />
+              </>
+            )}
 
             {/* ── Service Area ─────────────────────────────────── */}
             <section id="area" className="scroll-mt-28">
@@ -819,6 +975,56 @@ export default async function ProviderPage({ params }: Props) {
               </Accordion>
             </section>
 
+            {/* ── Related Providers ─────────────────────────────── */}
+            {relatedListings.length > 0 && (
+              <>
+                <Separator />
+                <section>
+                  <h2 className="mb-4 text-2xl font-bold tracking-tight">
+                    Other {niche.label} Providers in {cityConfig.name}
+                  </h2>
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    {relatedListings.slice(0, 4).map((listing) => (
+                      <Link
+                        key={listing.id}
+                        href={`/${niche.slug}/${listing.slug}`}
+                        className="flex-shrink-0 w-52 group"
+                      >
+                        <Card className="h-full transition-colors hover:border-primary/30">
+                          <CardContent className="pt-4 pb-3 px-4">
+                            <p className="font-semibold text-sm truncate group-hover:text-primary">
+                              {listing.businessName}
+                            </p>
+                            {listing.rating && (
+                              <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+                                {listing.rating.toFixed(1)}
+                                {listing.reviewCount > 0 && ` (${listing.reviewCount})`}
+                              </div>
+                            )}
+                            {listing.addressCity && (
+                              <p className="mt-1 text-xs text-muted-foreground truncate">
+                                <MapPin className="inline h-3 w-3 mr-0.5" aria-hidden="true" />
+                                {listing.addressCity}, {listing.addressState ?? cityConfig.stateCode}
+                              </p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="mt-3 text-center">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/${niche.slug}/directory`}>
+                        View all {niche.label.toLowerCase()} providers
+                        <ArrowRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                      </Link>
+                    </Button>
+                  </div>
+                </section>
+              </>
+            )}
+
             {/* ── Claim This Listing (scraped only) ────────────── */}
             {isListing && (
               <>
@@ -851,18 +1057,20 @@ export default async function ProviderPage({ params }: Props) {
           </div>
 
           {/* ── Sidebar (right 1/3) ────────────────────────────── */}
-          <div className="space-y-6">
+          <div className="space-y-6 print:hidden">
             {/* ── Quote form ───────────────────────────────────── */}
             <Card id="quote" className="sticky top-28 shadow-lg scroll-mt-28">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="h-5 w-5 text-primary" aria-hidden="true" />
-                  Request a Free Quote
+                  {nicheContent?.quoteFormTitle ?? "Request a Free Quote"}
                 </CardTitle>
                 <CardDescription>
-                  {isVerified
-                    ? `Send your request directly to ${providerName}. No obligation.`
-                    : `Request forwarded to ${providerName}. No obligation.`}
+                  {nicheContent?.quoteFormDescription
+                    ? nicheContent.quoteFormDescription
+                    : isVerified
+                      ? `Send your request directly to ${providerName}. No obligation.`
+                      : `Request forwarded to ${providerName}. No obligation.`}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -936,6 +1144,23 @@ export default async function ProviderPage({ params }: Props) {
               </Card>
             )}
 
+            {/* ── Seasonal Tip ──────────────────────────────────── */}
+            {seasonalTips.length > 0 && (() => {
+              const month = new Date().getMonth()
+              const seasonIdx = month < 3 ? 0 : month < 6 ? 1 : month < 9 ? 2 : 3
+              const tip = seasonalTips[seasonIdx % seasonalTips.length]
+              return tip ? (
+                <Card className="border-primary/10 bg-primary/5">
+                  <CardContent className="pt-4 pb-3">
+                    <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-1.5">
+                      Seasonal Tip
+                    </p>
+                    <p className="text-sm text-muted-foreground">{tip}</p>
+                  </CardContent>
+                </Card>
+              ) : null
+            })()}
+
             {/* ── Quick contact ─────────────────────────────────── */}
             <Card>
               <CardHeader className="pb-3">
@@ -1003,7 +1228,7 @@ export default async function ProviderPage({ params }: Props) {
       {/* ══════════════════════════════════════════════════════════
           MOBILE STICKY CTA BAR
           ══════════════════════════════════════════════════════════ */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background p-3 shadow-[0_-4px_12px_rgba(0,0,0,0.1)] lg:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background p-3 shadow-[0_-4px_12px_rgba(0,0,0,0.1)] lg:hidden print:hidden">
         <div className="mx-auto flex max-w-lg gap-2">
           {phone ? (
             <>
@@ -1076,10 +1301,14 @@ export default async function ProviderPage({ params }: Props) {
                 } : {}),
                 // Opening hours
                 ...(buildOpeningHoursSpec(parsedHours) ? { openingHoursSpecification: buildOpeningHoursSpec(parsedHours) } : {}),
-                makesOffer: services.map((service) => ({
-                  "@type": "Offer",
-                  itemOffered: { "@type": "Service", name: service, provider: { "@type": "LocalBusiness", name: providerName } },
-                })),
+                makesOffer: services.map((service) => {
+                  const priceMatch = pricingRanges.find((p) => service.toLowerCase().includes(p.service.toLowerCase().split(" ")[0]))
+                  return {
+                    "@type": "Offer",
+                    itemOffered: { "@type": "Service", name: service, provider: { "@type": "LocalBusiness", name: providerName } },
+                    ...(priceMatch ? { priceSpecification: { "@type": "UnitPriceSpecification", priceCurrency: "USD", price: priceMatch.range } } : {}),
+                  }
+                }),
                 potentialAction: {
                   "@type": "CommunicateAction",
                   target: `https://${cityConfig.domain}/${niche.slug}/${data?.slug ?? providerSlug}#quote`,

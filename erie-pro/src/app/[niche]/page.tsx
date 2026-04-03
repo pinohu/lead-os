@@ -29,6 +29,8 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { InternalLinks } from "@/components/internal-links"
 import { FeaturedProvider } from "@/components/featured-provider"
+import { getDirectoryListingsByNiche } from "@/lib/directory-store"
+import { getFeaturedProviderId } from "@/lib/perk-manager"
 import LeadForm from "@/components/lead-form"
 
 type Props = { params: Promise<{ niche: string }> }
@@ -74,6 +76,22 @@ export default async function NichePage({ params }: Props) {
   const localSnippet = getLocalSeoSnippet(slug)
   const localSchema = getLocalSchemaOrg(slug)
   const neighborhoods = ERIE_LOCAL_SEO.neighborhoods
+
+  // ── Directory listings for subtle links ────────────────────────
+  let directoryListings: Awaited<ReturnType<typeof getDirectoryListingsByNiche>> = []
+  let featuredProviderId: string | null = null
+  try {
+    [directoryListings, featuredProviderId] = await Promise.all([
+      getDirectoryListingsByNiche(slug, { limit: 20 }),
+      getFeaturedProviderId(slug, cityConfig.slug),
+    ])
+  } catch {
+    // DB unavailable during static build
+  }
+  // Exclude the territory owner from the subtle links (they're featured above)
+  const subtleListings = featuredProviderId
+    ? directoryListings.filter((l) => l.claimedByProviderId !== featuredProviderId)
+    : directoryListings
 
   return (
     <main>
@@ -147,6 +165,39 @@ export default async function NichePage({ params }: Props) {
           {localSnippet}
         </p>
       </section>
+
+      {/* ── Subtle provider links ────────────────────────────── */}
+      {subtleListings.length > 0 && (
+        <section className="mx-auto max-w-4xl px-4 pb-6 sm:px-6">
+          <p className="mb-2 text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">
+            Other {niche.label.toLowerCase()} providers in {cityConfig.name}
+          </p>
+          <div className="flex flex-wrap gap-x-1 gap-y-0.5">
+            {subtleListings.slice(0, 15).map((listing, i) => (
+              <span key={listing.id}>
+                {i > 0 && <span className="text-muted-foreground/30 mr-1">&middot;</span>}
+                <Link
+                  href={`/${slug}/${listing.slug}`}
+                  className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                >
+                  {listing.businessName}
+                </Link>
+              </span>
+            ))}
+            {subtleListings.length > 15 && (
+              <span>
+                <span className="text-muted-foreground/30 mr-1">&middot;</span>
+                <Link
+                  href={`/${slug}/directory`}
+                  className="text-xs text-muted-foreground/50 hover:text-primary transition-colors"
+                >
+                  +{subtleListings.length - 15} more
+                </Link>
+              </span>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* ── Service info cards ──────────────────────────────── */}
       <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6">

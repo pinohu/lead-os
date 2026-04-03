@@ -27,8 +27,8 @@ export async function FeaturedProvider({ niche, city }: FeaturedProviderProps) {
     return null
   }
 
-  // No active subscription or no featured badge perk → don't render
-  if (!perkStatus.subscriptionActive || !perkStatus.perks.featuredBadge) {
+  // No active subscription → don't render
+  if (!perkStatus.subscriptionActive) {
     return null
   }
 
@@ -40,45 +40,52 @@ export async function FeaturedProvider({ niche, city }: FeaturedProviderProps) {
   if (!provider) return null
 
   const tier = perkStatus.tier as ProviderTier
-  const badgeLabel = getBadgeLabel(tier)
+  const badgeLabel = getBadgeLabel(tier) // null for standard tier
   const badgeColors = getTierColor(tier)
   const isElite = tier === "elite"
-
-  // If tier doesn't warrant a badge (standard), don't render
-  if (!badgeLabel) return null
+  const isPremiumOrHigher = tier === "premium" || tier === "elite"
 
   return (
     <section className="mx-auto max-w-4xl px-4 pt-8 sm:px-6" aria-label={`Featured ${niche} provider in ${city}`}>
       <Card
-        className={`relative overflow-hidden border-2 ${
-          isElite
-            ? "border-purple-400 dark:border-purple-600"
-            : "border-amber-400 dark:border-amber-600"
+        className={`relative overflow-hidden ${
+          isPremiumOrHigher
+            ? `border-2 ${isElite ? "border-purple-400 dark:border-purple-600" : "border-amber-400 dark:border-amber-600"}`
+            : "border-2 border-primary/30"
         }`}
       >
-        {/* Decorative gradient bar */}
-        <div
-          className={`absolute inset-x-0 top-0 h-1 ${
-            isElite
-              ? "bg-gradient-to-r from-purple-500 via-purple-400 to-indigo-500"
-              : "bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500"
-          }`}
-        />
+        {/* Decorative gradient bar (premium/elite only) */}
+        {isPremiumOrHigher && (
+          <div
+            className={`absolute inset-x-0 top-0 h-1 ${
+              isElite
+                ? "bg-gradient-to-r from-purple-500 via-purple-400 to-indigo-500"
+                : "bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500"
+            }`}
+          />
+        )}
 
         <CardContent className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between">
           {/* Left: Provider info */}
           <div className="flex-1 space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge
-                className={`text-xs font-semibold ${badgeColors}`}
-              >
-                {isElite ? (
-                  <Award className="mr-1 h-3 w-3" />
-                ) : (
+              {badgeLabel ? (
+                <Badge
+                  className={`text-xs font-semibold ${badgeColors}`}
+                >
+                  {isElite ? (
+                    <Award className="mr-1 h-3 w-3" />
+                  ) : (
+                    <Shield className="mr-1 h-3 w-3" />
+                  )}
+                  {badgeLabel}
+                </Badge>
+              ) : (
+                <Badge className="text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-green-300 dark:border-green-700">
                   <Shield className="mr-1 h-3 w-3" />
-                )}
-                {badgeLabel}
-              </Badge>
+                  Verified Provider
+                </Badge>
+              )}
 
               {/* Show extra perk indicators for elite */}
               {perkStatus.perks.nationalListing && (
