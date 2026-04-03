@@ -12,7 +12,7 @@ import { LEAD_PRICES } from "@/lib/stripe-integration"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import {
   Breadcrumb,
@@ -217,6 +217,9 @@ export default async function NicheDirectoryPage({ params }: Props) {
           <Card className="mb-6 border-primary/30 bg-primary/5">
             <CardContent className="flex items-center gap-4 py-5">
               <Avatar className="h-14 w-14 bg-primary/10">
+                {claimedProvider.photoUrl ? (
+                  <AvatarImage src={claimedProvider.photoUrl} alt={claimedProvider.businessName} />
+                ) : null}
                 <AvatarFallback className="text-lg">{niche.icon}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">

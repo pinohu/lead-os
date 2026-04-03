@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { ProfileForm } from "./profile-form";
+import { PhotoUpload } from "./photo-upload";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +76,8 @@ export default async function ProfilePage() {
           &larr; Back to Dashboard
         </Link>
       </div>
+
+      <PhotoUpload currentPhotoUrl={provider.photoUrl ?? null} businessName={provider.businessName} />
 
       <ProfileForm profile={profileData} />
     </div>

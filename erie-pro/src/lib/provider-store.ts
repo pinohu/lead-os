@@ -39,6 +39,7 @@ export interface ProviderProfile {
   avgResponseTime: number;
   avgRating: number;
   reviewCount: number;
+  photoUrl?: string;
   claimedAt: string;
   lastLeadAt?: string;
 }
@@ -77,6 +78,7 @@ function toProfile(p: PrismaProvider): ProviderProfile {
     avgResponseTime: p.avgResponseTime,
     avgRating: p.avgRating,
     reviewCount: p.reviewCount,
+    photoUrl: p.photoUrl ?? undefined,
     claimedAt: p.claimedAt.toISOString(),
     lastLeadAt: p.lastLeadAt?.toISOString(),
   };

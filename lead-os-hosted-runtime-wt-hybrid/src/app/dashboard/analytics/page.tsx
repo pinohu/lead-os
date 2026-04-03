@@ -136,7 +136,7 @@ export default function AnalyticsPage() {
         <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 rounded-md px-6 py-2.5 text-sm flex items-center gap-2">
           <span className="font-bold text-amber-800 dark:text-amber-200">Demo data</span>
           <span className="text-amber-700 dark:text-amber-300">
-            &mdash; Connect your database to see live analytics.{" "}
+            &mdash; Showing sample data &mdash; connect your lead sources to see real analytics.{" "}
             <Link href="/setup" className="underline">Configure now &rarr;</Link>
           </span>
         </div>
