@@ -40,6 +40,9 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
   const unsubscribeUrl = getUnsubscribeUrl(options.to);
 
   if (!apiKey) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("EMAILIT_API_KEY is not configured. Cannot send emails in production.");
+    }
     logger.info("email", `[DRY RUN] Would send to ${options.to}: ${options.subject}`);
     if (process.env.NODE_ENV === "development") {
       logger.debug("email", "HTML preview:", options.html.slice(0, 200));
@@ -108,11 +111,16 @@ export async function sendConsumerConfirmation(
   consumerEmail: string,
   consumerName: string,
   niche: string,
-  routedToProvider: string | null
+  routedToProvider: string | null,
+  statusToken?: string
 ): Promise<boolean> {
   const statusMessage = routedToProvider
     ? `Your request has been sent to <strong>${escapeHtml(routedToProvider)}</strong>, a verified ${escapeHtml(niche)} provider in ${cityConfig.name}. They will contact you shortly.`
     : `We&apos;re matching your request with a ${escapeHtml(niche)} provider in ${cityConfig.name}. You&apos;ll be contacted once a match is found.`;
+
+  const statusLink = statusToken
+    ? `<p style="color:#374151;margin:16px 0"><a href="${SITE_URL}/lead-status?token=${encodeURIComponent(statusToken)}" style="color:#2563eb;text-decoration:underline">Check your request status</a></p>`
+    : "";
 
   return sendEmail({
     to: consumerEmail,
@@ -121,6 +129,7 @@ export async function sendConsumerConfirmation(
       <h2 style="margin:0 0 16px;color:#111827;font-size:20px">We Received Your Request</h2>
       <p style="color:#374151;margin:0 0 16px">Hi${consumerName ? ` ${escapeHtml(consumerName)}` : ""},</p>
       <p style="color:#374151;margin:0 0 16px">${statusMessage}</p>
+      ${statusLink}
       <h3 style="color:#111827;font-size:16px;margin:24px 0 12px">What to Expect</h3>
       <ul style="color:#374151;padding-left:20px;margin:0 0 24px">
         <li style="margin:8px 0">A provider will reach out within 24 hours (often much sooner)</li>

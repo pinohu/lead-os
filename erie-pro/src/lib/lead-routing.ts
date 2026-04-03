@@ -38,6 +38,7 @@ export interface LeadRouteResult {
   routeType: "primary" | "failover" | "overflow" | "unmatched";
   timestamp: string;
   slaDeadline: string;
+  statusToken: string;
 }
 
 export interface ProviderPerformance {
@@ -92,7 +93,117 @@ function leadToRouteResult(
     routeType: lead.routeType as LeadRouteResult["routeType"],
     timestamp: lead.createdAt.toISOString(),
     slaDeadline: lead.slaDeadline?.toISOString() ?? lead.createdAt.toISOString(),
+    statusToken: lead.statusToken ?? "",
   };
+}
+
+// ── Business Hours Availability ───────────────────────────────────
+
+interface BusinessHoursDay {
+  open: string;
+  close: string;
+}
+
+interface BusinessHoursClosed {
+  closed: true;
+}
+
+type DayConfig = BusinessHoursDay | BusinessHoursClosed;
+
+type BusinessHoursMap = Partial<
+  Record<"mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun", DayConfig>
+>;
+
+const DAY_MAP: Record<string, keyof BusinessHoursMap> = {
+  Mon: "mon",
+  Tue: "tue",
+  Wed: "wed",
+  Thu: "thu",
+  Fri: "fri",
+  Sat: "sat",
+  Sun: "sun",
+};
+
+/**
+ * Check if a provider is currently within their business hours.
+ * Returns true if no business hours are set (always available).
+ */
+export function isProviderAvailable(provider: {
+  businessHours: unknown;
+  timezone: string;
+}): boolean {
+  if (!provider.businessHours) return true;
+
+  const hours = provider.businessHours as BusinessHoursMap;
+  const now = new Date();
+
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: provider.timezone || "America/New_York",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    weekday: "short",
+  }).formatToParts(now);
+
+  const weekday = parts.find((p) => p.type === "weekday")?.value ?? "";
+  const hour = parts.find((p) => p.type === "hour")?.value ?? "00";
+  const minute = parts.find((p) => p.type === "minute")?.value ?? "00";
+
+  const dayKey = DAY_MAP[weekday];
+  if (!dayKey) return true;
+
+  const dayConfig = hours[dayKey];
+  if (!dayConfig) return true;
+  if ("closed" in dayConfig && dayConfig.closed) return false;
+
+  const currentMinutes = parseInt(hour) * 60 + parseInt(minute);
+  const dayHours = dayConfig as BusinessHoursDay;
+  const [openH, openM] = dayHours.open.split(":").map(Number);
+  const [closeH, closeM] = dayHours.close.split(":").map(Number);
+  const openMinutes = openH * 60 + openM;
+  const closeMinutes = closeH * 60 + closeM;
+
+  return currentMinutes >= openMinutes && currentMinutes < closeMinutes;
+}
+
+/**
+ * Calculate the next business hour open time for a provider.
+ */
+function getNextBusinessOpen(provider: {
+  businessHours: unknown;
+  timezone: string;
+}): Date {
+  if (!provider.businessHours) return new Date();
+
+  const hours = provider.businessHours as BusinessHoursMap;
+  const now = new Date();
+  const dayKeys: (keyof BusinessHoursMap)[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: provider.timezone || "America/New_York",
+    weekday: "short",
+  }).formatToParts(now);
+
+  const weekday = parts.find((p) => p.type === "weekday")?.value ?? "";
+  const todayKey = DAY_MAP[weekday];
+  const todayIndex = dayKeys.indexOf(todayKey ?? "mon");
+
+  for (let offset = 1; offset <= 7; offset++) {
+    const dayIndex = (todayIndex + offset) % 7;
+    const dayConfig = hours[dayKeys[dayIndex]];
+    if (dayConfig && !("closed" in dayConfig)) {
+      const [openH, openM] = (dayConfig as BusinessHoursDay).open.split(":").map(Number);
+      const nextOpen = new Date(now);
+      nextOpen.setDate(nextOpen.getDate() + offset);
+      nextOpen.setHours(openH, openM, 0, 0);
+      return nextOpen;
+    }
+  }
+
+  const fallback = new Date(now);
+  fallback.setDate(fallback.getDate() + 1);
+  fallback.setHours(8, 0, 0, 0);
+  return fallback;
 }
 
 // ── Core Functions ─────────────────────────────────────────────────
@@ -100,6 +211,7 @@ function leadToRouteResult(
 /**
  * Route a lead to the best available provider.
  * Priority: primary (active) -> backup -> overflow (same city) -> unmatched.
+ * Only routes to providers currently within their business hours.
  */
 export async function routeLead(
   niche: string,
@@ -110,7 +222,7 @@ export async function routeLead(
 
   // Find matching providers sorted by tier priority
   // Only route to providers with verified emails AND verified ownership
-  const candidates = await prisma.provider.findMany({
+  const allCandidates = await prisma.provider.findMany({
     where: {
       niche,
       city: { equals: city, mode: "insensitive" },
@@ -120,6 +232,15 @@ export async function routeLead(
     },
     orderBy: { tier: "asc" }, // primary < backup < overflow
   });
+
+  // Filter to only providers currently within their business hours
+  const candidates = allCandidates.filter((p) => isProviderAvailable(p));
+
+  // If no providers are currently available but some exist, queue for next open
+  let deliverAt: Date | null = null;
+  if (candidates.length === 0 && allCandidates.length > 0) {
+    deliverAt = getNextBusinessOpen(allCandidates[0]);
+  }
 
   // Determine routing
   let routedToId: string | null = null;
@@ -158,7 +279,8 @@ export async function routeLead(
     }
   }
 
-  // Create the lead record
+  // Create the lead record with unique status tracking token
+  const statusToken = crypto.randomUUID();
   const lead = await prisma.lead.create({
     data: {
       niche,
@@ -171,6 +293,9 @@ export async function routeLead(
       routeType,
       routedToId,
       slaDeadline,
+      statusToken,
+      source: (leadData.source as string) ?? "erie-pro",
+      deliverAt: deliverAt ?? undefined,
       tcpaConsent: (leadData.tcpaConsent as boolean) ?? false,
       tcpaConsentText: (leadData.tcpaConsentText as string) ?? null,
       tcpaIpAddress: (leadData.tcpaIpAddress as string) ?? null,
@@ -197,6 +322,7 @@ export async function routeLead(
     routeType: routeType as LeadRouteResult["routeType"],
     timestamp: now.toISOString(),
     slaDeadline: slaDeadline.toISOString(),
+    statusToken,
   };
 }
 
@@ -467,4 +593,61 @@ export async function deliverBankedLeads(
     },
   });
   return result.count;
+}
+
+/**
+ * Reassign a lead to a different provider in the same niche.
+ * Used by the SLA enforcement system when a provider fails to respond.
+ */
+export async function reassignLead(
+  leadId: string
+): Promise<{ success: boolean; newProviderId?: string }> {
+  const lead = await prisma.lead.findUnique({
+    where: { id: leadId },
+    include: { routedTo: true },
+  });
+  if (!lead || !lead.routedToId) return { success: false };
+
+  // Find another active, verified provider in the same niche (not the original)
+  const backup = await prisma.provider.findFirst({
+    where: {
+      niche: lead.niche,
+      city: { equals: lead.city, mode: "insensitive" },
+      subscriptionStatus: "active",
+      emailVerified: true,
+      verificationStatus: { in: ["verified", "auto_verified", "admin_approved"] },
+      id: { not: lead.routedToId },
+      territories: {
+        some: {
+          niche: lead.niche,
+          isPaused: false,
+          deactivatedAt: null,
+        },
+      },
+    },
+    orderBy: { avgResponseTime: "asc" },
+  });
+
+  if (!backup) return { success: false };
+
+  // Reassign the lead
+  await prisma.lead.update({
+    where: { id: leadId },
+    data: {
+      routedToId: backup.id,
+      routeType: "failover",
+      slaDeadline: new Date(Date.now() + 1800 * 1000), // fresh 30-min SLA
+    },
+  });
+
+  // Increment lead count on new provider
+  await prisma.provider.update({
+    where: { id: backup.id },
+    data: {
+      totalLeads: { increment: 1 },
+      lastLeadAt: new Date(),
+    },
+  });
+
+  return { success: true, newProviderId: backup.id };
 }

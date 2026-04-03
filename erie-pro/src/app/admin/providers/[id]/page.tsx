@@ -45,6 +45,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import ProviderActions from "./provider-actions"
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -197,17 +198,11 @@ export default async function ProviderDetailPage({ params }: Props) {
           </p>
         </div>
 
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            Upgrade Tier
-          </Button>
-          <Button variant="outline" size="sm">
-            Swap Territory
-          </Button>
-          <Button variant="destructive" size="sm">
-            Suspend
-          </Button>
-        </div>
+        <ProviderActions
+          providerId={provider.id}
+          currentTier={provider.tier}
+          businessName={provider.businessName}
+        />
       </div>
 
       {/* ── Profile + Performance ──────────────────────────── */}

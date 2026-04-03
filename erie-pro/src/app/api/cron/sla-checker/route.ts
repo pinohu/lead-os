@@ -7,6 +7,8 @@ import { prisma } from "@/lib/db";
 import { sendSlaWarning } from "@/lib/notifications";
 import { sendEmail } from "@/lib/email";
 import { logger } from "@/lib/logger";
+import { reassignLead } from "@/lib/lead-routing";
+import { audit } from "@/lib/audit-log";
 
 export async function GET(req: NextRequest) {
   // Validate CRON_SECRET
@@ -37,6 +39,8 @@ export async function GET(req: NextRequest) {
 
     let warningsSent = 0;
     let escalations = 0;
+    let reassignments = 0;
+    let suspensions = 0;
 
     for (const lead of overdueLeads) {
       if (!lead.routedTo) continue;
@@ -45,7 +49,86 @@ export async function GET(req: NextRequest) {
       const elapsedMinutes = Math.round(elapsedMs / 60000);
 
       if (elapsedMs >= escalationTimeoutMs) {
-        // Second offense: 8+ hours — escalate to admin
+        // 8+ hours with no outcome — apply consequences
+        const providerId = lead.routedTo.id;
+
+        // Check if we already sent a warning for this lead (avoid double-processing)
+        const alreadyWarned = await prisma.notification.findFirst({
+          where: {
+            providerId,
+            type: "sla_warning",
+            message: { contains: lead.id },
+          },
+        });
+
+        if (alreadyWarned) {
+          // Increment SLA violation count on the provider
+          const updatedProvider = await prisma.provider.update({
+            where: { id: providerId },
+            data: { slaViolationCount: { increment: 1 } },
+          });
+
+          const violationCount = updatedProvider.slaViolationCount;
+
+          // Try to reassign to a backup provider
+          const reassigned = await reassignLead(lead.id);
+          if (reassigned.success) {
+            await audit({
+              action: "lead.routed",
+              entityType: "lead",
+              entityId: lead.id,
+              providerId: reassigned.newProviderId,
+              metadata: {
+                reason: "sla_reassigned",
+                originalProviderId: providerId,
+                violationCount,
+              },
+            });
+            reassignments++;
+            logger.warn("cron/sla-checker", `REASSIGNED: Lead ${lead.id} from ${providerId} to ${reassigned.newProviderId}`);
+          }
+
+          // If 3+ violations, alert admin
+          if (violationCount >= 3) {
+            const adminEmail = process.env.ADMIN_EMAIL;
+            if (adminEmail) {
+              sendEmail({
+                to: adminEmail,
+                subject: `SLA Alert: ${lead.routedTo.businessName} has ${violationCount} violations`,
+                html: `
+                  <p><strong>SLA Violation Alert</strong></p>
+                  <p>Provider <strong>${lead.routedTo.businessName}</strong> (${lead.routedTo.email}) now has <strong>${violationCount} SLA violations</strong>.</p>
+                  <p>${violationCount >= 5 ? "Territory has been auto-paused." : "Consider reviewing this provider."}</p>
+                  <p>Latest: Lead <code>${lead.id}</code> waited ${elapsedMinutes} minutes (${Math.round(elapsedMinutes / 60)} hours).</p>
+                `,
+              }).catch((err) => { logger.error("cron/sla-checker", "Admin alert email failed", err) });
+            }
+          }
+
+          // If 5+ violations, auto-pause all territories
+          if (violationCount >= 5) {
+            await prisma.territory.updateMany({
+              where: { providerId, isPaused: false },
+              data: { isPaused: true, pausedAt: now },
+            });
+
+            await audit({
+              action: "territory.paused",
+              entityType: "provider",
+              entityId: providerId,
+              metadata: {
+                reason: "provider.sla_suspended",
+                violationCount,
+                autoSuspended: true,
+              },
+            });
+
+            suspensions++;
+            logger.warn("cron/sla-checker", `SUSPENDED: Provider ${providerId} — ${violationCount} SLA violations, territories paused`);
+          }
+        }
+
+        // Always send escalation email to admin
         const adminEmail = process.env.ADMIN_EMAIL;
         if (adminEmail) {
           sendEmail({
@@ -70,13 +153,15 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    logger.info("cron/sla-checker", `Checked ${overdueLeads.length} overdue leads. Warnings: ${warningsSent}, Escalations: ${escalations}`);
+    logger.info("cron/sla-checker", `Checked ${overdueLeads.length} overdue leads. Warnings: ${warningsSent}, Escalations: ${escalations}, Reassignments: ${reassignments}, Suspensions: ${suspensions}`);
 
     return NextResponse.json({
       success: true,
       overdueLeads: overdueLeads.length,
       warningsSent,
       escalations,
+      reassignments,
+      suspensions,
     });
   } catch (err) {
     logger.error("cron/sla-checker", "Error:", err);

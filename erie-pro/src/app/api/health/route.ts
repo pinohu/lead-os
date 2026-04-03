@@ -33,6 +33,7 @@ export async function GET() {
       uptime: process.uptime(),
       checks: {
         database: { status: dbStatus, latencyMs: dbLatencyMs },
+        emailService: { configured: !!process.env.EMAILIT_API_KEY, provider: "emailit" },
       },
       responseTimeMs: totalMs,
       version: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "dev",
