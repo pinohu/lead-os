@@ -157,8 +157,8 @@ export function RuntimeConfigForm({ initialConfig }: Props) {
         </div>
       </div>
 
-      <div className="cta-row">
-        <button type="submit" className="primary" disabled={isPending}>
+      <div className="flex flex-wrap gap-3 mt-4">
+        <button type="submit" className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-wait transition-colors" disabled={isPending}>
           {isPending ? "Saving..." : "Save runtime settings"}
         </button>
       </div>
