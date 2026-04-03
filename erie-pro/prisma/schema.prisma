@@ -149,6 +149,13 @@ model Provider {
   verificationAttempts Int               @default(0) // Brute-force protection
   claimedListingId    String?            // DirectoryListing.id being claimed
 
+  // SLA tracking
+  slaViolationCount   Int                @default(0)
+  businessHours       Json?
+  timezone            String             @default("America/New_York")
+  photoUrl            String?
+  coverPhotoUrl       String?
+
   // Performance metrics (denormalized for fast reads)
   totalLeads          Int                @default(0)
   convertedLeads      Int                @default(0)
@@ -172,6 +179,8 @@ model Provider {
   disputes            LeadDispute[]
   auditLogs           AuditLog[]
   checkoutSessions    CheckoutSession[]
+  apiKeys             ApiKey[]
+  webhookEndpoints    WebhookEndpoint[]
 
   @@index([niche, city])
   @@index([niche, subscriptionStatus])
@@ -194,6 +203,9 @@ model Lead {
   routeType         LeadRouteType   @default(unmatched)
   temperature       LeadTemperature @default(warm)
   slaDeadline       DateTime?
+  statusToken       String?         @unique
+  source            String          @default("erie-pro")
+  deliverAt         DateTime?
 
   // TCPA compliance fields
   tcpaConsent       Boolean         @default(false)
@@ -503,4 +515,39 @@ model Suppression {
   @@index([email])
   @@index([phone])
   @@map("suppressions")
+}
+
+// ── API Key ───────────────────────────────────────────────────────
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  keyHash     String    @unique
+  label       String
+  providerId  String
+  provider    Provider  @relation(fields: [providerId], references: [id])
+  permissions String[]  @default(["leads:write"])
+  lastUsedAt  DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  @@index([keyHash])
+  @@index([providerId])
+  @@map("api_keys")
+}
+
+// ── Webhook Endpoint ──────────────────────────────────────────────
+
+model WebhookEndpoint {
+  id          String   @id @default(cuid())
+  providerId  String
+  provider    Provider @relation(fields: [providerId], references: [id])
+  url         String
+  secret      String
+  events      String[] @default(["lead.created", "lead.routed"])
+  isActive    Boolean  @default(true)
+  failCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([providerId])
+  @@map("webhook_endpoints")
 }

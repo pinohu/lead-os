@@ -19,6 +19,8 @@ const navItems = [
   { href: "/dashboard/profile", label: "Profile", icon: "👤" },
   { href: "/dashboard/leads", label: "Leads", icon: "📋" },
   { href: "/dashboard/disputes", label: "Disputes", icon: "⚖️" },
+  { href: "/dashboard/integrations", label: "Integrations", icon: "🔗" },
+  { href: "/dashboard/webhooks", label: "Webhooks", icon: "📡" },
   { href: "/dashboard/settings", label: "Settings", icon: "⚙️" },
 ];
 

@@ -1,0 +1,225 @@
+// ── Inbound Webhook Endpoint ──────────────────────────────────────────
+// Accepts leads from external systems (CRMs, forms, aggregators) via API key auth.
+// POST /api/leads/inbound with X-API-Key header.
+
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import { routeLead } from "@/lib/lead-routing";
+import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { audit } from "@/lib/audit-log";
+import { deliverWebhookEvent } from "@/lib/webhook-delivery";
+import crypto from "crypto";
+
+// ── CORS Preflight ─────────────────────────────────────────────────
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, X-API-Key, X-Signature",
+    },
+  });
+}
+
+// ── Inbound Lead Schema ────────────────────────────────────────────
+const InboundLeadSchema = z.object({
+  firstName: z.string().min(1).optional(),
+  lastName: z.string().min(1).optional(),
+  name: z.string().min(1).optional(),
+  email: z.string().email(),
+  phone: z.string().min(7).optional(),
+  service: z.string().min(1).optional(),
+  niche: z.string().min(1).optional(),
+  message: z.string().optional(),
+  source: z.string().optional(),
+});
+
+// ── HMAC Signature Verification ────────────────────────────────────
+function verifyHmacSignature(
+  payload: string,
+  signature: string,
+  secret: string
+): boolean {
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(payload)
+    .digest("hex");
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected)
+  );
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    // 1. Rate limit
+    const rateLimited = await checkRateLimit(req, "lead");
+    if (rateLimited) return addCors(rateLimited);
+
+    // 2. Validate API key from X-API-Key header
+    const apiKeyRaw = req.headers.get("x-api-key");
+    if (!apiKeyRaw) {
+      return corsJson(
+        { success: false, error: "Missing X-API-Key header" },
+        401
+      );
+    }
+
+    const keyHash = crypto
+      .createHash("sha256")
+      .update(apiKeyRaw)
+      .digest("hex");
+    const apiKey = await prisma.apiKey.findUnique({
+      where: { keyHash },
+      include: { provider: true },
+    });
+
+    if (!apiKey || !apiKey.isActive) {
+      return corsJson(
+        { success: false, error: "Invalid or revoked API key" },
+        401
+      );
+    }
+
+    // Update lastUsedAt (fire-and-forget)
+    prisma.apiKey
+      .update({ where: { id: apiKey.id }, data: { lastUsedAt: new Date() } })
+      .catch(() => {});
+
+    // 3. Optional HMAC signature verification
+    const signature = req.headers.get("x-signature");
+    const rawBody = await req.text();
+
+    if (signature) {
+      // Find a webhook endpoint secret for this provider to verify against
+      const endpoint = await prisma.webhookEndpoint.findFirst({
+        where: { providerId: apiKey.providerId, isActive: true },
+      });
+      if (endpoint) {
+        try {
+          const valid = verifyHmacSignature(rawBody, signature, endpoint.secret);
+          if (!valid) {
+            return corsJson(
+              { success: false, error: "Invalid HMAC signature" },
+              401
+            );
+          }
+        } catch {
+          return corsJson(
+            { success: false, error: "Invalid HMAC signature format" },
+            401
+          );
+        }
+      }
+    }
+
+    // 4. Parse and validate body
+    let body: unknown;
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      return corsJson({ success: false, error: "Invalid JSON" }, 400);
+    }
+
+    const parsed = InboundLeadSchema.safeParse(body);
+    if (!parsed.success) {
+      return corsJson(
+        {
+          success: false,
+          error: parsed.error.issues.map((e) => e.message).join("; "),
+        },
+        400
+      );
+    }
+
+    // 5. Map fields
+    const data = parsed.data;
+    const niche = data.niche || data.service || apiKey.provider.niche;
+    const firstName =
+      data.firstName || data.name?.split(" ")[0] || "";
+    const lastName =
+      data.lastName || data.name?.split(" ").slice(1).join(" ") || "";
+
+    // 6. Check suppression list
+    const suppressed = await prisma.suppression.findFirst({
+      where: {
+        OR: [
+          { email: data.email },
+          ...(data.phone ? [{ phone: data.phone }] : []),
+        ],
+      },
+    });
+    if (suppressed) {
+      return corsJson({ success: false, error: "Contact opted out" }, 403);
+    }
+
+    // 7. Route the lead
+    const result = await routeLead(niche, apiKey.provider.city, {
+      firstName,
+      lastName,
+      phone: data.phone || "",
+      email: data.email,
+      message: data.message,
+      source: data.source || "webhook",
+      timestamp: new Date().toISOString(),
+      tcpaConsent: true,
+      tcpaConsentText: "Submitted via provider webhook integration",
+      tcpaConsentAt: new Date().toISOString(),
+      tcpaIpAddress: "webhook",
+    });
+
+    // 8. Audit log
+    audit({
+      action: "lead.routed",
+      entityType: "lead",
+      entityId: result.leadId,
+      providerId: apiKey.providerId,
+      metadata: { niche, source: "webhook", apiKeyId: apiKey.id },
+    }).catch(() => {});
+
+    // 9. Deliver outbound webhook events
+    if (result.routedTo) {
+      deliverWebhookEvent(result.routedTo.id, "lead.created", {
+        leadId: result.leadId,
+        niche,
+        firstName,
+        lastName,
+        email: data.email,
+        routeType: result.routeType,
+      }).catch(() => {});
+    }
+
+    return corsJson({
+      success: true,
+      leadId: result.leadId,
+      routedTo: result.routedTo?.businessName ?? "Queued",
+    });
+  } catch (err) {
+    logger.error("api/leads/inbound", "Error processing inbound lead:", err);
+    return corsJson({ success: false, error: "Internal server error" }, 500);
+  }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────
+
+function corsHeaders(): Record<string, string> {
+  return {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-API-Key, X-Signature",
+  };
+}
+
+function corsJson(data: unknown, status = 200): NextResponse {
+  return NextResponse.json(data, { status, headers: corsHeaders() });
+}
+
+function addCors(res: NextResponse): NextResponse {
+  for (const [k, v] of Object.entries(corsHeaders())) {
+    res.headers.set(k, v);
+  }
+  return res;
+}

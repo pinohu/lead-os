@@ -7,6 +7,7 @@ import { sendNewLeadNotification, sendConsumerConfirmation, sendAdminLeadAlert }
 import { logger } from "@/lib/logger"
 import { audit } from "@/lib/audit-log"
 import { prisma } from "@/lib/db"
+import { deliverWebhookEvent } from "@/lib/webhook-delivery"
 
 export async function POST(request: NextRequest) {
   try {
@@ -124,13 +125,14 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        // Consumer confirmation
+        // Consumer confirmation (includes status tracking link)
         tasks.push(
           sendConsumerConfirmation(
             email,
             leadName === "New Lead" ? "" : leadName,
             niche,
-            result.routedTo?.businessName ?? null
+            result.routedTo?.businessName ?? null,
+            result.statusToken
           ).catch((err) => { logger.error("email", "Consumer confirmation failed", err) })
         )
 
@@ -161,6 +163,21 @@ export async function POST(request: NextRequest) {
             metadata: { niche, city, ...(result.routedTo ? {} : { status: "banked" }) },
           }).catch((err) => { logger.error("lead", "Audit log failed", err) })
         )
+
+        // Outbound webhook delivery
+        if (result.routedTo) {
+          tasks.push(
+            deliverWebhookEvent(result.routedTo.id, "lead.created", {
+              leadId: result.leadId,
+              niche,
+              city,
+              firstName,
+              lastName,
+              email,
+              routeType: result.routeType,
+            }).catch((err) => { logger.error("webhook", "Webhook delivery failed", err) })
+          )
+        }
 
         await Promise.allSettled(tasks)
       } catch (err) {

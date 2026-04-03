@@ -39,7 +39,9 @@ export type AuditEntityType =
   | "territory"
   | "subscription"
   | "checkout"
-  | "dispute";
+  | "dispute"
+  | "api_key"
+  | "webhook";
 
 interface AuditEntry {
   action: AuditAction;
