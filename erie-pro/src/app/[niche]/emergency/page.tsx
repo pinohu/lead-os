@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+import { InternalLinks } from "@/components/internal-links"
 import {
   Siren,
   Phone,
@@ -348,6 +349,8 @@ export default async function NicheEmergencyPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      <InternalLinks niche={slug} currentPage="emergency" />
     </main>
     </>
   )

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useState, useMemo } from "react"
 import { ClipboardCheck, ArrowRight, ShieldCheck } from "lucide-react"
+import { InternalLinks } from "@/components/internal-links"
 import { cityConfig } from "@/lib/city-config"
 import { getNicheBySlug } from "@/lib/niches"
 import { getNicheContent } from "@/lib/niche-content"
@@ -345,6 +346,8 @@ export default function NicheChecklistPage() {
           </div>
         </div>
       </section>
+
+      <InternalLinks niche={slug} currentPage="checklist" />
     </main>
   )
 }

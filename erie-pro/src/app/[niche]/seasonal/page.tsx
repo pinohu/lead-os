@@ -2,6 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { CalendarDays, ArrowRight, Snowflake, Sun, Leaf, Flower2, AlertTriangle, CheckCircle2, Info } from "lucide-react"
+import { InternalLinks } from "@/components/internal-links"
 import { cityConfig } from "@/lib/city-config"
 import { getNicheBySlug } from "@/lib/niches"
 import { getNicheContent, getAllNicheSlugs } from "@/lib/niche-content"
@@ -234,6 +235,8 @@ export default async function NicheSeasonalPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      <InternalLinks niche={slug} currentPage="seasonal" />
     </main>
     </>
   )

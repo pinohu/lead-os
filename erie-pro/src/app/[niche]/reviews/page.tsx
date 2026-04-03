@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
+import { InternalLinks } from "@/components/internal-links"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -244,6 +245,8 @@ export default async function NicheReviewsPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      <InternalLinks niche={slug} currentPage="reviews" />
     </main>
     </>
   )

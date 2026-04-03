@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Loader2, Building, Shield, Flame, Lock, Save } from "lucide-react";
-import { niches } from "@/lib/niches";
+import { niches, getNicheBySlug } from "@/lib/niches";
 import { cityConfig } from "@/lib/city-config";
+import { getNicheContent } from "@/lib/niche-content";
 import {
   TIER_ORDER,
   calculateMonthlyFee,
@@ -90,6 +91,22 @@ export default function ClaimPage() {
     } catch { /* ignore corrupt localStorage */ }
   }, []);
 
+  // ── Pre-fill from directory listing when claiming an existing listing ──
+  useEffect(() => {
+    if (!listingId) return;
+    fetch(`/api/listing/${listingId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data) return;
+        if (data.businessName && !businessName) setBusinessName(data.businessName);
+        if (data.phone && !phone) setPhone(data.phone);
+        if (data.description && !description) setDescription(data.description);
+        if (data.niche && !niche) setNiche(data.niche);
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listingId]);
+
   // ── Debounced draft save on field changes ─────────────────────────
   const saveDraft = useCallback(() => {
     const draft = { niche, tier, businessName, email, phone, description, license };
@@ -116,6 +133,7 @@ export default function ClaimPage() {
   }, [niche]);
 
   const selectedNiche = niches.find((n) => n.slug === niche);
+  const nicheContent = niche ? getNicheContent(niche) : null;
   const tierPrice = selectedNiche
     ? calculateMonthlyFee(selectedNiche.monthlyFee, tier)
     : 0;
@@ -289,6 +307,30 @@ export default function ClaimPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Niche & Region Context */}
+          {selectedNiche && nicheContent && (
+            <Card className="border-muted bg-muted/30">
+              <CardContent className="pt-6 space-y-3">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Service Area</p>
+                    <p className="text-sm">{cityConfig.name}, {cityConfig.stateCode} &mdash; {cityConfig.serviceArea.slice(0, 6).join(", ")}{cityConfig.serviceArea.length > 6 ? `, +${cityConfig.serviceArea.length - 6} more` : ""}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Common Services</p>
+                    <p className="text-sm">{nicheContent.commonServices.slice(0, 5).join(", ")}{nicheContent.commonServices.length > 5 ? `, +${nicheContent.commonServices.length - 5} more` : ""}</p>
+                  </div>
+                </div>
+                {nicheContent.pricingRanges.length > 0 && (
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Typical Pricing in {cityConfig.name}</p>
+                    <p className="text-sm">{nicheContent.pricingRanges.slice(0, 3).map(p => `${p.service}: ${p.range}`).join(" · ")}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Tier Selection */}
           <Card>

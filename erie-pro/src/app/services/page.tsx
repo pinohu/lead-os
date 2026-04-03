@@ -131,21 +131,26 @@ export default function ServicesPage() {
                           <ArrowRight className="ml-1 h-3.5 w-3.5" />
                         </Link>
                       </Button>
-                      <Button asChild size="sm" variant="ghost">
-                        <Link href={`/${niche.slug}/directory`}>Directory</Link>
-                      </Button>
-                      <Button asChild size="sm" variant="ghost">
-                        <Link href={`/${niche.slug}/reviews`}>Reviews</Link>
-                      </Button>
-                      <Button asChild size="sm" variant="ghost">
-                        <Link href={`/${niche.slug}/pricing`}>Pricing</Link>
-                      </Button>
-                      <Button asChild size="sm" variant="ghost">
-                        <Link href={`/${niche.slug}/faq`}>FAQ</Link>
-                      </Button>
-                      <Button asChild size="sm" variant="ghost">
-                        <Link href={`/${niche.slug}/guides`}>Guides</Link>
-                      </Button>
+                      {[
+                        { href: "directory", label: "Directory" },
+                        { href: "reviews", label: "Reviews" },
+                        { href: "pricing", label: "Pricing" },
+                        { href: "costs", label: "Costs" },
+                        { href: "faq", label: "FAQ" },
+                        { href: "guides", label: "Guides" },
+                        { href: "blog", label: "Blog" },
+                        { href: "compare", label: "Compare" },
+                        { href: "tips", label: "Tips" },
+                        { href: "emergency", label: "Emergency" },
+                        { href: "seasonal", label: "Seasonal" },
+                        { href: "checklist", label: "Checklist" },
+                        { href: "certifications", label: "Certs" },
+                        { href: "glossary", label: "Glossary" },
+                      ].map((sub) => (
+                        <Button key={sub.href} asChild size="sm" variant="ghost">
+                          <Link href={`/${niche.slug}/${sub.href}`}>{sub.label}</Link>
+                        </Button>
+                      ))}
                     </div>
                   </div>
                 </AccordionContent>

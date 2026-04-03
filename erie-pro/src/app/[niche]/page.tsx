@@ -235,6 +235,35 @@ export default async function NichePage({ params }: Props) {
         </div>
       </section>
 
+      {/* ── Explore niche resources ──────────────────────────── */}
+      <section className="mx-auto max-w-4xl px-4 pb-12 sm:px-6">
+        <h2 className="mb-4 text-lg font-bold tracking-tight">
+          Explore {niche.label} Resources
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { href: `/${slug}/directory`, label: "Provider Directory" },
+            { href: `/${slug}/reviews`, label: "Reviews" },
+            { href: `/${slug}/pricing`, label: "Pricing Guide" },
+            { href: `/${slug}/costs`, label: "Cost Breakdown" },
+            { href: `/${slug}/faq`, label: "FAQ" },
+            { href: `/${slug}/guides`, label: "Hiring Guides" },
+            { href: `/${slug}/blog`, label: "Blog" },
+            { href: `/${slug}/compare`, label: "Compare Providers" },
+            { href: `/${slug}/tips`, label: "Tips" },
+            { href: `/${slug}/emergency`, label: "Emergency Services" },
+            { href: `/${slug}/seasonal`, label: "Seasonal Guide" },
+            { href: `/${slug}/checklist`, label: "Hiring Checklist" },
+            { href: `/${slug}/certifications`, label: "Certifications" },
+            { href: `/${slug}/glossary`, label: "Glossary" },
+          ].map((link) => (
+            <Button key={link.href} asChild variant="outline" size="sm">
+              <Link href={link.href}>{link.label}</Link>
+            </Button>
+          ))}
+        </div>
+      </section>
+
       {/* ── Quote form ──────────────────────────────────────── */}
       <section id="quote" className="mx-auto max-w-2xl px-4 pb-16 sm:px-6">
         <Card className="shadow-lg">
@@ -319,7 +348,7 @@ export default async function NichePage({ params }: Props) {
         <p className="text-sm text-muted-foreground">
           Are you a {niche.label.toLowerCase()} provider?{" "}
           <Link
-            href="/for-business"
+            href={`/for-business/claim?niche=${slug}`}
             className="font-medium text-primary hover:underline"
           >
             Claim this territory

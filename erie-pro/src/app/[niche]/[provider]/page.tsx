@@ -23,6 +23,7 @@ import { getProviderBySlug } from "@/lib/provider-store"
 import { getDirectoryListingBySlug, getAllDirectoryListingSlugs } from "@/lib/directory-store"
 import { getLocalSeoSnippet } from "@/lib/local-seo"
 import { getNicheContent } from "@/lib/niche-content"
+import { InternalLinks } from "@/components/internal-links"
 import { getDirectoryListingsByNiche } from "@/lib/directory-store"
 import { Button } from "@/components/ui/button"
 import {
@@ -428,6 +429,8 @@ export default async function ProviderPage({ params }: Props) {
               <li><Link href="/" className="hover:underline">Home</Link></li>
               <li aria-hidden="true">/</li>
               <li><Link href={`/${niche.slug}`} className="hover:underline">{niche.label}</Link></li>
+              <li aria-hidden="true">/</li>
+              <li><Link href={`/${niche.slug}/directory`} className="hover:underline">Directory</Link></li>
               <li aria-hidden="true">/</li>
               <li className={heroPhoto ? "text-white" : "text-foreground"}>{providerName}</li>
             </ol>
@@ -1337,6 +1340,8 @@ export default async function ProviderPage({ params }: Props) {
           }),
         }}
       />
+
+      <InternalLinks niche={niche.slug} currentPage="directory" />
     </main>
   )
 }
