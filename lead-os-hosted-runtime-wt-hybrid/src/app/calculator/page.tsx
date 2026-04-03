@@ -50,7 +50,7 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
   });
 
   return (
-    <div data-theme="light" className="[color-scheme:light]">
+    <div>
     <ExperienceScaffold
       niche={niche.slug}
       eyebrow="Hosted calculator path"

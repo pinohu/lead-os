@@ -76,7 +76,7 @@ export default async function AssessmentPage({ params, searchParams }: Assessmen
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(assessJsonLd) }} />
-    <div data-theme="light" className="[color-scheme:light]">
+    <div>
     <ExperienceScaffold
       eyebrow="Hosted assessment"
       title={niche.assessmentTitle}

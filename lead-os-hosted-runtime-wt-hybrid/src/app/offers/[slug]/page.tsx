@@ -63,7 +63,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
   });
 
   return (
-    <div data-theme="light" className="[color-scheme:light]">
+    <div>
     <ExperienceScaffold
       eyebrow="Offer path"
       title={`${niche.label} offer path built for high-intent visitors`}

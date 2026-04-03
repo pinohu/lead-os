@@ -31,7 +31,7 @@ export default function DirectoryIndexPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(directoryJsonLd) }} />
-    <div data-theme="light" className="[color-scheme:light]">
+    <div>
     <main className="min-h-screen">
       <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
         <div className="max-w-2xl">

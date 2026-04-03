@@ -217,7 +217,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
   });
 
   return (
-    <div data-theme="light" className="[color-scheme:light]">
+    <div>
       <ExperienceScaffold
         niche={bp.recommendedNiche}
         eyebrow={`Built for ${bp.label}`}

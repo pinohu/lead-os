@@ -108,7 +108,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
   }));
 
   return (
-    <div data-theme="light" className="[color-scheme:light]">
+    <div>
       <ExperienceScaffold
         eyebrow="Resource guide"
         title={`The Complete Guide to ${niche.label}`}

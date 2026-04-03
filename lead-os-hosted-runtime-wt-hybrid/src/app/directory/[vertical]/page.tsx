@@ -87,7 +87,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
   const coldHeadline = template?.headlineTemplates?.cold;
 
   return (
-    <div data-theme="light" className="[color-scheme:light]">
+    <div>
     <ExperienceScaffold
       eyebrow={`${niche.label} directory`}
       title={coldHeadline ? coldHeadline.headline.replace(/\{\{niche\}\}/g, niche.label) : `${niche.label} Growth Directory`}

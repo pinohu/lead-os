@@ -105,7 +105,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
   );
 
   return (
-    <div data-theme="light" className="[color-scheme:light]">
+    <div>
       <ExperienceScaffold
         eyebrow={niche.label}
         title={headline}
