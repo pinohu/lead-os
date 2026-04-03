@@ -213,7 +213,7 @@ main,
 .experience-page {
   max-width: 1180px;
   margin: 0 auto;
-  padding: var(--space-5) 24px var(--space-8);
+  padding: var(--space-3) 20px var(--space-5);
 }
 
 h1,
@@ -256,7 +256,7 @@ ol {
 
 main > * + *,
 .experience-page > * + * {
-  margin-top: 32px;
+  margin-top: 24px;
 }
 
 .hero,

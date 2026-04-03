@@ -15,7 +15,7 @@ export default async function DocumentJobsPage() {
 
   return (
     <main className="min-h-screen">
-      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+      <section className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Document queue</p>
           <h1 className="text-foreground">{tenantConfig.brandName} document jobs</h1>

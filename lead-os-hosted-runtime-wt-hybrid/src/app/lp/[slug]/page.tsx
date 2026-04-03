@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: LPPageProps): Promise<Metadat
 const SERIF = "'Palatino Linotype', 'Book Antiqua', Georgia, serif";
 
 /** Shared Tailwind classes for section containers */
-const SECTION_CLASSES = "py-16 px-6";
+const SECTION_CLASSES = "py-8 px-6";
 const MAX_W_CLASSES = "max-w-[1080px] mx-auto";
 const CARD_CLASSES = "bg-slate-50 border border-slate-200 rounded-xl";
 
@@ -94,7 +94,7 @@ function HeroSection({
 
   return (
     <div
-      className="bg-cover bg-center py-20 px-6 text-center text-white"
+      className="bg-cover bg-center py-10 px-6 text-center text-white"
       style={{
         backgroundImage: bgImage
           ? `linear-gradient(135deg, ${accent}e6 0%, ${accent}b3 100%), url(${bgImage})`

@@ -116,7 +116,7 @@ export default function HomePage() {
       {/* ── Hero ──────────────────────────────────────────── */}
       <section className="relative overflow-hidden" aria-labelledby="hero-heading">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
-        <div className="relative max-w-4xl mx-auto text-center px-4 pt-24 pb-20">
+        <div className="relative max-w-4xl mx-auto text-center px-4 pt-12 pb-10">
           <Badge variant="secondary" className="mb-6 text-sm px-4 py-1.5">
             Built for agencies managing multiple clients
           </Badge>
@@ -142,7 +142,7 @@ export default function HomePage() {
       </section>
 
       {/* ── The Agency Problem ────────────────────────────── */}
-      <section className="max-w-3xl mx-auto px-4 py-16" aria-labelledby="agency-problem-heading">
+      <section className="max-w-3xl mx-auto px-4 py-8" aria-labelledby="agency-problem-heading">
         <div className="text-center mb-8">
           <Badge variant="outline" className="mb-4">The agency problem</Badge>
           <h2 id="agency-problem-heading" className="text-3xl font-bold tracking-tight text-foreground mb-3">
@@ -169,7 +169,7 @@ export default function HomePage() {
       </section>
 
       {/* ── How It Works ──────────────────────────────────── */}
-      <section id="how-it-works" className="max-w-5xl mx-auto px-4 py-16" aria-labelledby="how-it-works-heading">
+      <section id="how-it-works" className="max-w-5xl mx-auto px-4 py-8" aria-labelledby="how-it-works-heading">
         <div className="text-center mb-10">
           <Badge variant="outline" className="mb-4">How it works</Badge>
           <h2 id="how-it-works-heading" className="text-3xl font-bold tracking-tight text-foreground">Four steps from zero to automated agency</h2>
@@ -204,7 +204,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Enterprise Grade ──────────────────────────────── */}
-      <section className="max-w-5xl mx-auto px-4 py-16" aria-labelledby="enterprise-heading">
+      <section className="max-w-5xl mx-auto px-4 py-8" aria-labelledby="enterprise-heading">
         <div className="text-center mb-10">
           <Badge variant="outline" className="mb-4">Enterprise-grade from day one</Badge>
           <h2 id="enterprise-heading" className="text-3xl font-bold tracking-tight text-foreground">
@@ -229,7 +229,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Social Proof ──────────────────────────────────── */}
-      <section className="max-w-5xl mx-auto px-4 py-16" aria-labelledby="social-proof-heading">
+      <section className="max-w-5xl mx-auto px-4 py-8" aria-labelledby="social-proof-heading">
         <div className="text-center mb-10">
           <Badge variant="outline" className="mb-4">From agency operators</Badge>
           <h2 id="social-proof-heading" className="text-3xl font-bold tracking-tight text-foreground">
@@ -272,7 +272,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Joy Layer ─────────────────────────────────────── */}
-      <section className="max-w-4xl mx-auto px-4 py-16" aria-label="The Joy Layer">
+      <section className="max-w-4xl mx-auto px-4 py-8" aria-label="The Joy Layer">
         <Card className="border-l-4 border-l-primary bg-primary/[0.03]">
           <CardHeader>
             <Badge variant="outline" className="w-fit mb-2">The Joy Layer</Badge>
@@ -311,7 +311,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Email Capture ─────────────────────────────────── */}
-      <section className="max-w-2xl mx-auto px-4 py-16 text-center" aria-labelledby="email-capture-heading">
+      <section className="max-w-2xl mx-auto px-4 py-8 text-center" aria-labelledby="email-capture-heading">
         <Badge variant="outline" className="mb-4">Get early access</Badge>
         <h2 id="email-capture-heading" className="text-3xl font-bold tracking-tight text-foreground mb-3">See it in action with your first client</h2>
         <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
@@ -350,7 +350,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Final CTA ─────────────────────────────────────── */}
-      <section className="max-w-2xl mx-auto px-4 py-16 text-center" aria-labelledby="final-cta-heading">
+      <section className="max-w-2xl mx-auto px-4 py-8 text-center" aria-labelledby="final-cta-heading">
         <h2 id="final-cta-heading" className="text-3xl font-bold tracking-tight text-foreground mb-3">Start your free agency account</h2>
         <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
           No credit card. No sales call. Add your first client in 15 minutes

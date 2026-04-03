@@ -219,7 +219,7 @@ export default function RadarPage() {
           <span className="text-amber-800">— Connect your database to see live radar. <a href="/setup" className="underline">Configure now &rarr;</a></span>
         </div>
       )}
-      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24">
+      <section className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Hot lead radar</p>
           <h1 className="text-foreground">Real-time monitoring</h1>

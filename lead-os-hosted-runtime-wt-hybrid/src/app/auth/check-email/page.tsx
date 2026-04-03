@@ -26,7 +26,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
   return (
     <main>
       {/* Confirmation hero */}
-      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24" aria-labelledby="check-email-heading">
+      <section className="max-w-5xl mx-auto px-4 py-8 md:py-12" aria-labelledby="check-email-heading">
         {/* Email illustration */}
         <div
           aria-hidden="true"

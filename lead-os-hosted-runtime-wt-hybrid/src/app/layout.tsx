@@ -152,8 +152,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div id="main-content">{children}</div>
 
         {/* ── Footer ──────────────────────────────────────── */}
-        <footer className="border-t border-border mt-16" role="contentinfo">
-          <div className="max-w-7xl mx-auto px-4 py-12">
+        <footer className="border-t border-border mt-8" role="contentinfo">
+          <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {/* Column 1: Brand */}
               <div className="col-span-2 md:col-span-1">

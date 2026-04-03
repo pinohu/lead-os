@@ -76,7 +76,7 @@ export default function JoyDashboard() {
   return (
     <main className="min-h-screen">
       {/* -- Greeting ------------------------------------------------- */}
-      <section className="max-w-5xl mx-auto px-4 py-16 md:py-24 text-center">
+      <section className="max-w-5xl mx-auto px-4 py-8 md:py-12 text-center">
         <div className="max-w-2xl mx-auto max-w-[700px]">
           <h1 className="text-foreground text-[clamp(1.6rem,4vw,2.4rem)]">
             {briefing.greeting}
