@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { AdaptiveLeadCaptureForm } from "@/components/AdaptiveLeadCaptureForm";
 import { ExperienceScaffold } from "@/components/ExperienceScaffold";
 import { getNiche, nicheCatalog } from "@/lib/catalog";
@@ -190,12 +191,12 @@ export default async function ResourcePage({ params, searchParams }: Props) {
             prioritized action plan you can execute this week.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href={`/assess/${niche.slug}`} className="primary">
+            <Button asChild><Link href={`/assess/${niche.slug}`}>
               Start the Assessment
-            </Link>
-            <Link href={`/industries/${niche.slug}`} className="secondary">
+            </Link></Button>
+            <Button asChild variant="outline"><Link href={`/industries/${niche.slug}`}>
               Explore {niche.label} Solutions
-            </Link>
+            </Link></Button>
           </div>
         </section>
 
@@ -211,12 +212,11 @@ export default async function ResourcePage({ params, searchParams }: Props) {
                 {niche.label.toLowerCase()} businesses.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link
+                <Button asChild variant="outline"><Link
                   href={`/industries/${niche.slug}`}
-                  className="secondary"
                 >
                   Explore the industry page
-                </Link>
+                </Link></Button>
               </div>
             </article>
             <article className="rounded-xl border border-border bg-card p-6">
@@ -226,9 +226,9 @@ export default async function ResourcePage({ params, searchParams }: Props) {
                 minutes and get a prioritized action plan.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link href={`/assess/${niche.slug}`} className="secondary">
+                <Button asChild variant="outline"><Link href={`/assess/${niche.slug}`}>
                   Take the assessment
-                </Link>
+                </Link></Button>
               </div>
             </article>
           </div>

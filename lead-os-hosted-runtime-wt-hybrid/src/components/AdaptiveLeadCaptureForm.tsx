@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useId, useState, useTransition } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/cn";
 import type { ExperienceProfile } from "@/lib/experience";
 import type { IntakeSource } from "@/lib/intake";
 import type { FunnelFamily } from "@/lib/runtime-schema";
@@ -134,55 +136,55 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
   }
 
   return (
-    <section className="capture-shell panel" id="capture-form" aria-labelledby="capture-form-title">
-      <div className="capture-header">
+    <section className="rounded-xl border border-border bg-card p-6" id="capture-form" aria-labelledby="capture-form-title">
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
         <div>
-          <p className="eyebrow">Adaptive capture path</p>
-          <h2 id="capture-form-title">Get the right next step without starting from scratch</h2>
-          <p className="muted">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Adaptive capture path</p>
+          <h2 id="capture-form-title" className="text-foreground">Get the right next step without starting from scratch</h2>
+          <p className="text-muted-foreground">
             We use one light commitment first, then tailor the milestone-two follow-up and the
             milestone-three offer around your actual intent.
           </p>
         </div>
-        <ol className="step-rail" aria-label="Form progress">
+        <ol className="flex gap-4" aria-label="Form progress">
           {[1, 2, 3].map((item) => (
-            <li key={item} className={item === step ? "current" : item < step ? "complete" : undefined}>
-              <span>{item}</span>
+            <li key={item} className={cn("flex flex-col items-center gap-1 text-sm", item === step ? "text-primary font-bold" : item < step ? "text-muted-foreground" : "text-muted-foreground/50")}>
+              <span className={cn("inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold", item === step ? "bg-primary text-primary-foreground" : item < step ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground")}>{item}</span>
               <strong>{item === 1 ? "Goal" : item === 2 ? "Contact" : "Confirm"}</strong>
             </li>
           ))}
         </ol>
       </div>
 
-      <div className="sticky-summary" aria-live="polite">
+      <div className="flex justify-between items-center py-2 px-3 rounded-md bg-muted text-sm text-foreground" aria-live="polite">
         <span>Step {step} of 3</span>
         <span>{selectedGoal?.label ?? "Choose your goal"}</span>
       </div>
 
       {result ? (
-        <div className="status-banner success" role="status">
-          <h3>You are all set</h3>
-          <p>{result.decision.reason}</p>
-          <p className="muted">
+        <div className="rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 p-4 space-y-2" role="status">
+          <h3 className="text-foreground">You are all set</h3>
+          <p className="text-foreground">{result.decision.reason}</p>
+          <p className="text-muted-foreground">
             {result.hot ? "We have prioritized your request and will be in touch shortly." : "We will follow up with your next step soon."}
           </p>
-          <div className="cta-row">
-            <Link href={result.decision.destination} className="primary">
+          <div className="flex flex-wrap gap-3 mt-4">
+            <Button asChild><Link href={result.decision.destination}>
               {result.decision.ctaLabel}
-            </Link>
-            <a href={props.profile.secondaryActionHref} className="secondary">
+            </Link></Button>
+            <Button asChild variant="outline"><a href={props.profile.secondaryActionHref}>
               {props.profile.secondaryActionLabel}
-            </a>
+            </a></Button>
           </div>
         </div>
       ) : (
         <>
           {step === 1 ? (
-            <fieldset className="capture-step">
+            <fieldset className="space-y-4">
               <legend>{props.profile.discoveryPrompt}</legend>
-              <div className="option-grid">
+              <div className="grid gap-3 md:grid-cols-2">
                 {props.profile.discoveryOptions.map((option) => (
-                  <label key={option.id} className={`choice-card${selectedGoalId === option.id ? " selected" : ""}`}>
+                  <label key={option.id} className={cn("rounded-lg border-2 p-4 cursor-pointer transition-colors flex flex-col gap-1", selectedGoalId === option.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50")}>
                     <input
                       type="radio"
                       name="goal"
@@ -190,8 +192,8 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
                       checked={selectedGoalId === option.id}
                       onChange={() => setSelectedGoalId(option.id)}
                     />
-                    <span className="choice-title">{option.label}</span>
-                    <span className="muted">{option.description}</span>
+                    <span className="font-semibold text-foreground">{option.label}</span>
+                    <span className="text-muted-foreground text-sm">{option.description}</span>
                   </label>
                 ))}
               </div>
@@ -199,19 +201,20 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
           ) : null}
 
           {step === 2 ? (
-            <div className="capture-step">
-              <h3>How can we reach you?</h3>
-              <p className="muted">
+            <div className="space-y-4">
+              <h3 className="text-foreground">How can we reach you?</h3>
+              <p className="text-muted-foreground">
                 We only ask for what we need to follow up on your request.
               </p>
-              <div className="form-grid">
-                <label>
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="flex flex-col gap-1 text-sm font-medium text-foreground">
                   First name
-                  <input value={firstName} onChange={(event) => setFirstName(event.target.value)} autoComplete="given-name" />
+                  <input className="rounded-md border border-border bg-background px-3 py-2 text-foreground" value={firstName} onChange={(event) => setFirstName(event.target.value)} autoComplete="given-name" />
                 </label>
-                <label>
+                <label className="flex flex-col gap-1 text-sm font-medium text-foreground">
                   Email
                   <input
+                    className="rounded-md border border-border bg-background px-3 py-2 text-foreground"
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
@@ -219,13 +222,14 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
                     inputMode="email"
                   />
                 </label>
-                <label>
+                <label className="flex flex-col gap-1 text-sm font-medium text-foreground">
                   Company
-                  <input value={company} onChange={(event) => setCompany(event.target.value)} autoComplete="organization" />
+                  <input className="rounded-md border border-border bg-background px-3 py-2 text-foreground" value={company} onChange={(event) => setCompany(event.target.value)} autoComplete="organization" />
                 </label>
-                <label>
+                <label className="flex flex-col gap-1 text-sm font-medium text-foreground">
                   Phone {requiresPhone ? "(recommended for this path)" : "(optional)"}
                   <input
+                    className="rounded-md border border-border bg-background px-3 py-2 text-foreground"
                     type="tel"
                     value={phone}
                     onChange={(event) => setPhone(event.target.value)}
@@ -233,12 +237,12 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
                     inputMode="tel"
                   />
                 </label>
-                <label className="span-two">
+                <label className="flex flex-col gap-1 text-sm font-medium text-foreground md:col-span-2">
                   Anything we should know (optional)
-                  <textarea value={notes} onChange={(event) => setNotes(event.target.value)} rows={4} />
+                  <textarea className="rounded-md border border-border bg-background px-3 py-2 text-foreground" value={notes} onChange={(event) => setNotes(event.target.value)} rows={4} />
                 </label>
               </div>
-              <p className="muted consent-notice mt-3 text-[0.78rem] leading-relaxed">
+              <p className="text-muted-foreground mt-3 text-[0.78rem] leading-relaxed">
                 By submitting, you agree to our{" "}
                 <a href="/privacy" className="text-inherit underline">
                   Privacy Policy
@@ -249,46 +253,46 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
           ) : null}
 
           {step === 3 ? (
-            <div className="capture-step">
-              <h3>Review and submit</h3>
-              <div className="review-grid">
-                <article className="review-card">
-                  <p className="eyebrow">Chosen outcome</p>
-                  <h4>{selectedGoal?.label}</h4>
-                  <p className="muted">{selectedGoal?.description}</p>
+            <div className="space-y-4">
+              <h3 className="text-foreground">Review and submit</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <article className="rounded-lg border border-border bg-card p-4 space-y-1">
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Chosen outcome</p>
+                  <h4 className="text-foreground">{selectedGoal?.label}</h4>
+                  <p className="text-muted-foreground text-sm">{selectedGoal?.description}</p>
                 </article>
-                <article className="review-card">
-                  <p className="eyebrow">What happens next</p>
-                  <h4>{props.profile.primaryActionLabel}</h4>
-                  <p className="muted">{props.profile.progressSteps[1]?.detail}</p>
+                <article className="rounded-lg border border-border bg-card p-4 space-y-1">
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What happens next</p>
+                  <h4 className="text-foreground">{props.profile.primaryActionLabel}</h4>
+                  <p className="text-muted-foreground text-sm">{props.profile.progressSteps[1]?.detail}</p>
                 </article>
               </div>
-              <p className="muted">
+              <p className="text-muted-foreground">
                 {props.profile.returnOffer}
               </p>
             </div>
           ) : null}
 
           {error ? (
-            <div id={statusId} className="status-banner error" role="alert">
+            <div id={statusId} className="rounded-lg border border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950 p-4 text-red-700 dark:text-red-300" role="alert">
               {error}
             </div>
           ) : null}
 
-          <div className="cta-row">
+          <div className="flex flex-wrap gap-3 mt-4">
             {step > 1 ? (
-              <button type="button" className="secondary" onClick={goBack}>
+              <Button type="button" variant="outline" onClick={goBack}>
                 Back
-              </button>
+              </Button>
             ) : null}
             {step < 3 ? (
-              <button type="button" className="primary" onClick={goToNextStep}>
+              <Button type="button" onClick={goToNextStep}>
                 Continue
-              </button>
+              </Button>
             ) : (
-              <button type="button" className="primary" onClick={handleSubmit} disabled={isPending}>
+              <Button type="button" onClick={handleSubmit} disabled={isPending}>
                 {isPending ? "Submitting..." : "Submit"}
-              </button>
+              </Button>
             )}
           </div>
         </>

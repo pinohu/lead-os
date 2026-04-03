@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { ExperienceScaffold } from "@/components/ExperienceScaffold";
 import { getNiche, nicheCatalog } from "@/lib/catalog";
 import { resolveExperienceProfile } from "@/lib/experience";
@@ -104,10 +105,10 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
       <section className="rounded-xl border border-border bg-card p-6 text-center">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Jump to a resource</p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <Link href={`/industries/${niche.slug}`} className="primary">Industry Overview</Link>
-          <Link href={`/assess/${niche.slug}`} className="secondary">Take Assessment</Link>
-          <Link href={`/resources/${niche.slug}`} className="secondary">Read the Guide</Link>
-          <Link href={`/calculator?niche=${niche.slug}`} className="secondary">ROI Calculator</Link>
+          <Button asChild><Link href={`/industries/${niche.slug}`}>Industry Overview</Link></Button>
+          <Button asChild variant="outline"><Link href={`/assess/${niche.slug}`}>Take Assessment</Link></Button>
+          <Button asChild variant="outline"><Link href={`/resources/${niche.slug}`}>Read the Guide</Link></Button>
+          <Button asChild variant="outline"><Link href={`/calculator?niche=${niche.slug}`}>ROI Calculator</Link></Button>
         </div>
       </section>
 
@@ -172,7 +173,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
             {calcPreset.proofPoint}
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href={`/calculator?niche=${niche.slug}`} className="primary">Open the full calculator</Link>
+            <Button asChild><Link href={`/calculator?niche=${niche.slug}`}>Open the full calculator</Link></Button>
           </div>
         </section>
       )}

@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { AdaptiveLeadCaptureForm } from "@/components/AdaptiveLeadCaptureForm";
 import { ExperienceScaffold } from "@/components/ExperienceScaffold";
 import { getNiche } from "@/lib/catalog";
@@ -269,18 +270,18 @@ export default async function PersonaPage({ params, searchParams }: Props) {
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Your growth path</p>
           <h2 className="text-foreground">How {bp.label} succeed with Lead OS</h2>
-          <ol className="journey-rail">
+          <ol className="space-y-3 mt-4 list-decimal list-inside">
             {bp.approachSteps.map((step, i) => (
               <li key={i}>{step}</li>
             ))}
           </ol>
           <div className="flex flex-wrap gap-3">
-            <Link href={`/assess/${niche.slug}`} className="primary">
+            <Button asChild><Link href={`/assess/${niche.slug}`}>
               {bp.ctaText}
-            </Link>
-            <Link href={`/industries/${niche.slug}`} className="secondary">
+            </Link></Button>
+            <Button asChild variant="outline"><Link href={`/industries/${niche.slug}`}>
               Explore {niche.label} Solutions
-            </Link>
+            </Link></Button>
           </div>
         </section>
 
@@ -296,12 +297,11 @@ export default async function PersonaPage({ params, searchParams }: Props) {
                 {niche.label.toLowerCase()} businesses.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link
+                <Button asChild variant="outline"><Link
                   href={`/industries/${bp.recommendedNiche}`}
-                  className="secondary"
                 >
                   See the industry
-                </Link>
+                </Link></Button>
               </div>
             </article>
             <article className="rounded-xl border border-border bg-card p-6">
@@ -310,12 +310,11 @@ export default async function PersonaPage({ params, searchParams }: Props) {
                 Score your readiness in two minutes and get an action plan.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link
+                <Button asChild variant="outline"><Link
                   href={`/assess/${bp.recommendedNiche}`}
-                  className="secondary"
                 >
                   Take the assessment
-                </Link>
+                </Link></Button>
               </div>
             </article>
             <article className="rounded-xl border border-border bg-card p-6">
@@ -325,12 +324,11 @@ export default async function PersonaPage({ params, searchParams }: Props) {
                 with pain points, solutions, and FAQs.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link
+                <Button asChild variant="outline"><Link
                   href={`/resources/${bp.recommendedNiche}`}
-                  className="secondary"
                 >
                   Read the guide
-                </Link>
+                </Link></Button>
               </div>
             </article>
           </div>

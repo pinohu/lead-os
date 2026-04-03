@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { AdaptiveLeadCaptureForm } from "@/components/AdaptiveLeadCaptureForm";
 import { ExperienceScaffold } from "@/components/ExperienceScaffold";
 import { getNiche, nicheCatalog } from "@/lib/catalog";
@@ -162,9 +163,9 @@ export default async function IndustryPage({ params, searchParams }: Props) {
             and returns a prioritized action plan.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href={`/assess/${niche.slug}`} className="primary">
+            <Button asChild><Link href={`/assess/${niche.slug}`}>
               {coldHeadline.ctaText.replace(/\{\{niche\}\}/g, niche.label)}
-            </Link>
+            </Link></Button>
           </div>
         </section>
 
@@ -180,9 +181,9 @@ export default async function IndustryPage({ params, searchParams }: Props) {
                 built for {niche.label.toLowerCase()} businesses.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link href={`/assess/${niche.slug}`} className="primary">
+                <Button asChild><Link href={`/assess/${niche.slug}`}>
                   Take the assessment
-                </Link>
+                </Link></Button>
               </div>
             </article>
 
@@ -194,9 +195,9 @@ export default async function IndustryPage({ params, searchParams }: Props) {
                 the {niche.label.toLowerCase()} industry.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link href={`/resources/${niche.slug}`} className="secondary">
+                <Button asChild variant="outline"><Link href={`/resources/${niche.slug}`}>
                   Read the complete guide
-                </Link>
+                </Link></Button>
               </div>
             </article>
 
@@ -208,9 +209,9 @@ export default async function IndustryPage({ params, searchParams }: Props) {
                 agency, a franchise, or an in-house growth team.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link href="/for/agencies" className="secondary">
+                <Button asChild variant="outline"><Link href="/for/agencies">
                   Built for your role
-                </Link>
+                </Link></Button>
               </div>
             </article>
           </div>

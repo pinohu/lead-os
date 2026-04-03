@@ -39,7 +39,7 @@ export default async function RuntimeSettingsPage() {
         </div>
         <aside className="hidden md:block">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Coverage summary</p>
-          <ul className="journey-rail">
+          <ul className="space-y-3 mt-4">
             <li>
               <strong>Trafft mappings</strong>
               <span>{summary.trafft.mappedServices}</span>

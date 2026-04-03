@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Button } from "@/components/ui/button";
 import { nicheCatalog } from "@/lib/catalog";
 
 export const metadata: Metadata = {
@@ -96,8 +97,8 @@ export default function DirectoryIndexPage() {
           configuration, funnel blueprint, and growth path for your business.
         </p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <Link href="/assess/general" className="primary">Take the general assessment</Link>
-          <Link href="/contact" className="secondary">Talk to a human</Link>
+          <Button asChild><Link href="/assess/general">Take the general assessment</Link></Button>
+          <Button asChild variant="outline"><Link href="/contact">Talk to a human</Link></Button>
         </div>
       </section>
     </main>

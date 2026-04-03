@@ -35,7 +35,7 @@ export default async function ProviderHealthPage() {
         <aside className="hidden md:block">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Channel readiness</p>
           <p className="text-muted-foreground">Persistence: {persistenceMode}</p>
-          <ul className="journey-rail">
+          <ul className="space-y-3 mt-4">
             {Object.entries(health.channels).map(([channel, ready]) => (
               <li key={channel}>
                 <strong>{channel}</strong>

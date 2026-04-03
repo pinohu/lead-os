@@ -165,7 +165,7 @@ export default function MarketplaceDashboardPage() {
         </div>
         <aside className="hidden md:block">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Summary</p>
-          <ul className="journey-rail">
+          <ul className="space-y-3 mt-4">
             <li>
               <strong>Total leads</strong>
               <span>{leads.length}</span>

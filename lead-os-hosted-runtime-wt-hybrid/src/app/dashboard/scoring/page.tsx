@@ -166,7 +166,7 @@ export default function ScoringPage() {
         </div>
         <aside className="hidden md:block">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Temperature distribution</p>
-          <ul className="journey-rail">
+          <ul className="space-y-3 mt-4">
             {(["burning", "hot", "warm", "cold"] as Temperature[]).map((temp) => (
               <li key={temp}>
                 <strong className="flex items-center gap-2">

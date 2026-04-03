@@ -241,7 +241,7 @@ export default function RadarPage() {
         </div>
         <aside className="hidden md:block">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Radar status</p>
-          <ul className="journey-rail">
+          <ul className="space-y-3 mt-4">
             <li>
               <strong>Hot leads</strong>
               <span>{data.hotLeads.length}</span>

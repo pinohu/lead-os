@@ -151,7 +151,7 @@ export default function ExperimentsPage() {
         </div>
         <aside className="hidden md:block">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Experiment summary</p>
-          <ul className="journey-rail">
+          <ul className="space-y-3 mt-4">
             <li><strong>Experiments</strong><span>{experiments.length}</span></li>
             <li><strong>Variants</strong><span>{totalVariants}</span></li>
             <li><strong>Running</strong><span>{runningCount}</span></li>

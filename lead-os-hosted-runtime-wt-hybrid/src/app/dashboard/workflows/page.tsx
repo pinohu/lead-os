@@ -40,7 +40,7 @@ export default async function WorkflowRunsPage() {
         </div>
         <aside className="hidden md:block">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Queue summary</p>
-          <ul className="journey-rail">
+          <ul className="space-y-3 mt-4">
             <li>
               <strong>Total runs</strong>
               <span>{runs.length}</span>
