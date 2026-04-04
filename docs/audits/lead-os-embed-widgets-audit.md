@@ -272,13 +272,15 @@ The repository has no license, meaning it is technically "all rights reserved" b
 
 ## 10 — Recommended Priority Actions
 
-1. **Fix the critical script loading bug** — add a build step producing an IIFE bundle, or remove the `export` keyword.
-2. **Add input validation** on the email and message fields before submission.
-3. **Add error handling** for `fetchBootConfig` — check response status, handle network failures gracefully.
-4. **Add null-safety** for `bootConfig.widget.*` access.
-5. **Set up a minimal build pipeline** (esbuild one-liner) for minification and IIFE output.
-6. **Add meaningful tests** with jsdom for DOM functions and mock-fetch for the submission flow.
-7. **Add a GitHub Actions CI workflow** to run tests and build on every push/PR.
-8. **Add a LICENSE file.**
-9. **Add `sanitize_callback`** to WordPress settings registration and an uninstall hook.
-10. **Improve accessibility** — `role="dialog"`, focus trap, keyboard dismiss, labels.
+1. ~~**Fix the critical script loading bug**~~ — ✅ Added esbuild pipeline producing IIFE bundle.
+2. ~~**Add input validation**~~ — ✅ Email format/length validation, message length validation, submit cooldown.
+3. ~~**Add error handling**~~ — ✅ `fetchBootConfig` checks response status, try/catch with console.warn.
+4. ~~**Add null-safety**~~ — ✅ `safeWidget()` provides defaults for all `bootConfig.widget.*` properties.
+5. ~~**Set up a minimal build pipeline**~~ — ✅ esbuild produces 6.7KB minified IIFE bundle.
+6. ~~**Add meaningful tests**~~ — ✅ 17 tests (jsdom DOM tests, validation, caching, config, a11y checks).
+7. ~~**Add a GitHub Actions CI workflow**~~ — ✅ `.github/workflows/ci.yml` runs tests + build on Node 20/22.
+8. ~~**Add a LICENSE file**~~ — ✅ MIT license added.
+9. ~~**Add `sanitize_callback` + uninstall hook**~~ — ✅ All WP settings have sanitize_callback, `uninstall.php` added.
+10. ~~**Improve accessibility**~~ — ✅ `role="dialog"`, `aria-modal`, focus trap, Escape key, `aria-live`, labels.
+
+All 18 findings have been resolved. Fixed code is in `lead-os-embed-widgets-fixes/`.
