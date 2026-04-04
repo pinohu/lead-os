@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Contact from "@/components/Contact";
@@ -25,9 +26,9 @@ export default function WebinarPage() {
             application or consultation flows, and hands the strongest leads directly into your automated intake stack.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <a href="/assess/general" className="rounded-lg bg-cyan px-6 py-3 font-semibold text-white">
+            <Link href="/assess/general" className="rounded-lg bg-cyan px-6 py-3 font-semibold text-white">
               Reserve My Spot
-            </a>
+            </Link>
             <a href="/calculator" className="rounded-lg border border-white/20 px-6 py-3 font-semibold text-white">
               Preview ROI First
             </a>
