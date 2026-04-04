@@ -40,7 +40,7 @@ export function buildCorsHeaders(origin?: string | null) {
   // to enforce same-origin policy. Returning an empty string or wildcard in
   // production would weaken security.
   const headers: Record<string, string> = {
-    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+    "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
     Vary: "Origin",
   };
 

@@ -35,6 +35,9 @@ const envSchema = z.object({
   ADMIN_ACCESS_KEY: emptyToUndefined.pipe(z.string().min(8).optional()),
   ADMIN_EMAIL: emptyToUndefined.pipe(z.string().email().optional()),
 
+  // ── Cron ─────────────────────────────────────────────────────────
+  CRON_SECRET: emptyToUndefined.pipe(z.string().min(16, "CRON_SECRET must be at least 16 characters").optional()),
+
   // ── App ──────────────────────────────────────────────────────────
   NEXT_PUBLIC_APP_URL: emptyToUndefined.pipe(z.string().url().optional()),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
