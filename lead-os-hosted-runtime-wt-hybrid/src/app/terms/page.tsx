@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "Terms of Service for Lead OS. Read the terms governing your use of the Lead OS platform.",
+    "Terms of Service for CX React. Read the terms governing your use of the CX React platform.",
 };
 
 export default function TermsOfServicePage() {
@@ -14,8 +14,8 @@ export default function TermsOfServicePage() {
     "@type": "WebPage",
     "@id": `${baseUrl}/terms#webpage`,
     url: `${baseUrl}/terms`,
-    name: "Terms of Service | Lead OS",
-    description: "Terms of Service for Lead OS. Read the terms governing your use of the Lead OS platform.",
+    name: "Terms of Service | CX React",
+    description: "Terms of Service for CX React. Read the terms governing your use of the CX React platform.",
     isPartOf: { "@id": `${baseUrl}/#website` },
     about: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     dateModified: "2026-03-28",
@@ -30,7 +30,7 @@ export default function TermsOfServicePage() {
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Legal</p>
           <h1 className="text-foreground">Terms of Service</h1>
           <p className="text-lg text-muted-foreground">
-            Last updated: March 28, 2026. Please read these terms carefully before using Lead OS.
+            Last updated: March 28, 2026. Please read these terms carefully before using CX React.
           </p>
         </div>
       </section>
@@ -38,12 +38,12 @@ export default function TermsOfServicePage() {
       <article className="max-w-3xl mx-auto px-4 py-8 leading-relaxed">
         <section className="mb-8">
           <h2 className="text-foreground text-xl font-semibold mb-3">1. Acceptance of Terms</h2>
-          <p>By accessing or using Lead OS (&quot;the Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you do not agree to all of these Terms, do not use the Service. These Terms apply to all visitors, users, operators, and others who access the Service.</p>
+          <p>By accessing or using CX React (&quot;the Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you do not agree to all of these Terms, do not use the Service. These Terms apply to all visitors, users, operators, and others who access the Service.</p>
         </section>
 
         <section className="mb-8">
           <h2 className="text-foreground text-xl font-semibold mb-3">2. Description of Service</h2>
-          <p>Lead OS is a programmable, multi-tenant lead generation infrastructure platform. The Service provides lead capture, scoring, routing, nurturing, conversion optimization, AI-powered content generation, marketplace functionality, and operator dashboard tools. Features may vary by subscription tier.</p>
+          <p>CX React is a programmable, multi-tenant lead generation infrastructure platform. The Service provides lead capture, scoring, routing, nurturing, conversion optimization, AI-powered content generation, marketplace functionality, and operator dashboard tools. Features may vary by subscription tier.</p>
         </section>
 
         <section className="mb-8">
@@ -80,7 +80,7 @@ export default function TermsOfServicePage() {
 
         <section className="mb-8">
           <h2 className="text-foreground text-xl font-semibold mb-3">6. Intellectual Property</h2>
-          <p>The Service and its original content, features, and functionality are owned by Lead OS and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws. You retain ownership of data you input into the Service. By using the Service, you grant us a limited license to process your data as necessary to provide the Service.</p>
+          <p>The Service and its original content, features, and functionality are owned by CX React and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws. You retain ownership of data you input into the Service. By using the Service, you grant us a limited license to process your data as necessary to provide the Service.</p>
         </section>
 
         <section className="mb-8">
@@ -95,12 +95,12 @@ export default function TermsOfServicePage() {
 
         <section className="mb-8">
           <h2 className="text-foreground text-xl font-semibold mb-3">9. Limitation of Liability</h2>
-          <p>To the maximum extent permitted by law, Lead OS shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from your use of the Service. Our total liability shall not exceed the amount you paid for the Service in the 12 months preceding the claim.</p>
+          <p>To the maximum extent permitted by law, CX React shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from your use of the Service. Our total liability shall not exceed the amount you paid for the Service in the 12 months preceding the claim.</p>
         </section>
 
         <section className="mb-8">
           <h2 className="text-foreground text-xl font-semibold mb-3">10. Indemnification</h2>
-          <p>You agree to indemnify and hold harmless Lead OS from any claims, damages, losses, and expenses arising from your use of the Service, your violation of these Terms, or your violation of any rights of another party.</p>
+          <p>You agree to indemnify and hold harmless CX React from any claims, damages, losses, and expenses arising from your use of the Service, your violation of these Terms, or your violation of any rights of another party.</p>
         </section>
 
         <section className="mb-8">

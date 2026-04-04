@@ -10,13 +10,13 @@ const contactJsonLd = {
   "@type": "ContactPage",
   "@id": "https://leadgen-os.com/contact#webpage",
   url: "https://leadgen-os.com/contact",
-  name: "Contact Lead OS",
-  description: "Questions about Lead OS? Reach out to our sales, support, or partnership team.",
+  name: "Contact CX React",
+  description: "Questions about CX React? Reach out to our sales, support, or partnership team.",
   isPartOf: { "@id": "https://leadgen-os.com/#website" },
   mainEntity: {
     "@type": "Organization",
     "@id": "https://leadgen-os.com/#organization",
-    name: "Lead OS",
+    name: "CX React",
     url: "https://leadgen-os.com",
     contactPoint: [
       { "@type": "ContactPoint", email: "support@leadgen-os.com", contactType: "customer support", availableLanguage: "English" },

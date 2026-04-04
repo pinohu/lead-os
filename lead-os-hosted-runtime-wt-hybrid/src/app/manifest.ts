@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Lead OS",
-    short_name: "LeadOS",
+    name: "CX React",
+    short_name: "CX React",
     description: "Programmable, multi-tenant lead generation platform",
     start_url: "/",
     display: "standalone",

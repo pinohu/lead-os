@@ -33,10 +33,10 @@ export async function generateMetadata({ params }: OfferPageProps): Promise<Meta
   const { slug } = await params;
   const niche = getNiche(slug);
   return {
-    title: `${niche.label} Offer | Lead OS`,
+    title: `${niche.label} Offer | CX React`,
     description: `${niche.summary} High-intent offer path with built-in recovery and proof.`,
     openGraph: {
-      title: `${niche.label} Offer | Lead OS`,
+      title: `${niche.label} Offer | CX React`,
       description: niche.summary,
       images: [{ url: buildOgImageUrl(`${niche.label} Offer`, niche.summary, niche.slug), width: 1200, height: 630 }],
     },
