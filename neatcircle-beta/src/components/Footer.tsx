@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
 
 const serviceLinks = [
@@ -37,13 +38,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Col 1: Brand */}
           <div>
-            <a
+            <Link
               href="/"
               className="inline-flex items-center gap-0 text-xl font-bold tracking-tight mb-4"
             >
               <span className="text-white">{siteConfig.brandPrimary}</span>
               <span className="text-cyan">{siteConfig.brandAccent}</span>
-            </a>
+            </Link>
             <p className="text-slate-400 text-sm leading-relaxed mb-3">
               Systematic Business Optimization
             </p>
@@ -59,12 +60,12 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {serviceLinks.map((link) => (
                 <li key={link}>
-                  <a
+                  <Link
                     href="/services"
                     className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
                     {link}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -78,12 +79,12 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {industryLinks.map((link) => (
                 <li key={link}>
-                  <a
+                  <Link
                     href="/#industries"
                     className="text-slate-400 hover:text-white text-sm transition-colors"
                   >
                     {link}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

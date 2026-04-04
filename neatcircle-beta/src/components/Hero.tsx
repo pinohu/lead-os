@@ -19,6 +19,7 @@ export default function Hero() {
   }, []);
 
   const experience = useMemo(() => {
+    void profileVersion;
     const profile = getStoredProfile();
     return buildHeroExperience({
       visitorId: ensureVisitorId(),

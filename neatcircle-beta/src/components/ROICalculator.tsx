@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useMemo } from "react";
 import {
   buildTraceIntakePayload,
@@ -259,12 +260,12 @@ export default function ROICalculator() {
             {submitted && (
               <div className="rounded-lg bg-green-50 p-4 text-center">
                 <p className="font-semibold text-green-700">Report sent! Check your inbox.</p>
-                <a
+                <Link
                   href="/services"
                   className="mt-2 inline-block text-sm font-medium text-cyan hover:text-cyan-dark"
                 >
                   Explore Our Solutions &rarr;
-                </a>
+                </Link>
               </div>
             )}
           </div>

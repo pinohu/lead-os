@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { siteConfig } from "@/lib/site-config";
 
@@ -21,10 +22,10 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-0 text-xl font-bold tracking-tight">
+          <Link href="/" className="flex items-center gap-0 text-xl font-bold tracking-tight">
             <span className="text-white">{siteConfig.brandPrimary}</span>
             <span className="text-cyan">{siteConfig.brandAccent}</span>
-          </a>
+          </Link>
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-8">
@@ -37,12 +38,12 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
-            <a
+            <Link
               href="/#contact"
               className="bg-cyan hover:bg-cyan-dark text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors"
             >
               Book a Call
-            </a>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -78,13 +79,13 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
-            <a
+            <Link
               href="/#contact"
               onClick={() => setOpen(false)}
               className="block bg-cyan hover:bg-cyan-dark text-white text-center font-semibold px-5 py-2.5 rounded-lg transition-colors mt-4"
             >
               Book a Call
-            </a>
+            </Link>
           </div>
         </div>
       )}

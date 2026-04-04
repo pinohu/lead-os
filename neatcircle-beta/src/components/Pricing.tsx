@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const tiers = [
   {
     name: "Starter",
@@ -185,12 +187,12 @@ export default function Pricing() {
             >
               Calculate Your ROI
             </a>
-            <a
+            <Link
               href="/assess/general"
               className="inline-block border border-white/20 hover:border-white/40 text-white font-semibold px-6 py-2.5 rounded-lg transition-colors text-sm"
             >
               Take Free Assessment
-            </a>
+            </Link>
           </div>
         </div>
 
