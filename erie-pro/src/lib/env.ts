@@ -78,5 +78,9 @@ export function getEnv(): Env {
   return _env;
 }
 
-// Convenience export for immediate validation
-export const env = getEnv();
+// Lazy convenience export — defers validation to first runtime access
+export const env = new Proxy({} as Env, {
+  get(_target, prop: string | symbol) {
+    return Reflect.get(getEnv(), prop);
+  },
+});

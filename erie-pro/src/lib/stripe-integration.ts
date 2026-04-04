@@ -26,25 +26,46 @@ export interface StripeWebhookResult {
 }
 
 // ── Configuration ──────────────────────────────────────────────────
+// Lazy accessors: config is read at first function call, not at module
+// load time. This allows `next build` to compile without env vars.
 
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY ?? "";
-const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET ?? "";
-const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL ?? `https://${cityConfig.domain}`;
+let _stripe: Stripe | null | undefined;
+let _isDryRun: boolean | undefined;
 
-// Production guard: Stripe keys MUST be present when running in production.
-// Dry-run mode is NEVER allowed in production — it would silently skip real payments.
-if (process.env.NODE_ENV === "production" && !STRIPE_SECRET_KEY) {
-  throw new Error(
-    "[stripe-integration] STRIPE_SECRET_KEY is required in production. " +
-    "Set the STRIPE_SECRET_KEY environment variable to your Stripe secret key."
-  );
+function getStripeConfig() {
+  if (_isDryRun !== undefined) return;
+
+  const key = process.env.STRIPE_SECRET_KEY ?? "";
+  const isProduction = process.env.NODE_ENV === "production";
+
+  if (isProduction && !key) {
+    throw new Error(
+      "[stripe-integration] STRIPE_SECRET_KEY is required in production. " +
+      "Set the STRIPE_SECRET_KEY environment variable to your Stripe secret key."
+    );
+  }
+
+  _isDryRun = isProduction ? false : !key;
+  _stripe = _isDryRun ? null : new Stripe(key);
 }
 
-const isProduction = process.env.NODE_ENV === "production";
-const isDryRun = isProduction ? false : !STRIPE_SECRET_KEY;
+function getStripe(): Stripe | null {
+  getStripeConfig();
+  return _stripe ?? null;
+}
 
-// Initialize Stripe SDK (only when key is set)
-const stripe = isDryRun ? null : new Stripe(STRIPE_SECRET_KEY);
+function isDryRun(): boolean {
+  getStripeConfig();
+  return _isDryRun!;
+}
+
+function getAppDomain(): string {
+  return process.env.NEXT_PUBLIC_APP_URL ?? `https://${cityConfig.domain}`;
+}
+
+function getWebhookSecret(): string {
+  return process.env.STRIPE_WEBHOOK_SECRET ?? "";
+}
 
 // ── Niche pricing ──────────────────────────────────────────────────
 
@@ -121,9 +142,9 @@ export async function createTerritoryCheckoutSession(
 ): Promise<TerritoryCheckout> {
   const monthlyFee = getMonthlyFee(niche);
 
-  if (!isDryRun && stripe) {
+  if (!isDryRun() && getStripe()) {
     // Production: Real Stripe Checkout
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe()!.checkout.sessions.create({
       mode: "subscription",
       customer_email: providerEmail,
       line_items: [
@@ -140,8 +161,8 @@ export async function createTerritoryCheckoutSession(
           quantity: 1,
         },
       ],
-      success_url: `${APP_DOMAIN}/for-business/claim/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${APP_DOMAIN}/for-business/claim?cancelled=true`,
+      success_url: `${getAppDomain()}/for-business/claim/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${getAppDomain()}/for-business/claim?cancelled=true`,
       metadata: { niche, city, providerName },
     });
 
@@ -166,7 +187,7 @@ export async function createTerritoryCheckoutSession(
       providerName,
       providerEmail,
       monthlyFee,
-      checkoutUrl: session.url ?? `${APP_DOMAIN}/for-business/claim/success?session_id=${session.id}`,
+      checkoutUrl: session.url ?? `${getAppDomain()}/for-business/claim/success?session_id=${session.id}`,
       sessionId: session.id,
     };
   }
@@ -198,7 +219,7 @@ export async function createTerritoryCheckoutSession(
     providerName,
     providerEmail,
     monthlyFee,
-    checkoutUrl: `${APP_DOMAIN}/for-business/claim/success?session_id=${sessionId}&niche=${niche}&city=${city}`,
+    checkoutUrl: `${getAppDomain()}/for-business/claim/success?session_id=${sessionId}&niche=${niche}&city=${city}`,
     sessionId,
   };
 }
@@ -235,8 +256,8 @@ export async function createLeadPurchaseCheckout(
 ): Promise<LeadPurchaseCheckout> {
   const price = LEAD_PRICES[temperature];
 
-  if (!isDryRun && stripe) {
-    const session = await stripe.checkout.sessions.create({
+  if (!isDryRun() && getStripe()) {
+    const session = await getStripe()!.checkout.sessions.create({
       mode: "payment",
       customer_email: buyerEmail,
       line_items: [
@@ -252,8 +273,8 @@ export async function createLeadPurchaseCheckout(
           quantity: 1,
         },
       ],
-      success_url: `${APP_DOMAIN}/for-business/leads/success?session_id={CHECKOUT_SESSION_ID}&lead_id=${leadId}&niche=${niche}`,
-      cancel_url: `${APP_DOMAIN}/for-business/leads?cancelled=true`,
+      success_url: `${getAppDomain()}/for-business/leads/success?session_id={CHECKOUT_SESSION_ID}&lead_id=${leadId}&niche=${niche}`,
+      cancel_url: `${getAppDomain()}/for-business/leads?cancelled=true`,
       metadata: { leadId, niche, temperature },
     });
 
@@ -277,7 +298,7 @@ export async function createLeadPurchaseCheckout(
       temperature,
       price,
       buyerEmail,
-      checkoutUrl: session.url ?? `${APP_DOMAIN}/for-business/leads/success?session_id=${session.id}`,
+      checkoutUrl: session.url ?? `${getAppDomain()}/for-business/leads/success?session_id=${session.id}`,
       sessionId: session.id,
     };
   }
@@ -309,7 +330,7 @@ export async function createLeadPurchaseCheckout(
     temperature,
     price,
     buyerEmail,
-    checkoutUrl: `${APP_DOMAIN}/for-business/leads/success?session_id=${sessionId}&lead_id=${leadId}&niche=${niche}`,
+    checkoutUrl: `${getAppDomain()}/for-business/leads/success?session_id=${sessionId}&lead_id=${leadId}&niche=${niche}`,
     sessionId,
   };
 }
@@ -431,10 +452,11 @@ export function constructWebhookEvent(
   rawBody: string,
   signature: string
 ): Stripe.Event | null {
-  if (!stripe || !STRIPE_WEBHOOK_SECRET) return null;
+  const s = getStripe();
+  if (!s || !getWebhookSecret()) return null;
 
   try {
-    return stripe.webhooks.constructEvent(rawBody, signature, STRIPE_WEBHOOK_SECRET);
+    return s.webhooks.constructEvent(rawBody, signature, getWebhookSecret());
   } catch {
     return null;
   }
@@ -446,9 +468,9 @@ export function constructWebhookEvent(
 export async function getSubscriptionStatus(
   stripeSubscriptionId: string
 ): Promise<"active" | "past_due" | "cancelled"> {
-  if (!isDryRun && stripe) {
+  if (!isDryRun() && getStripe()) {
     try {
-      const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+      const sub = await getStripe()!.subscriptions.retrieve(stripeSubscriptionId);
       if (sub.status === "active") return "active";
       if (sub.status === "past_due") return "past_due";
       return "cancelled";
@@ -481,7 +503,7 @@ export async function getCheckoutSession(sessionId: string) {
  * Check if Stripe is in dry-run mode.
  */
 export function isStripeDryRun(): boolean {
-  return isDryRun;
+  return isDryRun();
 }
 
-export { STRIPE_WEBHOOK_SECRET, NICHE_PRICING };
+export { NICHE_PRICING };
