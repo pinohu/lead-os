@@ -56,7 +56,7 @@ function escapeHtml(text: string): string {
 export function renderEmailLayout(bodyHtml: string, context: EmailContext): string {
   const brandColor = "#14b8a6";
   const year = context.currentYear || new Date().getFullYear().toString();
-  const brandName = escapeHtml(context.brandName || "Lead OS");
+  const brandName = escapeHtml(context.brandName || "CX React");
   const siteUrl = escapeHtml(context.siteUrl || "#");
   const supportEmail = escapeHtml(context.supportEmail || "");
   const unsubscribeUrl = escapeHtml(context.unsubscribeUrl || "#");

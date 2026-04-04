@@ -217,7 +217,7 @@ function EnvironmentStep({ envChecks, onNext, onBack }: EnvironmentStepProps) {
         Environment check
       </h2>
       <p className="text-base leading-relaxed text-muted-foreground">
-        Lead OS reads configuration from environment variables. Required
+        CX React reads configuration from environment variables. Required
         variables must be set before the platform functions. Optional services
         run in dry-run mode when missing — no errors, no real side effects.
       </p>

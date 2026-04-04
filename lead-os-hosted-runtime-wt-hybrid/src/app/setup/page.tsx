@@ -141,7 +141,7 @@ async function buildSetupStatus(): Promise<SetupStatus> {
   const brand =
     Boolean(brandName) &&
     brandName !== "My Brand" &&
-    brandName !== "Lead OS Hosted";
+    brandName !== "CX React";
 
   return {
     database,
