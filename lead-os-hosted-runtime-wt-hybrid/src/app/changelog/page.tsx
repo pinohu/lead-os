@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Changelog",
-  description: "What is new in Lead OS. Release notes, new features, and improvements.",
+  description: "What is new in CX React. Release notes, new features, and improvements.",
 };
 
 interface Release {

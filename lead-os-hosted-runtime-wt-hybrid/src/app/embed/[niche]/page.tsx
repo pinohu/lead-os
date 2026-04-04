@@ -9,7 +9,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const niche = getNiche(slug);
   const label = niche?.label ?? slug;
   return {
-    title: `${label} Lead Capture | Lead OS`,
+    title: `${label} Lead Capture | CX React`,
     description: `Embeddable lead capture widget for ${label}. Collect and score leads instantly.`,
   };
 }

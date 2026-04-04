@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   if (!context) return NextResponse.json({ data: null, error: { code: "UNAUTHORIZED", message: "Not authenticated" }, meta: null }, { status: 401 });
 
   const secret = generateTotpSecret();
-  const uri = generateTotpUri(secret, context.userId ?? "user", "Lead OS");
+  const uri = generateTotpUri(secret, context.userId ?? "user", "CX React");
 
   return NextResponse.json({
     data: { secret, uri, qrData: uri },

@@ -1,12 +1,14 @@
 // ── Admin Bootstrap API ─────────────────────────────────────────────
 // One-time endpoint to create the first admin user.
 // Returns 403 if any admin user already exists.
+// Gated by ALLOW_ADMIN_SETUP=true environment variable.
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
+import { logger } from "@/lib/logger";
 
 const SetupSchema = z.object({
   email: z
@@ -24,8 +26,40 @@ const SetupSchema = z.object({
     .optional(),
 });
 
+const setupAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function checkSetupRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = setupAttempts.get(ip);
+  if (!entry || now > entry.resetAt) {
+    setupAttempts.set(ip, { count: 1, resetAt: now + 60_000 });
+    return true;
+  }
+  entry.count++;
+  return entry.count <= 5;
+}
+
 export async function POST(request: Request) {
   try {
+    // ── Gate: require explicit opt-in via environment variable ─────────
+    if (process.env.ALLOW_ADMIN_SETUP !== "true") {
+      return NextResponse.json(
+        { error: "Admin setup is disabled. Set ALLOW_ADMIN_SETUP=true to enable." },
+        { status: 403 }
+      );
+    }
+
+    // ── Rate limit: 5 attempts per minute per IP ──────────────────────
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+      ?? request.headers.get("x-real-ip")
+      ?? "unknown";
+    if (!checkSetupRateLimit(ip)) {
+      return NextResponse.json(
+        { error: "Too many attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     // ── Guard: check if admin already exists ──────────────────────────
     const adminCount = await prisma.user.count({
       where: { role: "admin" },
@@ -113,7 +147,7 @@ export async function POST(request: Request) {
       message: "Admin account created successfully.",
     });
   } catch (err) {
-    console.error("Admin setup error:", err);
+    logger.error("setup-admin", "Admin setup error:", err);
     return NextResponse.json(
       { error: "Internal server error. Please try again." },
       { status: 500 }

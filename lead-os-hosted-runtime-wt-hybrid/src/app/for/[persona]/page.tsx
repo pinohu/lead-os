@@ -179,10 +179,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const bp = PERSONA_BLUEPRINTS[persona];
   if (!bp) return {};
   return {
-    title: `Lead OS for ${bp.label} | Lead OS`,
+    title: `CX React for ${bp.label} | CX React`,
     description: `${bp.tagline} Discover growth systems designed specifically for ${bp.label.toLowerCase()}.`,
     openGraph: {
-      title: `Lead OS for ${bp.label}`,
+      title: `CX React for ${bp.label}`,
       description: bp.tagline,
       images: [{ url: buildOgImageUrl(bp.label, bp.tagline, bp.recommendedNiche), width: 1200, height: 630 }],
     },
@@ -223,7 +223,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
         niche={bp.recommendedNiche}
         eyebrow={`Built for ${bp.label}`}
         title={bp.tagline}
-        summary={`Lead OS gives ${bp.label.toLowerCase()} a turnkey growth system that replaces patchwork tools with one platform tuned to the way you sell.`}
+        summary={`CX React gives ${bp.label.toLowerCase()} a turnkey growth system that replaces patchwork tools with one platform tuned to the way you sell.`}
         profile={profile}
         metrics={[
           {
@@ -269,7 +269,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
         {/* ---------- Recommended Approach ---------- */}
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Your growth path</p>
-          <h2 className="text-foreground">How {bp.label} succeed with Lead OS</h2>
+          <h2 className="text-foreground">How {bp.label} succeed with CX React</h2>
           <ol className="space-y-3 mt-4 list-decimal list-inside">
             {bp.approachSteps.map((step, i) => (
               <li key={i}>{step}</li>
@@ -353,7 +353,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Service",
-            name: `Lead OS for ${bp.label}`,
+            name: `CX React for ${bp.label}`,
             description: bp.tagline,
             provider: {
               "@type": "Organization",

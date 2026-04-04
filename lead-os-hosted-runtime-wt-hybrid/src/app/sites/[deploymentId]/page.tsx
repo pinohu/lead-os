@@ -3,8 +3,8 @@ import { getDeployment } from "@/lib/auto-deploy";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Site Preview | Lead OS",
-  description: "Preview and manage your deployed Lead OS site.",
+  title: "Site Preview | CX React",
+  description: "Preview and manage your deployed CX React site.",
 };
 
 export default async function SiteViewerPage({

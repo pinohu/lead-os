@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Roadmap",
-  description: "See what is planned, in progress, and completed for Lead OS.",
+  description: "See what is planned, in progress, and completed for CX React.",
 };
 
 interface RoadmapItem {
@@ -60,13 +60,13 @@ export default function RoadmapPage() {
     "@type": "WebPage",
     "@id": `${baseUrl}/roadmap#webpage`,
     url: `${baseUrl}/roadmap`,
-    name: "Lead OS Product Roadmap",
-    description: "See what is planned, in progress, and completed for Lead OS.",
+    name: "CX React Product Roadmap",
+    description: "See what is planned, in progress, and completed for CX React.",
     isPartOf: { "@id": `${baseUrl}/#website` },
     about: {
       "@type": "SoftwareApplication",
       "@id": `${baseUrl}/#app`,
-      name: "Lead OS",
+      name: "CX React",
     },
   }
 

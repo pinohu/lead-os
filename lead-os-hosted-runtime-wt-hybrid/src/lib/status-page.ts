@@ -143,7 +143,7 @@ export async function buildStatusPayload(): Promise<StatusPayload> {
     components,
     incidents: await extractIncidents(),
     page: {
-      name: "Lead OS Status",
+      name: "CX React Status",
       url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://leadgen-os.com",
     },
   };

@@ -5,7 +5,7 @@ export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
-  const title = searchParams.get("title") ?? "Lead OS";
+  const title = searchParams.get("title") ?? "CX React";
   const subtitle = searchParams.get("subtitle") ?? "Autonomous lead acquisition & conversion";
   const niche = searchParams.get("niche") ?? "general";
   const accent = searchParams.get("accent") ?? "#c4632d";
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
             L
           </div>
           <span style={{ color: "#a0b0a8", fontSize: "18px", fontWeight: 600 }}>
-            Lead OS
+            CX React
           </span>
           {niche !== "general" && (
             <span style={{

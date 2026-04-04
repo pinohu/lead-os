@@ -13,10 +13,11 @@ import { deliverWebhookEvent } from "@/lib/webhook-delivery";
 import crypto from "crypto";
 
 // ── CORS Preflight ─────────────────────────────────────────────────
-export async function OPTIONS() {
+export async function OPTIONS(req: NextRequest) {
+  const origin = resolveEmbedOrigin(req.headers.get("origin"));
   return new NextResponse(null, {
     status: 204,
-    headers: corsHeaders(),
+    headers: corsHeaders(origin),
   });
 }
 
@@ -29,10 +30,11 @@ const EmbedLeadSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const origin = resolveEmbedOrigin(req.headers.get("origin"));
   try {
     // Rate limit
     const rateLimited = await checkRateLimit(req, "lead");
-    if (rateLimited) return addCors(rateLimited);
+    if (rateLimited) return addCors(rateLimited, origin);
 
     // Validate API key
     const apiKeyRaw = req.headers.get("x-api-key");
@@ -138,20 +140,29 @@ export async function POST(req: NextRequest) {
 
 // ── Helpers ────────────────────────────────────────────────────────
 
-function corsHeaders(): Record<string, string> {
-  return {
-    "Access-Control-Allow-Origin": "*",
+function resolveEmbedOrigin(origin: string | null): string {
+  if (!origin) return "";
+  const allowedOrigins = (process.env.EMBED_ALLOWED_ORIGINS ?? "").split(",").map((o) => o.trim()).filter(Boolean);
+  if (allowedOrigins.length === 0) return origin;
+  return allowedOrigins.includes(origin) ? origin : "";
+}
+
+function corsHeaders(origin?: string): Record<string, string> {
+  const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, X-API-Key",
+    "Vary": "Origin",
   };
+  if (origin) headers["Access-Control-Allow-Origin"] = origin;
+  return headers;
 }
 
-function corsJson(data: unknown, status = 200): NextResponse {
-  return NextResponse.json(data, { status, headers: corsHeaders() });
+function corsJson(data: unknown, status = 200, origin?: string): NextResponse {
+  return NextResponse.json(data, { status, headers: corsHeaders(origin) });
 }
 
-function addCors(res: NextResponse): NextResponse {
-  for (const [k, v] of Object.entries(corsHeaders())) {
+function addCors(res: NextResponse, origin?: string): NextResponse {
+  for (const [k, v] of Object.entries(corsHeaders(origin))) {
     res.headers.set(k, v);
   }
   return res;

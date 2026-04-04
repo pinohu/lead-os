@@ -13,13 +13,18 @@ import { deliverWebhookEvent } from "@/lib/webhook-delivery";
 import crypto from "crypto";
 
 // ── CORS Preflight ─────────────────────────────────────────────────
-export async function OPTIONS() {
+// Server-to-server webhook endpoint — restrict CORS to configured origins.
+export async function OPTIONS(req: NextRequest) {
+  const origin = req.headers.get("origin") ?? "";
+  const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS ?? "").split(",").map((o) => o.trim()).filter(Boolean);
+  const allowed = allowedOrigins.includes(origin);
   return new NextResponse(null, {
     status: 204,
     headers: {
-      "Access-Control-Allow-Origin": "*",
+      ...(allowed ? { "Access-Control-Allow-Origin": origin } : {}),
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, X-API-Key, X-Signature",
+      "Vary": "Origin",
     },
   });
 }
@@ -54,10 +59,11 @@ function verifyHmacSignature(
 }
 
 export async function POST(req: NextRequest) {
+  const origin = req.headers.get("origin");
   try {
     // 1. Rate limit
     const rateLimited = await checkRateLimit(req, "lead");
-    if (rateLimited) return addCors(rateLimited);
+    if (rateLimited) return addCors(rateLimited, origin);
 
     // 2. Validate API key from X-API-Key header
     const apiKeyRaw = req.headers.get("x-api-key");
@@ -205,20 +211,23 @@ export async function POST(req: NextRequest) {
 
 // ── Helpers ────────────────────────────────────────────────────────
 
-function corsHeaders(): Record<string, string> {
+function corsHeaders(origin?: string | null): Record<string, string> {
+  const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS ?? "").split(",").map((o) => o.trim()).filter(Boolean);
+  const allowed = origin ? allowedOrigins.includes(origin) : false;
   return {
-    "Access-Control-Allow-Origin": "*",
+    ...(allowed && origin ? { "Access-Control-Allow-Origin": origin } : {}),
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, X-API-Key, X-Signature",
+    "Vary": "Origin",
   };
 }
 
-function corsJson(data: unknown, status = 200): NextResponse {
-  return NextResponse.json(data, { status, headers: corsHeaders() });
+function corsJson(data: unknown, status = 200, origin?: string | null): NextResponse {
+  return NextResponse.json(data, { status, headers: corsHeaders(origin) });
 }
 
-function addCors(res: NextResponse): NextResponse {
-  for (const [k, v] of Object.entries(corsHeaders())) {
+function addCors(res: NextResponse, origin?: string | null): NextResponse {
+  for (const [k, v] of Object.entries(corsHeaders(origin))) {
     res.headers.set(k, v);
   }
   return res;

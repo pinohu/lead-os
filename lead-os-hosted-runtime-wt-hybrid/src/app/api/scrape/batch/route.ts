@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
+import { validateExternalUrl } from "@/lib/validate-url";
 import { batchScrape } from "@/lib/integrations/firecrawl-adapter";
 
 export async function POST(request: Request) {
@@ -22,7 +23,25 @@ export async function POST(request: Request) {
       );
     }
 
-    const pages = await batchScrape(body.urls);
+    const validatedUrls: string[] = [];
+    for (const rawUrl of body.urls) {
+      if (typeof rawUrl !== "string") {
+        return NextResponse.json(
+          { data: null, error: { code: "VALIDATION_ERROR", message: "All URLs must be strings" }, meta: null },
+          { status: 400, headers },
+        );
+      }
+      const check = validateExternalUrl(rawUrl);
+      if (!check.valid) {
+        return NextResponse.json(
+          { data: null, error: { code: "VALIDATION_ERROR", message: `Invalid URL "${rawUrl}": ${check.reason}` }, meta: null },
+          { status: 400, headers },
+        );
+      }
+      validatedUrls.push(check.url.href);
+    }
+
+    const pages = await batchScrape(validatedUrls);
 
     return NextResponse.json(
       { data: pages, error: null, meta: { count: pages.length } },

@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: AssessmentPageProps): Promise
   const { slug } = await params;
   const niche = getNiche(slug);
   return {
-    title: `${niche.assessmentTitle} | Lead OS`,
+    title: `${niche.assessmentTitle} | CX React`,
     description: `${niche.summary} Take a 2-minute diagnostic and get a tailored action plan.`,
     openGraph: {
       title: niche.assessmentTitle,

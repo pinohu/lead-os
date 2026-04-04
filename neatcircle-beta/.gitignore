@@ -1,4 +1,30 @@
+# Dependencies
+node_modules/
+
+# Next.js build
+.next/
+out/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Vercel
 .vercel
+
+# Cloudflare / OpenNext
 .open-next
 .wrangler
 worker-configuration.d.ts
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+npm-debug.log*
+
+# TypeScript
+*.tsbuildinfo

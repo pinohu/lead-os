@@ -5,8 +5,8 @@ import { tenantConfig } from "@/lib/tenant";
 import { nicheCatalog } from "@/lib/catalog";
 
 export const metadata: Metadata = {
-  title: "Setup — Lead OS",
-  description: "First-run setup wizard for your Lead OS instance. Configure brand, environment, and integrations.",
+  title: "Setup — CX React",
+  description: "First-run setup wizard for your CX React instance. Configure brand, environment, and integrations.",
 };
 
 // ---------------------------------------------------------------------------
@@ -141,7 +141,7 @@ async function buildSetupStatus(): Promise<SetupStatus> {
   const brand =
     Boolean(brandName) &&
     brandName !== "My Brand" &&
-    brandName !== "Lead OS Hosted";
+    brandName !== "CX React";
 
   return {
     database,

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { nicheCatalog } from "@/lib/catalog";
 
 export const metadata: Metadata = {
-  title: "Business Directory | Lead OS",
+  title: "Business Directory | CX React",
   description:
     "Browse our industry directory. Find automation solutions, expert resources, and growth tools for your specific business vertical.",
 };
@@ -17,7 +17,7 @@ export default function DirectoryIndexPage() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "@id": `${baseUrl}/directory#directory`,
-    name: "Business Directory | Lead OS",
+    name: "Business Directory | CX React",
     description: "Browse by vertical to discover assessment tools, authority guides, lead capture systems, and proven funnel blueprints designed for your specific business.",
     numberOfItems: niches.length,
     itemListElement: niches.map((niche, i) => ({

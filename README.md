@@ -1,8 +1,8 @@
-# Lead OS
+# CX React
 
 Programmable, multi-tenant lead generation infrastructure. One runtime, many niches -- deploy a complete lead-gen platform for any industry in minutes with config, not code.
 
-Lead OS captures visitor intent through embeddable widgets, scores and routes leads through configurable funnel graphs, orchestrates multi-channel follow-up (email, SMS, WhatsApp, chat, voice), generates AI-powered content, and syncs outcomes to your CRM and automation bus. It replaces 15-20 separate SaaS products with a single deployable runtime.
+CX React captures visitor intent through embeddable widgets, scores and routes leads through configurable funnel graphs, orchestrates multi-channel follow-up (email, SMS, WhatsApp, chat, voice), generates AI-powered content, and syncs outcomes to your CRM and automation bus. It replaces 15-20 separate SaaS products with a single deployable runtime.
 
 ## By the Numbers
 

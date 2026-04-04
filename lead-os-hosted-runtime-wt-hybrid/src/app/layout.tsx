@@ -17,7 +17,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://cxreact.com"),
   title: {
     default: `${tenantConfig.brandName} — Enterprise Lead Generation Platform`,
     template: `%s | ${tenantConfig.brandName}`,
@@ -84,12 +84,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "@graph": [
                 {
                   "@type": "Organization",
-                  "@id": "https://leadgen-os.com/#organization",
+                  "@id": "https://cxreact.com/#organization",
                   name: tenantConfig.brandName,
-                  url: "https://leadgen-os.com",
+                  url: "https://cxreact.com",
                   logo: {
                     "@type": "ImageObject",
-                    url: "https://leadgen-os.com/og-image.png",
+                    url: "https://cxreact.com/og-image.png",
                     width: 1200,
                     height: 630,
                   },
@@ -99,31 +99,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 },
                 {
                   "@type": "WebSite",
-                  "@id": "https://leadgen-os.com/#website",
-                  url: "https://leadgen-os.com",
+                  "@id": "https://cxreact.com/#website",
+                  url: "https://cxreact.com",
                   name: `${tenantConfig.brandName} — Enterprise Lead Generation Platform`,
-                  publisher: { "@id": "https://leadgen-os.com/#organization" },
+                  publisher: { "@id": "https://cxreact.com/#organization" },
                   potentialAction: {
                     "@type": "SearchAction",
                     target: {
                       "@type": "EntryPoint",
-                      urlTemplate: "https://leadgen-os.com/industries?q={search_term_string}",
+                      urlTemplate: "https://cxreact.com/industries?q={search_term_string}",
                     },
                     "query-input": "required name=search_term_string",
                   },
                 },
                 {
                   "@type": "SoftwareApplication",
-                  "@id": "https://leadgen-os.com/#app",
+                  "@id": "https://cxreact.com/#app",
                   name: `${tenantConfig.brandName} Platform`,
                   applicationCategory: "BusinessApplication",
                   operatingSystem: "Web",
                   offers: {
                     "@type": "Offer",
-                    url: "https://leadgen-os.com/pricing",
+                    url: "https://cxreact.com/pricing",
                     priceCurrency: "USD",
                   },
-                  publisher: { "@id": "https://leadgen-os.com/#organization" },
+                  publisher: { "@id": "https://cxreact.com/#organization" },
                 },
               ],
             }),

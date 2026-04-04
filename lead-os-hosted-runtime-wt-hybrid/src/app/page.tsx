@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, ArrowRight, Zap, Shield, BarChart3, Users, Bot, Clock } from "lucide-react";
 
-const brandName = tenantConfig.brandName || "Lead OS";
+const brandName = tenantConfig.brandName || "CX React";
 
 export const metadata: Metadata = {
   title: `${brandName} | Run All Your Clients From One Dashboard`,
@@ -239,7 +239,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
-              quote: "We cut our client SaaS overhead by 61% in the first month. Lead OS replaced HubSpot, ActiveCampaign, and three other tools. The ROI was instant.",
+              quote: "We cut our client SaaS overhead by 61% in the first month. CX React replaced HubSpot, ActiveCampaign, and three other tools. The ROI was instant.",
               author: "Marcus W.",
               role: "Owner, Vertex Digital Agency",
               metric: "61% cost reduction",
@@ -251,7 +251,7 @@ export default function HomePage() {
               metric: "20-min white-label setup",
             },
             {
-              quote: "My team was spending 15 hours a week pulling reports. Lead OS automated all of it. That's 60 hours a month back. We used it to take on 3 new clients.",
+              quote: "My team was spending 15 hours a week pulling reports. CX React automated all of it. That's 60 hours a month back. We used it to take on 3 new clients.",
               author: "Derek T.",
               role: "Founder, Apex Growth Co.",
               metric: "60 hrs/mo saved",

@@ -63,7 +63,7 @@ export async function sendOperatorMagicLink(email: string, origin: string, nextP
     html: `
       <div style="font-family:Segoe UI,sans-serif;line-height:1.6;color:#0f172a">
         <h1 style="font-size:24px;margin-bottom:12px">${tenantConfig.brandName} operator access</h1>
-        <p>Use the secure link below to sign in to the LeadOS operator dashboard.</p>
+        <p>Use the secure link below to sign in to the CX React operator dashboard.</p>
         <p><a href="${magicLink}" style="display:inline-block;background:#14b8a6;color:#07142b;padding:12px 18px;border-radius:12px;font-weight:700;text-decoration:none">Open operator dashboard</a></p>
         <p>This link expires in 15 minutes and only works for approved operator email addresses.</p>
       </div>

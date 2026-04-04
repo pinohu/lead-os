@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const niche = getNiche(slug);
   if (!niche) return {};
   return {
-    title: `The Complete Guide to ${niche.label} | Lead OS Resources`,
+    title: `The Complete Guide to ${niche.label} | CX React Resources`,
     description: `Everything ${niche.label.toLowerCase()} businesses need to know about lead capture, scoring, automation, and growth. Actionable insights backed by real data.`,
     openGraph: {
       title: `The Complete Guide to ${niche.label}`,
@@ -208,7 +208,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
             <article className="rounded-xl border border-border bg-card p-6">
               <h3 className="text-foreground">Industry Solutions</h3>
               <p>
-                See how Lead OS is configured specifically for{" "}
+                See how CX React is configured specifically for{" "}
                 {niche.label.toLowerCase()} businesses.
               </p>
               <div className="flex flex-wrap gap-3">

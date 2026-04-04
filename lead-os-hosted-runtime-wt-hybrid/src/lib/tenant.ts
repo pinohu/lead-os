@@ -29,8 +29,8 @@ const parsedFunnels = splitCsv(process.env.LEAD_OS_ENABLED_FUNNELS);
 
 export const tenantConfig: TenantConfig = {
   tenantId: process.env.LEAD_OS_TENANT_ID ?? "default-tenant",
-  brandName: process.env.NEXT_PUBLIC_BRAND_NAME ?? "Lead OS Hosted",
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://leads.example.com",
+  brandName: process.env.NEXT_PUBLIC_BRAND_NAME ?? "CX React",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxreact.com",
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@example.com",
   defaultService: process.env.LEAD_OS_DEFAULT_SERVICE ?? "lead-capture",
   defaultNiche: process.env.LEAD_OS_DEFAULT_NICHE ?? "general",
@@ -50,7 +50,7 @@ export const tenantConfig: TenantConfig = {
 
 export function isAllowedWidgetOrigin(origin?: string | null) {
   if (!origin) return false;
-  if (tenantConfig.widgetOrigins.length === 0) return true;
+  if (tenantConfig.widgetOrigins.length === 0) return false;
   return tenantConfig.widgetOrigins.includes(origin);
 }
 

@@ -32,7 +32,7 @@ function checkTenant(): boolean {
 
 function checkBrand(): boolean {
   const brandName = process.env.NEXT_PUBLIC_BRAND_NAME;
-  return Boolean(brandName) && brandName !== "My Brand" && brandName !== "Lead OS Hosted";
+  return Boolean(brandName) && brandName !== "My Brand" && brandName !== "CX React";
 }
 
 export async function GET(): Promise<NextResponse<SetupStatusResponse>> {

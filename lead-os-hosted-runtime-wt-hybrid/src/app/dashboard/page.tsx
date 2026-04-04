@@ -6,8 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Dashboard — Lead OS Operator Command Center",
-  description: "KPI overview, three-visit milestone framework, and automation health for your Lead OS instance.",
+  title: "Dashboard — CX React Operator Command Center",
+  description: "KPI overview, three-visit milestone framework, and automation health for your CX React instance.",
 };
 import { buildDashboardSnapshot } from "@/lib/dashboard";
 import { getOperatorSession } from "@/lib/operator-auth";
@@ -37,7 +37,7 @@ export default async function DashboardPage() {
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Operator command center</p>
           <h1 id="dashboard-heading" className="text-foreground text-2xl font-bold tracking-tight">{tenantConfig.brandName} milestone dashboard</h1>
           <p className="text-lg text-muted-foreground">
-            LeadOS is optimizing for milestone two and milestone three, not just the first capture
+            CX React is optimizing for milestone two and milestone three, not just the first capture
             event. This console shows what is moving, what is leaking, and where the next operator
             intervention belongs.
           </p>
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
                 <CardContent className="pt-4 space-y-1">
                   <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Workflow runs</p>
                   <h3 className="text-foreground text-xl font-bold">{workflowRuns.length}</h3>
-                  <p className="text-sm text-muted-foreground">n8n and internal workflow emissions logged by LeadOS.</p>
+                  <p className="text-sm text-muted-foreground">n8n and internal workflow emissions logged by CX React.</p>
                   <Button asChild variant="outline" size="sm" className="mt-2">
                     <Link href="/dashboard/workflows">Open workflow history</Link>
                   </Button>

@@ -854,7 +854,7 @@ async function runOnboardingAgent(
   await runStep(notifyStep, async () => {
     onboarding.welcomeNotification = {
       to: operatorEmail,
-      subject: `Welcome to Lead OS - ${nicheSlug}`,
+      subject: `Welcome to CX React - ${nicheSlug}`,
       sentAt: new Date().toISOString(),
     };
     return { sent: true, to: operatorEmail };

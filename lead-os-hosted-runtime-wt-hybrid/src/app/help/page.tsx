@@ -17,30 +17,30 @@ const faqData: FaqCategory[] = [
   {
     title: "Getting Started",
     items: [
-      { question: "What is Lead OS?", answer: "Lead OS is a white-label lead generation platform built for agencies. It captures leads through embeddable widgets, scores them automatically, routes them to the right team member, and nurtures them across email, SMS, and chat. It replaces 15-20 separate tools with one dashboard you can brand as your own." },
+      { question: "What is CX React?", answer: "CX React is a white-label lead generation platform built for agencies. It captures leads through embeddable widgets, scores them automatically, routes them to the right team member, and nurtures them across email, SMS, and chat. It replaces 15-20 separate tools with one dashboard you can brand as your own." },
       { question: "How do I get started?", answer: "Head to the onboarding page to start the setup wizard. Choose your industry, pick a plan, add your branding, and connect your tools. The system automatically configures lead scoring, assessment questions, and nurture sequences for your industry." },
       { question: "How do I capture my first lead?", answer: "After onboarding, add the provided widget to your client's website. Visitors will see your configured form, quiz, calculator, or chat widget. When they submit, the lead is automatically scored, routed, and entered into your nurture sequence." },
       { question: "What does the dashboard show?", answer: "The dashboard gives you full visibility into your lead generation operations: KPIs, lead management, pipeline status, AI-generated content, A/B test results, billing, and client performance. Everything you need to run your agency from one screen." },
-      { question: "Can I add a new niche without coding?", answer: "Yes. Lead OS treats niches as configuration, not code. Enter your industry name and the system auto-generates scoring weights, assessment questions, lead magnets, nurture content, and funnel configurations." },
+      { question: "Can I add a new niche without coding?", answer: "Yes. CX React treats niches as configuration, not code. Enter your industry name and the system auto-generates scoring weights, assessment questions, lead magnets, nurture content, and funnel configurations." },
     ],
   },
   {
     title: "Lead Management",
     items: [
-      { question: "How does lead scoring work?", answer: "Lead OS scores every lead across four dimensions: how likely they are to buy (intent), how well they match your ideal customer (fit), how actively they are engaging (engagement), and how urgently they need your service (urgency). These combine into a single score that tells your team exactly who to call first." },
+      { question: "How does lead scoring work?", answer: "CX React scores every lead across four dimensions: how likely they are to buy (intent), how well they match your ideal customer (fit), how actively they are engaging (engagement), and how urgently they need your service (urgency). These combine into a single score that tells your team exactly who to call first." },
       { question: "What do the temperature labels mean?", answer: "Cold (0-34): Early-stage, needs nurturing. Warm (35-59): Showing interest, engage actively. Hot (60-79): High intent, prioritize outreach. Burning (80+): Ready to buy, route to sales immediately." },
       { question: "How does lead routing work?", answer: "You define rules for each stage of your funnel: who qualifies, where they go next, and what happens automatically. The system assigns leads to the right team members, updates your CRM, and starts the right nurture sequence -- all without manual work." },
-      { question: "What happens with duplicate leads?", answer: "Lead OS automatically detects duplicate submissions and merges them instead of creating new records. The system keeps the best data from each submission so your lead counts stay accurate and your team never calls the same person twice." },
+      { question: "What happens with duplicate leads?", answer: "CX React automatically detects duplicate submissions and merges them instead of creating new records. The system keeps the best data from each submission so your lead counts stay accurate and your team never calls the same person twice." },
       { question: "Can I export my leads?", answer: "Yes. Export leads directly from the dashboard with one click, or set up real-time sync to your CRM. You always own your data and can export it anytime." },
     ],
   },
   {
     title: "Integrations",
     items: [
-      { question: "How do I connect my CRM?", answer: "Go to Dashboard > Credentials and add your CRM connection (SuiteDash, SalesNexus, or others). Lead OS will automatically sync leads, deals, and pipeline stages. All integrations run in sandbox mode until you connect your accounts." },
-      { question: "How do I set up email nurturing?", answer: "Connect your email provider in Dashboard > Credentials. Lead OS includes pre-built 7-stage nurture sequences that automatically adapt messaging based on how engaged each lead is and what industry they are in." },
+      { question: "How do I connect my CRM?", answer: "Go to Dashboard > Credentials and add your CRM connection (SuiteDash, SalesNexus, or others). CX React will automatically sync leads, deals, and pipeline stages. All integrations run in sandbox mode until you connect your accounts." },
+      { question: "How do I set up email nurturing?", answer: "Connect your email provider in Dashboard > Credentials. CX React includes pre-built 7-stage nurture sequences that automatically adapt messaging based on how engaged each lead is and what industry they are in." },
       { question: "How do I configure SMS?", answer: "Connect your SMS provider in Dashboard > Credentials. SMS is part of the multi-channel nurture sequence and can be turned on or off for each stage of your funnel." },
-      { question: "Can I get real-time notifications when something happens?", answer: "Yes. Lead OS sends real-time notifications when key events occur -- like a new lead coming in, a lead changing stages, or a conversion. Configure these alerts in Dashboard > Settings." },
+      { question: "Can I get real-time notifications when something happens?", answer: "Yes. CX React sends real-time notifications when key events occur -- like a new lead coming in, a lead changing stages, or a conversion. Configure these alerts in Dashboard > Settings." },
       { question: "What if I have not connected my tools yet?", answer: "No problem. All integrations run in sandbox mode until you connect your accounts. You can explore and test the full platform with realistic sample data before going live." },
     ],
   },
@@ -60,8 +60,8 @@ const faqData: FaqCategory[] = [
       { question: "Do you have developer documentation?", answer: "Yes. Full API documentation is available for teams that want to build custom integrations. Contact support or visit our developer docs for details." },
       { question: "How do I add the widget to my client's site?", answer: "After onboarding, you get an embed code for each client. It works on any website and can be configured as a popup, inline form, chat bubble, or full-page assessment." },
       { question: "Can I use my own domain?", answer: "Yes. Set up your custom domain in Dashboard > Settings. Your clients will see your brand and your URL -- not ours." },
-      { question: "How is my data protected?", answer: "Lead OS uses bank-level encryption, secure authentication, and enterprise-grade security controls. Each client's data is completely isolated so there is no cross-contamination between accounts." },
-      { question: "Is Lead OS GDPR compliant?", answer: "Yes. Lead OS includes built-in tools for data export, data deletion, and consent management. See our Privacy Policy for full details." },
+      { question: "How is my data protected?", answer: "CX React uses bank-level encryption, secure authentication, and enterprise-grade security controls. Each client's data is completely isolated so there is no cross-contamination between accounts." },
+      { question: "Is CX React GDPR compliant?", answer: "Yes. CX React includes built-in tools for data export, data deletion, and consent management. See our Privacy Policy for full details." },
     ],
   },
 ];
@@ -110,7 +110,7 @@ export default function HelpCenterPage() {
       <main id="main-content" className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-foreground text-2xl font-extrabold mb-2">Help Center</h1>
       <p className="text-foreground mb-8">
-        Find answers to common questions about Lead OS.
+        Find answers to common questions about CX React.
       </p>
 
       <div className="mb-8">

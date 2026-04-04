@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "See Lead OS in Action | Demo",
-  description: "See how Lead OS helps agencies capture, score, and nurture leads from one dashboard. No signup required.",
+  title: "See CX React in Action | Demo",
+  description: "See how CX React helps agencies capture, score, and nurture leads from one dashboard. No signup required.",
 };
 
 const demos = [
@@ -78,7 +78,7 @@ export default function DemoPage() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "@id": `${baseUrl}/demo#demos`,
-    name: "Lead OS Feature Demos",
+    name: "CX React Feature Demos",
     description: "Interactive demos of lead capture, scoring, AI content generation, and the operator dashboard.",
     numberOfItems: demos.length,
     itemListElement: demos.map((demo, i) => ({

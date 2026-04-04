@@ -26,7 +26,7 @@ export async function GET(request: Request) {
   const leads = await getLeadRecords();
 
   const brandConfiguredLive =
-    tenantConfig.brandName !== "Lead OS" && tenantConfig.brandName !== "Lead OS Hosted";
+    tenantConfig.brandName !== "CX React";
 
   const emailConnectedLive = credentials.some(
     (c) =>

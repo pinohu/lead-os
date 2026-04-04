@@ -1,14 +1,14 @@
 // ── Health Check Endpoint ─────────────────────────────────────────────
 // GET /api/health — Used by uptime monitors and deployment checks.
-// Returns database connectivity status + basic app info.
+// Returns minimal info publicly; detailed info requires CRON_SECRET.
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const start = Date.now();
 
   let dbStatus: "ok" | "error" = "error";
@@ -26,18 +26,29 @@ export async function GET() {
   const totalMs = Date.now() - start;
   const healthy = dbStatus === "ok";
 
-  return NextResponse.json(
-    {
-      status: healthy ? "healthy" : "degraded",
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      checks: {
-        database: { status: dbStatus, latencyMs: dbLatencyMs },
-        emailService: { configured: !!process.env.EMAILIT_API_KEY, provider: "emailit" },
+  const authHeader = req.headers.get("authorization");
+  const cronSecret = process.env.CRON_SECRET;
+  const isAuthorized = cronSecret && authHeader === `Bearer ${cronSecret}`;
+
+  if (isAuthorized) {
+    return NextResponse.json(
+      {
+        status: healthy ? "healthy" : "degraded",
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        checks: {
+          database: { status: dbStatus, latencyMs: dbLatencyMs },
+          emailService: { configured: !!process.env.EMAILIT_API_KEY },
+        },
+        responseTimeMs: totalMs,
+        version: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "dev",
       },
-      responseTimeMs: totalMs,
-      version: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "dev",
-    },
+      { status: healthy ? 200 : 503 }
+    );
+  }
+
+  return NextResponse.json(
+    { status: healthy ? "healthy" : "degraded" },
     { status: healthy ? 200 : 503 }
   );
 }

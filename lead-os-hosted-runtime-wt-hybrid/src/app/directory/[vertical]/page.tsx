@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { vertical } = await params;
   const niche = getNiche(vertical);
   return {
-    title: `${niche.label} Directory | Lead OS`,
+    title: `${niche.label} Directory | CX React`,
     description: `Complete directory of ${niche.label.toLowerCase()} growth resources: industry overview, assessments, authority guides, ROI calculators, testimonials, and funnel blueprints.`,
     openGraph: {
       title: `${niche.label} Directory`,
@@ -214,7 +214,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
                 </ul>
               </article>
               <article className="rounded-xl border border-border bg-card p-6">
-                <h3 className="text-foreground m-0 mb-2 text-sm">What makes Lead OS different</h3>
+                <h3 className="text-foreground m-0 mb-2 text-sm">What makes CX React different</h3>
                 <ul className="m-0 pl-5 text-sm leading-loose">
                   {intel.competitors.differentiators.map((diff) => (
                     <li key={diff}>{diff}</li>
