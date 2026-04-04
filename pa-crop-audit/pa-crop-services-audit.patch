@@ -1,0 +1,1253 @@
+From ffe2314ff280eacdfaa5143ee4229d4e9ba9617a Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Sat, 4 Apr 2026 03:06:34 +0000
+Subject: [PATCH 1/3] fix(security): harden Stripe webhook signature, auth
+ validation, CORS, and notifications
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Fix Stripe webhook timingSafeEqual buffer length mismatch (compare hex strings)
+- Fix SMS endpoint sending email addresses instead of phone numbers
+- Add requireJson, rejectOversizedBody, isValidEmail to auth/index.js
+- Restrict CORS preview origin echo to *.vercel.app only
+- Fix notifications processPending using nested objects instead of flat columns
+- Use centralized N8N_BASE from _config.js in stripe-webhook.js and intake.js
+- Remove unused sanitize import from intake.js
+- Add error logging in auth/session.js
+- Fix about.html JSON-LD schema Person → Organization
+- Fix partners.html form success shown on HTTP error
+- Add keyboard a11y (role=button, tabindex, Enter/Space) to all FAQ accordions
+- Consolidate duplicate test/ into tests/, port tryDeterministicAnswer tests
+- Fix misleading comments in compliance.test.js
+- Remove || true from CI lint step so failures break the build
+---
+ .github/workflows/ci.yml                      |  2 +-
+ api/auth/index.js                             |  4 +
+ api/auth/session.js                           |  4 +
+ api/intake.js                                 |  4 +-
+ api/services/auth.js                          |  7 +-
+ api/services/notifications.js                 |  8 +-
+ api/stripe-webhook.js                         | 24 ++++--
+ public/about.html                             |  2 +-
+ ...crop-vs-registered-agent-pennsylvania.html |  2 +-
+ ...change-registered-office-pennsylvania.html |  2 +-
+ public/how-to-file-pa-annual-report-2026.html |  2 +-
+ public/pa-2027-compliance-checklist.html      |  2 +-
+ public/pa-2027-dissolution-deadline.html      |  2 +-
+ .../pa-annual-report-requirement-guide.html   |  2 +-
+ .../pa-crop-services-vs-ct-corporation.html   |  2 +-
+ public/pa-crop-services-vs-incfile.html       |  2 +-
+ ...ervices-vs-northwest-registered-agent.html |  2 +-
+ public/pa-crop-services-vs-zenbusiness.html   |  2 +-
+ public/partners.html                          |  1 +
+ ...sylvania-foreign-entity-annual-report.html |  2 +-
+ ...ia-llc-registered-office-requirements.html |  2 +-
+ public/registered-office-allentown-pa.html    |  2 +-
+ public/registered-office-bethlehem-pa.html    |  2 +-
+ public/registered-office-erie-pa.html         |  2 +-
+ public/registered-office-harrisburg-pa.html   |  2 +-
+ public/registered-office-lancaster-pa.html    |  2 +-
+ public/registered-office-philadelphia-pa.html |  2 +-
+ public/registered-office-pittsburgh-pa.html   |  2 +-
+ public/registered-office-reading-pa.html      |  2 +-
+ public/registered-office-scranton-pa.html     |  2 +-
+ public/registered-office-wilkes-barre-pa.html |  2 +-
+ .../reinstate-dissolved-pennsylvania-llc.html |  2 +-
+ test/compliance.test.js                       | 80 -----------------
+ test/guardrails.test.js                       | 85 -------------------
+ test/validate.test.js                         | 79 -----------------
+ tests/compliance.test.js                      |  7 +-
+ tests/guardrails.test.js                      | 30 ++++++-
+ 37 files changed, 90 insertions(+), 293 deletions(-)
+ delete mode 100644 test/compliance.test.js
+ delete mode 100644 test/guardrails.test.js
+ delete mode 100644 test/validate.test.js
+
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index b5b5983..6426efe 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -23,7 +23,7 @@ jobs:
+         run: npm ci
+ 
+       - name: Lint
+-        run: npx eslint api/ scripts/ --ext .js || true
++        run: npx eslint api/ scripts/ --ext .js
+ 
+       - name: Validate compliance content
+         run: node scripts/validate-content.js
+diff --git a/api/auth/index.js b/api/auth/index.js
+index 4b9384c..15e173f 100644
+--- a/api/auth/index.js
++++ b/api/auth/index.js
+@@ -5,16 +5,20 @@
+ import { setCors } from '../services/auth.js';
+ import { logError } from '../_log.js';
+ import { checkRateLimit, getClientIp } from '../_ratelimit.js';
++import { isValidEmail, requireJson, rejectOversizedBody } from '../_validate.js';
+ 
+ export default async function handler(req, res) {
+   setCors(req, res);
+   if (req.method === 'OPTIONS') return res.status(200).end();
+   if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'method_not_allowed' });
++  if (requireJson(req, res)) return;
++  if (rejectOversizedBody(req, res, 4096)) return;
+   const blocked = await checkRateLimit(getClientIp(req), 'index', 10, '60s');
+   if (blocked) { res.setHeader('Retry-After', String(blocked.retryAfter)); return res.status(429).json({ success: false, error: 'Too many requests' }); }
+ 
+   const { email, code } = req.body || {};
+   if (!email || !code) return res.status(400).json({ success: false, error: 'Missing email or code' });
++  if (!isValidEmail(email)) return res.status(400).json({ success: false, error: 'invalid_email' });
+ 
+   const cleanEmail = email.toLowerCase().trim();
+   const cleanCode = code.toUpperCase().trim();
+diff --git a/api/auth/session.js b/api/auth/session.js
+index 1bd1840..c07c5b9 100644
+--- a/api/auth/session.js
++++ b/api/auth/session.js
+@@ -1,5 +1,8 @@
+ import { setCors, authenticateRequest, createSession } from '../services/auth.js';
+ import { getClientById } from '../services/db.js';
++import { createLogger } from '../_log.js';
++
++const log = createLogger('auth-session');
+ 
+ export default async function handler(req, res) {
+   setCors(req, res);
+@@ -41,6 +44,7 @@ export default async function handler(req, res) {
+       } : { id: session.clientId, organization_id: session.orgId, plan_code: session.plan, roles: session.roles }
+     });
+   } catch (err) {
++    log.error('session_check_error', { clientId: session.clientId }, err);
+     return res.status(500).json({ success: false, error: 'internal_error' });
+   }
+ }
+diff --git a/api/intake.js b/api/intake.js
+index 1cfef37..e4999b1 100644
+--- a/api/intake.js
++++ b/api/intake.js
+@@ -1,8 +1,9 @@
+ import { setCors } from './services/auth.js';
+ import { checkRateLimit, getClientIp } from './_ratelimit.js';
+ import { createLogger } from './_log.js';
+-import { isValidEmail, isValidString, sanitize } from './_validate.js';
++import { isValidEmail, isValidString } from './_validate.js';
+ import { fetchWithTimeout } from './_fetch.js';
++import { N8N_BASE } from './_config.js';
+ 
+ const log = createLogger('intake');
+ 
+@@ -60,7 +61,6 @@ export default async function handler(req, res) {
+ 
+   const SD_PUBLIC = process.env.SUITEDASH_PUBLIC_ID;
+   const SD_SECRET = process.env.SUITEDASH_SECRET_KEY;
+-  const N8N_BASE  = 'https://n8n.audreysplace.place/webhook';
+ 
+   try {
+     // Create SuiteDash contact
+diff --git a/api/services/auth.js b/api/services/auth.js
+index 3d11482..6aeb483 100644
+--- a/api/services/auth.js
++++ b/api/services/auth.js
+@@ -328,11 +328,10 @@ export function setCors(req, res) {
+   const origin = req.headers.origin || '';
+   if (ALLOWED_ORIGINS.includes(origin)) {
+     res.setHeader('Access-Control-Allow-Origin', origin);
+-  } else if (process.env.VERCEL_ENV === 'preview' || process.env.VERCEL_ENV === 'development') {
+-    // Allow preview deployments for testing only
+-    res.setHeader('Access-Control-Allow-Origin', origin || ALLOWED_ORIGINS[0]);
++  } else if ((process.env.VERCEL_ENV === 'preview' || process.env.VERCEL_ENV === 'development')
++    && origin.endsWith('.vercel.app')) {
++    res.setHeader('Access-Control-Allow-Origin', origin);
+   } else {
+-    // Default to primary domain — never wildcard
+     res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGINS[0]);
+   }
+   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+diff --git a/api/services/notifications.js b/api/services/notifications.js
+index 7a09555..9a18079 100644
+--- a/api/services/notifications.js
++++ b/api/services/notifications.js
+@@ -120,12 +120,10 @@ export async function processPending() {
+   const results = [];
+ 
+   for (const notif of pending) {
+-    const org = notif.organizations;
+-    const obl = notif.obligations;
+     const variables = {
+-      org_name: org?.legal_name || notif.org_name || 'Your Entity',
+-      due_date: obl?.due_date || '',
+-      managed: obl?.filing_method === 'managed'
++      org_name: notif.org_name || notif.legal_name || 'Your Entity',
++      due_date: notif.due_date || '',
++      managed: notif.filing_method === 'managed'
+     };
+ 
+     // Find client email — try Neon first, then SuiteDash
+diff --git a/api/stripe-webhook.js b/api/stripe-webhook.js
+index 83a7f5e..7efe055 100644
+--- a/api/stripe-webhook.js
++++ b/api/stripe-webhook.js
+@@ -4,6 +4,7 @@
+ 
+ import { log, logError, logWarn } from './_log.js';
+ import { fetchWithTimeout } from './_fetch.js';
++import { N8N_BASE } from './_config.js';
+ 
+ async function _notifyIke(subject, body) {
+   const key = process.env.EMAILIT_API_KEY;
+@@ -84,13 +85,20 @@ export default async function handler(req, res) {
+   {
+     try {
+       const payload = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+-      const timestamp = sig.split(',').find(s => s.startsWith('t=')).split('=')[1];
++      const tsPart = sig.split(',').find(s => s.startsWith('t='));
++      if (!tsPart) return res.status(400).json({ success: false, error: 'Missing timestamp in signature' });
++      const timestamp = tsPart.split('=')[1];
+       const signatures = sig.split(',').filter(s => s.startsWith('v1=')).map(s => s.split('=')[1]);
++      if (!signatures.length) return res.status(400).json({ success: false, error: 'Missing v1 signature' });
+       const age = Math.floor(Date.now() / 1000) - parseInt(timestamp);
+       if (age > 300) return res.status(400).json({ success: false, error: 'Webhook timestamp too old' });
+       const crypto = await import('crypto');
+       const expected = crypto.createHmac('sha256', whSecret).update(`${timestamp}.${payload}`).digest('hex');
+-      const valid = signatures.some(s => crypto.timingSafeEqual(Buffer.from(s), Buffer.from(expected)));
++      const valid = signatures.some(s => {
++        const sigBuf = Buffer.from(s, 'utf8');
++        const expBuf = Buffer.from(expected, 'utf8');
++        return sigBuf.length === expBuf.length && crypto.timingSafeEqual(sigBuf, expBuf);
++      });
+       if (!valid) return res.status(400).json({ success: false, error: 'Invalid signature' });
+     } catch (err) {
+       logError('webhook_signature_failed', {}, err);
+@@ -143,7 +151,7 @@ export default async function handler(req, res) {
+       log('provision_result', { email, tier: tierConfig.tier, steps: provisionData.steps?.length || 0 });
+ 
+       // Step 2: Also notify n8n (for any additional workflow steps)
+-      await fetchWithTimeout('https://n8n.audreysplace.place/webhook/crop-new-client', {
++      await fetchWithTimeout(`${N8N_BASE}/crop-new-client`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ ...event, tierConfig, provisionResult: provisionData })
+@@ -176,17 +184,17 @@ export default async function handler(req, res) {
+       const custEmail = invoice?.customer_email || '';
+       const amount = ((invoice?.amount_due || 0) / 100).toFixed(2);
+ 
+-      // Day 1: Immediate SMS alert
++      // Day 1: Immediate email alert (SMS requires phone, not email)
+       if (custEmail) {
+-        fetchWithTimeout(`${baseUrl}/api/sms`, {
++        fetchWithTimeout(`${baseUrl}/api/email-triage`, {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json', 'X-Admin-Key': process.env.ADMIN_SECRET_KEY },
+-          body: JSON.stringify({ to: custEmail, message: `PA CROP Services: Your payment of $${amount} failed. Please update your payment method to keep your compliance monitoring active. Questions? 814-228-2822` })
+-        }).catch(e => logWarn('external_call_failed', { service: 'n8n/invoice', error: e.message }));
++          body: JSON.stringify({ to: custEmail, subject: 'Payment Failed — Action Required', message: `PA CROP Services: Your payment of $${amount} failed. Please update your payment method to keep your compliance monitoring active. Questions? 814-228-2822` })
++        }).catch(e => logWarn('external_call_failed', { service: 'payment-failed-alert', error: e.message }));
+       }
+ 
+       // n8n for full dunning workflow
+-      const pfRes = await fetchWithTimeout('https://n8n.audreysplace.place/webhook/crop-payment-failed', {
++      const pfRes = await fetchWithTimeout(`${N8N_BASE}/crop-payment-failed`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(event)
+diff --git a/public/about.html b/public/about.html
+index 4401063..7cbd93e 100644
+--- a/public/about.html
++++ b/public/about.html
+@@ -17,7 +17,7 @@
+ <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="/site.css">
+ <script type="application/ld+json">
+-{"@context":"https://schema.org","@type":"AboutPage","name":"About PA CROP Services","description":"PA CROP Services is a licensed Pennsylvania Commercial Registered Office Provider, founded by PA CROP Services Team.","url":"https://www.pacropservices.com/about","mainEntity":{"@type":"Person","name":"PA CROP Services","jobTitle":"Founder & President, PA CROP Services","worksFor":{"@type":"Organization","name":"PA Registered Office Services, LLC"}}}
++{"@context":"https://schema.org","@type":"AboutPage","name":"About PA CROP Services","description":"PA CROP Services is a licensed Pennsylvania Commercial Registered Office Provider.","url":"https://www.pacropservices.com/about","mainEntity":{"@type":"Organization","name":"PA CROP Services","legalName":"PA Registered Office Services, LLC","url":"https://www.pacropservices.com"}}
+ </script>
+ <script type="application/ld+json">
+ {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.pacropservices.com"},{"@type":"ListItem","position":2,"name":"About","item":"https://www.pacropservices.com/about"}]}
+diff --git a/public/crop-vs-registered-agent-pennsylvania.html b/public/crop-vs-registered-agent-pennsylvania.html
+index 440c5b1..23a2738 100644
+--- a/public/crop-vs-registered-agent-pennsylvania.html
++++ b/public/crop-vs-registered-agent-pennsylvania.html
+@@ -218,7 +218,7 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <footer class="site-footer" role="contentinfo"><div class="footer-inner">
+   <div><div class="footer-left">&copy; 2026 PA CROP Services (PA Registered Office Services, LLC)</div><div class="footer-legal">Licensed Pennsylvania CROP &middot; 924 W 23rd St, Erie, PA 16502 &middot; <a href="tel:+18142282822" style="color:rgba(255,255,255,.7)">814-228-2822</a> &middot; <a href="mailto:hello@pacropservices.com" style="color:rgba(255,255,255,.7)">hello@pacropservices.com</a></div></div>
+   <div class="footer-links"><a href="/">Home</a><a href="/#pricing">Pricing</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/portal">Client Login</a></div>
+-</div></footer><script>document.querySelectorAll('.faq-item').forEach(function(i){i.querySelector('.faq-q').addEventListener('click',function(){i.classList.toggle('open');});});</script><script src="/embed/chatbot.js" defer></script>
++</div></footer><script>document.querySelectorAll('.faq-item').forEach(function(i){var q=i.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){i.classList.toggle('open');q.setAttribute('aria-expanded',String(i.classList.contains('open')));}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script><script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+ </body></html>
+diff --git a/public/how-to-change-registered-office-pennsylvania.html b/public/how-to-change-registered-office-pennsylvania.html
+index ff6b18c..1e037cb 100644
+--- a/public/how-to-change-registered-office-pennsylvania.html
++++ b/public/how-to-change-registered-office-pennsylvania.html
+@@ -266,7 +266,7 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <footer class="site-footer" role="contentinfo"><div class="footer-inner">
+   <div><div class="footer-left">&copy; 2026 PA CROP Services (PA Registered Office Services, LLC)</div><div class="footer-legal">Licensed Pennsylvania CROP &middot; 924 W 23rd St, Erie, PA 16502 &middot; <a href="tel:+18142282822" style="color:rgba(255,255,255,.7)">814-228-2822</a> &middot; <a href="mailto:hello@pacropservices.com" style="color:rgba(255,255,255,.7)">hello@pacropservices.com</a></div></div>
+   <div class="footer-links"><a href="/">Home</a><a href="/#pricing">Pricing</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/portal">Client Login</a></div>
+-</div></footer><script>document.querySelectorAll('.faq-item').forEach(function(i){i.querySelector('.faq-q').addEventListener('click',function(){i.classList.toggle('open');});});</script><script src="/embed/chatbot.js" defer></script>
++</div></footer><script>document.querySelectorAll('.faq-item').forEach(function(i){var q=i.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){i.classList.toggle('open');q.setAttribute('aria-expanded',String(i.classList.contains('open')));}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script><script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+ </body></html>
+diff --git a/public/how-to-file-pa-annual-report-2026.html b/public/how-to-file-pa-annual-report-2026.html
+index e3147eb..d7a0ae4 100644
+--- a/public/how-to-file-pa-annual-report-2026.html
++++ b/public/how-to-file-pa-annual-report-2026.html
+@@ -262,7 +262,7 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+   <div><div class="footer-left">&copy; 2026 PA CROP Services (PA Registered Office Services, LLC)</div><div class="footer-legal">Licensed Pennsylvania CROP &middot; 924 W 23rd St, Erie, PA 16502 &middot; <a href="tel:+18142282822" style="color:rgba(255,255,255,.7)">814-228-2822</a> &middot; <a href="mailto:hello@pacropservices.com" style="color:rgba(255,255,255,.7)">hello@pacropservices.com</a></div></div>
+   <div class="footer-links"><a href="/">Home</a><a href="/#pricing">Pricing</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/portal">Client Login</a></div>
+ </div></footer>
+-<script>document.querySelectorAll(".faq-item").forEach(function(i){i.querySelector(".faq-q").addEventListener("click",function(){i.classList.toggle("open");});});</script>
++<script>document.querySelectorAll(".faq-item").forEach(function(i){var q=i.querySelector(".faq-q");q.setAttribute("role","button");q.setAttribute("tabindex","0");q.setAttribute("aria-expanded","false");function toggle(){i.classList.toggle("open");q.setAttribute("aria-expanded",String(i.classList.contains("open")));}q.addEventListener("click",toggle);q.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();}});});</script>
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+diff --git a/public/pa-2027-compliance-checklist.html b/public/pa-2027-compliance-checklist.html
+index cc96dc8..e978700 100644
+--- a/public/pa-2027-compliance-checklist.html
++++ b/public/pa-2027-compliance-checklist.html
+@@ -386,7 +386,7 @@ async function saveChecklist(){
+ // Restore state
+ try{var saved=JSON.parse(localStorage.getItem("pa_checklist")||"{}");Object.keys(saved).forEach(function(k){if(saved[k]){var items=document.querySelectorAll(".check-item");items.forEach(function(i){if(i.textContent.trim().slice(0,30)===k){i.classList.add("done");checkState[k]=true;}});}});updateProgress();}catch(e){}
+ </script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(i){i.querySelector('.faq-q').addEventListener('click',function(){i.classList.toggle('open');});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(i){var q=i.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){i.classList.toggle('open');q.setAttribute('aria-expanded',String(i.classList.contains('open')));}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+diff --git a/public/pa-2027-dissolution-deadline.html b/public/pa-2027-dissolution-deadline.html
+index 5477536..96421c3 100644
+--- a/public/pa-2027-dissolution-deadline.html
++++ b/public/pa-2027-dissolution-deadline.html
+@@ -254,7 +254,7 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+   <div><div class="footer-left">&copy; 2026 PA CROP Services (PA Registered Office Services, LLC)</div><div class="footer-legal">Licensed Pennsylvania CROP &middot; 924 W 23rd St, Erie, PA 16502 &middot; <a href="tel:+18142282822" style="color:rgba(255,255,255,.7)">814-228-2822</a> &middot; <a href="mailto:hello@pacropservices.com" style="color:rgba(255,255,255,.7)">hello@pacropservices.com</a></div></div>
+   <div class="footer-links"><a href="/">Home</a><a href="/#pricing">Pricing</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/portal">Client Login</a></div>
+ </div></footer>
+-<script>document.querySelectorAll('.faq-item').forEach(function(i){i.querySelector('.faq-q').addEventListener('click',function(){i.classList.toggle('open');});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(i){var q=i.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){i.classList.toggle('open');q.setAttribute('aria-expanded',String(i.classList.contains('open')));}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+diff --git a/public/pa-annual-report-requirement-guide.html b/public/pa-annual-report-requirement-guide.html
+index 3b92b56..bd28b8d 100644
+--- a/public/pa-annual-report-requirement-guide.html
++++ b/public/pa-annual-report-requirement-guide.html
+@@ -267,7 +267,7 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+   <div><div class="footer-left">&copy; 2026 PA CROP Services (PA Registered Office Services, LLC)</div><div class="footer-legal">Licensed Pennsylvania CROP &middot; 924 W 23rd St, Erie, PA 16502 &middot; <a href="tel:+18142282822" style="color:rgba(255,255,255,.7)">814-228-2822</a> &middot; <a href="mailto:hello@pacropservices.com" style="color:rgba(255,255,255,.7)">hello@pacropservices.com</a></div></div>
+   <div class="footer-links"><a href="/">Home</a><a href="/#pricing">Pricing</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/portal">Client Login</a></div>
+ </div></footer>
+-<script>document.querySelectorAll('.faq-item').forEach(function(i){i.querySelector('.faq-q').addEventListener('click',function(){i.classList.toggle('open');});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(i){var q=i.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){i.classList.toggle('open');q.setAttribute('aria-expanded',String(i.classList.contains('open')));}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+diff --git a/public/pa-crop-services-vs-ct-corporation.html b/public/pa-crop-services-vs-ct-corporation.html
+index 99c1ac6..25b52f2 100644
+--- a/public/pa-crop-services-vs-ct-corporation.html
++++ b/public/pa-crop-services-vs-ct-corporation.html
+@@ -220,7 +220,7 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+   <div><div class="footer-left">&copy; 2026 PA CROP Services (PA Registered Office Services, LLC)</div><div class="footer-legal">Licensed Pennsylvania CROP &middot; 924 W 23rd St, Erie, PA 16502 &middot; <a href="tel:+18142282822" style="color:rgba(255,255,255,.7)">814-228-2822</a> &middot; <a href="mailto:hello@pacropservices.com" style="color:rgba(255,255,255,.7)">hello@pacropservices.com</a></div></div>
+   <div class="footer-links"><a href="/">Home</a><a href="/#pricing">Pricing</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/portal">Client Login</a></div>
+ </div></footer>
+-<script>document.querySelectorAll('.faq-item').forEach(function(i){i.querySelector('.faq-q').addEventListener('click',function(){i.classList.toggle('open');});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(i){var q=i.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){i.classList.toggle('open');q.setAttribute('aria-expanded',String(i.classList.contains('open')));}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+diff --git a/public/pa-crop-services-vs-incfile.html b/public/pa-crop-services-vs-incfile.html
+index 48a3d8a..75f1cd7 100644
+--- a/public/pa-crop-services-vs-incfile.html
++++ b/public/pa-crop-services-vs-incfile.html
+@@ -214,7 +214,7 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+   <div><div class="footer-left">&copy; 2026 PA CROP Services (PA Registered Office Services, LLC)</div><div class="footer-legal">Licensed Pennsylvania CROP &middot; 924 W 23rd St, Erie, PA 16502 &middot; <a href="tel:+18142282822" style="color:rgba(255,255,255,.7)">814-228-2822</a> &middot; <a href="mailto:hello@pacropservices.com" style="color:rgba(255,255,255,.7)">hello@pacropservices.com</a></div></div>
+   <div class="footer-links"><a href="/">Home</a><a href="/#pricing">Pricing</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/portal">Client Login</a></div>
+ </div></footer>
+-<script>document.querySelectorAll('.faq-item').forEach(function(i){i.querySelector('.faq-q').addEventListener('click',function(){i.classList.toggle('open');});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(i){var q=i.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){i.classList.toggle('open');q.setAttribute('aria-expanded',String(i.classList.contains('open')));}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+diff --git a/public/pa-crop-services-vs-northwest-registered-agent.html b/public/pa-crop-services-vs-northwest-registered-agent.html
+index 104b5db..2426ecf 100644
+--- a/public/pa-crop-services-vs-northwest-registered-agent.html
++++ b/public/pa-crop-services-vs-northwest-registered-agent.html
+@@ -288,6 +288,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/pa-crop-services-vs-zenbusiness.html b/public/pa-crop-services-vs-zenbusiness.html
+index e550744..9867df2 100644
+--- a/public/pa-crop-services-vs-zenbusiness.html
++++ b/public/pa-crop-services-vs-zenbusiness.html
+@@ -290,6 +290,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/partners.html b/public/partners.html
+index 7451e31..342b692 100644
+--- a/public/partners.html
++++ b/public/partners.html
+@@ -258,6 +258,7 @@ async function submitPartnerForm(){
+         pricingPreference:document.getElementById("p-pricing").value
+       })
+     });
++    if(!res.ok){throw new Error('Server returned '+res.status);}
+     document.getElementById("partner-success").style.display="block";
+     document.getElementById("partner-submit-btn").style.display="none";
+     if(window.plausible)plausible("Partner Application",{props:{firmType:document.getElementById("p-type").value}});
+diff --git a/public/pennsylvania-foreign-entity-annual-report.html b/public/pennsylvania-foreign-entity-annual-report.html
+index 607a0f7..43d9d36 100644
+--- a/public/pennsylvania-foreign-entity-annual-report.html
++++ b/public/pennsylvania-foreign-entity-annual-report.html
+@@ -249,7 +249,7 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <footer class="site-footer" role="contentinfo"><div class="footer-inner">
+   <div><div class="footer-left">&copy; 2026 PA CROP Services (PA Registered Office Services, LLC)</div><div class="footer-legal">Licensed Pennsylvania CROP &middot; 924 W 23rd St, Erie, PA 16502 &middot; <a href="tel:+18142282822" style="color:rgba(255,255,255,.7)">814-228-2822</a> &middot; <a href="mailto:hello@pacropservices.com" style="color:rgba(255,255,255,.7)">hello@pacropservices.com</a></div></div>
+   <div class="footer-links"><a href="/">Home</a><a href="/#pricing">Pricing</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/portal">Client Login</a></div>
+-</div></footer><script>document.querySelectorAll(".faq-item").forEach(function(i){i.querySelector(".faq-q").addEventListener("click",function(){i.classList.toggle("open");});});</script><script src="/embed/chatbot.js" defer></script>
++</div></footer><script>document.querySelectorAll(".faq-item").forEach(function(i){var q=i.querySelector(".faq-q");q.setAttribute("role","button");q.setAttribute("tabindex","0");q.setAttribute("aria-expanded","false");function toggle(){i.classList.toggle("open");q.setAttribute("aria-expanded",String(i.classList.contains("open")));}q.addEventListener("click",toggle);q.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();}});});</script><script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+ </body></html>
+diff --git a/public/pennsylvania-llc-registered-office-requirements.html b/public/pennsylvania-llc-registered-office-requirements.html
+index bd4ba4e..88341ae 100644
+--- a/public/pennsylvania-llc-registered-office-requirements.html
++++ b/public/pennsylvania-llc-registered-office-requirements.html
+@@ -225,7 +225,7 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <footer class="site-footer" role="contentinfo"><div class="footer-inner">
+   <div><div class="footer-left">&copy; 2026 PA CROP Services (PA Registered Office Services, LLC)</div><div class="footer-legal">Licensed Pennsylvania CROP &middot; 924 W 23rd St, Erie, PA 16502 &middot; <a href="tel:+18142282822" style="color:rgba(255,255,255,.7)">814-228-2822</a> &middot; <a href="mailto:hello@pacropservices.com" style="color:rgba(255,255,255,.7)">hello@pacropservices.com</a></div></div>
+   <div class="footer-links"><a href="/">Home</a><a href="/#pricing">Pricing</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/portal">Client Login</a></div>
+-</div></footer><script>document.querySelectorAll(".faq-item").forEach(function(i){i.querySelector(".faq-q").addEventListener("click",function(){i.classList.toggle("open");});});</script><script src="/embed/chatbot.js" defer></script>
++</div></footer><script>document.querySelectorAll(".faq-item").forEach(function(i){var q=i.querySelector(".faq-q");q.setAttribute("role","button");q.setAttribute("tabindex","0");q.setAttribute("aria-expanded","false");function toggle(){i.classList.toggle("open");q.setAttribute("aria-expanded",String(i.classList.contains("open")));}q.addEventListener("click",toggle);q.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();}});});</script><script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+ </body></html>
+diff --git a/public/registered-office-allentown-pa.html b/public/registered-office-allentown-pa.html
+index cf54560..5acc982 100644
+--- a/public/registered-office-allentown-pa.html
++++ b/public/registered-office-allentown-pa.html
+@@ -174,6 +174,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/registered-office-bethlehem-pa.html b/public/registered-office-bethlehem-pa.html
+index 8f58641..cbed9e9 100644
+--- a/public/registered-office-bethlehem-pa.html
++++ b/public/registered-office-bethlehem-pa.html
+@@ -173,6 +173,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/registered-office-erie-pa.html b/public/registered-office-erie-pa.html
+index 9da046e..0357d90 100644
+--- a/public/registered-office-erie-pa.html
++++ b/public/registered-office-erie-pa.html
+@@ -174,6 +174,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/registered-office-harrisburg-pa.html b/public/registered-office-harrisburg-pa.html
+index 468bfe2..43d0b2a 100644
+--- a/public/registered-office-harrisburg-pa.html
++++ b/public/registered-office-harrisburg-pa.html
+@@ -175,6 +175,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/registered-office-lancaster-pa.html b/public/registered-office-lancaster-pa.html
+index 835ff79..d8904f5 100644
+--- a/public/registered-office-lancaster-pa.html
++++ b/public/registered-office-lancaster-pa.html
+@@ -176,6 +176,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/registered-office-philadelphia-pa.html b/public/registered-office-philadelphia-pa.html
+index 12029f0..41007db 100644
+--- a/public/registered-office-philadelphia-pa.html
++++ b/public/registered-office-philadelphia-pa.html
+@@ -180,6 +180,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/registered-office-pittsburgh-pa.html b/public/registered-office-pittsburgh-pa.html
+index d797437..260138b 100644
+--- a/public/registered-office-pittsburgh-pa.html
++++ b/public/registered-office-pittsburgh-pa.html
+@@ -181,6 +181,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/registered-office-reading-pa.html b/public/registered-office-reading-pa.html
+index 3810606..5609725 100644
+--- a/public/registered-office-reading-pa.html
++++ b/public/registered-office-reading-pa.html
+@@ -172,6 +172,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/registered-office-scranton-pa.html b/public/registered-office-scranton-pa.html
+index 459e373..62a9084 100644
+--- a/public/registered-office-scranton-pa.html
++++ b/public/registered-office-scranton-pa.html
+@@ -176,6 +176,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/registered-office-wilkes-barre-pa.html b/public/registered-office-wilkes-barre-pa.html
+index 1ad2f6b..13c5eba 100644
+--- a/public/registered-office-wilkes-barre-pa.html
++++ b/public/registered-office-wilkes-barre-pa.html
+@@ -176,6 +176,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+-<script>document.querySelectorAll('.faq-item').forEach(function(item){item.querySelector('.faq-q').addEventListener('click',function(){item.classList.toggle('open');var span=this.querySelector('span');if(span)span.textContent=item.classList.contains('open')?'\u2212':'+';});});</script>
++<script>document.querySelectorAll('.faq-item').forEach(function(item){var q=item.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){item.classList.toggle('open');var open=item.classList.contains('open');q.setAttribute('aria-expanded',String(open));var span=q.querySelector('span');if(span)span.textContent=open?'−':'+';}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script>
+ </body>
+ </html>
+diff --git a/public/reinstate-dissolved-pennsylvania-llc.html b/public/reinstate-dissolved-pennsylvania-llc.html
+index 2a824ad..7d33183 100644
+--- a/public/reinstate-dissolved-pennsylvania-llc.html
++++ b/public/reinstate-dissolved-pennsylvania-llc.html
+@@ -253,7 +253,7 @@ footer{background:var(--dark);color:rgba(255,255,255,.6);padding:40px 0;font-siz
+ <footer class="site-footer" role="contentinfo"><div class="footer-inner">
+   <div><div class="footer-left">&copy; 2026 PA CROP Services (PA Registered Office Services, LLC)</div><div class="footer-legal">Licensed Pennsylvania CROP &middot; 924 W 23rd St, Erie, PA 16502 &middot; <a href="tel:+18142282822" style="color:rgba(255,255,255,.7)">814-228-2822</a> &middot; <a href="mailto:hello@pacropservices.com" style="color:rgba(255,255,255,.7)">hello@pacropservices.com</a></div></div>
+   <div class="footer-links"><a href="/">Home</a><a href="/#pricing">Pricing</a><a href="/about">About</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/portal">Client Login</a></div>
+-</div></footer><script>document.querySelectorAll('.faq-item').forEach(function(i){i.querySelector('.faq-q').addEventListener('click',function(){i.classList.toggle('open');});});</script><script src="/embed/chatbot.js" defer></script>
++</div></footer><script>document.querySelectorAll('.faq-item').forEach(function(i){var q=i.querySelector('.faq-q');q.setAttribute('role','button');q.setAttribute('tabindex','0');q.setAttribute('aria-expanded','false');function toggle(){i.classList.toggle('open');q.setAttribute('aria-expanded',String(i.classList.contains('open')));}q.addEventListener('click',toggle);q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});});</script><script src="/embed/chatbot.js" defer></script>
+ <script>const obs=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target)}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));</script>
+ <script>document.addEventListener("click",function(e){var m=document.getElementById("mm"),b=document.querySelector(".nav-mobile");if(m&&b&&!m.contains(e.target)&&!b.contains(e.target))m.classList.remove("open")});</script>
+ </body></html>
+diff --git a/test/compliance.test.js b/test/compliance.test.js
+deleted file mode 100644
+index 4c9d5e8..0000000
+--- a/test/compliance.test.js
++++ /dev/null
+@@ -1,80 +0,0 @@
+-import { describe, it } from 'node:test';
+-import assert from 'node:assert/strict';
+-import { getRules, resolveEntityType, getEntityConfig, getEntityDeadline, computeDaysUntil, getDeadlineGroup } from '../api/_compliance.js';
+-
+-describe('_compliance', () => {
+-  describe('getRules', () => {
+-    it('returns rules object with required keys', () => {
+-      const rules = getRules();
+-      assert.ok(rules.entityTypes, 'must have entityTypes');
+-      assert.ok(rules.deadlineGroups, 'must have deadlineGroups');
+-      assert.ok(rules.enforcement, 'must have enforcement');
+-      assert.ok(rules.registeredOffice, 'must have registeredOffice');
+-    });
+-
+-    it('has correct deadline groups', () => {
+-      const rules = getRules();
+-      assert.ok(rules.deadlineGroups.corporations, 'must have corporations group');
+-      assert.ok(rules.deadlineGroups.llcs, 'must have llcs group');
+-      assert.ok(rules.deadlineGroups.others, 'must have others group');
+-    });
+-  });
+-
+-  describe('resolveEntityType', () => {
+-    it('resolves common entity type strings', () => {
+-      assert.equal(resolveEntityType('LLC'), 'domestic_llc');
+-      assert.equal(resolveEntityType('Domestic LLC'), 'domestic_llc');
+-      assert.equal(resolveEntityType('Corporation'), 'domestic_business_corp');
+-      assert.equal(resolveEntityType('foreign LLC'), 'foreign_llc');
+-      assert.equal(resolveEntityType('Nonprofit'), 'domestic_nonprofit_corp');
+-    });
+-
+-    it('defaults to domestic_llc for unknown types', () => {
+-      assert.equal(resolveEntityType(''), 'domestic_llc');
+-      assert.equal(resolveEntityType('unknown'), 'domestic_llc');
+-    });
+-  });
+-
+-  describe('getEntityConfig', () => {
+-    it('returns config with required fields', () => {
+-      const config = getEntityConfig('LLC');
+-      assert.ok(config.key);
+-      assert.ok(config.label);
+-      assert.ok(typeof config.fee === 'number');
+-      assert.ok(typeof config.canReinstate === 'boolean');
+-    });
+-  });
+-
+-  describe('getEntityDeadline', () => {
+-    it('returns deadline for corporations (June 30)', () => {
+-      const dl = getEntityDeadline('Corporation');
+-      assert.ok(dl.label.includes('June'), `Expected June deadline, got: ${dl.label}`);
+-    });
+-
+-    it('returns deadline for LLCs (September 30)', () => {
+-      const dl = getEntityDeadline('LLC');
+-      assert.ok(dl.label.includes('September'), `Expected September deadline, got: ${dl.label}`);
+-    });
+-  });
+-
+-  describe('getDeadlineGroup', () => {
+-    it('groups corporations correctly', () => {
+-      assert.equal(getDeadlineGroup('Corporation'), 'corporations');
+-      assert.equal(getDeadlineGroup('Nonprofit'), 'corporations');
+-    });
+-
+-    it('groups LLCs correctly', () => {
+-      assert.equal(getDeadlineGroup('LLC'), 'llcs');
+-      assert.equal(getDeadlineGroup('foreign LLC'), 'llcs');
+-    });
+-  });
+-
+-  describe('computeDaysUntil', () => {
+-    it('returns a positive number', () => {
+-      const days = computeDaysUntil('LLC');
+-      assert.ok(typeof days === 'number');
+-      // Should always be 1-365 since it wraps to next year if past
+-      assert.ok(days > 0 && days <= 366, `Days should be 1-366, got: ${days}`);
+-    });
+-  });
+-});
+diff --git a/test/guardrails.test.js b/test/guardrails.test.js
+deleted file mode 100644
+index 8c8af56..0000000
+--- a/test/guardrails.test.js
++++ /dev/null
+@@ -1,85 +0,0 @@
+-import { describe, it } from 'node:test';
+-import assert from 'node:assert/strict';
+-import { classifyIntent, shouldRefuse, tryDeterministicAnswer, buildRefusalResponse, buildGuardrailInstructions } from '../api/_guardrails.js';
+-
+-describe('_guardrails', () => {
+-  describe('classifyIntent', () => {
+-    it('classifies compliance questions', () => {
+-      assert.equal(classifyIntent('When is my annual report deadline?'), 'COMPLIANCE_FACT');
+-      assert.equal(classifyIntent('How much is the filing fee?'), 'COMPLIANCE_FACT');
+-      assert.equal(classifyIntent('What happens if I miss the deadline?'), 'COMPLIANCE_FACT');
+-    });
+-
+-    it('classifies legal questions', () => {
+-      assert.equal(classifyIntent('Should I sue my former partner?'), 'LEGAL_QUESTION');
+-      assert.equal(classifyIntent('Am I liable for this contract breach?'), 'LEGAL_QUESTION');
+-      assert.equal(classifyIntent('What are my legal rights here?'), 'LEGAL_QUESTION');
+-    });
+-
+-    it('classifies billing questions', () => {
+-      assert.equal(classifyIntent('What is the pricing for plans?'), 'BILLING_QUESTION');
+-      assert.equal(classifyIntent('Cancel my subscription'), 'BILLING_QUESTION');
+-    });
+-
+-    it('classifies action requests', () => {
+-      assert.equal(classifyIntent('How do I upload a document?'), 'ACTION_REQUEST');
+-      assert.equal(classifyIntent('Show my entities'), 'ACTION_REQUEST');
+-    });
+-
+-    it('returns GENERAL_QUESTION for unmatched', () => {
+-      assert.equal(classifyIntent('Hello!'), 'GENERAL_QUESTION');
+-      assert.equal(classifyIntent(''), 'GENERAL_QUESTION');
+-      assert.equal(classifyIntent(null), 'GENERAL_QUESTION');
+-    });
+-  });
+-
+-  describe('shouldRefuse', () => {
+-    it('refuses legal questions', () => {
+-      assert.ok(shouldRefuse('LEGAL_QUESTION'));
+-    });
+-
+-    it('allows other intents', () => {
+-      assert.ok(!shouldRefuse('COMPLIANCE_FACT'));
+-      assert.ok(!shouldRefuse('BILLING_QUESTION'));
+-      assert.ok(!shouldRefuse('GENERAL_QUESTION'));
+-    });
+-  });
+-
+-  describe('buildRefusalResponse', () => {
+-    it('returns structured refusal', () => {
+-      const r = buildRefusalResponse();
+-      assert.ok(r.answer.includes('attorney'));
+-      assert.equal(r.confidence, 1.0);
+-    });
+-  });
+-
+-  describe('tryDeterministicAnswer', () => {
+-    it('answers deadline questions', () => {
+-      const result = tryDeterministicAnswer('When is my filing deadline?', { entityType: 'LLC' });
+-      assert.ok(result);
+-      assert.ok(result.answer.length > 0);
+-      assert.equal(result.confidence, 1.0);
+-      assert.ok(result.sources.length > 0);
+-    });
+-
+-    it('answers fee questions', () => {
+-      const result = tryDeterministicAnswer('How much is the annual report fee?', { entityType: 'Corporation' });
+-      assert.ok(result);
+-      assert.ok(result.answer.includes('$'));
+-    });
+-
+-    it('returns null for non-deterministic questions', () => {
+-      const result = tryDeterministicAnswer('Tell me about your services', {});
+-      assert.equal(result, null);
+-    });
+-  });
+-
+-  describe('buildGuardrailInstructions', () => {
+-    it('returns instructions with required rules', () => {
+-      const instructions = buildGuardrailInstructions();
+-      assert.ok(instructions.includes('CITATION'));
+-      assert.ok(instructions.includes('LEGAL BOUNDARY'));
+-      assert.ok(instructions.includes('NO INVENTION'));
+-    });
+-  });
+-});
+diff --git a/test/validate.test.js b/test/validate.test.js
+deleted file mode 100644
+index 5f09c37..0000000
+--- a/test/validate.test.js
++++ /dev/null
+@@ -1,79 +0,0 @@
+-import { describe, it } from 'node:test';
+-import assert from 'node:assert/strict';
+-import { isValidEmail, isValidUUID, isValidString, sanitize, isValidPlanCode } from '../api/_validate.js';
+-
+-describe('_validate', () => {
+-  describe('isValidEmail', () => {
+-    it('accepts valid emails', () => {
+-      assert.ok(isValidEmail('test@example.com'));
+-      assert.ok(isValidEmail('user+tag@domain.co.uk'));
+-    });
+-
+-    it('rejects invalid emails', () => {
+-      assert.ok(!isValidEmail(''));
+-      assert.ok(!isValidEmail('notanemail'));
+-      assert.ok(!isValidEmail('@no-local.com'));
+-      assert.ok(!isValidEmail('spaces here@test.com'));
+-      assert.ok(!isValidEmail(null));
+-      assert.ok(!isValidEmail(123));
+-    });
+-
+-    it('rejects emails exceeding 254 chars', () => {
+-      const long = 'a'.repeat(250) + '@b.co';
+-      assert.ok(!isValidEmail(long));
+-    });
+-  });
+-
+-  describe('isValidUUID', () => {
+-    it('accepts valid UUIDv4', () => {
+-      assert.ok(isValidUUID('550e8400-e29b-41d4-a716-446655440000'));
+-    });
+-
+-    it('rejects non-UUID strings', () => {
+-      assert.ok(!isValidUUID('not-a-uuid'));
+-      assert.ok(!isValidUUID(''));
+-      assert.ok(!isValidUUID(null));
+-    });
+-  });
+-
+-  describe('isValidString', () => {
+-    it('validates with defaults', () => {
+-      assert.ok(isValidString('hello'));
+-      assert.ok(!isValidString(''));
+-      assert.ok(!isValidString('   '));
+-    });
+-
+-    it('validates with custom limits', () => {
+-      assert.ok(isValidString('ab', { minLength: 2, maxLength: 5 }));
+-      assert.ok(!isValidString('a', { minLength: 2 }));
+-      assert.ok(!isValidString('abcdef', { maxLength: 5 }));
+-    });
+-  });
+-
+-  describe('sanitize', () => {
+-    it('strips HTML tags', () => {
+-      assert.equal(sanitize('<script>alert("xss")</script>'), 'alert("xss")');
+-      assert.equal(sanitize('<b>bold</b>'), 'bold');
+-    });
+-
+-    it('handles non-string input', () => {
+-      assert.equal(sanitize(null), '');
+-      assert.equal(sanitize(123), '');
+-    });
+-  });
+-
+-  describe('isValidPlanCode', () => {
+-    it('accepts valid plan codes', () => {
+-      assert.ok(isValidPlanCode('compliance_only'));
+-      assert.ok(isValidPlanCode('business_starter'));
+-      assert.ok(isValidPlanCode('business_pro'));
+-      assert.ok(isValidPlanCode('business_empire'));
+-    });
+-
+-    it('rejects invalid plan codes', () => {
+-      assert.ok(!isValidPlanCode('free'));
+-      assert.ok(!isValidPlanCode(''));
+-      assert.ok(!isValidPlanCode(null));
+-    });
+-  });
+-});
+diff --git a/tests/compliance.test.js b/tests/compliance.test.js
+index 999d722..48bb896 100644
+--- a/tests/compliance.test.js
++++ b/tests/compliance.test.js
+@@ -4,7 +4,6 @@
+ // because errors here could result in compliance misinformation sent to clients.
+ //
+ // Run: node --test tests/compliance.test.js
+-// Or: npm test (when jest is configured)
+ 
+ import assert from 'node:assert/strict';
+ import { test, describe } from 'node:test';
+@@ -130,21 +129,21 @@ describe('getEntityDeadline', () => {
+   test('LLC deadline is September 30', () => {
+     const dl = getEntityDeadline('LLC');
+     assert.equal(dl.label, 'September 30');
+-    assert.equal(dl.month, 8); // 0-indexed: August = 8 → September 30
++    assert.equal(dl.month, 8); // 0-indexed: September = 8
+     assert.equal(dl.day, 30);
+   });
+ 
+   test('corporation deadline is June 30', () => {
+     const dl = getEntityDeadline('Corporation');
+     assert.equal(dl.label, 'June 30');
+-    assert.equal(dl.month, 5); // May = 5 → June 30
++    assert.equal(dl.month, 5); // 0-indexed: June = 5
+     assert.equal(dl.day, 30);
+   });
+ 
+   test('LP deadline is December 31', () => {
+     const dl = getEntityDeadline('LP');
+     assert.equal(dl.label, 'December 31');
+-    assert.equal(dl.month, 11); // November = 11 → December 31
++    assert.equal(dl.month, 11); // 0-indexed: December = 11
+     assert.equal(dl.day, 31);
+   });
+ });
+diff --git a/tests/guardrails.test.js b/tests/guardrails.test.js
+index 6379032..c241904 100644
+--- a/tests/guardrails.test.js
++++ b/tests/guardrails.test.js
+@@ -12,7 +12,8 @@ import {
+   classifyIntent,
+   shouldRefuse,
+   buildRefusalResponse,
+-  buildGuardrailInstructions
++  buildGuardrailInstructions,
++  tryDeterministicAnswer
+ } from '../api/_guardrails.js';
+ 
+ describe('classifyIntent', () => {
+@@ -162,3 +163,30 @@ describe('buildGuardrailInstructions', () => {
+     );
+   });
+ });
++
++describe('tryDeterministicAnswer', () => {
++  test('answers deadline questions with entity context', () => {
++    const result = tryDeterministicAnswer('When is my filing deadline?', { entityType: 'LLC' });
++    assert.ok(result, 'should return a result');
++    assert.ok(result.answer.length > 0, 'answer should be non-empty');
++    assert.equal(result.confidence, 1.0);
++    assert.ok(result.sources.length > 0, 'should cite sources');
++  });
++
++  test('answers fee questions', () => {
++    const result = tryDeterministicAnswer('How much is the annual report fee?', { entityType: 'Corporation' });
++    assert.ok(result, 'should return a result');
++    assert.ok(result.answer.includes('$'), 'should mention dollar amount');
++  });
++
++  test('answers CROP questions', () => {
++    const result = tryDeterministicAnswer('What is a CROP?', {});
++    assert.ok(result, 'should return a result');
++    assert.ok(result.answer.includes('registered office'), 'should explain registered office');
++  });
++
++  test('returns null for non-deterministic questions', () => {
++    const result = tryDeterministicAnswer('Tell me about your services', {});
++    assert.equal(result, null, 'should return null for ambiguous questions');
++  });
++});
+-- 
+2.43.0
+
+
+From fca13e01c41089dc9afb4990fc6da7640c3050d2 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Sat, 4 Apr 2026 03:12:39 +0000
+Subject: [PATCH 2/3] refactor(api): use N8N_BASE from _config for n8n webhooks
+
+Replace hardcoded n8n.audreysplace.place/webhook URLs with N8N_BASE
+across subscribe, voice-recording, setup-guide, retarget, reset-code,
+partner-intake, entity-intake, entity-request, and admin. setup-guide
+derives N8N_ORIGIN from N8N_BASE for dashboard URLs.
+---
+ api/admin/index.js     |  3 ++-
+ api/entity-intake.js   |  3 ++-
+ api/entity-request.js  |  3 ++-
+ api/partner-intake.js  |  3 ++-
+ api/reset-code.js      |  3 ++-
+ api/retarget.js        |  3 ++-
+ api/setup-guide.js     | 18 +++++++++++-------
+ api/subscribe.js       |  3 ++-
+ api/voice-recording.js |  3 ++-
+ 9 files changed, 27 insertions(+), 15 deletions(-)
+
+diff --git a/api/admin/index.js b/api/admin/index.js
+index 37793d4..303186e 100644
+--- a/api/admin/index.js
++++ b/api/admin/index.js
+@@ -5,6 +5,7 @@
+ import * as db from '../services/db.js';
+ import { fetchWithTimeout } from '../_fetch.js';
+ import { createLogger } from '../_log.js';
++import { N8N_BASE } from '../_config.js';
+ 
+ const log = createLogger('admin');
+ 
+@@ -455,7 +456,7 @@ export default async function handler(req, res) {
+       case 'check_entity': {
+         const { entityName, entityNumber } = payload;
+         try {
+-          const r = await fetchWithTimeout('https://n8n.audreysplace.place/webhook/crop-dos-entity-checker', {
++          const r = await fetchWithTimeout(`${N8N_BASE}/crop-dos-entity-checker`, {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ entityName, entityNumber })
+diff --git a/api/entity-intake.js b/api/entity-intake.js
+index 8e9f17f..027d2e2 100644
+--- a/api/entity-intake.js
++++ b/api/entity-intake.js
+@@ -6,6 +6,7 @@ import { setCors } from './services/auth.js';
+ import { checkRateLimit, getClientIp } from './_ratelimit.js';
+ import { createLogger } from './_log.js';
+ import { resolveEntityType } from './_compliance.js';
++import { N8N_BASE } from './_config.js';
+ 
+ const log = createLogger('entity-intake');
+ 
+@@ -181,7 +182,7 @@ export default async function handler(req, res) {
+ 
+   // ── Step 4: Hot lead signal to n8n ──────────────────────────
+   try {
+-    await fetch('https://n8n.audreysplace.place/webhook/crop-hot-lead-alert', {
++    await fetch(`${N8N_BASE}/crop-hot-lead-alert`, {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({
+diff --git a/api/entity-request.js b/api/entity-request.js
+index 0b86312..e7b7314 100644
+--- a/api/entity-request.js
++++ b/api/entity-request.js
+@@ -1,6 +1,7 @@
+ import { setCors } from './services/auth.js';
+ import { checkRateLimit, getClientIp } from './_ratelimit.js';
+ import { createLogger } from './_log.js';
++import { N8N_BASE } from './_config.js';
+ 
+ const log = createLogger('entity-request');
+ 
+@@ -62,7 +63,7 @@ export default async function handler(req, res) {
+     }
+ 
+     // Notify Ike via n8n (with email fallback)
+-    const erRes = await fetch('https://n8n.audreysplace.place/webhook/crop-entity-request', {
++    const erRes = await fetch(`${N8N_BASE}/crop-entity-request`, {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ entityName, entityType, email: contactEmail, phone, notes })
+diff --git a/api/partner-intake.js b/api/partner-intake.js
+index 2809898..0ac87d4 100644
+--- a/api/partner-intake.js
++++ b/api/partner-intake.js
+@@ -1,6 +1,7 @@
+ import { setCors } from './services/auth.js';
+ import { checkRateLimit, getClientIp } from './_ratelimit.js';
+ import { createLogger } from './_log.js';
++import { N8N_BASE } from './_config.js';
+ 
+ const log = createLogger('partner-intake');
+ 
+@@ -76,7 +77,7 @@ export default async function handler(req, res) {
+     }
+ 
+     // Fire n8n partner onboarding sequence
+-    await fetch('https://n8n.audreysplace.place/webhook/crop-partner-onboarding', {
++    await fetch(`${N8N_BASE}/crop-partner-onboarding`, {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({
+diff --git a/api/reset-code.js b/api/reset-code.js
+index a1363c0..eb3117c 100644
+--- a/api/reset-code.js
++++ b/api/reset-code.js
+@@ -6,6 +6,7 @@ import { isValidEmail } from './_validate.js';
+ import { setCors } from './services/auth.js';
+ import { checkRateLimit, getClientIp } from './_ratelimit.js';
+ import { createLogger } from './_log.js';
++import { N8N_BASE } from './_config.js';
+ 
+ const log = createLogger('reset-code');
+ 
+@@ -46,7 +47,7 @@ export default async function handler(req, res) {
+       
+       if (code) {
+         // Fire n8n to send the code via email
+-        await fetch('https://n8n.audreysplace.place/webhook/crop-portal-reset', {
++        await fetch(`${N8N_BASE}/crop-portal-reset`, {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ email: cleanEmail, code, firstName })
+diff --git a/api/retarget.js b/api/retarget.js
+index 1ecd3c5..c3e806b 100644
+--- a/api/retarget.js
++++ b/api/retarget.js
+@@ -1,6 +1,7 @@
+ import { setCors } from './services/auth.js';
+ import { checkRateLimit, getClientIp } from './_ratelimit.js';
+ import { createLogger } from './_log.js';
++import { N8N_BASE } from './_config.js';
+ 
+ const log = createLogger('retarget');
+ 
+@@ -42,7 +43,7 @@ export default async function handler(req, res) {
+     });
+ 
+     // Also trigger n8n for immediate Day-1 email
+-    await fetch('https://n8n.audreysplace.place/webhook/crop-retarget-start', {
++    await fetch(`${N8N_BASE}/crop-retarget-start`, {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ email, name, riskScore, source, day: 1 })
+diff --git a/api/setup-guide.js b/api/setup-guide.js
+index d7071ed..7127d77 100644
+--- a/api/setup-guide.js
++++ b/api/setup-guide.js
+@@ -2,6 +2,14 @@
+ // GET /api/setup-guide?key=ADMIN&section=all|suitedash|stripe|n8n|thoughtly|callscaler
+ // Returns step-by-step configuration instructions for all external tools
+ 
++import { N8N_BASE } from './_config.js';
++import { isAdminRequest } from './services/auth.js';
++import { setCors } from './services/auth.js';
++import { createLogger } from './_log.js';
++
++/** n8n UI origin (N8N_BASE is the webhook prefix …/webhook) */
++const N8N_ORIGIN = N8N_BASE.replace(/\/webhook\/?$/, '') || N8N_BASE;
++
+ const GUIDES = {
+   stripe: {
+     title: 'Stripe — Convert to Subscriptions',
+@@ -26,10 +34,10 @@ const GUIDES = {
+     title: 'n8n — Create 17 Cron Workflows',
+     priority: 'HIGH — activates all scheduled automations',
+     estimatedTime: '45 minutes',
+-    url: 'https://n8n.audreysplace.place',
++    url: N8N_ORIGIN,
+     quickMethod: 'Import JSON from /api/n8n-export?key=<YOUR_ADMIN_KEY>&workflow=<id>',
+     steps: [
+-      { step: 1, action: 'Go to n8n dashboard: https://n8n.audreysplace.place' },
++      { step: 1, action: `Go to n8n dashboard: ${N8N_ORIGIN}` },
+       { step: 2, action: 'For each workflow: Click + New Workflow → Import from JSON → Paste JSON from /api/n8n-export' },
+       { step: 3, action: 'Activate each workflow (toggle ON)' },
+       { step: 4, action: 'Test each by clicking "Execute Workflow" manually once' },
+@@ -74,7 +82,7 @@ const GUIDES = {
+     steps: [
+       { step: 1, action: 'Login to CallScaler dashboard' },
+       { step: 2, action: 'Set up tracking number forwarding to 814-228-2822' },
+-      { step: 3, action: 'Configure webhook: POST to https://n8n.audreysplace.place/webhook/crop-call-log on call complete' },
++      { step: 3, action: `Configure webhook: POST to ${N8N_BASE}/crop-call-log on call complete` },
+       { step: 4, action: 'n8n workflow: receive call data → match caller to SuiteDash contact → log activity' },
+     ]
+   },
+@@ -103,10 +111,6 @@ const GUIDES = {
+   }
+ };
+ 
+-import { isAdminRequest } from './services/auth.js';
+-import { setCors } from './services/auth.js';
+-import { createLogger } from './_log.js';
+-
+ const log = createLogger('setup-guide');
+ 
+ export default async function handler(req, res) {
+diff --git a/api/subscribe.js b/api/subscribe.js
+index e3eee1b..4bccd25 100644
+--- a/api/subscribe.js
++++ b/api/subscribe.js
+@@ -6,6 +6,7 @@ import { checkRateLimit, getClientIp } from './_ratelimit.js';
+ import { setCors } from './services/auth.js';
+ import { createLogger } from './_log.js';
+ import { db } from './_db.js';
++import { N8N_BASE } from './_config.js';
+ import { isValidEmail, isValidString, sanitize } from './_validate.js';
+ 
+ const logger = createLogger('subscribe');
+@@ -75,7 +76,7 @@ export default async function handler(req, res) {
+ 
+     // ── n8n nurture sequence webhook ──
+     try {
+-      const n8nRes = await fetch('https://n8n.audreysplace.place/webhook/crop-lead-nurture-start', {
++      const n8nRes = await fetch(`${N8N_BASE}/crop-lead-nurture-start`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ email: cleanEmail, source: cleanSource, tag: cleanTag, leadTier: 'warm', guideUrl: 'https://pacropservices.com/pa-annual-report-compliance-checklist.pdf' })
+diff --git a/api/voice-recording.js b/api/voice-recording.js
+index de06edd..875d9a0 100644
+--- a/api/voice-recording.js
++++ b/api/voice-recording.js
+@@ -1,6 +1,7 @@
+ import { setCors } from './services/auth.js';
+ import { checkRateLimit, getClientIp } from './_ratelimit.js';
+ import { createLogger } from './_log.js';
++import { N8N_BASE } from './_config.js';
+ 
+ const log = createLogger('voice-recording');
+ 
+@@ -71,7 +72,7 @@ export default async function handler(req, res) {
+ 
+   // Log voicemail and notify via n8n
+   try {
+-    const vmRes = await fetch('https://n8n.audreysplace.place/webhook/crop-voicemail', {
++    const vmRes = await fetch(`${N8N_BASE}/crop-voicemail`, {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ from: From, callSid: CallSid, recordingUrl: RecordingUrl, transcription, timestamp: new Date().toISOString() })
+-- 
+2.43.0
+
+
+From 94c5fb1dbf4a1c0b87efd8738cb165a024bea905 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Sat, 4 Apr 2026 03:14:41 +0000
+Subject: [PATCH 3/3] =?UTF-8?q?fix:=20clean=20up=20provision.js=20?=
+ =?UTF-8?q?=E2=80=94=20remove=20unused=20import,=20duplicate=20crypto,=20u?=
+ =?UTF-8?q?se=20N8N=5FBASE,=20env-based=20Acumbamail=20list=5Fid?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .env.example     |  1 +
+ api/provision.js | 14 +++++++-------
+ 2 files changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/.env.example b/.env.example
+index 730f7a9..d6bb383 100644
+--- a/.env.example
++++ b/.env.example
+@@ -36,6 +36,7 @@ EMAILIT_API_KEY=
+ 
+ # ── Email Marketing (Acumbamail) ──
+ ACUMBAMAIL_API_KEY=
++ACUMBAMAIL_LIST_ID=1267324
+ 
+ # ── Document Generation (Documentero) ──
+ DOCUMENTERO_API_KEY=
+diff --git a/api/provision.js b/api/provision.js
+index f4afd80..e97cdef 100644
+--- a/api/provision.js
++++ b/api/provision.js
+@@ -2,9 +2,10 @@
+ // Full tier-aware auto-provisioning: SuiteDash + 20i hosting/email/SSL/domain + welcome email
+ // Called by stripe-webhook.js on checkout.session.completed OR admin dashboard
+ 
+-import { isAdminRequest, generateAccessCode as _genCode } from './services/auth.js';
++import { isAdminRequest } from './services/auth.js';
+ import { setCors } from './services/auth.js';
+ import { randomBytes } from 'crypto';
++import { N8N_BASE } from './_config.js';
+ 
+ export default async function handler(req, res) {
+   setCors(req, res);
+@@ -27,15 +28,13 @@ export default async function handler(req, res) {
+ 
+   // Auto-generate missing params
+   const accountSlug = rawSlug || email.split('@')[0].replace(/[^a-z0-9]/gi, '').toLowerCase().slice(0, 20);
+-  const { randomBytes: rb } = await import('crypto');
+-  const hostingPassword = rawPw || 'Crop' + rb(8).toString('base64url').slice(0, 12) + '!';
++  const hostingPassword = rawPw || 'Crop' + randomBytes(8).toString('base64url').slice(0, 12) + '!';
+   
+   const SD_PUBLIC = process.env.SUITEDASH_PUBLIC_ID;
+   const SD_SECRET = process.env.SUITEDASH_SECRET_KEY;
+   const TWENTY_GENERAL = process.env.TWENTY_I_GENERAL || (process.env.TWENTY_I_TOKEN || '').split('+')[0];
+   const BEARER = TWENTY_GENERAL ? `Bearer ${Buffer.from(TWENTY_GENERAL).toString('base64')}` : null;
+   const TWENTY_RESELLER_ID = process.env.TWENTY_I_RESELLER_ID;
+-  const N8N = 'https://n8n.audreysplace.place/webhook';
+ 
+   const results = { email, tier, steps: [], warnings: [] };
+ 
+@@ -290,7 +289,7 @@ export default async function handler(req, res) {
+   const emailitKey = process.env.EMAILIT_API_KEY;
+   try {
+     // Try n8n first
+-    const n8nRes = await fetch(`${N8N}/crop-new-client`, {
++    const n8nRes = await fetch(`${N8N_BASE}/crop-new-client`, {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ email, name, accessCode, tier, refCode, includesHosting, hostingPassword: includesHosting ? hostingPassword : undefined })
+@@ -359,10 +358,11 @@ export default async function handler(req, res) {
+   // ── STEP 5: Acumbamail ────────────────────────────────────────────────
+   try {
+     const acuKey = process.env.ACUMBAMAIL_API_KEY;
++    const acuListId = process.env.ACUMBAMAIL_LIST_ID || '1267324';
+     await fetch('https://acumbamail.com/api/1/addSubscriber/', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+-      body: JSON.stringify({ auth_token: acuKey, list_id: '1267324', email, merge_fields: { TIER: tier, NAME: name }, response_type: 'json' })
++      body: JSON.stringify({ auth_token: acuKey, list_id: acuListId, email, merge_fields: { TIER: tier, NAME: name }, response_type: 'json' })
+     });
+     results.steps.push({ step: 'acumbamail', status: 'done' });
+   } catch (e) {
+@@ -481,7 +481,7 @@ export default async function handler(req, res) {
+   // ── STEP 11: WordPress starter content + theme configuration ─────────
+   if (websitePages > 0 && results.steps.find(s => s.step === '20i_wordpress_install' && s.status === 'done')) {
+     try {
+-      await fetch(`${N8N}/crop-wordpress-setup`, {
++      await fetch(`${N8N_BASE}/crop-wordpress-setup`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+-- 
+2.43.0
+
