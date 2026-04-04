@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
+import { validateExternalUrl } from "@/lib/validate-url";
 import { crawlSite } from "@/lib/integrations/firecrawl-adapter";
 
 export async function POST(request: Request) {
@@ -15,7 +16,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const job = await crawlSite(body.url, body.options);
+    const urlCheck = validateExternalUrl(body.url);
+    if (!urlCheck.valid) {
+      return NextResponse.json(
+        { data: null, error: { code: "VALIDATION_ERROR", message: urlCheck.reason }, meta: null },
+        { status: 400, headers },
+      );
+    }
+
+    const job = await crawlSite(urlCheck.url.href, body.options);
 
     return NextResponse.json(
       { data: job, error: null, meta: null },

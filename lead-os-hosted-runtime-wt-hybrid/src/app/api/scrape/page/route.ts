@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildCorsHeaders } from "@/lib/cors";
+import { validateExternalUrl } from "@/lib/validate-url";
 import { scrapePage } from "@/lib/integrations/web-scraper";
 
 const ScrapePageSchema = z.object({
@@ -21,7 +22,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await scrapePage(validation.data.url);
+    const urlCheck = validateExternalUrl(validation.data.url);
+    if (!urlCheck.valid) {
+      return NextResponse.json(
+        { data: null, error: { code: "VALIDATION_ERROR", message: urlCheck.reason }, meta: null },
+        { status: 400, headers },
+      );
+    }
+
+    const result = await scrapePage(urlCheck.url.href);
 
     return NextResponse.json(
       { data: result, error: null, meta: { mode: result.mode } },
