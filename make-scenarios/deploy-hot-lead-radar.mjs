@@ -21,20 +21,21 @@ import { join } from 'path';
 // ── Config ──
 
 const API_BASE = 'https://integrator.boost.space/api/v2';
-const API_TOKEN = process.env.MAKE_API_TOKEN || '24595d5e-9b7f-48f9-ab61-9644c46ed7f9';
+const API_TOKEN = process.env.MAKE_API_TOKEN;
+if (!API_TOKEN) throw new Error('MAKE_API_TOKEN environment variable is required');
 
 const DISCORD = {
-  highValue: 'https://discord.com/api/webhooks/1480429897263480962/e-vvArec6HCRc_HpzxmWOpz3GbJ7ncekeLBD7hSnKHm4v-zXTwt8fm6DjrY7TUBeo6Ct',
+  highValue: process.env.DISCORD_WEBHOOK_HIGH_VALUE || '',
 };
 
 const TELEGRAM = {
-  botToken: '8739229269:AAGYs6jIIjDa87y4TAVwn4QtTWBqliohDQI',
-  highValue: '-1003862266875',
+  botToken: process.env.TELEGRAM_BOT_TOKEN || '',
+  highValue: process.env.TELEGRAM_HIGH_VALUE_CHAT || '',
 };
 
 const AITABLE = {
-  apiToken: 'usk8wYBrRgsc6RHxkZP9VAN',
-  datasheetId: 'dstBicDQKC6gpLAMYj',
+  apiToken: process.env.AITABLE_API_TOKEN || '',
+  datasheetId: process.env.AITABLE_DATASHEET_ID || '',
   apiBase: 'https://aitable.ai/fusion/v1',
 };
 
