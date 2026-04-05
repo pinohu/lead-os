@@ -1,8 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { JSDOM } from "jsdom";
-import fs from "node:fs";
-import path from "node:path";
 
 function createDOM() {
   const dom = new JSDOM("<!doctype html><html><body></body></html>", {
@@ -23,25 +21,6 @@ function cleanupDOM() {
   delete global.document;
   delete global.sessionStorage;
   delete global.HTMLElement;
-}
-
-async function loadModule() {
-  const src = fs.readFileSync(
-    path.join(process.cwd(), "src", "index.js"),
-    "utf8",
-  );
-  const stripped = src
-    .replace(/^export /gm, "")
-    .replace(/if \(typeof window.*\n[\s\S]*$/, "");
-
-  const blob = new Blob([stripped], { type: "text/javascript" });
-  const url = URL.createObjectURL(blob);
-
-  try {
-    return await import(url);
-  } finally {
-    URL.revokeObjectURL(url);
-  }
 }
 
 test("createElement builds DOM nodes with attributes", () => {

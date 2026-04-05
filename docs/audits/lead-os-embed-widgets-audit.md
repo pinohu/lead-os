@@ -284,3 +284,9 @@ The repository has no license, meaning it is technically "all rights reserved" b
 10. ~~**Improve accessibility**~~ — ✅ `role="dialog"`, `aria-modal`, focus trap, Escape key, `aria-live`, labels.
 
 All 18 findings have been resolved. Fixed code is in `lead-os-embed-widgets-fixes/`.
+
+### Additional fixes beyond audit scope
+- Dynamic `trapFocus` — re-queries focusable elements on each Tab press to handle disabled button state changes.
+- Click-outside-to-close — clicking outside the drawer or launcher dismisses the drawer.
+- Dead code removed — unused `loadModule` helper and stale imports cleaned from tests.
+- `CHANGELOG.md` added (audit finding 8.2).

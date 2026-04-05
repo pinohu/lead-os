@@ -119,16 +119,16 @@ function safeWidget(bootConfig) {
   };
 }
 
-function trapFocus(container) {
-  const focusable = container.querySelectorAll(
-    'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-  );
-  if (focusable.length === 0) return;
-  const first = focusable[0];
-  const last = focusable[focusable.length - 1];
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+function trapFocus(container) {
   container.addEventListener("keydown", (e) => {
     if (e.key !== "Tab") return;
+    const focusable = Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR));
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
     if (e.shiftKey) {
       if (document.activeElement === first) {
         e.preventDefault();
@@ -400,6 +400,16 @@ export async function mountLeadOS() {
         if (e.key === "Escape" && drawer.style.display !== "none") {
           toggleDrawer(drawer, launcher);
           launcher.focus();
+        }
+      });
+
+      document.addEventListener("click", (e) => {
+        if (
+          drawer.style.display !== "none" &&
+          !drawer.contains(e.target) &&
+          !launcher.contains(e.target)
+        ) {
+          toggleDrawer(drawer, launcher);
         }
       });
     }
