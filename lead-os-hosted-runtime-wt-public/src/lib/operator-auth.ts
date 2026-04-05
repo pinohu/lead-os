@@ -26,7 +26,6 @@ export function getAllowedOperatorEmails() {
   return resolveAllowedOperatorEmails(process.env.LEAD_OS_OPERATOR_EMAILS, [
     process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
     tenantConfig.supportEmail,
-    "polycarpohu@gmail.com",
   ]);
 }
 

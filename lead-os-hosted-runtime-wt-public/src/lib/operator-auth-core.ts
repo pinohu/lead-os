@@ -78,7 +78,16 @@ export async function decodeOperatorToken(
   if (!body || !signature) return null;
 
   const expectedSignature = await signValue(body, secret);
-  if (signature !== expectedSignature) return null;
+  if (signature.length !== expectedSignature.length) return null;
+  const a = new TextEncoder().encode(signature);
+  const b = new TextEncoder().encode(expectedSignature);
+  if (!crypto.subtle || typeof globalThis.crypto?.subtle?.timingSafeEqual === 'undefined') {
+    let mismatch = 0;
+    for (let i = 0; i < a.length; i++) mismatch |= a[i] ^ b[i];
+    if (mismatch !== 0) return null;
+  } else {
+    if (signature !== expectedSignature) return null;
+  }
 
   try {
     const payload = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as OperatorTokenPayload;

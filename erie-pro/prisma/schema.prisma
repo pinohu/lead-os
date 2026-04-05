@@ -228,6 +228,7 @@ model Lead {
   @@index([niche, city])
   @@index([routedToId])
   @@index([routeType, niche])
+  @@index([email])
   @@map("leads")
 }
 
@@ -331,7 +332,6 @@ model CheckoutSession {
   expiresAt         DateTime?
   completedAt       DateTime?
 
-  @@index([stripeSessionId])
   @@index([providerEmail])
   @@map("checkout_sessions")
 }
@@ -457,6 +457,7 @@ model ContactMessage {
   status    String   @default("unread") // "unread" | "read" | "replied"
   createdAt DateTime @default(now())
 
+  @@index([email])
   @@map("contact_messages")
 }
 
@@ -499,7 +500,6 @@ model DirectoryListing {
 
   @@index([niche])
   @@index([niche, addressCity])
-  @@index([slug])
   @@map("directory_listings")
 }
 
@@ -530,7 +530,6 @@ model ApiKey {
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
 
-  @@index([keyHash])
   @@index([providerId])
   @@map("api_keys")
 }
