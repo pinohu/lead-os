@@ -24,10 +24,39 @@ function getRelayUrl(): string {
   return process.env.API_RELAY_URL ?? "http://localhost:9001"
 }
 
+interface CacheEntry<T> {
+  data: T
+  expiresAt: number
+}
+
+const cache = new Map<string, CacheEntry<unknown>>()
+const CACHE_TTL_MS = 10_000
+
+function getCached<T>(key: string): T | null {
+  const entry = cache.get(key)
+  if (!entry) return null
+  if (Date.now() > entry.expiresAt) {
+    cache.delete(key)
+    return null
+  }
+  return entry.data as T
+}
+
+function setCache<T>(key: string, data: T): void {
+  cache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS })
+}
+
 export async function fetchAgentActivity(): Promise<AgentActivityResponse | null> {
+  const cached = getCached<AgentActivityResponse>("agents")
+  if (cached) return cached
+
   try {
     const res = await fetchWithTimeout(`${getRelayUrl()}/api/agents/activity`)
-    if (res.ok) return (await res.json()) as AgentActivityResponse
+    if (res.ok) {
+      const data = (await res.json()) as AgentActivityResponse
+      setCache("agents", data)
+      return data
+    }
   } catch {
     // Relay unavailable
   }
@@ -35,9 +64,16 @@ export async function fetchAgentActivity(): Promise<AgentActivityResponse | null
 }
 
 export async function fetchCosts(): Promise<CostResponse | null> {
+  const cached = getCached<CostResponse>("costs")
+  if (cached) return cached
+
   try {
     const res = await fetchWithTimeout(`${getRelayUrl()}/api/costs`)
-    if (res.ok) return (await res.json()) as CostResponse
+    if (res.ok) {
+      const data = (await res.json()) as CostResponse
+      setCache("costs", data)
+      return data
+    }
   } catch {
     // Relay unavailable
   }
@@ -56,16 +92,6 @@ export async function fetchServiceHealth(
   } catch {
     return { ok: false, latency: Math.round(performance.now() - start) }
   }
-}
-
-export interface AgentSession {
-  sessionId: string
-  key: string
-  model: string
-  totalTokens: number
-  updatedAt: string
-  kind?: string
-  channel?: string
 }
 
 export interface AgentActivityResponse {
@@ -96,6 +122,21 @@ export interface CostResponse {
   dailyTrend?: Record<string, number>
 }
 
+export interface ServiceEntry {
+  name: string
+  status: "online" | "offline"
+  latency: number | null
+  timestamp: string
+}
+
+export interface ServiceStatusResponse {
+  status: "all-healthy" | "degraded"
+  onlineCount: number
+  totalCount: number
+  services: ServiceEntry[]
+  timestamp: string
+}
+
 export interface ServiceEndpoint {
   name: string
   url: string
@@ -107,8 +148,9 @@ export function getServiceEndpoints(): ServiceEndpoint[] {
   if (!raw) return []
 
   return raw.split(",").map((entry) => {
-    const [name, url] = entry.split(":")
-    const fullUrl = entry.slice(name.length + 1)
+    const firstColon = entry.indexOf(":")
+    const name = entry.slice(0, firstColon)
+    const fullUrl = entry.slice(firstColon + 1)
     return { name: name.trim(), url: fullUrl.trim(), timeout: 2000 }
   })
 }

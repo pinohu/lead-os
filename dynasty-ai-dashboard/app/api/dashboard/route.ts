@@ -5,25 +5,29 @@ export const dynamic = "force-dynamic"
 
 export async function GET() {
   try {
-    const [agents, costs] = await Promise.all([
+    const [agentsResult, costsResult] = await Promise.allSettled([
       fetchAgentActivity(),
       fetchCosts(),
     ])
 
-    if (agents && costs) {
-      return NextResponse.json({
-        timestamp: new Date().toISOString(),
-        agents,
-        costs,
-        source: "relay",
-      })
-    }
+    const agents =
+      agentsResult.status === "fulfilled" && agentsResult.value
+        ? agentsResult.value
+        : { totalAgents: 0, activeNow: 0, agents: [], lastUpdate: new Date().toISOString() }
+
+    const costs =
+      costsResult.status === "fulfilled" && costsResult.value
+        ? costsResult.value
+        : { today: 0, thisMonth: 0, monthlyTarget: 300 }
 
     return NextResponse.json({
       timestamp: new Date().toISOString(),
-      agents: { totalAgents: 0, activeNow: 0, agents: [], lastUpdate: new Date().toISOString() },
-      costs: { today: 0, thisMonth: 0, monthlyTarget: 300 },
-      source: "fallback",
+      agents,
+      costs,
+      source:
+        agentsResult.status === "fulfilled" && agentsResult.value
+          ? "relay"
+          : "fallback",
     })
   } catch (error) {
     console.error("Dashboard fetch error:", error)
