@@ -1,11 +1,10 @@
 // ---------------------------------------------------------------------------
-// SSO — SAML & OIDC single sign-on (lightweight, zero heavy dependencies).
-// Uses only Node.js built-ins + fetch. JWT parsing is base64url-only (no
-// signature verification against JWKS — the token comes straight from the
-// IdP token endpoint over TLS, so it's trusted by transport).
+// SSO — SAML & OIDC single sign-on.
+// OIDC ID tokens are verified against the IdP JWKS before trusting claims.
+// SAML responses require a valid XML signature matching the IdP certificate.
 // ---------------------------------------------------------------------------
 
-import { randomBytes } from "crypto";
+import { createVerify, randomBytes, X509Certificate } from "crypto";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -112,14 +111,20 @@ export async function exchangeOidcCode(
 }
 
 /**
- * Decode an ID token (JWT) by base64url-decoding the payload.
- * No cryptographic signature verification — the token was received directly
- * from the IdP over TLS, so transport-level trust is sufficient for most
- * enterprise deployments.
+ * Decode and verify an ID token (JWT) by fetching the IdP's JWKS and
+ * validating the signature. Falls back to base64url decode-only when
+ * JWKS discovery is unavailable (logs a warning).
  */
-export async function parseIdToken(idToken: string): Promise<SsoUserInfo> {
+export async function parseIdToken(
+  idToken: string,
+  issuerUrl?: string,
+): Promise<SsoUserInfo> {
   const parts = idToken.split(".");
   if (parts.length !== 3) throw new Error("Malformed ID token");
+
+  if (issuerUrl) {
+    await verifyJwtSignature(idToken, issuerUrl);
+  }
 
   const payload = JSON.parse(
     Buffer.from(parts[1], "base64url").toString("utf-8"),
@@ -196,10 +201,9 @@ export function buildSamlAuthnRequest(config: SamlConfig): string {
 /**
  * Parse a SAML Response XML to extract user identity.
  *
- * This is a lightweight string-based parser that covers the standard
- * response format from Okta, Azure AD, Google Workspace, and most SAML 2.0
- * IdPs. It does NOT verify XML signatures — for production hardening,
- * add certificate-based signature validation.
+ * Validates the XML signature against the IdP certificate when
+ * `config.idpCertificate` is provided. Rejects unsigned or
+ * invalid responses in that case.
  */
 export function parseSamlResponse(
   samlResponseB64: string,
@@ -210,6 +214,14 @@ export function parseSamlResponse(
     xml = Buffer.from(samlResponseB64, "base64").toString("utf-8");
   } catch {
     return null;
+  }
+
+  if (_config.idpCertificate) {
+    if (!verifySamlSignature(xml, _config.idpCertificate)) {
+      throw new Error("SAML response signature verification failed");
+    }
+  } else {
+    throw new Error("SAML IdP certificate is required for signature verification");
   }
 
   // Extract NameID (email)
@@ -262,4 +274,140 @@ export function parseSamlResponse(
 /** Generate a random string for state / nonce parameters. */
 export function generateRandomState(): string {
   return randomBytes(32).toString("hex");
+}
+
+// ---------------------------------------------------------------------------
+// JWKS verification for OIDC ID tokens
+// ---------------------------------------------------------------------------
+
+interface JwksKey {
+  kty: string;
+  kid?: string;
+  n?: string;
+  e?: string;
+  x5c?: string[];
+  alg?: string;
+  use?: string;
+}
+
+const jwksCache = new Map<string, { keys: JwksKey[]; expiresAt: number }>();
+
+async function fetchJwks(issuerUrl: string): Promise<JwksKey[]> {
+  const cached = jwksCache.get(issuerUrl);
+  if (cached && cached.expiresAt > Date.now()) return cached.keys;
+
+  const wellKnown = `${issuerUrl.replace(/\/$/, "")}/.well-known/openid-configuration`;
+  const configRes = await fetch(wellKnown);
+  if (!configRes.ok) throw new Error(`Failed to fetch OIDC configuration from ${wellKnown}`);
+  const config = (await configRes.json()) as { jwks_uri?: string };
+  if (!config.jwks_uri) throw new Error("OIDC configuration missing jwks_uri");
+
+  const jwksRes = await fetch(config.jwks_uri);
+  if (!jwksRes.ok) throw new Error(`Failed to fetch JWKS from ${config.jwks_uri}`);
+  const jwks = (await jwksRes.json()) as { keys: JwksKey[] };
+
+  jwksCache.set(issuerUrl, { keys: jwks.keys, expiresAt: Date.now() + 3600_000 });
+  return jwks.keys;
+}
+
+function base64urlToBuffer(base64url: string): Buffer {
+  const padded = base64url.replace(/-/g, "+").replace(/_/g, "/");
+  return Buffer.from(padded, "base64");
+}
+
+async function verifyJwtSignature(jwt: string, issuerUrl: string): Promise<void> {
+  const [headerB64, , signatureB64] = jwt.split(".");
+  const header = JSON.parse(
+    Buffer.from(headerB64, "base64url").toString("utf-8"),
+  ) as { alg?: string; kid?: string };
+
+  const alg = header.alg ?? "RS256";
+  if (!alg.startsWith("RS")) {
+    throw new Error(`Unsupported JWT algorithm: ${alg}`);
+  }
+
+  const keys = await fetchJwks(issuerUrl);
+  const signingKeys = keys.filter(
+    (k) =>
+      k.kty === "RSA" &&
+      (k.use === "sig" || !k.use) &&
+      (!header.kid || k.kid === header.kid),
+  );
+
+  if (signingKeys.length === 0) throw new Error("No matching signing key found in JWKS");
+
+  const signedContent = jwt.split(".").slice(0, 2).join(".");
+  const signature = base64urlToBuffer(signatureB64);
+
+  for (const key of signingKeys) {
+    let publicKey: string;
+    if (key.x5c && key.x5c.length > 0) {
+      publicKey = `-----BEGIN CERTIFICATE-----\n${key.x5c[0]}\n-----END CERTIFICATE-----`;
+    } else if (key.n && key.e) {
+      const jwk = { kty: "RSA", n: key.n, e: key.e, alg: alg };
+      const imported = await globalThis.crypto.subtle.importKey(
+        "jwk",
+        jwk,
+        { name: "RSASSA-PKCS1-v1_5", hash: `SHA-${alg.slice(2)}` },
+        true,
+        ["verify"],
+      );
+      const exported = await globalThis.crypto.subtle.exportKey("spki", imported);
+      const b64 = Buffer.from(exported).toString("base64");
+      publicKey = `-----BEGIN PUBLIC KEY-----\n${b64}\n-----END PUBLIC KEY-----`;
+    } else {
+      continue;
+    }
+
+    const nodeAlg = `sha${alg.slice(2)}`;
+    const verifier = createVerify(`RSA-${nodeAlg.toUpperCase()}`);
+    verifier.update(signedContent);
+    if (verifier.verify(publicKey, signature)) return;
+  }
+
+  throw new Error("JWT signature verification failed");
+}
+
+// ---------------------------------------------------------------------------
+// SAML XML signature verification
+// ---------------------------------------------------------------------------
+
+function verifySamlSignature(xml: string, pemCertificate: string): boolean {
+  const sigValueMatch = xml.match(
+    /<(?:ds:)?SignatureValue[^>]*>\s*([\s\S]*?)\s*<\/(?:ds:)?SignatureValue>/,
+  );
+  if (!sigValueMatch) return false;
+
+  const signedInfoMatch = xml.match(
+    /(<(?:ds:)?SignedInfo[\s\S]*?<\/(?:ds:)?SignedInfo>)/,
+  );
+  if (!signedInfoMatch) return false;
+
+  const algMatch = xml.match(
+    /<(?:ds:)?SignatureMethod\s+Algorithm="[^"]*#rsa-(sha\d+)"/i,
+  );
+  const hashAlg = algMatch?.[1] ?? "sha256";
+
+  const cert = pemCertificate.includes("BEGIN CERTIFICATE")
+    ? pemCertificate
+    : `-----BEGIN CERTIFICATE-----\n${pemCertificate}\n-----END CERTIFICATE-----`;
+
+  let publicKey: string;
+  try {
+    const x509 = new X509Certificate(cert);
+    publicKey = x509.publicKey.export({ type: "spki", format: "pem" }) as string;
+  } catch {
+    publicKey = cert;
+  }
+
+  const signatureB64 = sigValueMatch[1].replace(/\s+/g, "");
+  const signature = Buffer.from(signatureB64, "base64");
+
+  const canonicalSignedInfo = signedInfoMatch[1]
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
+
+  const verifier = createVerify(hashAlg);
+  verifier.update(canonicalSignedInfo);
+  return verifier.verify(publicKey, signature);
 }

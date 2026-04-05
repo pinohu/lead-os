@@ -223,7 +223,7 @@ ${subheadline ? `<p style="margin:0 0 32px;font-size:20px;line-height:1.5;opacit
     }
 
     case "text": {
-      const content = String(p.content ?? "");
+      const content = escapeHtml(String(p.content ?? ""));
       const align = p.align ? `text-align:${escapeHtml(String(p.align))};` : "";
       return `<section style="padding:40px 24px;${align}">
 <div style="max-width:600px;margin:0 auto;font-size:16px;line-height:1.7;color:#374151;">${content}</div>
@@ -380,7 +380,7 @@ ${title ? `<h2 style="margin:0 0 24px;font-size:24px;font-weight:700;color:#1118
       const cols = Array.isArray(p.columns) ? (p.columns as Array<{ content: string }>) : [];
       const colHtml = cols
         .map(
-          (col) => `<div style="flex:1;min-width:200px;padding:16px;">${String(col.content)}</div>`,
+          (col) => `<div style="flex:1;min-width:200px;padding:16px;">${escapeHtml(String(col.content))}</div>`,
         )
         .join("");
       return `<section style="padding:48px 24px;">

@@ -9,6 +9,7 @@ import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { MAX_BODY_SIZE } from "@/lib/validation";
+import { auth } from "@/lib/auth";
 
 const ExportDataSchema = z.object({
   email: z
@@ -20,6 +21,14 @@ const ExportDataSchema = z.object({
 export async function POST(req: NextRequest) {
   const rateLimited = await checkRateLimit(req, "contact");
   if (rateLimited) return rateLimited;
+
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json(
+      { success: false, error: "Authentication required. Please sign in to export your data." },
+      { status: 401 }
+    );
+  }
 
   try {
     // ── Body size check ──────────────────────────────────────────
@@ -48,6 +57,13 @@ export async function POST(req: NextRequest) {
     }
 
     const { email } = parsed.data;
+
+    if (email !== session.user.email!.toLowerCase().trim()) {
+      return NextResponse.json(
+        { success: false, error: "You can only export data associated with your own account." },
+        { status: 403 }
+      );
+    }
 
     // ── Query all tables for matching data ───────────────────────
     const [leads, contactMessages, leadOutcomes, trackedCalls] = await Promise.all([

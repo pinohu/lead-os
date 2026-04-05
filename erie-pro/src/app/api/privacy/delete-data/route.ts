@@ -10,6 +10,7 @@ import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { MAX_BODY_SIZE, sanitizeText } from "@/lib/validation";
+import { auth } from "@/lib/auth";
 
 const DeleteDataSchema = z.object({
   email: z.string().email("Valid email is required").transform((e) => e.toLowerCase().trim()),
@@ -20,6 +21,14 @@ export async function POST(req: NextRequest) {
   // Rate limit: treat as contact
   const rateLimited = await checkRateLimit(req, "contact");
   if (rateLimited) return rateLimited;
+
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json(
+      { success: false, error: "Authentication required. Please sign in to request data deletion." },
+      { status: 401 }
+    );
+  }
 
   try {
     // ── Body size check ──────────────────────────────────────────
@@ -48,6 +57,13 @@ export async function POST(req: NextRequest) {
     }
 
     const { email, reason } = parsed.data;
+
+    if (email !== session.user.email!.toLowerCase().trim()) {
+      return NextResponse.json(
+        { success: false, error: "You can only request deletion of data associated with your own account." },
+        { status: 403 }
+      );
+    }
 
     // Store the request as a contact message with special niche tag
     await prisma.contactMessage.create({

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { timingSafeEqual } from "crypto";
 import { embeddedSecrets } from "@/lib/embedded-secrets";
 
 function getHostname(value: string | null) {
@@ -34,7 +35,17 @@ function isTrustedBrowserRequest(request: NextRequest) {
 
 function hasBearerToken(request: NextRequest, secret: string) {
   const authHeader = request.headers.get("authorization");
-  return authHeader === `Bearer ${secret}`;
+  if (!authHeader) return false;
+  const expected = `Bearer ${secret}`;
+  if (authHeader.length !== expected.length) return false;
+  try {
+    return timingSafeEqual(
+      Buffer.from(authHeader, "utf-8"),
+      Buffer.from(expected, "utf-8"),
+    );
+  } catch {
+    return false;
+  }
 }
 
 function reject(status: number, error: string) {
@@ -100,13 +111,6 @@ export function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/api/automations/")) {
     const automationSecret = process.env.AUTOMATION_API_SECRET ?? embeddedSecrets.automation.apiSecret;
-    const internalSmokeRequest =
-      request.headers.get("x-lead-os-internal-smoke") === "1" &&
-      request.headers.get("x-lead-os-dry-run") === "1";
-
-    if (internalSmokeRequest) {
-      return allow(request);
-    }
 
     if (!automationSecret) {
       return isLocalHost(request.nextUrl.hostname)
