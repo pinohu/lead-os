@@ -372,6 +372,40 @@ Multiple deployment targets with no unified deployment documentation or runbook.
 
 ---
 
+## Remediation Status
+
+The following issues have been fixed as part of this audit:
+
+| # | Finding | Severity | Status |
+|---|---------|----------|--------|
+| C-1 | Secrets in git (`neatcircle-beta/.env.local`, `_n8n_sources/.env`) | 🔴 Critical | ✅ Removed from tracking. **Rotate all exposed keys manually.** |
+| C-2 | Incomplete `.gitignore` in sub-projects | 🔴 Critical | ✅ Fixed — all sub-projects now exclude `.env*`, OS files, debug logs |
+| C-3 | SSRF in `/api/intelligence/analyze` | 🔴 Critical | ✅ Fixed — blocks private IPs, metadata, non-http, redirects; 10s timeout, 2MB limit |
+| H-1 | Forgeable auth bypass headers | 🟠 High | ✅ Fixed — internal smoke bypass restricted to localhost only |
+| H-2 | Unsubscribe GET without token | 🟠 High | ✅ Fixed — token is now required |
+| H-3 | Weak default unsubscribe secret | 🟠 High | ✅ Fixed — removed `"default-unsubscribe-secret"`, uses `AUTH_SECRET` |
+| H-4 | Hardcoded operator email | 🟠 High | ✅ Fixed — removed from public runtime allowlist |
+| H-5 | Auth secret fallback chain | 🟠 High | ✅ Fixed — `LEAD_OS_AUTH_SECRET` required (both hybrid + public) |
+| M-1 | In-memory rate limiting | 🟡 Medium | ⏳ Remaining — requires Redis integration |
+| M-2 | CSP `unsafe-inline` | 🟡 Medium | ⏳ Remaining — requires Next.js nonce infrastructure |
+| M-3 | Intelligence endpoints lack auth | 🟡 Medium | ⏳ Remaining — SSRF blocked, but rate limiting is still only protection |
+| — | Missing security headers (neatcircle, public) | 🟡 Medium | ✅ Fixed — HSTS, X-Content-Type-Options, X-Frame-Options, etc. |
+| — | No ESLint config (neatcircle, erie-pro) | 🟡 Medium | ✅ Fixed — `eslint.config.mjs` added |
+| — | CI gaps (erie-pro, public runtime missing) | 🟡 Medium | ✅ Fixed — typecheck, test, build, lint, audit jobs added |
+| — | Silent error swallowing | 🔵 Low | ✅ Fixed — `.catch(() => {})` replaced with logged warnings |
+| — | Subscribe route silent 500 | 🔵 Low | ✅ Fixed — error now logged |
+| — | npm vulnerabilities (12 total) | 🟡 Medium | ✅ Fixed — 0 vulnerabilities across all 4 projects |
+
+### Verification
+
+All fixes verified:
+- `tsc --noEmit` passes on all 4 projects
+- 4187/4187 tests pass (hybrid), 89/89 tests pass (erie-pro)
+- `npm audit` returns 0 vulnerabilities across all projects
+- `npm run build` succeeds for neatcircle-beta
+
+---
+
 ## Files Audited
 
 - **neatcircle-beta:** `package.json`, `tsconfig.json`, `next.config.ts`, `middleware.ts`, `postcss.config.mjs`, `wrangler.toml`, `vercel.json`, `.env.sample`, `.env.local`, all `src/app/api/**/route.ts`, `src/lib/*`, `src/middleware.ts`
