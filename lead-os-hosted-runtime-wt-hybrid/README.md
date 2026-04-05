@@ -243,4 +243,4 @@ Use the companion repo [lead-os-embed-widgets](https://github.com/pinohu/lead-os
 
 ## License
 
-Private. All rights reserved.
+MIT
