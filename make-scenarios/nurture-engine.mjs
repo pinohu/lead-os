@@ -29,38 +29,44 @@
 // CONFIGURATION
 // ════════════════════════════════════════════════════════════════
 
+function requireEnv(name) {
+  const val = process.env[name];
+  if (!val) throw new Error(`Missing required env var: ${name}`);
+  return val;
+}
+
 const EMAILIT = {
-  apiKey: 'secret_4lQqUaweMC1pmyCpwqdRy3ktjl9hzd6m',
+  apiKey: requireEnv('EMAILIT_API_KEY'),
   apiBase: 'https://api.emailit.com/v1',
-  domain: 'neatcircle.com',
-  adminTo: 'ike@neatcircle.com',
+  domain: process.env.EMAILIT_DOMAIN || 'neatcircle.com',
+  adminTo: process.env.ADMIN_NOTIFICATION_EMAIL || 'ike@neatcircle.com',
 };
 
 const AITABLE = {
-  apiToken: 'usk8wYBrRgsc6RHxkZP9VAN',
-  datasheetId: 'dstBicDQKC6gpLAMYj',
-  apiBase: 'https://aitable.ai/fusion/v1',
+  apiToken: requireEnv('AITABLE_API_TOKEN'),
+  datasheetId: process.env.AITABLE_DATASHEET_ID || 'dstBicDQKC6gpLAMYj',
+  apiBase: process.env.AITABLE_API_BASE || 'https://aitable.ai/fusion/v1',
 };
 
 const WBIZTOOL = {
-  apiKey: '54140a11389a13031a2eb19070ce35c5ce769a30',
-  instanceId: '12316',
-  apiBase: 'https://app.wbiztool.com/api',
+  apiKey: requireEnv('WBIZTOOL_API_KEY'),
+  instanceId: process.env.WBIZTOOL_INSTANCE_ID || '12316',
+  apiBase: process.env.WBIZTOOL_API_BASE || 'https://app.wbiztool.com/api',
 };
 
 const DISCORD = {
-  newLeads: 'https://discord.com/api/webhooks/1480429578047717449/7bF_noLBXwykgIVye6hxYQ_e61-eDKS_OEyER_OpL8L0yxObOMDkCmqifgHPuEI3LoTp',
-  errors: 'https://discord.com/api/webhooks/1480423483207975066/ZWeuxptsElvzpj8Fzrd-Q3pPDGkL3StUpuNJybNwKlJwyVkGm8D6k_qjz6mdsSHZ7J4n',
-  wins: 'https://discord.com/api/webhooks/1480429754963333252/9tlYfvzLOon6LVB3juh3eN_BelV_V_DJzF6lMYrv_JccxnKjRNvqY2n_htd8r2-jshyw',
-  highValue: 'https://discord.com/api/webhooks/1480429897263480962/e-vvArec6HCRc_HpzxmWOpz3GbJ7ncekeLBD7hSnKHm4v-zXTwt8fm6DjrY7TUBeo6Ct',
+  newLeads: requireEnv('DISCORD_NEW_LEADS_WEBHOOK'),
+  errors: requireEnv('DISCORD_ERRORS_WEBHOOK'),
+  wins: requireEnv('DISCORD_WINS_WEBHOOK'),
+  highValue: requireEnv('DISCORD_HIGH_VALUE_WEBHOOK'),
 };
 
 const TELEGRAM = {
-  botToken: '8739229269:AAGYs6jIIjDa87y4TAVwn4QtTWBqliohDQI',
-  newLeads: '-1003809646667',
-  errors: '-1003751399010',
-  wins: '-1003899173545',
-  highValue: '-1003862266875',
+  botToken: requireEnv('TELEGRAM_BOT_TOKEN'),
+  newLeads: process.env.TELEGRAM_NEW_LEADS_CHAT || '-1003809646667',
+  errors: process.env.TELEGRAM_ERRORS_CHAT || '-1003751399010',
+  wins: process.env.TELEGRAM_WINS_CHAT || '-1003899173545',
+  highValue: process.env.TELEGRAM_HIGH_VALUE_CHAT || '-1003862266875',
 };
 
 // ════════════════════════════════════════════════════════════════
