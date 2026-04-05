@@ -243,7 +243,9 @@ export function trackBrowserEvent(payload: TraceEventPayload) {
       timestamp: payload.timestamp ?? trace.timestamp ?? new Date().toISOString(),
     }),
     keepalive: true,
-  }).catch(() => {});
+  }).catch((err: unknown) => {
+    console.warn("[trace] Trace sync failed:", err instanceof Error ? err.message : String(err));
+  });
 }
 
 export function buildTraceIntakePayload<T extends Record<string, unknown>>(payload: T) {

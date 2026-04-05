@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { processLeadIntake } from "@/lib/lead-intake";
+import { logger } from "@/lib/logger";
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,7 +23,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(result);
-  } catch {
+  } catch (err) {
+    logger.error("/api/subscribe error", {
+      error: err instanceof Error ? err.message : String(err),
+    });
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

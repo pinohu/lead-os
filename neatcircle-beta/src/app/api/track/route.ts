@@ -9,6 +9,7 @@ import {
   isValidEmail,
 } from "@/lib/request-guards";
 import { buildLeadKey } from "@/lib/trace";
+import { logger } from "@/lib/logger";
 
 const AITABLE = {
   apiToken: process.env.AITABLE_API_TOKEN ?? embeddedSecrets.aitable.apiToken,
@@ -128,7 +129,9 @@ async function logToAITable(event: TrackEvent) {
         fieldKey: "name",
       }),
     },
-  ).catch(() => {});
+  ).catch((err: unknown) => {
+    logger.warn("AITable track write failed", { error: err instanceof Error ? err.message : String(err) });
+  });
 }
 
 export async function POST(request: Request) {

@@ -3,6 +3,7 @@ import { embeddedSecrets } from "@/lib/embedded-secrets";
 import { serverSiteConfig } from "@/lib/site-config";
 import { clampText, isPlainObject, isValidEmail, isValidPhone } from "@/lib/request-guards";
 import { buildLeadKey } from "@/lib/trace";
+import { logger } from "@/lib/logger";
 
 export type IntakeSource =
   | "contact_form"
@@ -166,7 +167,9 @@ async function logToAITable(payload: LeadIntakePayload, normalized: IntakeResult
       ],
       fieldKey: "name",
     }),
-  }).catch(() => {});
+  }).catch((err: unknown) => {
+    logger.warn("AITable intake write failed", { error: err instanceof Error ? err.message : String(err) });
+  });
 
   return true;
 }
@@ -215,7 +218,9 @@ Step: ${payload.stepId ?? "n/a"}`;
           },
         ],
       }),
-    }).catch(() => {});
+    }).catch((err: unknown) => {
+      logger.warn("Discord high-value alert failed", { error: err instanceof Error ? err.message : String(err) });
+    });
   }
 
   if (TELEGRAM_BOT_TOKEN && TELEGRAM_HIGH_VALUE_CHAT) {
@@ -226,7 +231,9 @@ Step: ${payload.stepId ?? "n/a"}`;
         chat_id: TELEGRAM_HIGH_VALUE_CHAT,
         text,
       }),
-    }).catch(() => {});
+    }).catch((err: unknown) => {
+      logger.warn("Telegram high-value alert failed", { error: err instanceof Error ? err.message : String(err) });
+    });
   }
 
   return true;
