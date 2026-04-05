@@ -17,18 +17,17 @@ const authRateLimiter = createRateLimiter({
 
 // ---------------------------------------------------------------------------
 // Content Security Policy
-// PRODUCTION TODO: Tighten 'unsafe-inline' and 'unsafe-eval' in script-src
-// and 'unsafe-inline' in style-src once Next.js nonce-based CSP is configured.
-// These are required during development but should be replaced with nonce or
-// hash-based directives for production hardening.
+// style-src still requires 'unsafe-inline' for Next.js inline styles.
+// script-src uses 'strict-dynamic' with 'unsafe-inline' as a fallback
+// for browsers that don't support strict-dynamic (the fallback is ignored
+// by browsers that do support it per CSP Level 3).
 // ---------------------------------------------------------------------------
 
 const CSP_DIRECTIVES = [
   "default-src 'self'",
-  // TODO: Replace 'unsafe-inline' with nonce-based CSP once Next.js nonce infrastructure is configured
-  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'strict-dynamic' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: https:",
+  "img-src 'self' https:",
   "connect-src 'self' https:",
   "font-src 'self' https: data:",
   "frame-ancestors 'none'",

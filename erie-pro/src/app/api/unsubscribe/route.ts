@@ -20,7 +20,8 @@ const UnsubscribeSchema = z
 
 /** Generate a simple HMAC token for email unsubscribe links */
 function generateUnsubscribeToken(email: string): string {
-  const secret = process.env.UNSUBSCRIBE_SECRET || process.env.NEXTAUTH_SECRET || "default-unsubscribe-secret";
+  const secret = process.env.UNSUBSCRIBE_SECRET || process.env.NEXTAUTH_SECRET;
+  if (!secret) throw new Error("UNSUBSCRIBE_SECRET or NEXTAUTH_SECRET must be configured");
   return createHash("sha256").update(`${email}:${secret}`).digest("hex").slice(0, 32);
 }
 
@@ -103,9 +104,16 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // Validate token if provided (prevents abuse)
+  if (!token) {
+    return new NextResponse(
+      "<html><body><h1>Invalid Request</h1><p>Unsubscribe token is required.</p></body></html>",
+      { status: 400, headers: { "Content-Type": "text/html" } }
+    );
+  }
+
+  // Validate token (prevents abuse)
   const expectedToken = generateUnsubscribeToken(email);
-  if (token && token !== expectedToken) {
+  if (token !== expectedToken) {
     return new NextResponse(
       "<html><body><h1>Invalid Token</h1><p>The unsubscribe link is invalid or expired.</p></body></html>",
       { status: 403, headers: { "Content-Type": "text/html" } }
@@ -129,7 +137,7 @@ export async function GET(req: NextRequest) {
       logger.info("unsubscribe", "Email suppressed via link", { hasEmail: true });
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://erie.pro";
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://erie.pro").replace(/[&<>"']/g, "");
 
     return new NextResponse(
       `<html>

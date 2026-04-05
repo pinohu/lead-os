@@ -1,14 +1,16 @@
 // ── Provider Photo Upload API ─────────────────────────────────────────
 // POST /api/provider/photo — Upload a profile photo
-// Accepts multipart/form-data with an image file (max 5MB).
+// Accepts multipart/form-data with an image file (max 1MB).
 // Stores as base64 data URL in the database.
+// TODO: Migrate to object storage (S3/R2) for production — base64 in
+// PostgreSQL is a DoS vector and degrades query performance.
 
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB (reduced from 5MB to limit DB bloat)
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 export async function POST(req: NextRequest) {
@@ -67,7 +69,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: `File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum: 5MB`,
+        error: `File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum: 1MB`,
       },
       { status: 400 }
     );

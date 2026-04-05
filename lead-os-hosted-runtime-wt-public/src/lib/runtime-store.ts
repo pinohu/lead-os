@@ -176,7 +176,7 @@ function getPool() {
 
   pool = new Pool({
     connectionString,
-    ssl: connectionString.includes("sslmode=disable") ? false : { rejectUnauthorized: false },
+    ssl: connectionString.includes("sslmode=disable") ? false : { rejectUnauthorized: true },
     max: 4,
   });
 

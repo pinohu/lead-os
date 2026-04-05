@@ -1,4 +1,4 @@
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 import { resolveNextNurtureStage } from "@/lib/automation";
 import { sendEmail } from "@/lib/email-sender";
@@ -27,7 +27,12 @@ export async function GET(request: Request) {
   if (!cronSecret) {
     return NextResponse.json({ data: null, error: { code: "SERVICE_UNAVAILABLE", message: "Cron not configured" } }, { status: 503 });
   }
-  if (request.headers.get("authorization") !== `Bearer ${cronSecret}`) {
+  const authHeader = request.headers.get("authorization") ?? "";
+  const expected = `Bearer ${cronSecret}`;
+  const isAuthorized =
+    authHeader.length === expected.length &&
+    timingSafeEqual(Buffer.from(authHeader, "utf-8"), Buffer.from(expected, "utf-8"));
+  if (!isAuthorized) {
     return NextResponse.json({ data: null, error: { code: "UNAUTHORIZED", message: "Unauthorized" } }, { status: 401 });
   }
 
