@@ -229,8 +229,15 @@ export async function routeLead(
       subscriptionStatus: "active",
       emailVerified: true,
       verificationStatus: { in: ["verified", "auto_verified", "admin_approved"] },
+      territories: {
+        some: {
+          niche,
+          isPaused: false,
+          deactivatedAt: null,
+        },
+      },
     },
-    orderBy: { tier: "asc" }, // primary < backup < overflow
+    orderBy: { tier: "asc" },
   });
 
   // Filter to only providers currently within their business hours

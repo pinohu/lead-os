@@ -71,13 +71,14 @@ async function deliverToEndpoint(
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10_000); // 10s timeout
 
+      const parsedBody = JSON.parse(body);
       const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-Webhook-Signature": signature,
-          "X-Webhook-Event": JSON.parse(body).event,
-          "X-Webhook-Timestamp": JSON.parse(body).timestamp,
+          "X-Webhook-Event": parsedBody.event,
+          "X-Webhook-Timestamp": parsedBody.timestamp,
           "User-Agent": "EriePro-Webhooks/1.0",
         },
         body,

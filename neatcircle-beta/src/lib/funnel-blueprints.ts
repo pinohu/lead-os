@@ -1560,40 +1560,6 @@ export function selectBlueprintForVisitor(profile: {
   utmMedium?: string;
 }): FunnelBlueprint {
   return recommendBlueprintForVisitor(profile).blueprint;
-  const niche = normalizeNicheSlug(profile.nicheInterest);
-  const config = NICHE_FUNNEL_CONFIG[niche];
-
-  // Hot lead — straight to high-ticket
-  if (profile.scores.composite >= 70 && profile.assessmentCompleted) {
-    return FUNNEL_BLUEPRINTS["high-ticket-call"];
-  }
-
-  // Chat engaged + email = chatbot funnel progression
-  if (profile.chatEngaged && profile.capturedEmail) {
-    return FUNNEL_BLUEPRINTS["chatbot-lead"];
-  }
-
-  // ROI calculator used = value ladder (ready to compare tiers)
-  if (profile.roiCalculatorUsed && profile.capturedEmail) {
-    return FUNNEL_BLUEPRINTS["value-ladder"];
-  }
-
-  // Return visitor without email = abandonment recovery
-  if (profile.sessions >= 3 && !profile.capturedEmail) {
-    return FUNNEL_BLUEPRINTS["abandonment-recovery"];
-  }
-
-  // Viewed services page = bridge funnel
-  if (profile.pagesViewed.some(p => p.startsWith("/services/")) && !profile.assessmentCompleted) {
-    return FUNNEL_BLUEPRINTS["bridge"];
-  }
-
-  // Niche-specific primary blueprint
-  if (config) {
-    return FUNNEL_BLUEPRINTS[config.primaryBlueprint] ?? FUNNEL_BLUEPRINTS["lead-gen"];
-  }
-
-  return FUNNEL_BLUEPRINTS["lead-gen"];
 }
 
 export function getNextFunnelStep(

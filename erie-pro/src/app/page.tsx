@@ -17,9 +17,7 @@ import {
   Shield,
   Clock,
   MapPin,
-
   Phone,
-  Star,
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { niches } from "@/lib/niches"
