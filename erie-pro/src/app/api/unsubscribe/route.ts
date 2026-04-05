@@ -18,9 +18,13 @@ const UnsubscribeSchema = z
     message: "Email or phone required",
   });
 
-/** Generate a simple HMAC token for email unsubscribe links */
-function generateUnsubscribeToken(email: string): string {
-  const secret = process.env.UNSUBSCRIBE_SECRET || process.env.NEXTAUTH_SECRET || "default-unsubscribe-secret";
+function getUnsubscribeSecret(): string | null {
+  return process.env.UNSUBSCRIBE_SECRET || process.env.AUTH_SECRET || null;
+}
+
+function generateUnsubscribeToken(email: string): string | null {
+  const secret = getUnsubscribeSecret();
+  if (!secret) return null;
   return createHash("sha256").update(`${email}:${secret}`).digest("hex").slice(0, 32);
 }
 
@@ -47,7 +51,6 @@ export async function POST(req: NextRequest) {
 
     const { email, phone } = parsed.data;
 
-    // Check if already suppressed
     const existing = await prisma.suppression.findFirst({
       where: {
         OR: [
@@ -103,9 +106,23 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // Validate token if provided (prevents abuse)
+  if (!token) {
+    return new NextResponse(
+      "<html><body><h1>Invalid Request</h1><p>A valid unsubscribe token is required.</p></body></html>",
+      { status: 400, headers: { "Content-Type": "text/html" } }
+    );
+  }
+
   const expectedToken = generateUnsubscribeToken(email);
-  if (token && token !== expectedToken) {
+  if (!expectedToken) {
+    logger.error("/api/unsubscribe", "UNSUBSCRIBE_SECRET / AUTH_SECRET not configured");
+    return new NextResponse(
+      "<html><body><h1>Configuration Error</h1><p>Unsubscribe is temporarily unavailable.</p></body></html>",
+      { status: 503, headers: { "Content-Type": "text/html" } }
+    );
+  }
+
+  if (token !== expectedToken) {
     return new NextResponse(
       "<html><body><h1>Invalid Token</h1><p>The unsubscribe link is invalid or expired.</p></body></html>",
       { status: 403, headers: { "Content-Type": "text/html" } }
@@ -113,7 +130,6 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Check if already suppressed
     const existing = await prisma.suppression.findFirst({
       where: { email },
     });
