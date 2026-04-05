@@ -1,467 +1,387 @@
-# Comprehensive Repository Audit Report
+# UX & Accessibility Audit Report (WCAG 2.1 AA)
 
-**Repository:** `pinohu/immigration-smarts` (aka CX React / Lead OS)
-**Date:** 2026-04-04
-**Scope:** All 4 main applications + supporting directories
-
----
-
-## Executive Summary
-
-This monorepo contains 4 Next.js applications (a kernel platform, territory layer, marketing edge layer, and public embed runtime), with supporting automation scripts and vendored n8n references. The codebase demonstrates strong TypeScript discipline and thoughtful architecture, but has **critical security issues** that require immediate attention, along with significant gaps in testing, performance optimization, and dependency hygiene.
-
-| Severity | Count |
-|----------|-------|
-| CRITICAL | 5 |
-| HIGH | 11 |
-| MEDIUM | 10 |
-| LOW | 6 |
+**Date:** 2026-04-05  
+**Scope:** All 4 apps in the monorepo  
+**Legend:** APP1 = `lead-os-hosted-runtime-wt-hybrid` (kernel/dashboard), APP2 = `erie-pro` (territory/SEO), APP3 = `neatcircle-beta` (marketing edge), APP4 = `lead-os-hosted-runtime-wt-public` (embed/subdomain)
 
 ---
 
-## 1. SECURITY
+## Part A — UX Audit
 
-### CRITICAL
+### 1. Form Components (Validation, Error Messages, Loading, Success, Disabled States)
 
-#### S1. Hardcoded Production Secrets in Git History
+#### APP2 — erie-pro ✅ (strong)
 
-**Files:**
-- `make-scenarios/deploy-advanced-scenarios.mjs`
-- `make-scenarios/nurture-engine.mjs`
-- `make-scenarios/deploy-referral-engine.mjs`
-- `make-scenarios/deploy-niche-intelligence.mjs`
-- `make-scenarios/deploy-event-scenarios.mjs`
+| File | Line(s) | Finding |
+|---|---|---|
+| `src/components/lead-form.tsx` | 41-46 | ✅ `loading`, `result`, `tcpaConsent`, `errors`, `canResubmit` states all tracked |
+| `src/components/lead-form.tsx` | 58-67 | ✅ Per-field validation with `validateField()` for name/email/phone |
+| `src/components/lead-form.tsx` | 69-78 | ✅ `handleBlur` and `handlePhoneChange` clear/set errors on interaction |
+| `src/components/lead-form.tsx` | 153-176 | ✅ Full success state with CheckCircle icon, message, and re-submit button with cooldown |
+| `src/components/lead-form.tsx` | 270 | ✅ Submit button `disabled={loading \|\| !isFormValid}` |
+| `src/components/lead-form.tsx` | 271 | ✅ Loading text: `"Submitting..."` |
+| `src/components/contact-form.tsx` | 51-56 | ✅ Mirrors the same pattern: loading, result, errors, phone, canResubmit |
+| `src/components/contact-form.tsx` | 156-179 | ✅ Full success state |
+| `src/components/contact-form.tsx` | 248 | ✅ Disabled state on submit |
+| `src/app/login/login-form.tsx` | 20-41 | ✅ Handles error from credentials, loading state, try/catch |
+| `src/app/login/login-form.tsx` | 98-126 | ✅ Submit disabled during loading, spinner animation shown |
+| `src/app/forgot-password/forgot-password-form.tsx` | 12-41 | ✅ Sent state, loading, error, rate-limit (429) handling |
+| `src/app/forgot-password/forgot-password-form.tsx` | 44-61 | ✅ Success state with "check your inbox" message |
+| `src/app/reset-password/reset-password-form.tsx` | 37-76 | ✅ Client-side password length + match validation |
+| `src/app/reset-password/reset-password-form.tsx` | 78-93 | ✅ Success state with "sign in" CTA |
+| `src/app/reset-password/reset-password-form.tsx` | 19-34 | ✅ Missing token/email guard with helpful CTA |
+| `src/app/dashboard/disputes/dispute-form.tsx` | — | ✅ Uses role="alert" aria-live="polite" for errors |
+| `src/components/homepage-lead-form.tsx` | — | ✅ Mirrors lead-form pattern |
 
-**Exposed credentials:**
-- Telegram bot token: `8739229269:AAGYs6jIIjDa87y4TAVwn4QtTWBqliohDQI`
-- Emailit API key: `secret_4lQqUaweMC1pmyCpwqdRy3ktjl9hzd6m`
-- AITable token: `usk8wYBrRgsc6RHxkZP9VAN`
-- WBizTool API key: `54140a11389a13031a2eb19070ce35c5ce769a30`
-- Make.com API token: `24595d5e-9b7f-48f9-ab61-9644c46ed7f9`
-- 4 Discord webhook URLs with full tokens
-- Telegram chat IDs
+#### APP1 — lead-os-hosted-runtime-wt-hybrid ✅ (strong)
 
-**Remediation:** Rotate ALL exposed credentials immediately. Move to environment variables. Use `git filter-repo` or BFG Repo-Cleaner to purge secrets from git history.
+| File | Line(s) | Finding |
+|---|---|---|
+| `src/app/auth/sign-in/page.tsx` | 57-63 | ✅ Error banner with `role="alert" aria-live="assertive"` |
+| `src/app/auth/sign-in/page.tsx` | 66-96 | ✅ Sign-in form with label, aria-describedby, email help text |
+| `src/components/SetupWizardClient.tsx` | — | ✅ Multi-step wizard with validation per step, error/success states |
+| `src/app/onboard/page.tsx` | 340 | ✅ Error state with `role="alert"` |
+| `src/app/contact/page.tsx` | 155 | ✅ Per-field error with `role="alert"` |
+| `src/components/LPLeadCaptureForm.tsx` | 118, 255 | ✅ aria-live on error/success states |
 
-#### S2. Tracked `.env` File with Default Credentials
+#### APP3 — neatcircle-beta ⚠️ (gaps)
 
-**File:** `_n8n_sources/Zie619-n8n-workflows/ai-stack/.env`
+| File | Line(s) | Finding | Severity |
+|---|---|---|---|
+| `src/components/Contact.tsx` | 20 | ✅ 4-state tracking: idle/sending/sent/error | — |
+| `src/components/Contact.tsx` | 167-173 | ✅ Submit disabled during sending, text changes to "Sending..." | — |
+| `src/components/Contact.tsx` | 113-121 | ✅ Success state with green checkmark | — |
+| `src/components/Contact.tsx` | 175-178 | ⚠️ **Error message lacks `role="alert"` or `aria-live`** — screen readers won't announce it | Medium |
+| `src/components/ROICalculator.tsx` | 82-115 | ⚠️ **No error handling on the `fetch` call** — `.catch(() => {})` silently swallows failures, no user feedback | High |
+| `src/components/ExitIntent.tsx` | — | ⚠️ **No error state** for the email capture form — if `fetch` fails the user sees nothing | Medium |
+| `src/components/ChatWidget.tsx` | 370-388 | ⚠️ **Send button has no `aria-label`** — only contains an SVG icon, no accessible text | High |
 
-Contains `N8N_BASIC_AUTH_USER=admin` / `N8N_BASIC_AUTH_PASSWORD=changeme`. This file is tracked by git despite `.gitignore` containing `.env` (pattern doesn't match nested paths by default).
+#### APP4 — lead-os-hosted-runtime-wt-public ✅ (solid)
 
-**Remediation:** Add `**/.env` to `.gitignore`. Remove the tracked file with `git rm --cached`.
-
-### HIGH
-
-#### S3. Auth Bypass via Trivially Spoofable Headers
-
-**File:** `neatcircle-beta/middleware.ts:101-108`
-
-Two static headers (`x-lead-os-internal-smoke: 1` + `x-lead-os-dry-run: 1`) grant **unauthenticated access** to all `/api/automations/*` routes. Any attacker who discovers these header names can bypass authentication entirely.
-
-```typescript
-const internalSmokeRequest =
-  request.headers.get("x-lead-os-internal-smoke") === "1" &&
-  request.headers.get("x-lead-os-dry-run") === "1";
-
-if (internalSmokeRequest) {
-  return allow(request);  // No further auth check
-}
-```
-
-**Remediation:** Remove the header-based bypass. Use a proper shared secret or restrict to localhost only.
-
-#### S4. Erie Pro Admin Routes Lack Middleware Auth
-
-Erie Pro's middleware does not cover `/api/admin/*` routes. Auth is handled ad-hoc inside individual route handlers, which is error-prone and inconsistent.
-
-**Remediation:** Add explicit middleware matchers for admin routes.
-
-#### S5. In-Memory Rate Limiting (All Apps)
-
-Rate limiting resets on every cold start in serverless environments (Vercel, Cloudflare Workers). This makes rate limits trivially bypassable.
-
-**Remediation:** Use Redis-backed or edge-native rate limiting (Upstash, Cloudflare Rate Limiting).
-
-#### S6. Weak Password Policy
-
-8-character minimum with no complexity requirements.
-
-**Remediation:** Enforce minimum 12 characters with complexity rules, or adopt passkey/SSO.
-
-### MEDIUM
-
-#### S7. Missing Security Headers (2 of 4 Apps)
-
-`neatcircle-beta` and `lead-os-hosted-runtime-wt-public` have **no security headers** configured (no `X-Content-Type-Options`, `X-Frame-Options`, HSTS, CSP, or `Permissions-Policy`). Only `lead-os-hosted-runtime-wt-hybrid` and `erie-pro` set these.
-
-**Remediation:** Add security headers via `next.config` or middleware in both apps.
-
-#### S8. CSP Uses `unsafe-inline` for Scripts
-
-Both `erie-pro` and `lead-os-hosted-runtime-wt-hybrid` use `'unsafe-inline'` in their Content Security Policy for scripts, weakening XSS protections. There are even TODO comments in hybrid's middleware acknowledging this.
-
-**Remediation:** Migrate to nonce-based CSP.
-
-#### S9. Open CORS on Embed Endpoint
-
-When `EMBED_ALLOWED_ORIGINS` is not set, the embed endpoint accepts requests from any origin.
-
-**Remediation:** Fail closed — reject cross-origin requests when no allowlist is configured.
+| File | Line(s) | Finding |
+|---|---|---|
+| `src/components/AdaptiveLeadCaptureForm.tsx` | 38-48 | ✅ step, error, result, isPending via `useTransition` |
+| `src/components/AdaptiveLeadCaptureForm.tsx` | 54-77 | ✅ Per-step validation with user-friendly messages |
+| `src/components/AdaptiveLeadCaptureForm.tsx` | 163-178 | ✅ Full success state with score, hot-path indicator, CTAs |
+| `src/components/AdaptiveLeadCaptureForm.tsx` | 267-271 | ✅ Error with `role="alert"` |
+| `src/components/AdaptiveLeadCaptureForm.tsx` | 284 | ✅ `disabled={isPending}` with loading text |
 
 ---
 
-## 2. DEPENDENCIES
+### 2. Navigation: 404 Pages, Error Boundaries, Loading Skeletons
 
-### CRITICAL
+| App | 404 Page | Error Boundary (root) | Error Boundary (dashboard) | Loading Skeleton |
+|---|---|---|---|---|
+| APP1 | ✅ `src/app/not-found.tsx` (L4-35) | ✅ `src/app/error.tsx` (L1-44) | ✅ `src/app/dashboard/error.tsx` | ✅ `src/app/loading.tsx` (spinner) + `src/app/dashboard/loading.tsx` |
+| APP2 | ✅ `src/app/not-found.tsx` (L1-36) | ✅ `src/app/error.tsx` (L1-43) | ✅ `src/app/dashboard/error.tsx` + `src/app/admin/error.tsx` | ✅ `src/app/loading.tsx` (rich skeleton) + 4 more loading files |
+| APP3 | ❌ **No `not-found.tsx`** | ❌ **No `error.tsx`** | N/A | ❌ **No `loading.tsx`** |
+| APP4 | ❌ **No `not-found.tsx`** | ❌ **No `error.tsx`** | N/A | ❌ **No `loading.tsx`** |
 
-#### D1. Beta Authentication Package in Production
-
-**File:** `erie-pro/package.json`
-
-`next-auth@5.0.0-beta.30` is a beta prerelease used in a production-facing app. Beta APIs may change without notice and may have unpatched security issues.
-
-**Remediation:** Pin to the latest stable NextAuth release, or document the risk and monitor closely.
-
-### HIGH
-
-#### D2. 11 Known Vulnerabilities in neatcircle-beta
-
-`npm audit` reports 8 high and 3 moderate vulnerabilities, primarily from the `wrangler`/`miniflare`/`undici` dependency chain. All are fixable via `npm audit fix`.
-
-**Remediation:** Run `npm audit fix` in `neatcircle-beta/`.
-
-#### D3. Next.js HTTP Smuggling Vulnerability (Public Runtime)
-
-`lead-os-hosted-runtime-wt-public` uses a Next.js version with a known HTTP smuggling + disk cache vulnerability. Fixed in Next.js >= 15.5.14.
-
-**Remediation:** Bump Next.js to >= 15.5.14.
-
-#### D4. Major Version Fragmentation
-
-| Package | hybrid | erie-pro | neatcircle | public |
-|---------|--------|----------|------------|--------|
-| Next.js | 16 | 15 | 15 | 15 |
-| Tailwind | 3 | 3 | 4 | — |
-| React | 19 | 19 | 19 | 19 |
-
-Running Next.js across a major version boundary creates maintenance risk — features, APIs, and security patches differ.
-
-### MEDIUM
-
-#### D5. Missing `engines.node` in 3 of 4 Apps
-
-Only `lead-os-hosted-runtime-wt-hybrid` declares `"engines": { "node": ">=22.0.0" }`. The other 3 apps silently require Node 22+ but don't enforce it.
-
-**Remediation:** Add `engines` field to all `package.json` files.
-
-#### D6. Lockfile Drift in neatcircle-beta
-
-`neatcircle-beta/package-lock.json` has uncommitted modifications (visible in `git status`). This causes CI builds to use different dependency versions than development.
-
-**Remediation:** Commit the lockfile after `npm install`, or regenerate with `npm ci`.
-
-#### D7. Vendored `_n8n_sources/` with No Update Mechanism
-
-The `_n8n_sources/` directory contains copied third-party code with no automated update or dependency scanning. One project (`growchief`) pins `engines.node` to 20.x only, conflicting with the workspace's Node 22 requirement.
+**Critical findings:**
+- **APP3 (`neatcircle-beta`)**: No 404 page, no error boundary, no loading state. Users hitting a bad URL or a runtime error see the generic Next.js error or a white screen.
+- **APP4 (`lead-os-hosted-runtime-wt-public`)**: Same — missing all three. The dashboard section has no loading skeleton; data-dependent pages may flash blank content.
 
 ---
 
-## 3. CODE QUALITY
+### 3. Mobile Responsiveness
 
-### HIGH
+#### Viewport Meta Tags
 
-#### C1. Massive Code Duplication Between Hybrid and Public Runtime
+| App | Has `<meta name="viewport">`? | Location |
+|---|---|---|
+| APP1 | ✅ Explicit in layout `src/app/layout.tsx:77` | `width=device-width, initial-scale=1` |
+| APP2 | ✅ Next.js auto-injects viewport | No explicit meta needed (Next.js handles it) |
+| APP3 | ⚠️ **No explicit viewport meta** — relies on Next.js default, but `<html>` is plain `<html lang="en">` without `suppressHydrationWarning` | `src/app/layout.tsx:89` |
+| APP4 | ⚠️ **No explicit viewport meta, no Tailwind/CSS** — layout is bare: `<html lang="en"><body>` | `src/app/layout.tsx:17-18` |
 
-21 library files are duplicated between `lead-os-hosted-runtime-wt-hybrid/src/lib/` and `lead-os-hosted-runtime-wt-public/src/lib/`:
-- **10 files** are 100% identical (~1,200+ lines of wasted code)
-- **6 files** have drifted — they share the same origin but have diverged, creating maintenance risk and potential behavioral inconsistencies
+#### Tailwind Breakpoints Usage
 
-**Key duplicated files:** `runtime-store.ts`, `intake.ts`, `scoring-engine.ts`, `orchestration.ts`, `persistent-store.ts`
+| App | Uses responsive breakpoints? | Details |
+|---|---|---|
+| APP1 | ✅ Extensive | `sm:`, `md:`, `lg:` throughout pages and components |
+| APP2 | ✅ Extensive | `sm:`, `md:`, `lg:` used consistently in grid layouts, navigation, forms |
+| APP3 | ✅ Good | `sm:`, `md:`, `lg:` in hero, grids, forms |
+| APP4 | ⚠️ **No Tailwind classes** | Uses plain CSS classes (`capture-shell`, `panel`, `auth-form`). Responsive behavior depends on external stylesheet. |
 
-**Remediation:** Extract a shared `@lead-os/core` package or use a workspace-level shared directory.
+#### Touch Targets
 
-#### C2. All Dashboard Pages Are Client Components
-
-All 21+ pages under `lead-os-hosted-runtime-wt-hybrid/src/app/dashboard/` are `"use client"` components that fetch data via `useEffect` + `fetch`. This is a Next.js anti-pattern — these could be server components with streaming, reducing bundle size and improving initial load performance.
-
-**Remediation:** Convert dashboard pages to server components using `async` data fetching. Keep interactive portions as small client sub-components.
-
-#### C3. 48+ Silent Error Swallowing
-
-Found `.catch(() => {})` in 48+ locations across hybrid, neatcircle, and erie-pro. Errors are silently discarded, making debugging production issues extremely difficult.
-
-**Key offenders:**
-- `erie-pro/src/app/api/embed/submit/route.ts` (3 instances)
-- `erie-pro/src/app/api/leads/inbound/route.ts` (3 instances)
-- `neatcircle-beta/src/lib/lead-intake.ts` (3 instances)
-- `lead-os-hosted-runtime-wt-hybrid/src/lib/execution-engine.ts` (3 instances)
-
-**Remediation:** Replace with proper error logging. At minimum: `.catch((err) => console.error("context:", err))`.
-
-#### C4. 1,181-Line Component File
-
-`lead-os-hosted-runtime-wt-hybrid/src/app/DynastyLandingPage.tsx` is 1,181 lines — far too large for a single component. This harms readability, testability, and reuse.
-
-**Remediation:** Split into smaller, focused sub-components.
-
-### MEDIUM
-
-#### C5. Index-Based Keys in 28+ List Renders
-
-Using `key={index}` in list renders causes React reconciliation issues when items are added, removed, or reordered.
-
-**Remediation:** Use stable unique identifiers for keys.
-
-#### C6. Inconsistent File Naming
-
-The hybrid app mixes `PascalCase` (`DashboardSidebar.tsx`) and `kebab-case` (`scoring-engine.ts`) component files in the same directory.
-
-**Remediation:** Standardize on one convention (kebab-case is the Next.js convention).
-
-#### C7. 41 Deep Relative Imports
-
-The hybrid app has 41+ imports with 3-5 levels of `../` despite having `@/` path alias configured in `tsconfig.json`.
-
-**Remediation:** Replace deep relative imports with `@/` aliases.
-
-### LOW
-
-#### C8. TypeScript Strict Mode — Excellent
-
-All 4 apps have `strict: true` in `tsconfig.json`. Zero `any` types, zero `@ts-ignore`, zero `@ts-nocheck` found across the codebase. This is exemplary.
-
-#### C9. Console.log Usage — Acceptable
-
-Console statements are minimal and mostly appropriate. Erie-pro's ~158 instances are concentrated in CLI scripts, not production routes.
+| File | Line | Finding | Severity |
+|---|---|---|---|
+| APP2 `src/app/login/login-form.tsx` | 129-138 | ⚠️ "Forgot password?" and "Claim your territory" links are `text-xs` with no padding — likely **< 44×44px touch target** | Medium |
+| APP3 `src/components/Navbar.tsx` | 31-38 | ⚠️ Desktop nav links are `text-sm` but mobile hamburger button (`p-2`) is borderline at ~32px | Low |
+| APP3 `src/components/ChatWidget.tsx` | 380-388 | ⚠️ Send button in chat is `px-3 py-2` — may be below 44px minimum | Medium |
 
 ---
 
-## 4. DATABASE & DATA
+### 4. User-Facing Flows
 
-### CRITICAL
+#### Onboarding
 
-#### DB1. SQL Identifier Interpolation in PersistentStore
+| App | Onboarding Flow | Details |
+|---|---|---|
+| APP1 | ✅ Full wizard at `src/app/onboard/page.tsx` | 6-step wizard: email → niche → plan → branding → integrations → review |
+| APP1 | ✅ Setup wizard at `src/components/SetupWizardClient.tsx` | 5-step progressive wizard with nav progress bar |
+| APP2 | ✅ Provider claim flow at `src/app/for-business/claim/page.tsx` | Business claim → verification → success |
+| APP3 | ❌ **No onboarding flow** | Direct marketing pages; no guided first-run experience |
+| APP4 | ❌ **No onboarding flow** | Sign-in page exists but no guided setup after first login |
 
-**File:** `lead-os-hosted-runtime-wt-hybrid/src/lib/persistent-store.ts:78-101`
+#### Auth (Login/Signup/Reset)
 
-Table names, column names, and tenant columns are interpolated directly into SQL strings:
-```typescript
-`SELECT ${this.keyCol}, ${this.valueCol} FROM ${this.tableName} WHERE ${this.tenantCol} = $1`
-```
+| App | Login | Signup | Forgot Password | Reset Password |
+|---|---|---|---|---|
+| APP1 | ✅ `src/app/auth/sign-in/page.tsx` (magic link) | ✅ via onboard flow | N/A (passwordless) | N/A |
+| APP2 | ✅ `src/app/login/` (credentials) | ✅ via claim | ✅ `src/app/forgot-password/` | ✅ `src/app/reset-password/` |
+| APP3 | ❌ **No auth flow** | ❌ **No auth** | ❌ | ❌ |
+| APP4 | ✅ `src/app/auth/sign-in/page.tsx` (magic link) | N/A | N/A | N/A |
 
-While currently safe (all callers use hardcoded strings), this violates defense-in-depth. If any future caller passes user input, it becomes a SQL injection vector.
+#### Dashboard Navigation
 
-**Remediation:** Use a whitelist of allowed identifiers, or use `pg-format` for identifier quoting.
-
-#### DB2. No Connection Timeouts in Public Runtime Pool
-
-**File:** `lead-os-hosted-runtime-wt-public/src/lib/runtime-store.ts:177-181`
-
-The connection pool has `max: 4` but no `connectionTimeoutMillis`, `idleTimeoutMillis`, or `statement_timeout`. A single slow query can exhaust all connections and hang the entire application.
-
-**Remediation:** Add timeout configuration:
-```typescript
-const pool = new Pool({
-  max: 4,
-  connectionTimeoutMillis: 5000,
-  idleTimeoutMillis: 30000,
-  statement_timeout: 10000,
-});
-```
-
-### HIGH
-
-#### DB3. Webhook Secrets Stored in Plaintext
-
-- **Erie Pro:** `schema.prisma:545` — `WebhookEndpoint.secret` stored as plain `String`
-- **Hybrid:** `003_additional_tables.sql:505` — webhook secrets in plaintext column
-
-**Remediation:** Encrypt webhook secrets at rest. Use application-level encryption with a KMS-managed key.
-
-#### DB4. Missing Cascade Deletes in Erie Pro
-
-`ApiKey` and `WebhookEndpoint` models in erie-pro's Prisma schema are **missing `onDelete: Cascade`** on their `Provider` relation. Deleting a provider will fail with foreign key constraint violations.
-
-**Remediation:** Add `onDelete: Cascade` to child relations.
-
-#### DB5. Missing Database Indexes
-
-Erie Pro Prisma schema is missing indexes on frequently queried columns:
-- `Lead.email` (used in uniqueness checks and lookups)
-- `Lead.createdAt` (used in sorting and pagination)
-- `User.providerId` (used in auth lookups)
-
-**Remediation:** Add `@@index` declarations in the Prisma schema.
-
-#### DB6. Event Insertion Performance Regression (Public Runtime)
-
-`lead-os-hosted-runtime-wt-public/src/lib/runtime-store.ts:546-555` — `appendEvents()` inserts events one-by-one in a loop, while the hybrid version batches into a single multi-row INSERT. This is an O(n) network round-trip penalty.
-
-**Remediation:** Port the batch insert from hybrid to public runtime.
-
-### MEDIUM
-
-#### DB7. Non-Idempotent Migration Statements
-
-`lead-os-hosted-runtime-wt-hybrid/db/migrations/004_enterprise_upgrade.sql` uses `CREATE INDEX` without `IF NOT EXISTS`, which will fail if run twice.
-
-`002_multi_tenant.sql` is also missing idempotency guards.
-
-**Remediation:** Use `CREATE INDEX IF NOT EXISTS` and `CREATE TABLE IF NOT EXISTS` consistently.
+| App | Sidebar/Nav | Breadcrumbs |
+|---|---|---|
+| APP1 | ✅ `src/app/dashboard/DashboardSidebar.tsx` — collapsible sidebar with keyboard support, 27+ pages | No breadcrumbs found |
+| APP2 | ✅ `src/app/dashboard/layout.tsx` — sidebar layout with nested routes | Skeleton includes breadcrumbs |
+| APP3 | ⚠️ `src/app/dashboard/page.tsx` exists but is a single metrics page | No dashboard nav |
+| APP4 | ⚠️ Dashboard pages exist but no shared nav component found | No sidebar/breadcrumbs |
 
 ---
 
-## 5. TESTING
+### 5. Empty States
 
-### HIGH
-
-#### T1. Zero End-to-End / Integration Tests
-
-No Playwright, Cypress, or browser-based tests exist anywhere in the monorepo. All testing is unit/library-level.
-
-**Test file counts:**
-| App | Test Files |
-|-----|-----------|
-| hybrid | 175 |
-| erie-pro | 8 |
-| neatcircle-beta | 6 |
-| public | 11 |
-
-While hybrid has solid library test coverage, there are **zero UI/component tests** across all 4 apps.
-
-**Remediation:** Add Playwright E2E tests for critical user flows (auth, lead intake, dashboard). Add component tests for shared UI.
-
-#### T2. CI Pipeline Only Covers 3 of 4 Apps
-
-**File:** `.github/workflows/ci.yml`
-
-The CI pipeline includes typecheck, test, and build for hybrid and erie-pro, but for neatcircle-beta only has a build step (no typecheck, no tests). `lead-os-hosted-runtime-wt-public` is **completely absent** from CI.
-
-**Remediation:** Add test and typecheck jobs for all 4 apps.
-
-#### T3. Security Audit in CI Uses `|| true`
-
-```yaml
-run: npm audit --audit-level=critical || true
-```
-
-The `|| true` suffix means the security audit **never fails the build**, even with critical vulnerabilities. This makes it purely informational.
-
-**Remediation:** Remove `|| true` at least for critical-level audits, or use a dedicated tool like Snyk/Socket that can be configured with proper thresholds.
-
-### MEDIUM
-
-#### T4. Erie Pro Tests Are Library-Only
-
-Erie Pro's 8 test files only cover library utilities. No API route tests, no middleware tests, no component tests.
+| File | Line | What | Finding |
+|---|---|---|---|
+| APP1 `src/app/dashboard/page.tsx` | 252-253 | No funnel traffic | ✅ "No funnel traffic yet" message |
+| APP1 `src/app/dashboard/page.tsx` | 272-273 | No leads | ✅ "No leads have been captured in this runtime yet" |
+| APP1 `src/app/dashboard/page.tsx` | 298+ | No milestone events | ✅ Handled |
+| APP2 `src/app/dashboard/leads/page.tsx` | — | No leads | ⚠️ **Not checked** — server component renders table directly from DB; if no leads, user sees empty table with headers but no explicit empty state message |
+| APP2 `src/app/lead-status/page.tsx` | 154 | No tracking results | ✅ "text-center text-gray-500 py-8" message shown |
+| APP3 `src/app/dashboard/page.tsx` | — | Metrics page | ⚠️ **No empty state** — fetches from API; if zero data, cards show `0` values but no contextual guidance |
+| APP4 `src/app/dashboard/page.tsx` | — | Dashboard | ⚠️ **Unknown** — depends on API response; no explicit empty-state component found |
 
 ---
 
-## 6. PERFORMANCE
+### 6. Toast/Notification System
 
-### HIGH
-
-#### P1. Zero Usage of `next/image`
-
-Searched all `.tsx` files across all 4 apps: **zero imports of `next/image`**. All images use raw `<img>` tags, missing out on:
-- Automatic WebP/AVIF conversion
-- Responsive `srcSet` generation
-- Lazy loading
-- Layout shift prevention (CLS)
-
-**Remediation:** Replace `<img>` with `next/image` throughout.
-
-#### P2. No Caching Strategy
-
-3 of 4 apps have **no caching layer** — no `unstable_cache`, no Redis caching, no ISR (Incremental Static Regeneration). Every page request hits the origin/database.
-
-**Remediation:** Implement ISR for marketing pages, Redis/unstable_cache for API responses, and proper `Cache-Control` headers.
-
-### MEDIUM
-
-#### P3. Dashboard Fetching Pattern (Waterfall)
-
-Dashboard pages use `useEffect` → `fetch` → `setState`, creating client-side waterfalls. Combined with `"use client"`, this means:
-1. User downloads JavaScript bundle
-2. React hydrates
-3. `useEffect` fires
-4. Fetch begins
-5. Data arrives
-6. Content renders
-
-With server components: steps 1-4 are eliminated.
-
-#### P4. Missing Dynamic Imports for Heavy Components
-
-Large dashboard components are statically imported. Components like charts, rich text editors, and data tables should use `next/dynamic` to reduce initial bundle size.
+| App | System | Details |
+|---|---|---|
+| APP1 | ✅ `src/components/ui/sonner.tsx` + `<Toaster />` in layout (L211) | Sonner toast library integrated at root layout |
+| APP2 | ✅ Dual: `src/components/ui/sonner.tsx` AND `src/components/ui/toaster.tsx` + `src/components/ui/toast.tsx` | Has both Radix toast and Sonner. ⚠️ **Inconsistency risk** — two different toast systems |
+| APP3 | ❌ **No toast system** | No `<Toaster />` in layout, no toast components. Errors shown inline only |
+| APP4 | ❌ **No toast system** | No `<Toaster />` in layout, no toast components |
 
 ---
 
-## 7. ARCHITECTURE
+### 7. Layout Files (Metadata, Fonts, Viewport)
 
-### MEDIUM
-
-#### A1. No Shared Package Strategy
-
-The 4 apps share significant code (types, utilities, validation schemas) but there is no workspace/package mechanism. Code is either duplicated or missing from apps that need it.
-
-**Remediation:** Adopt npm/pnpm workspaces with a `packages/shared` directory.
-
-#### A2. `_n8n_sources/` Inflates Repository
-
-The `_n8n_sources/` directory contains ~10,000+ files of vendored third-party code. This bloats the repository, slows clones, and creates confusion about what is "the product" vs. reference material.
-
-**Remediation:** Move to a separate repository or git submodule. If kept, add a clear README and exclude from CI/linting.
+| App | File | Metadata | Font | Viewport | lang | suppressHydrationWarning |
+|---|---|---|---|---|---|---|
+| APP1 | `src/app/layout.tsx` | ✅ Full (title template, OG, Twitter, icons) | ✅ Inter w/ swap | ✅ Explicit L77 | ✅ `en` | ✅ |
+| APP2 | `src/app/layout.tsx` | ✅ Full (title template, OG, Twitter, icons, manifest) | ✅ Inter | ✅ (Next.js default) | ✅ `en` | ✅ |
+| APP3 | `src/app/layout.tsx` | ✅ Full (title, OG, Twitter, keywords) | ✅ Geist + Geist_Mono | ⚠️ No explicit viewport | ✅ `en` | ❌ **Missing** |
+| APP4 | `src/app/layout.tsx` | ⚠️ **Minimal** — title + description only. No OG, no Twitter, no icons | ❌ **No font loaded** | ❌ **No explicit viewport** | ✅ `en` | ❌ **Missing** |
 
 ---
 
-## Prioritized Action Plan
+## Part B — Accessibility Audit (WCAG 2.1 AA)
 
-### Immediate (This Week)
+### 1. Images Without `alt` Attributes
 
-1. **Rotate all exposed credentials** (S1) — Telegram, Emailit, AITable, WBizTool, Make.com, Discord webhooks
-2. **Purge secrets from git history** using BFG Repo-Cleaner
-3. **Remove auth bypass headers** in neatcircle middleware (S3)
-4. **Fix `.gitignore`** to use `**/.env` and remove tracked `.env` file (S2)
-5. **Run `npm audit fix`** in neatcircle-beta (D2)
-6. **Bump Next.js** in public runtime to fix HTTP smuggling (D3)
+All `<img>` tags in the four primary apps have `alt` attributes:
 
-### Short-Term (Next 2-4 Sprints)
+| File | Line | alt Value | Status |
+|---|---|---|---|
+| APP2 `src/components/photo-gallery-dialog.tsx` | 47-51 | `alt={\`${providerName} photo ${i + 2}\`}` | ✅ |
+| APP2 `src/components/photo-gallery-dialog.tsx` | 69-73 | `alt={\`${providerName} photo ${i + 1}\`}` | ✅ |
+| APP2 `src/components/ui/optimized-image.tsx` | 22-26 | `alt={alt}` (prop pass-through) | ✅ |
+| APP2 `src/app/dashboard/profile/photo-upload.tsx` | 84-88 | `alt={\`${businessName} profile photo\`}` | ✅ |
+| APP2 `src/app/[niche]/[provider]/page.tsx` | 411-416 | `alt=""` with `aria-hidden="true"` (decorative) | ✅ |
 
-7. Add security headers to neatcircle and public runtime (S7)
-8. Add connection timeouts to public runtime DB pool (DB2)
-9. Extract shared package from duplicated hybrid/public code (C1)
-10. Add missing Prisma indexes (DB5) and cascade deletes (DB4)
-11. Expand CI to cover all 4 apps with tests (T2)
-12. Adopt `next/image` across all apps (P1)
-
-### Medium-Term
-
-13. Convert dashboard pages to server components (C2)
-14. Add Playwright E2E tests for critical flows (T1)
-15. Implement proper rate limiting with Redis (S5)
-16. Add caching layer (P2)
-17. Migrate to nonce-based CSP (S8)
-18. Encrypt webhook secrets at rest (DB3)
-19. Evaluate NextAuth stable release for erie-pro (D1)
-20. Implement shared package/workspace strategy (A1)
+**No native `<img>` tags found in APP1, APP3, or APP4** (they use Next.js `<Image>` or SVG icons instead).
 
 ---
 
-## Positive Findings
+### 2. Buttons/Links Without Accessible Labels
 
-The codebase has several strengths worth acknowledging:
+| File | Line | Element | Finding | Severity |
+|---|---|---|---|---|
+| APP3 `src/components/ChatWidget.tsx` | 380-388 | `<button>` with only SVG child | ❌ **No `aria-label`, no text content** — inaccessible send button | **High** |
+| APP3 `src/components/ExitIntent.tsx` | (close button) | `<button>` | ⚠️ Needs verification — may contain only "×" character | Medium |
+| APP1 `src/app/dashboard/DashboardSidebar.tsx` | 347-354 | `<button>` | ✅ Has `aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}` |
+| APP2 `src/components/mobile-nav.tsx` | 27 | `<Button>` | ✅ Has `aria-label="Open menu"` |
+| APP3 `src/components/Navbar.tsx` | 49-53 | `<button>` | ✅ Has `aria-label="Toggle menu"` |
+| APP3 `src/components/FunnelOrchestrator.tsx` | 214-219 | `<button>` | ✅ Has `aria-label="Dismiss"` |
 
-- **TypeScript discipline is excellent** — strict mode everywhere, zero `any`, zero `@ts-ignore`
-- **Parameterized SQL** throughout (with the `PersistentStore` exception noted)
-- **Secure session cookies** with proper flags
-- **bcrypt password hashing** with appropriate cost factor
-- **Timing-safe comparisons** for token validation
-- **Anti-enumeration** on password reset flows
-- **Comprehensive middleware auth** in the hybrid kernel
-- **Well-structured Prisma schema** with good use of enums and relations
-- **Standalone Docker build** with non-root user and health checks
-- **Security-conscious response headers** in hybrid and erie-pro
-- **Pinned GitHub Actions** using commit SHAs (not tags)
-- **Good CI concurrency** configuration with cancel-in-progress
+---
+
+### 3. Heading Hierarchy
+
+#### APP3 — neatcircle-beta ⚠️
+
+| File | Heading Levels Used | Finding |
+|---|---|---|
+| `src/app/page.tsx` (homepage) | Uses h1 (Hero), h2 (sections), h3 (cards) | ✅ Correct hierarchy |
+| `src/components/Footer.tsx` | 58, 75, 94 | ⚠️ **Uses `<h4>` directly** — skips h2/h3 in context of the page hierarchy. Should use a styled lower-weight element or ensure h2/h3 precede it | Low |
+| `src/components/AssessmentQuiz.tsx` | 139 (h3), 196 (h3), 215 (h4), 265 (h3) | ⚠️ Multiple h3 then h4 — context-dependent but the component jumps between levels | Low |
+| `src/app/locations/[slug]/page.tsx` | 92 (h1), 109 (h3) | ⚠️ **Skips h2** — goes h1 → h3 | Medium |
+
+#### APP2 — erie-pro ✅
+
+Footer uses `<h4>` elements (L279, 304, 336) within sections that have implied h2/h3 context. Generally well-structured.
+
+#### APP1 — lead-os-hosted-runtime-wt-hybrid ✅
+
+Uses proper h1 → h2 → h3 hierarchy across pages. `aria-labelledby` used for section headings.
+
+#### APP4 — lead-os-hosted-runtime-wt-public ✅
+
+Simple page structure with h1 → h2 → h3.
+
+---
+
+### 4. Form Inputs With Associated Labels
+
+| File | Line | Input | Finding | Severity |
+|---|---|---|---|---|
+| APP3 `src/components/ROICalculator.tsx` | 133 | `<select>` | ⚠️ Uses `<label className="...">Industry</label>` but **label is not associated** — no `htmlFor` and `id` pairing | **High** |
+| APP3 `src/components/ROICalculator.tsx` | 148 | range input | ⚠️ Same — **label text "Number of Employees" not associated via `htmlFor`/`id`** | **High** |
+| APP3 `src/components/ROICalculator.tsx` | 148-160 | All range inputs | ⚠️ **4 more range inputs** with same pattern — label text present but not programmatically associated | **High** |
+| APP4 `src/components/AdaptiveLeadCaptureForm.tsx` | 210-241 | All text inputs | ⚠️ Uses wrapping `<label>` pattern (label text + input child). **This is valid HTML** but the inputs lack `id` attributes — works for click-to-focus but may not be optimal for all AT | Low |
+| APP3 `src/components/ChatWidget.tsx` | 371-378 | Text input | ⚠️ **No `<label>` or `aria-label`** — only has `placeholder="Type a message..."` | **High** |
+| APP2 forms | All | All | ✅ All use `htmlFor`/`id` pairing or `<Label>` component from shadcn | — |
+| APP1 forms | All | All | ✅ Uses `<label htmlFor>` + `id` consistently | — |
+
+---
+
+### 5. Color Contrast Issues
+
+**Potential WCAG AA failures (4.5:1 ratio for normal text, 3:1 for large text):**
+
+| Class Pattern | Where Used | Concern | Severity |
+|---|---|---|---|
+| `text-slate-400` on dark bg (`bg-navy`, `bg-slate-900`) | APP3: Footer (L47, 64, 83, 103), Hero (L121), Contact (L78, 92, 105), Testimonials (L70), About (L98) | ⚠️ `slate-400` (#94a3b8) on `slate-900` (#0f172a) = ~4.4:1 — **borderline AA for body text** | Medium |
+| `text-slate-400` on white bg | APP3: Pricing (L105, 120), Industries page (L55, 86) | ⚠️ `slate-400` (#94a3b8) on white (#fff) = ~3.3:1 — **fails AA for normal text** | **High** |
+| `text-slate-500` on `bg-slate-900` | APP3: Footer (L50-51, 130) | ⚠️ `slate-500` (#64748b) on `slate-900` = ~3.2:1 — **fails AA** | **High** |
+| `text-gray-400` on light bg | APP2: `setup-form.tsx` (L168), `lead-status/page.tsx` (L32, 41) | ⚠️ `gray-400` (#9ca3af) on white = ~3.0:1 — **fails AA** | **High** |
+| `text-gray-500` on white bg | APP2: login, forgot-password, settings — multiple files | ⚠️ `gray-500` (#6b7280) on white = ~4.6:1 — **passes** but barely | Low |
+| `text-muted-foreground` | All apps | ✅ Uses CSS variable — passes if configured correctly | — |
+| `text-gray-300` on white bg | APP2: `setup-form.tsx` (L103, 123, 144, 165) as label text | ❌ **NOT contrast-failing** — these are paired with `dark:text-gray-300` (dark mode only). Light mode uses `text-gray-700`. | ✅ |
+
+---
+
+### 6. Focus Indicators
+
+| App | Status | Details |
+|---|---|---|
+| APP1 | ✅ Excellent | `focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2` on buttons, inputs, and interactive elements (L131-360 of page.tsx, contact/page.tsx, error.tsx) |
+| APP2 | ✅ Good | shadcn/ui components include `focus-visible:ring-2` by default. Custom forms (login, reset-password) use `focus:outline-none focus:ring-1 focus:ring-blue-500` |
+| APP3 | ⚠️ **Inconsistent** | Contact form inputs use `focus:ring-2 focus:ring-cyan/40` ✅, but Navbar links (`text-slate-300 hover:text-white`) have **no visible focus indicator** ❌. ROI Calculator inputs use `focus:ring-2 focus:ring-cyan/20` (very subtle). ChatWidget input uses `focus:ring-1 focus:ring-cyan/20` (extremely subtle) | **High** |
+| APP4 | ⚠️ **Relies on browser defaults** | Uses custom CSS classes (`primary`, `secondary`) — no explicit `focus-visible` styles found in components. Browser default outline may be suppressed | Medium |
+
+---
+
+### 7. Keyboard Navigation
+
+| File | Line | Finding |
+|---|---|---|
+| APP1 `src/app/dashboard/leads/page.tsx` | 350-377 | ✅ Sort headers have `tabIndex={0}` + `onKeyDown` (Enter/Space) |
+| APP1 `src/app/dashboard/tenants/page.tsx` | 125-126 | ✅ `tabIndex={0}` + `onKeyDown` for expand/collapse |
+| APP1 `src/app/dashboard/DashboardSidebar.tsx` | 272 | ✅ Traps focus in sidebar with `querySelectorAll('a[href], button:not([disabled]), [tabindex]')` |
+| APP1 `src/app/onboard/page.tsx` | 358, 423, 487 | ✅ `onKeyDown` for Enter key on interactive elements |
+| APP1 `src/components/getting-started-checklist.tsx` | 258 | ✅ `onKeyDown` for checklist items |
+| APP2 `src/components/service-search.tsx` | 111 | ✅ `onKeyDown={handleKeyDown}` for search |
+| APP3 `src/components/ChatWidget.tsx` | 376 | ✅ Enter key sends message |
+| APP3 `src/components/Navbar.tsx` | — | ⚠️ **Mobile menu toggle and links lack keyboard close** (Escape key handler) | Medium |
+| APP4 | — | ⚠️ **No explicit keyboard handlers found** — relies on native form behavior | Low |
+
+---
+
+### 8. `aria-live` Regions for Dynamic Content
+
+| App | Usage | Assessment |
+|---|---|---|
+| APP1 | ✅ Extensive: 15+ instances across SetupWizardClient, calculator, error pages, dashboard pages, forms | Properly uses `aria-live="polite"` for status updates and `aria-live="assertive"` for errors |
+| APP2 | ✅ Excellent: Every form error/success uses `role="alert" aria-live="polite"` | `lead-form.tsx` (L157, 184), `contact-form.tsx` (L160, 192), `login-form.tsx` (L49), `forgot-password-form.tsx` (L68), all dashboard forms |
+| APP3 | ⚠️ **No `aria-live` regions found in any component** | Contact.tsx error (L176) is plain `<p>` without `role="alert"` or `aria-live`. ChatWidget messages appear dynamically without announcement. | **High** |
+| APP4 | ✅ Good: `AdaptiveLeadCaptureForm.tsx` (L157) uses `aria-live="polite"` on sticky summary, sign-in page uses `role="alert"` | — |
+
+---
+
+### 9. Skip Navigation Links
+
+| App | Has Skip Link? | Location | Quality |
+|---|---|---|---|
+| APP1 | ✅ | `src/app/layout.tsx:135-137` | `sr-only focus:not-sr-only` with proper styling, links to `#main-content` |
+| APP2 | ✅ | `src/app/layout.tsx:111-116` | `sr-only focus:not-sr-only focus:fixed` — excellent implementation |
+| APP3 | ✅ | `src/app/layout.tsx:99-104` | Present and functional |
+| APP4 | ✅ | `src/app/layout.tsx:19-21` | Present but uses `className="skip-link"` — ⚠️ **requires external CSS** to be visually hidden/shown. If CSS is missing, skip link is always visible or broken |
+
+---
+
+### 10. Semantic HTML
+
+| App | `<main>` | `<nav>` | `<header>` | `<footer>` | `<section>` | `<article>` | Assessment |
+|---|---|---|---|---|---|---|---|
+| APP1 | ✅ `page.tsx:115`, error pages, pricing, sites | ✅ Footer navs with `aria-label`, setup wizard | ✅ Via SiteHeader | ✅ `layout.tsx:155` with `role="contentinfo"` | ✅ Extensive with `aria-labelledby` | ✅ In offers, industries, sites pages | **Excellent** |
+| APP2 | ✅ `not-found.tsx:7`, error pages, loading | ✅ Mobile nav (`aria-label="Mobile navigation"`), footer navs (`aria-label`) | ✅ Layout header with `<nav aria-label="Main navigation">` | ✅ `layout.tsx:252` with `role="contentinfo"` | ✅ Used in content pages | ✅ Limited usage | **Good** |
+| APP3 | ❌ **No `<main>` element** in layout or page components | ✅ Navbar `<nav>` (L20) | ❌ **No `<header>` element** — Navbar is a `<nav>` directly | ✅ Footer.tsx (L35) | ✅ Used in sections (Contact, Hero) | ❌ No `<article>` elements | **Poor** |
+| APP4 | ✅ `sign-in/page.tsx:15` | ❌ **No `<nav>`** element | ❌ **No `<header>`** | ❌ **No `<footer>`** | ✅ Used in sign-in, forms | ✅ In AdaptiveLeadCaptureForm | **Poor** |
+
+#### Specific findings:
+
+| File | Line | Finding | Severity |
+|---|---|---|---|
+| APP3 `src/app/layout.tsx` | 105 | `<div id="main-content">` — should be `<main id="main-content">` | **High** |
+| APP4 `src/app/layout.tsx` | 31 | `<div id="main-content">` — should be `<main id="main-content">` | **High** |
+| APP2 `src/app/layout.tsx` | 244 | `<div id="main-content" role="main">` — ⚠️ `role="main"` is redundant if changed to `<main>`, but the current `<div>` with `role="main"` is acceptable | Low |
+| APP1 `src/app/layout.tsx` | 152 | `<div id="main-content">` — should be `<main>` but layout includes header/footer outside the div | Medium |
+
+---
+
+## Summary of Critical Findings (Release Blockers)
+
+### P0 — Must Fix Before Release
+
+| # | App | Issue | File:Line |
+|---|---|---|---|
+| 1 | APP3 | **No `not-found.tsx`** — bad URLs show generic error | `src/app/` (missing file) |
+| 2 | APP3 | **No `error.tsx`** — runtime errors crash with no recovery | `src/app/` (missing file) |
+| 3 | APP3 | **No `loading.tsx`** — no loading feedback | `src/app/` (missing file) |
+| 4 | APP4 | **No `not-found.tsx`** — bad URLs show generic error | `src/app/` (missing file) |
+| 5 | APP4 | **No `error.tsx`** — runtime errors crash with no recovery | `src/app/` (missing file) |
+| 6 | APP4 | **No `loading.tsx`** — no loading feedback | `src/app/` (missing file) |
+| 7 | APP3 | **ChatWidget send button inaccessible** — SVG-only, no aria-label | `src/components/ChatWidget.tsx:380-388` |
+| 8 | APP3 | **ChatWidget input has no label** — only placeholder | `src/components/ChatWidget.tsx:371-378` |
+| 9 | APP3 | **ROICalculator inputs not labeled** — 6 inputs missing `htmlFor`/`id` | `src/components/ROICalculator.tsx:133-160` |
+| 10 | APP3 | **No `aria-live` anywhere** — dynamic content invisible to screen readers | All components |
+| 11 | APP3 | **`<div>` instead of `<main>`** — skip link target is not a landmark | `src/app/layout.tsx:105` |
+| 12 | APP4 | **`<div>` instead of `<main>`** — skip link target is not a landmark | `src/app/layout.tsx:31` |
+| 13 | APP3 | **Color contrast failures** — `text-slate-400` on white, `text-slate-500` on dark | Multiple (see Section B.5) |
+
+### P1 — Should Fix Before Release
+
+| # | App | Issue | File:Line |
+|---|---|---|---|
+| 14 | APP3 | Contact form error lacks `role="alert"` | `src/components/Contact.tsx:175-178` |
+| 15 | APP3 | ROI Calculator swallows fetch errors silently | `src/components/ROICalculator.tsx:111` |
+| 16 | APP3 | ExitIntent email form has no error state | `src/components/ExitIntent.tsx` |
+| 17 | APP3 | Navbar links have no focus indicators | `src/components/Navbar.tsx:31-38` |
+| 18 | APP3 | No `<header>` semantic element | `src/components/Navbar.tsx` |
+| 19 | APP3 | No `<main>` semantic element | `src/app/layout.tsx` |
+| 20 | APP4 | Minimal metadata — no OG, no Twitter, no icons | `src/app/layout.tsx:7-10` |
+| 21 | APP4 | No font loaded — falls back to system fonts | `src/app/layout.tsx` |
+| 22 | APP4 | No `suppressHydrationWarning` on `<html>` | `src/app/layout.tsx:17` |
+| 23 | APP4 | No toast/notification system | Layout level |
+| 24 | APP3 | No toast/notification system | Layout level |
+| 25 | APP2 | Two different toast systems (Sonner + Radix) — inconsistency risk | `src/components/ui/sonner.tsx` + `src/components/ui/toaster.tsx` |
+| 26 | APP3 | Heading skip h1→h3 in locations page | `src/app/locations/[slug]/page.tsx:92,109` |
+| 27 | APP4 | Skip link relies on external CSS class | `src/app/layout.tsx:19-21` |
+| 28 | APP2 | `text-gray-400` used on light backgrounds | Multiple files (see Section B.5) |
+
+### P2 — Nice to Have
+
+| # | App | Issue | File:Line |
+|---|---|---|---|
+| 29 | APP3 | Footer `<h4>` elements skip heading levels | `src/components/Footer.tsx:58,75,94` |
+| 30 | APP2 | Login "Forgot password?" touch target too small | `src/app/login/login-form.tsx:129-138` |
+| 31 | APP1 | Main content wrapper is `<div>` not `<main>` | `src/app/layout.tsx:152` |
+| 32 | APP4 | No Tailwind/responsive framework — responsiveness unverified | `src/app/layout.tsx` |
+| 33 | APP3 | `suppressHydrationWarning` missing on `<html>` | `src/app/layout.tsx:89` |
