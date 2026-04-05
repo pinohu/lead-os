@@ -32,7 +32,8 @@ export default function IntegrationsPage() {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<"curl" | "js" | "embed">("curl");
 
-  const webhookUrl = "https://erie.pro/api/leads/inbound";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://erie.pro";
+  const webhookUrl = `${appUrl}/api/leads/inbound`;
 
   const fetchKeys = useCallback(async () => {
     try {
@@ -127,7 +128,7 @@ console.log(data); // { success: true, leadId: "...", routedTo: "..." }`;
 
   const embedExample = `<!-- Add to any webpage to embed a lead form -->
 <script
-  src="https://erie.pro/embed.js"
+  src="${appUrl}/embed.js"
   data-key="YOUR_API_KEY"
   data-niche="plumbing"
 ></script>`;
