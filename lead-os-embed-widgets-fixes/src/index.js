@@ -12,18 +12,29 @@ const Z_DRAWER = "999998";
 const Z_LAUNCHER = "999999";
 const BOOT_CACHE_KEY = "lead-os-boot";
 const BOOT_CACHE_TTL_MS = 5 * 60 * 1000;
+const FETCH_TIMEOUT_MS = 5000;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const HEX_COLOR_RE = /^#([0-9a-fA-F]{3,8})$/;
 const MAX_EMAIL_LEN = 254;
 const MAX_MESSAGE_LEN = 2000;
 const SUBMIT_COOLDOWN_MS = 3000;
+const SUCCESS_DISMISS_MS = 5000;
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-function getConfig() {
+let instanceCounter = 0;
+
+function uid(base) {
+  return `${base}-${++instanceCounter}`;
+}
+
+export function getConfig() {
   const config = { ...DEFAULTS, ...(window.LeadOSConfig || {}) };
   if (typeof Object.freeze === "function") Object.freeze(config);
   return config;
 }
 
-function createElement(tag, attrs = {}, children = []) {
+export function createElement(tag, attrs = {}, children = []) {
   const element = document.createElement(tag);
   for (const [key, value] of Object.entries(attrs)) {
     if (key === "style" && typeof value === "object") {
@@ -48,7 +59,7 @@ function createElement(tag, attrs = {}, children = []) {
   return element;
 }
 
-function validateEmail(value) {
+export function validateEmail(value) {
   if (!value || typeof value !== "string") return "Email is required.";
   const trimmed = value.trim();
   if (trimmed.length === 0) return "Email is required.";
@@ -57,14 +68,33 @@ function validateEmail(value) {
   return null;
 }
 
-function validateMessage(value) {
+export function validateMessage(value) {
   if (!value || typeof value !== "string" || value.trim().length === 0) return "Message is required.";
   if (value.length > MAX_MESSAGE_LEN) return `Message must be under ${MAX_MESSAGE_LEN} characters.`;
   return null;
 }
 
+export function safeAccent(raw) {
+  if (typeof raw === "string" && HEX_COLOR_RE.test(raw)) return raw;
+  return "#3b82f6";
+}
+
+export function safeWidget(bootConfig) {
+  const widget = bootConfig && bootConfig.widget ? bootConfig.widget : {};
+  return {
+    brandName: (typeof widget.brandName === "string" && widget.brandName.length > 0) ? widget.brandName : "Lead OS",
+    accent: safeAccent(widget.accent),
+  };
+}
+
+function fetchWithTimeout(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+
 async function postJson(url, payload) {
-  const response = await fetch(url, {
+  const response = await fetchWithTimeout(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -102,7 +132,7 @@ async function fetchBootConfig(runtimeBaseUrl) {
   const cached = getCachedBoot();
   if (cached) return cached;
 
-  const response = await fetch(`${runtimeBaseUrl}/api/widgets/boot`);
+  const response = await fetchWithTimeout(`${runtimeBaseUrl}/api/widgets/boot`);
   if (!response.ok) {
     throw new Error(`Boot config fetch failed: ${response.status}`);
   }
@@ -111,16 +141,24 @@ async function fetchBootConfig(runtimeBaseUrl) {
   return data;
 }
 
-function safeWidget(bootConfig) {
-  const widget = bootConfig && bootConfig.widget ? bootConfig.widget : {};
-  return {
-    brandName: widget.brandName || "Lead OS",
-    accent: widget.accent || "#3b82f6",
-  };
+function injectWidgetStyles() {
+  if (document.getElementById("lead-os-embed-styles")) return;
+  const style = document.createElement("style");
+  style.id = "lead-os-embed-styles";
+  style.textContent = `
+    #lead-os-drawer *:focus-visible,
+    .lead-os-launcher:focus-visible {
+      outline: 2px solid #8de6d8;
+      outline-offset: 2px;
+    }
+    #lead-os-drawer input::placeholder,
+    #lead-os-drawer textarea::placeholder {
+      color: #8ba3c7;
+      opacity: 1;
+    }
+  `;
+  document.head.appendChild(style);
 }
-
-const FOCUSABLE_SELECTOR =
-  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 function trapFocus(container) {
   container.addEventListener("keydown", (e) => {
@@ -144,10 +182,13 @@ function trapFocus(container) {
 }
 
 function buildDrawer(config, widget) {
+  const emailId = uid("lead-os-email");
+  const messageId = uid("lead-os-message");
+  const feedbackId = uid("lead-os-feedback");
+
   const drawer = createElement("div", {
     id: "lead-os-drawer",
     role: "dialog",
-    "aria-modal": "true",
     "aria-label": `${widget.brandName} Lead Assistant`,
     style: {
       position: "fixed",
@@ -155,6 +196,8 @@ function buildDrawer(config, widget) {
       right: "24px",
       width: "360px",
       maxWidth: "calc(100vw - 48px)",
+      maxHeight: "calc(100vh - 120px)",
+      overflowY: "auto",
       background: "#08152c",
       color: "#f3f7fb",
       borderRadius: "18px",
@@ -166,26 +209,52 @@ function buildDrawer(config, widget) {
     },
   });
 
-  const title = createElement("h3", { style: { marginTop: "0" } }, [
+  const header = createElement("div", {
+    style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start" },
+  });
+
+  const title = createElement("h2", { style: { marginTop: "0", marginBottom: "8px", fontSize: "18px" } }, [
     `${widget.brandName} Lead Assistant`,
   ]);
 
-  const description = createElement("p", { style: { color: "#bdd0ef" } }, [
+  const closeButton = createElement(
+    "button",
+    {
+      type: "button",
+      "aria-label": "Close widget",
+      style: {
+        background: "transparent",
+        border: "0",
+        color: "#bdd0ef",
+        cursor: "pointer",
+        fontSize: "20px",
+        padding: "4px 8px",
+        lineHeight: "1",
+        flexShrink: "0",
+      },
+    },
+    ["\u00D7"],
+  );
+
+  header.append(title, closeButton);
+
+  const description = createElement("p", { style: { color: "#bdd0ef", marginTop: "0" } }, [
     "Capture a lead, launch an assessment, or route a visitor to the best next step.",
   ]);
 
   const emailLabel = createElement("label", {
-    for: "lead-os-email",
+    for: emailId,
     style: { display: "block", marginBottom: "4px", fontSize: "13px", color: "#bdd0ef" },
   }, ["Email"]);
 
   const emailInput = createElement("input", {
-    id: "lead-os-email",
+    id: emailId,
     type: "email",
     placeholder: "you@example.com",
     maxlength: String(MAX_EMAIL_LEN),
     required: "true",
     "aria-required": "true",
+    "aria-describedby": feedbackId,
     autocomplete: "email",
     style: {
       width: "100%",
@@ -200,16 +269,18 @@ function buildDrawer(config, widget) {
   });
 
   const messageLabel = createElement("label", {
-    for: "lead-os-message",
+    for: messageId,
     style: { display: "block", marginBottom: "4px", fontSize: "13px", color: "#bdd0ef" },
   }, ["Message"]);
 
   const messageInput = createElement("textarea", {
-    id: "lead-os-message",
+    id: messageId,
     placeholder: "What does the visitor need help with?",
     maxlength: String(MAX_MESSAGE_LEN),
     required: "true",
     "aria-required": "true",
+    "aria-describedby": feedbackId,
+    autocomplete: "off",
     style: {
       width: "100%",
       minHeight: "90px",
@@ -218,19 +289,32 @@ function buildDrawer(config, widget) {
       border: "1px solid rgba(255,255,255,0.12)",
       background: "#102447",
       color: "#fff",
-      marginBottom: "12px",
+      marginBottom: "4px",
       boxSizing: "border-box",
       resize: "vertical",
     },
   });
 
+  const charCounter = createElement("div", {
+    "aria-hidden": "true",
+    style: { textAlign: "right", fontSize: "12px", color: "#667a99", marginBottom: "12px" },
+  }, [`0 / ${MAX_MESSAGE_LEN}`]);
+
+  messageInput.addEventListener("input", () => {
+    const len = messageInput.value.length;
+    charCounter.textContent = `${len} / ${MAX_MESSAGE_LEN}`;
+    charCounter.style.color = len > MAX_MESSAGE_LEN * 0.9 ? "#f87171" : "#667a99";
+  });
+
   const feedback = createElement("div", {
+    id: feedbackId,
     "aria-live": "polite",
     role: "status",
     style: { minHeight: "24px", color: "#8de6d8", fontSize: "14px" },
   });
 
   let lastSubmitTime = 0;
+  let dismissTimer = null;
 
   const submitButton = createElement(
     "button",
@@ -248,6 +332,8 @@ function buildDrawer(config, widget) {
         fontSize: "15px",
       },
       onClick: async () => {
+        if (dismissTimer) { clearTimeout(dismissTimer); dismissTimer = null; }
+
         const emailError = validateEmail(emailInput.value);
         if (emailError) {
           feedback.textContent = emailError;
@@ -291,6 +377,8 @@ function buildDrawer(config, widget) {
             feedback.textContent = "Lead captured successfully.";
             emailInput.value = "";
             messageInput.value = "";
+            charCounter.textContent = `0 / ${MAX_MESSAGE_LEN}`;
+            dismissTimer = setTimeout(() => { feedback.textContent = ""; }, SUCCESS_DISMISS_MS);
           } else {
             feedback.textContent = "Lead submission failed. Please try again.";
           }
@@ -320,14 +408,18 @@ function buildDrawer(config, widget) {
   );
 
   drawer.append(
-    title, description,
+    header, description,
     emailLabel, emailInput,
-    messageLabel, messageInput,
+    messageLabel, messageInput, charCounter,
     submitButton, feedback,
     assessmentLink,
   );
 
   trapFocus(drawer);
+
+  closeButton.addEventListener("click", () => {
+    drawer._onClose();
+  });
 
   return drawer;
 }
@@ -336,8 +428,8 @@ function buildLauncher(accent) {
   return createElement(
     "button",
     {
-      id: "lead-os-launcher",
       type: "button",
+      class: "lead-os-launcher",
       style: {
         position: "fixed",
         bottom: "24px",
@@ -356,19 +448,29 @@ function buildLauncher(accent) {
       "aria-label": "Open Lead OS widget",
       "aria-haspopup": "dialog",
       "aria-expanded": "false",
+      title: "Open Lead OS widget",
     },
     ["LO"],
   );
 }
 
-function toggleDrawer(drawer, launcher) {
-  const isOpen = drawer.style.display !== "none";
-  drawer.style.display = isOpen ? "none" : "block";
-  launcher.setAttribute("aria-expanded", String(!isOpen));
+function openDrawer(drawer, launcher) {
+  drawer.style.display = "block";
+  launcher.setAttribute("aria-expanded", "true");
+  const firstInput = drawer.querySelector("input, textarea");
+  if (firstInput) firstInput.focus();
+}
 
-  if (!isOpen) {
-    const firstInput = drawer.querySelector("input, textarea");
-    if (firstInput) firstInput.focus();
+function closeDrawer(drawer, launcher) {
+  drawer.style.display = "none";
+  launcher.setAttribute("aria-expanded", "false");
+}
+
+function toggleDrawer(drawer, launcher) {
+  if (drawer.style.display !== "none") {
+    closeDrawer(drawer, launcher);
+  } else {
+    openDrawer(drawer, launcher);
   }
 }
 
@@ -379,44 +481,68 @@ export async function mountLeadOS() {
     return;
   }
 
-  let bootConfig;
-  try {
-    bootConfig = await fetchBootConfig(config.runtimeBaseUrl);
-  } catch (err) {
-    console.warn("[Lead OS] Failed to load boot config:", err.message);
-    bootConfig = {};
+  injectWidgetStyles();
+
+  const defaultWidget = safeWidget({});
+  const launcher = buildLauncher(defaultWidget.accent);
+  document.body.appendChild(launcher);
+
+  let drawer = null;
+  let outsideClickBound = false;
+
+  function handleClose() {
+    if (drawer) {
+      closeDrawer(drawer, launcher);
+      launcher.focus();
+    }
   }
 
-  const widget = safeWidget(bootConfig);
-  const launcher = buildLauncher(widget.accent);
-  let drawer = null;
+  fetchBootConfig(config.runtimeBaseUrl)
+    .then((bootConfig) => {
+      const widget = safeWidget(bootConfig);
+      launcher.style.background = widget.accent;
+      launcher._widget = widget;
+    })
+    .catch((err) => {
+      console.warn("[Lead OS] Failed to load boot config:", err.message);
+      launcher._widget = defaultWidget;
+    });
 
-  launcher.addEventListener("click", () => {
+  launcher.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    const widget = launcher._widget || defaultWidget;
+
     if (!drawer) {
       drawer = buildDrawer(config, widget);
+      drawer._onClose = handleClose;
       document.body.appendChild(drawer);
 
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && drawer.style.display !== "none") {
-          toggleDrawer(drawer, launcher);
-          launcher.focus();
-        }
-      });
-
-      document.addEventListener("click", (e) => {
-        if (
-          drawer.style.display !== "none" &&
-          !drawer.contains(e.target) &&
-          !launcher.contains(e.target)
-        ) {
-          toggleDrawer(drawer, launcher);
+      document.addEventListener("keydown", (evt) => {
+        if (evt.key === "Escape" && drawer.style.display !== "none") {
+          handleClose();
         }
       });
     }
-    toggleDrawer(drawer, launcher);
-  });
 
-  document.body.appendChild(launcher);
+    toggleDrawer(drawer, launcher);
+
+    if (!outsideClickBound) {
+      outsideClickBound = true;
+      setTimeout(() => {
+        document.addEventListener("click", (evt) => {
+          if (
+            drawer &&
+            drawer.style.display !== "none" &&
+            !drawer.contains(evt.target) &&
+            !launcher.contains(evt.target)
+          ) {
+            closeDrawer(drawer, launcher);
+          }
+        });
+      }, 0);
+    }
+  });
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
