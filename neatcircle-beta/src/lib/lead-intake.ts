@@ -68,6 +68,16 @@ const TELEGRAM_BOT_TOKEN =
   process.env.TELEGRAM_BOT_TOKEN ?? embeddedSecrets.telegram.botToken;
 const intakeReplayStore = new Map<string, number>();
 const INTAKE_REPLAY_WINDOW_MS = 5 * 60 * 1000;
+let lastReplayEviction = Date.now();
+
+function evictExpiredReplays() {
+  const now = Date.now();
+  if (now - lastReplayEviction < 60_000) return;
+  lastReplayEviction = now;
+  for (const [key, ts] of intakeReplayStore) {
+    if (now - ts >= INTAKE_REPLAY_WINDOW_MS) intakeReplayStore.delete(key);
+  }
+}
 const VALID_SOURCES: IntakeSource[] = [
   "contact_form",
   "assessment",
@@ -113,6 +123,7 @@ function buildReplayKey(payload: LeadIntakePayload, normalized: IntakeResult["no
 }
 
 function isRecentReplay(key: string) {
+  evictExpiredReplays();
   const now = Date.now();
   const existing = intakeReplayStore.get(key);
   if (existing && now - existing < INTAKE_REPLAY_WINDOW_MS) return true;

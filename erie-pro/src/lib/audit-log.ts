@@ -87,6 +87,7 @@ export async function getAuditLogs(options?: {
   offset?: number;
 }) {
   const { providerId, action, entityType, limit = 50, offset = 0 } = options ?? {};
+  const cappedLimit = Math.min(limit, 200);
 
   return prisma.auditLog.findMany({
     where: {
@@ -95,7 +96,7 @@ export async function getAuditLogs(options?: {
       ...(entityType ? { entityType } : {}),
     },
     orderBy: { createdAt: "desc" },
-    take: limit,
+    take: cappedLimit,
     skip: offset,
   });
 }
