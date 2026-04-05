@@ -31,7 +31,7 @@ npx vercel --prod --yes
 ```
 
 ## Auth Token Location
-`C:\Users\VRLab\AppData\Roaming\com.vercel.cli\Data\auth.json`
+Your local Vercel CLI auth token is stored at the default Vercel CLI data path (e.g. `~/.local/share/com.vercel.cli/Data/auth.json` on Linux/macOS).
 
 ## Post-Deploy Verification
 Always wait 10-12 seconds after deploy, then:

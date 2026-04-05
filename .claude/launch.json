@@ -19,7 +19,7 @@
       "name": "erie-pro-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 3004,
+      "port": 3002,
       "autoPort": false,
       "cwd": "erie-pro"
     }
