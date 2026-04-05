@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next"
 import { niches } from "@/lib/niches"
 import { cityConfig } from "@/lib/city-config"
 import { getAllDirectoryListingSlugs } from "@/lib/directory-store"
-import { prisma } from "@/lib/db"
+import { prisma, isDatabaseAvailable } from "@/lib/db"
 
 const BASE = `https://${cityConfig.domain}`
 
@@ -69,14 +69,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // /[niche]/[provider] URL. De-duplicate by slug to avoid double-
   // indexing when a provider claims an existing listing.
   let businessPages: MetadataRoute.Sitemap = []
-  try {
-    const [listings, providers] = await Promise.all([
-      getAllDirectoryListingSlugs(),
-      prisma.provider.findMany({
-        where: { subscriptionStatus: { in: ["active", "trial"] } },
-        select: { slug: true, niche: true, updatedAt: true },
-      }),
-    ])
+  if (isDatabaseAvailable()) {
+    try {
+      const [listings, providers] = await Promise.all([
+        getAllDirectoryListingSlugs(),
+        prisma.provider.findMany({
+          where: { subscriptionStatus: { in: ["active", "trial"] } },
+          select: { slug: true, niche: true, updatedAt: true },
+        }),
+      ])
 
     const seen = new Set<string>()
 
@@ -105,8 +106,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
       })
     }
-  } catch {
-    // DB unavailable during build — skip dynamic URLs
+    } catch {
+      // DB unavailable at runtime — skip dynamic URLs
+    }
   }
 
   // ── Excluded intentionally ─────────────────────────────────────────

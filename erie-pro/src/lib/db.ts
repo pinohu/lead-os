@@ -39,6 +39,11 @@ function getPrismaClient(): PrismaClient {
   return globalForPrisma.prisma;
 }
 
+/** True when DATABASE_URL is configured and Prisma can be used. */
+export function isDatabaseAvailable(): boolean {
+  return !!process.env.DATABASE_URL;
+}
+
 export const prisma = new Proxy({} as PrismaClient, {
   get(_target, prop: string | symbol) {
     return Reflect.get(getPrismaClient(), prop);
