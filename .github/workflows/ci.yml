@@ -14,8 +14,9 @@ env:
   NODE_VERSION: "22"
 
 jobs:
+  # ── Hybrid Runtime ──────────────────────────────────────────────────
   typecheck:
-    name: Type Check
+    name: Type Check (Hybrid)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,7 +32,7 @@ jobs:
       - run: npx tsc --noEmit
 
   test:
-    name: Test
+    name: Test (Hybrid)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -62,6 +63,23 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+  # ── Edge Layer (NeatCircle) ─────────────────────────────────────────
+  lint-edge:
+    name: Lint (Edge)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: neatcircle-beta
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: neatcircle-beta/package-lock.json
+      - run: npm ci
+      - run: npx next lint
+
   build-edge:
     name: Build Edge Layer
     runs-on: ubuntu-latest
@@ -77,3 +95,109 @@ jobs:
           cache-dependency-path: neatcircle-beta/package-lock.json
       - run: npm ci
       - run: npm run build
+
+  # ── Erie Pro ────────────────────────────────────────────────────────
+  typecheck-erie:
+    name: Type Check (Erie Pro)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: erie-pro
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: erie-pro/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+
+  test-erie:
+    name: Test (Erie Pro)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: erie-pro
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: erie-pro/package-lock.json
+      - run: npm ci
+      - run: npm test
+
+  build-erie:
+    name: Build Erie Pro
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: erie-pro
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: erie-pro/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  # ── Public Runtime ──────────────────────────────────────────────────
+  typecheck-public:
+    name: Type Check (Public Runtime)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lead-os-hosted-runtime-wt-public
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: lead-os-hosted-runtime-wt-public/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+
+  build-public:
+    name: Build Public Runtime
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lead-os-hosted-runtime-wt-public
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: lead-os-hosted-runtime-wt-public/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  # ── Security ────────────────────────────────────────────────────────
+  audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - neatcircle-beta
+          - erie-pro
+          - lead-os-hosted-runtime-wt-hybrid
+          - lead-os-hosted-runtime-wt-public
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ matrix.project }}/package-lock.json
+      - run: npm ci
+      - run: npm audit --audit-level=high
