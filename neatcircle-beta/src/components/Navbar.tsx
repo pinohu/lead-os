@@ -4,7 +4,10 @@ import { useState } from "react";
 import { siteConfig } from "@/lib/site-config";
 
 const navLinks = [
+  { label: "Services", href: "/services" },
   { label: "Industries", href: "/#industries" },
+  { label: "Locations", href: "/locations" },
+  { label: "Webinar", href: "/webinar" },
   { label: "Pricing", href: "/#pricing" },
   { label: "About", href: "/#about" },
   { label: "Contact", href: "/#contact" },
