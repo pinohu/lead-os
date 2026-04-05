@@ -78,7 +78,25 @@ export async function decodeOperatorToken(
   if (!body || !signature) return null;
 
   const expectedSignature = await signValue(body, secret);
-  if (signature !== expectedSignature) return null;
+  if (
+    signature.length !== expectedSignature.length ||
+    !crypto.subtle
+  ) return null;
+  try {
+    const key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(secret),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["verify"],
+    );
+    const sigBytes = Buffer.from(signature, "base64url");
+    const bodyBytes = new TextEncoder().encode(body);
+    const valid = await crypto.subtle.verify("HMAC", key, sigBytes, bodyBytes);
+    if (!valid) return null;
+  } catch {
+    return null;
+  }
 
   try {
     const payload = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as OperatorTokenPayload;

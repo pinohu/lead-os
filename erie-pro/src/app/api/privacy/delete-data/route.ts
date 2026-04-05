@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
     const { email, reason } = parsed.data;
 
-    if (email !== session.user.email!.toLowerCase().trim()) {
+    if (email !== session.user.email?.toLowerCase().trim()) {
       return NextResponse.json(
         { success: false, error: "You can only request deletion of data associated with your own account." },
         { status: 403 }

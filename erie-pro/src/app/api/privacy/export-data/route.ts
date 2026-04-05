@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
     const { email } = parsed.data;
 
-    if (email !== session.user.email!.toLowerCase().trim()) {
+    if (email !== session.user.email?.toLowerCase().trim()) {
       return NextResponse.json(
         { success: false, error: "You can only export data associated with your own account." },
         { status: 403 }
