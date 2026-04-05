@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getSiteUrl } from "@/lib/site-url";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface RevenueData {
@@ -75,9 +76,7 @@ const DEMO_REVENUE: RevenueData = {
 
 async function fetchRevenueData(): Promise<RevenueData> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000");
+    const baseUrl = getSiteUrl();
     const res = await fetch(`${baseUrl}/api/revenue/command?tenantId=default`, {
       cache: "no-store",
     });

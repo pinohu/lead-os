@@ -1,6 +1,7 @@
 import { getPool } from "./db.ts";
 import { getPlanById } from "./plan-catalog.ts";
 import { createTenant, type CreateTenantInput } from "./tenant-store.ts";
+import { getSiteUrl } from "./site-url.ts";
 
 export type OnboardingStep = "niche" | "plan" | "branding" | "integrations" | "review" | "complete";
 
@@ -411,7 +412,7 @@ export async function completeOnboarding(id: string): Promise<OnboardingState> {
 
   const tenant = await createTenant(tenantInput);
 
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000");
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : getSiteUrl();
   const embedScript = `<script src="${baseUrl}/embed.js" data-tenant="${tenant.tenantId}" data-accent="${tenant.accent}" async></script>`;
   const dashboardUrl = `${baseUrl}/dashboard?tenantId=${tenant.tenantId}`;
 

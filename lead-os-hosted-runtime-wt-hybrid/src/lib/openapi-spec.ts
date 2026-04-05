@@ -1,3 +1,5 @@
+import { getSiteUrl } from "./site-url.ts";
+
 export function buildOpenApiSpec(): object {
   return {
     openapi: "3.1.0",
@@ -9,8 +11,7 @@ export function buildOpenApiSpec(): object {
       license: { name: "MIT", url: "https://opensource.org/licenses/MIT" },
     },
     servers: [
-      { url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://leadgen-os.com", description: "Production" },
-      { url: "http://localhost:3000", description: "Development" },
+      { url: getSiteUrl(), description: process.env.NODE_ENV === "production" ? "Production" : "Development" },
     ],
     components: {
       securitySchemes: {

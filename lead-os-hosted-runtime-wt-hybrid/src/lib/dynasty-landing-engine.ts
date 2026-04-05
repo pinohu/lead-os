@@ -3,10 +3,13 @@
  * functions for the landing page config DSL.
  *
  * 22 preset configs spanning:
+
  *   - 5 persona types   (category: "persona")
  *   - 4 revenue models  (category: "revenue-model")
  *   - 13 industry pages (category: "industry")
  */
+
+import { getSiteUrl } from "./site-url.ts";
 
 // ---------------------------------------------------------------------------
 // Primitives
@@ -330,10 +333,7 @@ export interface SiteJsonLd {
 }
 
 export function generateSiteJsonLd(config: DynastyLandingConfig): SiteJsonLd {
-  const base =
-    process.env.NEXT_PUBLIC_APP_URL ??
-    process.env.NEXTAUTH_URL ??
-    "https://localhost:3000";
+  const base = getSiteUrl();
   const url = `${base}/d/${config.slug}`;
 
   return {
@@ -377,10 +377,7 @@ export interface SiteMeta {
 }
 
 export function generateSiteMeta(config: DynastyLandingConfig): SiteMeta {
-  const base =
-    process.env.NEXT_PUBLIC_APP_URL ??
-    process.env.NEXTAUTH_URL ??
-    "https://localhost:3000";
+  const base = getSiteUrl();
   return {
     title: config.meta.title,
     description: config.meta.description,

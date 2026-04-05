@@ -4,8 +4,6 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
 import { startTrace } from "@/lib/request-tracer";
 
-export const runtime = "nodejs";
-
 // ---------------------------------------------------------------------------
 // Rate limiter for auth endpoints — 10 requests per minute per IP
 // ---------------------------------------------------------------------------
@@ -146,7 +144,7 @@ function getClientIp(request: NextRequest): string {
   return request.headers.get("x-real-ip") ?? "unknown";
 }
 
-export async function middleware(request: NextRequest): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const requestId = crypto.randomUUID();
   const { pathname } = request.nextUrl;
   const method = request.method;
