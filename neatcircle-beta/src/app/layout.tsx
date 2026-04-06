@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import BehavioralTracker from "@/components/BehavioralTracker";
-import ExitIntent from "@/components/ExitIntent";
-import ChatWidget from "@/components/ChatWidget";
-import FunnelOrchestrator from "@/components/FunnelOrchestrator";
-import WhatsAppOptIn from "@/components/WhatsAppOptIn";
+import dynamic from "next/dynamic";
 import { siteConfig } from "@/lib/site-config";
+
+const BehavioralTracker = dynamic(() => import("@/components/BehavioralTracker"), { ssr: false });
+const ExitIntent = dynamic(() => import("@/components/ExitIntent"), { ssr: false });
+const ChatWidget = dynamic(() => import("@/components/ChatWidget"), { ssr: false });
+const FunnelOrchestrator = dynamic(() => import("@/components/FunnelOrchestrator"), { ssr: false });
+const WhatsAppOptIn = dynamic(() => import("@/components/WhatsAppOptIn"), { ssr: false });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

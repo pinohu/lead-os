@@ -5,20 +5,48 @@ import {
   type WebsiteIntelligenceInput,
 } from "@/lib/website-intelligence";
 
-async function fetchTargetHtml(url: string) {
-  const response = await fetch(url, {
-    headers: {
-      "user-agent": "LeadOS-IntelligenceBot/1.0 (+https://github.com/pinohu/lead-os)",
-      accept: "text/html,application/xhtml+xml",
-    },
-    cache: "no-store",
-  });
+function isAllowedUrl(raw: string): boolean {
+  try {
+    const parsed = new URL(raw);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return false;
+    const hostname = parsed.hostname.toLowerCase();
+    if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1") return false;
+    if (hostname.endsWith(".local") || hostname.endsWith(".internal")) return false;
+    if (/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|169\.254\.)/.test(hostname)) return false;
+    if (hostname === "metadata.google.internal") return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch target website (${response.status})`);
+async function fetchTargetHtml(url: string) {
+  if (!isAllowedUrl(url)) {
+    throw new Error("URL is not allowed. Only public HTTP(S) URLs are accepted.");
   }
 
-  return response.text();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "user-agent": "LeadOS-IntelligenceBot/1.0 (+https://github.com/pinohu/lead-os)",
+        accept: "text/html,application/xhtml+xml",
+      },
+      cache: "no-store",
+      signal: controller.signal,
+      redirect: "follow",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch target website (${response.status})`);
+    }
+
+    return response.text();
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function POST(request: Request) {

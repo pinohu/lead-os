@@ -1,12 +1,25 @@
 import { logger } from "@/lib/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { processLeadIntake } from "@/lib/lead-intake";
+import { enforceRateLimit, getRequestIdentity, isPlainObject } from "@/lib/request-guards";
 
 export async function POST(req: NextRequest) {
   try {
+    const identity = getRequestIdentity(req);
+    const rateLimit = enforceRateLimit(`contact:${identity}`, 5, 60_000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        { status: 429 },
+      );
+    }
+
     const body = await req.json();
-    const { firstName, lastName, email, company, phone, service, message } =
-      body;
+    if (!isPlainObject(body)) {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
+
+    const { firstName, lastName, email, company, phone, service, message } = body;
 
     if (!firstName || !lastName || !email) {
       return NextResponse.json(

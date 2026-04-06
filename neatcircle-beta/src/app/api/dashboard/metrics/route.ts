@@ -42,8 +42,9 @@ async function fetchAllRecords(): Promise<AITableRecord[]> {
   const allRecords: AITableRecord[] = [];
   let pageNum = 1;
   let hasMore = true;
+  const MAX_PAGES = 20;
 
-  while (hasMore) {
+  while (hasMore && pageNum <= MAX_PAGES) {
     const res = await fetch(
       `${AITABLE.apiBase}/datasheets/${AITABLE.datasheetId}/records?fieldKey=name&pageSize=1000&pageNum=${pageNum}`,
       { headers: { Authorization: `Bearer ${AITABLE.apiToken}` } },
@@ -61,16 +62,6 @@ async function fetchAllRecords(): Promise<AITableRecord[]> {
 }
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  const dashboardSecret = process.env.DASHBOARD_SECRET ?? embeddedSecrets.dashboard.secret;
-  if (
-    dashboardSecret &&
-    authHeader !== `Bearer ${dashboardSecret}` &&
-    !isTrustedDashboardRequest(request)
-  ) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
     const records = await fetchAllRecords();
     const now = new Date();

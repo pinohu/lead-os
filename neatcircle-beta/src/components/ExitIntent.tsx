@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   buildTraceIntakePayload,
   ensureVisitorId,
@@ -144,11 +144,52 @@ export default function ExitIntent() {
     sessionStorage.setItem("nc_exit_dismissed", "true");
   };
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!visible) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const focusableElements = dialog.querySelectorAll<HTMLElement>(
+      'input, button, a, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusableElements[0];
+    const last = focusableElements[focusableElements.length - 1];
+    first?.focus();
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        dismiss();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    }
+
+    dialog.addEventListener("keydown", handleKeyDown);
+    return () => dialog.removeEventListener("keydown", handleKeyDown);
+  }, [visible]);
+
   if (!visible) return null;
 
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="exit-intent-title"
+      ref={dialogRef}
       onClick={(e) => {
         if (e.target === e.currentTarget) dismiss();
       }}
@@ -167,7 +208,7 @@ export default function ExitIntent() {
             <div className="mb-2 text-sm font-semibold uppercase tracking-wider text-cyan">
               Free Assessment
             </div>
-            <h3 className="mb-2 text-2xl font-bold text-navy">{offer.headline}</h3>
+            <h3 id="exit-intent-title" className="mb-2 text-2xl font-bold text-navy">{offer.headline}</h3>
             <p className="mb-6 text-gray-600">{offer.subtext}</p>
 
             <form onSubmit={handleSubmit} className="space-y-3">
