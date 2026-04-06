@@ -9,9 +9,6 @@ import { bookingConfirmationTemplate } from './emailTemplates/bookingConfirmatio
 import { tcApplicationConfirmationTemplate } from './emailTemplates/tcApplicationConfirmation';
 import { cropApplicationConfirmationTemplate } from './emailTemplates/cropApplicationConfirmation';
 
-const emailitApiKey = import.meta.env.VITE_EMAILIT_API_KEY;
-const emailitApiUrl = import.meta.env.VITE_EMAILIT_API_URL || 'https://api.emailit.com/v1';
-
 const DEFAULT_FROM = 'Notroom <noreply@notroom.com>';
 const DEFAULT_FROM_EMAIL = 'noreply@notroom.com';
 
@@ -47,39 +44,18 @@ async function sendEmailViaEmailit(
   html: string,
   from?: string
 ): Promise<boolean> {
-  if (!emailitApiKey) {
-    logger.warn('Emailit.com API key not configured');
-    return false;
-  }
-
   try {
-    // Emailit.com API endpoint: /emails
-    // Format: from, to, subject, message (NOT html - use message, content, or body)
-    // From can be "Name <email@domain.com>" or just "email@domain.com"
-    const response = await fetch(`${emailitApiUrl}/emails`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${emailitApiKey}`,
-      },
-      body: JSON.stringify({
-        from: from || DEFAULT_FROM_EMAIL,
-        to: to,
-        subject: subject,
-        message: html, // Emailit.com uses 'message' field for HTML content
-      }),
+    const { supabase } = await import('@/integrations/supabase/client');
+    const { error } = await supabase.functions.invoke('send-booking-confirmation', {
+      body: { to, subject, html, from: from || DEFAULT_FROM_EMAIL },
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-      throw new Error(`Emailit.com API error: ${errorData.message || response.statusText}`);
+    if (error) {
+      logger.error('Email service error:', error);
+      return false;
     }
-
-    const result = await response.json();
-    logger.log('Email sent via Emailit.com:', { to, subject, result });
     return true;
   } catch (error) {
-    logger.error('Emailit.com API error:', error);
+    logger.error('Email service error:', error);
     return false;
   }
 }
@@ -89,20 +65,6 @@ async function sendEmailViaEmailit(
  */
 export async function captureLeadMagnetEmail(leadData: LeadData): Promise<boolean> {
   try {
-    if (!emailitApiKey) {
-      logger.warn('Emailit.com API key not configured, storing lead locally');
-      // Fallback to localStorage in development
-      if (import.meta.env.DEV) {
-        const leads = JSON.parse(localStorage.getItem('captured_leads') || '[]');
-        leads.push({
-          ...leadData,
-          capturedAt: new Date().toISOString()
-        });
-        localStorage.setItem('captured_leads', JSON.stringify(leads));
-      }
-      return false;
-    }
-
     // Send welcome email
     const emailSent = await sendEmailViaEmailit(
       leadData.email,
@@ -133,11 +95,6 @@ export async function sendTransactionalEmail(
   options: TransactionalEmailOptions
 ): Promise<boolean> {
   try {
-    if (!emailitApiKey) {
-      logger.warn('Emailit.com API key not configured');
-      return false;
-    }
-
     const emailSent = await sendEmailViaEmailit(
       options.to,
       options.subject,

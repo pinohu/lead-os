@@ -114,9 +114,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       if (!user) throw new Error('No user logged in');
 
+      const ALLOWED_PROFILE_FIELDS = ['display_name', 'company_name', 'phone', 'notification_preferences'] as const;
+      const sanitizedData = Object.fromEntries(
+        Object.entries(data).filter(([key]) => (ALLOWED_PROFILE_FIELDS as readonly string[]).includes(key))
+      );
+
       const { error } = await supabase
         .from('profiles')
-        .update(data)
+        .update(sanitizedData)
         .eq('id', user.id);
 
       if (error) throw error;

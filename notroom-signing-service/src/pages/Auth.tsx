@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,7 +56,8 @@ export default function Auth() {
 
   useEffect(() => {
     if (user) {
-      const redirect = searchParams.get('redirect') || '/portal';
+      const raw = searchParams.get('redirect') || '/portal';
+      const redirect = raw.startsWith('/') && !raw.startsWith('//') ? raw : '/portal';
       navigate(redirect);
     }
   }, [user, navigate, searchParams]);
@@ -105,7 +106,7 @@ export default function Auth() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-white px-4 py-12 pt-32">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <Building className="h-12 w-12 mx-auto mb-4 text-primary" />
+            <Building className="h-12 w-12 mx-auto mb-4 text-primary" aria-hidden="true" />
             <CardTitle className="text-2xl">Client Portal</CardTitle>
             <CardDescription>
               Access your CROP account to manage mail and services
@@ -136,6 +137,7 @@ export default function Auth() {
                         type="email"
                         placeholder="your@email.com"
                         className="pl-10"
+                        autoComplete="email"
                         {...loginForm.register('email')}
                       />
                     </div>
@@ -153,6 +155,7 @@ export default function Auth() {
                         type="password"
                         placeholder="••••••••"
                         className="pl-10"
+                        autoComplete="current-password"
                         {...loginForm.register('password')}
                       />
                     </div>
@@ -178,6 +181,7 @@ export default function Auth() {
                         type="email"
                         placeholder="your@email.com"
                         className="pl-10"
+                        autoComplete="email"
                         {...signupForm.register('email')}
                       />
                     </div>
@@ -195,6 +199,7 @@ export default function Auth() {
                         type="text"
                         placeholder="John Doe"
                         className="pl-10"
+                        autoComplete="name"
                         {...signupForm.register('displayName')}
                       />
                     </div>
@@ -212,6 +217,7 @@ export default function Auth() {
                         type="text"
                         placeholder="Your Company LLC"
                         className="pl-10"
+                        autoComplete="organization"
                         {...signupForm.register('companyName')}
                       />
                     </div>
@@ -229,6 +235,7 @@ export default function Auth() {
                         type="tel"
                         placeholder="+1 (555) 123-4567"
                         className="pl-10"
+                        autoComplete="tel"
                         {...signupForm.register('phone')}
                       />
                     </div>
@@ -246,6 +253,7 @@ export default function Auth() {
                         type="password"
                         placeholder="••••••••"
                         className="pl-10"
+                        autoComplete="new-password"
                         {...signupForm.register('password')}
                       />
                     </div>
@@ -263,6 +271,7 @@ export default function Auth() {
                         type="password"
                         placeholder="••••••••"
                         className="pl-10"
+                        autoComplete="new-password"
                         {...signupForm.register('confirmPassword')}
                       />
                     </div>
@@ -279,7 +288,7 @@ export default function Auth() {
             </Tabs>
 
             <div className="mt-6 text-center text-sm text-muted-foreground">
-              <p>Need help? <a href="/contact" className="text-primary hover:underline">Contact Support</a></p>
+              <p>Need help? <Link to="/contact" className="text-primary hover:underline">Contact Support</Link></p>
             </div>
           </CardContent>
         </Card>

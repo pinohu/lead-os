@@ -14,8 +14,8 @@ export async function verifyWebhookSignature(
   secret: string
 ): Promise<boolean> {
   if (!secret) {
-    console.warn('Webhook secret not configured - signature verification disabled');
-    return true; // Backward compatibility
+    console.warn('Webhook secret not configured - rejecting request');
+    return false;
   }
 
   if (!signature) {
@@ -44,7 +44,14 @@ export async function verifyWebhookSignature(
     // Remove any prefix like 'sha256=' if present
     const providedSig = signature.toLowerCase().replace(/^sha256=/, '');
     
-    return expectedHex === providedSig;
+    const a = new TextEncoder().encode(expectedHex);
+    const b = new TextEncoder().encode(providedSig);
+    if (a.length !== b.length) return false;
+    let mismatch = 0;
+    for (let i = 0; i < a.length; i++) {
+      mismatch |= a[i] ^ b[i];
+    }
+    return mismatch === 0;
   } catch (error) {
     console.error('Signature verification error:', error);
     return false;
@@ -56,20 +63,14 @@ export async function verifyWebhookSignature(
  */
 export function verifyJWT(req: Request): { valid: boolean; error?: string } {
   const authHeader = req.headers.get('authorization');
-  
   if (!authHeader) {
     return { valid: false, error: 'Missing Authorization header' };
   }
-
   const token = authHeader.replace(/^Bearer\s+/i, '');
   const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-  const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
-
-  // Accept either service role or anon key for internal calls
-  if (token === serviceRoleKey || token === anonKey) {
+  if (token === serviceRoleKey) {
     return { valid: true };
   }
-
   return { valid: false, error: 'Invalid or expired token' };
 }
 

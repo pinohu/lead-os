@@ -153,8 +153,7 @@ export async function checkRateLimit(
   
   if (error) {
     console.error('Rate limit check error:', error);
-    // Fail open on error to avoid blocking legitimate users
-    return { allowed: true, remaining: maxAttempts };
+    return { allowed: false, remaining: 0, error: 'Rate limit check failed' };
   }
   
   const attempts = data?.length || 0;

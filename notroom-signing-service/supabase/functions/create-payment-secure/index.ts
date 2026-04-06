@@ -2,11 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { validateApiKeyEnv } from "../_shared/envValidation.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, cf-connecting-ip, x-forwarded-for",
-};
+import { getCorsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -138,7 +134,7 @@ const checkRateLimit = async (
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return handleCorsPreflightRequest(req);
   }
 
   try {
@@ -156,6 +152,12 @@ serve(async (req) => {
 
     if (!priceId || !customerEmail || !turnstileToken) {
       throw new Error("Missing required parameters");
+    }
+
+    if (customAmount !== undefined) {
+      if (typeof customAmount !== 'number' || !Number.isInteger(customAmount) || customAmount < 100 || customAmount > 1000000) {
+        throw new Error("Invalid amount: must be an integer between 100 and 1000000 cents");
+      }
     }
 
     // Security Check 1: Verify Turnstile token
@@ -220,7 +222,9 @@ serve(async (req) => {
     }
 
     // Create checkout session
-    const origin = req.headers.get("origin") || "https://notroom.com";
+    const ALLOWED_ORIGINS = ['https://notroom.com', 'https://www.notroom.com'];
+    const reqOrigin = req.headers.get("origin") || '';
+    const origin = ALLOWED_ORIGINS.includes(reqOrigin) ? reqOrigin : 'https://notroom.com';
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       line_items: lineItems,
@@ -255,7 +259,7 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ url: session.url, sessionId: session.id }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...getCorsHeaders(req.headers.get('origin')), "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
@@ -264,20 +268,16 @@ serve(async (req) => {
     
     // Handle configuration errors specifically
     if (errorMessage.includes('Missing required environment variables')) {
+      console.error('[CREATE-PAYMENT-SECURE] Config error:', errorMessage);
       return new Response(
-        JSON.stringify({ 
-          error: 'Configuration error',
-          message: errorMessage 
-        }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
+        JSON.stringify({ error: 'Service temporarily unavailable' }),
+        { status: 503, headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' } }
       );
     }
     
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    console.error('[CREATE-PAYMENT-SECURE] Error:', errorMessage);
+    return new Response(JSON.stringify({ error: 'Payment processing failed. Please try again.' }), {
+      headers: { ...getCorsHeaders(req.headers.get('origin')), "Content-Type": "application/json" },
       status: 500,
     });
   }

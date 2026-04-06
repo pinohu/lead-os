@@ -5,6 +5,8 @@
 
 import { logger } from './logger';
 
+const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || '';
+
 interface EventProperties {
   [key: string]: string | number | boolean | undefined;
 }
@@ -12,7 +14,8 @@ interface EventProperties {
 export const trackEvent = (eventName: string, properties?: EventProperties) => {
   logger.log('[Analytics]', eventName, properties);
 
-  // Send to Google Analytics 4
+  if (!GA_MEASUREMENT_ID) return;
+
   const win = window as Window & { gtag?: (command: string, targetId: string, config?: Record<string, unknown>) => void };
   if (typeof window !== 'undefined' && win.gtag) {
     win.gtag('event', eventName, properties);
@@ -22,10 +25,11 @@ export const trackEvent = (eventName: string, properties?: EventProperties) => {
 export const trackPageView = (path: string, title: string) => {
   logger.log('[Analytics] Page view:', path, title);
 
-  // Send to Google Analytics 4
+  if (!GA_MEASUREMENT_ID) return;
+
   const win = window as Window & { gtag?: (command: string, targetId: string, config?: Record<string, unknown>) => void };
   if (typeof window !== 'undefined' && win.gtag) {
-    win.gtag('config', 'G-HZ29KE41TZ', {
+    win.gtag('config', GA_MEASUREMENT_ID, {
       page_path: path,
       page_title: title,
     });
@@ -69,11 +73,10 @@ export const trackCTAClick = (ctaLocation: string, ctaText: string) => {
 };
 
 // Lead Generation Tracking
-export const trackLeadMagnet = (email: string, name: string) => {
+export const trackLeadMagnet = (resource?: string) => {
   trackEvent('lead_captured', {
     source: 'lead_magnet',
-    email,
-    name,
+    resource: resource || 'unknown',
     timestamp: Date.now(),
   });
 };

@@ -1,11 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { getCorsHeaders, handleCorsPreflightRequest } from "../_shared/cors.ts";
+import { verifyJWT } from "../_shared/webhookSecurity.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -15,15 +12,29 @@ const logStep = (step: string, details?: any) => {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return handleCorsPreflightRequest(req);
   }
 
   try {
     logStep("Function started");
 
+    const authResult = verifyJWT(req);
+    if (!authResult.valid) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...getCorsHeaders(req.headers.get('origin')), 'Content-Type': 'application/json' },
+      });
+    }
+
     // Get request body
     const { priceId, bookingId, customerEmail, customerName, customAmount } = await req.json();
     logStep("Request data received", { priceId, bookingId, customerEmail, hasCustomAmount: !!customAmount });
+
+    if (customAmount !== undefined) {
+      if (typeof customAmount !== 'number' || !Number.isInteger(customAmount) || customAmount < 100 || customAmount > 1000000) {
+        throw new Error("Invalid amount: must be an integer between 100 and 1000000 cents");
+      }
+    }
 
     if (!priceId || !customerEmail) {
       throw new Error("Missing required parameters: priceId and customerEmail are required");
@@ -74,7 +85,9 @@ serve(async (req) => {
     }
 
     // Create checkout session
-    const origin = req.headers.get("origin") || "https://notroom.com";
+    const ALLOWED_ORIGINS = ['https://notroom.com', 'https://www.notroom.com'];
+    const reqOrigin = req.headers.get("origin") || '';
+    const origin = ALLOWED_ORIGINS.includes(reqOrigin) ? reqOrigin : 'https://notroom.com';
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       line_items: lineItems,
@@ -122,14 +135,15 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ url: session.url, sessionId: session.id }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...getCorsHeaders(req.headers.get('origin')), "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR in create-payment", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    console.error('[CREATE-PAYMENT] Error:', errorMessage);
+    return new Response(JSON.stringify({ error: 'Payment processing failed. Please try again.' }), {
+      headers: { ...getCorsHeaders(req.headers.get('origin')), "Content-Type": "application/json" },
       status: 500,
     });
   }

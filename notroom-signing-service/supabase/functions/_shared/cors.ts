@@ -3,13 +3,21 @@
  * Restricts origins to notroom.com domains only
  */
 
-const ALLOWED_ORIGINS = [
+const PRODUCTION_ORIGINS = [
   'https://notroom.com',
   'https://www.notroom.com',
-  'https://notroom.lovable.app',  // Development
-  'http://localhost:3000',          // Local development
-  'http://localhost:5173',          // Vite dev server
 ];
+
+const DEV_ORIGINS = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:8080',
+];
+
+const isProduction = Deno.env.get('ENVIRONMENT') === 'production' || 
+  !Deno.env.get('ENVIRONMENT');
+
+const ALLOWED_ORIGINS = isProduction ? PRODUCTION_ORIGINS : [...PRODUCTION_ORIGINS, ...DEV_ORIGINS];
 
 /**
  * Get CORS headers with proper origin validation
