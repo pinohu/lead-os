@@ -13,14 +13,10 @@ import { deliverWebhookEvent } from "@/lib/webhook-delivery";
 import crypto from "crypto";
 
 // ── CORS Preflight ─────────────────────────────────────────────────
-export async function OPTIONS() {
+export async function OPTIONS(req: NextRequest) {
   return new NextResponse(null, {
     status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, X-API-Key, X-Signature",
-    },
+    headers: corsHeaders(req.headers.get("origin")),
   });
 }
 
@@ -54,17 +50,19 @@ function verifyHmacSignature(
 }
 
 export async function POST(req: NextRequest) {
+  const origin = req.headers.get("origin");
   try {
     // 1. Rate limit
     const rateLimited = await checkRateLimit(req, "lead");
-    if (rateLimited) return addCors(rateLimited);
+    if (rateLimited) return addCors(rateLimited, origin);
 
     // 2. Validate API key from X-API-Key header
     const apiKeyRaw = req.headers.get("x-api-key");
     if (!apiKeyRaw) {
       return corsJson(
         { success: false, error: "Missing X-API-Key header" },
-        401
+        401,
+        origin,
       );
     }
 
@@ -80,7 +78,8 @@ export async function POST(req: NextRequest) {
     if (!apiKey || !apiKey.isActive) {
       return corsJson(
         { success: false, error: "Invalid or revoked API key" },
-        401
+        401,
+        origin,
       );
     }
 
@@ -104,14 +103,16 @@ export async function POST(req: NextRequest) {
           if (!valid) {
             return corsJson(
               { success: false, error: "Invalid HMAC signature" },
-              401
+              401,
+              origin,
             );
           }
         } catch {
-          return corsJson(
-            { success: false, error: "Invalid HMAC signature format" },
-            401
-          );
+            return corsJson(
+              { success: false, error: "Invalid HMAC signature format" },
+              401,
+              origin,
+            );
         }
       }
     }
@@ -121,7 +122,7 @@ export async function POST(req: NextRequest) {
     try {
       body = JSON.parse(rawBody);
     } catch {
-      return corsJson({ success: false, error: "Invalid JSON" }, 400);
+      return corsJson({ success: false, error: "Invalid JSON" }, 400, origin);
     }
 
     const parsed = InboundLeadSchema.safeParse(body);
@@ -131,7 +132,8 @@ export async function POST(req: NextRequest) {
           success: false,
           error: parsed.error.issues.map((e) => e.message).join("; "),
         },
-        400
+        400,
+        origin,
       );
     }
 
@@ -153,7 +155,7 @@ export async function POST(req: NextRequest) {
       },
     });
     if (suppressed) {
-      return corsJson({ success: false, error: "Contact opted out" }, 403);
+      return corsJson({ success: false, error: "Contact opted out" }, 403, origin);
     }
 
     // 7. Route the lead
@@ -196,29 +198,43 @@ export async function POST(req: NextRequest) {
       success: true,
       leadId: result.leadId,
       routedTo: result.routedTo?.businessName ?? "Queued",
-    });
+    }, 200, origin);
   } catch (err) {
     logger.error("api/leads/inbound", "Error processing inbound lead:", err);
-    return corsJson({ success: false, error: "Internal server error" }, 500);
+    return corsJson({ success: false, error: "Internal server error" }, 500, origin);
   }
 }
 
 // ── Helpers ────────────────────────────────────────────────────────
 
-function corsHeaders(): Record<string, string> {
+function isAllowedOrigin(origin: string | null): string | null {
+  if (!origin) return null;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  if (appUrl) {
+    try {
+      const allowed = new URL(appUrl).origin;
+      if (origin === allowed) return origin;
+    } catch {}
+  }
+  return null;
+}
+
+function corsHeaders(origin?: string | null): Record<string, string> {
+  const allowedOrigin = isAllowedOrigin(origin ?? null);
   return {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": allowedOrigin ?? (process.env.NEXT_PUBLIC_APP_URL || ""),
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, X-API-Key, X-Signature",
+    ...(allowedOrigin ? { "Vary": "Origin" } : {}),
   };
 }
 
-function corsJson(data: unknown, status = 200): NextResponse {
-  return NextResponse.json(data, { status, headers: corsHeaders() });
+function corsJson(data: unknown, status = 200, origin?: string | null): NextResponse {
+  return NextResponse.json(data, { status, headers: corsHeaders(origin) });
 }
 
-function addCors(res: NextResponse): NextResponse {
-  for (const [k, v] of Object.entries(corsHeaders())) {
+function addCors(res: NextResponse, origin?: string | null): NextResponse {
+  for (const [k, v] of Object.entries(corsHeaders(origin))) {
     res.headers.set(k, v);
   }
   return res;

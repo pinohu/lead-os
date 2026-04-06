@@ -91,11 +91,21 @@ interface IdentityHeaders {
 // LEAD_OS_AUTH_SECRET must be set in all environments; no hardcoded fallback.
 const MIDDLEWARE_SIGNATURE_KEY = process.env.LEAD_OS_AUTH_SECRET ?? "";
 
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
 function computeMiddlewareSignature(userId: string, tenantId: string, requestId: string): string {
   const payload = `${userId}:${tenantId}:${requestId}`;
-  return createHmac("sha256", MIDDLEWARE_SIGNATURE_KEY)
+  const hmac = createHmac("sha256", MIDDLEWARE_SIGNATURE_KEY)
     .update(payload)
     .digest("hex");
+  return `mw1-${hmac}`;
 }
 
 function forwardWithIdentity(
@@ -226,7 +236,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   // Cron secret — fast path, no DB required
   const cronSecret = request.headers.get("x-cron-secret");
-  if (cronSecret && cronSecret === process.env.CRON_SECRET) {
+  if (cronSecret && process.env.CRON_SECRET && constantTimeEqual(cronSecret, process.env.CRON_SECRET)) {
     const response = NextResponse.next();
     return applySecurityHeaders(response, requestId);
   }

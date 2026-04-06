@@ -10,7 +10,8 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_TO_LENGTH = 254;
 
 function generateUnsubscribeToken(email: string, tenant: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "unsubscribe-token-secret";
+  const secret = process.env.LEAD_OS_AUTH_SECRET;
+  if (!secret) throw new Error("LEAD_OS_AUTH_SECRET is required");
   return createHmac("sha256", secret)
     .update(`${email.toLowerCase().trim()}::${tenant}`)
     .digest("hex")
@@ -18,7 +19,8 @@ function generateUnsubscribeToken(email: string, tenant: string): string {
 }
 
 function generatePreferencesToken(email: string, tenantId: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "preferences-service";
+  const secret = process.env.LEAD_OS_AUTH_SECRET;
+  if (!secret) throw new Error("LEAD_OS_AUTH_SECRET is required");
   return createHash("sha256")
     .update(`${email.toLowerCase().trim()}::${tenantId}::${secret}`)
     .digest("hex")

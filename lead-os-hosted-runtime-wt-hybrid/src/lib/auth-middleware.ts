@@ -28,8 +28,8 @@ export function getAuthFromHeaders(request: Request): AuthFromHeaders | null {
   const signature = request.headers.get("x-middleware-signature");
   if (!userId || !role) return null;
 
-  // Verify middleware signature to prevent direct header spoofing
-  if (signature && !signature.startsWith("mw1-")) return null;
+  // Signature MUST be present and start with mw1- to prove middleware processed this request
+  if (!signature || !signature.startsWith("mw1-")) return null;
 
   return {
     userId,

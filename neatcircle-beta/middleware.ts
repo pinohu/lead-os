@@ -32,9 +32,19 @@ function isTrustedBrowserRequest(request: NextRequest) {
   return fetchSite === "same-origin" || fetchSite === "same-site";
 }
 
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
 function hasBearerToken(request: NextRequest, secret: string) {
   const authHeader = request.headers.get("authorization");
-  return authHeader === `Bearer ${secret}`;
+  if (!authHeader) return false;
+  return constantTimeEqual(authHeader, `Bearer ${secret}`);
 }
 
 function reject(status: number, error: string) {
