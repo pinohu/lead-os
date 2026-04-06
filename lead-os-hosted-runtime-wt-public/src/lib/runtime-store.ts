@@ -176,7 +176,7 @@ function getPool() {
 
   pool = new Pool({
     connectionString,
-    ssl: connectionString.includes("sslmode=disable") ? false : { rejectUnauthorized: false },
+    ssl: connectionString.includes("sslmode=disable") ? false : { rejectUnauthorized: true },
     max: 4,
   });
 
@@ -1074,6 +1074,10 @@ export async function getRuntimeConfigs() {
 }
 
 export async function resetRuntimeStore() {
+  if (process.env.LEAD_OS_ALLOW_RESET !== "true") {
+    return;
+  }
+
   leadStore.clear();
   eventStore.length = 0;
   providerExecutionStore.length = 0;
@@ -1086,10 +1090,6 @@ export async function resetRuntimeStore() {
 
   const activePool = getPool();
   if (!activePool) {
-    return;
-  }
-
-  if (process.env.LEAD_OS_ALLOW_RESET !== "true") {
     return;
   }
 
