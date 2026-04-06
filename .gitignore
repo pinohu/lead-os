@@ -4,6 +4,10 @@ node_modules/
 backups/
 lead-os-hosted-runtime/
 lead-os-embed-widgets/
+**/.env
+**/.env.local
+**/.env.production
+**/.env.*.local
 .env
 .env.local
 .env.production
