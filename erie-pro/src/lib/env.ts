@@ -25,7 +25,11 @@ const envSchema = z.object({
 
   // ── Auth ─────────────────────────────────────────────────────────
   AUTH_SECRET: emptyToUndefined
-    .pipe(z.string().min(16, "AUTH_SECRET must be at least 16 characters").optional()),
+    .pipe(z.string().min(16, "AUTH_SECRET must be at least 16 characters").optional())
+    .refine(
+      (val) => process.env.NODE_ENV !== "production" || (val !== undefined && val !== ""),
+      { message: "AUTH_SECRET is required in production" }
+    ),
   AUTH_URL: emptyToUndefined.pipe(z.string().url("AUTH_URL must be a valid URL").optional()),
 
   // ── Email (Emailit) ──────────────────────────────────────────────

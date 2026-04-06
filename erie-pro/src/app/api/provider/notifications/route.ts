@@ -35,8 +35,19 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const provider = await prisma.provider.findFirst({
-      where: { email: session.user.email ?? "" },
+    // Resolve provider via User.providerId (avoids email-coupling issues)
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+    if (!user?.providerId) {
+      return NextResponse.json(
+        { success: false, error: "Provider not found" },
+        { status: 404 }
+      );
+    }
+
+    const provider = await prisma.provider.findUnique({
+      where: { id: user.providerId },
       select: { notificationPrefs: true },
     });
 
@@ -85,8 +96,21 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const provider = await prisma.provider.findFirst({
-      where: { email: session.user.email ?? "" },
+    const { prefs } = parsed.data;
+
+    // Resolve provider via User.providerId (avoids email-coupling issues)
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+    if (!user?.providerId) {
+      return NextResponse.json(
+        { success: false, error: "Provider not found" },
+        { status: 404 }
+      );
+    }
+
+    const provider = await prisma.provider.findUnique({
+      where: { id: user.providerId },
     });
 
     if (!provider) {
@@ -98,12 +122,12 @@ export async function PATCH(req: NextRequest) {
 
     await prisma.provider.update({
       where: { id: provider.id },
-      data: { notificationPrefs: parsed.data.prefs },
+      data: { notificationPrefs: prefs },
     });
 
     logger.info("Provider notification prefs updated", {
       providerId: provider.id,
-      prefs: parsed.data.prefs,
+      prefs,
     });
 
     return NextResponse.json({ success: true });

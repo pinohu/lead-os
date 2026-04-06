@@ -1,6 +1,21 @@
 // ── Email Verification Endpoint ────────────────────────────────────────
 // GET /api/verify-email?token=xxx
 // Verifies a provider's email before allowing Stripe checkout.
+//
+// Two verification flows coexist for backwards-compatibility:
+//
+// Flow 1 — NextAuth VerificationToken table
+//   Used by the NextAuth email provider (magic-link sign-in). NextAuth
+//   creates a row in `VerificationToken` with the user's email as
+//   `identifier`. We look it up first, check expiry, mark the matching
+//   Provider.emailVerified = true, then delete the consumed token.
+//
+// Flow 2 — Provider.emailVerifyToken field (fallback)
+//   Used by the Stripe webhook flow, which stores a one-time token
+//   directly on the Provider row when a checkout session is created.
+//   This path fires only when no matching VerificationToken exists,
+//   keeping it as a migration/compat fallback until all token issuance
+//   is consolidated into VerificationToken.
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
@@ -23,13 +38,13 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Look up the verification token
+    // ── Flow 1: NextAuth VerificationToken table ──────────────────────
     const verificationToken = await prisma.verificationToken.findUnique({
       where: { token },
     });
 
     if (!verificationToken) {
-      // Fallback: check Provider.emailVerifyToken (tokens stored by Stripe webhook)
+      // ── Flow 2: Provider.emailVerifyToken (Stripe webhook compat) ────
       const providerByToken = await prisma.provider.findFirst({
         where: { emailVerifyToken: token },
       });
