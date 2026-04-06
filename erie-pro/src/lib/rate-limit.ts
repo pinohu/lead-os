@@ -109,6 +109,11 @@ if (typeof setInterval !== "undefined") {
   }, 300_000);
 }
 
+/**
+ * WARNING: x-forwarded-for and x-real-ip are trivially spoofable by clients.
+ * These headers should only be trusted when the application runs behind a
+ * reverse proxy (e.g. Vercel, Cloudflare, nginx) that overwrites them.
+ */
 function getClientIp(req: NextRequest): string {
   return (
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??

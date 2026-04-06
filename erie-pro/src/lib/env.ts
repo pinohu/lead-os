@@ -39,6 +39,14 @@ const envSchema = z.object({
   NEXT_PUBLIC_APP_URL: emptyToUndefined.pipe(z.string().url().optional()),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 
+  // ── Security ──────────────────────────────────────────────────────
+  CRON_SECRET: emptyToUndefined.pipe(z.string().min(16).optional())
+    .refine(
+      (val) => process.env.NODE_ENV !== "production" || (val !== undefined && val !== ""),
+      { message: "CRON_SECRET is required in production" }
+    ),
+  UNSUBSCRIBE_SECRET: emptyToUndefined.pipe(z.string().min(16).optional()),
+
   // ── Observability ────────────────────────────────────────────────
   SENTRY_DSN: emptyToUndefined.pipe(z.string().url().optional()),
   NEXT_PUBLIC_POSTHOG_KEY: emptyToUndefined.pipe(z.string().min(1).optional()),

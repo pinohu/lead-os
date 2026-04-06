@@ -52,11 +52,6 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const adminKey = process.env.ADMIN_ACCESS_KEY
-  if (!adminKey) {
-    redirect("/for-business")
-  }
-
   // Verify user is authenticated and has admin role
   const session = await auth()
   if (!session?.user) {

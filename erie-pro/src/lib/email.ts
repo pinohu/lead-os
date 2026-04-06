@@ -6,7 +6,7 @@ import { cityConfig } from "@/lib/city-config";
 import { logger } from "@/lib/logger";
 
 /** Escape HTML special characters to prevent XSS in email templates */
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

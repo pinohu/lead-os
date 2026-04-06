@@ -17,7 +17,7 @@ import { activatePerks, deactivatePerks } from "@/lib/perk-manager";
 import { deliverBankedLeads } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
-import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
+import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert, escapeHtml } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,6 +26,13 @@ export async function POST(req: NextRequest) {
 
     // ── Dry-run mode: accept mock events ─────────────────────────
     if (isStripeDryRun()) {
+      if (process.env.NODE_ENV === "production") {
+        return NextResponse.json(
+          { success: false, error: "Server misconfigured: Stripe not configured for production" },
+          { status: 500 }
+        );
+      }
+
       let mockEvent;
       try {
         mockEvent = JSON.parse(rawBody);
@@ -103,7 +110,7 @@ export async function POST(req: NextRequest) {
             to: provider.email,
             subject: "Payment failed \u2014 7-day grace period started",
             html: `
-              <p>Hi ${provider.businessName},</p>
+              <p>Hi ${escapeHtml(provider.businessName)},</p>
               <p>Your most recent payment for your Erie Pro territory subscription has failed.</p>
               <p>You have a <strong>7-day grace period</strong> to update your payment information before your territory is deactivated.</p>
               <p><a href="${siteUrl}/dashboard/billing">Update Payment Info</a></p>
@@ -206,7 +213,7 @@ export async function POST(req: NextRequest) {
                 to: provider.email,
                 subject: "Payment received \u2014 your territory is active again!",
                 html: `
-                  <p>Hi ${provider.businessName},</p>
+                  <p>Hi ${escapeHtml(provider.businessName)},</p>
                   <p>Great news! Your payment has been processed successfully and your Erie Pro territory is active again.</p>
                   <p>Leads are now being routed to you. Check your dashboard for any new leads:</p>
                   <p><a href="${siteUrl}/dashboard">Go to Dashboard</a></p>
@@ -222,7 +229,7 @@ export async function POST(req: NextRequest) {
                 to: provider.email,
                 subject: "Your subscription is past due — action required",
                 html: `
-                  <p>Hi ${provider.businessName},</p>
+                  <p>Hi ${escapeHtml(provider.businessName)},</p>
                   <p>Your Erie Pro territory subscription is now past due. Your territory may be deactivated if payment is not received.</p>
                   <p><a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro"}/dashboard/settings">Update Payment Info</a></p>
                 `,

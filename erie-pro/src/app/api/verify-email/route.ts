@@ -29,10 +29,35 @@ export async function GET(req: NextRequest) {
     });
 
     if (!verificationToken) {
-      return NextResponse.json(
-        { success: false, error: "Invalid or expired verification token" },
-        { status: 404 }
-      );
+      // Fallback: check Provider.emailVerifyToken (tokens stored by Stripe webhook)
+      const providerByToken = await prisma.provider.findFirst({
+        where: { emailVerifyToken: token },
+      });
+
+      if (!providerByToken) {
+        return NextResponse.json(
+          { success: false, error: "Invalid or expired verification token" },
+          { status: 404 }
+        );
+      }
+
+      await prisma.provider.update({
+        where: { id: providerByToken.id },
+        data: { emailVerified: true, emailVerifyToken: null },
+      });
+
+      await audit({
+        action: "provider.email_verified",
+        entityType: "provider",
+        entityId: providerByToken.id,
+        providerId: providerByToken.id,
+        ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      });
+
+      const redirectUrl = new URL("/for-business/claim", req.nextUrl.origin);
+      redirectUrl.searchParams.set("verified", "true");
+      redirectUrl.searchParams.set("email", providerByToken.email);
+      return NextResponse.redirect(redirectUrl);
     }
 
     // Check expiry

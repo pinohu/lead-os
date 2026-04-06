@@ -8,7 +8,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { auth } from "@/lib/auth";
 import { logger } from "@/lib/logger";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escapeHtml } from "@/lib/email";
 
 const ResolveSchema = z.object({
   providerId: z.string().min(1, "Provider ID is required"),
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
         to: provider.email,
         subject: "Your business ownership has been verified!",
         html: `
-          <p>Hi ${provider.businessName},</p>
+          <p>Hi ${escapeHtml(provider.businessName)},</p>
           <p>Great news! Your ownership claim has been approved by our team. Leads for your territory are now being routed to you.</p>
           <p><a href="${siteUrl}/dashboard">Go to Dashboard</a></p>
         `,
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
         to: provider.email,
         subject: "Ownership verification update",
         html: `
-          <p>Hi ${provider.businessName},</p>
+          <p>Hi ${escapeHtml(provider.businessName)},</p>
           <p>We were unable to verify your ownership of the business listing you claimed. Leads will not be routed until ownership is verified.</p>
           <p>If you believe this is an error, please reply to this email or <a href="${siteUrl}/contact">contact our support team</a> with proof of ownership (business license, utility bill, etc.).</p>
         `,

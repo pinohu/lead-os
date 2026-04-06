@@ -9,6 +9,7 @@ import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { MAX_BODY_SIZE } from "@/lib/validation";
+import { auth } from "@/lib/auth";
 
 const ExportDataSchema = z.object({
   email: z
@@ -18,6 +19,14 @@ const ExportDataSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json(
+      { success: false, error: "Authentication required" },
+      { status: 401 }
+    );
+  }
+
   const rateLimited = await checkRateLimit(req, "contact");
   if (rateLimited) return rateLimited;
 
@@ -49,25 +58,33 @@ export async function POST(req: NextRequest) {
 
     const { email } = parsed.data;
 
+    if (session.user.email.toLowerCase() !== email) {
+      return NextResponse.json(
+        { success: false, error: "You can only export your own data" },
+        { status: 403 }
+      );
+    }
+
     // ── Query all tables for matching data ───────────────────────
-    const [leads, contactMessages, leadOutcomes, trackedCalls] = await Promise.all([
-      prisma.lead.findMany({
-        where: { email },
-        select: {
-          id: true,
-          niche: true,
-          city: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          phone: true,
-          message: true,
-          routeType: true,
-          tcpaConsent: true,
-          tcpaConsentAt: true,
-          createdAt: true,
-        },
-      }),
+    const leads = await prisma.lead.findMany({
+      where: { email },
+      select: {
+        id: true,
+        niche: true,
+        city: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        message: true,
+        routeType: true,
+        tcpaConsent: true,
+        tcpaConsentAt: true,
+        createdAt: true,
+      },
+    });
+
+    const [contactMessages, leadOutcomes] = await Promise.all([
       prisma.contactMessage.findMany({
         where: { email },
         select: {
@@ -81,7 +98,6 @@ export async function POST(req: NextRequest) {
           createdAt: true,
         },
       }),
-      // LeadOutcomes are linked through leads
       prisma.leadOutcome.findMany({
         where: { lead: { email } },
         select: {
@@ -92,18 +108,24 @@ export async function POST(req: NextRequest) {
           createdAt: true,
         },
       }),
-      prisma.trackedCall.findMany({
-        where: { callerPhone: email }, // TrackedCall uses phone, but check anyway
-        select: {
-          id: true,
-          niche: true,
-          callerPhone: true,
-          duration: true,
-          outcome: true,
-          createdAt: true,
-        },
-      }),
     ]);
+
+    // TrackedCall is keyed by phone number, not email.
+    // Only query if we found a lead with a phone number on file.
+    const phones = [...new Set(leads.map((l) => l.phone).filter((p): p is string => !!p))];
+    const trackedCalls = phones.length > 0
+      ? await prisma.trackedCall.findMany({
+          where: { callerPhone: { in: phones } },
+          select: {
+            id: true,
+            niche: true,
+            callerPhone: true,
+            duration: true,
+            outcome: true,
+            createdAt: true,
+          },
+        })
+      : [];
 
     // ── Audit trail for the export request ───────────────────────
     await audit({

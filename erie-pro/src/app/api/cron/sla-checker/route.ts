@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { sendSlaWarning } from "@/lib/notifications";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escapeHtml } from "@/lib/email";
 import { logger } from "@/lib/logger";
 import { reassignLead } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
@@ -14,7 +14,10 @@ export async function GET(req: NextRequest) {
   // Validate CRON_SECRET
   const authHeader = req.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret) {
+    return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
+  }
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -97,9 +100,9 @@ export async function GET(req: NextRequest) {
                 subject: `SLA Alert: ${lead.routedTo.businessName} has ${violationCount} violations`,
                 html: `
                   <p><strong>SLA Violation Alert</strong></p>
-                  <p>Provider <strong>${lead.routedTo.businessName}</strong> (${lead.routedTo.email}) now has <strong>${violationCount} SLA violations</strong>.</p>
+                  <p>Provider <strong>${escapeHtml(lead.routedTo.businessName)}</strong> (${escapeHtml(lead.routedTo.email)}) now has <strong>${violationCount} SLA violations</strong>.</p>
                   <p>${violationCount >= 5 ? "Territory has been auto-paused." : "Consider reviewing this provider."}</p>
-                  <p>Latest: Lead <code>${lead.id}</code> waited ${elapsedMinutes} minutes (${Math.round(elapsedMinutes / 60)} hours).</p>
+                  <p>Latest: Lead <code>${escapeHtml(lead.id)}</code> waited ${elapsedMinutes} minutes (${Math.round(elapsedMinutes / 60)} hours).</p>
                 `,
               }).catch((err) => { logger.error("cron/sla-checker", "Admin alert email failed", err) });
             }
@@ -136,9 +139,9 @@ export async function GET(req: NextRequest) {
             subject: `SLA Escalation: Lead ${lead.id} waiting ${elapsedMinutes} minutes`,
             html: `
               <p><strong>SLA Escalation Alert</strong></p>
-              <p>Lead <code>${lead.id}</code> has been waiting <strong>${elapsedMinutes} minutes</strong> (${Math.round(elapsedMinutes / 60)} hours) without a response.</p>
-              <p>Provider: ${lead.routedTo.businessName} (${lead.routedTo.email})</p>
-              <p>Niche: ${lead.niche} | City: ${lead.city}</p>
+              <p>Lead <code>${escapeHtml(lead.id)}</code> has been waiting <strong>${elapsedMinutes} minutes</strong> (${Math.round(elapsedMinutes / 60)} hours) without a response.</p>
+              <p>Provider: ${escapeHtml(lead.routedTo.businessName)} (${escapeHtml(lead.routedTo.email)})</p>
+              <p>Niche: ${escapeHtml(lead.niche)} | City: ${escapeHtml(lead.city)}</p>
             `,
           }).catch((err) => { logger.error("cron/sla-checker", "Escalation email failed", err) });
         }

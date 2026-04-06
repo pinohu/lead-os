@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { auth } from "@/lib/auth";
 
 function formatLead(lead: {
   id: string;
@@ -84,27 +85,20 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json(
+      { success: false, error: "Authentication required" },
+      { status: 401 }
+    );
+  }
+
   // Rate limit: 5 lookups per minute per IP
   const rateLimited = await checkRateLimit(req, "contact");
   if (rateLimited) return rateLimited;
 
   try {
-    const body = await req.json().catch(() => null);
-    if (!body?.email || typeof body.email !== "string") {
-      return NextResponse.json(
-        { success: false, error: "Email is required" },
-        { status: 400 }
-      );
-    }
-
-    const email = body.email.toLowerCase().trim();
-    // Basic email validation
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json(
-        { success: false, error: "Invalid email format" },
-        { status: 400 }
-      );
-    }
+    const email = session.user.email.toLowerCase().trim();
 
     const leads = await prisma.lead.findMany({
       where: { email },

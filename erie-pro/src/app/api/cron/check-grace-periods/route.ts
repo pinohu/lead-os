@@ -6,14 +6,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { deactivatePerks } from "@/lib/perk-manager";
 import { audit } from "@/lib/audit-log";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escapeHtml } from "@/lib/email";
 import { logger } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
   // Validate CRON_SECRET
   const authHeader = req.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret) {
+    return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
+  }
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -58,7 +61,7 @@ export async function GET(req: NextRequest) {
         to: provider.email,
         subject: "Territory deactivated \u2014 payment not received",
         html: `
-          <p>Hi ${provider.businessName},</p>
+          <p>Hi ${escapeHtml(provider.businessName)},</p>
           <p>Your Erie Pro territory has been deactivated because your payment was not received within the 7-day grace period.</p>
           <p>If you'd like to reactivate, you can update your payment information and re-subscribe:</p>
           <p><a href="${siteUrl}/for-business/claim">Reactivate Territory</a></p>
@@ -87,7 +90,7 @@ export async function GET(req: NextRequest) {
           to: provider.email,
           subject: `Reminder: ${daysOut} days left to update payment`,
           html: `
-            <p>Hi ${provider.businessName},</p>
+            <p>Hi ${escapeHtml(provider.businessName)},</p>
             <p>You have <strong>${daysOut} days</strong> remaining to update your payment information before your Erie Pro territory is deactivated.</p>
             <p><a href="${siteUrl}/dashboard/billing">Update Payment Info</a></p>
           `,

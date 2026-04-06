@@ -20,7 +20,10 @@ const UnsubscribeSchema = z
 
 /** Generate a simple HMAC token for email unsubscribe links */
 function generateUnsubscribeToken(email: string): string {
-  const secret = process.env.UNSUBSCRIBE_SECRET || process.env.NEXTAUTH_SECRET || "default-unsubscribe-secret";
+  const secret = process.env.UNSUBSCRIBE_SECRET || process.env.NEXTAUTH_SECRET;
+  if (!secret) {
+    throw new Error("UNSUBSCRIBE_SECRET or NEXTAUTH_SECRET must be configured");
+  }
   return createHash("sha256").update(`${email}:${secret}`).digest("hex").slice(0, 32);
 }
 
@@ -103,9 +106,25 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // Validate token if provided (prevents abuse)
-  const expectedToken = generateUnsubscribeToken(email);
-  if (token && token !== expectedToken) {
+  if (!token) {
+    return new NextResponse(
+      "<html><body><h1>Invalid Request</h1><p>A valid unsubscribe token is required.</p></body></html>",
+      { status: 400, headers: { "Content-Type": "text/html" } }
+    );
+  }
+
+  // Validate token (prevents abuse)
+  let expectedToken: string;
+  try {
+    expectedToken = generateUnsubscribeToken(email);
+  } catch {
+    return new NextResponse(
+      "<html><body><h1>Server Error</h1><p>Unsubscribe is temporarily unavailable. Please try again later.</p></body></html>",
+      { status: 500, headers: { "Content-Type": "text/html" } }
+    );
+  }
+
+  if (token !== expectedToken) {
     return new NextResponse(
       "<html><body><h1>Invalid Token</h1><p>The unsubscribe link is invalid or expired.</p></body></html>",
       { status: 403, headers: { "Content-Type": "text/html" } }

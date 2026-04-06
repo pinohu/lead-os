@@ -55,6 +55,8 @@ export async function GET(req: NextRequest) {
         const leadIds = leads.map((l) => l.id);
 
         // Delete in order: outcomes/disputes first, then leads, then contact messages, then calls
+        // NOTE: Stripe subscriptions must be cancelled separately via the Stripe API
+        // before or after this deletion runs.
         await prisma.$transaction([
           // Delete lead outcomes for matching leads
           prisma.leadOutcome.deleteMany({
@@ -77,6 +79,22 @@ export async function GET(req: NextRequest) {
           }),
           // Delete tracked calls by caller phone (best effort — email may not match phone)
           // TrackedCall doesn't have email, so we can't match directly
+          // Delete audit log entries for this email
+          prisma.auditLog.deleteMany({
+            where: {
+              OR: [
+                { metadata: { path: ["email"], string_contains: email } },
+              ],
+            },
+          }),
+          // Delete Provider record
+          prisma.provider.deleteMany({
+            where: { email },
+          }),
+          // Delete User record
+          prisma.user.deleteMany({
+            where: { email },
+          }),
           // Mark the deletion request as processed
           prisma.contactMessage.update({
             where: { id: request.id },
