@@ -103,6 +103,15 @@ export default function ExitIntent() {
     };
   }, [handleMouseLeave]);
 
+  useEffect(() => {
+    if (!visible) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") dismiss();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [visible]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
@@ -153,7 +162,14 @@ export default function ExitIntent() {
         if (e.target === e.currentTarget) dismiss();
       }}
     >
-      <div className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Special offer"
+        aria-labelledby="exit-intent-heading"
+        aria-describedby="exit-intent-description"
+        className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl"
+      >
         <button
           onClick={dismiss}
           className="absolute right-4 top-4 text-2xl text-gray-400 hover:text-gray-600"
@@ -167,11 +183,13 @@ export default function ExitIntent() {
             <div className="mb-2 text-sm font-semibold uppercase tracking-wider text-cyan">
               Free Assessment
             </div>
-            <h3 className="mb-2 text-2xl font-bold text-navy">{offer.headline}</h3>
-            <p className="mb-6 text-gray-600">{offer.subtext}</p>
+            <h3 id="exit-intent-heading" className="mb-2 text-2xl font-bold text-navy">{offer.headline}</h3>
+            <p id="exit-intent-description" className="mb-6 text-gray-600">{offer.subtext}</p>
 
             <form onSubmit={handleSubmit} className="space-y-3">
+              <label htmlFor="exit-intent-email" className="sr-only">Email address</label>
               <input
+                id="exit-intent-email"
                 type="email"
                 required
                 value={email}
@@ -179,7 +197,9 @@ export default function ExitIntent() {
                 placeholder="Your email address"
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
               />
+              <label htmlFor="exit-intent-company" className="sr-only">Company name</label>
               <input
+                id="exit-intent-company"
                 type="text"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}

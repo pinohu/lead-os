@@ -86,9 +86,10 @@ export default function WebsiteIntelligenceLab() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <label className="space-y-2">
+        <label htmlFor="wil-url" className="space-y-2">
           <div className="text-sm font-medium text-white">Website URL</div>
           <input
+            id="wil-url"
             value={url}
             onChange={(event) => setUrl(event.target.value)}
             placeholder="https://example.com"
@@ -96,9 +97,10 @@ export default function WebsiteIntelligenceLab() {
           />
         </label>
 
-        <label className="space-y-2">
+        <label htmlFor="wil-notes" className="space-y-2">
           <div className="text-sm font-medium text-white">Operator Notes</div>
           <input
+            id="wil-notes"
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
             placeholder="Optional hints about the offer, market, or buyer"
@@ -107,9 +109,10 @@ export default function WebsiteIntelligenceLab() {
         </label>
       </div>
 
-      <label className="space-y-2">
+      <label htmlFor="wil-html" className="space-y-2">
         <div className="text-sm font-medium text-white">Raw HTML Snapshot (optional fallback)</div>
         <textarea
+          id="wil-html"
           value={html}
           onChange={(event) => setHtml(event.target.value)}
           placeholder="<html>...</html>"

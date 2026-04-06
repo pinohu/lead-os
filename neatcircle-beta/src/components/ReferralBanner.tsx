@@ -88,7 +88,7 @@ export default function ReferralBanner() {
             onClick={handleCopy}
             className="rounded-lg bg-cyan px-4 py-2 text-xs font-semibold text-white transition hover:bg-cyan-dark"
           >
-            {copied ? "Copied!" : "Copy Link"}
+            <span aria-live="polite">{copied ? "Copied!" : "Copy Link"}</span>
           </button>
         </div>
       </div>

@@ -325,6 +325,7 @@ export default function ChatWidget() {
         onClick={() => (open ? setOpen(false) : handleOpen())}
         className="fixed bottom-6 right-6 z-[9999] flex h-14 w-14 items-center justify-center rounded-full bg-cyan text-white shadow-lg transition hover:bg-cyan-dark"
         aria-label={open ? "Close chat" : "Open chat"}
+        aria-expanded={open}
       >
         {open ? (
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -381,6 +382,7 @@ export default function ChatWidget() {
                 onClick={handleSend}
                 disabled={!input.trim()}
                 className="rounded-lg bg-cyan px-3 py-2 text-white transition hover:bg-cyan-dark disabled:opacity-50"
+                aria-label="Send message"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />

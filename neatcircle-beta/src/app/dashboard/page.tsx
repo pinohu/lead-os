@@ -207,7 +207,7 @@ export default function DashboardPage() {
             {topNiches.length === 0 ? (
               <p style={{ color: "#8b8ba7" }}>Not enough data yet</p>
             ) : (
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }} aria-label="Top niches performance">
                 <thead>
                   <tr style={{ color: "#8b8ba7", textAlign: "left" }}>
                     <th style={{ padding: "4px 8px" }}>Niche</th>
@@ -222,7 +222,10 @@ export default function DashboardPage() {
                       <td style={{ padding: "6px 8px", color: "#ccc" }}>{niche.name}</td>
                       <td style={{ padding: "6px 8px" }}>{niche.total}</td>
                       <td style={{ padding: "6px 8px", color: niche.conversionRate > 10 ? "#22c55e" : "#f59e0b" }}>
-                        {niche.conversionRate}%
+                        {niche.conversionRate}%{" "}
+                        <span style={{ fontSize: 10 }}>
+                          {niche.conversionRate > 10 ? "(Active)" : "(Warning)"}
+                        </span>
                       </td>
                       <td style={{ padding: "6px 8px" }}>{niche.hotLeads}</td>
                     </tr>
@@ -317,8 +320,12 @@ export default function DashboardPage() {
                     fontSize: 12,
                     color: "#ccc",
                   }}
+                  role="status"
+                  aria-label={`${status}: ${count} ${status.startsWith("ERROR") ? "(Error)" : status === "CONVERTED" ? "(Active)" : ""}`}
                 >
                   {status}: {count}
+                  {status.startsWith("ERROR") && <span style={{ marginLeft: 4, fontSize: 10 }}>(Error)</span>}
+                  {status === "CONVERTED" && <span style={{ marginLeft: 4, fontSize: 10 }}>(Active)</span>}
                 </span>
               ))}
           </div>

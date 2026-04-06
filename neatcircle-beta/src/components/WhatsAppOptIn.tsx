@@ -108,7 +108,9 @@ export default function WhatsAppOptIn() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-2">
+          <label htmlFor="whatsapp-phone" className="sr-only">Phone number</label>
           <input
+            id="whatsapp-phone"
             type="tel"
             required
             value={phone}

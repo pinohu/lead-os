@@ -154,6 +154,7 @@ export default function ROICalculator() {
                 value={employees}
                 onChange={(e) => setEmployees(Number(e.target.value))}
                 className="w-full accent-cyan"
+                aria-label="Number of employees"
               />
               <div className="text-right text-sm font-semibold text-cyan">{employees}</div>
             </div>
@@ -184,6 +185,7 @@ export default function ROICalculator() {
                 value={manualHours}
                 onChange={(e) => setManualHours(Number(e.target.value))}
                 className="w-full accent-cyan"
+                aria-label="Hours per week on manual tasks per person"
               />
               <div className="text-right text-sm font-semibold text-cyan">{manualHours}h</div>
             </div>
@@ -197,6 +199,7 @@ export default function ROICalculator() {
                 value={tools}
                 onChange={(e) => setTools(Number(e.target.value))}
                 className="w-full accent-cyan"
+                aria-label="Number of software tools in use"
               />
               <div className="text-right text-sm font-semibold text-cyan">{tools} tools</div>
             </div>

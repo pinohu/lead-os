@@ -30,18 +30,20 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <Hero />
-      <Stats />
-      <Services />
-      <Industries />
-      <BluOcean />
-      <Process />
-      <ToolStack />
-      <Pricing />
-      <Testimonials />
-      <About />
-      <Contact />
-      <ReferralBanner />
+      <main id="main-content">
+        <Hero />
+        <Stats />
+        <Services />
+        <Industries />
+        <BluOcean />
+        <Process />
+        <ToolStack />
+        <Pricing />
+        <Testimonials />
+        <About />
+        <Contact />
+        <ReferralBanner />
+      </main>
       <Footer />
     </>
   );

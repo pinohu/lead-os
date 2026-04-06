@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
   recommendBlueprintForVisitor,
   getNextFunnelStep,
@@ -139,7 +140,7 @@ export default function FunnelOrchestrator() {
     return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, [evaluateFunnel]);
 
-  const handleCtaClick = () => {
+  const handleCtaClick = (e: React.MouseEvent) => {
     if (!currentStep) return;
 
     const state = getFunnelState();
@@ -174,6 +175,7 @@ export default function FunnelOrchestrator() {
     });
 
     if (currentStep.ctaUrl.startsWith("#")) {
+      e.preventDefault();
       if (currentStep.ctaUrl === "#chat-widget") {
         window.dispatchEvent(new Event("nc-open-chat"));
       }
@@ -184,8 +186,6 @@ export default function FunnelOrchestrator() {
       } else {
         window.location.href = `/${currentStep.ctaUrl}`;
       }
-    } else {
-      window.location.href = currentStep.ctaUrl;
     }
   };
 
@@ -229,12 +229,13 @@ export default function FunnelOrchestrator() {
             <p className="text-sm font-semibold text-white">{currentStep.headline}</p>
             <p className="text-xs text-white/80">{currentStep.subtext}</p>
           </div>
-          <button
+          <Link
+            href={currentStep.ctaUrl}
             onClick={handleCtaClick}
             className="shrink-0 rounded-lg bg-white px-4 py-2 text-xs font-bold text-navy transition hover:bg-gray-100"
           >
             {currentStep.cta}
-          </button>
+          </Link>
         </div>
       </div>
     </div>
