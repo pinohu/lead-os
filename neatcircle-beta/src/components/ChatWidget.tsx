@@ -323,7 +323,7 @@ export default function ChatWidget() {
       <button
         id="chat-widget"
         onClick={() => (open ? setOpen(false) : handleOpen())}
-        className="fixed bottom-6 right-6 z-[9999] flex h-14 w-14 items-center justify-center rounded-full bg-cyan text-white shadow-lg transition hover:bg-cyan-dark"
+        className="fixed bottom-6 right-6 z-[9999] flex h-14 w-14 items-center justify-center rounded-full bg-cyan text-white shadow-lg transition motion-reduce:transition-none hover:bg-cyan-dark"
         aria-label={open ? "Close chat" : "Open chat"}
       >
         {open ? (
@@ -352,8 +352,8 @@ export default function ChatWidget() {
           </div>
 
           <div className="flex-1 space-y-3 overflow-y-auto p-4">
-            {messages.map((message, index) => (
-              <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+            {messages.map((message) => (
+              <div key={`msg-${message.timestamp}`} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
                   className={`max-w-[80%] whitespace-pre-line rounded-xl px-3 py-2 text-sm ${
                     message.role === "user" ? "bg-cyan text-white" : "bg-gray-100 text-navy"
@@ -380,7 +380,7 @@ export default function ChatWidget() {
               <button
                 onClick={handleSend}
                 disabled={!input.trim()}
-                className="rounded-lg bg-cyan px-3 py-2 text-white transition hover:bg-cyan-dark disabled:opacity-50"
+                className="rounded-lg bg-cyan px-3 py-2 text-white transition motion-reduce:transition-none hover:bg-cyan-dark disabled:opacity-50"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />

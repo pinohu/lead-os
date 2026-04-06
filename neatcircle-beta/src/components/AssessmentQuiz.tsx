@@ -171,7 +171,7 @@ export default function AssessmentQuiz({
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-cyan px-6 py-3 font-semibold text-white transition hover:bg-cyan-dark disabled:opacity-50"
+              className="w-full rounded-lg bg-cyan px-6 py-3 font-semibold text-white transition motion-reduce:transition-none hover:bg-cyan-dark disabled:opacity-50"
             >
               {loading ? "Processing..." : "Get My Results"}
             </button>
@@ -199,7 +199,7 @@ export default function AssessmentQuiz({
             <h3 className="mb-1 text-3xl font-bold text-navy">{tier.label}</h3>
             <div className="mx-auto mb-4 h-3 w-full max-w-xs overflow-hidden rounded-full bg-gray-100">
               <div
-                className="h-full rounded-full transition-all duration-1000"
+                className="h-full rounded-full transition-all motion-reduce:transition-none duration-1000"
                 style={{
                   width: `${Math.round((totalScore / maxPossibleScore) * 100)}%`,
                   background:
@@ -230,7 +230,7 @@ export default function AssessmentQuiz({
           <div className="text-center">
             <a
               href={submitted ? "/services" : "#contact"}
-              className="inline-block rounded-lg bg-cyan px-8 py-3 font-semibold text-white transition hover:bg-cyan-dark"
+              className="inline-block rounded-lg bg-cyan px-8 py-3 font-semibold text-white transition motion-reduce:transition-none hover:bg-cyan-dark"
             >
               {tier.cta}
             </a>
@@ -259,7 +259,7 @@ export default function AssessmentQuiz({
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-gray-100">
             <div
-              className="h-full rounded-full bg-cyan transition-all duration-500"
+              className="h-full rounded-full bg-cyan transition-all motion-reduce:transition-none duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -272,7 +272,7 @@ export default function AssessmentQuiz({
             <button
               key={index}
               onClick={() => handleAnswer(currentQuestion.id, option.score, option.insight)}
-              className="w-full rounded-lg border-2 border-gray-100 px-4 py-4 text-left text-sm font-medium text-navy transition hover:border-cyan hover:bg-cyan/5"
+              className="w-full rounded-lg border-2 border-gray-100 px-4 py-4 text-left text-sm font-medium text-navy transition motion-reduce:transition-none hover:border-cyan hover:bg-cyan/5"
             >
               {option.label}
             </button>

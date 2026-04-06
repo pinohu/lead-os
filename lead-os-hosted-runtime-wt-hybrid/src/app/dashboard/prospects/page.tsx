@@ -291,7 +291,7 @@ function ProspectCard({
         <div className="mb-3.5 flex flex-wrap gap-1.5" aria-label="Discovery reasoning">
           {prospect.reasoning.map((reason, i) => (
             <span
-              key={i}
+              key={`reason-${i}-${reason.slice(0, 20)}`}
               className="inline-block rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2 py-0.5 text-[0.7rem] font-semibold text-purple-300"
             >
               {reason}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { siteConfig } from "@/lib/site-config";
 
 const navLinks = [
@@ -15,6 +15,19 @@ const navLinks = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [open]);
 
   return (
     <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50 bg-navy/95 backdrop-blur-sm border-b border-white/10">
@@ -32,14 +45,14 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-sm text-slate-300 hover:text-white transition-colors"
+                className="text-sm text-slate-300 hover:text-white transition-colors motion-reduce:transition-none"
               >
                 {link.label}
               </a>
             ))}
             <a
               href="/#contact"
-              className="bg-cyan hover:bg-cyan-dark text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors"
+              className="bg-cyan hover:bg-cyan-dark text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors motion-reduce:transition-none"
             >
               Book a Call
             </a>
@@ -73,7 +86,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="block text-slate-300 hover:text-white transition-colors py-2"
+                className="block text-slate-300 hover:text-white transition-colors motion-reduce:transition-none py-2"
               >
                 {link.label}
               </a>
@@ -81,7 +94,7 @@ export default function Navbar() {
             <a
               href="/#contact"
               onClick={() => setOpen(false)}
-              className="block bg-cyan hover:bg-cyan-dark text-white text-center font-semibold px-5 py-2.5 rounded-lg transition-colors mt-4"
+              className="block bg-cyan hover:bg-cyan-dark text-white text-center font-semibold px-5 py-2.5 rounded-lg transition-colors motion-reduce:transition-none mt-4"
             >
               Book a Call
             </a>
