@@ -98,11 +98,11 @@ export default function RootLayout({
       >
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-white focus:text-black"
         >
-          Skip to content
+          Skip to main content
         </a>
-        <div id="main-content">{children}</div>
+        <main id="main-content">{children}</main>
         <BehavioralTracker />
         <ExitIntent />
         <ChatWidget />
