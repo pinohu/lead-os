@@ -108,6 +108,14 @@ export interface RuntimeConfigRecord {
 }
 
 const MAX_STORE_SIZE = 10000;
+const MAX_STORE_ENTRIES = 2000;
+
+function evictOldest<K, V>(map: Map<K, V>) {
+  if (map.size >= MAX_STORE_ENTRIES) {
+    const oldest = map.keys().next().value;
+    if (oldest !== undefined) map.delete(oldest);
+  }
+}
 
 const leadStore = new Map<string, StoredLeadRecord>();
 const eventStore: CanonicalEvent[] = [];
@@ -439,6 +447,7 @@ async function getAitableRuntimeEntries() {
 }
 
 export async function upsertLeadRecord(record: StoredLeadRecord) {
+  evictOldest(leadStore);
   leadStore.set(record.leadKey, record);
 
   const activePool = getPool();
@@ -483,6 +492,7 @@ export async function getLeadRecord(leadKey: string) {
   );
   const record = result.rows[0]?.payload;
   if (record) {
+    evictOldest(leadStore);
     leadStore.set(record.leadKey, record);
   }
   return record;
@@ -747,6 +757,7 @@ export async function upsertBookingJob(job: Omit<BookingJobRecord, "id" | "creat
     updatedAt: job.updatedAt ?? new Date().toISOString(),
     ...job,
   };
+  evictOldest(bookingJobStore);
   bookingJobStore.set(normalizedJob.id, normalizedJob);
 
   const activePool = getPool();
@@ -823,6 +834,7 @@ export async function upsertDocumentJob(job: Omit<DocumentJobRecord, "id" | "cre
     updatedAt: job.updatedAt ?? new Date().toISOString(),
     ...job,
   };
+  evictOldest(documentJobStore);
   documentJobStore.set(normalizedJob.id, normalizedJob);
 
   const activePool = getPool();
@@ -895,6 +907,7 @@ export async function upsertRuntimeConfig(
     updatedAt: config.updatedAt ?? new Date().toISOString(),
     ...config,
   };
+  evictOldest(runtimeConfigStore);
   runtimeConfigStore.set(normalizedConfig.key, normalizedConfig);
 
   const activePool = getPool();
@@ -933,6 +946,7 @@ export async function upsertWorkflowRegistry(
     lastProvisionedAt: record.lastProvisionedAt ?? record.updatedAt ?? new Date().toISOString(),
     ...record,
   };
+  evictOldest(workflowRegistryStore);
   workflowRegistryStore.set(normalizedRecord.slug, normalizedRecord);
 
   const activePool = getPool();
@@ -980,6 +994,7 @@ export async function getWorkflowRegistryRecord(slug: string) {
   );
   const record = result.rows[0]?.payload;
   if (record) {
+    evictOldest(workflowRegistryStore);
     workflowRegistryStore.set(record.slug, record);
   }
   return record;
@@ -1036,6 +1051,7 @@ export async function getRuntimeConfig(key: string) {
   );
   const config = result.rows[0]?.payload;
   if (config) {
+    evictOldest(runtimeConfigStore);
     runtimeConfigStore.set(config.key, config);
   }
   return config;
