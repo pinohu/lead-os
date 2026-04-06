@@ -21,6 +21,14 @@ export async function GET(request: Request) {
       );
     }
 
+    const authenticatedTenantId = request.headers.get("x-authenticated-tenant-id");
+    if (authenticatedTenantId && tenantId !== authenticatedTenantId) {
+      return NextResponse.json(
+        { data: null, error: { code: "FORBIDDEN", message: "tenantId does not match authenticated tenant" }, meta: null },
+        { status: 403, headers },
+      );
+    }
+
     const webhooks = await listWebhooks(tenantId);
     return NextResponse.json(
       { data: webhooks, error: null, meta: { count: webhooks.length } },
@@ -46,6 +54,14 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId is required" }, meta: null },
         { status: 400, headers },
+      );
+    }
+
+    const authenticatedTenantId = request.headers.get("x-authenticated-tenant-id");
+    if (authenticatedTenantId && body.tenantId !== authenticatedTenantId) {
+      return NextResponse.json(
+        { data: null, error: { code: "FORBIDDEN", message: "tenantId does not match authenticated tenant" }, meta: null },
+        { status: 403, headers },
       );
     }
 

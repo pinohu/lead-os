@@ -135,11 +135,25 @@ export function clearOperatorSession(response: NextResponse) {
 
 export async function requireOperatorApiSession(request: Request) {
   // Fast path: trust identity headers set by the Next.js middleware.
-  // When middleware already validated the operator cookie it attaches the
-  // identity as request headers, so we can skip re-parsing the JWT.
+  // Only operator-cookie is accepted as a valid operator authentication
+  // method. API keys and session tokens authenticate regular users, not
+  // operators — allowing them here would let non-operator roles access
+  // operator-only endpoints.
   const userId = request.headers.get("x-authenticated-user-id");
   const method = request.headers.get("x-authenticated-method");
   if (userId && method) {
+    if (method !== "operator-cookie") {
+      return {
+        session: null,
+        response: NextResponse.json(
+          {
+            success: false,
+            error: "Forbidden: operator-level authentication required",
+          },
+          { status: 403 },
+        ),
+      };
+    }
     return {
       session: { email: userId, type: "session" as const, exp: 0 },
       response: null,

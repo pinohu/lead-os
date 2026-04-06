@@ -26,6 +26,14 @@ export async function POST(request: Request) {
       );
     }
 
+    const authenticatedTenantId = request.headers.get("x-authenticated-tenant-id");
+    if (authenticatedTenantId && body.tenantId.trim() !== authenticatedTenantId) {
+      return NextResponse.json(
+        { data: null, error: { code: "FORBIDDEN", message: "tenantId does not match authenticated tenant" }, meta: null },
+        { status: 403, headers },
+      );
+    }
+
     if (!body.planId || typeof body.planId !== "string" || body.planId.trim().length === 0) {
       return NextResponse.json(
         { data: null, error: { code: "VALIDATION_ERROR", message: "planId is required" }, meta: null },

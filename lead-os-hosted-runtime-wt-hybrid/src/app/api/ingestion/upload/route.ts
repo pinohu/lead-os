@@ -100,6 +100,14 @@ export async function POST(request: Request) {
     geoHint = typeof b.geoHint === "string" && b.geoHint.trim().length > 0 ? b.geoHint.trim() : undefined;
   }
 
+  const authenticatedTenantId = request.headers.get("x-authenticated-tenant-id");
+  if (authenticatedTenantId && tenantId !== authenticatedTenantId) {
+    return NextResponse.json(
+      { data: null, error: { code: "FORBIDDEN", message: "tenantId does not match authenticated tenant" }, meta: null },
+      { status: 403, headers },
+    );
+  }
+
   try {
     const artifact = extractMarketingArtifact({ text, tenantId, sourceType, geoHint });
     await addArtifact(artifact);

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
 import { startTrace } from "@/lib/request-tracer";
@@ -91,9 +91,9 @@ const MIDDLEWARE_SIGNATURE_KEY = process.env.LEAD_OS_AUTH_SECRET ?? "";
 
 function computeMiddlewareSignature(userId: string, tenantId: string, requestId: string): string {
   const payload = `${userId}:${tenantId}:${requestId}`;
-  return createHmac("sha256", MIDDLEWARE_SIGNATURE_KEY)
+  return `mw1-${createHmac("sha256", MIDDLEWARE_SIGNATURE_KEY)
     .update(payload)
-    .digest("hex");
+    .digest("hex")}`;
 }
 
 function forwardWithIdentity(
@@ -224,7 +224,9 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   // Cron secret — fast path, no DB required
   const cronSecret = request.headers.get("x-cron-secret");
-  if (cronSecret && cronSecret === process.env.CRON_SECRET) {
+  const expectedCronSecret = process.env.CRON_SECRET;
+  if (cronSecret && expectedCronSecret && cronSecret.length === expectedCronSecret.length &&
+    timingSafeEqual(Buffer.from(cronSecret), Buffer.from(expectedCronSecret))) {
     const response = NextResponse.next();
     return applySecurityHeaders(response, requestId);
   }

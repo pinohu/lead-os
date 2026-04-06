@@ -551,6 +551,35 @@ export async function validateSession(token: string): Promise<SessionRecord | nu
     return memSession;
   }
 
+  const pool = getPool();
+  if (pool) {
+    const result = await pool.query(
+      `SELECT id, user_id, tenant_id, role, expires_at, created_at
+       FROM lead_os_sessions WHERE id = $1 LIMIT 1`,
+      [token],
+    );
+
+    if (result.rows.length > 0) {
+      const row = result.rows[0];
+      const session: SessionRecord = {
+        id: row.id,
+        userId: row.user_id,
+        tenantId: row.tenant_id,
+        role: row.role as UserRole,
+        expiresAt: row.expires_at instanceof Date ? row.expires_at.toISOString() : String(row.expires_at),
+        createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : String(row.created_at),
+      };
+
+      if (new Date(session.expiresAt) < new Date()) {
+        await pool.query(`DELETE FROM lead_os_sessions WHERE id = $1`, [token]);
+        return null;
+      }
+
+      sessionStore.set(token, session);
+      return session;
+    }
+  }
+
   return null;
 }
 

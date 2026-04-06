@@ -1,8 +1,33 @@
 import { NextResponse } from "next/server";
+import { timingSafeEqual } from "crypto";
 import { handleWebhookEvent } from "@/lib/integrations/chargebee-adapter";
 
 export async function POST(request: Request) {
   try {
+    const webhookSecret = process.env.CHARGEBEE_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      if (process.env.NODE_ENV === "production") {
+        return NextResponse.json(
+          { data: null, error: { code: "WEBHOOK_REJECTED", message: "Webhook secret not configured" }, meta: null },
+          { status: 500 },
+        );
+      }
+      console.warn("[Chargebee] CHARGEBEE_WEBHOOK_SECRET not set — skipping signature check in non-production");
+    }
+
+    if (webhookSecret) {
+      const token = request.headers.get("x-chargebee-webhook-token") ?? "";
+      if (
+        !token ||
+        token.length !== webhookSecret.length ||
+        !timingSafeEqual(Buffer.from(token), Buffer.from(webhookSecret))
+      ) {
+        return NextResponse.json(
+          { data: null, error: { code: "WEBHOOK_REJECTED", message: "Invalid webhook signature" }, meta: null },
+          { status: 401 },
+        );
+      }
+    }
     const contentType = request.headers.get("content-type") ?? "";
     if (!contentType.includes("application/json")) {
       return NextResponse.json(

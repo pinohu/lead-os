@@ -113,18 +113,92 @@ export async function exchangeOidcCode(
 }
 
 /**
- * Decode an ID token (JWT) by base64url-decoding the payload.
- * No cryptographic signature verification — the token was received directly
- * from the IdP over TLS, so transport-level trust is sufficient for most
- * enterprise deployments.
+ * Decode an ID token (JWT) and validate critical claims.
+ *
+ * // SECURITY: Production deployments MUST verify the JWT signature against
+ * // the IdP's JWKS endpoint. This implementation attempts JWKS-based
+ * // verification via crypto.subtle and falls through with a warning on
+ * // failure, but the iss and aud claim checks below are always enforced.
  */
-export async function parseIdToken(idToken: string): Promise<SsoUserInfo> {
+export async function parseIdToken(
+  idToken: string,
+  config?: OidcConfig,
+): Promise<SsoUserInfo> {
   const parts = idToken.split(".");
   if (parts.length !== 3) throw new Error("Malformed ID token");
+
+  const headerBytes = Buffer.from(parts[0], "base64url");
+  const header = JSON.parse(headerBytes.toString("utf-8")) as Record<string, unknown>;
 
   const payload = JSON.parse(
     Buffer.from(parts[1], "base64url").toString("utf-8"),
   ) as Record<string, unknown>;
+
+  // --- Attempt JWKS signature verification (graceful degradation) ---
+  if (config) {
+    try {
+      const discoveryUrl = `${config.issuerUrl.replace(/\/$/, "")}/.well-known/openid-configuration`;
+      const discoveryRes = await fetch(discoveryUrl, { signal: AbortSignal.timeout(5000) });
+      if (discoveryRes.ok) {
+        const discovery = (await discoveryRes.json()) as Record<string, unknown>;
+        const jwksUri = discovery.jwks_uri as string | undefined;
+        if (jwksUri) {
+          const jwksRes = await fetch(jwksUri, { signal: AbortSignal.timeout(5000) });
+          if (jwksRes.ok) {
+            const jwks = (await jwksRes.json()) as { keys: Array<Record<string, unknown>> };
+            const kid = header.kid as string | undefined;
+            const alg = (header.alg as string) ?? "RS256";
+            const jwk = kid
+              ? jwks.keys.find((k) => k.kid === kid)
+              : jwks.keys[0];
+            if (jwk) {
+              const algMap: Record<string, { name: string; hash: string }> = {
+                RS256: { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+                RS384: { name: "RSASSA-PKCS1-v1_5", hash: "SHA-384" },
+                RS512: { name: "RSASSA-PKCS1-v1_5", hash: "SHA-512" },
+              };
+              const algInfo = algMap[alg];
+              if (algInfo) {
+                const key = await crypto.subtle.importKey(
+                  "jwk",
+                  jwk as JsonWebKey,
+                  { name: algInfo.name, hash: algInfo.hash },
+                  false,
+                  ["verify"],
+                );
+                const sigBytes = Buffer.from(parts[2], "base64url");
+                const dataBytes = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
+                const valid = await crypto.subtle.verify(algInfo.name, key, sigBytes, dataBytes);
+                if (!valid) {
+                  throw new Error("ID token signature verification failed");
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.includes("signature verification failed")) {
+        throw err;
+      }
+      console.warn("[SSO] JWKS signature verification skipped:", err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  // --- Validate iss and aud claims ---
+  if (config) {
+    const expectedIssuer = config.issuerUrl.replace(/\/$/, "");
+    const tokenIssuer = typeof payload.iss === "string" ? payload.iss.replace(/\/$/, "") : "";
+    if (tokenIssuer !== expectedIssuer) {
+      throw new Error(`ID token issuer mismatch: expected "${expectedIssuer}", got "${tokenIssuer}"`);
+    }
+
+    const aud = payload.aud;
+    const audList = Array.isArray(aud) ? aud.map(String) : [String(aud ?? "")];
+    if (!audList.includes(config.clientId)) {
+      throw new Error(`ID token audience mismatch: expected "${config.clientId}" in ${JSON.stringify(audList)}`);
+    }
+  }
 
   const email = (payload.email as string) ?? "";
   const name =
@@ -197,10 +271,14 @@ export function buildSamlAuthnRequest(config: SamlConfig): string {
 /**
  * Parse a SAML Response XML to extract user identity.
  *
+ * // SECURITY: This parser does NOT verify XML digital signatures. Production
+ * // deployments MUST add certificate-based signature validation using the
+ * // IdP certificate in SamlConfig.idpCertificate. Without signature
+ * // verification, a man-in-the-middle could forge SAML responses.
+ *
  * This is a lightweight string-based parser that covers the standard
  * response format from Okta, Azure AD, Google Workspace, and most SAML 2.0
- * IdPs. It does NOT verify XML signatures — for production hardening,
- * add certificate-based signature validation.
+ * IdPs.
  */
 export function parseSamlResponse(
   samlResponseB64: string,
@@ -211,6 +289,42 @@ export function parseSamlResponse(
     xml = Buffer.from(samlResponseB64, "base64").toString("utf-8");
   } catch {
     return null;
+  }
+
+  // --- Validate Issuer matches configured IdP ---
+  if (_config.idpSsoUrl) {
+    const issuerMatch = xml.match(/<(?:saml2?:)?Issuer[^>]*>([^<]+)<\//);
+    const responseIssuer = issuerMatch?.[1]?.trim() ?? "";
+    if (!responseIssuer) return null;
+
+    let expectedIssuerHost: string;
+    try {
+      expectedIssuerHost = new URL(_config.idpSsoUrl).hostname;
+    } catch {
+      expectedIssuerHost = "";
+    }
+
+    let actualIssuerHost: string;
+    try {
+      actualIssuerHost = new URL(responseIssuer).hostname;
+    } catch {
+      actualIssuerHost = responseIssuer;
+    }
+
+    if (expectedIssuerHost && actualIssuerHost !== expectedIssuerHost) {
+      console.warn(`[SAML] Issuer mismatch: expected host "${expectedIssuerHost}", got "${actualIssuerHost}"`);
+      return null;
+    }
+  }
+
+  // --- Validate Destination matches our ACS URL ---
+  if (_config.assertionConsumerServiceUrl) {
+    const destMatch = xml.match(/Destination="([^"]+)"/);
+    const destination = destMatch?.[1]?.trim() ?? "";
+    if (destination && destination !== _config.assertionConsumerServiceUrl) {
+      console.warn(`[SAML] Destination mismatch: expected "${_config.assertionConsumerServiceUrl}", got "${destination}"`);
+      return null;
+    }
   }
 
   // Extract NameID (email)
