@@ -66,8 +66,10 @@ export function getEnv(): Env {
 
     // In development, warn but don't crash (allows partial dev setup)
     if (process.env.NODE_ENV === "development") {
-      logger.warn("env", "⚠️  Continuing with partial env in development mode.\n");
-      _env = result.data as unknown as Env;
+      logger.warn("env", "Continuing with partial env in development mode.\n");
+      _env = (result as { data?: Partial<Env> }).data
+        ? ((result as { data: Partial<Env> }).data as Env)
+        : ({} as Env);
       return _env;
     }
 

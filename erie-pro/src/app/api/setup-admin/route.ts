@@ -26,20 +26,11 @@ const SetupSchema = z.object({
 
 export async function POST(request: Request) {
   try {
-    // ── Guard: check if admin already exists ──────────────────────────
-    const adminCount = await prisma.user.count({
-      where: { role: "admin" },
-    });
-
-    if (adminCount > 0) {
-      return NextResponse.json(
-        { error: "Admin already configured. Setup is disabled." },
-        { status: 403 }
-      );
+    const body = await request.json().catch(() => null);
+    if (!body) {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
-    // ── Parse & validate input ───────────────────────────────────────
-    const body = await request.json();
     const parsed = SetupSchema.safeParse(body);
 
     if (!parsed.success) {
@@ -51,59 +42,52 @@ export async function POST(request: Request) {
 
     const { email, password, name } = parsed.data;
     const displayName = name || "Admin";
-
-    // ── Hash password (bcrypt, 12 rounds — matches create-admin.ts) ──
     const passwordHash = await bcrypt.hash(password, 12);
-
-    // ── Create Provider record for password auth ─────────────────────
     const adminSlug = `admin-${email.split("@")[0]}`;
 
-    const provider = await prisma.provider.create({
-      data: {
-        slug: adminSlug,
-        businessName: `${displayName} (Admin)`,
-        niche: "admin",
-        phone: "0000000000",
-        email,
-        passwordHash,
-      },
+    const result = await prisma.$transaction(async (tx) => {
+      const adminCount = await tx.user.count({ where: { role: "admin" } });
+      if (adminCount > 0) {
+        return { error: "Admin already configured. Setup is disabled." } as const;
+      }
+
+      const provider = await tx.provider.create({
+        data: {
+          slug: adminSlug,
+          businessName: `${displayName} (Admin)`,
+          niche: "admin",
+          phone: "0000000000",
+          email,
+          passwordHash,
+        },
+      });
+
+      const existingUser = await tx.user.findUnique({ where: { email } });
+
+      const user = existingUser
+        ? await tx.user.update({
+            where: { email },
+            data: { role: "admin", providerId: provider.id, name: displayName, emailVerified: new Date() },
+          })
+        : await tx.user.create({
+            data: { email, name: displayName, role: "admin", providerId: provider.id, emailVerified: new Date() },
+          });
+
+      return { provider, user } as const;
     });
 
-    // ── Create or update User with admin role ────────────────────────
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-
-    let user;
-    if (existingUser) {
-      user = await prisma.user.update({
-        where: { email },
-        data: {
-          role: "admin",
-          providerId: provider.id,
-          name: displayName,
-          emailVerified: new Date(),
-        },
-      });
-    } else {
-      user = await prisma.user.create({
-        data: {
-          email,
-          name: displayName,
-          role: "admin",
-          providerId: provider.id,
-          emailVerified: new Date(),
-        },
-      });
+    if ("error" in result) {
+      return NextResponse.json({ error: result.error }, { status: 403 });
     }
 
-    // ── Audit log ────────────────────────────────────────────────────
     await audit({
       action: "admin.action",
       entityType: "provider",
-      entityId: provider.id,
-      providerId: provider.id,
+      entityId: result.provider.id,
+      providerId: result.provider.id,
       metadata: {
         description: "First admin account created via bootstrap setup",
-        userId: user.id,
+        userId: result.user.id,
         email,
       },
     });

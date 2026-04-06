@@ -21,6 +21,14 @@ export async function POST(req: NextRequest) {
   const rateLimited = await checkRateLimit(req, "contact");
   if (rateLimited) return rateLimited;
 
+  const session = await (await import("@/lib/auth")).auth();
+  if (!session?.user) {
+    return NextResponse.json(
+      { success: false, error: "Authentication required to export personal data." },
+      { status: 401 }
+    );
+  }
+
   try {
     // ── Body size check ──────────────────────────────────────────
     const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);

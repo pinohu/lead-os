@@ -72,10 +72,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true, duplicate: true });
     }
 
-    // Handle the event
+    // Handle the event (includes invoice.payment_failed → past_due)
     const result = await handleStripeWebhook(event);
 
-    // ── 2.3: Handle payment failure — set grace period instead of immediate deactivation
+    // Grace period email for payment failures (enhances handleStripeWebhook)
     if (event.type === "invoice.payment_failed") {
       const invoice = event.data.object;
       const customerId = invoice && "customer" in invoice ? (invoice.customer as string) : null;
@@ -86,16 +86,12 @@ export async function POST(req: NextRequest) {
           select: { id: true, email: true, businessName: true, gracePeriodEndsAt: true },
         });
 
-        if (provider) {
-          // Set 7-day grace period (only if not already in one)
-          const gracePeriodEndsAt = provider.gracePeriodEndsAt ?? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        if (provider && !provider.gracePeriodEndsAt) {
+          const gracePeriodEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
           await prisma.provider.update({
             where: { id: provider.id },
-            data: {
-              subscriptionStatus: "past_due",
-              gracePeriodEndsAt,
-            },
+            data: { gracePeriodEndsAt },
           });
 
           const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";

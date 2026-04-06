@@ -17,9 +17,16 @@ const DeleteDataSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  // Rate limit: treat as contact
   const rateLimited = await checkRateLimit(req, "contact");
   if (rateLimited) return rateLimited;
+
+  const session = await (await import("@/lib/auth")).auth();
+  if (!session?.user) {
+    return NextResponse.json(
+      { success: false, error: "Authentication required to request data deletion." },
+      { status: 401 }
+    );
+  }
 
   try {
     // ── Body size check ──────────────────────────────────────────

@@ -176,11 +176,12 @@ function getNextBusinessOpen(provider: {
   if (!provider.businessHours) return new Date();
 
   const hours = provider.businessHours as BusinessHoursMap;
+  const tz = provider.timezone || "America/New_York";
   const now = new Date();
   const dayKeys: (keyof BusinessHoursMap)[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
   const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: provider.timezone || "America/New_York",
+    timeZone: tz,
     weekday: "short",
   }).formatToParts(now);
 
@@ -193,10 +194,14 @@ function getNextBusinessOpen(provider: {
     const dayConfig = hours[dayKeys[dayIndex]];
     if (dayConfig && !("closed" in dayConfig)) {
       const [openH, openM] = (dayConfig as BusinessHoursDay).open.split(":").map(Number);
-      const nextOpen = new Date(now);
-      nextOpen.setDate(nextOpen.getDate() + offset);
-      nextOpen.setHours(openH, openM, 0, 0);
-      return nextOpen;
+      const targetDate = new Date(now);
+      targetDate.setDate(targetDate.getDate() + offset);
+      const tzDateStr = targetDate.toLocaleDateString("en-US", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" });
+      const [month, day, year] = tzDateStr.split("/").map(Number);
+      const isoString = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}T${String(openH).padStart(2, "0")}:${String(openM).padStart(2, "0")}:00`;
+      const providerLocalDate = new Date(new Date(isoString).toLocaleString("en-US", { timeZone: tz }));
+      const utcOffset = providerLocalDate.getTime() - new Date(isoString).getTime();
+      return new Date(new Date(isoString).getTime() - utcOffset);
     }
   }
 
