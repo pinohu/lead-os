@@ -411,7 +411,7 @@ export async function completeOnboarding(id: string): Promise<OnboardingState> {
 
   const tenant = await createTenant(tenantInput);
 
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000");
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_SITE_URL || "");
   const embedScript = `<script src="${baseUrl}/embed.js" data-tenant="${tenant.tenantId}" data-accent="${tenant.accent}" async></script>`;
   const dashboardUrl = `${baseUrl}/dashboard?tenantId=${tenant.tenantId}`;
 

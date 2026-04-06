@@ -1,5 +1,13 @@
 import { getPool } from "./db.ts";
 
+const VALID_IDENTIFIER = /^[a-z_][a-z0-9_]*$/;
+
+function assertValidIdentifier(name: string, label: string): void {
+  if (!VALID_IDENTIFIER.test(name)) {
+    throw new Error(`Invalid SQL identifier for ${label}: "${name}"`);
+  }
+}
+
 export interface PersistentStoreOptions<T> {
   tableName: string;
   keyColumn?: string;
@@ -25,6 +33,10 @@ export class PersistentStore<T> {
     this.keyCol = options.keyColumn ?? "key";
     this.valueCol = options.valueColumn ?? "value";
     this.tenantCol = options.tenantColumn ?? "tenant_id";
+    assertValidIdentifier(this.tableName, "tableName");
+    assertValidIdentifier(this.keyCol, "keyColumn");
+    assertValidIdentifier(this.valueCol, "valueColumn");
+    assertValidIdentifier(this.tenantCol, "tenantColumn");
     this.serialize = options.serialize ?? JSON.stringify;
     this.deserialize = options.deserialize ?? JSON.parse;
     this.maxMemory = options.maxMemory ?? 10000;
