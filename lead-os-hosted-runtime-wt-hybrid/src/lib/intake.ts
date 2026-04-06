@@ -1,4 +1,5 @@
 import { buildImmediateFollowupPlan } from "./automation.ts";
+import { getCircuitBreaker } from "./circuit-breaker.ts";
 import { decideNextStep } from "./orchestrator.ts";
 import {
   createBookingAction,
@@ -115,8 +116,26 @@ const VALID_SOURCES: IntakeSource[] = [
   "manual",
 ];
 
+const REPLAY_STORE_MAX_SIZE = 10_000;
 const intakeReplayStore = new Map<string, number>();
 const INTAKE_REPLAY_WINDOW_MS = 5 * 60 * 1000;
+
+function pruneReplayStore() {
+  if (intakeReplayStore.size <= REPLAY_STORE_MAX_SIZE) return;
+  const now = Date.now();
+  for (const [key, ts] of intakeReplayStore) {
+    if (now - ts >= INTAKE_REPLAY_WINDOW_MS) {
+      intakeReplayStore.delete(key);
+    }
+  }
+  if (intakeReplayStore.size > REPLAY_STORE_MAX_SIZE) {
+    const entries = [...intakeReplayStore.entries()].sort((a, b) => a[1] - b[1]);
+    const toRemove = entries.slice(0, entries.length - REPLAY_STORE_MAX_SIZE);
+    for (const [key] of toRemove) {
+      intakeReplayStore.delete(key);
+    }
+  }
+}
 
 function normalizeName(value?: string) {
   return value?.trim().replace(/\s+/g, " ") ?? "";
@@ -250,15 +269,18 @@ async function safelyRunProviderAction(
   payload?: Record<string, unknown>,
 ) {
   try {
+    const breaker = getCircuitBreaker(provider);
     const timeout = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error(`Provider action timed out after ${PROVIDER_TIMEOUT_MS}ms`)), PROVIDER_TIMEOUT_MS)
     );
-    const result = await Promise.race([action(), timeout]);
+    const result = await breaker.execute(() => Promise.race([action(), timeout]));
     return result;
   } catch (error) {
+    const message = error instanceof Error ? error.message : `${provider} action failed`;
+    logger.warn(`Provider action '${provider}' failed`, { error: message });
     return failedProviderResult(
       provider,
-      error instanceof Error ? error.message : `${provider} action failed`,
+      message,
       payload,
     );
   }
@@ -303,6 +325,7 @@ function isRecentReplay(key: string) {
   const existing = intakeReplayStore.get(key);
   if (existing && now - existing < INTAKE_REPLAY_WINDOW_MS) return true;
   intakeReplayStore.set(key, now);
+  pruneReplayStore();
   return false;
 }
 

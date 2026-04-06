@@ -70,7 +70,7 @@ async function processJobInMemory(queue: string, jobId: string): Promise<void> {
   }
 
   const def: JobDefinition = { name: job.name, data: job.data };
-  const maxAttempts = 1;
+  const maxAttempts = 3;
   let attempt = 0;
 
   while (attempt < maxAttempts) {
@@ -126,7 +126,12 @@ async function getBullQueue(queue: string): Promise<BullMQQueue> {
   if (bullQueues.has(queue)) return bullQueues.get(queue)!;
 
   const { Queue } = await import(/* webpackIgnore: true */ "bullmq");
-  const connection = { url: process.env.REDIS_URL! };
+  const connection = {
+    url: process.env.REDIS_URL!,
+    maxRetriesPerRequest: 3,
+    enableReadyCheck: true,
+    retryStrategy: (times: number) => Math.min(times * 500, 5000),
+  };
   const q = new Queue(queue, { connection }) as unknown as BullMQQueue;
   bullQueues.set(queue, q);
   return q;
