@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           />
         ) : null}
-        <div id="main-content">{children}</div>
+        <main id="main-content">{children}</main>
       </body>
     </html>
   );
