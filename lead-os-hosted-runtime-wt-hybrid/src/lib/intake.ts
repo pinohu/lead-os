@@ -36,6 +36,7 @@ import { tenantConfig } from "./tenant.ts";
 import type { FunnelFamily } from "./runtime-schema.ts";
 import { incrementUsage } from "./billing-store.ts";
 import { enforcePlanLimits } from "./plan-enforcer.ts";
+import { logger } from "./logger.ts";
 
 export type IntakeSource =
   | "contact_form"
@@ -241,13 +242,19 @@ function failedProviderResult(
   };
 }
 
+const PROVIDER_TIMEOUT_MS = 3000;
+
 async function safelyRunProviderAction(
   provider: string,
   action: () => Promise<ProviderResult>,
   payload?: Record<string, unknown>,
 ) {
   try {
-    return await action();
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`Provider action timed out after ${PROVIDER_TIMEOUT_MS}ms`)), PROVIDER_TIMEOUT_MS)
+    );
+    const result = await Promise.race([action(), timeout]);
+    return result;
   } catch (error) {
     return failedProviderResult(
       provider,
@@ -860,7 +867,14 @@ export async function processLeadIntake(payload: HostedLeadPayload): Promise<Int
   ]);
 
   if (!existing && !replayed) {
-    incrementUsage(tenantId, "leads", 1).catch(() => {});
+    try {
+      await incrementUsage(tenantId, "leads", 1);
+    } catch (err) {
+      logger.error("Failed to increment billing usage for lead", {
+        tenantId,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
   }
 
   return {

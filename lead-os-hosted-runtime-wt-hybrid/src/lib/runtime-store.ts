@@ -1,6 +1,7 @@
 import type { QueryResultRow } from "pg";
 import { getPool as getDbPool } from "./db.ts";
 import { embeddedSecrets } from "./embedded-secrets.ts";
+import { LruCache } from "./lru-cache.ts";
 import type { CustomerMilestoneId, LeadMilestoneId, LeadStage } from "./runtime-schema.ts";
 import type { CanonicalEvent, TraceContext } from "./trace.ts";
 
@@ -109,14 +110,14 @@ export interface RuntimeConfigRecord {
 
 const MAX_STORE_SIZE = 10000;
 
-const leadStore = new Map<string, StoredLeadRecord>();
+const leadStore = new LruCache<string, StoredLeadRecord>({ maxSize: MAX_STORE_SIZE });
 const eventStore: CanonicalEvent[] = [];
 const providerExecutionStore: ProviderExecutionRecord[] = [];
 const workflowRunStore: WorkflowRunRecord[] = [];
-const bookingJobStore = new Map<string, BookingJobRecord>();
-const documentJobStore = new Map<string, DocumentJobRecord>();
-const workflowRegistryStore = new Map<string, WorkflowRegistryRecord>();
-const runtimeConfigStore = new Map<string, RuntimeConfigRecord>();
+const bookingJobStore = new LruCache<string, BookingJobRecord>({ maxSize: MAX_STORE_SIZE });
+const documentJobStore = new LruCache<string, DocumentJobRecord>({ maxSize: MAX_STORE_SIZE });
+const workflowRegistryStore = new LruCache<string, WorkflowRegistryRecord>({ maxSize: MAX_STORE_SIZE });
+const runtimeConfigStore = new LruCache<string, RuntimeConfigRecord>({ maxSize: MAX_STORE_SIZE });
 
 let schemaReady: Promise<void> | null = null;
 let aitableCache: { fetchedAt: number; entries: AitableRuntimeEntry[] } | null = null;

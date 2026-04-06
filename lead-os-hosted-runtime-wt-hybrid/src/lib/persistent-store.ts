@@ -1,4 +1,5 @@
 import { getPool } from "./db.ts";
+import { logger } from "./logger.ts";
 
 export interface PersistentStoreOptions<T> {
   tableName: string;
@@ -41,12 +42,20 @@ export class PersistentStore<T> {
       if (firstKey) this.memory.delete(firstKey);
     }
     // Write-through to Postgres (fire and forget)
-    this.persist(key, value, tenantId).catch(() => {});
+    this.persist(key, value, tenantId).catch((err) => {
+      logger.error("PersistentStore: failed to persist to database", {
+        key, error: err instanceof Error ? err.message : String(err),
+      });
+    });
   }
 
   delete(key: string): boolean {
     const existed = this.memory.delete(key);
-    this.unpersist(key).catch(() => {});
+    this.unpersist(key).catch((err) => {
+      logger.error("PersistentStore: failed to unpersist from database", {
+        key, error: err instanceof Error ? err.message : String(err),
+      });
+    });
     return existed;
   }
 
@@ -101,7 +110,11 @@ export class PersistentStore<T> {
          ON CONFLICT (${this.keyCol}) DO UPDATE SET ${this.valueCol} = $2, created_at = NOW()`,
         [key, serialized, tenantId ?? "default"],
       );
-    } catch { /* DB persistence failure must not break the store */ }
+    } catch (err) {
+      logger.warn("PersistentStore: DB write failed, data only in memory", {
+        key: this.tableName, error: err instanceof Error ? err.message : String(err),
+      });
+    }
   }
 
   private async unpersist(key: string): Promise<void> {
