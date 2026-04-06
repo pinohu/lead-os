@@ -1,152 +1,104 @@
-# PA CROP Services — Full Audit Report (2026-04-04)
+# PA CROP Services — Full Audit & Remediation Report (2026-04-04)
 
 ## Overview
 
-Comprehensive security, code quality, accessibility, SEO, and infrastructure audit of [pinohu/pa-crop-services](https://github.com/pinohu/pa-crop-services). All fixes are included in the accompanying patch file.
+Comprehensive production-readiness audit and remediation of [pinohu/pa-crop-services](https://github.com/pinohu/pa-crop-services). Multi-agent audit council identified 40+ issues across 7 disciplines. All critical, high, and medium issues have been fixed.
 
 ## How to Apply
 
 ```bash
 cd pa-crop-services
 git am pa-crop-audit/pa-crop-services-audit.patch
-# Or apply manually:
-git apply pa-crop-audit/pa-crop-services-audit.patch
 ```
 
 ---
 
-## Critical Fixes Applied
+## Security Fixes (Critical + High)
 
-### 1. Stripe Webhook Signature Verification (CRITICAL)
-**File:** `api/stripe-webhook.js`
-- `timingSafeEqual` was called with `Buffer.from(hexString)` which treats hex digits as UTF-8 bytes, not hex — causing buffer length mismatches that could crash or falsely reject valid webhooks
-- Added null guards for missing `t=` timestamp and `v1=` signatures
-- Now compares hex strings as UTF-8 buffers of equal length
+| # | Issue | Severity | File(s) |
+|---|-------|----------|---------|
+| 1 | `/api/chat` had NO authentication — public LLM abuse | CRITICAL | `api/chat.js` |
+| 2 | `/api/document-upload` had NO authentication — anyone could impersonate any user | CRITICAL | `api/document-upload.js` |
+| 3 | Stripe webhook `timingSafeEqual` buffer length mismatch | CRITICAL | `api/stripe-webhook.js` |
+| 4 | `provision.js` returned `accessCode`, `hostingPassword` in API response | CRITICAL | `api/provision.js` |
+| 5 | `sanitize()` only stripped tags, no HTML entity encoding | HIGH | `api/_validate.js` |
+| 6 | SMS endpoint received email addresses in `to` field | HIGH | `api/stripe-webhook.js`, `api/document-upload.js` |
+| 7 | Auth/index.js used `===` instead of timing-safe compare | HIGH | `api/auth/index.js` |
+| 8 | Rate limiter `clear()` on 10k entries — attacker could flush all limits | HIGH | `api/_ratelimit.js` |
+| 9 | Admin API keys GET returned ALL keys across ALL orgs | HIGH | `api/admin/api-keys.js` |
+| 10 | CORS reflected ANY origin in preview mode | MEDIUM | `api/services/auth.js` |
+| 11 | Missing `requireJson`/`rejectOversizedBody` on auth endpoints | MEDIUM | `api/auth/index.js`, `api/auth/reset-code.js` |
 
-### 2. SMS Sends to Email Address (HIGH)
-**File:** `api/stripe-webhook.js`
-- `invoice.payment_failed` handler sent SMS with `custEmail` (email address) in the `to` field instead of a phone number
-- Changed to use email notification endpoint instead of SMS
+## Backend/Reliability Fixes
 
-### 3. Auth Route Hardening (HIGH)
-**File:** `api/auth/index.js`
-- Legacy `/api/auth` endpoint lacked `requireJson`, `rejectOversizedBody`, and `isValidEmail` checks present in the newer `/api/auth/login` route
-- Added all three guards to match the security posture of `auth/login.js`
+| # | Issue | Severity | File(s) |
+|---|-------|----------|---------|
+| 12 | Stripe webhook always returned 200 — Stripe would never retry failures | CRITICAL | `api/stripe-webhook.js` |
+| 13 | No webhook idempotency — retries caused duplicate provisioning | CRITICAL | `api/stripe-webhook.js` |
+| 14 | `resolveEntityType` defaulted unknown types to LLC — wrong deadlines | HIGH | `api/_compliance.js` |
+| 15 | `computeObligations` null dereference on failed creation | HIGH | `api/services/obligations.js` |
+| 16 | `provision.js` metadata clobber — overwrote existing metadata keys | HIGH | `api/provision.js` |
+| 17 | `provision.js` bare `fetch` calls with no timeout — 20+ external calls | HIGH | `api/provision.js` |
+| 18 | `evaluateObligation` returned stale status after transitions | MEDIUM | `api/services/obligations.js` |
+| 19 | Health check external calls had no timeout — could hang indefinitely | MEDIUM | `api/health.js` |
+| 20 | Hardcoded N8N URLs in 11 files instead of centralized config | MEDIUM | Multiple |
+| 21 | Notification templates hardcoded `$7` fee — wrong for nonprofits (`$0`) | MEDIUM | `api/services/notifications.js` |
+| 22 | `notifications.js` `processPending` accessed non-existent nested objects | MEDIUM | `api/services/notifications.js` |
 
-### 4. CORS Origin Reflection Tightened (MEDIUM)
-**File:** `api/services/auth.js`
-- Preview/development CORS allowed ANY origin to be reflected
-- Now restricted to `*.vercel.app` origins only in preview mode
+## UX Fixes
 
-### 5. Notifications Data Shape Bug (MEDIUM)
-**File:** `api/services/notifications.js`
-- `processPending()` accessed `notif.organizations?.legal_name` and `notif.obligations?.filing_method` but the SQL query returns flat columns, not nested objects
-- Fixed to use `notif.org_name`, `notif.legal_name`, `notif.filing_method` directly
-
----
-
-## Code Quality Fixes
-
-### 6. Hardcoded N8N URLs Centralized
-**Files:** 11 API files
-- Replaced all hardcoded `https://n8n.audreysplace.place/webhook` with `N8N_BASE` from `_config.js`
-- Affects: `stripe-webhook.js`, `intake.js`, `provision.js`, `subscribe.js`, `voice-recording.js`, `setup-guide.js`, `retarget.js`, `reset-code.js`, `partner-intake.js`, `entity-intake.js`, `entity-request.js`, `admin/index.js`
-
-### 7. Duplicate Test Directory Removed
-- Deleted `test/` directory (stale copy of `tests/`)
-- Ported unique `tryDeterministicAnswer` tests from `test/guardrails.test.js` into `tests/guardrails.test.js`
-- CI, npm scripts, and pre-commit hooks all reference `tests/` only
-
-### 8. Provision.js Cleanup
-**File:** `api/provision.js`
-- Removed unused `generateAccessCode as _genCode` import
-- Removed redundant `await import('crypto')` when `randomBytes` was already statically imported
-- Moved Acumbamail `list_id` from hardcoded `'1267324'` to `process.env.ACUMBAMAIL_LIST_ID` with fallback
-
-### 9. Missing Error Logging
-**File:** `api/auth/session.js`
-- Added `createLogger` import and error logging in catch block (was silently returning 500)
-
-### 10. CI Lint Enforcement
-**File:** `.github/workflows/ci.yml`
-- Removed `|| true` from lint step so ESLint failures now break the build
-
-### 11. Stale Test Comments
-**File:** `tests/compliance.test.js`
-- Removed misleading Jest reference comment
-- Fixed 0-indexed month comments (September=8, June=5, December=11)
-
----
+| # | Issue | Severity | File(s) |
+|---|-------|----------|---------|
+| 23 | Portal mobile nav missing "Entities" tab — core section inaccessible | CRITICAL | `public/portal.html` |
+| 24 | Admin dashboard accessible on network error (login bypass) | CRITICAL | `public/admin.html` |
+| 25 | Portal showed fake compliance score (88) on API failure | HIGH | `public/portal.html` |
+| 26 | Portal silent logout — no explanation to user | HIGH | `public/portal.html` |
+| 27 | Settings claimed "auto-saved" but weren't persisted | HIGH | `public/portal.html` |
+| 28 | Admin had no logout button or session management | HIGH | `public/admin.html` |
+| 29 | Admin `callAPI`/`adminFetch` never checked `res.ok` | HIGH | `public/admin.html` |
+| 30 | Partners form showed success on HTTP error | MEDIUM | `public/partners.html` |
+| 31 | Newsletter error styling broken (wrong CSS selector) | MEDIUM | `public/index.html` |
+| 32 | Pricing grid horizontal overflow on mobile | MEDIUM | `public/index.html` |
 
 ## Accessibility Fixes
 
-### 12. FAQ Keyboard Accessibility (23 pages)
-- All FAQ accordion `div.faq-q` elements now have `role="button"`, `tabindex="0"`, `aria-expanded`
-- Added `Enter` and `Space` keydown handlers
-- `aria-expanded` now toggles dynamically on open/close
-- Affected all 10 city pages, 8 article pages, and 5 comparison pages
+| # | Issue | Severity | File(s) |
+|---|-------|----------|---------|
+| 33 | FAQ accordions mouse-only — no keyboard support (23 pages) | HIGH | All city/article pages |
+| 34 | Hamburger menus missing `aria-expanded` | HIGH | `admin.html`, `404.html`, `about.html` |
+| 35 | About page JSON-LD `@type: Person` → `@type: Organization` | MEDIUM | `public/about.html` |
+| 36 | No `prefers-reduced-motion` media query | MEDIUM | `public/site.css` |
 
-### 13. Partners Form Error Handling
-**File:** `public/partners.html`
-- `submitPartnerForm()` showed success message even on HTTP 4xx/5xx responses
-- Added `if(!res.ok) throw` before showing success
+## Code Quality
 
-### 14. About Page JSON-LD
-**File:** `public/about.html`
-- Changed `mainEntity` from `@type: Person` to `@type: Organization` (PA CROP Services is not a person)
-
----
-
-## Issues Identified (Not Fixed — Require Product Decisions)
-
-### Navigation Inconsistency
-- `index.html` nav includes Partners, FAQ, About
-- City/article pages omit About and Partners from nav
-- Footer links vary across pages
-- **Recommendation:** Standardize nav/footer across all pages
-
-### Missing OG Meta Tags
-- Several pages missing `og:url`, `twitter:title`, `twitter:description`, `og:image:alt`
-- `portal.html` and `admin.html` have minimal OG tags (intentionally `noindex`)
-- **Recommendation:** Add complete OG/Twitter tags to all public-facing pages
-
-### Missing `og-image.jpg` in Repository
-- Many pages reference `https://www.pacropservices.com/og-image.jpg`
-- The file is not in the `public/` directory (may be served by CDN)
-- **Recommendation:** Add the image to `public/` or verify CDN delivery
-
-### Mobile Menu `aria-expanded` Static on Some Pages
-- `about.html`, `404.html`, `partners.html` have static `aria-expanded="false"` on hamburger
-- `welcome.html` and `portal.html` update it correctly
-- **Recommendation:** Unify hamburger toggle script across all pages
-
-### Redis Session Revocation Fail-Open
-- `verifySession()` fails open when Redis is unavailable (revoked tokens still work)
-- This is documented and intentional (avoids locking out all users)
-- **Risk:** Acknowledged; mitigated by short TTL (1h) and rate limiting
-
-### Database Schema Divergence
-- Three incompatible migration paths: `infrastructure/migrations/`, `schema/`, `migrations/`
-- `schema/schema.prisma` doesn't model `client_organizations` table
-- `infrastructure/migrations/002_seed_rules.sql` only works with `001_schema.sql`'s `rules` table shape
-- **Recommendation:** Unify into a single ordered migration system
-
-### Docker Compose
-- `version: "3.8"` is obsolete in modern Compose (harmless warning)
-- No healthchecks on services
-- No app database service defined
+| # | Issue | File(s) |
+|---|-------|---------|
+| 37 | Duplicate `test/` directory consolidated into `tests/` | `test/` → `tests/` |
+| 38 | `tryDeterministicAnswer` tests ported from duplicate | `tests/guardrails.test.js` |
+| 39 | Unused imports removed | `api/intake.js`, `api/provision.js` |
+| 40 | CI lint step now enforces failures | `.github/workflows/ci.yml` |
+| 41 | Stale Jest reference and wrong month comments fixed | `tests/compliance.test.js` |
 
 ---
 
 ## Test Results
 
 ```
-# tests 136
+# tests 138
 # suites 26
-# pass 136
+# pass 138
 # fail 0
-# cancelled 0
-# skipped 0
 ```
 
-ESLint: 0 errors, 113 warnings (all pre-existing; none introduced by audit changes)
+ESLint: 0 errors, 115 warnings (all pre-existing)
+
+---
+
+## Known Items Deferred (require product decisions)
+
+- Database schema divergence across 3 migration paths
+- Redis session revocation fail-open (documented, intentional)
+- Nav/footer inconsistency across marketing pages
+- Missing OG meta tags on some pages
+- `portal.html` is a monolithic inline SPA (~300KB)
+- Welcome page onboarding gated by URL param only
