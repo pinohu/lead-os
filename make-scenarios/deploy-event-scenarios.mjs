@@ -25,27 +25,27 @@ import { join } from 'path';
 // ── Config ──
 
 const API_BASE = 'https://integrator.boost.space/api/v2';
-const API_TOKEN = process.env.MAKE_API_TOKEN || '24595d5e-9b7f-48f9-ab61-9644c46ed7f9';
+const API_TOKEN = process.env.MAKE_API_TOKEN || '';
 
 const DISCORD = {
-  newLeads: 'https://discord.com/api/webhooks/1480429578047717449/7bF_noLBXwykgIVye6hxYQ_e61-eDKS_OEyER_OpL8L0yxObOMDkCmqifgHPuEI3LoTp',
-  highValue: 'https://discord.com/api/webhooks/1480429897263480962/e-vvArec6HCRc_HpzxmWOpz3GbJ7ncekeLBD7hSnKHm4v-zXTwt8fm6DjrY7TUBeo6Ct',
+  newLeads: process.env.DISCORD_WEBHOOK_NEW_LEADS || '',
+  highValue: process.env.DISCORD_WEBHOOK_HIGH_VALUE || '',
 };
 
 const TELEGRAM = {
-  botToken: '8739229269:AAGYs6jIIjDa87y4TAVwn4QtTWBqliohDQI',
-  newLeads: '-1003809646667',
-  highValue: '-1003862266875',
+  botToken: process.env.TELEGRAM_BOT_TOKEN || '',
+  newLeads: process.env.TELEGRAM_CHAT_NEW_LEADS || '',
+  highValue: process.env.TELEGRAM_CHAT_HIGH_VALUE || '',
 };
 
 const AITABLE = {
-  apiToken: 'usk8wYBrRgsc6RHxkZP9VAN',
-  datasheetId: 'dstBicDQKC6gpLAMYj',
+  apiToken: process.env.AITABLE_API_TOKEN || '',
+  datasheetId: process.env.AITABLE_DATASHEET_ID || '',
   apiBase: 'https://aitable.ai/fusion/v1',
 };
 
 const WBIZTOOL = {
-  apiKey: '54140a11389a13031a2eb19070ce35c5ce769a30',
+  apiKey: process.env.WBIZTOOL_API_KEY || '',
   instanceId: '12316',
   apiBase: 'https://app.wbiztool.com/api',
 };

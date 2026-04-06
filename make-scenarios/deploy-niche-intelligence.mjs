@@ -17,22 +17,22 @@ import { join } from 'path';
 // ── Config ──
 
 const API_BASE = 'https://integrator.boost.space/api/v2';
-const API_TOKEN = process.env.MAKE_API_TOKEN || '24595d5e-9b7f-48f9-ab61-9644c46ed7f9';
+const API_TOKEN = process.env.MAKE_API_TOKEN || '';
 
 const EMAILIT = {
-  apiKey: 'secret_4lQqUaweMC1pmyCpwqdRy3ktjl9hzd6m',
+  apiKey: process.env.EMAILIT_API_KEY || '',
   domain: 'neatcircle.com',
   adminTo: 'ike@neatcircle.com',
 };
 
 const AITABLE = {
-  apiToken: 'usk8wYBrRgsc6RHxkZP9VAN',
-  datasheetId: 'dstBicDQKC6gpLAMYj',
+  apiToken: process.env.AITABLE_API_TOKEN || '',
+  datasheetId: process.env.AITABLE_DATASHEET_ID || '',
   apiBase: 'https://aitable.ai/fusion/v1',
 };
 
 const DISCORD = {
-  wins: 'https://discord.com/api/webhooks/1480429754963333252/9tlYfvzLOon6LVB3juh3eN_BelV_V_DJzF6lMYrv_JccxnKjRNvqY2n_htd8r2-jshyw',
+  wins: process.env.DISCORD_WEBHOOK_WINS || '',
 };
 
 const EMAILIT_URL = 'https://api.emailit.com/v1/emails';
