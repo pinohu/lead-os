@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     return NextResponse.json(result, { headers });
   } catch (error) {
     return NextResponse.json(
-      { success: false, error: error instanceof Error ? error.message : "Intake failed" },
+      { success: false, error: "Intake failed" },
       { status: 400, headers },
     );
   }

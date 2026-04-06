@@ -506,7 +506,7 @@ export const N8N_STARTER_WORKFLOWS: N8nStarterWorkflow[] = [
           [20, -80],
           {
             headers: {
-              Authorization: `Bearer ${getStraicoApiKey()}`,
+              Authorization: "Bearer {{STRAICO_API_KEY}}",
               "Content-Type": "application/json",
             },
           },

@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server";
 import { getRecipeForFamily } from "@/lib/automation";
 import { buildDefaultFunnelGraphs } from "@/lib/funnel-library";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { getAutomationHealth } from "@/lib/providers";
 import { getCanonicalEvents, getLeadRecords, getRuntimePersistenceMode } from "@/lib/runtime-store";
 import { tenantConfig } from "@/lib/tenant";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireOperatorApiSession(request);
+  if (auth.response) {
+    return NextResponse.json({ status: "ok" });
+  }
+
   const graphs = buildDefaultFunnelGraphs(tenantConfig.tenantId);
   const health = getAutomationHealth();
   const leads = await getLeadRecords();

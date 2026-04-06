@@ -19,7 +19,11 @@ export async function GET(request: Request) {
   const health = getAutomationHealth();
   return NextResponse.json({
     success: true,
-    tenant: tenantConfig,
+    tenant: {
+      tenantId: tenantConfig.tenantId,
+      brandName: tenantConfig.brandName,
+      accent: tenantConfig.accent,
+    },
     niches: Object.values(nicheCatalog),
     widgets: {
       chat: true,

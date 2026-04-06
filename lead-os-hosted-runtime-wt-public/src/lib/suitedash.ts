@@ -38,20 +38,27 @@ export interface SuiteDashContactPayload {
 }
 
 export async function createContact(payload: SuiteDashContactPayload) {
-  const res = await fetch(`${SD_API}/contact`, {
-    method: "POST",
-    headers: getHeaders(),
-    body: JSON.stringify(payload),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15_000);
+  try {
+    const res = await fetch(`${SD_API}/contact`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
 
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok && !String(data?.message ?? "").toLowerCase().includes("already exists")) {
-    throw new Error(String(data?.message ?? "Failed to create contact"));
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok && !String(data?.message ?? "").toLowerCase().includes("already exists")) {
+      throw new Error(String(data?.message ?? "Failed to create contact"));
+    }
+
+    return {
+      success: true,
+      message: String(data?.message ?? (res.ok ? "Contact created" : "Contact already exists")),
+      data: data?.data,
+    };
+  } finally {
+    clearTimeout(timeout);
   }
-
-  return {
-    success: true,
-    message: String(data?.message ?? (res.ok ? "Contact created" : "Contact already exists")),
-    data: data?.data,
-  };
 }

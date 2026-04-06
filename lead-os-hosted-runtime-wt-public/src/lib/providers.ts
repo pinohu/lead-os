@@ -404,15 +404,21 @@ function getBooleanValue(...values: unknown[]) {
 }
 
 async function request(url: string, init: RequestInit): Promise<HttpResult> {
-  const response = await fetch(url, init);
-  const text = await response.text();
-  return {
-    ok: response.ok,
-    status: response.status,
-    text,
-    json: parseJson(text),
-    contentType: response.headers.get("content-type"),
-  };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15_000);
+  try {
+    const response = await fetch(url, { ...init, signal: controller.signal });
+    const text = await response.text();
+    return {
+      ok: response.ok,
+      status: response.status,
+      text,
+      json: parseJson(text),
+      contentType: response.headers.get("content-type"),
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function postJson(url: string, body: unknown, headers: Record<string, string> = {}) {

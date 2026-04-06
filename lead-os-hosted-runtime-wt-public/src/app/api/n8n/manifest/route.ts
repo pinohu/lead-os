@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { getN8nStarterManifestVersion, N8N_STARTER_WORKFLOWS } from "@/lib/n8n-starter-pack";
 import { canProvisionToN8n } from "@/lib/n8n-client";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireOperatorApiSession(request);
+  if (auth.response) return auth.response;
+
   const milestoneWorkflows = N8N_STARTER_WORKFLOWS.filter((workflow) =>
     workflow.slug === "milestone-second-touch" || workflow.slug === "milestone-third-touch-conversion"
   );

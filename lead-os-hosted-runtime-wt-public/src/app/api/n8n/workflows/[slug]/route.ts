@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { getN8nStarterWorkflow } from "@/lib/n8n-starter-pack";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
 
 type Params = Promise<{ slug: string }>;
 
-export async function GET(_request: Request, context: { params: Params }) {
+export async function GET(request: Request, context: { params: Params }) {
+  const auth = await requireOperatorApiSession(request);
+  if (auth.response) return auth.response;
+
   const { slug } = await context.params;
   const workflow = getN8nStarterWorkflow(slug);
 
