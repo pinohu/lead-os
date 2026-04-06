@@ -223,8 +223,7 @@ export async function runAutomationSmoke(baseUrl: string) {
       method: fixture.method,
       headers: {
         "Content-Type": "application/json",
-        "x-lead-os-dry-run": "1",
-        "x-lead-os-internal-smoke": "1",
+        "Authorization": `Bearer ${process.env.AUTOMATION_API_SECRET}`,
       },
       body: fixture.method === "POST" ? JSON.stringify(fixture.body ?? {}) : undefined,
     });
