@@ -23,6 +23,7 @@ const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 let instanceCounter = 0;
+let mounted = false;
 
 function uid(base) {
   return `${base}-${++instanceCounter}`;
@@ -87,6 +88,12 @@ export function safeWidget(bootConfig) {
   };
 }
 
+function warnIfInsecure(url) {
+  if (typeof url === "string" && url.startsWith("http://") && !url.startsWith("http://localhost")) {
+    console.warn("[Lead OS] runtimeBaseUrl uses HTTP. Lead data will be sent unencrypted. Use HTTPS in production.");
+  }
+}
+
 function fetchWithTimeout(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -132,13 +139,20 @@ async function fetchBootConfig(runtimeBaseUrl) {
   const cached = getCachedBoot();
   if (cached) return cached;
 
-  const response = await fetchWithTimeout(`${runtimeBaseUrl}/api/widgets/boot`);
-  if (!response.ok) {
-    throw new Error(`Boot config fetch failed: ${response.status}`);
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const response = await fetchWithTimeout(`${runtimeBaseUrl}/api/widgets/boot`);
+      if (!response.ok) throw new Error(`Boot config fetch failed: ${response.status}`);
+      const data = await response.json();
+      setCachedBoot(data);
+      return data;
+    } catch (err) {
+      lastError = err;
+      if (attempt === 0) await new Promise((r) => setTimeout(r, 1000));
+    }
   }
-  const data = await response.json();
-  setCachedBoot(data);
-  return data;
+  throw lastError;
 }
 
 function injectWidgetStyles() {
@@ -155,6 +169,10 @@ function injectWidgetStyles() {
     #lead-os-drawer textarea::placeholder {
       color: #8ba3c7;
       opacity: 1;
+    }
+    #lead-os-drawer button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   `;
   document.head.appendChild(style);
@@ -392,6 +410,14 @@ function buildDrawer(config, widget) {
     ["Submit Lead"],
   );
 
+  const separator = createElement("hr", {
+    style: {
+      border: "0",
+      borderTop: "1px solid rgba(255,255,255,0.1)",
+      margin: "16px 0 12px",
+    },
+  });
+
   const assessmentLink = createElement(
     "a",
     {
@@ -412,7 +438,7 @@ function buildDrawer(config, widget) {
     emailLabel, emailInput,
     messageLabel, messageInput, charCounter,
     submitButton, feedback,
-    assessmentLink,
+    separator, assessmentLink,
   );
 
   trapFocus(drawer);
@@ -475,12 +501,19 @@ function toggleDrawer(drawer, launcher) {
 }
 
 export async function mountLeadOS() {
+  if (mounted) {
+    console.warn("[Lead OS] Widget already mounted. Ignoring duplicate call.");
+    return;
+  }
+  mounted = true;
+
   const config = getConfig();
   if (!config.runtimeBaseUrl) {
     console.warn("[Lead OS] runtimeBaseUrl is not configured.");
     return;
   }
 
+  warnIfInsecure(config.runtimeBaseUrl);
   injectWidgetStyles();
 
   const defaultWidget = safeWidget({});

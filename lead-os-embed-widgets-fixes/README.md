@@ -105,6 +105,24 @@ Use the plugin in [`wordpress-plugin/lead-os-embed`](./wordpress-plugin/lead-os-
 3. Configure in **Settings > Lead OS Embed**.
 4. Optionally use the `[lead_os_embed]` shortcode on specific pages.
 
+## Deployment
+
+The build produces `dist/lead-os-embed.js` (IIFE bundle) and `dist/lead-os-embed.js.map` (source map). To deploy:
+
+1. **GitHub Releases** — push a `v*` tag to trigger the release workflow, which attaches the built files as release artifacts.
+2. **Manual** — run `npm run build` and copy `dist/lead-os-embed.js` to your runtime host's `/embed/` path.
+3. **CI artifact** — the CI workflow verifies the build succeeds on every push/PR.
+
+The WordPress plugin loads the script from `$runtime_base_url/embed/lead-os-embed.js`, so the built file must be accessible at that URL on your hosted runtime.
+
+## Privacy & Security Notes
+
+- The widget sends `window.location.origin`, `window.location.pathname`, and `document.title` to the runtime's `/api/intake` endpoint with each lead submission. Under GDPR, URL paths may contain PII (e.g. `/users/john.doe`). Ensure your runtime's privacy policy covers this data collection.
+- The `runtimeBaseUrl` should use HTTPS. The widget warns in the console if HTTP is detected (except `localhost`).
+- Boot config is cached in `sessionStorage` (readable by same-origin scripts). This contains only brand name and accent color — no sensitive data.
+- The 3-second submit cooldown is client-side only and cannot prevent automated abuse. Implement server-side rate limiting on your `/api/intake` endpoint.
+- The `accent` color from the boot config is validated as a hex color (`#RGB` / `#RRGGBB` format) before use to prevent CSS injection.
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
