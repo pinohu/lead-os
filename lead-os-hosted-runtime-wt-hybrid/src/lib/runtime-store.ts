@@ -2,7 +2,12 @@ import type { QueryResultRow } from "pg";
 import { getPool as getDbPool } from "./db.ts";
 import { embeddedSecrets } from "./embedded-secrets.ts";
 import type { CustomerMilestoneId, LeadMilestoneId, LeadStage } from "./runtime-schema.ts";
+import { tenantConfig } from "./tenant.ts";
 import type { CanonicalEvent, TraceContext } from "./trace.ts";
+
+function currentTenantId(): string {
+  return tenantConfig.tenantId;
+}
 
 export interface LeadMilestoneState {
   visitCount: number;
@@ -108,6 +113,16 @@ export interface RuntimeConfigRecord {
 }
 
 const MAX_STORE_SIZE = 10000;
+
+function evictOldestEntries<K, V>(store: Map<K, V>, maxSize: number): void {
+  if (store.size <= maxSize) return;
+  const excess = store.size - maxSize;
+  const iterator = store.keys();
+  for (let i = 0; i < excess; i++) {
+    const next = iterator.next();
+    if (!next.done) store.delete(next.value);
+  }
+}
 
 const leadStore = new Map<string, StoredLeadRecord>();
 const eventStore: CanonicalEvent[] = [];
@@ -440,6 +455,7 @@ async function getAitableRuntimeEntries() {
 
 export async function upsertLeadRecord(record: StoredLeadRecord) {
   leadStore.set(record.leadKey, record);
+  evictOldestEntries(leadStore, MAX_STORE_SIZE);
 
   const activePool = getPool();
   if (!activePool && runtimeMode() === "aitable") {
@@ -453,15 +469,15 @@ export async function upsertLeadRecord(record: StoredLeadRecord) {
   await ensureSchema();
   await queryPostgres(
     `
-      INSERT INTO lead_os_leads (lead_key, created_at, updated_at, payload)
-      VALUES ($1, $2::timestamptz, $3::timestamptz, $4::jsonb)
+      INSERT INTO lead_os_leads (lead_key, tenant_id, created_at, updated_at, payload)
+      VALUES ($1, $5, $2::timestamptz, $3::timestamptz, $4::jsonb)
       ON CONFLICT (lead_key)
       DO UPDATE SET
         created_at = EXCLUDED.created_at,
         updated_at = EXCLUDED.updated_at,
         payload = EXCLUDED.payload
     `,
-    [record.leadKey, record.createdAt, record.updatedAt, JSON.stringify(record)],
+    [record.leadKey, record.createdAt, record.updatedAt, JSON.stringify(record), currentTenantId()],
   );
 
   return record;
@@ -478,8 +494,8 @@ export async function getLeadRecord(leadKey: string) {
 
   await ensureSchema();
   const result = await queryPostgres<{ payload: StoredLeadRecord }>(
-    "SELECT payload FROM lead_os_leads WHERE lead_key = $1 LIMIT 1",
-    [leadKey],
+    "SELECT payload FROM lead_os_leads WHERE lead_key = $1 AND tenant_id = $2 LIMIT 1",
+    [leadKey, currentTenantId()],
   );
   const record = result.rows[0]?.payload;
   if (record) {
@@ -513,8 +529,8 @@ export async function getLeadRecords(limit: number = 1000) {
 
   await ensureSchema();
   const result = await queryPostgres<{ payload: StoredLeadRecord }>(
-    "SELECT payload FROM lead_os_leads ORDER BY updated_at DESC LIMIT $1",
-    [limit],
+    "SELECT payload FROM lead_os_leads WHERE tenant_id = $1 ORDER BY updated_at DESC LIMIT $2",
+    [currentTenantId(), limit],
   );
   const records = result.rows.map((row) => row.payload);
   leadStore.clear();
@@ -542,12 +558,12 @@ export async function appendEvents(events: CanonicalEvent[]) {
     const values: unknown[] = [];
     const placeholders: string[] = [];
     events.forEach((event, i) => {
-      const offset = i * 5;
-      placeholders.push(`($${offset+1}, $${offset+2}, $${offset+3}, $${offset+4}::timestamptz, $${offset+5}::jsonb)`);
-      values.push(event.id, event.leadKey, event.eventType, event.timestamp, JSON.stringify(event));
+      const offset = i * 6;
+      placeholders.push(`($${offset+1}, $${offset+2}, $${offset+3}, $${offset+4}::timestamptz, $${offset+5}::jsonb, $${offset+6})`);
+      values.push(event.id, event.leadKey, event.eventType, event.timestamp, JSON.stringify(event), currentTenantId());
     });
     await queryPostgres(
-      `INSERT INTO lead_os_events (id, lead_key, event_type, timestamp, payload) VALUES ${placeholders.join(", ")} ON CONFLICT (id) DO NOTHING`,
+      `INSERT INTO lead_os_events (id, lead_key, event_type, timestamp, payload, tenant_id) VALUES ${placeholders.join(", ")} ON CONFLICT (id) DO NOTHING`,
       values,
     );
   }
@@ -573,8 +589,8 @@ export async function getCanonicalEvents(limit: number = 1000) {
 
   await ensureSchema();
   const result = await queryPostgres<{ payload: CanonicalEvent }>(
-    "SELECT payload FROM lead_os_events ORDER BY timestamp DESC LIMIT $1",
-    [limit],
+    "SELECT payload FROM lead_os_events WHERE tenant_id = $1 ORDER BY timestamp DESC LIMIT $2",
+    [currentTenantId(), limit],
   );
   const events = result.rows.map((row) => row.payload);
   eventStore.length = 0;
@@ -617,8 +633,8 @@ export async function recordProviderExecution(record: Omit<ProviderExecutionReco
   await ensureSchema();
   await queryPostgres(
     `
-      INSERT INTO lead_os_provider_executions (id, lead_key, provider, kind, created_at, payload)
-      VALUES ($1, $2, $3, $4, $5::timestamptz, $6::jsonb)
+      INSERT INTO lead_os_provider_executions (id, lead_key, provider, kind, created_at, payload, tenant_id)
+      VALUES ($1, $2, $3, $4, $5::timestamptz, $6::jsonb, $7)
       ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload, created_at = EXCLUDED.created_at
     `,
     [
@@ -628,6 +644,7 @@ export async function recordProviderExecution(record: Omit<ProviderExecutionReco
       normalizedRecord.kind,
       normalizedRecord.createdAt,
       JSON.stringify(normalizedRecord),
+      currentTenantId(),
     ],
   );
   return normalizedRecord;
@@ -654,12 +671,12 @@ export async function getProviderExecutions(leadKey?: string) {
   await ensureSchema();
   const query = leadKey
     ? {
-        text: "SELECT payload FROM lead_os_provider_executions WHERE lead_key = $1 ORDER BY created_at DESC",
-        values: [leadKey],
+        text: "SELECT payload FROM lead_os_provider_executions WHERE lead_key = $1 AND tenant_id = $2 ORDER BY created_at DESC",
+        values: [leadKey, currentTenantId()],
       }
     : {
-        text: "SELECT payload FROM lead_os_provider_executions ORDER BY created_at DESC",
-        values: [] as unknown[],
+        text: "SELECT payload FROM lead_os_provider_executions WHERE tenant_id = $1 ORDER BY created_at DESC",
+        values: [currentTenantId()] as unknown[],
       };
   const result = await queryPostgres<{ payload: ProviderExecutionRecord }>(query.text, query.values);
   return result.rows.map((row) => row.payload);
@@ -689,8 +706,8 @@ export async function recordWorkflowRun(record: Omit<WorkflowRunRecord, "id" | "
   await ensureSchema();
   await queryPostgres(
     `
-      INSERT INTO lead_os_workflow_runs (id, lead_key, event_name, created_at, payload)
-      VALUES ($1, $2, $3, $4::timestamptz, $5::jsonb)
+      INSERT INTO lead_os_workflow_runs (id, lead_key, event_name, created_at, payload, tenant_id)
+      VALUES ($1, $2, $3, $4::timestamptz, $5::jsonb, $6)
       ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload, created_at = EXCLUDED.created_at
     `,
     [
@@ -699,6 +716,7 @@ export async function recordWorkflowRun(record: Omit<WorkflowRunRecord, "id" | "
       normalizedRecord.eventName,
       normalizedRecord.createdAt,
       JSON.stringify(normalizedRecord),
+      currentTenantId(),
     ],
   );
   return normalizedRecord;
@@ -725,12 +743,12 @@ export async function getWorkflowRuns(leadKey?: string) {
   await ensureSchema();
   const query = leadKey
     ? {
-        text: "SELECT payload FROM lead_os_workflow_runs WHERE lead_key = $1 ORDER BY created_at DESC",
-        values: [leadKey],
+        text: "SELECT payload FROM lead_os_workflow_runs WHERE lead_key = $1 AND tenant_id = $2 ORDER BY created_at DESC",
+        values: [leadKey, currentTenantId()],
       }
     : {
-        text: "SELECT payload FROM lead_os_workflow_runs ORDER BY created_at DESC",
-        values: [] as unknown[],
+        text: "SELECT payload FROM lead_os_workflow_runs WHERE tenant_id = $1 ORDER BY created_at DESC",
+        values: [currentTenantId()] as unknown[],
       };
   const result = await queryPostgres<{ payload: WorkflowRunRecord }>(query.text, query.values);
   return result.rows.map((row) => row.payload);
@@ -748,6 +766,7 @@ export async function upsertBookingJob(job: Omit<BookingJobRecord, "id" | "creat
     ...job,
   };
   bookingJobStore.set(normalizedJob.id, normalizedJob);
+  evictOldestEntries(bookingJobStore, MAX_STORE_SIZE);
 
   const activePool = getPool();
   if (!activePool && runtimeMode() === "aitable") {
@@ -761,8 +780,8 @@ export async function upsertBookingJob(job: Omit<BookingJobRecord, "id" | "creat
   await ensureSchema();
   await queryPostgres(
     `
-      INSERT INTO lead_os_booking_jobs (id, lead_key, provider, updated_at, payload)
-      VALUES ($1, $2, $3, $4::timestamptz, $5::jsonb)
+      INSERT INTO lead_os_booking_jobs (id, lead_key, provider, updated_at, payload, tenant_id)
+      VALUES ($1, $2, $3, $4::timestamptz, $5::jsonb, $6)
       ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload, updated_at = EXCLUDED.updated_at
     `,
     [
@@ -771,6 +790,7 @@ export async function upsertBookingJob(job: Omit<BookingJobRecord, "id" | "creat
       normalizedJob.provider,
       normalizedJob.updatedAt,
       JSON.stringify(normalizedJob),
+      currentTenantId(),
     ],
   );
   return normalizedJob;
@@ -801,12 +821,12 @@ export async function getBookingJobs(leadKey?: string) {
   await ensureSchema();
   const query = leadKey
     ? {
-        text: "SELECT payload FROM lead_os_booking_jobs WHERE lead_key = $1 ORDER BY updated_at DESC",
-        values: [leadKey],
+        text: "SELECT payload FROM lead_os_booking_jobs WHERE lead_key = $1 AND tenant_id = $2 ORDER BY updated_at DESC",
+        values: [leadKey, currentTenantId()],
       }
     : {
-        text: "SELECT payload FROM lead_os_booking_jobs ORDER BY updated_at DESC",
-        values: [] as unknown[],
+        text: "SELECT payload FROM lead_os_booking_jobs WHERE tenant_id = $1 ORDER BY updated_at DESC",
+        values: [currentTenantId()] as unknown[],
       };
   const result = await queryPostgres<{ payload: BookingJobRecord }>(query.text, query.values);
   return result.rows.map((row) => row.payload);
@@ -824,6 +844,7 @@ export async function upsertDocumentJob(job: Omit<DocumentJobRecord, "id" | "cre
     ...job,
   };
   documentJobStore.set(normalizedJob.id, normalizedJob);
+  evictOldestEntries(documentJobStore, MAX_STORE_SIZE);
 
   const activePool = getPool();
   if (!activePool && runtimeMode() === "aitable") {
@@ -837,8 +858,8 @@ export async function upsertDocumentJob(job: Omit<DocumentJobRecord, "id" | "cre
   await ensureSchema();
   await queryPostgres(
     `
-      INSERT INTO lead_os_document_jobs (id, lead_key, provider, updated_at, payload)
-      VALUES ($1, $2, $3, $4::timestamptz, $5::jsonb)
+      INSERT INTO lead_os_document_jobs (id, lead_key, provider, updated_at, payload, tenant_id)
+      VALUES ($1, $2, $3, $4::timestamptz, $5::jsonb, $6)
       ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload, updated_at = EXCLUDED.updated_at
     `,
     [
@@ -847,6 +868,7 @@ export async function upsertDocumentJob(job: Omit<DocumentJobRecord, "id" | "cre
       normalizedJob.provider,
       normalizedJob.updatedAt,
       JSON.stringify(normalizedJob),
+      currentTenantId(),
     ],
   );
   return normalizedJob;
@@ -877,12 +899,12 @@ export async function getDocumentJobs(leadKey?: string) {
   await ensureSchema();
   const query = leadKey
     ? {
-        text: "SELECT payload FROM lead_os_document_jobs WHERE lead_key = $1 ORDER BY updated_at DESC",
-        values: [leadKey],
+        text: "SELECT payload FROM lead_os_document_jobs WHERE lead_key = $1 AND tenant_id = $2 ORDER BY updated_at DESC",
+        values: [leadKey, currentTenantId()],
       }
     : {
-        text: "SELECT payload FROM lead_os_document_jobs ORDER BY updated_at DESC",
-        values: [] as unknown[],
+        text: "SELECT payload FROM lead_os_document_jobs WHERE tenant_id = $1 ORDER BY updated_at DESC",
+        values: [currentTenantId()] as unknown[],
       };
   const result = await queryPostgres<{ payload: DocumentJobRecord }>(query.text, query.values);
   return result.rows.map((row) => row.payload);
@@ -896,6 +918,7 @@ export async function upsertRuntimeConfig(
     ...config,
   };
   runtimeConfigStore.set(normalizedConfig.key, normalizedConfig);
+  evictOldestEntries(runtimeConfigStore, MAX_STORE_SIZE);
 
   const activePool = getPool();
   if (!activePool && runtimeMode() === "aitable") {
@@ -909,14 +932,15 @@ export async function upsertRuntimeConfig(
   await ensureSchema();
   await queryPostgres(
     `
-      INSERT INTO lead_os_runtime_config (key, updated_at, payload)
-      VALUES ($1, $2::timestamptz, $3::jsonb)
+      INSERT INTO lead_os_runtime_config (key, updated_at, payload, tenant_id)
+      VALUES ($1, $2::timestamptz, $3::jsonb, $4)
       ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = EXCLUDED.updated_at
     `,
     [
       normalizedConfig.key,
       normalizedConfig.updatedAt,
       JSON.stringify(normalizedConfig),
+      currentTenantId(),
     ],
   );
   return normalizedConfig;
@@ -934,6 +958,7 @@ export async function upsertWorkflowRegistry(
     ...record,
   };
   workflowRegistryStore.set(normalizedRecord.slug, normalizedRecord);
+  evictOldestEntries(workflowRegistryStore, MAX_STORE_SIZE);
 
   const activePool = getPool();
   if (!activePool && runtimeMode() === "aitable") {
@@ -947,8 +972,8 @@ export async function upsertWorkflowRegistry(
   await ensureSchema();
   await queryPostgres(
     `
-      INSERT INTO lead_os_workflow_registry (slug, provider, updated_at, payload)
-      VALUES ($1, $2, $3::timestamptz, $4::jsonb)
+      INSERT INTO lead_os_workflow_registry (slug, provider, updated_at, payload, tenant_id)
+      VALUES ($1, $2, $3::timestamptz, $4::jsonb, $5)
       ON CONFLICT (slug) DO UPDATE SET
         provider = EXCLUDED.provider,
         payload = EXCLUDED.payload,
@@ -959,6 +984,7 @@ export async function upsertWorkflowRegistry(
       normalizedRecord.provider,
       normalizedRecord.updatedAt,
       JSON.stringify(normalizedRecord),
+      currentTenantId(),
     ],
   );
   return normalizedRecord;
@@ -975,8 +1001,8 @@ export async function getWorkflowRegistryRecord(slug: string) {
 
   await ensureSchema();
   const result = await queryPostgres<{ payload: WorkflowRegistryRecord }>(
-    "SELECT payload FROM lead_os_workflow_registry WHERE slug = $1 LIMIT 1",
-    [slug],
+    "SELECT payload FROM lead_os_workflow_registry WHERE slug = $1 AND tenant_id = $2 LIMIT 1",
+    [slug, currentTenantId()],
   );
   const record = result.rows[0]?.payload;
   if (record) {
@@ -1010,7 +1036,8 @@ export async function getWorkflowRegistryRecords() {
 
   await ensureSchema();
   const result = await queryPostgres<{ payload: WorkflowRegistryRecord }>(
-    "SELECT payload FROM lead_os_workflow_registry ORDER BY updated_at DESC",
+    "SELECT payload FROM lead_os_workflow_registry WHERE tenant_id = $1 ORDER BY updated_at DESC",
+    [currentTenantId()],
   );
   const records = result.rows.map((row) => row.payload);
   workflowRegistryStore.clear();
@@ -1031,8 +1058,8 @@ export async function getRuntimeConfig(key: string) {
 
   await ensureSchema();
   const result = await queryPostgres<{ payload: RuntimeConfigRecord }>(
-    "SELECT payload FROM lead_os_runtime_config WHERE key = $1 LIMIT 1",
-    [key],
+    "SELECT payload FROM lead_os_runtime_config WHERE key = $1 AND tenant_id = $2 LIMIT 1",
+    [key, currentTenantId()],
   );
   const config = result.rows[0]?.payload;
   if (config) {
@@ -1066,7 +1093,8 @@ export async function getRuntimeConfigs() {
 
   await ensureSchema();
   const result = await queryPostgres<{ payload: RuntimeConfigRecord }>(
-    "SELECT payload FROM lead_os_runtime_config ORDER BY updated_at DESC",
+    "SELECT payload FROM lead_os_runtime_config WHERE tenant_id = $1 ORDER BY updated_at DESC",
+    [currentTenantId()],
   );
   const configs = result.rows.map((row) => row.payload);
   runtimeConfigStore.clear();

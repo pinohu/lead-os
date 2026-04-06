@@ -435,7 +435,11 @@ export async function processLeadIntake(payload: HostedLeadPayload): Promise<Int
       })
     ),
   ];
-  await appendEvents(events);
+  try {
+    await appendEvents(events);
+  } catch (eventError) {
+    console.error(`[intake] Events failed for lead ${leadKey} after successful upsert:`, eventError);
+  }
 
   const crmPayload = {
     leadKey,
