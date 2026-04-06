@@ -1,10 +1,19 @@
-import { NextResponse } from "next/server";
-import { isPlainObject } from "@/lib/request-guards";
+import { NextRequest, NextResponse } from "next/server";
+import { isPlainObject, enforceRateLimit, getRequestIdentity } from "@/lib/request-guards";
 import { buildHeroExperience, type ExperienceProfile } from "@/lib/experience-engine";
 import { recommendBlueprintForVisitor } from "@/lib/funnel-blueprints";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const identity = getRequestIdentity(request);
+    const rateLimit = enforceRateLimit(`decision:${identity}`, 30, 60_000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        { status: 429 },
+      );
+    }
+
     const body = (await request.json()) as ExperienceProfile;
 
     if (!isPlainObject(body) || !isPlainObject(body.scores)) {

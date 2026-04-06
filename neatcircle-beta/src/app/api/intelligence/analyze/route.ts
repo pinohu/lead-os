@@ -5,7 +5,40 @@ import {
   type WebsiteIntelligenceInput,
 } from "@/lib/website-intelligence";
 
+function isPrivateOrReservedUrl(urlStr: string): boolean {
+  let parsed: URL;
+  try {
+    parsed = new URL(urlStr);
+  } catch {
+    return true;
+  }
+
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return true;
+
+  const hostname = parsed.hostname.toLowerCase();
+  if (hostname === "localhost" || hostname === "[::1]") return true;
+
+  const ipMatch = hostname.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
+  if (ipMatch) {
+    const [, a, b] = ipMatch.map(Number);
+    if (a === 127) return true;
+    if (a === 10) return true;
+    if (a === 172 && b >= 16 && b <= 31) return true;
+    if (a === 192 && b === 168) return true;
+    if (a === 169 && b === 254) return true;
+    if (a === 0) return true;
+  }
+
+  if (hostname.endsWith(".internal") || hostname.endsWith(".local")) return true;
+
+  return false;
+}
+
 async function fetchTargetHtml(url: string) {
+  if (isPrivateOrReservedUrl(url)) {
+    throw new Error("URL targets a private or reserved address");
+  }
+
   const response = await fetch(url, {
     headers: {
       "user-agent": "LeadOS-IntelligenceBot/1.0 (+https://github.com/pinohu/lead-os)",
@@ -47,7 +80,9 @@ export async function POST(request: Request) {
       manifest,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown analysis failure";
+    const message = error instanceof Error && error.message === "URL targets a private or reserved address"
+      ? error.message
+      : "Analysis failed";
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

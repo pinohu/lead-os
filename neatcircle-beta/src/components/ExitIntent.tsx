@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   buildTraceIntakePayload,
   ensureVisitorId,
@@ -8,6 +8,7 @@ import {
   trackBrowserEvent,
   updateStoredProfile,
 } from "@/lib/trace";
+import { logger } from "@/lib/logger";
 
 function getOffer(path: string): { headline: string; subtext: string; cta: string; niche?: string } {
   if (path.includes("re-syndication")) {
@@ -62,6 +63,8 @@ export default function ExitIntent() {
   const [company, setCompany] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const offer = typeof window !== "undefined" ? getOffer(window.location.pathname) : getOffer("");
 
@@ -103,6 +106,31 @@ export default function ExitIntent() {
     };
   }, [handleMouseLeave]);
 
+  useEffect(() => {
+    if (!visible) return;
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    dialogRef.current?.focus();
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") { dismiss(); return; }
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      previousFocusRef.current?.focus();
+    };
+  }, [visible]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
@@ -133,7 +161,7 @@ export default function ExitIntent() {
           stepId: "exit-intent-capture",
         }),
       ),
-    }).catch(() => {});
+    }).catch((err) => { logger.error("ExitIntent intake failed", { error: String(err) }); });
 
     setSubmitted(true);
     setLoading(false);
@@ -152,8 +180,11 @@ export default function ExitIntent() {
       onClick={(e) => {
         if (e.target === e.currentTarget) dismiss();
       }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Free assessment offer"
     >
-      <div className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+      <div ref={dialogRef} tabIndex={-1} className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl outline-none">
         <button
           onClick={dismiss}
           className="absolute right-4 top-4 text-2xl text-gray-400 hover:text-gray-600"
@@ -171,21 +202,29 @@ export default function ExitIntent() {
             <p className="mb-6 text-gray-600">{offer.subtext}</p>
 
             <form onSubmit={handleSubmit} className="space-y-3">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your email address"
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
-              />
-              <input
-                type="text"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                placeholder="Company name (optional)"
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
-              />
+              <div>
+                <label htmlFor="exit-email" className="sr-only">Email address</label>
+                <input
+                  id="exit-email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Your email address"
+                  className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                />
+              </div>
+              <div>
+                <label htmlFor="exit-company" className="sr-only">Company name</label>
+                <input
+                  id="exit-company"
+                  type="text"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  placeholder="Company name (optional)"
+                  className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                />
+              </div>
               <button
                 type="submit"
                 disabled={loading}

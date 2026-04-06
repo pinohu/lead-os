@@ -3,6 +3,7 @@ import { embeddedSecrets } from "@/lib/embedded-secrets";
 import { serverSiteConfig } from "@/lib/site-config";
 import { clampText, isPlainObject, isValidEmail, isValidPhone } from "@/lib/request-guards";
 import { buildLeadKey } from "@/lib/trace";
+import { logger } from "@/lib/logger";
 
 export type IntakeSource =
   | "contact_form"
@@ -68,6 +69,16 @@ const TELEGRAM_BOT_TOKEN =
   process.env.TELEGRAM_BOT_TOKEN ?? embeddedSecrets.telegram.botToken;
 const intakeReplayStore = new Map<string, number>();
 const INTAKE_REPLAY_WINDOW_MS = 5 * 60 * 1000;
+let lastReplayEviction = Date.now();
+
+function evictExpiredReplays() {
+  const now = Date.now();
+  if (now - lastReplayEviction < 60_000) return;
+  lastReplayEviction = now;
+  for (const [key, ts] of intakeReplayStore) {
+    if (now - ts >= INTAKE_REPLAY_WINDOW_MS) intakeReplayStore.delete(key);
+  }
+}
 const VALID_SOURCES: IntakeSource[] = [
   "contact_form",
   "assessment",
@@ -113,6 +124,7 @@ function buildReplayKey(payload: LeadIntakePayload, normalized: IntakeResult["no
 }
 
 function isRecentReplay(key: string) {
+  evictExpiredReplays();
   const now = Date.now();
   const existing = intakeReplayStore.get(key);
   if (existing && now - existing < INTAKE_REPLAY_WINDOW_MS) return true;
@@ -166,7 +178,7 @@ async function logToAITable(payload: LeadIntakePayload, normalized: IntakeResult
       ],
       fieldKey: "name",
     }),
-  }).catch(() => {});
+  }).catch((err) => { logger.error("AITable log failed", { error: String(err) }); });
 
   return true;
 }
@@ -215,7 +227,7 @@ Step: ${payload.stepId ?? "n/a"}`;
           },
         ],
       }),
-    }).catch(() => {});
+    }).catch((err) => { logger.error("Discord alert failed", { error: String(err) }); });
   }
 
   if (TELEGRAM_BOT_TOKEN && TELEGRAM_HIGH_VALUE_CHAT) {
@@ -226,7 +238,7 @@ Step: ${payload.stepId ?? "n/a"}`;
         chat_id: TELEGRAM_HIGH_VALUE_CHAT,
         text,
       }),
-    }).catch(() => {});
+    }).catch((err) => { logger.error("Telegram alert failed", { error: String(err) }); });
   }
 
   return true;

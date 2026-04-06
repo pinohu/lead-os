@@ -116,7 +116,7 @@ export default function AssessmentQuiz({
           stepId: "assessment-capture",
         }),
       ),
-    }).catch(() => {});
+    }).catch((err: unknown) => { console.error("Assessment intake failed:", err); });
 
     setSubmitted(true);
     setLoading(false);
@@ -143,7 +143,11 @@ export default function AssessmentQuiz({
           </p>
 
           <form onSubmit={handleCapture} className="space-y-3">
+            <label htmlFor="assessment-capture-email" className="sr-only">
+              Email address
+            </label>
             <input
+              id="assessment-capture-email"
               type="email"
               required
               value={email}
@@ -151,14 +155,22 @@ export default function AssessmentQuiz({
               placeholder="Your email address"
               className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
             />
+            <label htmlFor="assessment-capture-company" className="sr-only">
+              Company name (optional)
+            </label>
             <input
+              id="assessment-capture-company"
               type="text"
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               placeholder="Company name (optional)"
               className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
             />
+            <label htmlFor="assessment-capture-phone" className="sr-only">
+              Phone number (optional, for priority support)
+            </label>
             <input
+              id="assessment-capture-phone"
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}

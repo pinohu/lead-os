@@ -72,7 +72,7 @@ export default function WhatsAppOptIn() {
           stepId: "whatsapp-optin",
         }),
       ),
-    }).catch(() => {});
+    }).catch((err: unknown) => { console.error("WhatsApp intake failed:", err); });
 
     setSubmitted(true);
     setLoading(false);
@@ -108,7 +108,11 @@ export default function WhatsAppOptIn() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-2">
+          <label htmlFor="whatsapp-optin-phone" className="sr-only">
+            Phone number for WhatsApp updates
+          </label>
           <input
+            id="whatsapp-optin-phone"
             type="tel"
             required
             value={phone}

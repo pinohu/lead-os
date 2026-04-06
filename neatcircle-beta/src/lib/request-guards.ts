@@ -7,6 +7,18 @@ type RateLimitEntry = {
 
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
+const EVICTION_INTERVAL_MS = 60_000;
+let lastEviction = Date.now();
+
+function evictExpiredEntries() {
+  const now = Date.now();
+  if (now - lastEviction < EVICTION_INTERVAL_MS) return;
+  lastEviction = now;
+  for (const [key, entry] of rateLimitStore) {
+    if (entry.resetAt <= now) rateLimitStore.delete(key);
+  }
+}
+
 export function getRequestIdentity(request: Request | NextRequest) {
   const forwardedFor = request.headers.get("x-forwarded-for");
   if (forwardedFor) {
@@ -57,6 +69,7 @@ export function isLikelyBotRequest(request: Request | NextRequest) {
 }
 
 export function enforceRateLimit(key: string, limit: number, windowMs: number) {
+  evictExpiredEntries();
   const now = Date.now();
   const existing = rateLimitStore.get(key);
 

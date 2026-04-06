@@ -83,7 +83,9 @@ export interface TenantMetrics {
 
 // --------------- in-memory stores (swap for DB in prod) ---------------
 
-const milestoneStore: Map<string, JoyMilestone[]> = new Map();
+import { EvictableMap } from "./evictable-map.ts";
+
+const milestoneStore: Map<string, JoyMilestone[]> = new EvictableMap();
 
 function storeMilestone(m: JoyMilestone) {
   const list = milestoneStore.get(m.tenantId) ?? [];

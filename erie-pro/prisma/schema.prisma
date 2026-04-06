@@ -457,6 +457,8 @@ model ContactMessage {
   status    String   @default("unread") // "unread" | "read" | "replied"
   createdAt DateTime @default(now())
 
+  @@index([email])
+  @@index([niche])
   @@map("contact_messages")
 }
 

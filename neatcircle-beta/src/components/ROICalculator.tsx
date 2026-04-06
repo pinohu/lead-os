@@ -108,7 +108,7 @@ export default function ROICalculator() {
           stepId: "roi-capture",
         }),
       ),
-    }).catch(() => {});
+    }).catch((err: unknown) => { console.error("ROI intake failed:", err); });
 
     setSubmitted(true);
     setLoading(false);
@@ -130,8 +130,11 @@ export default function ROICalculator() {
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-5">
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">Industry</label>
+              <label htmlFor="roi-industry" className="mb-1 block text-sm font-medium text-navy">
+                Industry
+              </label>
               <select
+                id="roi-industry"
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
@@ -145,8 +148,11 @@ export default function ROICalculator() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">Number of Employees</label>
+              <label htmlFor="roi-employees" className="mb-1 block text-sm font-medium text-navy">
+                Number of Employees
+              </label>
               <input
+                id="roi-employees"
                 type="range"
                 min={1}
                 max={100}
@@ -158,10 +164,11 @@ export default function ROICalculator() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">
+              <label htmlFor="roi-avg-salary" className="mb-1 block text-sm font-medium text-navy">
                 Average Annual Salary ($)
               </label>
               <input
+                id="roi-avg-salary"
                 type="number"
                 value={avgSalary}
                 onChange={(e) => setAvgSalary(Number(e.target.value))}
@@ -173,10 +180,11 @@ export default function ROICalculator() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">
+              <label htmlFor="roi-manual-hours" className="mb-1 block text-sm font-medium text-navy">
                 Hours/Week on Manual Tasks (per person)
               </label>
               <input
+                id="roi-manual-hours"
                 type="range"
                 min={1}
                 max={40}
@@ -188,8 +196,11 @@ export default function ROICalculator() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">Software Tools in Use</label>
+              <label htmlFor="roi-tools" className="mb-1 block text-sm font-medium text-navy">
+                Software Tools in Use
+              </label>
               <input
+                id="roi-tools"
                 type="range"
                 min={1}
                 max={20}
@@ -237,13 +248,20 @@ export default function ROICalculator() {
 
             {calculated && !submitted && (
               <form onSubmit={handleEmailSubmit} className="space-y-2">
-                <p className="text-sm font-medium text-navy">Get your full personalized ROI report:</p>
+                <p className="text-sm font-medium text-navy" id="roi-report-email-desc">
+                  Get your full personalized ROI report:
+                </p>
+                <label htmlFor="roi-report-email" className="sr-only">
+                  Email address for your full personalized ROI report
+                </label>
                 <input
+                  id="roi-report-email"
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Your email address"
+                  aria-describedby="roi-report-email-desc"
                   className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
                 />
                 <button

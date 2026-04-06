@@ -19,7 +19,8 @@ function generateUnsubscribeToken(email: string, tenant: string): string {
 }
 
 function generatePreferencesToken(email: string, tenantId: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "preferences-service";
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET;
+  if (!secret) throw new Error("LEAD_OS_AUTH_SECRET or CRON_SECRET must be configured");
   return createHash("sha256")
     .update(`${email.toLowerCase().trim()}::${tenantId}::${secret}`)
     .digest("hex")

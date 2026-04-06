@@ -88,10 +88,12 @@ export interface TrustBadge {
 // In-memory stores
 // ---------------------------------------------------------------------------
 
-const reviewStore: Map<string, Review> = new Map();
-const certificationStore: Map<string, Certification> = new Map();
+import { EvictableMap } from "./evictable-map.ts";
+
+const reviewStore: Map<string, Review> = new EvictableMap();
+const certificationStore: Map<string, Certification> = new EvictableMap();
 const socialProofEvents: SocialProofEvent[] = [];
-const tenantMeta: Map<string, { yearsInBusiness: number; avgResponseTimeHours: number }> = new Map();
+const tenantMeta: Map<string, { yearsInBusiness: number; avgResponseTimeHours: number }> = new EvictableMap();
 
 let reviewIdCounter = 0;
 let certIdCounter = 0;

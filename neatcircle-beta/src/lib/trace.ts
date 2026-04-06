@@ -243,7 +243,7 @@ export function trackBrowserEvent(payload: TraceEventPayload) {
       timestamp: payload.timestamp ?? trace.timestamp ?? new Date().toISOString(),
     }),
     keepalive: true,
-  }).catch(() => {});
+  }).catch(() => { /* Non-critical tracking beacon */ });
 }
 
 export function buildTraceIntakePayload<T extends Record<string, unknown>>(payload: T) {

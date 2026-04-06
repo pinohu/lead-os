@@ -11,7 +11,8 @@ const MAX_EMAIL_LENGTH = 254;
  * Uses the same approach as unsubscribe but with a stronger hash.
  */
 function generateToken(email: string, tenantId: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "gdpr-self-service";
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET;
+  if (!secret) throw new Error("LEAD_OS_AUTH_SECRET or CRON_SECRET must be configured");
   return createHash("sha256")
     .update(`${email.toLowerCase().trim()}::${tenantId}::${secret}`)
     .digest("hex")

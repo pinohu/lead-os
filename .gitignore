@@ -5,6 +5,9 @@ backups/
 lead-os-hosted-runtime/
 lead-os-embed-widgets/
 .env
+.env.*
+!.env.example
+!.env.sample
 .env.local
 .env.production
 .env.*.local
