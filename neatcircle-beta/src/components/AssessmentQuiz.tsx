@@ -116,7 +116,7 @@ export default function AssessmentQuiz({
           stepId: "assessment-capture",
         }),
       ),
-    }).catch(() => {});
+    }).catch((err: unknown) => { console.error("Assessment intake failed:", err); });
 
     setSubmitted(true);
     setLoading(false);

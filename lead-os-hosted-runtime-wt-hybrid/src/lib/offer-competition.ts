@@ -69,16 +69,18 @@ export interface OfferEvolution {
 // In-memory stores
 // ---------------------------------------------------------------------------
 
-const variantStore: Map<string, OfferVariant> = new Map();
-const testStore: Map<string, OfferTest> = new Map();
+import { EvictableMap } from "./evictable-map";
+
+const variantStore: Map<string, OfferVariant> = new EvictableMap();
+const testStore: Map<string, OfferTest> = new EvictableMap();
 const revenueLog: Array<{
   variantId: string;
   revenue: number;
   timestamp: string;
 }> = [];
-const visitorLog: Map<string, number> = new Map();
-const refundLog: Map<string, number> = new Map();
-const complaintLog: Map<string, number> = new Map();
+const visitorLog: Map<string, number> = new EvictableMap();
+const refundLog: Map<string, number> = new EvictableMap();
+const complaintLog: Map<string, number> = new EvictableMap();
 
 let variantIdCounter = 0;
 let testIdCounter = 0;

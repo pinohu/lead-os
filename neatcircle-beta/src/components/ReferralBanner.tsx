@@ -55,7 +55,7 @@ export default function ReferralBanner() {
           data: { action: "copy_link", email: email || undefined },
           timestamp: new Date().toISOString(),
         }),
-      }).catch(() => {});
+      }).catch((err: unknown) => { console.error("Referral tracking failed:", err); });
     } catch {
       // Fallback for older browsers
       const textarea = document.createElement("textarea");

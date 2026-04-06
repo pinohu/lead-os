@@ -31,7 +31,9 @@ export interface ProactiveAlert {
 
 // --------------- in-memory store ---------------
 
-const alertStore: Map<string, ProactiveAlert[]> = new Map();
+import { EvictableMap } from "./evictable-map";
+
+const alertStore: Map<string, ProactiveAlert[]> = new EvictableMap();
 
 function storeAlert(a: ProactiveAlert) {
   const list = alertStore.get(a.tenantId) ?? [];

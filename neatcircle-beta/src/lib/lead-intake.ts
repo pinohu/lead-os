@@ -3,6 +3,7 @@ import { embeddedSecrets } from "@/lib/embedded-secrets";
 import { serverSiteConfig } from "@/lib/site-config";
 import { clampText, isPlainObject, isValidEmail, isValidPhone } from "@/lib/request-guards";
 import { buildLeadKey } from "@/lib/trace";
+import { logger } from "@/lib/logger";
 
 export type IntakeSource =
   | "contact_form"
@@ -177,7 +178,7 @@ async function logToAITable(payload: LeadIntakePayload, normalized: IntakeResult
       ],
       fieldKey: "name",
     }),
-  }).catch(() => {});
+  }).catch((err) => { logger.error("AITable log failed", { error: String(err) }); });
 
   return true;
 }
@@ -226,7 +227,7 @@ Step: ${payload.stepId ?? "n/a"}`;
           },
         ],
       }),
-    }).catch(() => {});
+    }).catch((err) => { logger.error("Discord alert failed", { error: String(err) }); });
   }
 
   if (TELEGRAM_BOT_TOKEN && TELEGRAM_HIGH_VALUE_CHAT) {
@@ -237,7 +238,7 @@ Step: ${payload.stepId ?? "n/a"}`;
         chat_id: TELEGRAM_HIGH_VALUE_CHAT,
         text,
       }),
-    }).catch(() => {});
+    }).catch((err) => { logger.error("Telegram alert failed", { error: String(err) }); });
   }
 
   return true;

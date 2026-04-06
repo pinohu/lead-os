@@ -654,11 +654,11 @@ export async function getProviderExecutions(leadKey?: string) {
   await ensureSchema();
   const query = leadKey
     ? {
-        text: "SELECT payload FROM lead_os_provider_executions WHERE lead_key = $1 ORDER BY created_at DESC",
+        text: "SELECT payload FROM lead_os_provider_executions WHERE lead_key = $1 ORDER BY created_at DESC LIMIT 500",
         values: [leadKey],
       }
     : {
-        text: "SELECT payload FROM lead_os_provider_executions ORDER BY created_at DESC",
+        text: "SELECT payload FROM lead_os_provider_executions ORDER BY created_at DESC LIMIT 500",
         values: [] as unknown[],
       };
   const result = await queryPostgres<{ payload: ProviderExecutionRecord }>(query.text, query.values);
@@ -725,11 +725,11 @@ export async function getWorkflowRuns(leadKey?: string) {
   await ensureSchema();
   const query = leadKey
     ? {
-        text: "SELECT payload FROM lead_os_workflow_runs WHERE lead_key = $1 ORDER BY created_at DESC",
+        text: "SELECT payload FROM lead_os_workflow_runs WHERE lead_key = $1 ORDER BY created_at DESC LIMIT 500",
         values: [leadKey],
       }
     : {
-        text: "SELECT payload FROM lead_os_workflow_runs ORDER BY created_at DESC",
+        text: "SELECT payload FROM lead_os_workflow_runs ORDER BY created_at DESC LIMIT 500",
         values: [] as unknown[],
       };
   const result = await queryPostgres<{ payload: WorkflowRunRecord }>(query.text, query.values);
@@ -801,11 +801,11 @@ export async function getBookingJobs(leadKey?: string) {
   await ensureSchema();
   const query = leadKey
     ? {
-        text: "SELECT payload FROM lead_os_booking_jobs WHERE lead_key = $1 ORDER BY updated_at DESC",
+        text: "SELECT payload FROM lead_os_booking_jobs WHERE lead_key = $1 ORDER BY updated_at DESC LIMIT 500",
         values: [leadKey],
       }
     : {
-        text: "SELECT payload FROM lead_os_booking_jobs ORDER BY updated_at DESC",
+        text: "SELECT payload FROM lead_os_booking_jobs ORDER BY updated_at DESC LIMIT 500",
         values: [] as unknown[],
       };
   const result = await queryPostgres<{ payload: BookingJobRecord }>(query.text, query.values);
@@ -877,11 +877,11 @@ export async function getDocumentJobs(leadKey?: string) {
   await ensureSchema();
   const query = leadKey
     ? {
-        text: "SELECT payload FROM lead_os_document_jobs WHERE lead_key = $1 ORDER BY updated_at DESC",
+        text: "SELECT payload FROM lead_os_document_jobs WHERE lead_key = $1 ORDER BY updated_at DESC LIMIT 500",
         values: [leadKey],
       }
     : {
-        text: "SELECT payload FROM lead_os_document_jobs ORDER BY updated_at DESC",
+        text: "SELECT payload FROM lead_os_document_jobs ORDER BY updated_at DESC LIMIT 500",
         values: [] as unknown[],
       };
   const result = await queryPostgres<{ payload: DocumentJobRecord }>(query.text, query.values);

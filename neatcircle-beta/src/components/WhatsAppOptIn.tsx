@@ -72,7 +72,7 @@ export default function WhatsAppOptIn() {
           stepId: "whatsapp-optin",
         }),
       ),
-    }).catch(() => {});
+    }).catch((err: unknown) => { console.error("WhatsApp intake failed:", err); });
 
     setSubmitted(true);
     setLoading(false);

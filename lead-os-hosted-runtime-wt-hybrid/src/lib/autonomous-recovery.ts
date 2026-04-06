@@ -39,7 +39,9 @@ export interface ProjectMetrics {
 
 // --------------- in-memory store ---------------
 
-const recoveryStore: Map<string, RecoveryAction[]> = new Map();
+import { EvictableMap } from "./evictable-map";
+
+const recoveryStore: Map<string, RecoveryAction[]> = new EvictableMap();
 
 function storeAction(a: RecoveryAction) {
   const list = recoveryStore.get(a.tenantId) ?? [];

@@ -128,7 +128,7 @@ async function logToAITable(event: TrackEvent) {
         fieldKey: "name",
       }),
     },
-  ).catch(() => {});
+  ).catch(() => { /* Non-critical AITable side-effect */ });
 }
 
 export async function POST(request: Request) {
