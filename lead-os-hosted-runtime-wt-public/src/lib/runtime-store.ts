@@ -178,6 +178,9 @@ function getPool() {
     connectionString,
     ssl: connectionString.includes("sslmode=disable") ? false : { rejectUnauthorized: false },
     max: 4,
+    connectionTimeoutMillis: 5000,
+    idleTimeoutMillis: 30000,
+    statement_timeout: 10000,
   });
 
   return pool;
@@ -543,14 +546,17 @@ export async function appendEvents(events: CanonicalEvent[]) {
   }
 
   await ensureSchema();
-  for (const event of events) {
+  if (events.length > 0) {
+    const values: unknown[] = [];
+    const placeholders: string[] = [];
+    events.forEach((event, i) => {
+      const offset = i * 5;
+      placeholders.push(`($${offset+1}, $${offset+2}, $${offset+3}, $${offset+4}::timestamptz, $${offset+5}::jsonb)`);
+      values.push(event.id, event.leadKey, event.eventType, event.timestamp, JSON.stringify(event));
+    });
     await queryPostgres(
-      `
-        INSERT INTO lead_os_events (id, lead_key, event_type, timestamp, payload)
-        VALUES ($1, $2, $3, $4::timestamptz, $5::jsonb)
-        ON CONFLICT (id) DO NOTHING
-      `,
-      [event.id, event.leadKey, event.eventType, event.timestamp, JSON.stringify(event)],
+      `INSERT INTO lead_os_events (id, lead_key, event_type, timestamp, payload) VALUES ${placeholders.join(", ")} ON CONFLICT (id) DO NOTHING`,
+      values,
     );
   }
 }
