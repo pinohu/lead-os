@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server"
-import { readdir, readFile } from "fs/promises"
-import { join } from "path"
+import { readdir, readFile, realpath } from "fs/promises"
+import { join, resolve, normalize } from "path"
 
 export const dynamic = "force-dynamic"
 
 function getMemoryBasePath(): string {
   const base = process.env.KNOWLEDGE_BASE_PATH
-  if (base) return base
+  if (base) return resolve(base)
   const home = process.env.HOME ?? "/home/user"
-  return join(home, "clawd")
+  return resolve(join(home, "clawd"))
+}
+
+function isSafePath(base: string, target: string): boolean {
+  const normalizedBase = normalize(base)
+  const normalizedTarget = normalize(target)
+  return normalizedTarget.startsWith(normalizedBase)
 }
 
 export async function GET() {
@@ -18,7 +24,13 @@ export async function GET() {
 
     let memoryContent = ""
     try {
-      memoryContent = await readFile(join(clawdDir, "MEMORY.md"), "utf-8")
+      const memoryPath = join(clawdDir, "MEMORY.md")
+      const resolved = await realpath(memoryPath).catch(() => memoryPath)
+      if (isSafePath(clawdDir, resolved)) {
+        memoryContent = await readFile(resolved, "utf-8")
+      } else {
+        memoryContent = "Access denied"
+      }
     } catch {
       memoryContent = "No MEMORY.md found"
     }
@@ -34,8 +46,11 @@ export async function GET() {
         .slice(0, 7)
 
       for (const file of sortedFiles) {
+        const filePath = join(memoryDir, file)
+        const resolved = await realpath(filePath).catch(() => filePath)
+        if (!isSafePath(clawdDir, resolved)) continue
         try {
-          const content = await readFile(join(memoryDir, file), "utf-8")
+          const content = await readFile(resolved, "utf-8")
           dailyMemories[file] = content.substring(0, 500)
         } catch {
           // Skip unreadable files
@@ -82,11 +97,7 @@ export async function GET() {
   } catch (error) {
     console.error("Knowledge base fetch error:", error)
     return NextResponse.json(
-      {
-        sections: [],
-        error: "Could not fetch knowledge base",
-        lastUpdated: new Date().toISOString(),
-      },
+      { error: "Could not fetch knowledge base", sections: [], stats: { totalEntries: 0, lastUpdated: new Date().toISOString() } },
       { status: 500 }
     )
   }

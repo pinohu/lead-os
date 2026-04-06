@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server"
 import { fetchAgentActivity, fetchCosts } from "@/lib/relay-client"
+import { apiSuccess, apiError } from "@/lib/api-response"
 
 export const dynamic = "force-dynamic"
 
@@ -20,8 +20,7 @@ export async function GET() {
         ? costsResult.value
         : { today: 0, thisMonth: 0, monthlyTarget: 300 }
 
-    return NextResponse.json({
-      timestamp: new Date().toISOString(),
+    return apiSuccess({
       agents,
       costs,
       source:
@@ -29,11 +28,7 @@ export async function GET() {
           ? "relay"
           : "fallback",
     })
-  } catch (error) {
-    console.error("Dashboard fetch error:", error)
-    return NextResponse.json(
-      { error: "Failed to fetch dashboard data" },
-      { status: 500 }
-    )
+  } catch {
+    return apiError("Failed to fetch dashboard data", 500)
   }
 }

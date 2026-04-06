@@ -6,13 +6,29 @@ export const dynamic = "force-dynamic"
 
 const UPDATE_INTERVAL_MS = 5000
 const HEARTBEAT_INTERVAL_MS = 15000
+const MAX_CONNECTIONS = 50
+
+let activeConnections = 0
 
 export async function GET(request: NextRequest) {
+  if (activeConnections >= MAX_CONNECTIONS) {
+    return new Response("Too many connections", { status: 429 })
+  }
+
+  activeConnections++
   const encoder = new TextEncoder()
 
   const stream = new ReadableStream({
     async start(controller) {
       let stopped = false
+
+      const cleanup = () => {
+        if (!stopped) {
+          stopped = true
+          activeConnections = Math.max(0, activeConnections - 1)
+          try { controller.close() } catch { /* already closed */ }
+        }
+      }
 
       const sendUpdate = async () => {
         if (stopped) return
@@ -34,16 +50,12 @@ export async function GET(request: NextRequest) {
                 : { today: 0, thisMonth: 0, monthlyTarget: 300 },
           }
 
-          controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify(payload)}\n\n`)
-          )
-        } catch (error) {
-          console.error("SSE update error:", error)
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`))
+        } catch {
+          // Swallow — stream may be closed
         }
 
-        if (!stopped) {
-          setTimeout(sendUpdate, UPDATE_INTERVAL_MS)
-        }
+        if (!stopped) setTimeout(sendUpdate, UPDATE_INTERVAL_MS)
       }
 
       const sendHeartbeat = () => {
@@ -51,24 +63,16 @@ export async function GET(request: NextRequest) {
         try {
           controller.enqueue(encoder.encode(`:heartbeat\n\n`))
         } catch {
-          // Stream closed
+          cleanup()
+          return
         }
-        if (!stopped) {
-          setTimeout(sendHeartbeat, HEARTBEAT_INTERVAL_MS)
-        }
+        if (!stopped) setTimeout(sendHeartbeat, HEARTBEAT_INTERVAL_MS)
       }
 
       await sendUpdate()
       setTimeout(sendHeartbeat, HEARTBEAT_INTERVAL_MS)
 
-      request.signal.addEventListener("abort", () => {
-        stopped = true
-        try {
-          controller.close()
-        } catch {
-          // Already closed
-        }
-      })
+      request.signal.addEventListener("abort", cleanup)
     },
   })
 

@@ -1,110 +1,81 @@
 # Dynasty AI Dashboard
 
-A real-time monitoring dashboard for Dynasty AI infrastructure and agents, built with Next.js 14 and React.
+Real-time monitoring dashboard for Dynasty AI infrastructure and agents.
 
 ## Features
 
-- **Service Status** — Real-time health checks for configured services
+- **Real-time Dashboard** — SSE-powered live updates for costs and agent activity
+- **Service Status** — Health checks for all configured services
 - **Cost Tracking** — Monitor API costs via relay backend
-- **Agent Activity** — Live agent session monitoring
+- **Agent Activity** — Live agent session monitoring with status indicators
 - **Knowledge Base** — Browse MEMORY.md and daily logs
-- **Settings** — Configure alert thresholds, monitoring intervals, and agent settings
-- **Authentication** — Password-protected access with configurable allowed emails
+- **Settings** — Persistent configuration for alerts, monitoring, and agents
+- **Authentication** — Per-user password auth with bcrypt, rate limiting, and JWT
 
 ## Tech Stack
 
-- **Framework:** Next.js 14 (App Router)
-- **Language:** TypeScript (strict mode)
-- **Styling:** Tailwind CSS
-- **Auth:** NextAuth.js v4 with credentials provider + bcrypt
-- **Icons:** Lucide React
+- Next.js 14 (App Router), TypeScript (strict), Tailwind CSS
+- NextAuth.js v4 + bcrypt, Zod validation, self-hosted Inter font
 
 ## Quick Start
 
 ```bash
-# Install dependencies
 npm install
-
-# Copy environment template and configure
 cp .env.example .env.local
 
-# Generate a NEXTAUTH_SECRET
-openssl rand -base64 32
+# Generate secrets
+openssl rand -base64 32                    # → NEXTAUTH_SECRET
+node -e "require('bcryptjs').hash('pw',10).then(h=>console.log(h))"  # → password hash
 
-# Generate a password hash for ADMIN_PASSWORD_HASH
-node -e "require('bcryptjs').hash('your-password', 10).then(h => console.log(h))"
-
-# Edit .env.local with your values
-# - NEXTAUTH_SECRET (required)
-# - ALLOWED_EMAILS (required)
-# - ADMIN_PASSWORD_HASH (required)
-# - SERVICE_ENDPOINTS (optional)
-# - API_RELAY_URL (optional)
-
-# Start development server
+# Edit .env.local, then:
 npm run dev
 ```
-
-The dashboard will be available at `http://localhost:3000`.
 
 ## Environment Variables
 
 | Variable | Required | Description |
 |---|---|---|
-| `NEXTAUTH_URL` | Yes | Base URL of the app (e.g., `http://localhost:3000`) |
-| `NEXTAUTH_SECRET` | Yes | Random secret for JWT signing |
-| `ALLOWED_EMAILS` | Yes | Comma-separated list of authorized emails |
-| `ADMIN_PASSWORD_HASH` | Yes | bcrypt hash of the admin password |
-| `API_RELAY_URL` | No | URL of the backend relay API (default: `http://localhost:9001`) |
-| `SERVICE_ENDPOINTS` | No | Comma-separated `Name:URL` pairs for health checks |
+| `NEXTAUTH_URL` | Yes | App base URL |
+| `NEXTAUTH_SECRET` | Yes | JWT signing secret |
+| `ALLOWED_USERS` | Preferred | Per-user auth: `email:bcrypt_hash,...` |
+| `ALLOWED_EMAILS` | Fallback | Comma-separated emails (shared password) |
+| `ADMIN_PASSWORD_HASH` | With ALLOWED_EMAILS | Shared bcrypt hash |
+| `API_RELAY_URL` | No | Relay API (default: `localhost:9001`) |
+| `SERVICE_ENDPOINTS` | No | `Name:URL,...` pairs for health checks |
 | `KNOWLEDGE_BASE_PATH` | No | Path to clawd memory directory |
-
-## API Endpoints
-
-All API routes require authentication (enforced via Next.js middleware).
-
-| Method | Path | Description |
-|---|---|---|
-| GET | `/api/dashboard` | Full dashboard state |
-| GET | `/api/dashboard/stream` | Server-Sent Events for real-time updates |
-| GET | `/api/services/status` | Service health check results |
-| GET | `/api/costs` | Cost metrics from relay |
-| GET | `/api/agents/activity` | Agent session data from relay |
-| GET | `/api/knowledge-base` | Memory and documentation |
-| GET | `/api/settings` | Current settings |
-| POST | `/api/settings` | Update settings (JSON body) |
+| `SETTINGS_DIR` | No | Persistent settings directory |
 
 ## Architecture
 
 ```
 app/
 ├── api/                  # API routes (all auth-protected)
-│   ├── auth/             # NextAuth handler
-│   ├── dashboard/        # Dashboard data + SSE stream
-│   ├── agents/activity/  # Agent session data
-│   ├── costs/            # Cost tracking
-│   ├── services/status/  # Health checks
-│   ├── settings/         # User preferences
-│   └── knowledge-base/   # Memory browser
 ├── auth/signin/          # Login page
+├── knowledge/            # Knowledge base browser
+├── settings/             # Settings UI
+├── app-shell.tsx         # Navigation sidebar
 ├── error.tsx             # Error boundary
 ├── global-error.tsx      # Global error boundary
-├── layout.tsx            # Root layout
-├── page.tsx              # Main dashboard
-└── providers.tsx         # SessionProvider wrapper
+├── layout.tsx            # Root layout (self-hosted font)
+├── page.tsx              # Dashboard (SSE real-time)
+└── providers.tsx         # SessionProvider
 lib/
-└── relay-client.ts       # Backend relay API client
-middleware.ts             # Auth middleware (route protection)
+├── api-response.ts       # Standardized API response helpers
+├── auth.ts               # NextAuth config + rate limiting
+└── relay-client.ts       # Relay API client with TTL cache
+middleware.ts             # Auth middleware
 ```
 
 ## Security
 
-- Password-based authentication with bcrypt hashing
-- JWT session strategy with configurable secret
-- All API routes protected by NextAuth middleware
-- Content Security Policy headers
-- No hardcoded secrets or PII in source code
-- All service URLs configurable via environment variables
+- Per-user passwords with bcrypt (no shared secret required)
+- Brute-force protection: 5 attempts, 15-minute lockout
+- All routes behind NextAuth middleware
+- CSP, HSTS, X-Frame-Options, Permissions-Policy headers
+- Path sandboxing on knowledge-base filesystem reads
+- Zod validation on all API inputs
+- SSE connection limit (max 50 concurrent)
+- No hardcoded secrets or PII
 
 ## License
 

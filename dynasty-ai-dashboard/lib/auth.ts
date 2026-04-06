@@ -2,12 +2,34 @@ import type { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 
-function getAllowedEmails(): string[] {
-  const raw = process.env.ALLOWED_EMAILS ?? ""
-  return raw
+interface UserEntry {
+  email: string
+  hash: string
+}
+
+function getUsers(): UserEntry[] {
+  const raw = process.env.ALLOWED_USERS ?? ""
+  if (raw) {
+    return raw
+      .split(",")
+      .map((entry) => {
+        const sep = entry.lastIndexOf(":")
+        if (sep === -1) return null
+        const email = entry.slice(0, sep).trim().toLowerCase()
+        const hash = entry.slice(sep + 1).trim()
+        if (!email || !hash) return null
+        return { email, hash }
+      })
+      .filter((e): e is UserEntry => e !== null)
+  }
+
+  const emails = (process.env.ALLOWED_EMAILS ?? "")
     .split(",")
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean)
+  const sharedHash = process.env.ADMIN_PASSWORD_HASH ?? ""
+  if (!sharedHash) return []
+  return emails.map((email) => ({ email, hash: sharedHash }))
 }
 
 const loginAttempts = new Map<string, { count: number; lastAttempt: number }>()
@@ -40,7 +62,7 @@ function clearAttempts(email: string): void {
 
 function validateSecret(): void {
   if (!process.env.NEXTAUTH_SECRET && process.env.NODE_ENV === "production") {
-    console.error("FATAL: NEXTAUTH_SECRET is required in production. Set it in your environment.")
+    console.error("FATAL: NEXTAUTH_SECRET is required in production.")
     process.exit(1)
   }
 }
@@ -61,16 +83,14 @@ export const authOptions: NextAuthOptions = {
 
         if (isRateLimited(email)) return null
 
-        const allowed = getAllowedEmails()
-        if (!allowed.includes(email)) {
+        const users = getUsers()
+        const user = users.find((u) => u.email === email)
+        if (!user) {
           recordFailedAttempt(email)
           return null
         }
 
-        const storedHash = process.env.ADMIN_PASSWORD_HASH
-        if (!storedHash) return null
-
-        const isValid = await bcrypt.compare(credentials.password, storedHash)
+        const isValid = await bcrypt.compare(credentials.password, user.hash)
         if (!isValid) {
           recordFailedAttempt(email)
           return null

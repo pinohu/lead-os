@@ -1,7 +1,6 @@
 "use client"
 
 export default function GlobalError({
-  error,
   reset,
 }: {
   error: Error & { digest?: string }
@@ -9,12 +8,12 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en">
-      <body className="bg-gray-900 text-white">
+      <body className="bg-gray-950 text-white">
         <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center max-w-md">
+          <div className="text-center max-w-md" role="alert">
             <h2 className="text-2xl font-bold mb-4">Critical Error</h2>
-            <p className="text-gray-400 mb-6">
-              {error.message || "A critical error occurred."}
+            <p className="text-gray-300 mb-6">
+              A critical error occurred. Please reload the page.
             </p>
             <button
               onClick={reset}

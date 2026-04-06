@@ -2,9 +2,11 @@
 
 import { signIn } from "next-auth/react"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Shield } from "lucide-react"
 
 export default function SignIn() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -25,15 +27,17 @@ export default function SignIn() {
     setIsLoading(false)
 
     if (result?.ok) {
-      window.location.href = "/"
+      router.push("/")
     } else {
       setError("Invalid email or password. Contact your administrator.")
     }
   }
 
+  const errorId = error ? "signin-error" : undefined
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-dynasty-blue to-dynasty-purple">
-      <div className="bg-white rounded-lg shadow-2xl p-8 max-w-md w-full">
+      <main className="bg-white rounded-lg shadow-2xl p-8 max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Dynasty AI Stack
@@ -41,7 +45,7 @@ export default function SignIn() {
           <p className="text-gray-600">Mission Control Dashboard</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
             <label
               htmlFor="email"
@@ -55,7 +59,10 @@ export default function SignIn() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-dynasty-blue focus:border-transparent"
+              autoComplete="email"
+              aria-describedby={errorId}
+              aria-invalid={!!error}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-gray-900"
               placeholder="your-email@example.com"
             />
           </div>
@@ -73,13 +80,16 @@ export default function SignIn() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-dynasty-blue focus:border-transparent"
+              autoComplete="current-password"
+              aria-describedby={errorId}
+              aria-invalid={!!error}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent text-gray-900"
               placeholder="Enter your password"
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+            <p id="signin-error" className="text-sm text-red-600 bg-red-50 p-3 rounded-lg" role="alert">
               {error}
             </p>
           )}
@@ -94,10 +104,10 @@ export default function SignIn() {
         </form>
 
         <div className="mt-6 flex items-center justify-center text-sm text-gray-500">
-          <Shield className="w-4 h-4 mr-1" />
+          <Shield className="w-4 h-4 mr-1" aria-hidden="true" />
           <span>Restricted access — authorized users only</span>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

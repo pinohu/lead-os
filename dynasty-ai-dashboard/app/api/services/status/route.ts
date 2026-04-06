@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server"
 import {
   fetchServiceHealth,
   getServiceEndpoints,
   type ServiceEndpoint,
 } from "@/lib/relay-client"
+import { apiSuccess } from "@/lib/api-response"
 
 export const dynamic = "force-dynamic"
 
@@ -17,15 +17,11 @@ export async function GET() {
 
   const results = await Promise.allSettled(
     services.map(async (service) => {
-      const { ok, latency } = await fetchServiceHealth(
-        service.url,
-        service.timeout
-      )
+      const { ok, latency } = await fetchServiceHealth(service.url, service.timeout)
       return {
         name: service.name,
         status: ok ? ("online" as const) : ("offline" as const),
         latency,
-        timestamp: new Date().toISOString(),
       }
     })
   )
@@ -33,16 +29,15 @@ export async function GET() {
   const resolved = results.map((r) =>
     r.status === "fulfilled"
       ? r.value
-      : { name: "Unknown", status: "offline" as const, latency: null, timestamp: new Date().toISOString() }
+      : { name: "Unknown", status: "offline" as const, latency: null }
   )
 
   const onlineCount = resolved.filter((s) => s.status === "online").length
 
-  return NextResponse.json({
+  return apiSuccess({
     status: onlineCount === resolved.length ? "all-healthy" : "degraded",
     onlineCount,
     totalCount: resolved.length,
     services: resolved,
-    timestamp: new Date().toISOString(),
-  })
+  }, 10)
 }
