@@ -281,38 +281,42 @@ export async function routeLead(
 
   // Create the lead record with unique status tracking token
   const statusToken = crypto.randomUUID();
-  const lead = await prisma.lead.create({
-    data: {
-      niche,
-      city: city.toLowerCase(),
-      firstName: (leadData.firstName as string) ?? null,
-      lastName: (leadData.lastName as string) ?? null,
-      email: ((leadData.email as string) ?? "").toLowerCase(),
-      phone: (leadData.phone as string) ?? null,
-      message: (leadData.message as string) ?? null,
-      routeType,
-      routedToId,
-      slaDeadline,
-      statusToken,
-      source: (leadData.source as string) ?? "erie-pro",
-      deliverAt: deliverAt ?? undefined,
-      tcpaConsent: (leadData.tcpaConsent as boolean) ?? false,
-      tcpaConsentText: (leadData.tcpaConsentText as string) ?? null,
-      tcpaIpAddress: (leadData.tcpaIpAddress as string) ?? null,
-      tcpaConsentAt: leadData.tcpaConsent ? now : null,
-    },
-  });
-
-  // Update provider's lead count if routed
-  if (routedToId) {
-    await prisma.provider.update({
-      where: { id: routedToId },
+  const lead = await prisma.$transaction(async (tx) => {
+    const created = await tx.lead.create({
       data: {
-        totalLeads: { increment: 1 },
-        lastLeadAt: now,
+        niche,
+        city: city.toLowerCase(),
+        firstName: (leadData.firstName as string) ?? null,
+        lastName: (leadData.lastName as string) ?? null,
+        email: ((leadData.email as string) ?? "").toLowerCase(),
+        phone: (leadData.phone as string) ?? null,
+        message: (leadData.message as string) ?? null,
+        routeType,
+        routedToId,
+        slaDeadline,
+        statusToken,
+        source: (leadData.source as string) ?? "erie-pro",
+        deliverAt: deliverAt ?? undefined,
+        tcpaConsent: (leadData.tcpaConsent as boolean) ?? false,
+        tcpaConsentText: (leadData.tcpaConsentText as string) ?? null,
+        tcpaIpAddress: (leadData.tcpaIpAddress as string) ?? null,
+        tcpaConsentAt: leadData.tcpaConsent ? now : null,
       },
     });
-  }
+
+    // Update provider's lead count if routed
+    if (routedToId) {
+      await tx.provider.update({
+        where: { id: routedToId },
+        data: {
+          totalLeads: { increment: 1 },
+          lastLeadAt: now,
+        },
+      });
+    }
+
+    return created;
+  });
 
   return {
     leadId: lead.id,
@@ -405,7 +409,7 @@ export async function getProviderPerformance(
 ): Promise<ProviderPerformance> {
   const [provider, outcomes] = await Promise.all([
     prisma.provider.findUnique({ where: { id: providerId } }),
-    prisma.leadOutcome.findMany({ where: { providerId } }),
+    prisma.leadOutcome.findMany({ where: { providerId }, take: 1000 }),
   ]);
 
   const slaTimeout = 1800; // 30 min default
@@ -545,6 +549,7 @@ export async function getUnmatchedLeadsForNiche(niche: string): Promise<LeadRout
     where: { niche, routeType: "unmatched" },
     include: { routedTo: true },
     orderBy: { createdAt: "desc" },
+    take: 100,
   });
   return leads.map(leadToRouteResult);
 }

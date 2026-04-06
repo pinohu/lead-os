@@ -126,7 +126,7 @@ export async function getProvidersByNiche(niche: string): Promise<ProviderProfil
 }
 
 export async function getAllProviders(): Promise<ProviderProfile[]> {
-  const providers = await prisma.provider.findMany();
+  const providers = await prisma.provider.findMany({ take: 100 });
   return providers.map(toProfile);
 }
 
