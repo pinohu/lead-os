@@ -18,7 +18,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
-    const { email, firstName } = body;
+    const email = typeof body.email === "string" ? body.email : undefined;
+    const firstName = typeof body.firstName === "string" ? body.firstName : undefined;
 
     if (!email) {
       return NextResponse.json(

@@ -19,7 +19,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
-    const { firstName, lastName, email, company, phone, service, message } = body;
+    const firstName = typeof body.firstName === "string" ? body.firstName : undefined;
+    const lastName = typeof body.lastName === "string" ? body.lastName : undefined;
+    const email = typeof body.email === "string" ? body.email : undefined;
+    const company = typeof body.company === "string" ? body.company : undefined;
+    const phone = typeof body.phone === "string" ? body.phone : undefined;
+    const service = typeof body.service === "string" ? body.service : undefined;
+    const message = typeof body.message === "string" ? body.message : undefined;
 
     if (!firstName || !lastName || !email) {
       return NextResponse.json(
