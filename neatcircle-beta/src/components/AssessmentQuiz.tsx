@@ -33,6 +33,7 @@ export default function AssessmentQuiz({
   const [showCapture, setShowCapture] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const totalScore = Object.values(answers).reduce((sum, answer) => sum + answer.score, 0);
   const maxPossibleScore = questions.length * 10;
@@ -86,6 +87,7 @@ export default function AssessmentQuiz({
   const handleCapture = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+    setError(null);
     setLoading(true);
 
     updateStoredProfile({
@@ -95,33 +97,38 @@ export default function AssessmentQuiz({
       currentService: niche,
     });
 
-    await fetch("/api/intake", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(
-        buildTraceIntakePayload({
-          source: "assessment",
-          visitorId: ensureVisitorId(),
-          firstName: email.split("@")[0],
-          lastName: ".",
-          email,
-          company: company || undefined,
-          phone: phone || undefined,
-          service: niche,
-          niche,
-          page: window.location.pathname,
-          score: totalScore,
-          tier: tier.label,
-          message: `Assessment completed: ${title}. Score: ${totalScore}/${maxPossibleScore}. Tier: ${tier.label}`,
-          stepId: "assessment-capture",
-        }),
-      ),
-    }).catch(() => {});
-
-    setSubmitted(true);
-    setLoading(false);
-    setShowResults(true);
-    setShowCapture(false);
+    try {
+      const res = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          buildTraceIntakePayload({
+            source: "assessment",
+            visitorId: ensureVisitorId(),
+            firstName: email.split("@")[0],
+            lastName: ".",
+            email,
+            company: company || undefined,
+            phone: phone || undefined,
+            service: niche,
+            niche,
+            page: window.location.pathname,
+            score: totalScore,
+            tier: tier.label,
+            message: `Assessment completed: ${title}. Score: ${totalScore}/${maxPossibleScore}. Tier: ${tier.label}`,
+            stepId: "assessment-capture",
+          }),
+        ),
+      });
+      if (!res.ok) throw new Error();
+      setSubmitted(true);
+      setShowResults(true);
+      setShowCapture(false);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const skipCapture = () => {
@@ -178,6 +185,7 @@ export default function AssessmentQuiz({
             >
               {loading ? "Processing..." : "Get My Results"}
             </button>
+            {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
           </form>
 
           <button

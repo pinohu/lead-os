@@ -29,6 +29,7 @@ export default function ROICalculator() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [calculated, setCalculated] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const results = useMemo(() => {
     const hourlyRate = avgSalary / 2080;
@@ -83,6 +84,7 @@ export default function ROICalculator() {
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+    setError(null);
     setLoading(true);
 
     updateStoredProfile({
@@ -91,28 +93,33 @@ export default function ROICalculator() {
       currentService: INDUSTRY_MULTIPLIERS[industry]?.label ?? "general",
     });
 
-    await fetch("/api/intake", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(
-        buildTraceIntakePayload({
-          source: "roi_calculator",
-          visitorId: ensureVisitorId(),
-          firstName: email.split("@")[0],
-          lastName: ".",
-          email,
-          service: INDUSTRY_MULTIPLIERS[industry]?.label ?? "general",
-          niche: industry,
-          page: window.location.pathname,
-          score: results.roi,
-          message: `ROI Calculator: ${employees} employees, $${results.annualSavings.toLocaleString()} projected savings, ${results.roi}% ROI`,
-          stepId: "roi-capture",
-        }),
-      ),
-    }).catch(() => {});
-
-    setSubmitted(true);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          buildTraceIntakePayload({
+            source: "roi_calculator",
+            visitorId: ensureVisitorId(),
+            firstName: email.split("@")[0],
+            lastName: ".",
+            email,
+            service: INDUSTRY_MULTIPLIERS[industry]?.label ?? "general",
+            niche: industry,
+            page: window.location.pathname,
+            score: results.roi,
+            message: `ROI Calculator: ${employees} employees, $${results.annualSavings.toLocaleString()} projected savings, ${results.roi}% ROI`,
+            stepId: "roi-capture",
+          }),
+        ),
+      });
+      if (!res.ok) throw new Error();
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -257,6 +264,7 @@ export default function ROICalculator() {
                 >
                   {loading ? "Processing..." : "Send My Full Report"}
                 </button>
+                {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
               </form>
             )}
 

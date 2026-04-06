@@ -13,6 +13,7 @@ export default function WhatsAppOptIn() {
   const [phone, setPhone] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -48,34 +49,40 @@ export default function WhatsAppOptIn() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone) return;
+    setError(null);
     setLoading(true);
 
     updateStoredProfile({ phone, whatsappOptIn: true, currentStepId: "whatsapp-optin" });
 
     const profile = getStoredProfile();
 
-    fetch("/api/intake", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(
-        buildTraceIntakePayload({
-          source: "whatsapp_optin",
-          visitorId: ensureVisitorId(),
-          firstName: profile.email ? String(profile.email).split("@")[0] : "Lead",
-          lastName: ".",
-          email: profile.email as string | undefined,
-          phone,
-          service: profile.nicheInterest as string | undefined,
-          niche: profile.nicheInterest as string | undefined,
-          page: window.location.pathname,
-          metadata: { whatsappOptIn: true },
-          stepId: "whatsapp-optin",
-        }),
-      ),
-    }).catch(() => {});
-
-    setSubmitted(true);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          buildTraceIntakePayload({
+            source: "whatsapp_optin",
+            visitorId: ensureVisitorId(),
+            firstName: profile.email ? String(profile.email).split("@")[0] : "Lead",
+            lastName: ".",
+            email: profile.email as string | undefined,
+            phone,
+            service: profile.nicheInterest as string | undefined,
+            niche: profile.nicheInterest as string | undefined,
+            page: window.location.pathname,
+            metadata: { whatsappOptIn: true },
+            stepId: "whatsapp-optin",
+          }),
+        ),
+      });
+      if (!res.ok) throw new Error();
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const dismiss = () => {
@@ -125,6 +132,7 @@ export default function WhatsAppOptIn() {
           >
             {loading ? "Connecting..." : "Connect on WhatsApp"}
           </button>
+          {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
         </form>
 
         <p className="mt-2 text-center text-[10px] text-gray-400">

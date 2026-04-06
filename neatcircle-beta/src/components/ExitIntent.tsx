@@ -62,6 +62,7 @@ export default function ExitIntent() {
   const [company, setCompany] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const offer = typeof window !== "undefined" ? getOffer(window.location.pathname) : getOffer("");
 
@@ -115,6 +116,7 @@ export default function ExitIntent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+    setError(null);
     setLoading(true);
 
     updateStoredProfile({
@@ -124,28 +126,33 @@ export default function ExitIntent() {
       currentService: offer.niche ?? "general",
     });
 
-    await fetch("/api/intake", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(
-        buildTraceIntakePayload({
-          source: "exit_intent",
-          visitorId: ensureVisitorId(),
-          firstName: email.split("@")[0],
-          lastName: ".",
-          email,
-          company: company || undefined,
-          service: offer.niche ?? "general",
-          niche: offer.niche ?? "general",
-          page: window.location.pathname,
-          message: `Exit-intent capture on ${window.location.pathname}. Offer: ${offer.headline}`,
-          stepId: "exit-intent-capture",
-        }),
-      ),
-    }).catch(() => {});
-
-    setSubmitted(true);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          buildTraceIntakePayload({
+            source: "exit_intent",
+            visitorId: ensureVisitorId(),
+            firstName: email.split("@")[0],
+            lastName: ".",
+            email,
+            company: company || undefined,
+            service: offer.niche ?? "general",
+            niche: offer.niche ?? "general",
+            page: window.location.pathname,
+            message: `Exit-intent capture on ${window.location.pathname}. Offer: ${offer.headline}`,
+            stepId: "exit-intent-capture",
+          }),
+        ),
+      });
+      if (!res.ok) throw new Error();
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const dismiss = () => {
@@ -213,6 +220,7 @@ export default function ExitIntent() {
               >
                 {loading ? "Processing..." : offer.cta}
               </button>
+              {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
             </form>
 
             <p className="mt-4 text-center text-xs text-gray-400">No spam. Unsubscribe anytime.</p>
