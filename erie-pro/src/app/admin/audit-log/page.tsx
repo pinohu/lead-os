@@ -38,7 +38,7 @@ export default async function AuditLogPage({
     <div className="p-8 max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Audit Log</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{total} total entries</p>
+        <p className="text-sm text-gray-500 dark:text-gray-600">{total} total entries</p>
       </div>
 
       {/* ── Filters ───────────────────────────────────────────── */}
@@ -64,18 +64,18 @@ export default async function AuditLogPage({
           <table className="min-w-[640px] w-full text-sm">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-400">Time</th>
-                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-400">Action</th>
-                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-400">Entity</th>
-                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-400">Provider</th>
-                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-400">IP</th>
-                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-400">Metadata</th>
+                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-600">Time</th>
+                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-600">Action</th>
+                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-600">Entity</th>
+                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-600">Provider</th>
+                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-600">IP</th>
+                <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-600">Metadata</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {logs.map((log) => (
                 <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
-                  <td className="py-2 px-4 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                  <td className="py-2 px-4 text-gray-600 dark:text-gray-600 whitespace-nowrap">
                     {log.createdAt.toLocaleString()}
                   </td>
                   <td className="py-2 px-4">
@@ -83,16 +83,16 @@ export default async function AuditLogPage({
                       {log.action}
                     </span>
                   </td>
-                  <td className="py-2 px-4 text-gray-600 dark:text-gray-400">
+                  <td className="py-2 px-4 text-gray-600 dark:text-gray-600">
                     {log.entityType}{log.entityId ? `:${log.entityId.slice(0, 8)}` : ""}
                   </td>
                   <td className="py-2 px-4 text-gray-900 dark:text-white">
                     {log.provider?.businessName ?? "—"}
                   </td>
-                  <td className="py-2 px-4 font-mono text-xs text-gray-500 dark:text-gray-400">
+                  <td className="py-2 px-4 font-mono text-xs text-gray-500 dark:text-gray-600">
                     {log.ipAddress ?? "—"}
                   </td>
-                  <td className="py-2 px-4 text-xs text-gray-500 dark:text-gray-400 max-w-xs truncate">
+                  <td className="py-2 px-4 text-xs text-gray-500 dark:text-gray-600 max-w-xs truncate">
                     {log.metadata ? JSON.stringify(log.metadata) : "—"}
                   </td>
                 </tr>
@@ -103,7 +103,7 @@ export default async function AuditLogPage({
 
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-800 px-4 py-3">
-            <span className="text-sm text-gray-500 dark:text-gray-400">Page {page} of {totalPages}</span>
+            <span className="text-sm text-gray-500 dark:text-gray-600">Page {page} of {totalPages}</span>
             <div className="flex gap-2">
               {page > 1 && (
                 <a

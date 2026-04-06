@@ -24,7 +24,7 @@ export default async function ProfilePage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
           No Provider Account
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+        <p className="text-gray-600 dark:text-gray-600 mb-6">
           Your account isn&apos;t linked to a provider profile yet.
         </p>
         <Link
@@ -65,7 +65,7 @@ export default async function ProfilePage() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Business Profile
           </h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-600">
             Update your business information visible to potential customers.
           </p>
         </div>

@@ -165,7 +165,7 @@ function HeroSection({ service }: { service: ServiceData }) {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
           href="/services"
-          className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-white transition-colors mb-8"
         >
           <ArrowLeftIcon />
           All Services
@@ -185,7 +185,7 @@ function HeroSection({ service }: { service: ServiceData }) {
         </p>
         <div className="flex flex-wrap items-center gap-4">
           <span className="text-2xl font-bold text-cyan">{service.price}</span>
-          <span className="text-slate-400">|</span>
+          <span className="text-slate-600">|</span>
           <span className="flex items-center gap-2 text-slate-300">
             <ClockIcon />
             {service.timelineRange}
@@ -496,13 +496,13 @@ function FooterNav() {
         <div className="flex items-center gap-6">
           <Link
             href="/services"
-            className="text-sm text-slate-400 hover:text-white transition-colors"
+            className="text-sm text-slate-600 hover:text-white transition-colors"
           >
             All Services
           </Link>
           <Link
             href="/#contact"
-            className="text-sm text-slate-400 hover:text-white transition-colors"
+            className="text-sm text-slate-600 hover:text-white transition-colors"
           >
             Contact
           </Link>
@@ -558,7 +558,7 @@ export default async function ServicePage({ params }: PageProps) {
               <details key={item.q} className="group border border-slate-200 rounded-lg">
                 <summary className="flex items-center justify-between cursor-pointer px-6 py-4 font-semibold text-navy hover:bg-slate-50 transition-colors">
                   {item.q}
-                  <span className="ml-2 text-slate-400 group-open:rotate-180 transition-transform">&#9662;</span>
+                  <span className="ml-2 text-slate-600 group-open:rotate-180 transition-transform">&#9662;</span>
                 </summary>
                 <div className="px-6 pb-4 text-slate-600 text-sm leading-relaxed">{item.a}</div>
               </details>

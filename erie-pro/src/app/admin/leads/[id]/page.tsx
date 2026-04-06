@@ -101,7 +101,7 @@ export default async function LeadDetailPage({
       {/* Back Link */}
       <Link
         href="/admin/leads"
-        className="mb-6 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+        className="mb-6 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-600 dark:hover:text-gray-200"
       >
         &larr; Back to Lead Management
       </Link>
@@ -112,7 +112,7 @@ export default async function LeadDetailPage({
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
             {name}
           </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-600">
             Lead ID: {lead.id}
           </p>
         </div>
@@ -143,7 +143,7 @@ export default async function LeadDetailPage({
         </div>
         <div className="grid gap-4 p-6 sm:grid-cols-2">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               First Name
             </p>
             <p className="mt-1 text-sm text-gray-900 dark:text-white">
@@ -151,7 +151,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Last Name
             </p>
             <p className="mt-1 text-sm text-gray-900 dark:text-white">
@@ -159,7 +159,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Email
             </p>
             <p className="mt-1 text-sm">
@@ -172,7 +172,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Phone
             </p>
             <p className="mt-1 text-sm">
@@ -184,12 +184,12 @@ export default async function LeadDetailPage({
                   {lead.phone}
                 </a>
               ) : (
-                <span className="text-gray-400 dark:text-gray-500">--</span>
+                <span className="text-gray-600 dark:text-gray-500">--</span>
               )}
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Niche
             </p>
             <p className="mt-1 text-sm text-gray-900 dark:text-white">
@@ -197,7 +197,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               City
             </p>
             <p className="mt-1 text-sm capitalize text-gray-900 dark:text-white">
@@ -205,7 +205,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div className="sm:col-span-2">
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Message
             </p>
             <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">
@@ -213,7 +213,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Created At
             </p>
             <p className="mt-1 text-sm text-gray-900 dark:text-white">
@@ -221,7 +221,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Updated At
             </p>
             <p className="mt-1 text-sm text-gray-900 dark:text-white">
@@ -240,7 +240,7 @@ export default async function LeadDetailPage({
         </div>
         <div className="grid gap-4 p-6 sm:grid-cols-2">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Route Type
             </p>
             <p className="mt-1">
@@ -254,7 +254,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Temperature
             </p>
             <p className="mt-1">
@@ -268,7 +268,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Routed To
             </p>
             {lead.routedTo ? (
@@ -280,7 +280,7 @@ export default async function LeadDetailPage({
                   {lead.routedTo.businessName}
                 </Link>
                 {lead.routedTo.email && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-600">
                     {lead.routedTo.email}
                   </p>
                 )}
@@ -292,7 +292,7 @@ export default async function LeadDetailPage({
             )}
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               SLA Deadline
             </p>
             <p className="mt-1 text-sm text-gray-900 dark:text-white">
@@ -306,7 +306,7 @@ export default async function LeadDetailPage({
                   )}
                 </>
               ) : (
-                <span className="text-gray-400 dark:text-gray-500">--</span>
+                <span className="text-gray-600 dark:text-gray-500">--</span>
               )}
             </p>
           </div>
@@ -322,7 +322,7 @@ export default async function LeadDetailPage({
         </div>
         <div className="grid gap-4 p-6 sm:grid-cols-2">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Consent Given
             </p>
             <p className="mt-1">
@@ -338,7 +338,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Consent At
             </p>
             <p className="mt-1 text-sm text-gray-900 dark:text-white">
@@ -348,7 +348,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               IP Address
             </p>
             <p className="mt-1 font-mono text-sm text-gray-900 dark:text-white">
@@ -356,7 +356,7 @@ export default async function LeadDetailPage({
             </p>
           </div>
           <div className="sm:col-span-2">
-            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
               Consent Text
             </p>
             <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">
@@ -375,23 +375,23 @@ export default async function LeadDetailPage({
         </div>
         <div className="p-6">
           {lead.outcomes.length === 0 ? (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gray-600">
               No outcomes recorded for this lead.
             </p>
           ) : (
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-800">
-                  <th className="pb-2 font-medium text-gray-500 dark:text-gray-400">
+                  <th className="pb-2 font-medium text-gray-500 dark:text-gray-600">
                     Outcome
                   </th>
-                  <th className="pb-2 font-medium text-gray-500 dark:text-gray-400">
+                  <th className="pb-2 font-medium text-gray-500 dark:text-gray-600">
                     Response Time
                   </th>
-                  <th className="pb-2 font-medium text-gray-500 dark:text-gray-400">
+                  <th className="pb-2 font-medium text-gray-500 dark:text-gray-600">
                     Satisfaction
                   </th>
-                  <th className="pb-2 font-medium text-gray-500 dark:text-gray-400">
+                  <th className="pb-2 font-medium text-gray-500 dark:text-gray-600">
                     Date
                   </th>
                 </tr>
@@ -412,7 +412,7 @@ export default async function LeadDetailPage({
                         ? `${outcome.satisfactionRating.toFixed(1)} / 5`
                         : "--"}
                     </td>
-                    <td className="py-3 text-xs text-gray-500 dark:text-gray-400">
+                    <td className="py-3 text-xs text-gray-500 dark:text-gray-600">
                       {formatDateTime(outcome.createdAt)}
                     </td>
                   </tr>
@@ -432,7 +432,7 @@ export default async function LeadDetailPage({
         </div>
         <div className="p-6">
           {lead.disputes.length === 0 ? (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gray-600">
               No disputes filed for this lead.
             </p>
           ) : (
@@ -462,11 +462,11 @@ export default async function LeadDetailPage({
                     )}
                   </div>
                   {dispute.description && (
-                    <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">
+                    <p className="mb-2 text-sm text-gray-600 dark:text-gray-600">
                       {dispute.description}
                     </p>
                   )}
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-600">
                     Filed: {formatDateTime(dispute.createdAt)}
                   </p>
                 </div>

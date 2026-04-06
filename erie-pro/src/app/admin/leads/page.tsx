@@ -134,7 +134,7 @@ export default async function AdminLeadsPage({
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
             Lead Management
           </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-600">
             All leads across the platform with routing and temperature data
           </p>
         </div>
@@ -149,7 +149,7 @@ export default async function AdminLeadsPage({
       {/* Summary Stats */}
       <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-600">
             Total Leads
           </p>
           <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
@@ -157,7 +157,7 @@ export default async function AdminLeadsPage({
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-600">
             Matched
           </p>
           <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
@@ -165,7 +165,7 @@ export default async function AdminLeadsPage({
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-600">
             Unmatched
           </p>
           <p className="mt-1 text-2xl font-bold text-red-600 dark:text-red-400">
@@ -173,7 +173,7 @@ export default async function AdminLeadsPage({
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-600">
             Leads Today
           </p>
           <p className="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400">
@@ -188,7 +188,7 @@ export default async function AdminLeadsPage({
         <div className="flex-1 min-w-[200px]">
           <label
             htmlFor="search"
-            className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400"
+            className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-600"
           >
             Search
           </label>
@@ -223,7 +223,7 @@ export default async function AdminLeadsPage({
 
         {/* Niche Filter */}
         <div className="min-w-[160px]">
-          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-600">
             Niche
           </label>
           <div className="flex flex-wrap gap-1">
@@ -251,7 +251,7 @@ export default async function AdminLeadsPage({
                 <Link
                   key={n.slug}
                   href={buildUrl({ niche: n.slug })}
-                  className="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+                  className="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-600 dark:hover:bg-gray-800"
                 >
                   {n.icon} {n.label}
                 </Link>
@@ -262,7 +262,7 @@ export default async function AdminLeadsPage({
 
         {/* Route Type Filter */}
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-600">
             Route Type
           </label>
           <div className="flex gap-1">
@@ -296,7 +296,7 @@ export default async function AdminLeadsPage({
 
         {/* Temperature Filter */}
         <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-600">
             Temperature
           </label>
           <div className="flex gap-1">
@@ -340,38 +340,38 @@ export default async function AdminLeadsPage({
       {/* Leads Table */}
       <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
         {leads.length === 0 ? (
-          <div className="py-16 text-center text-sm text-gray-500 dark:text-gray-400">
+          <div className="py-16 text-center text-sm text-gray-500 dark:text-gray-600">
             No leads found matching the current filters.
           </div>
         ) : (
           <table className="min-w-[640px] w-full text-left text-sm">
             <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
               <tr>
-                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-600">
                   Date
                 </th>
-                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-600">
                   Niche
                 </th>
-                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-600">
                   Customer
                 </th>
-                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-600">
                   Email
                 </th>
-                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-600">
                   Phone
                 </th>
-                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-600">
                   Message
                 </th>
-                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-600">
                   Temp
                 </th>
-                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-600">
                   Routed To
                 </th>
-                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-600">
                   Route Type
                 </th>
               </tr>
@@ -388,7 +388,7 @@ export default async function AdminLeadsPage({
                     key={lead.id}
                     className="hover:bg-gray-50 dark:hover:bg-gray-800/50"
                   >
-                    <td className="whitespace-nowrap px-4 py-3 text-xs text-gray-500 dark:text-gray-400">
+                    <td className="whitespace-nowrap px-4 py-3 text-xs text-gray-500 dark:text-gray-600">
                       <Link
                         href={`/admin/leads/${lead.id}`}
                         className="hover:text-blue-600 dark:hover:text-blue-400"
@@ -399,7 +399,7 @@ export default async function AdminLeadsPage({
                           year: "numeric",
                         })}
                         <br />
-                        <span className="text-gray-400 dark:text-gray-500">
+                        <span className="text-gray-600 dark:text-gray-500">
                           {lead.createdAt.toLocaleTimeString("en-US", {
                             hour: "numeric",
                             minute: "2-digit",
@@ -438,12 +438,12 @@ export default async function AdminLeadsPage({
                           {lead.phone}
                         </a>
                       ) : (
-                        <span className="text-gray-400 dark:text-gray-500">
+                        <span className="text-gray-600 dark:text-gray-500">
                           --
                         </span>
                       )}
                     </td>
-                    <td className="max-w-[200px] truncate px-4 py-3 text-gray-600 dark:text-gray-400">
+                    <td className="max-w-[200px] truncate px-4 py-3 text-gray-600 dark:text-gray-600">
                       {lead.message
                         ? lead.message.length > 60
                           ? `${lead.message.substring(0, 60)}...`
@@ -486,7 +486,7 @@ export default async function AdminLeadsPage({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-6 flex items-center justify-between">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-500 dark:text-gray-600">
             Showing {(page - 1) * PAGE_SIZE + 1}--
             {Math.min(page * PAGE_SIZE, totalCount)} of{" "}
             {totalCount.toLocaleString()} leads
@@ -500,11 +500,11 @@ export default async function AdminLeadsPage({
                 Previous
               </Link>
             ) : (
-              <span className="cursor-not-allowed rounded-md border border-gray-200 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-600">
+              <span className="cursor-not-allowed rounded-md border border-gray-200 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-600">
                 Previous
               </span>
             )}
-            <span className="flex items-center px-3 text-sm text-gray-500 dark:text-gray-400">
+            <span className="flex items-center px-3 text-sm text-gray-500 dark:text-gray-600">
               Page {page} of {totalPages}
             </span>
             {page < totalPages ? (
@@ -515,7 +515,7 @@ export default async function AdminLeadsPage({
                 Next
               </Link>
             ) : (
-              <span className="cursor-not-allowed rounded-md border border-gray-200 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-600">
+              <span className="cursor-not-allowed rounded-md border border-gray-200 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-600">
                 Next
               </span>
             )}

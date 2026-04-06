@@ -148,7 +148,7 @@ export default function BusinessHoursPage() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Business Hours
           </h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-600">
             Set when you are available to receive leads. Leads outside your
             hours will be queued for delivery when you open.
           </p>
@@ -234,7 +234,7 @@ export default function BusinessHoursPage() {
                 </button>
 
                 {closed ? (
-                  <span className="text-sm text-gray-400 dark:text-gray-500 italic">
+                  <span className="text-sm text-gray-600 dark:text-gray-500 italic">
                     Closed
                   </span>
                 ) : (

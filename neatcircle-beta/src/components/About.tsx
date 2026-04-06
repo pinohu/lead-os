@@ -95,7 +95,7 @@ export default function About() {
                   <div className="font-semibold text-navy text-sm">
                     {siteConfig.legalName}
                   </div>
-                  <div className="text-slate-400 text-xs">
+                  <div className="text-slate-600 text-xs">
                     Pennsylvania, USA &middot; Remote-capable nationwide
                   </div>
                 </div>

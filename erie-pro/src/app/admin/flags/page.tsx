@@ -29,7 +29,7 @@ export default function FlagsPage() {
     <div className="p-8 max-w-4xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Feature Flags</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-600">
           Control via environment variables: <code className="text-xs bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">FEATURE_FLAG_NAME=true</code>
         </p>
       </div>
@@ -41,10 +41,10 @@ export default function FlagsPage() {
             <table className="min-w-[640px] w-full text-sm">
               <thead className="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                  <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-400">Flag</th>
-                  <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-400">Status</th>
-                  <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-400">Phase</th>
-                  <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-400">Description</th>
+                  <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-600">Flag</th>
+                  <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-600">Status</th>
+                  <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-600">Phase</th>
+                  <th className="text-left py-2 px-4 font-medium text-gray-500 dark:text-gray-600">Description</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -56,13 +56,13 @@ export default function FlagsPage() {
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
                           value.enabled
                             ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                            : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                            : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-600"
                         }`}
                       >
                         {value.enabled ? "ON" : "OFF"}
                       </span>
                     </td>
-                    <td className="py-2 px-4 text-gray-500 dark:text-gray-400">P{value.phase}</td>
+                    <td className="py-2 px-4 text-gray-500 dark:text-gray-600">P{value.phase}</td>
                     <td className="py-2 px-4 text-gray-600 dark:text-gray-300">{value.description}</td>
                   </tr>
                 ))}

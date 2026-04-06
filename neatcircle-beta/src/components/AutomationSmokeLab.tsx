@@ -70,7 +70,7 @@ export default function AutomationSmokeLab() {
           </div>
 
           <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-            <div className="grid grid-cols-[2fr_1fr_1fr] gap-4 border-b border-white/10 px-4 py-3 text-xs uppercase tracking-[0.2em] text-slate-400">
+            <div className="grid grid-cols-[2fr_1fr_1fr] gap-4 border-b border-white/10 px-4 py-3 text-xs uppercase tracking-[0.2em] text-slate-600">
               <div>Route</div>
               <div>Status</div>
               <div>Method</div>

@@ -130,8 +130,9 @@ export default function ROICalculator() {
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-5">
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">Industry</label>
+              <label htmlFor="roi-industry" className="mb-1 block text-sm font-medium text-navy">Industry</label>
               <select
+                id="roi-industry"
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
@@ -145,8 +146,9 @@ export default function ROICalculator() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">Number of Employees</label>
+              <label htmlFor="num-employees" className="mb-1 block text-sm font-medium text-navy">Number of Employees</label>
               <input
+                id="num-employees"
                 type="range"
                 min={1}
                 max={100}
@@ -158,10 +160,11 @@ export default function ROICalculator() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">
+              <label htmlFor="avg-salary" className="mb-1 block text-sm font-medium text-navy">
                 Average Annual Salary ($)
               </label>
               <input
+                id="avg-salary"
                 type="number"
                 value={avgSalary}
                 onChange={(e) => setAvgSalary(Number(e.target.value))}
@@ -173,10 +176,11 @@ export default function ROICalculator() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">
+              <label htmlFor="manual-hours" className="mb-1 block text-sm font-medium text-navy">
                 Hours/Week on Manual Tasks (per person)
               </label>
               <input
+                id="manual-hours"
                 type="range"
                 min={1}
                 max={40}
@@ -188,8 +192,9 @@ export default function ROICalculator() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-navy">Software Tools in Use</label>
+              <label htmlFor="software-tools" className="mb-1 block text-sm font-medium text-navy">Software Tools in Use</label>
               <input
+                id="software-tools"
                 type="range"
                 min={1}
                 max={20}
@@ -244,6 +249,7 @@ export default function ROICalculator() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Your email address"
+                  aria-label="Email address"
                   className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
                 />
                 <button

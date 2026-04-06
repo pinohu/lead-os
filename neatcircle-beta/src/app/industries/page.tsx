@@ -52,7 +52,7 @@ export default function IndustriesPage() {
                   {svc.title}
                 </h3>
                 <p className="text-sm text-slate-600 mb-3">{svc.tagline}</p>
-                <p className="text-xs text-slate-400">{svc.price}</p>
+                <p className="text-xs text-slate-600">{svc.price}</p>
               </Link>
             ))}
           </div>
@@ -83,7 +83,7 @@ export default function IndustriesPage() {
                   {svc.title}
                 </h3>
                 <p className="text-sm text-slate-600 mb-3">{svc.tagline}</p>
-                <p className="text-xs text-slate-400">{svc.price}</p>
+                <p className="text-xs text-slate-600">{svc.price}</p>
               </Link>
             ))}
           </div>

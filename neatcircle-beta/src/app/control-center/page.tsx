@@ -63,7 +63,7 @@ export default function ControlCenterPage() {
               {Object.values(clientPresets).map((preset) => (
                 <div key={preset.id} className="rounded-xl border border-white/10 bg-black/10 p-4">
                   <div className="font-semibold text-white">{preset.brandName}</div>
-                  <div className="mt-2 text-xs uppercase tracking-wider text-slate-400">{preset.id}</div>
+                  <div className="mt-2 text-xs uppercase tracking-wider text-slate-600">{preset.id}</div>
                   <div className="mt-2"><strong>Enabled services:</strong> {preset.enabledServices.length}</div>
                 </div>
               ))}

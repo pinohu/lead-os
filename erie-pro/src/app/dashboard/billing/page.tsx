@@ -43,14 +43,14 @@ export default async function BillingPage() {
     active: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
     trial: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
     past_due: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-    expired: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
-    cancelled: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
+    expired: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-600",
+    cancelled: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-600",
   };
 
   const sessionStatusColors: Record<string, string> = {
     completed: "text-green-700 dark:text-green-400",
     pending: "text-amber-700 dark:text-amber-400",
-    expired: "text-gray-500 dark:text-gray-400",
+    expired: "text-gray-500 dark:text-gray-600",
     cancelled: "text-red-700 dark:text-red-400",
   };
 
@@ -61,7 +61,7 @@ export default async function BillingPage() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Billing & Invoices
           </h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-600">
             Manage your subscription and view payment history.
           </p>
         </div>
@@ -81,19 +81,19 @@ export default async function BillingPage() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Plan</p>
+            <p className="text-sm text-gray-500 dark:text-gray-600">Plan</p>
             <p className="mt-0.5 text-sm font-medium text-gray-900 dark:text-white capitalize">
               {nicheData?.label ?? provider.niche} Territory &mdash; {provider.tier}
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Monthly Fee</p>
+            <p className="text-sm text-gray-500 dark:text-gray-600">Monthly Fee</p>
             <p className="mt-0.5 text-lg font-bold text-gray-900 dark:text-white">
               ${provider.monthlyFee}/mo
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
+            <p className="text-sm text-gray-500 dark:text-gray-600">Status</p>
             <span
               className={`mt-0.5 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
                 statusColors[provider.subscriptionStatus] ?? statusColors.expired
@@ -106,7 +106,7 @@ export default async function BillingPage() {
 
         {nextBillingDate && provider.subscriptionStatus === "active" && (
           <div className="rounded-md bg-gray-50 dark:bg-gray-900 px-4 py-3">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-gray-600">
               Next billing date:{" "}
               <span className="font-medium text-gray-900 dark:text-white">
                 {nextBillingDate.toLocaleDateString("en-US", {
@@ -123,7 +123,7 @@ export default async function BillingPage() {
           {provider.stripeCustomerId ? (
             <BillingButton />
           ) : (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gray-600">
               No billing account linked. Contact support to set up billing.
             </p>
           )}
@@ -143,7 +143,7 @@ export default async function BillingPage() {
         </h2>
 
         {payments.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-500 dark:text-gray-600">
             No payment records found.
           </p>
         ) : (
@@ -151,16 +151,16 @@ export default async function BillingPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-800">
-                  <th className="text-left px-3 py-2.5 font-medium text-gray-500 dark:text-gray-400">
+                  <th className="text-left px-3 py-2.5 font-medium text-gray-500 dark:text-gray-600">
                     Date
                   </th>
-                  <th className="text-left px-3 py-2.5 font-medium text-gray-500 dark:text-gray-400">
+                  <th className="text-left px-3 py-2.5 font-medium text-gray-500 dark:text-gray-600">
                     Type
                   </th>
-                  <th className="text-right px-3 py-2.5 font-medium text-gray-500 dark:text-gray-400">
+                  <th className="text-right px-3 py-2.5 font-medium text-gray-500 dark:text-gray-600">
                     Amount
                   </th>
-                  <th className="text-right px-3 py-2.5 font-medium text-gray-500 dark:text-gray-400">
+                  <th className="text-right px-3 py-2.5 font-medium text-gray-500 dark:text-gray-600">
                     Status
                   </th>
                 </tr>
@@ -178,7 +178,7 @@ export default async function BillingPage() {
                         year: "numeric",
                       })}
                     </td>
-                    <td className="px-3 py-2.5 text-gray-600 dark:text-gray-400 capitalize">
+                    <td className="px-3 py-2.5 text-gray-600 dark:text-gray-600 capitalize">
                       {p.sessionType.replace("_", " ")}
                     </td>
                     <td className="px-3 py-2.5 text-right font-medium text-gray-900 dark:text-white">

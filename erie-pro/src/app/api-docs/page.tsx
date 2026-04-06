@@ -17,7 +17,7 @@ function CodeBlock({ children, title }: { children: string; title?: string }) {
   return (
     <div className="rounded-lg border bg-gray-950 text-gray-100 overflow-x-auto">
       {title && (
-        <div className="border-b border-gray-800 px-4 py-2 text-xs font-medium text-gray-400">
+        <div className="border-b border-gray-800 px-4 py-2 text-xs font-medium text-gray-600">
           {title}
         </div>
       )}

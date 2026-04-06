@@ -51,7 +51,7 @@ export default async function LeadsPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Leads</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{total} total leads</p>
+        <p className="text-sm text-gray-500 dark:text-gray-600">{total} total leads</p>
       </div>
 
       {/* ── Temperature Filter ──────────────────────────────────── */}
@@ -74,7 +74,7 @@ export default async function LeadsPage({
       {/* ── Leads Table ────────────────────────────────────────── */}
       {leads.length === 0 ? (
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-8 text-center">
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500 dark:text-gray-600">
             {tempFilter
               ? `No ${tempFilter} leads found. Try a different filter.`
               : "No leads yet. They'll appear here as they come in."}
@@ -86,13 +86,13 @@ export default async function LeadsPage({
             <table className="w-full text-sm">
               <thead className="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Name</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Email</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Phone</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Temp</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Outcome</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Date</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-400">Actions</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Name</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Email</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Phone</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Temp</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Outcome</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Date</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -103,12 +103,12 @@ export default async function LeadsPage({
                       <td className="py-3 px-4 text-gray-900 dark:text-white">
                         {lead.firstName ?? "—"} {lead.lastName ?? ""}
                       </td>
-                      <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                      <td className="py-3 px-4 text-gray-600 dark:text-gray-600">
                         <a href={`mailto:${lead.email}`} className="text-blue-600 dark:text-blue-400 hover:underline">
                           {lead.email}
                         </a>
                       </td>
-                      <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                      <td className="py-3 px-4 text-gray-600 dark:text-gray-600">
                         {lead.phone ? (
                           <a href={`tel:${lead.phone}`} className="text-blue-600 dark:text-blue-400 hover:underline">
                             {lead.phone}
@@ -137,7 +137,7 @@ export default async function LeadsPage({
                           currentOutcome={outcome?.outcome ?? null}
                         />
                       </td>
-                      <td className="py-3 px-4 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                      <td className="py-3 px-4 text-gray-600 dark:text-gray-600 whitespace-nowrap">
                         {lead.createdAt.toLocaleDateString()}
                       </td>
                       <td className="py-3 px-4">
@@ -159,7 +159,7 @@ export default async function LeadsPage({
           {/* ── Pagination ──────────────────────────────────────── */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-800 px-4 py-3">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-500 dark:text-gray-600">
                 Page {page} of {totalPages}
               </p>
               <div className="flex gap-2">

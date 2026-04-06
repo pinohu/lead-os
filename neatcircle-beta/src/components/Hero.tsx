@@ -118,7 +118,7 @@ export default function Hero() {
             {experience.secondaryCta.label}
           </a>
         </div>
-        <p className="mb-16 text-sm text-slate-400">{experience.urgencyNote}</p>
+        <p className="mb-16 text-sm text-slate-600">{experience.urgencyNote}</p>
 
         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
           {experience.trustBar.map((stat) => (

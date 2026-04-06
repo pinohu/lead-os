@@ -151,7 +151,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
         <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           Dispute Management
         </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-600">
           Review and resolve lead disputes filed by providers. Platform SLA: 48-hour resolution.
         </p>
       </div>
@@ -180,7 +180,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-600">
               Total Disputes
             </CardTitle>
           </CardHeader>
@@ -199,7 +199,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
           }
         >
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-600">
               Pending
             </CardTitle>
           </CardHeader>
@@ -218,7 +218,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-600">
               Approved
             </CardTitle>
           </CardHeader>
@@ -231,7 +231,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-600">
               Denied
             </CardTitle>
           </CardHeader>
@@ -245,7 +245,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
 
       {/* ── Status Filters ──────────────────────────────────── */}
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mr-1">
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-600 mr-1">
           Filter:
         </span>
         {[
@@ -278,7 +278,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
         <CardContent className="p-0">
           {sorted.length === 0 ? (
             <div className="py-16 text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-gray-500 dark:text-gray-600">
                 {statusFilter
                   ? `No ${statusFilter} disputes found.`
                   : "No disputes have been filed yet."}
@@ -327,7 +327,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
                             year: "numeric",
                           })}
                           <br />
-                          <span className="text-xs text-gray-400 dark:text-gray-500">
+                          <span className="text-xs text-gray-600 dark:text-gray-500">
                             {dispute.createdAt.toLocaleTimeString("en-US", {
                               hour: "numeric",
                               minute: "2-digit",
@@ -340,7 +340,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
                             <p className="text-sm font-medium text-gray-900 dark:text-white">
                               {dispute.provider.businessName}
                             </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                            <p className="text-xs text-gray-500 dark:text-gray-600">
                               {dispute.provider.email}
                             </p>
                           </div>
@@ -361,7 +361,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
                               </a>
                             </p>
                             {dispute.lead.phone && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                              <p className="text-xs text-gray-500 dark:text-gray-600">
                                 <a href={`tel:${dispute.lead.phone}`}>
                                   {dispute.lead.phone}
                                 </a>
@@ -383,13 +383,13 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
                         <TableCell className="max-w-[200px]">
                           {dispute.description ? (
                             <p
-                              className="text-xs text-gray-600 dark:text-gray-400 truncate"
+                              className="text-xs text-gray-600 dark:text-gray-600 truncate"
                               title={dispute.description}
                             >
                               {dispute.description}
                             </p>
                           ) : (
-                            <span className="text-xs text-gray-400 dark:text-gray-500 italic">
+                            <span className="text-xs text-gray-600 dark:text-gray-500 italic">
                               No description
                             </span>
                           )}
@@ -410,7 +410,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
                             className={`text-sm font-mono ${
                               isOverdue
                                 ? "font-bold text-red-600 dark:text-red-400"
-                                : "text-gray-600 dark:text-gray-400"
+                                : "text-gray-600 dark:text-gray-600"
                             }`}
                           >
                             {age}d
@@ -425,7 +425,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
                               leadName={leadName}
                             />
                           ) : (
-                            <span className="text-xs text-gray-400 dark:text-gray-500">
+                            <span className="text-xs text-gray-600 dark:text-gray-500">
                               {dispute.resolvedAt
                                 ? `Resolved ${dispute.resolvedAt.toLocaleDateString("en-US", {
                                     month: "short",
@@ -456,7 +456,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
       {/* ── Pagination ──────────────────────────────────────── */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-500 dark:text-gray-600">
             Showing {(safePage - 1) * PER_PAGE + 1}--
             {Math.min(safePage * PER_PAGE, filteredCount)} of {filteredCount} disputes
           </p>
@@ -489,7 +489,7 @@ export default async function AdminDisputesPage({ searchParams }: PageProps) {
                 item === "ellipsis" ? (
                   <span
                     key={`ellipsis-${idx}`}
-                    className="px-1 text-gray-400 dark:text-gray-500"
+                    className="px-1 text-gray-600 dark:text-gray-500"
                   >
                     ...
                   </span>

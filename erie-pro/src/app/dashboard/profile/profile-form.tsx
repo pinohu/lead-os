@@ -139,7 +139,7 @@ export function ProfileForm({ profile }: { profile: ProfileData }) {
               disabled
               className={`${inputStyles} opacity-60 cursor-not-allowed`}
             />
-            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+            <p className="mt-1 text-xs text-gray-600 dark:text-gray-500">
               Contact support to change your email address.
             </p>
           </Field>
@@ -206,7 +206,7 @@ export function ProfileForm({ profile }: { profile: ProfileData }) {
             placeholder="Describe your business, services, and what sets you apart..."
             className={`${inputStyles} resize-y`}
           />
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+          <p className="mt-1 text-xs text-gray-600 dark:text-gray-500">
             {description.length}/2000 characters
           </p>
         </Field>
@@ -225,7 +225,7 @@ export function ProfileForm({ profile }: { profile: ProfileData }) {
             placeholder="e.g. Erie, Millcreek, Harborcreek, Fairview"
             className={inputStyles}
           />
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+          <p className="mt-1 text-xs text-gray-600 dark:text-gray-500">
             Separate multiple areas with commas.
           </p>
         </Field>
@@ -245,7 +245,7 @@ export function ProfileForm({ profile }: { profile: ProfileData }) {
             placeholder="Enter your license or registration number"
             className={inputStyles}
           />
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+          <p className="mt-1 text-xs text-gray-600 dark:text-gray-500">
             Displayed on your listing to build trust with customers.
           </p>
         </Field>
@@ -269,7 +269,7 @@ export function ProfileForm({ profile }: { profile: ProfileData }) {
           <span className="text-sm font-medium text-gray-900 dark:text-white">
             Insured
           </span>
-          <span className="text-xs text-gray-400 dark:text-gray-500">
+          <span className="text-xs text-gray-600 dark:text-gray-500">
             Indicates your business carries liability insurance
           </span>
         </div>
@@ -282,7 +282,7 @@ export function ProfileForm({ profile }: { profile: ProfileData }) {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Email Verification
             </h2>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-600">
               {profile.email}
             </p>
           </div>

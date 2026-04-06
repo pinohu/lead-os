@@ -67,7 +67,7 @@ export default function Testimonials() {
                 <div className="font-semibold text-navy text-sm">
                   {t.name}
                 </div>
-                <div className="text-slate-400 text-xs">{t.company}</div>
+                <div className="text-slate-600 text-xs">{t.company}</div>
               </div>
 
               {/* Stat badge */}

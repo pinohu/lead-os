@@ -156,7 +156,7 @@ export default function ExitIntent() {
       <div className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
         <button
           onClick={dismiss}
-          className="absolute right-4 top-4 text-2xl text-gray-400 hover:text-gray-600"
+          className="absolute right-4 top-4 text-2xl text-gray-600 hover:text-gray-600"
           aria-label="Close"
         >
           &times;
@@ -195,7 +195,7 @@ export default function ExitIntent() {
               </button>
             </form>
 
-            <p className="mt-4 text-center text-xs text-gray-400">No spam. Unsubscribe anytime.</p>
+            <p className="mt-4 text-center text-xs text-gray-600">No spam. Unsubscribe anytime.</p>
           </>
         ) : (
           <div className="py-4 text-center">

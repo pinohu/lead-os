@@ -18,7 +18,7 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
             Provider Login
           </h1>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-600">
             Sign in to manage your territory, view leads, and track performance.
           </p>
         </div>

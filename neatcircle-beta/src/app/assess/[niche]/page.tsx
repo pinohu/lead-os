@@ -52,7 +52,7 @@ export default async function AssessPage({ params }: { params: Promise<{ niche: 
           />
 
           <div className="mt-12 text-center">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-600">
               Takes less than 2 minutes. No signup required to start.
             </p>
           </div>

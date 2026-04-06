@@ -149,21 +149,24 @@ export default function AssessmentQuiz({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Your email address"
-              className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
+              aria-label="Email address"
+              className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan/20"
             />
             <input
               type="text"
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               placeholder="Company name (optional)"
-              className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
+              aria-label="Company name"
+              className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan/20"
             />
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="Phone number (optional - for priority support)"
-              className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus:outline-none focus:ring-2 focus:ring-cyan/20"
+              aria-label="Phone number"
+              className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan/20"
             />
             <button
               type="submit"
@@ -176,7 +179,7 @@ export default function AssessmentQuiz({
 
           <button
             onClick={skipCapture}
-            className="mt-3 w-full text-center text-xs text-gray-400 hover:text-gray-600"
+            className="mt-3 w-full text-center text-xs text-gray-600 hover:text-gray-600"
           >
             Skip - show results without email
           </button>
@@ -232,7 +235,7 @@ export default function AssessmentQuiz({
               {tier.cta}
             </a>
             {!submitted && (
-              <p className="mt-2 text-xs text-gray-400">
+              <p className="mt-2 text-xs text-gray-600">
                 Get a detailed report - enter your email above
               </p>
             )}
@@ -279,7 +282,7 @@ export default function AssessmentQuiz({
         {step > 0 && (
           <button
             onClick={() => setStep(step - 1)}
-            className="mt-4 text-sm text-gray-400 hover:text-gray-600"
+            className="mt-4 text-sm text-gray-600 hover:text-gray-600"
           >
             &larr; Back
           </button>

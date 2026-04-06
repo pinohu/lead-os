@@ -16,7 +16,7 @@ export default function TerritoryToggle({ territories }: { territories: Territor
 
   if (items.length === 0) {
     return (
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-gray-500 dark:text-gray-600">
         No active territories. Territories are assigned when you claim a service area.
       </p>
     );

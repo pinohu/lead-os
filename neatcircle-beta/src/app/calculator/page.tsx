@@ -16,7 +16,7 @@ export default function CalculatorPage() {
         <div className="mx-auto max-w-4xl px-4">
           <ROICalculator />
           <div className="mt-12 text-center">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-600">
               Calculations based on industry averages. Your actual results may vary.
               <br />
               209+ premium tools included. Zero software licensing fees.

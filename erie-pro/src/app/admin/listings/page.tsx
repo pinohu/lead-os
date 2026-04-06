@@ -79,7 +79,7 @@ export default async function AdminListingsPage({ searchParams }: Props) {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Directory Listings
           </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-600">
             {totalCount} listings{nicheFilter ? ` in ${nicheFilter}` : ""} from Google Places
           </p>
         </div>
@@ -122,7 +122,7 @@ export default async function AdminListingsPage({ searchParams }: Props) {
       <Card>
         <CardContent className="pt-6">
           {listings.length === 0 ? (
-            <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-600">
               No listings found. Run the scraper to populate directory listings.
             </p>
           ) : (
@@ -159,7 +159,7 @@ export default async function AdminListingsPage({ searchParams }: Props) {
                                 href={listing.website}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600"
+                                className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-600 hover:text-blue-600"
                               >
                                 <Globe className="h-3 w-3" />
                                 Website
@@ -179,7 +179,7 @@ export default async function AdminListingsPage({ searchParams }: Props) {
                               {listing.rating.toFixed(1)}
                             </span>
                           ) : (
-                            <span className="text-gray-400">—</span>
+                            <span className="text-gray-600">—</span>
                           )}
                         </TableCell>
                         <TableCell className="text-right font-medium">
@@ -195,17 +195,17 @@ export default async function AdminListingsPage({ searchParams }: Props) {
                               {listing.phone}
                             </a>
                           ) : (
-                            <span className="text-xs text-gray-400">—</span>
+                            <span className="text-xs text-gray-600">—</span>
                           )}
                         </TableCell>
                         <TableCell>
                           {listing.addressCity ? (
-                            <span className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                            <span className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-600 whitespace-nowrap">
                               <MapPin className="h-3 w-3" />
                               {listing.addressCity}, {listing.addressState ?? "PA"}
                             </span>
                           ) : (
-                            <span className="text-xs text-gray-400">—</span>
+                            <span className="text-xs text-gray-600">—</span>
                           )}
                         </TableCell>
                         <TableCell>
@@ -236,7 +236,7 @@ export default async function AdminListingsPage({ searchParams }: Props) {
 
           {/* ── Pagination ──────────────────────────────────── */}
           {totalPages > 1 && (
-            <div className="mt-4 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+            <div className="mt-4 flex items-center justify-between text-sm text-gray-500 dark:text-gray-600">
               <p>
                 Showing {(page - 1) * perPage + 1}–{Math.min(page * perPage, totalCount)} of {totalCount}
               </p>

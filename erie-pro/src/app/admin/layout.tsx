@@ -102,7 +102,7 @@ export default async function AdminLayout({
         <nav className="flex-1 overflow-y-auto py-4">
           {navSections.map((section) => (
             <div key={section.label} className="mb-6">
-              <p className="mb-2 px-5 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+              <p className="mb-2 px-5 text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-500">
                 {section.label}
               </p>
               <div className="space-y-0.5 px-3">
@@ -112,7 +112,7 @@ export default async function AdminLayout({
                     <Link
                       key={item.href}
                       href={item.href}
-                      className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"
+                      className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"
                     >
                       <span className="flex items-center gap-3">
                         <span className="text-base" aria-hidden="true">{item.icon}</span>
@@ -135,7 +135,7 @@ export default async function AdminLayout({
         <div className="border-t border-gray-200 dark:border-gray-800 p-4">
           <Link
             href="/"
-            className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-600 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <span aria-hidden="true">&larr;</span>
             Back to site

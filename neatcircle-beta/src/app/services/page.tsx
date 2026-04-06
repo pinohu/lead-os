@@ -90,7 +90,7 @@ export default function ServicesIndex() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-white transition-colors mb-8"
           >
             <svg
               className="w-4 h-4"
@@ -196,13 +196,13 @@ export default function ServicesIndex() {
           <div className="flex items-center gap-6">
             <Link
               href="/"
-              className="text-sm text-slate-400 hover:text-white transition-colors"
+              className="text-sm text-slate-600 hover:text-white transition-colors"
             >
               Home
             </Link>
             <Link
               href="/#contact"
-              className="text-sm text-slate-400 hover:text-white transition-colors"
+              className="text-sm text-slate-600 hover:text-white transition-colors"
             >
               Contact
             </Link>

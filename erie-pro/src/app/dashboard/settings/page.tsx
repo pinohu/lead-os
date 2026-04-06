@@ -43,7 +43,7 @@ export default async function SettingsPage() {
     <div className="space-y-8 max-w-3xl">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-600">
           Manage your provider profile and account preferences.
         </p>
       </div>
@@ -83,7 +83,7 @@ export default async function SettingsPage() {
       {/* ── Territories ──────────────────────────────────────── */}
       <section className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-6 space-y-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Territories</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-gray-600 dark:text-gray-600">
           Pause lead delivery for a territory when you are at capacity. Resume anytime.
         </p>
         <TerritoryToggle territories={territoryData} />
@@ -103,7 +103,7 @@ export default async function SettingsPage() {
         {provider.stripeCustomerId ? (
           <BillingButton />
         ) : (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-500 dark:text-gray-600">
             No billing account linked. Contact support to set up billing.
           </p>
         )}
@@ -142,7 +142,7 @@ export default async function SettingsPage() {
 function FieldDisplay({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+      <p className="text-sm text-gray-500 dark:text-gray-600">{label}</p>
       <p className="mt-0.5 text-sm font-medium text-gray-900 dark:text-white capitalize">{value}</p>
     </div>
   );

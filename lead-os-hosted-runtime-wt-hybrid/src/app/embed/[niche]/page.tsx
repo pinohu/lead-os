@@ -39,9 +39,9 @@ export default async function EmbedPage({ params }: Props) {
       >
         <input type="hidden" name="source" value="widget" />
         <input type="hidden" name="niche" value={niche.slug} />
-        <input name="firstName" placeholder="First name" required
+        <input name="firstName" placeholder="First name" required aria-label="First name"
           className="px-3.5 py-3 border border-border rounded-lg text-sm" />
-        <input name="email" type="email" placeholder="Email" required
+        <input name="email" type="email" placeholder="Email" required aria-label="Email address"
           className="px-3.5 py-3 border border-border rounded-lg text-sm" />
         <button type="submit" className="px-5 py-3 border-none rounded-lg bg-primary text-primary-foreground font-bold text-sm cursor-pointer">
           Get your free assessment &rarr;

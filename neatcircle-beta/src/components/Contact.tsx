@@ -75,7 +75,7 @@ export default function Contact() {
                   </svg>
                 </div>
                 <div>
-                  <div className="text-sm text-slate-400">Email</div>
+                  <div className="text-sm text-slate-600">Email</div>
                   <a href={`mailto:${siteConfig.supportEmail}`} className="text-navy font-medium hover:text-cyan transition-colors">
                     {siteConfig.supportEmail}
                   </a>
@@ -89,7 +89,7 @@ export default function Contact() {
                   </svg>
                 </div>
                 <div>
-                  <div className="text-sm text-slate-400">Response Time</div>
+                  <div className="text-sm text-slate-600">Response Time</div>
                   <span className="text-navy font-medium">Within 24 hours</span>
                 </div>
               </div>
@@ -102,7 +102,7 @@ export default function Contact() {
                   </svg>
                 </div>
                 <div>
-                  <div className="text-sm text-slate-400">Location</div>
+                  <div className="text-sm text-slate-600">Location</div>
                   <span className="text-navy font-medium">Pennsylvania, USA</span>
                 </div>
               </div>
@@ -125,33 +125,33 @@ export default function Contact() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="firstName" className="block text-sm font-medium text-navy mb-1.5">First Name</label>
-                    <input id="firstName" name="firstName" type="text" required className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan/40 focus:border-cyan" />
+                    <input id="firstName" name="firstName" type="text" required className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan/40 focus:border-cyan" />
                   </div>
                   <div>
                     <label htmlFor="lastName" className="block text-sm font-medium text-navy mb-1.5">Last Name</label>
-                    <input id="lastName" name="lastName" type="text" required className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan/40 focus:border-cyan" />
+                    <input id="lastName" name="lastName" type="text" required className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan/40 focus:border-cyan" />
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-navy mb-1.5">Email</label>
-                  <input id="email" name="email" type="email" required className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan/40 focus:border-cyan" />
+                  <input id="email" name="email" type="email" required className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan/40 focus:border-cyan" />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="company" className="block text-sm font-medium text-navy mb-1.5">Company</label>
-                    <input id="company" name="company" type="text" className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan/40 focus:border-cyan" />
+                    <input id="company" name="company" type="text" className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan/40 focus:border-cyan" />
                   </div>
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-navy mb-1.5">Phone</label>
-                    <input id="phone" name="phone" type="tel" className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan/40 focus:border-cyan" />
+                    <input id="phone" name="phone" type="tel" className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan/40 focus:border-cyan" />
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="service" className="block text-sm font-medium text-navy mb-1.5">Service Interested In</label>
-                  <select id="service" name="service" required className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan/40 focus:border-cyan bg-white">
+                  <select id="service" name="service" required className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan/40 focus:border-cyan bg-white">
                     <option value="">Select a service...</option>
                     {serviceOptions.map((opt) => (
                       <option key={opt} value={opt}>{opt}</option>
@@ -161,7 +161,7 @@ export default function Contact() {
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-navy mb-1.5">Message</label>
-                  <textarea id="message" name="message" rows={4} className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan/40 focus:border-cyan resize-none" placeholder="Tell us about your business challenges..." />
+                  <textarea id="message" name="message" rows={4} className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan/40 focus:border-cyan resize-none" placeholder="Tell us about your business challenges..." />
                 </div>
 
                 <button

@@ -22,7 +22,7 @@ export default async function AnalyticsPage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
           No Territory Linked
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+        <p className="text-gray-600 dark:text-gray-600 mb-6">
           Claim a territory to start seeing analytics.
         </p>
         <Link
@@ -107,7 +107,7 @@ export default async function AnalyticsPage() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
         Analytics
       </h1>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+      <p className="text-sm text-gray-500 dark:text-gray-600 mb-8">
         Performance overview for {provider.businessName}
       </p>
 
@@ -150,7 +150,7 @@ export default async function AnalyticsPage() {
             const widthPct = Math.max((week.count / maxWeekly) * 100, 2);
             return (
               <div key={week.label} className="flex items-center gap-3">
-                <span className="w-24 text-xs text-gray-500 dark:text-gray-400 shrink-0">
+                <span className="w-24 text-xs text-gray-500 dark:text-gray-600 shrink-0">
                   {week.label}
                 </span>
                 <div className="flex-1 h-6 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden">
@@ -175,7 +175,7 @@ function StatCard({
   label,
   value,
   sub,
-  subColor = "text-gray-500 dark:text-gray-400",
+  subColor = "text-gray-500 dark:text-gray-600",
 }: {
   label: string;
   value: string;
@@ -184,7 +184,7 @@ function StatCard({
 }) {
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
-      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+      <p className="text-xs font-medium text-gray-500 dark:text-gray-600 uppercase tracking-wide">
         {label}
       </p>
       <p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">

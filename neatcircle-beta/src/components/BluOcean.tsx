@@ -87,11 +87,11 @@ export default function BluOcean() {
               </p>
               <div className="border-t border-slate-100 pt-3 mt-auto space-y-1">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Setup</span>
+                  <span className="text-slate-600">Setup</span>
                   <span className="font-semibold text-navy">{opp.price.split(" + ")[0] ?? opp.price}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Monthly</span>
+                  <span className="text-slate-600">Monthly</span>
                   <span className="font-semibold text-navy">{opp.price.includes(" + ") ? opp.price.split(" + ")[1] : "Custom"}</span>
                 </div>
               </div>

@@ -64,7 +64,7 @@ export default async function AdminSetupPage() {
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
             Admin Setup
           </h1>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-600">
             Create the platform administrator account to get started.
           </p>
         </div>

@@ -44,7 +44,7 @@ export default function Footer() {
               <span className="text-white">{siteConfig.brandPrimary}</span>
               <span className="text-cyan">{siteConfig.brandAccent}</span>
             </a>
-            <p className="text-slate-400 text-sm leading-relaxed mb-3">
+            <p className="text-slate-600 text-sm leading-relaxed mb-3">
               Systematic Business Optimization
             </p>
             <p className="text-slate-500 text-xs">
@@ -61,7 +61,7 @@ export default function Footer() {
                 <li key={link}>
                   <a
                     href="/services"
-                    className="text-slate-400 hover:text-white text-sm transition-colors"
+                    className="text-slate-600 hover:text-white text-sm transition-colors"
                   >
                     {link}
                   </a>
@@ -80,7 +80,7 @@ export default function Footer() {
                 <li key={link}>
                   <a
                     href="/#industries"
-                    className="text-slate-400 hover:text-white text-sm transition-colors"
+                    className="text-slate-600 hover:text-white text-sm transition-colors"
                   >
                     {link}
                   </a>
@@ -100,7 +100,7 @@ export default function Footer() {
                     {...(link.external
                       ? { target: "_blank", rel: "noopener noreferrer" }
                       : {})}
-                    className="text-slate-400 hover:text-white text-sm transition-colors"
+                    className="text-slate-600 hover:text-white text-sm transition-colors"
                   >
                     {link.label}
                     {link.external && (

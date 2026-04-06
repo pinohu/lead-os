@@ -26,7 +26,7 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
           No Territory Linked
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+        <p className="text-gray-600 dark:text-gray-600 mb-6">
           Your account isn&apos;t linked to a provider territory yet. Claim a territory to start receiving leads.
         </p>
         <Link
@@ -129,7 +129,7 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Welcome back, {provider.businessName}
         </h1>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-600">
           {nicheData?.label ?? provider.niche} territory in {cityConfig.name}, {cityConfig.stateCode}
         </p>
       </div>
@@ -171,19 +171,19 @@ export default async function DashboardPage() {
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Territory Status</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Subscription</p>
+            <p className="text-sm text-gray-500 dark:text-gray-600">Subscription</p>
             <p className="mt-1 font-medium text-gray-900 dark:text-white">
               <StatusBadge status={provider.subscriptionStatus} />
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Monthly Fee</p>
+            <p className="text-sm text-gray-500 dark:text-gray-600">Monthly Fee</p>
             <p className="mt-1 font-medium text-gray-900 dark:text-white">
               ${provider.monthlyFee}/mo
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Territory</p>
+            <p className="text-sm text-gray-500 dark:text-gray-600">Territory</p>
             <p className="mt-1 font-medium text-gray-900 dark:text-white">
               {territory
                 ? territory.isPaused
@@ -201,7 +201,7 @@ export default async function DashboardPage() {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
             Get started with your territory
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-600 mb-4">
             Complete these steps to start receiving leads.
           </p>
           <ul className="space-y-3">
@@ -238,7 +238,7 @@ export default async function DashboardPage() {
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-gray-300 dark:border-gray-600" />
                 )}
                 {step.done ? (
-                  <span className="text-sm text-gray-500 dark:text-gray-400 line-through">{step.label}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-600 line-through">{step.label}</span>
                 ) : (
                   <Link
                     href={step.href}
@@ -266,7 +266,7 @@ export default async function DashboardPage() {
         </div>
 
         {recentLeads.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-500 dark:text-gray-600">
             No leads in the last 30 days. Leads will appear here as they come in.
           </p>
         ) : (
@@ -274,10 +274,10 @@ export default async function DashboardPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-800">
-                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Name</th>
-                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Contact</th>
-                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Temp</th>
-                  <th className="text-left py-2 font-medium text-gray-500 dark:text-gray-400">Date</th>
+                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-600">Name</th>
+                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-600">Contact</th>
+                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-600">Temp</th>
+                  <th className="text-left py-2 font-medium text-gray-500 dark:text-gray-600">Date</th>
                 </tr>
               </thead>
               <tbody>
@@ -286,13 +286,13 @@ export default async function DashboardPage() {
                     <td className="py-3 pr-4 text-gray-900 dark:text-white">
                       {lead.firstName ?? "Unknown"} {lead.lastName ?? ""}
                     </td>
-                    <td className="py-3 pr-4 text-gray-600 dark:text-gray-400">
+                    <td className="py-3 pr-4 text-gray-600 dark:text-gray-600">
                       {lead.email}
                     </td>
                     <td className="py-3 pr-4">
                       <TemperatureBadge temperature={lead.temperature} />
                     </td>
-                    <td className="py-3 text-gray-600 dark:text-gray-400">
+                    <td className="py-3 text-gray-600 dark:text-gray-600">
                       {lead.createdAt.toLocaleDateString()}
                     </td>
                   </tr>
@@ -331,10 +331,10 @@ function StatCard({
 }) {
   return (
     <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-4">
-      <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+      <p className="text-sm text-gray-500 dark:text-gray-600">{label}</p>
       <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
       {trend && (
-        <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{trend}</p>
+        <p className="mt-1 text-xs text-gray-600 dark:text-gray-500">{trend}</p>
       )}
     </div>
   );
@@ -345,8 +345,8 @@ function StatusBadge({ status }: { status: string }) {
     active: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
     trial: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
     past_due: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-    expired: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
-    cancelled: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
+    expired: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-600",
+    cancelled: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-600",
   };
 
   return (

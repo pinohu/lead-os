@@ -61,7 +61,7 @@ export default async function AdminRevenuePage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Revenue Overview
         </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-600">
           Platform revenue metrics and opportunities
         </p>
       </div>
@@ -69,7 +69,7 @@ export default async function AdminRevenuePage() {
       {/* Top-Level Cards */}
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
             Total MRR
           </p>
           <p className="mt-1 text-3xl font-bold text-green-600 dark:text-green-400">
@@ -77,7 +77,7 @@ export default async function AdminRevenuePage() {
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
             ARR
           </p>
           <p className="mt-1 text-3xl font-bold text-green-600 dark:text-green-400">
@@ -85,24 +85,24 @@ export default async function AdminRevenuePage() {
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
             Avg Revenue / Provider
           </p>
           <p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
             ${avgRevenuePerProvider.toLocaleString()}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-gray-500 dark:text-gray-600">
             {providers.length} active provider{providers.length !== 1 ? "s" : ""}
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
             Revenue if Fully Sold
           </p>
           <p className="mt-1 text-3xl font-bold text-blue-600 dark:text-blue-400">
             ${fullSoldMRR.toLocaleString()}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-gray-500 dark:text-gray-600">
             all {niches.length} niches claimed
           </p>
         </div>
@@ -116,7 +116,7 @@ export default async function AdminRevenuePage() {
             MRR by Niche
           </h2>
           {sortedNicheMRR.length === 0 ? (
-            <p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p className="py-6 text-center text-sm text-gray-500 dark:text-gray-600">
               No active subscriptions yet.
             </p>
           ) : (
@@ -153,7 +153,7 @@ export default async function AdminRevenuePage() {
             MRR by Tier
           </h2>
           {Object.keys(mrrByTier).length === 0 ? (
-            <p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p className="py-6 text-center text-sm text-gray-500 dark:text-gray-600">
               No active subscriptions yet.
             </p>
           ) : (
@@ -170,7 +170,7 @@ export default async function AdminRevenuePage() {
                         <span className="text-sm font-semibold capitalize text-gray-900 dark:text-white">
                           {tier}
                         </span>
-                        <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                        <span className="ml-2 text-xs text-gray-500 dark:text-gray-600">
                           {data.count} provider{data.count !== 1 ? "s" : ""}
                         </span>
                       </div>
@@ -178,7 +178,7 @@ export default async function AdminRevenuePage() {
                         <p className="text-lg font-bold text-green-600 dark:text-green-400">
                           ${data.revenue.toLocaleString()}/mo
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-xs text-gray-500 dark:text-gray-600">
                           ${(data.revenue * 12).toLocaleString()}/yr
                         </p>
                       </div>
@@ -196,12 +196,12 @@ export default async function AdminRevenuePage() {
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">
             Provider Revenue
           </h2>
-          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-600">
             All active providers with their monthly contribution
           </p>
         </div>
         {providers.length === 0 ? (
-          <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+          <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-600">
             No active providers yet.
           </p>
         ) : (
@@ -209,22 +209,22 @@ export default async function AdminRevenuePage() {
             <table className="min-w-[640px] w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Provider
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Niche
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Tier
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Monthly Fee
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Payment
                   </th>
                   <th className="px-4 py-3" />
@@ -290,7 +290,7 @@ export default async function AdminRevenuePage() {
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">
             Revenue Opportunities
           </h2>
-          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-600">
             {unclaimed.length} unclaimed niches -- ${missedMRR.toLocaleString()}/mo
             revenue on the table
           </p>
@@ -304,16 +304,16 @@ export default async function AdminRevenuePage() {
             <table className="min-w-[640px] w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Niche
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Monthly Fee
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Annual Value
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Avg Project Value
                   </th>
                 </tr>
@@ -333,7 +333,7 @@ export default async function AdminRevenuePage() {
                     <td className="px-4 py-3 text-right text-gray-700 dark:text-gray-300">
                       ${(n.monthlyFee * 12).toLocaleString()}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-600">
                       {n.avgProjectValue}
                     </td>
                   </tr>
@@ -350,12 +350,12 @@ export default async function AdminRevenuePage() {
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">
             Recent Checkout Sessions
           </h2>
-          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-600">
             Latest Stripe checkout activity
           </p>
         </div>
         {checkoutSessions.length === 0 ? (
-          <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+          <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-600">
             No checkout sessions recorded yet.
           </p>
         ) : (
@@ -363,22 +363,22 @@ export default async function AdminRevenuePage() {
             <table className="min-w-[640px] w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Date
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Type
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Niche
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Provider Email
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
                     Amount
                   </th>
                 </tr>
@@ -391,7 +391,7 @@ export default async function AdminRevenuePage() {
                       : cs.status === "pending"
                       ? "bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300"
                       : cs.status === "expired"
-                      ? "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                      ? "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-600"
                       : "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300"
                   return (
                     <tr key={cs.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">

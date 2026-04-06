@@ -102,7 +102,7 @@ export default function Pricing() {
               </h3>
               <p
                 className={`text-sm mb-4 ${
-                  tier.featured ? "text-slate-500" : "text-slate-400"
+                  tier.featured ? "text-slate-500" : "text-slate-600"
                 }`}
               >
                 {tier.audience}
@@ -117,7 +117,7 @@ export default function Pricing() {
                   {tier.setup}
                   <span
                     className={`text-sm font-normal ml-1 ${
-                      tier.featured ? "text-slate-500" : "text-slate-400"
+                      tier.featured ? "text-slate-500" : "text-slate-600"
                     }`}
                   >
                     setup
@@ -195,7 +195,7 @@ export default function Pricing() {
         </div>
 
         {/* Note */}
-        <p className="text-center text-slate-400 text-sm mt-6">
+        <p className="text-center text-slate-600 text-sm mt-6">
           Industry-specific packages available. Custom scoping for complex
           requirements.{" "}
           <a href="#contact" className="text-cyan hover:underline">

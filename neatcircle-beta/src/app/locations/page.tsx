@@ -49,7 +49,7 @@ export default function LocationsPage() {
                 {profile.description}
               </p>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-400">{profile.serviceArea}</span>
+                <span className="text-slate-600">{profile.serviceArea}</span>
                 <span className="text-cyan font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
                   View details
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

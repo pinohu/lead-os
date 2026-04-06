@@ -8,7 +8,7 @@ const OUTCOMES = [
   { value: "converted", label: "Converted", color: "text-green-600 dark:text-green-400" },
   { value: "no_response", label: "No Response", color: "text-orange-600 dark:text-orange-400" },
   { value: "declined", label: "Declined", color: "text-red-600 dark:text-red-400" },
-  { value: "cancelled", label: "Cancelled", color: "text-gray-600 dark:text-gray-400" },
+  { value: "cancelled", label: "Cancelled", color: "text-gray-600 dark:text-gray-600" },
 ] as const;
 
 type OutcomeValue = (typeof OUTCOMES)[number]["value"];
@@ -65,7 +65,7 @@ export default function LeadOutcomeButton({ leadId, currentOutcome }: LeadOutcom
             ? "border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
             : "border-dashed border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-900"
           }
-          ${current?.color ?? "text-gray-500 dark:text-gray-400"}
+          ${current?.color ?? "text-gray-500 dark:text-gray-600"}
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:focus:ring-offset-gray-950`}
         title={error ?? "Set lead outcome"}
       >
@@ -80,7 +80,7 @@ export default function LeadOutcomeButton({ leadId, currentOutcome }: LeadOutcom
       </select>
       {/* Dropdown chevron */}
       <svg
-        className="pointer-events-none absolute right-1.5 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400"
+        className="pointer-events-none absolute right-1.5 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-600"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

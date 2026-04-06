@@ -96,7 +96,7 @@ export default function ToolStack() {
                       <span className="text-white font-medium text-sm">
                         {tool.name}
                       </span>
-                      <p className="text-slate-400 text-xs mt-0.5">
+                      <p className="text-slate-600 text-xs mt-0.5">
                         {tool.description}
                       </p>
                     </div>

@@ -71,7 +71,7 @@ export default async function AdminClaimsPage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Claims Verification Queue
         </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-600">
           {pendingProviders.length} claim{pendingProviders.length !== 1 ? "s" : ""} awaiting review
         </p>
       </div>
@@ -79,7 +79,7 @@ export default async function AdminClaimsPage() {
       {/* -- Pending Claims ------------------------------------------------- */}
       {pendingProviders.length === 0 ? (
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-8 text-center">
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500 dark:text-gray-600">
             No pending verification claims. All clear!
           </p>
         </div>
@@ -105,27 +105,27 @@ export default async function AdminClaimsPage() {
                     </div>
 
                     <div className="grid grid-cols-1 gap-x-8 gap-y-1 text-sm sm:grid-cols-2">
-                      <p className="text-gray-600 dark:text-gray-400">
+                      <p className="text-gray-600 dark:text-gray-600">
                         <span className="font-medium text-gray-500 dark:text-gray-500">Email:</span>{" "}
                         {provider.email}
                       </p>
-                      <p className="text-gray-600 dark:text-gray-400">
+                      <p className="text-gray-600 dark:text-gray-600">
                         <span className="font-medium text-gray-500 dark:text-gray-500">Niche:</span>{" "}
                         {provider.niche}
                       </p>
-                      <p className="text-gray-600 dark:text-gray-400">
+                      <p className="text-gray-600 dark:text-gray-600">
                         <span className="font-medium text-gray-500 dark:text-gray-500">City:</span>{" "}
                         {provider.city}
                       </p>
-                      <p className="text-gray-600 dark:text-gray-400">
+                      <p className="text-gray-600 dark:text-gray-600">
                         <span className="font-medium text-gray-500 dark:text-gray-500">Subscription:</span>{" "}
                         {provider.subscriptionStatus}
                       </p>
-                      <p className="text-gray-600 dark:text-gray-400">
+                      <p className="text-gray-600 dark:text-gray-600">
                         <span className="font-medium text-gray-500 dark:text-gray-500">Claimed:</span>{" "}
                         {provider.createdAt.toLocaleDateString()}
                       </p>
-                      <p className="text-gray-600 dark:text-gray-400">
+                      <p className="text-gray-600 dark:text-gray-600">
                         <span className="font-medium text-gray-500 dark:text-gray-500">Attempts:</span>{" "}
                         {provider.verificationAttempts}/10
                       </p>
@@ -134,24 +134,24 @@ export default async function AdminClaimsPage() {
                     {/* Linked listing details */}
                     {listing ? (
                       <div className="mt-3 rounded-md border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-3">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-500 mb-1">
                           Claiming Listing
                         </p>
                         <p className="text-sm text-gray-900 dark:text-white font-medium">
                           {listing.businessName}
                         </p>
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-0.5">
+                        <div className="text-xs text-gray-500 dark:text-gray-600 mt-1 space-y-0.5">
                           {listing.email && <p>Listing email: {listing.email}</p>}
                           {listing.phone && <p>Listing phone: {listing.phone}</p>}
                           {listing.website && <p>Listing website: {listing.website}</p>}
                         </div>
                       </div>
                     ) : provider.claimedListingId ? (
-                      <p className="mt-2 text-xs text-gray-400">
+                      <p className="mt-2 text-xs text-gray-600">
                         Linked listing ID: {provider.claimedListingId} (not found)
                       </p>
                     ) : (
-                      <p className="mt-2 text-xs text-gray-400">
+                      <p className="mt-2 text-xs text-gray-600">
                         New business (not claiming an existing listing)
                       </p>
                     )}
@@ -189,10 +189,10 @@ export default async function AdminClaimsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-800">
-                  <th className="text-left py-2.5 px-4 font-medium text-gray-500 dark:text-gray-400">Business</th>
-                  <th className="text-left py-2.5 px-4 font-medium text-gray-500 dark:text-gray-400">Niche</th>
-                  <th className="text-left py-2.5 px-4 font-medium text-gray-500 dark:text-gray-400">Status</th>
-                  <th className="text-left py-2.5 px-4 font-medium text-gray-500 dark:text-gray-400">Resolved</th>
+                  <th className="text-left py-2.5 px-4 font-medium text-gray-500 dark:text-gray-600">Business</th>
+                  <th className="text-left py-2.5 px-4 font-medium text-gray-500 dark:text-gray-600">Niche</th>
+                  <th className="text-left py-2.5 px-4 font-medium text-gray-500 dark:text-gray-600">Status</th>
+                  <th className="text-left py-2.5 px-4 font-medium text-gray-500 dark:text-gray-600">Resolved</th>
                 </tr>
               </thead>
               <tbody>
@@ -203,11 +203,11 @@ export default async function AdminClaimsPage() {
                         {p.businessName}
                       </Link>
                     </td>
-                    <td className="py-2.5 px-4 text-gray-600 dark:text-gray-400">{p.niche}</td>
+                    <td className="py-2.5 px-4 text-gray-600 dark:text-gray-600">{p.niche}</td>
                     <td className="py-2.5 px-4">
                       <StatusBadge status={p.verificationStatus} />
                     </td>
-                    <td className="py-2.5 px-4 text-gray-600 dark:text-gray-400">
+                    <td className="py-2.5 px-4 text-gray-600 dark:text-gray-600">
                       {p.updatedAt.toLocaleDateString()}
                     </td>
                   </tr>
@@ -225,7 +225,7 @@ export default async function AdminClaimsPage() {
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    unverified: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400",
+    unverified: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-600",
     pending: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
     verified: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
     auto_verified: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",

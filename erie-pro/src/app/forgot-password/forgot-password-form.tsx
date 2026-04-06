@@ -48,7 +48,7 @@ export default function ForgotPasswordForm() {
           If an account exists with that email address, you&apos;ll receive a
           password reset link shortly. Please check your inbox and spam folder.
         </div>
-        <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-center text-sm text-gray-500 dark:text-gray-600">
           <Link
             href="/login"
             className="text-blue-600 hover:text-blue-500"
@@ -122,7 +122,7 @@ export default function ForgotPasswordForm() {
         )}
       </button>
 
-      <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-center text-sm text-gray-500 dark:text-gray-600">
         <Link
           href="/login"
           className="text-blue-600 hover:text-blue-500"

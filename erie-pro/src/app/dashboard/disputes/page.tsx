@@ -41,7 +41,7 @@ export default async function DisputesPage({
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Lead Disputes</h1>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-600">
           Report bad leads (wrong number, spam, out of area) for credit review.
         </p>
       </div>
@@ -59,12 +59,12 @@ export default async function DisputesPage({
         {disputes.length === 0 ? (
           <div className="text-center py-8">
             <div className="mx-auto h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
-              <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <p className="text-sm font-medium text-gray-900 dark:text-white">No disputes filed</p>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-600">
               All clear! If you receive a bad lead (wrong number, spam, or out of area),
               use the form above to file a dispute for credit review.
             </p>
@@ -74,11 +74,11 @@ export default async function DisputesPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-800">
-                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Lead</th>
-                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Reason</th>
-                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Status</th>
-                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Credit</th>
-                  <th className="text-left py-2 font-medium text-gray-500 dark:text-gray-400">Filed</th>
+                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-600">Lead</th>
+                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-600">Reason</th>
+                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-600">Status</th>
+                  <th className="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-600">Credit</th>
+                  <th className="text-left py-2 font-medium text-gray-500 dark:text-gray-600">Filed</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -87,7 +87,7 @@ export default async function DisputesPage({
                     <td className="py-3 pr-4 text-gray-900 dark:text-white">
                       {d.lead.firstName ?? "Unknown"} {d.lead.lastName ?? ""} — {d.lead.email}
                     </td>
-                    <td className="py-3 pr-4 text-gray-600 dark:text-gray-400 capitalize">
+                    <td className="py-3 pr-4 text-gray-600 dark:text-gray-600 capitalize">
                       {d.reason.replace("_", " ")}
                     </td>
                     <td className="py-3 pr-4">
@@ -103,10 +103,10 @@ export default async function DisputesPage({
                         {d.status}
                       </span>
                     </td>
-                    <td className="py-3 pr-4 text-gray-600 dark:text-gray-400">
+                    <td className="py-3 pr-4 text-gray-600 dark:text-gray-600">
                       {d.creditAmount ? `$${d.creditAmount.toFixed(2)}` : "—"}
                     </td>
-                    <td className="py-3 text-gray-600 dark:text-gray-400">
+                    <td className="py-3 text-gray-600 dark:text-gray-600">
                       {d.createdAt.toLocaleDateString()}
                     </td>
                   </tr>

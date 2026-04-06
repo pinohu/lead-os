@@ -154,7 +154,7 @@ export default async function AdminDashboard() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Dashboard
         </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-600">
           {cityConfig.domain} -- {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
         </p>
       </div>
@@ -213,12 +213,12 @@ export default async function AdminDashboard() {
         <Link href="/admin/revenue">
           <Card className="hover:border-green-300 dark:hover:border-green-800 transition-colors cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">MRR</CardTitle>
-              <DollarSign className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-600">MRR</CardTitle>
+              <DollarSign className="h-4 w-4 text-gray-600 dark:text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-green-600 dark:text-green-400">${totalMRR.toLocaleString()}</div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">${(totalMRR * 12).toLocaleString()} ARR</p>
+              <p className="text-xs text-gray-500 dark:text-gray-600">${(totalMRR * 12).toLocaleString()} ARR</p>
             </CardContent>
           </Card>
         </Link>
@@ -226,12 +226,12 @@ export default async function AdminDashboard() {
         <Link href="/admin/leads">
           <Card className="hover:border-blue-300 dark:hover:border-blue-800 transition-colors cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Leads</CardTitle>
-              <TrendingUp className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-600">Leads</CardTitle>
+              <TrendingUp className="h-4 w-4 text-gray-600 dark:text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalLeads.toLocaleString()}</div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-600">
                 {leadsToday} today &middot; {stats.totalConverted} converted ({stats.totalLeads > 0 ? Math.round((stats.totalConverted / stats.totalLeads) * 100) : 0}%)
               </p>
             </CardContent>
@@ -241,12 +241,12 @@ export default async function AdminDashboard() {
         <Link href="/admin/providers">
           <Card className="hover:border-purple-300 dark:hover:border-purple-800 transition-colors cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Providers</CardTitle>
-              <Users className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-600">Providers</CardTitle>
+              <Users className="h-4 w-4 text-gray-600 dark:text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.active}</div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{stats.total} total registered</p>
+              <p className="text-xs text-gray-500 dark:text-gray-600">{stats.total} total registered</p>
             </CardContent>
           </Card>
         </Link>
@@ -254,12 +254,12 @@ export default async function AdminDashboard() {
         <Link href="/admin/territories">
           <Card className="hover:border-amber-300 dark:hover:border-amber-800 transition-colors cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Territories</CardTitle>
-              <MapPin className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-600">Territories</CardTitle>
+              <MapPin className="h-4 w-4 text-gray-600 dark:text-gray-500" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-gray-900 dark:text-white">{claimedNiches.size} / {niches.length}</div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{niches.length - claimedNiches.size} available</p>
+              <p className="text-xs text-gray-500 dark:text-gray-600">{niches.length - claimedNiches.size} available</p>
             </CardContent>
           </Card>
         </Link>
@@ -267,12 +267,12 @@ export default async function AdminDashboard() {
         <Link href="/admin/disputes">
           <Card className={`hover:border-red-300 dark:hover:border-red-800 transition-colors cursor-pointer ${pendingDisputes > 0 ? "border-red-200 dark:border-red-800/50" : ""}`}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Disputes</CardTitle>
-              <AlertCircle className={`h-4 w-4 ${pendingDisputes > 0 ? "text-red-500" : "text-gray-400 dark:text-gray-500"}`} />
+              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-600">Disputes</CardTitle>
+              <AlertCircle className={`h-4 w-4 ${pendingDisputes > 0 ? "text-red-500" : "text-gray-600 dark:text-gray-500"}`} />
             </CardHeader>
             <CardContent>
               <div className={`text-3xl font-bold ${pendingDisputes > 0 ? "text-red-600 dark:text-red-400" : "text-gray-900 dark:text-white"}`}>{pendingDisputes}</div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">pending review</p>
+              <p className="text-xs text-gray-500 dark:text-gray-600">pending review</p>
             </CardContent>
           </Card>
         </Link>
@@ -298,7 +298,7 @@ export default async function AdminDashboard() {
         </CardHeader>
         <CardContent>
           {recentLeads.length === 0 ? (
-            <p className="text-sm text-gray-500 dark:text-gray-400 py-8 text-center">No leads yet. Leads will appear here as they come in.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-600 py-8 text-center">No leads yet. Leads will appear here as they come in.</p>
           ) : (
             <div className="overflow-x-auto -mx-4 sm:mx-0">
               <Table className="min-w-[640px]">
@@ -319,7 +319,7 @@ export default async function AdminDashboard() {
                     const status = outcome ?? (lead.routedToId ? "pending" : "unmatched")
                     return (
                       <TableRow key={lead.id}>
-                        <TableCell className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                        <TableCell className="text-xs text-gray-500 dark:text-gray-600 whitespace-nowrap">
                           {lead.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })}{" "}
                           {lead.createdAt.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                         </TableCell>
@@ -331,12 +331,12 @@ export default async function AdminDashboard() {
                             {leadName}
                           </Link>
                           {lead.message && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]">{lead.message}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-600 truncate max-w-[200px]">{lead.message}</p>
                           )}
                         </TableCell>
                         <TableCell>
                           <p className="text-xs"><a href={`mailto:${lead.email}`} className="text-blue-600 dark:text-blue-400 hover:underline">{lead.email}</a></p>
-                          {lead.phone && <p className="text-xs text-gray-500 dark:text-gray-400">{lead.phone}</p>}
+                          {lead.phone && <p className="text-xs text-gray-500 dark:text-gray-600">{lead.phone}</p>}
                         </TableCell>
                         <TableCell className="text-sm">
                           {lead.routedTo?.businessName ? (
@@ -477,7 +477,7 @@ export default async function AdminDashboard() {
                         <Link href={`/admin/providers/${p.id}`} className="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline">
                           {p.businessName}
                         </Link>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{p.email}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-600">{p.email}</p>
                       </TableCell>
                       <TableCell><Badge variant="outline" className="capitalize">{p.niche}</Badge></TableCell>
                       <TableCell className="text-right font-medium text-green-600 dark:text-green-400">${p.monthlyFee}</TableCell>
@@ -537,7 +537,7 @@ function QuickLink({
           )}
         </div>
         <p className="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{label}</p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">{description}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-600">{description}</p>
       </div>
     </Link>
   )

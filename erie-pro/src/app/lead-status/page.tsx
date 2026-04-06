@@ -29,7 +29,7 @@ function StatusTimeline({ current }: { current: string }) {
             className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
               i <= activeIdx
                 ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
+                : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-600"
             }`}
           >
             {i + 1}
@@ -38,7 +38,7 @@ function StatusTimeline({ current }: { current: string }) {
             className={`text-xs ${
               i <= activeIdx
                 ? "font-semibold text-gray-900 dark:text-white"
-                : "text-gray-400 dark:text-gray-500"
+                : "text-gray-600 dark:text-gray-500"
             }`}
           >
             {step}
@@ -118,7 +118,7 @@ export default function LeadStatusPage() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
         Check Your Request Status
       </h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-8">
+      <p className="text-gray-600 dark:text-gray-600 mb-8">
         Enter the email you used when submitting your service request to see its
         current status.
       </p>
@@ -151,7 +151,7 @@ export default function LeadStatusPage() {
 
       {/* Results */}
       {searched && !loading && leads.length === 0 && !error && (
-        <p className="text-center text-gray-500 dark:text-gray-400 py-8">
+        <p className="text-center text-gray-500 dark:text-gray-600 py-8">
           No requests found for this email address.
         </p>
       )}
@@ -167,7 +167,7 @@ export default function LeadStatusPage() {
                 <h3 className="font-semibold text-gray-900 dark:text-white capitalize">
                   {lead.niche.replace(/-/g, " ")}
                 </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-xs text-gray-500 dark:text-gray-600 mt-0.5">
                   Submitted{" "}
                   {new Date(lead.createdAt).toLocaleDateString("en-US", {
                     month: "short",

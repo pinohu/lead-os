@@ -49,7 +49,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
           <h1 className="mt-6 text-5xl font-bold leading-tight">{service.title}</h1>
           <p className="mt-6 text-lg text-slate-300">{service.overview}</p>
           <div className="mt-10 rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 to-transparent p-8">
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-400">What the visitor learns</p>
+            <p className="text-sm uppercase tracking-[0.3em] text-slate-600">What the visitor learns</p>
             <div className="mt-6 grid gap-6 md:grid-cols-3">
               {service.features.slice(0, 3).map((feature) => (
                 <div key={feature.title} className="rounded-2xl bg-black/20 p-5">

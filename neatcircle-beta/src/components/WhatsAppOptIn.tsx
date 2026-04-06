@@ -88,7 +88,7 @@ export default function WhatsAppOptIn() {
       <div className="rounded-2xl bg-white p-5 shadow-xl">
         <button
           onClick={dismiss}
-          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+          className="absolute right-3 top-3 text-gray-600 hover:text-gray-600"
           aria-label="Close"
         >
           &times;
@@ -125,7 +125,7 @@ export default function WhatsAppOptIn() {
           </button>
         </form>
 
-        <p className="mt-2 text-center text-[10px] text-gray-400">
+        <p className="mt-2 text-center text-[10px] text-gray-600">
           Unsubscribe anytime by replying STOP
         </p>
       </div>

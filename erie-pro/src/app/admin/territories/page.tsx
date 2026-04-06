@@ -144,7 +144,7 @@ export default async function AdminTerritoriesPage({
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Territory Management
         </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-600">
           All {niches.length} niches and their claim status
         </p>
       </div>
@@ -152,7 +152,7 @@ export default async function AdminTerritoriesPage({
       {/* Summary Cards */}
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
             Total Niches
           </p>
           <p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
@@ -160,7 +160,7 @@ export default async function AdminTerritoriesPage({
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
             Claimed
           </p>
           <p className="mt-1 text-3xl font-bold text-green-600 dark:text-green-400">
@@ -168,7 +168,7 @@ export default async function AdminTerritoriesPage({
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
             Available
           </p>
           <p className="mt-1 text-3xl font-bold text-blue-600 dark:text-blue-400">
@@ -176,7 +176,7 @@ export default async function AdminTerritoriesPage({
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
             Paused
           </p>
           <p className="mt-1 text-3xl font-bold text-amber-600 dark:text-amber-400">
@@ -184,13 +184,13 @@ export default async function AdminTerritoriesPage({
           </p>
         </div>
         <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-600">
             Potential MRR
           </p>
           <p className="mt-1 text-3xl font-bold text-green-600 dark:text-green-400">
             ${totalPotentialMRR.toLocaleString()}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-gray-500 dark:text-gray-600">
             if all {niches.length} claimed
           </p>
         </div>
@@ -206,7 +206,7 @@ export default async function AdminTerritoriesPage({
               className={`rounded-md px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
                 filter === f
                   ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  : "text-gray-600 dark:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
               }`}
             >
               {f}
@@ -215,7 +215,7 @@ export default async function AdminTerritoriesPage({
         </div>
 
         <div className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-1">
-          <span className="px-2 text-xs text-gray-500 dark:text-gray-400">Sort:</span>
+          <span className="px-2 text-xs text-gray-500 dark:text-gray-600">Sort:</span>
           {([
             { key: "name", label: "Name" },
             { key: "fee", label: "Fee" },
@@ -227,7 +227,7 @@ export default async function AdminTerritoriesPage({
               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 sort === s.key
                   ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  : "text-gray-600 dark:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
               }`}
             >
               {s.label}
@@ -257,7 +257,7 @@ export default async function AdminTerritoriesPage({
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                     {card.label}
                   </h3>
-                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-600">
                     ${card.monthlyFee}/mo
                   </p>
                 </div>
@@ -286,13 +286,13 @@ export default async function AdminTerritoriesPage({
               {card.status === "claimed" && (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-gray-500 dark:text-gray-400">Provider</span>
+                    <span className="text-gray-500 dark:text-gray-600">Provider</span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {card.providerName}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500 dark:text-gray-400">Status</span>
+                    <span className="text-gray-500 dark:text-gray-600">Status</span>
                     <span className={`capitalize font-medium ${
                       card.subscriptionStatus === "active"
                         ? "text-green-600 dark:text-green-400"
@@ -302,14 +302,14 @@ export default async function AdminTerritoriesPage({
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500 dark:text-gray-400">Tier</span>
+                    <span className="text-gray-500 dark:text-gray-600">Tier</span>
                     <span className="capitalize font-medium text-gray-900 dark:text-white">
                       {card.tier}
                     </span>
                   </div>
                   {card.claimedDate && (
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Claimed</span>
+                      <span className="text-gray-500 dark:text-gray-600">Claimed</span>
                       <span className="text-gray-900 dark:text-white">
                         {card.claimedDate.toLocaleDateString("en-US", {
                           month: "short",
@@ -320,7 +320,7 @@ export default async function AdminTerritoriesPage({
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-gray-500 dark:text-gray-400">Leads</span>
+                    <span className="text-gray-500 dark:text-gray-600">Leads</span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {card.leadCount}
                     </span>
@@ -342,7 +342,7 @@ export default async function AdminTerritoriesPage({
                 <>
                   {card.providerName && (
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Provider</span>
+                      <span className="text-gray-500 dark:text-gray-600">Provider</span>
                       <span className="font-medium text-gray-900 dark:text-white">
                         {card.providerName}
                       </span>
@@ -350,14 +350,14 @@ export default async function AdminTerritoriesPage({
                   )}
                   {card.tier && (
                     <div className="flex justify-between">
-                      <span className="text-gray-500 dark:text-gray-400">Tier</span>
+                      <span className="text-gray-500 dark:text-gray-600">Tier</span>
                       <span className="capitalize font-medium text-gray-900 dark:text-white">
                         {card.tier}
                       </span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span className="text-gray-500 dark:text-gray-400">Banked leads</span>
+                    <span className="text-gray-500 dark:text-gray-600">Banked leads</span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {card.bankedLeads}
                     </span>
@@ -368,13 +368,13 @@ export default async function AdminTerritoriesPage({
               {card.status === "available" && (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-gray-500 dark:text-gray-400">Monthly fee</span>
+                    <span className="text-gray-500 dark:text-gray-600">Monthly fee</span>
                     <span className="font-medium text-green-600 dark:text-green-400">
                       ${card.monthlyFee}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500 dark:text-gray-400">Banked leads waiting</span>
+                    <span className="text-gray-500 dark:text-gray-600">Banked leads waiting</span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {card.bankedLeads}
                     </span>
@@ -387,7 +387,7 @@ export default async function AdminTerritoriesPage({
       </div>
 
       {cards.length === 0 && (
-        <div className="py-12 text-center text-sm text-gray-500 dark:text-gray-400">
+        <div className="py-12 text-center text-sm text-gray-500 dark:text-gray-600">
           No territories match the selected filter.
         </div>
       )}

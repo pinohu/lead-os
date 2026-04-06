@@ -15,7 +15,7 @@ export default function CitiesPage() {
     <div className="p-8 max-w-5xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">City Network</h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-600">
           {cities.length} city(ies) registered &middot; {totalNiches} niches &times; 15 page types = {totalNiches * 15} pages per city
         </p>
       </div>
@@ -33,8 +33,8 @@ export default function CitiesPage() {
         {/* Expansion placeholder */}
         <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 p-6 flex flex-col items-center justify-center text-center">
           <p className="text-2xl mb-2">+</p>
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Add New City</p>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-600">Add New City</p>
+          <p className="text-xs text-gray-600 dark:text-gray-500 mt-1">
             Edit <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">city-registry.ts</code>
           </p>
         </div>
@@ -42,7 +42,7 @@ export default function CitiesPage() {
 
       <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Expansion Checklist</h2>
-        <ol className="space-y-2 text-sm text-gray-600 dark:text-gray-400 list-decimal list-inside">
+        <ol className="space-y-2 text-sm text-gray-600 dark:text-gray-600 list-decimal list-inside">
           <li>Add city config to <code className="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">src/lib/city-registry.ts</code></li>
           <li>Run <code className="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">npx tsx src/scripts/expansion-readiness.ts &lt;slug&gt;</code> to validate</li>
           <li>Register domain and point DNS to Vercel</li>
@@ -76,7 +76,7 @@ function CityCard({ city, isCurrent, nicheCount }: { city: CityConfig; isCurrent
         )}
       </div>
 
-      <dl className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+      <dl className="space-y-1 text-sm text-gray-600 dark:text-gray-600">
         <div className="flex justify-between">
           <dt>Domain</dt>
           <dd className="font-medium text-gray-900 dark:text-white">{city.domain}</dd>
