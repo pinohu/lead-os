@@ -181,6 +181,7 @@ export async function upsertDirectoryListing(
       reviewsJson: data.reviewsJson as object | undefined,
       servicesOffered: data.servicesOffered ?? [],
       source: data.source ?? "google_places",
+      isActive: true,
       lastScrapedAt: new Date(),
     },
   });

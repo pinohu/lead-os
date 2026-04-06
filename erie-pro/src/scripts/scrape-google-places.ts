@@ -220,6 +220,7 @@ async function main() {
             photoRefs: data.photoRefs ?? [],
             servicesOffered: [],
             source: "outscraper",
+            isActive: true,
             lastScrapedAt: new Date(),
           },
         })
