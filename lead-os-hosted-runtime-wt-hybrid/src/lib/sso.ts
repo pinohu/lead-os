@@ -196,63 +196,14 @@ export function buildSamlAuthnRequest(config: SamlConfig): string {
 /**
  * Parse a SAML Response XML to extract user identity.
  *
- * This is a lightweight string-based parser that covers the standard
- * response format from Okta, Azure AD, Google Workspace, and most SAML 2.0
- * IdPs. It does NOT verify XML signatures — for production hardening,
- * add certificate-based signature validation.
+ * // SECURITY: SAML is disabled until XML signature verification is implemented.
+ * // Without signature validation, an attacker can forge arbitrary SAML assertions.
  */
 export function parseSamlResponse(
-  samlResponseB64: string,
+  _samlResponseB64: string,
   _config: SamlConfig,
 ): SsoUserInfo | null {
-  let xml: string;
-  try {
-    xml = Buffer.from(samlResponseB64, "base64").toString("utf-8");
-  } catch {
-    return null;
-  }
-
-  // Extract NameID (email)
-  const nameIdMatch = xml.match(/<(?:saml2?:)?NameID[^>]*>([^<]+)<\//);
-  const email = nameIdMatch?.[1]?.trim() ?? "";
-  if (!email) return null;
-
-  // Extract common attributes
-  const attrMap: Record<string, string> = {};
-  const attrRegex =
-    /<(?:saml2?:)?Attribute\s+Name="([^"]+)"[^>]*>\s*<(?:saml2?:)?AttributeValue[^>]*>([^<]+)<\//g;
-  let match: RegExpExecArray | null;
-  while ((match = attrRegex.exec(xml)) !== null) {
-    attrMap[match[1]] = match[2].trim();
-  }
-
-  const givenName =
-    attrMap["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"] ??
-    attrMap["firstName"] ??
-    attrMap["first_name"] ??
-    "";
-  const surname =
-    attrMap["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"] ??
-    attrMap["lastName"] ??
-    attrMap["last_name"] ??
-    "";
-  const displayName =
-    attrMap["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] ??
-    attrMap["displayName"] ??
-    ([givenName, surname].filter(Boolean).join(" ") || email);
-
-  // Extract SessionIndex or assertion ID as sub
-  const sessionMatch = xml.match(/SessionIndex="([^"]+)"/);
-  const assertionIdMatch = xml.match(/<(?:saml2?:)?Assertion[^>]+ID="([^"]+)"/);
-  const sub = sessionMatch?.[1] ?? assertionIdMatch?.[1] ?? email;
-
-  return {
-    email,
-    name: displayName,
-    sub,
-    provider: "saml",
-    raw: { ...attrMap, nameId: email },
-  };
+  throw new Error("SAML authentication is disabled: XML signature verification is not yet implemented. Use OIDC instead.");
 }
 
 // ---------------------------------------------------------------------------

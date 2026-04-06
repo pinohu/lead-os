@@ -224,6 +224,28 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     return applySecurityHeaders(response, requestId);
   }
 
+  // CSRF protection: require X-Requested-With header for state-changing
+  // requests that may be authenticated via cookies (prevents cross-site
+  // form submissions). GET and HEAD are safe methods, so they're exempt.
+  if (method !== "GET" && method !== "HEAD" && method !== "OPTIONS") {
+    const requestedWith = request.headers.get("x-requested-with");
+    const authHeader = request.headers.get("authorization");
+    // Only enforce for requests without explicit Bearer auth (cookie-only auth)
+    if (!authHeader && !requestedWith) {
+      return NextResponse.json(
+        {
+          data: null,
+          error: {
+            code: "CSRF_REJECTED",
+            message: "Missing X-Requested-With header. Include 'X-Requested-With: XMLHttpRequest' for state-changing requests.",
+          },
+          meta: { requestId },
+        },
+        { status: 403, headers: { "x-request-id": requestId } },
+      );
+    }
+  }
+
   // Cron secret — fast path, no DB required
   const cronSecret = request.headers.get("x-cron-secret");
   if (cronSecret && process.env.CRON_SECRET) {

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
+import { getAuthFromHeaders } from "./auth-middleware.ts";
 import { embeddedSecrets } from "./embedded-secrets.ts";
 import {
   createMagicLinkUrl,
@@ -18,8 +19,12 @@ import { ensureTraceContext } from "./trace.ts";
 export const OPERATOR_SESSION_COOKIE = "leados_operator_session";
 export { sanitizeNextPath } from "./operator-auth-core.ts";
 
-function getAuthSecret() {
-  return process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? embeddedSecrets.cron.secret;
+function getAuthSecret(): string {
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET;
+  if (!secret) {
+    throw new Error("LEAD_OS_AUTH_SECRET or CRON_SECRET must be configured for operator authentication");
+  }
+  return secret;
 }
 
 export function getAllowedOperatorEmails() {
@@ -134,14 +139,12 @@ export function clearOperatorSession(response: NextResponse) {
 }
 
 export async function requireOperatorApiSession(request: Request) {
-  // Fast path: trust identity headers set by the Next.js middleware.
-  // When middleware already validated the operator cookie it attaches the
-  // identity as request headers, so we can skip re-parsing the JWT.
-  const userId = request.headers.get("x-authenticated-user-id");
-  const method = request.headers.get("x-authenticated-method");
-  if (userId && method) {
+  // Fast path: trust identity headers set by the Next.js middleware, but only
+  // after verifying the HMAC middleware signature to prevent header spoofing.
+  const headerAuth = getAuthFromHeaders(request);
+  if (headerAuth && headerAuth.method === "operator-cookie") {
     return {
-      session: { email: userId, type: "session" as const, exp: 0 },
+      session: { email: headerAuth.userId, type: "session" as const, exp: 0 },
       response: null,
     };
   }
