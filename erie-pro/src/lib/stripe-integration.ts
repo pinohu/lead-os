@@ -326,7 +326,6 @@ export async function handleStripeWebhook(
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
 
-      // Mark checkout session as completed in DB
       if (session.id) {
         await prisma.checkoutSession.updateMany({
           where: { stripeSessionId: session.id },
@@ -334,18 +333,63 @@ export async function handleStripeWebhook(
         });
       }
 
+      const customerId = session.customer as string | null;
+      if (customerId) {
+        const provider = await prisma.provider.findFirst({
+          where: { stripeCustomerId: customerId },
+        });
+
+        if (provider) {
+          await prisma.provider.update({
+            where: { id: provider.id },
+            data: {
+              subscriptionStatus: "active",
+            },
+          });
+
+          if (provider.niche) {
+            await prisma.territory.upsert({
+              where: {
+                niche_city: { niche: provider.niche, city: provider.city ?? "erie" },
+              },
+              update: {
+                providerId: provider.id,
+                activatedAt: new Date(),
+                deactivatedAt: null,
+              },
+              create: {
+                niche: provider.niche,
+                city: provider.city ?? "erie",
+                providerId: provider.id,
+                activatedAt: new Date(),
+              },
+            });
+          }
+        }
+      }
+
       return {
         handled: true,
         eventType,
-        message: "Checkout session completed, provider activation pending",
+        message: "Checkout completed — provider activated, territory assigned",
       };
     }
 
     case "invoice.payment_succeeded": {
+      const invoice = event.data.object as Stripe.Invoice;
+      const customerId = invoice.customer as string;
+
+      if (customerId) {
+        await prisma.provider.updateMany({
+          where: { stripeCustomerId: customerId },
+          data: { subscriptionStatus: "active" },
+        });
+      }
+
       return {
         handled: true,
         eventType,
-        message: "Payment succeeded, subscription renewed",
+        message: "Payment succeeded, provider status confirmed active",
       };
     }
 
