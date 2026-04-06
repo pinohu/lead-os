@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ClientWidgets from "@/components/ClientWidgets";
+import Loading from "./loading";
 import { siteConfig } from "@/lib/site-config";
 
 const geistSans = Geist({
@@ -98,7 +100,11 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <div id="main-content">{children}</div>
+        <div id="main-content">
+          <Suspense fallback={<Loading />}>
+            {children}
+          </Suspense>
+        </div>
         <ClientWidgets />
       </body>
     </html>

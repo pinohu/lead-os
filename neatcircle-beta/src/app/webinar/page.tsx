@@ -29,9 +29,9 @@ export default function WebinarPage() {
             <Link href="/assess/general" className="rounded-lg bg-cyan px-6 py-3 font-semibold text-white">
               Reserve My Spot
             </Link>
-            <a href="/calculator" className="rounded-lg border border-white/20 px-6 py-3 font-semibold text-white">
+            <Link href="/calculator" className="rounded-lg border border-white/20 px-6 py-3 font-semibold text-white">
               Preview ROI First
-            </a>
+            </Link>
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {[

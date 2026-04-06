@@ -1,5 +1,5 @@
 import { logger } from "@/lib/logger";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   automationCatalog,
   lifecycleAutomations,
@@ -14,6 +14,35 @@ import { checkConnectivity } from "@/lib/suitedash";
 
 function hasSecret(value?: string) {
   return Boolean(value && value.trim().length > 0);
+}
+
+function getHostname(value: string | null) {
+  if (!value) return "";
+  try {
+    return new URL(value).hostname.toLowerCase();
+  } catch {
+    return "";
+  }
+}
+
+function isLocalHost(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+}
+
+function isTrustedBrowserRequest(request: NextRequest) {
+  const requestHost = request.nextUrl.hostname.toLowerCase();
+  const originHost = getHostname(request.headers.get("origin"));
+  const refererHost = getHostname(request.headers.get("referer"));
+  const fetchSite = request.headers.get("sec-fetch-site");
+
+  if (originHost && (originHost === requestHost || isLocalHost(originHost))) return true;
+  if (refererHost && (refererHost === requestHost || isLocalHost(refererHost))) return true;
+  return fetchSite === "same-origin" || fetchSite === "same-site";
+}
+
+function hasBearerToken(request: NextRequest, secret: string) {
+  const authHeader = request.headers.get("authorization");
+  return authHeader === `Bearer ${secret}`;
 }
 
 function dependencyStatusMap() {
@@ -53,7 +82,16 @@ function dependencyStatusMap() {
   } satisfies Record<AutomationDependency, { configured: boolean }>;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const automationSecret = process.env.AUTOMATION_API_SECRET ?? embeddedSecrets.automation.apiSecret;
+  const authenticated =
+    (automationSecret && hasBearerToken(request, automationSecret)) ||
+    isTrustedBrowserRequest(request);
+
+  if (!authenticated) {
+    return NextResponse.json({ status: "ok", timestamp: new Date().toISOString() });
+  }
+
   try {
     const dependencies = dependencyStatusMap();
     const suiteDashConnected = dependencies.suiteDash.configured

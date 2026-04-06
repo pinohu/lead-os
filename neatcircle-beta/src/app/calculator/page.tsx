@@ -6,6 +6,10 @@ import { siteConfig } from "@/lib/site-config";
 export const metadata = {
   title: `Automation ROI Calculator | ${siteConfig.brandName}`,
   description: "Calculate how much time and money your business could save with automation. Free ROI analysis.",
+  openGraph: {
+    title: `Automation ROI Calculator | ${siteConfig.brandName}`,
+    description: "Calculate how much time and money your business could save with automation. Free ROI analysis.",
+  },
 };
 
 export default function CalculatorPage() {

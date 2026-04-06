@@ -57,7 +57,11 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (request.method === "OPTIONS") {
-    return allow(request);
+    const response = new NextResponse(null, { status: 204 });
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    return response;
   }
 
   if (pathname === "/api/automations/health") {

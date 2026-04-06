@@ -137,7 +137,16 @@ export default function DashboardPage() {
     );
   }
 
-  if (!metrics) return null;
+  if (!metrics) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#0f0f23", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 18, marginBottom: 8 }}>No data available yet</div>
+          <div style={{ fontSize: 14, color: "#8b8ba7" }}>Dashboard metrics will appear once your Lead OS instance is connected.</div>
+        </div>
+      </div>
+    );
+  }
 
   const {
     summary,
