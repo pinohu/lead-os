@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import dynamic from "next/dynamic";
 import "./globals.css";
 import { CookieBanner } from "@/components/CookieBanner";
+import { ClientWidgets } from "@/components/ClientWidgets";
 import { siteConfig } from "@/lib/site-config";
-
-const BehavioralTracker = dynamic(() => import("@/components/BehavioralTracker"), { ssr: false });
-const ExitIntent = dynamic(() => import("@/components/ExitIntent"), { ssr: false });
-const ChatWidget = dynamic(() => import("@/components/ChatWidget"), { ssr: false });
-const FunnelOrchestrator = dynamic(() => import("@/components/FunnelOrchestrator"), { ssr: false });
-const WhatsAppOptIn = dynamic(() => import("@/components/WhatsAppOptIn"), { ssr: false });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -106,11 +100,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <main id="main-content">{children}</main>
-        <BehavioralTracker />
-        <ExitIntent />
-        <ChatWidget />
-        <FunnelOrchestrator />
-        <WhatsAppOptIn />
+        <ClientWidgets />
         <CookieBanner />
       </body>
     </html>
