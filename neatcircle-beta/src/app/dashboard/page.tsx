@@ -158,8 +158,8 @@ export default function DashboardPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#0f0f23", color: "#fff", fontFamily: "system-ui, -apple-system, sans-serif" }}>
       {isDemo && (
-        <div style={{ background: "#1e1a3f", borderBottom: "1px solid #3730a3", padding: "10px 32px", fontSize: "0.875rem", color: "#a5b4fc" }}>
-          Demo data — Connect your Lead OS instance to see live metrics.
+        <div role="alert" aria-live="polite" style={{ background: "#1e1a3f", borderBottom: "1px solid #3730a3", padding: "10px 32px", fontSize: "0.875rem", color: "#a5b4fc" }}>
+          &#9888; Showing demo data — Connect your Lead OS instance to see live metrics.
         </div>
       )}
       <div style={{ padding: 32 }}>
@@ -183,7 +183,7 @@ export default function DashboardPage() {
           <StatCard label="Lead Identity" value={`${traceCoverage.leadKeyRate}%`} />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24 }}>
           <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
             <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Nurture Funnel</h2>
             {Object.entries(nurtureFunnel).length === 0 ? (
@@ -233,17 +233,17 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24, marginTop: 24 }}>
           <MetricList title="Top Intake Paths" items={topIntakeSources} empty="No captured leads yet" />
           <MetricList title="Behavioral Signals" items={topBehavioralSignals} empty="No behavioral activity captured yet" />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24, marginTop: 24 }}>
           <MetricList title="Blueprint Activity" items={topBlueprints} empty="Blueprint attribution starts showing once orchestration events accumulate." />
           <MetricList title="Top Services" items={topServices} empty="No service activity yet" />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24, marginTop: 24 }}>
           <div style={{ background: "#1a1a2e", borderRadius: 12, padding: 24 }}>
             <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Experiment Coverage</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>

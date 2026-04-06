@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { normalizeNicheSlug } from "@/lib/funnel-blueprints";
 import { siteConfig } from "@/lib/site-config";
+import { logger } from "@/lib/logger";
 import {
   buildTraceIntakePayload,
   ensureVisitorId,
@@ -142,6 +143,7 @@ export default function ChatWidget() {
   const [showBubble, setShowBubble] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const chatPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -163,6 +165,15 @@ export default function ChatWidget() {
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
   const openChat = useCallback(() => {
@@ -272,7 +283,7 @@ export default function ChatWidget() {
             stepId: "chat-capture",
           }),
         ),
-      }).catch(() => {});
+      }).catch((err) => { logger.error("ChatWidget intake failed", { error: String(err) }); });
     }
 
     setTimeout(() => {
@@ -338,7 +349,7 @@ export default function ChatWidget() {
       </button>
 
       {open && (
-        <div className="fixed bottom-24 right-6 z-[9999] flex h-[480px] w-[360px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div ref={chatPanelRef} role="dialog" aria-modal="true" aria-label="Chat with assistant" className="fixed bottom-24 right-6 z-[9999] flex h-[480px] w-[360px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
           <div className="bg-gradient-to-r from-navy to-navy-light px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-cyan text-sm font-bold text-white">
@@ -368,7 +379,9 @@ export default function ChatWidget() {
 
           <div className="border-t border-gray-100 p-3">
             <div className="flex gap-2">
+              <label htmlFor="chat-input" className="sr-only">Type a message</label>
               <input
+                id="chat-input"
                 ref={inputRef}
                 type="text"
                 value={input}
