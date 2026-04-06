@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Invalid intake request" },
+      { error: "Invalid request" },
       { status: 400 },
     );
   }

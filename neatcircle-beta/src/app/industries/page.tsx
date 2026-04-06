@@ -102,7 +102,7 @@ export default function IndustriesPage() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              href="/assess"
+              href="/assess/general"
               className="bg-cyan hover:bg-cyan-dark text-white font-semibold px-8 py-3.5 rounded-lg transition-colors"
             >
               Take the Assessment

@@ -75,7 +75,7 @@ export default async function IndustryPage({ params }: PageProps) {
           <p className="text-sm text-cyan font-semibold">{svc.price}</p>
           <div className="flex flex-wrap justify-center gap-4 mt-8">
             <Link
-              href={`/assess`}
+              href={`/assess/general`}
               className="bg-cyan hover:bg-cyan-dark text-white font-semibold px-8 py-3.5 rounded-lg transition-colors"
             >
               Take the Assessment
@@ -210,7 +210,7 @@ export default async function IndustryPage({ params }: PageProps) {
               </p>
             </Link>
             <Link
-              href="/assess"
+              href="/assess/general"
               className="group border border-slate-200 rounded-xl p-6 bg-white hover:border-cyan/40 hover:shadow-lg transition-all"
             >
               <h3 className="font-semibold text-navy group-hover:text-cyan transition-colors mb-2">
@@ -247,7 +247,7 @@ export default async function IndustryPage({ params }: PageProps) {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
-              href="/assess"
+              href="/assess/general"
               className="bg-cyan hover:bg-cyan-dark text-white font-semibold px-8 py-3.5 rounded-lg transition-colors"
             >
               Take the Assessment

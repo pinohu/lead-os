@@ -13,11 +13,12 @@ export function generateStaticParams() {
   return VALID_NICHES.map(niche => ({ niche }));
 }
 
-export function generateMetadata({ params }: { params: Promise<{ niche: string }> }) {
-  // Use default metadata since we can't await in generateMetadata synchronously
+export async function generateMetadata({ params }: { params: Promise<{ niche: string }> }) {
+  const { niche } = await params;
+  const assessment = NICHE_ASSESSMENTS[niche] ?? DEFAULT_ASSESSMENT;
   return {
-    title: `Business Readiness Assessment | ${siteConfig.brandName}`,
-    description: "Take our free assessment and discover how automation can transform your business.",
+    title: `${assessment.title} | ${siteConfig.brandName}`,
+    description: assessment.subtitle,
   };
 }
 

@@ -5,20 +5,68 @@ import {
   type WebsiteIntelligenceInput,
 } from "@/lib/website-intelligence";
 
-async function fetchTargetHtml(url: string) {
-  const response = await fetch(url, {
-    headers: {
-      "user-agent": "LeadOS-IntelligenceBot/1.0 (+https://github.com/pinohu/lead-os)",
-      accept: "text/html,application/xhtml+xml",
-    },
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch target website (${response.status})`);
+function isPrivateHost(hostname: string): boolean {
+  if (
+    hostname === "localhost" ||
+    hostname === "[::1]" ||
+    hostname.endsWith(".local")
+  ) {
+    return true;
   }
 
-  return response.text();
+  const bare = hostname.replace(/^\[|\]$/g, "");
+
+  if (bare.startsWith("fc00:") || bare.startsWith("fe80:") || bare === "::1") {
+    return true;
+  }
+
+  const parts = bare.split(".").map(Number);
+  if (parts.length === 4 && parts.every((n) => n >= 0 && n <= 255)) {
+    if (parts[0] === 10) return true;
+    if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true;
+    if (parts[0] === 192 && parts[1] === 168) return true;
+    if (parts[0] === 127) return true;
+    if (parts[0] === 169 && parts[1] === 254) return true;
+    if (parts[0] === 0) return true;
+  }
+
+  return false;
+}
+
+function validateFetchUrl(raw: string): URL {
+  const parsed = new URL(raw);
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new Error("disallowed scheme");
+  }
+  if (isPrivateHost(parsed.hostname)) {
+    throw new Error("disallowed host");
+  }
+  return parsed;
+}
+
+async function fetchTargetHtml(url: string) {
+  const validated = validateFetchUrl(url);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
+
+  try {
+    const response = await fetch(validated.href, {
+      headers: {
+        "user-agent": "LeadOS-IntelligenceBot/1.0 (+https://github.com/pinohu/lead-os)",
+        accept: "text/html,application/xhtml+xml",
+      },
+      cache: "no-store",
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch target website (${response.status})`);
+    }
+
+    return response.text();
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function POST(request: Request) {
@@ -28,6 +76,14 @@ export async function POST(request: Request) {
     let html = typeof body.html === "string" ? body.html : "";
 
     if (!html && url) {
+      try {
+        validateFetchUrl(url);
+      } catch {
+        return NextResponse.json(
+          { success: false, error: "The provided URL is not allowed." },
+          { status: 400 },
+        );
+      }
       html = await fetchTargetHtml(url);
     }
 

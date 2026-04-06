@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import BehavioralTracker from "@/components/BehavioralTracker";
-import ExitIntent from "@/components/ExitIntent";
-import ChatWidget from "@/components/ChatWidget";
-import FunnelOrchestrator from "@/components/FunnelOrchestrator";
-import WhatsAppOptIn from "@/components/WhatsAppOptIn";
+import ClientWidgets from "@/components/ClientWidgets";
 import { siteConfig } from "@/lib/site-config";
 
 const geistSans = Geist({
@@ -103,11 +99,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <div id="main-content">{children}</div>
-        <BehavioralTracker />
-        <ExitIntent />
-        <ChatWidget />
-        <FunnelOrchestrator />
-        <WhatsAppOptIn />
+        <ClientWidgets />
       </body>
     </html>
   );
