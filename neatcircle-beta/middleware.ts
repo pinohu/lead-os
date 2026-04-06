@@ -100,13 +100,6 @@ export function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/api/automations/")) {
     const automationSecret = process.env.AUTOMATION_API_SECRET ?? embeddedSecrets.automation.apiSecret;
-    const internalSmokeRequest =
-      request.headers.get("x-lead-os-internal-smoke") === "1" &&
-      request.headers.get("x-lead-os-dry-run") === "1";
-
-    if (internalSmokeRequest) {
-      return allow(request);
-    }
 
     if (!automationSecret) {
       return isLocalHost(request.nextUrl.hostname)
