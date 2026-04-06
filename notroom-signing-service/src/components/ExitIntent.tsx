@@ -50,7 +50,7 @@ const ExitIntent = () => {
     
     if (!email) return;
 
-    trackEvent('exit_intent_captured', { email, timestamp: Date.now() });
+    trackEvent('exit_intent_captured', { timestamp: Date.now() });
     
     setIsSubmitted(true);
     
@@ -122,6 +122,7 @@ const ExitIntent = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              aria-label="Email address"
             />
             <Button 
               type="submit"

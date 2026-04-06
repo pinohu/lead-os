@@ -22,7 +22,7 @@ const Layout = ({ children }: LayoutProps) => {
       const headerHeight = 80;
       const additionalOffset = 20;
       const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerHeight - additionalOffset;
+      const offsetPosition = elementPosition + window.scrollY - headerHeight - additionalOffset;
 
       window.scrollTo({
         top: offsetPosition,
@@ -36,7 +36,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen overflow-x-hidden max-w-full" lang="en">
       {/* Skip Navigation Links - WCAG 2.1 AA Compliance */}
-      <div className="sr-only">
+      <div>
         <a 
           href="#main-content" 
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
@@ -81,7 +81,7 @@ const Layout = ({ children }: LayoutProps) => {
           aria-label="Book a service now - starting from $60"
         >
           <span className="flex items-center justify-center gap-2">
-            📅 Book Now - From $60
+            <span aria-hidden="true">📅</span> Book Now - From $60
             <span className="text-xs font-normal opacity-90">• Same-day available</span>
           </span>
         </Button>

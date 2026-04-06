@@ -476,7 +476,7 @@ const SigningServicesHome = () => {
                 <CardContent className="p-8">
                   <div className="flex gap-1 mb-4">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+                      <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" aria-hidden="true" />
                     ))}
                   </div>
                   <p className="text-lg text-slate-700 mb-6 leading-relaxed italic">
@@ -517,6 +517,7 @@ const SigningServicesHome = () => {
               <Button 
                 size="lg"
                 variant="outline"
+                onClick={() => window.location.href = "tel:814-480-0989"}
                 className="border-slate-600 text-white hover:bg-white/10 text-lg px-10 py-7 font-semibold bg-transparent"
               >
                 <Phone className="mr-2 w-5 h-5" />

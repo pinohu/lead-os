@@ -9,7 +9,7 @@ const Hero = () => {
     const headerHeight = 80; // h-20
     const additionalOffset = 20;
     const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - headerHeight - additionalOffset;
+    const offsetPosition = elementPosition + window.scrollY - headerHeight - additionalOffset;
 
     window.scrollTo({
       top: offsetPosition,
@@ -37,7 +37,7 @@ const Hero = () => {
         <div className="max-w-5xl mx-auto text-center">
           {/* Professional Badge */}
           <div className="inline-block mb-6 px-6 py-2 bg-background/10 backdrop-blur-sm rounded-full border border-background/20">
-            <span className="text-primary-foreground font-semibold">🏛️ Professional Notary & Business Services</span>
+            <span className="text-primary-foreground font-semibold"><span aria-hidden="true">🏛️</span> Professional Notary & Business Services</span>
           </div>
           
           {/* Main Heading - Clear Value Proposition */}
@@ -64,7 +64,7 @@ const Hero = () => {
               aria-label="Take service quiz to find the right service"
             >
               <div className="flex flex-col items-center gap-1">
-                <span>🎯 Find Your Service</span>
+                <span><span aria-hidden="true">🎯</span> Find Your Service</span>
                 <span className="text-xs sm:text-sm font-normal opacity-90">60-second quiz</span>
               </div>
             </Button>
@@ -76,7 +76,7 @@ const Hero = () => {
               aria-label="Book a service starting from $60"
             >
               <div className="flex flex-col items-center gap-1">
-                <span>📅 Book Now</span>
+                <span><span aria-hidden="true">📅</span> Book Now</span>
                 <span className="text-xs sm:text-sm font-normal opacity-90">From $60</span>
               </div>
             </Button>
@@ -100,13 +100,13 @@ const Hero = () => {
           
           {/* Certifications */}
           <div className="flex flex-wrap justify-center gap-4 text-primary-foreground/80 text-xs md:text-sm">
-            <span>📜 PA State Licensed</span>
+            <span><span aria-hidden="true">📜</span> PA State Licensed</span>
             <span>•</span>
-            <span>🎓 Background Checked</span>
+            <span><span aria-hidden="true">🎓</span> Background Checked</span>
             <span>•</span>
-            <span>🔒 Bonded & Insured</span>
+            <span><span aria-hidden="true">🔒</span> Bonded & Insured</span>
             <span>•</span>
-            <span>⚡ Same-Day Available</span>
+            <span><span aria-hidden="true">⚡</span> Same-Day Available</span>
           </div>
           
           {/* Contact Info - Enhanced touch targets for mobile */}

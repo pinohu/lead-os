@@ -11,7 +11,7 @@ interface SEOProps {
 const SEO = ({ title, description, keywords, canonical, schema }: SEOProps): JSX.Element | null => {
   useEffect(() => {
     // Update title
-    document.title = `${title} | Notroom - Erie, PA`;
+    document.title = `${title} | Notroom Signing Services`;
 
     // Update meta tags
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -58,14 +58,14 @@ const SEO = ({ title, description, keywords, canonical, schema }: SEOProps): JSX
       schemaScript.text = JSON.stringify(schema);
       schemaScript.id = "page-schema";
       document.head.appendChild(schemaScript);
-
-      return () => {
-        const existingSchema = document.getElementById("page-schema");
-        if (existingSchema) {
-          existingSchema.remove();
-        }
-      };
     }
+
+    return () => {
+      const existingSchema = document.getElementById("page-schema");
+      if (existingSchema) {
+        existingSchema.remove();
+      }
+    };
   }, [title, description, keywords, canonical, schema]);
 
   return null;

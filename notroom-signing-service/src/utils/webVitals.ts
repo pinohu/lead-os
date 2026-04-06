@@ -4,7 +4,6 @@
  */
 
 import { logger } from './logger';
-import { checkPerformanceThresholds } from './performanceAlerts';
 
 export interface Metric {
   name: string;
@@ -16,36 +15,25 @@ export interface Metric {
 }
 
 const STORAGE_KEY = 'web-vitals-metrics';
-const MAX_STORED_METRICS = 100; // Keep last 100 metrics
 
-// Store metric in localStorage for dashboard
+let pendingMetrics: Metric[] = [];
+
 const storeMetric = (metric: Metric) => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const metrics: Metric[] = stored ? JSON.parse(stored) : [];
-    
-    // Add new metric
-    metrics.push({
-      ...metric,
-      timestamp: Date.now(),
-    });
-    
-    // Keep only last MAX_STORED_METRICS
-    if (metrics.length > MAX_STORED_METRICS) {
-      metrics.shift();
-    }
-    
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(metrics));
-    
-    // Check for alerts
-    const alerts = checkPerformanceThresholds({ [metric.name]: metric.value });
-    if (alerts.length > 0) {
-      logger.warn('[Performance Alert]', alerts[0].message);
-    }
-  } catch (error) {
-    logger.warn('Failed to store Web Vitals metric:', error);
-  }
+  pendingMetrics.push(metric);
 };
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden' && pendingMetrics.length > 0) {
+      try {
+        const existing: Metric[] = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        const combined = [...existing, ...pendingMetrics].slice(-100);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(combined));
+        pendingMetrics = [];
+      } catch {}
+    }
+  });
+}
 
 // Get stored metrics for dashboard
 export const getStoredMetrics = (): Metric[] => {

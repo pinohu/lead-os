@@ -18,7 +18,8 @@ const CookieConsent = () => {
 
   useEffect(() => {
     const consent = localStorage.getItem("cookie-consent");
-    if (!consent) {
+    const dismissed = localStorage.getItem("cookie-consent-dismissed");
+    if (!consent && !dismissed) {
       // Delay showing banner slightly for better UX
       setTimeout(() => setShowBanner(true), 1000);
     }
@@ -194,7 +195,10 @@ const CookieConsent = () => {
               </div>
 
               <button
-                onClick={() => setShowBanner(false)}
+                onClick={() => {
+                  setShowBanner(false);
+                  localStorage.setItem('cookie-consent-dismissed', 'true');
+                }}
                 className="p-2 hover:bg-muted rounded-lg transition-colors"
                 aria-label="Close cookie banner"
               >

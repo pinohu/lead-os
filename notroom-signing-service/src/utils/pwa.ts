@@ -48,12 +48,7 @@ export const registerServiceWorker = () => {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed') {
                   if (navigator.serviceWorker.controller) {
-                    // New service worker available - force reload
-                    logger.log('New service worker available, reloading...');
-                    // Reload after a short delay to allow the new worker to activate
-                    setTimeout(() => {
-                      window.location.reload();
-                    }, 100);
+                    console.info('[PWA] New version available. Refresh to update.');
                   } else {
                     // First time installation
                     logger.log('Service Worker installed for the first time');
@@ -65,8 +60,7 @@ export const registerServiceWorker = () => {
 
           // Handle controller change (new service worker took control)
           navigator.serviceWorker.addEventListener('controllerchange', () => {
-            logger.log('Service Worker controller changed, reloading...');
-            window.location.reload();
+            console.info('[PWA] New version available. Refresh to update.');
           });
         })
         .catch((error) => {

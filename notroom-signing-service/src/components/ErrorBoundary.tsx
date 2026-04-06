@@ -37,11 +37,11 @@ class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-background" role="alert">
           <Card className="max-w-md w-full">
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center space-y-4">
-                <AlertTriangle className="w-16 h-16 text-destructive" />
+                <AlertTriangle className="w-16 h-16 text-destructive" aria-hidden="true" />
                 <h1 className="text-2xl font-bold text-foreground">
                   Something Went Wrong
                 </h1>

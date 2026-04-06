@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { CommunityData, getNearbyLinks } from "@/data/communityData";
 import PricingCalculator from "@/components/PricingCalculator";
 import BookingForm from "@/components/BookingForm";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LocalCaseStudies } from "@/components/local-seo/LocalCaseStudies";
 import { LocalProofSection } from "@/components/local-seo/LocalProofSection";
@@ -32,6 +32,13 @@ const CommunityPage = ({ community }: CommunityPageProps) => {
 
   // Generate community image on mount if prompt exists
   useEffect(() => {
+    const cacheKey = `community-img-${community.slug}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      setCommunityImage(cached);
+      return;
+    }
+
     const generateImage = async () => {
       if (!community.imagePrompt || imageLoading || communityImage) return;
       
@@ -44,6 +51,7 @@ const CommunityPage = ({ community }: CommunityPageProps) => {
         if (error) throw error;
         if (data?.imageUrl) {
           setCommunityImage(data.imageUrl);
+          localStorage.setItem(cacheKey, data.imageUrl);
         }
       } catch (error) {
         logger.error('Error generating community image:', error);
@@ -53,7 +61,7 @@ const CommunityPage = ({ community }: CommunityPageProps) => {
     };
 
     generateImage();
-  }, [community.imagePrompt]);
+  }, [community.slug]);
 
   const services = [
     { icon: Video, title: "Remote Online Notary (RON)", price: "$60", description: `Online notarization 24/7 for ${community.name} residents`, link: "/services/remote-online-notary" },
@@ -67,7 +75,7 @@ const CommunityPage = ({ community }: CommunityPageProps) => {
 
   const caseStudies = getCaseStudiesForCity(community.slug);
   
-  const localBusinessSchema = {
+  const localBusinessSchema = useMemo(() => ({
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
     "name": `Erie Notary - Professional Notary Services in ${community.name}, PA`,
@@ -79,11 +87,6 @@ const CommunityPage = ({ community }: CommunityPageProps) => {
       "addressRegion": "PA",
       "addressCountry": "US",
       "postalCode": community.zipCodes[0]
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": "",
-      "longitude": ""
     },
     "url": `https://notroom.com/areas/${community.slug}-pa`,
     "telephone": "(814) 480-0989",
@@ -180,7 +183,7 @@ const CommunityPage = ({ community }: CommunityPageProps) => {
       "name": "Verification",
       "value": "PA State Licensed & NNA Certified"
     }
-  };
+  }), [community]);
   
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "https://notroom.com/" },

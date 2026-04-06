@@ -24,14 +24,14 @@
     <meta property="og:url" content="https://notroom.com/" />
     <meta property="og:title" content="Notroom | National Signing Service | 50-State Coverage" />
     <meta property="og:description" content="National signing service for title companies. 3-minute confirmation, 98%+ first-pass funding, 50-state coverage. Start your free pilot today." />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:image" content="/favicon.png" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://notroom.com/" />
     <meta name="twitter:title" content="Notroom | National Signing Service" />
     <meta name="twitter:description" content="National signing service for title companies. 3-minute confirmation, 98%+ first-pass funding. Elite notary network." />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:image" content="/favicon.png" />
     
     <!-- Business Location (HQ) -->
     <meta name="geo.region" content="US-PA" />
@@ -44,6 +44,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
     
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-HZ29KE41TZ"></script>
@@ -51,7 +52,8 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-HZ29KE41TZ');
+      gtag('config', 'G-HZ29KE41TZ', { send_page_view: false });
+      window.addEventListener('load', function() { gtag('config', 'G-HZ29KE41TZ'); });
     </script>
     
     <!-- Schema.org JSON-LD -->

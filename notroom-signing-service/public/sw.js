@@ -3,7 +3,7 @@
 
 // Cache version - using timestamp to ensure unique cache per deployment
 // This ensures each deployment gets a fresh cache
-const CACHE_VERSION = Date.now();
+const CACHE_VERSION = 'v1';
 const CACHE_NAME = `notroom-cache-${CACHE_VERSION}`;
 const urlsToCache = [
   '/',
@@ -14,19 +14,12 @@ const urlsToCache = [
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker with cache:', CACHE_NAME);
-  
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('[SW] Caching app shell');
-        return cache.addAll(urlsToCache).catch((error) => {
-          console.warn('[SW] Some resources failed to cache:', error);
-        });
+        return cache.addAll(urlsToCache).catch(() => {});
       })
-      .catch((error) => {
-        console.error('[SW] Service Worker install failed:', error);
-      })
+      .catch(() => {})
   );
   
   // Force activation of new service worker immediately
@@ -35,19 +28,14 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker');
-  
   event.waitUntil(
     Promise.all([
       // Delete all old caches
       caches.keys().then((cacheNames) => {
-        console.log('[SW] Found caches:', cacheNames);
-        
         return Promise.all(
           cacheNames
             .filter((cacheName) => cacheName.startsWith('notroom-cache-') && cacheName !== CACHE_NAME)
             .map((cacheName) => {
-              console.log('[SW] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             })
         );
@@ -100,9 +88,7 @@ self.addEventListener('fetch', (event) => {
           .then((cache) => {
             cache.put(event.request, responseToCache);
           })
-          .catch((error) => {
-            console.warn('[SW] Failed to cache response:', error);
-          });
+          .catch(() => {});
 
         return response;
       })
@@ -111,7 +97,6 @@ self.addEventListener('fetch', (event) => {
         return caches.match(event.request)
           .then((cachedResponse) => {
             if (cachedResponse) {
-              console.log('[SW] Serving from cache:', event.request.url);
               return cachedResponse;
             }
             

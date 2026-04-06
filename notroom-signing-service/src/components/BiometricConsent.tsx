@@ -20,7 +20,7 @@ const BiometricConsent = ({ onConsent, required = false }: BiometricConsentProps
   return (
     <Card className="p-6 bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-500">
       <div className="flex items-start gap-3 mb-4">
-        <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+        <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
         <div>
           <h3 className="font-bold text-amber-900 dark:text-amber-100 text-lg mb-2">
             Biometric Data Collection Notice & Consent
@@ -37,7 +37,7 @@ const BiometricConsent = ({ onConsent, required = false }: BiometricConsentProps
             <Fingerprint className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="font-semibold mb-1">Biometric Identifiers We Collect:</h4>
-              <ul className="list-disc list-inside space-y-1 text-xs">
+              <ul className="list-disc list-inside space-y-1 text-sm">
                 <li><strong>Facial Recognition Data:</strong> Geometry, landmarks, and unique facial features extracted from your live video and government-issued ID photo</li>
                 <li><strong>Identity Verification Scans:</strong> High-resolution digital copies of your government ID (driver's license, passport, state ID)</li>
                 <li><strong>Voice Recordings:</strong> Audio from the RON session for identity verification and record-keeping</li>
@@ -50,7 +50,7 @@ const BiometricConsent = ({ onConsent, required = false }: BiometricConsentProps
             <Eye className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="font-semibold mb-1">Purpose of Collection:</h4>
-              <ul className="list-disc list-inside space-y-1 text-xs">
+              <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Verify your identity as required by Pennsylvania RON law (57 Pa.C.S. § 319)</li>
                 <li>Prevent fraud, identity theft, and unauthorized notarizations</li>
                 <li>Create legally required audio-video recording of notarial act</li>
@@ -63,7 +63,7 @@ const BiometricConsent = ({ onConsent, required = false }: BiometricConsentProps
             <Clock className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="font-semibold mb-1">Retention & Storage:</h4>
-              <ul className="list-disc list-inside space-y-1 text-xs">
+              <ul className="list-disc list-inside space-y-1 text-sm">
                 <li><strong>10-Year Retention:</strong> Pennsylvania law requires retention of all RON recordings for 10 years minimum</li>
                 <li><strong>Secure Storage:</strong> Encrypted storage on secure servers with access controls</li>
                 <li><strong>Third-Party Processors:</strong> Your biometric data is processed through our PA-approved RON platform provider</li>
@@ -76,7 +76,7 @@ const BiometricConsent = ({ onConsent, required = false }: BiometricConsentProps
             <Video className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
             <div>
               <h4 className="font-semibold mb-1">Your Rights:</h4>
-              <ul className="list-disc list-inside space-y-1 text-xs">
+              <ul className="list-disc list-inside space-y-1 text-sm">
                 <li><strong>Right to Know:</strong> You may request a copy of biometric data we have collected about you</li>
                 <li><strong>Right to Delete:</strong> After the 10-year legal retention period, you may request deletion</li>
                 <li><strong>Right to Withdraw:</strong> You may withdraw consent at any time BEFORE the RON session begins</li>
@@ -88,7 +88,7 @@ const BiometricConsent = ({ onConsent, required = false }: BiometricConsentProps
 
         <div className="bg-destructive/10 border-l-4 border-destructive p-4 rounded">
           <p className="text-sm font-semibold text-destructive mb-2">⚠️ Important Legal Notice:</p>
-          <p className="text-xs text-destructive">
+          <p className="text-sm text-destructive">
             Illinois residents: This collection is subject to Illinois Biometric Information Privacy Act (BIPA).
             California residents: This collection is subject to California Consumer Privacy Act (CCPA).
             Texas residents: This collection is subject to Texas Capture or Use of Biometric Identifier Act.
