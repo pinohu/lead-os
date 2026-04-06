@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 import {
   validateApiKey,
@@ -25,16 +26,26 @@ export interface AuthFromHeaders {
 export function getAuthFromHeaders(request: Request): AuthFromHeaders | null {
   const userId = request.headers.get("x-authenticated-user-id");
   const role = request.headers.get("x-authenticated-role");
+  const tenantId = request.headers.get("x-authenticated-tenant-id") ?? "";
   const signature = request.headers.get("x-middleware-signature");
-  if (!userId || !role) return null;
+  const requestId = request.headers.get("x-request-id") ?? "";
 
-  // Verify middleware signature to prevent direct header spoofing
-  if (signature && !signature.startsWith("mw1-")) return null;
+  if (!userId || !role || !signature) return null;
+
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? "";
+  if (!secret) return null;
+
+  const payload = `${userId}:${tenantId}:${requestId}`;
+  const expected = createHmac("sha256", secret).update(payload).digest("hex");
+
+  if (expected.length !== signature.length) return null;
+  const valid = timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+  if (!valid) return null;
 
   return {
     userId,
     role,
-    tenantId: request.headers.get("x-authenticated-tenant-id") ?? undefined,
+    tenantId: tenantId || undefined,
     method: request.headers.get("x-authenticated-method") ?? "unknown",
   };
 }

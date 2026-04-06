@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
 import { startTrace } from "@/lib/request-tracer";
@@ -226,9 +226,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   // Cron secret — fast path, no DB required
   const cronSecret = request.headers.get("x-cron-secret");
-  if (cronSecret && cronSecret === process.env.CRON_SECRET) {
-    const response = NextResponse.next();
-    return applySecurityHeaders(response, requestId);
+  if (cronSecret && process.env.CRON_SECRET) {
+    const a = Buffer.from(cronSecret);
+    const b = Buffer.from(process.env.CRON_SECRET);
+    if (a.length === b.length && timingSafeEqual(a, b)) {
+      const response = NextResponse.next();
+      return applySecurityHeaders(response, requestId);
+    }
   }
 
   // Authenticated paths — dynamic import keeps auth-system out of the public
