@@ -69,7 +69,7 @@ export interface OfferEvolution {
 // In-memory stores
 // ---------------------------------------------------------------------------
 
-import { EvictableMap } from "./evictable-map";
+import { EvictableMap } from "./evictable-map.ts";
 
 const variantStore: Map<string, OfferVariant> = new EvictableMap();
 const testStore: Map<string, OfferTest> = new EvictableMap();

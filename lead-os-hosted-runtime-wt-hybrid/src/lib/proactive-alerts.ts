@@ -31,7 +31,7 @@ export interface ProactiveAlert {
 
 // --------------- in-memory store ---------------
 
-import { EvictableMap } from "./evictable-map";
+import { EvictableMap } from "./evictable-map.ts";
 
 const alertStore: Map<string, ProactiveAlert[]> = new EvictableMap();
 

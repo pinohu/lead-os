@@ -88,7 +88,7 @@ export interface TrustBadge {
 // In-memory stores
 // ---------------------------------------------------------------------------
 
-import { EvictableMap } from "./evictable-map";
+import { EvictableMap } from "./evictable-map.ts";
 
 const reviewStore: Map<string, Review> = new EvictableMap();
 const certificationStore: Map<string, Certification> = new EvictableMap();

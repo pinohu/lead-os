@@ -39,7 +39,7 @@ export interface ProjectMetrics {
 
 // --------------- in-memory store ---------------
 
-import { EvictableMap } from "./evictable-map";
+import { EvictableMap } from "./evictable-map.ts";
 
 const recoveryStore: Map<string, RecoveryAction[]> = new EvictableMap();
 
