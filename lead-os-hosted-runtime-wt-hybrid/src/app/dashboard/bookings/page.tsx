@@ -14,7 +14,7 @@ export default async function BookingJobsPage() {
   );
 
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       <section className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Booking queue</p>
@@ -76,6 +76,6 @@ export default async function BookingJobsPage() {
           ))
         )}
       </section>
-    </main>
+    </div>
   );
 }

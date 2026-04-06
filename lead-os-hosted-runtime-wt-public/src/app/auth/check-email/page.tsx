@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type CheckEmailPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
@@ -27,9 +29,9 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
           The link expires in 15 minutes. If you do not see it, check spam and then request a new
           one from the sign-in page.
         </p>
-        <a href="/auth/sign-in" className="secondary">
+        <Link href="/auth/sign-in" className="secondary">
           Back to sign-in
-        </a>
+        </Link>
       </section>
     </main>
   );

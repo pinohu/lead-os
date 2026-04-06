@@ -169,7 +169,7 @@ export default async function RevenueCommandPage() {
   const trendArrow = data.revenueTrend > 0 ? "\u2191" : data.revenueTrend < 0 ? "\u2193" : "\u2192";
 
   return (
-    <main className="max-w-[1180px] mx-auto px-6 py-6 space-y-6">
+    <div className="max-w-[1180px] mx-auto px-6 py-6 space-y-6">
       {/* Header */}
       <header className="mb-8">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -327,6 +327,6 @@ export default async function RevenueCommandPage() {
           )}
         </CardContent>
       </Card>
-    </main>
+    </div>
   );
 }

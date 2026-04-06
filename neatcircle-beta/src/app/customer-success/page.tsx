@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { siteConfig } from "@/lib/site-config";
@@ -37,12 +38,12 @@ export default function CustomerSuccessPage() {
             ))}
           </div>
           <div className="mt-8 flex flex-wrap gap-4">
-            <a href="/dashboard" className="rounded-lg bg-cyan px-6 py-3 font-semibold text-white">
+            <Link href="/dashboard" className="rounded-lg bg-cyan px-6 py-3 font-semibold text-white">
               View Control Tower
-            </a>
-            <a href="/control-center" className="rounded-lg border border-white/20 px-6 py-3 font-semibold text-white">
+            </Link>
+            <Link href="/control-center" className="rounded-lg border border-white/20 px-6 py-3 font-semibold text-white">
               Open Platform Controls
-            </a>
+            </Link>
           </div>
         </section>
       </main>

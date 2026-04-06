@@ -252,7 +252,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const fullName = [lead.firstName, lead.lastName].filter(Boolean).join(" ") || decodedLeadKey;
 
   return (
-    <main className="min-h-screen bg-background px-6 py-8 pb-16 font-sans">
+    <div className="min-h-screen bg-background px-6 py-8 pb-16 font-sans">
       <div className="mx-auto flex max-w-[1200px] flex-col gap-6">
 
         {/* Back nav */}
@@ -611,6 +611,6 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         </Card>
 
       </div>
-    </main>
+    </div>
   );
 }

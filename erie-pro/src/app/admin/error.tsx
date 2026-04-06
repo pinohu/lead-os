@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+
 export default function AdminError({
   error,
   reset,
@@ -30,9 +32,9 @@ export default function AdminError({
         >
           Try again
         </button>
-        <a href="/admin" className="rounded-md border border-gray-300 dark:border-gray-700 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
+        <Link href="/admin" className="rounded-md border border-gray-300 dark:border-gray-700 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
           Back to Dashboard
-        </a>
+        </Link>
       </div>
     </div>
   )

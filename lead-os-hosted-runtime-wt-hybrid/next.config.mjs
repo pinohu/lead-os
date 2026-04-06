@@ -4,6 +4,10 @@ const nextConfig = {
   // enabling the lean Docker runner stage without shipping node_modules wholesale.
   output: "standalone",
   poweredByHeader: false,
+  images: {
+    formats: ["image/avif", "image/webp"],
+  },
+  serverExternalPackages: ["bullmq"],
   async headers() {
     return [
       {

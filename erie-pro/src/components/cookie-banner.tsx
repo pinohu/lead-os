@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 function getCookie(name: string): string | null {
@@ -47,9 +48,9 @@ export function CookieBanner() {
           We use cookies to improve your experience and analyze site traffic. By
           clicking &quot;Accept&quot;, you consent to our use of cookies. See
           our{" "}
-          <a href="/privacy" className="underline hover:text-foreground">
+          <Link href="/privacy" className="underline hover:text-foreground">
             Privacy Policy
-          </a>{" "}
+          </Link>{" "}
           for details.
         </p>
         <div className="flex gap-2 shrink-0">

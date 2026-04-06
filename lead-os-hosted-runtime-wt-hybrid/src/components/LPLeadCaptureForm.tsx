@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useId } from "react";
+import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -265,9 +266,9 @@ export function LPLeadCaptureForm({
       {/* Privacy notice */}
       <p className="mb-5 text-[0.78rem] leading-relaxed text-muted-foreground">
         By submitting, you agree to our{" "}
-        <a href="/privacy" className="text-inherit underline">
+        <Link href="/privacy" className="text-inherit underline">
           Privacy Policy
-        </a>
+        </Link>
         . We may send follow-up communications related to your inquiry. You can unsubscribe at any time.
       </p>
 

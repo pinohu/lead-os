@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import dynamic from "next/dynamic";
 import "./globals.css";
-import BehavioralTracker from "@/components/BehavioralTracker";
-import ExitIntent from "@/components/ExitIntent";
-import ChatWidget from "@/components/ChatWidget";
-import FunnelOrchestrator from "@/components/FunnelOrchestrator";
-import WhatsAppOptIn from "@/components/WhatsAppOptIn";
+import { CookieBanner } from "@/components/CookieBanner";
 import { siteConfig } from "@/lib/site-config";
+
+const BehavioralTracker = dynamic(() => import("@/components/BehavioralTracker"), { ssr: false });
+const ExitIntent = dynamic(() => import("@/components/ExitIntent"), { ssr: false });
+const ChatWidget = dynamic(() => import("@/components/ChatWidget"), { ssr: false });
+const FunnelOrchestrator = dynamic(() => import("@/components/FunnelOrchestrator"), { ssr: false });
+const WhatsAppOptIn = dynamic(() => import("@/components/WhatsAppOptIn"), { ssr: false });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -98,16 +101,17 @@ export default function RootLayout({
       >
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none"
+          className="absolute -top-full left-4 z-50 rounded-md bg-cyan-500 px-4 py-2 text-white focus:top-4 focus:outline-none focus:ring-2 focus:ring-cyan-400"
         >
           Skip to content
         </a>
-        <div id="main-content">{children}</div>
+        <main id="main-content">{children}</main>
         <BehavioralTracker />
         <ExitIntent />
         <ChatWidget />
         <FunnelOrchestrator />
         <WhatsAppOptIn />
+        <CookieBanner />
       </body>
     </html>
   );

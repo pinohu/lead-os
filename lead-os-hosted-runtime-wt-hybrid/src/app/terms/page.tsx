@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -85,7 +86,7 @@ export default function TermsOfServicePage() {
 
         <section className="mb-8">
           <h2 className="text-foreground text-xl font-semibold mb-3">7. Data Processing</h2>
-          <p>We process personal data in accordance with our <a href="/privacy" className="text-primary underline">Privacy Policy</a>. For business customers processing personal data of EU residents, we will enter into a Data Processing Agreement upon request. You are responsible for ensuring your use of the Service complies with applicable data protection laws, including obtaining necessary consents from individuals whose data you process through the Service.</p>
+          <p>We process personal data in accordance with our <Link href="/privacy" className="text-primary underline">Privacy Policy</Link>. For business customers processing personal data of EU residents, we will enter into a Data Processing Agreement upon request. You are responsible for ensuring your use of the Service complies with applicable data protection laws, including obtaining necessary consents from individuals whose data you process through the Service.</p>
         </section>
 
         <section className="mb-8">
@@ -120,7 +121,7 @@ export default function TermsOfServicePage() {
 
         <section className="mb-8">
           <h2 className="text-foreground text-xl font-semibold mb-3">14. Contact Information</h2>
-          <p>For questions about these Terms, please contact us at <a href="mailto:legal@leadgen-os.com" className="text-primary underline">legal@leadgen-os.com</a> or visit our <a href="/contact" className="text-primary underline">contact page</a>.</p>
+          <p>For questions about these Terms, please contact us at <a href="mailto:legal@leadgen-os.com" className="text-primary underline">legal@leadgen-os.com</a> or visit our <Link href="/contact" className="text-primary underline">contact page</Link>.</p>
         </section>
       </article>
     </main>

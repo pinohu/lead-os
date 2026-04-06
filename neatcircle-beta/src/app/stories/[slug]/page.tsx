@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Contact from "@/components/Contact";
@@ -76,12 +77,12 @@ export default async function StoryPage({ params }: StoryPageProps) {
             </div>
           </div>
           <div className="mt-10 flex flex-wrap gap-4">
-            <a href={`/assess/${service.slug}`} className="rounded-lg bg-cyan px-6 py-3 font-semibold text-white">
+            <Link href={`/assess/${service.slug}`} className="rounded-lg bg-cyan px-6 py-3 font-semibold text-white">
               Start {service.title} Assessment
-            </a>
-            <a href="/calculator" className="rounded-lg border border-white/20 px-6 py-3 font-semibold text-white">
+            </Link>
+            <Link href="/calculator" className="rounded-lg border border-white/20 px-6 py-3 font-semibold text-white">
               Calculate ROI
-            </a>
+            </Link>
           </div>
         </section>
         <Contact />

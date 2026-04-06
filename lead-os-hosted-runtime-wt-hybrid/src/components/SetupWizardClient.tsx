@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useId, type FormEvent, type KeyboardEvent } from "react";
+import Link from "next/link";
 
 // ---------------------------------------------------------------------------
 // Prop types
@@ -778,9 +779,9 @@ function AllDoneStep({ siteUrl, tenantId, brandName, onBack }: AllDoneStepProps)
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <a href="/dashboard" className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-500 px-7 py-3.5 text-[0.95rem] font-bold text-white no-underline transition-opacity duration-150">
+        <Link href="/dashboard" className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-500 px-7 py-3.5 text-[0.95rem] font-bold text-white no-underline transition-opacity duration-150">
           Go to dashboard →
-        </a>
+        </Link>
         <button className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-border bg-muted px-6 py-3.5 text-[0.95rem] font-semibold text-foreground transition-opacity duration-150" onClick={onBack} type="button">
           ← Back
         </button>

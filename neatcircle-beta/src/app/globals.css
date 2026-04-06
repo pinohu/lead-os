@@ -109,3 +109,13 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #22d3ee;
+  outline-offset: 3px;
+}

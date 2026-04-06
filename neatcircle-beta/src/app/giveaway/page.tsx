@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Contact from "@/components/Contact";
@@ -37,12 +38,12 @@ export default function GiveawayPage() {
             ))}
           </div>
           <div className="mt-8 flex flex-wrap gap-4">
-            <a href="/calculator" className="rounded-lg bg-cyan px-6 py-3 font-semibold text-white">
+            <Link href="/calculator" className="rounded-lg bg-cyan px-6 py-3 font-semibold text-white">
               Get the ROI Tool
-            </a>
-            <a href="/webinar/on-demand" className="rounded-lg border border-white/20 px-6 py-3 font-semibold text-white">
+            </Link>
+            <Link href="/webinar/on-demand" className="rounded-lg border border-white/20 px-6 py-3 font-semibold text-white">
               Continue to Evergreen Webinar
-            </a>
+            </Link>
           </div>
         </section>
         <Contact />

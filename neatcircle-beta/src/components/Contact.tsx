@@ -111,7 +111,7 @@ export default function Contact() {
 
           <div className="bg-slate-50 rounded-xl p-7 border border-slate-200">
             {status === "sent" ? (
-              <div className="flex flex-col items-center justify-center text-center py-12">
+              <div role="status" className="flex flex-col items-center justify-center text-center py-12">
                 <div className="rounded-full bg-green-100 p-4">
                   <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -173,7 +173,7 @@ export default function Contact() {
                 </button>
 
                 {status === "error" && (
-                  <p className="text-sm text-red-600 text-center">
+                  <p role="alert" className="text-sm text-red-600 text-center">
                     Something went wrong. Please email us at {siteConfig.supportEmail}.
                   </p>
                 )}

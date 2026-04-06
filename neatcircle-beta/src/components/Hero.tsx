@@ -98,7 +98,7 @@ export default function Hero() {
           <span className="text-cyan">{experience.highlight}</span>
         </h1>
 
-        <p className="mx-auto mb-10 max-w-3xl text-lg leading-relaxed text-slate-300 sm:text-xl">
+        <p className="mx-auto mb-10 max-w-3xl text-lg leading-relaxed text-slate-200 sm:text-xl">
           {experience.subheadline}
         </p>
 

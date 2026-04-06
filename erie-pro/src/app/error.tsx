@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { AlertCircle, RefreshCw, Home } from "lucide-react"
 
 export default function Error({
@@ -31,10 +32,10 @@ export default function Error({
             Try again
           </Button>
           <Button asChild variant="outline">
-            <a href="/">
+            <Link href="/">
               <Home className="mr-2 h-4 w-4" />
               Go home
-            </a>
+            </Link>
           </Button>
         </div>
       </div>

@@ -244,9 +244,9 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
               </div>
               <p className="text-muted-foreground mt-3 text-[0.78rem] leading-relaxed">
                 By submitting, you agree to our{" "}
-                <a href="/privacy" className="text-inherit underline">
+                <Link href="/privacy" className="text-inherit underline">
                   Privacy Policy
-                </a>
+                </Link>
                 . We will use your information to respond to your inquiry and may send relevant follow-up communications. You can unsubscribe at any time.
               </p>
             </div>

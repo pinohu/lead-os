@@ -28,7 +28,7 @@ export default async function DashboardPage() {
   const health = getAutomationHealth();
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
       <GettingStartedChecklist />
 
       {/* Hero section */}
@@ -316,6 +316,6 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </section>
-    </main>
+    </div>
   );
 }

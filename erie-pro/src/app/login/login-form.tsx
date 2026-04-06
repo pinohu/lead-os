@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -127,15 +128,15 @@ export default function LoginForm() {
 
       <div className="text-center space-y-2">
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          <a href="/forgot-password" className="text-blue-600 hover:text-blue-500">
+          <Link href="/forgot-password" className="text-blue-600 hover:text-blue-500">
             Forgot password?
-          </a>
+          </Link>
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400">
           Don&apos;t have an account?{" "}
-          <a href="/for-business/claim" className="text-blue-600 hover:text-blue-500">
+          <Link href="/for-business/claim" className="text-blue-600 hover:text-blue-500">
             Claim your territory
-          </a>
+          </Link>
         </p>
       </div>
     </form>

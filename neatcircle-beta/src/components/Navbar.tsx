@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
 
 const navLinks = [
@@ -21,28 +22,28 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-0 text-xl font-bold tracking-tight">
+          <Link href="/" className="flex items-center gap-0 text-xl font-bold tracking-tight">
             <span className="text-white">{siteConfig.brandPrimary}</span>
             <span className="text-cyan">{siteConfig.brandAccent}</span>
-          </a>
+          </Link>
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className="text-sm text-slate-300 hover:text-white transition-colors"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
-            <a
+            <Link
               href="/#contact"
               className="bg-cyan hover:bg-cyan-dark text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors"
             >
               Book a Call
-            </a>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -69,22 +70,22 @@ export default function Navbar() {
         <div className="md:hidden bg-navy border-t border-white/10">
           <div className="px-4 py-4 space-y-3">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
                 className="block text-slate-300 hover:text-white transition-colors py-2"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
-            <a
+            <Link
               href="/#contact"
               onClick={() => setOpen(false)}
               className="block bg-cyan hover:bg-cyan-dark text-white text-center font-semibold px-5 py-2.5 rounded-lg transition-colors mt-4"
             >
               Book a Call
-            </a>
+            </Link>
           </div>
         </div>
       )}

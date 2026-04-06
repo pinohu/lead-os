@@ -14,7 +14,7 @@ export default async function ProviderHealthPage() {
     .sort(([left], [right]) => left.localeCompare(right));
 
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       <section className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Provider health</p>
@@ -97,6 +97,6 @@ export default async function ProviderHealthPage() {
           </article>
         ))}
       </section>
-    </main>
+    </div>
   );
 }

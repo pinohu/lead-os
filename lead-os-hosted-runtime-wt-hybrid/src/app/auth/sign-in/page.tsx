@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
@@ -121,9 +122,9 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             <p className="text-muted-foreground mb-3 text-[0.95rem]">
               New to {brandName}?
             </p>
-            <a href="/onboard" className="secondary inline-block">
+            <Link href="/onboard" className="secondary inline-block">
               Create your account
-            </a>
+            </Link>
           </div>
         </section>
 
