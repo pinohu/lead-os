@@ -81,5 +81,7 @@ export function getEnv(): Env {
   return _env;
 }
 
-// Convenience export for immediate validation
-export const env = getEnv();
+// NOTE: do NOT eagerly call `getEnv()` at module top-level. This module
+// gets pulled into the edge middleware bundle via instrumentation, and
+// any throw at import time turns into MIDDLEWARE_INVOCATION_FAILED on
+// every request. Callers must invoke `getEnv()` explicitly.
