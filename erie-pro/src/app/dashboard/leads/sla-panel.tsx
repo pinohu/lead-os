@@ -28,45 +28,71 @@ export async function SlaPanel({ providerId }: SlaPanelProps) {
   const now = new Date();
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const [activeLeads, weekLeads, weekOutcomes, failovers] = await Promise.all([
-    // Active = routed to me, no outcome yet, deadline in the future OR recently passed
-    prisma.lead.findMany({
-      where: {
-        routedToId: providerId,
-        slaDeadline: { not: null, gte: new Date(now.getTime() - 30 * 60_000) },
-        outcomes: { none: {} },
-      },
-      orderBy: { slaDeadline: "asc" },
-      take: 5,
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        niche: true,
-        temperature: true,
-        routeType: true,
-        slaDeadline: true,
-      },
-    }),
-    prisma.lead.count({
-      where: { routedToId: providerId, createdAt: { gte: weekAgo } },
-    }),
-    prisma.leadOutcome.findMany({
-      where: {
-        providerId,
-        createdAt: { gte: weekAgo },
-        responseTimeSeconds: { not: null },
-      },
-      select: { responseTimeSeconds: true, lead: { select: { slaDeadline: true, createdAt: true } } },
-    }),
-    prisma.lead.count({
-      where: {
-        routedToId: providerId,
-        routeType: "failover",
-        createdAt: { gte: weekAgo },
-      },
-    }),
-  ]);
+  const [activeLeads, weekLeads, weekOutcomes, failovers, recentFailovers] =
+    await Promise.all([
+      // Active = routed to me, no outcome yet, deadline in the future OR recently passed
+      prisma.lead.findMany({
+        where: {
+          routedToId: providerId,
+          slaDeadline: { not: null, gte: new Date(now.getTime() - 30 * 60_000) },
+          outcomes: { none: {} },
+        },
+        orderBy: { slaDeadline: "asc" },
+        take: 5,
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          niche: true,
+          temperature: true,
+          routeType: true,
+          slaDeadline: true,
+        },
+      }),
+      prisma.lead.count({
+        where: { routedToId: providerId, createdAt: { gte: weekAgo } },
+      }),
+      prisma.leadOutcome.findMany({
+        where: {
+          providerId,
+          createdAt: { gte: weekAgo },
+          responseTimeSeconds: { not: null },
+        },
+        select: {
+          responseTimeSeconds: true,
+          lead: { select: { slaDeadline: true, createdAt: true } },
+        },
+      }),
+      prisma.lead.count({
+        where: {
+          routedToId: providerId,
+          routeType: "failover",
+          createdAt: { gte: weekAgo },
+        },
+      }),
+      // Failover log: the 5 most recent leads that reached us via
+      // failover in the last 7 days. Shown below the active list so
+      // the pro sees both "what's still open" and "what rolled to me
+      // because someone else missed SLA."
+      prisma.lead.findMany({
+        where: {
+          routedToId: providerId,
+          routeType: "failover",
+          createdAt: { gte: weekAgo },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          niche: true,
+          temperature: true,
+          createdAt: true,
+          slaDeadline: true,
+        },
+      }),
+    ]);
 
   // SLA compliance: of leads responded this week, what % beat the deadline?
   const respondedWithDeadline = weekOutcomes.filter(
@@ -130,6 +156,49 @@ export async function SlaPanel({ providerId }: SlaPanelProps) {
           accent={failovers > 0 ? "warn" : "ok"}
         />
       </div>
+
+      {/* ── Failover log ────────────────────────────────────────
+          Anything in this list is a lead that reached this provider
+          because someone else missed their SLA window. Useful for
+          context + to prompt a thank-you call. */}
+      {recentFailovers.length > 0 && (
+        <div className="border-t border-gray-100 dark:border-gray-800">
+          <div className="flex items-center justify-between px-4 py-2 text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+            <span>Recent failovers to you</span>
+            <span className="font-normal text-gray-500 dark:text-gray-400 normal-case tracking-normal">
+              These rolled in because another pro missed SLA
+            </span>
+          </div>
+          <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+            {recentFailovers.map((lead) => (
+              <li
+                key={lead.id}
+                className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 text-xs"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium uppercase text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                    failover
+                  </span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {lead.firstName ?? "Lead"} {lead.lastName ?? ""}
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    {lead.niche} · {lead.temperature}
+                  </span>
+                </div>
+                <span className="text-gray-500 dark:text-gray-400">
+                  {new Date(lead.createdAt).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* ── Active deadlines list ─────────────────────────────── */}
       {activeLeads.length > 0 && (

@@ -105,24 +105,38 @@ const CITIES: CityConfig[] = [
     // Three-category pilot focus, same pattern as Erie.
     pilotCategories: ["plumbing", "hvac", "handyman"],
   },
-  // {
-  //   slug: "warren",
-  //   name: "Warren",
-  //   state: "Pennsylvania",
-  //   stateCode: "PA",
-  //   domain: "warren.pro",
-  //   population: 9400,
-  //   coordinates: { lat: 41.8439, lng: -79.1453 },
-  //   serviceArea: [
-  //     "Warren", "Pleasant Township", "Glade Township", "Conewango",
-  //     "Youngsville", "Sugar Grove", "Sheffield",
-  //   ],
-  //   tagline: "Warren's local service connection",
-  //   timezone: "America/New_York",
-  //   pricingMultiplier: 0.65,
-  //   metroArea: "Warren County",
-  //   counties: ["Warren County"],
-  // },
+  // Warren is the third city — similar size to Meadville but in the
+  // Allegheny National Forest corridor. Smaller market so we price at
+  // 0.65× the Erie base rate.
+  {
+    slug: "warren",
+    name: "Warren",
+    state: "Pennsylvania",
+    stateCode: "PA",
+    domain: "warren.pro",
+    population: 9400,
+    coordinates: { lat: 41.8439, lng: -79.1453 },
+    serviceArea: [
+      "Warren", "Pleasant Township", "Glade Township", "Conewango Township",
+      "Youngsville", "Sugar Grove", "Sheffield", "Tidioute",
+      "Clarendon", "Russell", "Starbrick",
+    ],
+    tagline: "One pro. No bidding. Always Warren.",
+    timezone: "America/New_York",
+    pricingMultiplier: 0.65,
+    metroArea: "Warren County",
+    counties: ["Warren County"],
+    // Warren's core ZIPs cluster tightly around the city proper plus
+    // the National Forest edge communities.
+    coverageZips: [
+      "16365", "16371", "16372", "16347",
+      "16353", "16438", "16340", "16254",
+    ],
+    overlapAreas: [
+      { city: "Jamestown", stateCode: "NY", zip: "14701" },
+    ],
+    pilotCategories: ["plumbing", "hvac", "handyman"],
+  },
   // {
   //   slug: "jamestown",
   //   name: "Jamestown",

@@ -333,8 +333,17 @@ model CheckoutSession {
   expiresAt         DateTime?
   completedAt       DateTime?
 
+  // ── Concierge ops fields ──────────────────────────────────────
+  // Populated by the ops team on /admin/concierge. Tracks who the
+  // job was assigned to, private notes, and when the job was
+  // actually delivered to the requester.
+  assignedProviderId String?
+  opsNotes           String?
+  fulfilledAt        DateTime?
+
   @@index([stripeSessionId])
   @@index([providerEmail])
+  @@index([sessionType, status])
   @@map("checkout_sessions")
 }
 

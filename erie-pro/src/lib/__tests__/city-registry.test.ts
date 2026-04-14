@@ -105,3 +105,33 @@ describe("Meadville expansion city", () => {
     expect(slugs).toContain("meadville");
   });
 });
+
+describe("Warren expansion city", () => {
+  it("resolves from the registry", () => {
+    const warren = getCityBySlug("warren");
+    expect(warren).toBeDefined();
+    expect(warren!.stateCode).toBe("PA");
+    expect(warren!.domain).toBe("warren.pro");
+    expect(warren!.pricingMultiplier).toBe(0.65);
+    expect(warren!.counties).toContain("Warren County");
+  });
+
+  it("applies its pricing multiplier (smaller market)", () => {
+    // 1000 × 0.65 = 650
+    expect(getCityAdjustedPrice("warren", 1000)).toBe(650);
+  });
+
+  it("appears in the city slugs list alongside Erie and Meadville", () => {
+    const slugs = getAllCitySlugs();
+    expect(slugs).toContain("warren");
+    expect(slugs).toContain("meadville");
+    expect(slugs).toContain("erie");
+  });
+
+  it("has Launch Kit fields wired up", () => {
+    const warren = getCityBySlug("warren")!;
+    expect(warren.coverageZips?.length ?? 0).toBeGreaterThanOrEqual(5);
+    expect(warren.pilotCategories?.length ?? 0).toBeGreaterThanOrEqual(3);
+    expect(warren.tagline).toMatch(/Warren/);
+  });
+});

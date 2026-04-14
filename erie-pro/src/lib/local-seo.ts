@@ -239,11 +239,88 @@ export const MEADVILLE_LOCAL_SEO: LocalSeoData = {
   ],
 };
 
+// ── Warren Local SEO Data ──────────────────────────────────────────
+// Allegheny National Forest gateway, ~9.4K population, heavy snow
+// corridor with a small dense core and rural outer ring.
+
+export const WARREN_LOCAL_SEO: LocalSeoData = {
+  city: "Warren",
+  state: "Pennsylvania",
+  stateCode: "PA",
+
+  neighborhoods: [
+    "Downtown Warren", "North Warren", "South Warren",
+    "Pleasant Township", "Glade Township", "Conewango Township",
+    "Youngsville", "Sugar Grove", "Sheffield", "Tidioute",
+    "Clarendon", "Russell", "Starbrick", "Allegheny Reservoir area",
+  ],
+
+  landmarks: [
+    "Allegheny National Forest", "Kinzua Dam", "Allegheny Reservoir",
+    "Struthers Library Theatre", "Warren County Courthouse",
+    "Warren General Hospital", "Crescent Park", "Betts Park",
+    "Chapman State Park", "Kinzua Bridge State Park",
+  ],
+
+  zipCodes: [
+    "16365", "16371", "16372", "16347",
+    "16353", "16438", "16340", "16254",
+    // Overlap: Jamestown NY
+    "14701",
+  ],
+
+  countyName: "Warren County",
+
+  climateNotes: [
+    "Warren averages 70-90 inches of snow per winter along the Allegheny plateau",
+    "Freeze-thaw cycles run November through March",
+    "Summer temperatures average 66-78\u00B0F with forest humidity",
+    "Ice storms are a recurring hazard in the National Forest corridor",
+  ],
+
+  avgWinterTemp: "25\u00B0F (-4\u00B0C)",
+  avgSummerTemp: "68\u00B0F (20\u00B0C)",
+  annualSnowfall: "80 inches",
+
+  buildingCodes: [
+    "Pennsylvania Uniform Construction Code (UCC)",
+    "International Building Code (IBC) adopted",
+    "Warren County building permits required for most structural work",
+    "Plumbing work requires licensed plumber per PA Act 27",
+    "Electrical work requires licensed electrician per PA Act 1",
+  ],
+
+  licensingRequirements: [
+    "General contractors: PA Home Improvement Contractor Registration (HICPA)",
+    "Plumbers: PA licensed journeyman or master plumber",
+    "Electricians: PA licensed electrician",
+    "HVAC: EPA 608 certification for refrigerant handling",
+    "Roofers: PA Home Improvement Contractor Registration",
+  ],
+
+  permitInfo:
+    "Building permits are issued by Warren County or the City of Warren Code Enforcement. Most projects over $500 require a permit.",
+
+  population: 9400,
+  medianHomeValue: "$85,000",
+  medianIncome: "$42,000",
+  homeownershipRate: "62%",
+
+  geoCoordinates: { lat: 41.8439, lng: -79.1453 },
+
+  nearbySearchTerms: [
+    "in Warren PA", "Warren Pennsylvania", "near Warren", "Warren area",
+    "near me in Warren", "Warren County PA", "around Warren",
+    "Youngsville PA", "Sheffield PA", "Allegheny National Forest",
+  ],
+};
+
 // ── City dataset registry ──────────────────────────────────────────
 
 const LOCAL_SEO_BY_CITY: Record<string, LocalSeoData> = {
   erie: ERIE_LOCAL_SEO,
   meadville: MEADVILLE_LOCAL_SEO,
+  warren: WARREN_LOCAL_SEO,
 };
 
 /**
@@ -398,6 +475,42 @@ const CITY_NICHE_SNIPPETS: Record<string, Record<string, string>> = {
       "Meadville's mix of 19th-century homes downtown, Allegheny College rentals, and newer developments in Vernon and West Mead keeps local handymen busy year-round. Freeze-thaw weather creates a steady drip of small repairs \u2014 gutter fixes, door adjustments, storm-window swaps \u2014 across Crawford County.",
     electrical:
       "Older housing stock in downtown Meadville and around Allegheny College often needs panel upgrades and rewiring to meet modern codes. Pennsylvania Act 1 requires all electrical work to be performed by a licensed electrician. Winter ice storms drive demand for generator installs across Crawford County.",
+    roofing:
+      "Meadville's 70 inches of annual snow, freeze-thaw cycles, and French Creek valley humidity take a steady toll on roofs. Homes in Vernon Township, West Mead, and downtown Meadville regularly need patch work and replacements after heavy winters. Pennsylvania requires roofing contractors to hold a Home Improvement Contractor Registration (HICPA).",
+    landscaping:
+      "Meadville's growing season runs roughly late April through early October, bracketed by heavy snow and ice. Homeowners across Vernon, Hayfield, and Saegertown invest in spring cleanups, drainage work, and winter prep. Wet springs along French Creek drive demand for grading and drainage solutions.",
+    cleaning:
+      "Meadville homeowners, Allegheny College tenants, and downtown businesses keep local cleaners busy year-round. Road salt, freeze-thaw moisture, and humid summers bring extra dirt indoors. Move-in / move-out cleans spike every May and August with the college calendar.",
+    "snow-removal":
+      "With roughly 70 inches of snow each winter, Meadville residents and small businesses rely heavily on driveway plowing, sidewalk shoveling, and commercial lot clearing. Demand peaks from December through March across Vernon, West Mead, and the city proper.",
+    "auto-repair":
+      "Meadville's salted roads, harsh winters, and rural routes through Crawford County are rough on vehicles. Rust repair, alignment work, and brake service stay steady year-round. Pennsylvania requires annual safety inspections and emissions testing, keeping local shops consistently booked.",
+    "tree-service":
+      "Ice loads, windstorms off Lake Erie's southern edge, and mature shade trees around Allegheny College and the Diamond make tree service essential in Meadville. Emergency removal spikes during winter ice storms and summer thunderstorms across Crawford County.",
+    chimney:
+      "Long Crawford County winters averaging 26\u00B0F keep Meadville wood stoves and fireplaces running hard. Freeze-thaw cycles crack mortar joints and flue liners; annual inspection and cleaning is critical for fire safety, especially in the older housing stock near downtown and Allegheny College.",
+    "garage-door":
+      "Heavy snow and ice in Meadville put extra strain on garage doors and openers. Spring replacement, weatherstripping upgrades, and opener service are common needs in Vernon Township, Saegertown, and across the city. Freeze-thaw swings can warp tracks and damage panels.",
+    painting:
+      "Meadville's humid summers and frigid winters demand high-quality exterior paint that can flex with the temperature swing. Historic homes downtown and around Allegheny College frequently need restoration painting; interior work is popular year-round in Vernon and West Mead.",
+  },
+  warren: {
+    plumbing:
+      "Warren's 80 inches of annual snow and rural well-and-septic coverage make plumbing service a year-round priority. Frozen pipes and well-pump failures are common in Pleasant Township, Glade Township, and the Allegheny National Forest edge communities. Pennsylvania law requires licensed plumbers under PA Act 27.",
+    hvac:
+      "Warren winters average 25\u00B0F along the Allegheny plateau, with heavy snow from November through March. Wood stoves, oil heat, and propane are all common so HVAC pros handle a wide range of systems. EPA 608 certification is required for all refrigerant work.",
+    handyman:
+      "Warren homeowners across Conewango Township, Youngsville, and Sheffield rely on handymen for seasonal maintenance \u2014 gutter cleaning before winter, storm-damage patches after ice storms, and deck repairs every spring. Older downtown housing keeps the repair pipeline steady.",
+    electrical:
+      "Warren's older housing stock and rural extensions in the National Forest corridor often need panel upgrades, surge protection, and backup generator installs. Ice-storm outages are routine here. PA Act 1 requires all electrical work to be performed by a licensed electrician.",
+    roofing:
+      "Warren's 80 inches of snowfall and ice dams from the Allegheny plateau are rough on roofs. Homes in Pleasant Township and along the reservoir frequently need replacement after heavy winters. Pennsylvania requires HICPA registration for all roofing contractors.",
+    "snow-removal":
+      "With 80 inches of snow per winter, snow-removal is essential in Warren. Driveway plowing, walkway shoveling, and commercial lot clearing peak from December through early March across the city and outlying townships.",
+    "tree-service":
+      "Warren sits at the edge of the Allegheny National Forest, so mature trees are everywhere. Ice loads, summer thunderstorms, and emerald ash borer damage all drive tree-service demand. Emergency removal and storm cleanup run year-round across Warren County.",
+    "auto-repair":
+      "Long rural commutes through Warren, Pleasant, and Glade Townships combined with road salt and potholes mean steady wear on vehicles. Rust repair, suspension work, and winter tire swaps are mainstays. Pennsylvania requires annual inspections and emissions testing.",
   },
 };
 

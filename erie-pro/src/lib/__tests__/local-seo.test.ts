@@ -6,6 +6,7 @@ import { describe, it, expect } from "vitest";
 import {
   ERIE_LOCAL_SEO,
   MEADVILLE_LOCAL_SEO,
+  WARREN_LOCAL_SEO,
   getLocalSeoForCity,
   getLocalMetaDescription,
   getLocalContext,
@@ -46,6 +47,19 @@ describe("MEADVILLE_LOCAL_SEO", () => {
   });
 });
 
+describe("WARREN_LOCAL_SEO", () => {
+  it("has Warren basics wired up", () => {
+    expect(WARREN_LOCAL_SEO.city).toBe("Warren");
+    expect(WARREN_LOCAL_SEO.stateCode).toBe("PA");
+    expect(WARREN_LOCAL_SEO.countyName).toBe("Warren County");
+    expect(WARREN_LOCAL_SEO.population).toBe(9400);
+  });
+
+  it("references the Allegheny National Forest in landmarks", () => {
+    expect(WARREN_LOCAL_SEO.landmarks).toContain("Allegheny National Forest");
+  });
+});
+
 describe("getLocalSeoForCity", () => {
   it("resolves erie", () => {
     expect(getLocalSeoForCity("erie")).toBe(ERIE_LOCAL_SEO);
@@ -53,6 +67,10 @@ describe("getLocalSeoForCity", () => {
 
   it("resolves meadville", () => {
     expect(getLocalSeoForCity("meadville")).toBe(MEADVILLE_LOCAL_SEO);
+  });
+
+  it("resolves warren", () => {
+    expect(getLocalSeoForCity("warren")).toBe(WARREN_LOCAL_SEO);
   });
 
   it("returns undefined for an unknown slug", () => {
