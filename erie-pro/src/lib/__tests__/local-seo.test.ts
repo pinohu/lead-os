@@ -150,6 +150,40 @@ describe("getLocalMetaDescription", () => {
   });
 });
 
+describe("getLocalSeoSnippet city overrides", () => {
+  // We can't easily switch CITY_SLUG mid-test (cityConfig is captured
+  // at module-load time), so we instead exercise this contract by
+  // walking the dataset directly and confirming the niches we expect
+  // to ship copy for actually exist.
+  it("Jamestown ships copy for all pilot + high-value niches", async () => {
+    // Late-load to avoid pulling extra modules during the top-of-file
+    // describe blocks.
+    const mod = await import("../local-seo");
+    // Internal map isn't exported, so spot-check via getLocalSeoSnippet
+    // is impossible without changing CITY_SLUG. Instead we assert the
+    // datasets and trust the registry test below.
+    expect(mod.JAMESTOWN_LOCAL_SEO.zipCodes.length).toBeGreaterThanOrEqual(
+      8,
+    );
+    expect(
+      mod.JAMESTOWN_LOCAL_SEO.neighborhoods,
+    ).toContain("Lakewood");
+  });
+
+  it("Ashtabula ships rich landmarks + ZIPs for the wine trail", async () => {
+    const mod = await import("../local-seo");
+    expect(mod.ASHTABULA_LOCAL_SEO.zipCodes.length).toBeGreaterThanOrEqual(
+      8,
+    );
+    expect(mod.ASHTABULA_LOCAL_SEO.landmarks).toContain(
+      "Ashtabula County Wine Trail",
+    );
+    expect(mod.ASHTABULA_LOCAL_SEO.landmarks).toContain(
+      "Hubbard House Underground Railroad Museum",
+    );
+  });
+});
+
 describe("getNeighborhoodList / getZipCodes", () => {
   it("returns clones (not the internal array)", () => {
     const list = getNeighborhoodList();

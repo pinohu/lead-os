@@ -700,6 +700,18 @@ const CITY_NICHE_SNIPPETS: Record<string, Record<string, string>> = {
       "Long Jamestown winters averaging 24\u00B0F keep wood stoves and fireplaces running hard. Freeze-thaw cycles crack mortar and damage flue liners; annual inspection and cleaning are critical for fire safety, especially in the older housing stock on the North Side and around Jamestown Community College.",
     "garage-door":
       "Heavy snow and ice around Chautauqua Lake put extra strain on garage doors and openers. Spring replacements and opener service are common needs in Lakewood, Falconer, and Celoron; freeze-thaw swings regularly warp tracks and damage panels.",
+    "pest-control":
+      "Jamestown's lakefront properties along Chautauqua Lake and humid Southern Tier summers create steady demand for pest control. Carpenter ants, mice, and box elder bugs are common in older North Side and Frewsburg homes; mosquito mitigation peaks May through September around Bemus Point and Celoron.",
+    painting:
+      "Jamestown's century-old housing stock around the Reg Lenna Center and the North Side often needs restoration painting. Lake humidity and 90+ inches of snow demand exterior coatings that can flex with temperature swings. Interior repaints stay busy year-round in Lakewood, Falconer, and Busti.",
+    foundation:
+      "Jamestown's freeze-thaw cycles, high water table near Chautauqua Lake, and heavy lake-effect snowmelt create serious foundation pressure. Basement flooding is common in older homes on the North Side and South Side; sump pump installs and crack sealing peak each spring after the thaw.",
+    concrete:
+      "Jamestown's 90 inches of annual snow and freeze-thaw cycles are punishing for driveways, sidewalks, and patios. Salt damage and frost heaving keep concrete crews busy in Lakewood, Falconer, and Busti. New York permit requirements apply for most structural pours.",
+    "windows-doors":
+      "Energy efficiency is critical in Jamestown where winter temperatures average 24\u00B0F and snowfall pushes 90 inches. Many century-old homes around Jamestown Community College and the Reg Lenna corridor have original single-pane windows that drive up heating costs. NY state codes require modern energy ratings on replacements.",
+    "appliance-repair":
+      "Jamestown's roughly 29,000 residents and lakefront seasonal homeowners depend on working appliances through deep winters. Hard water common in Chautauqua County shortens appliance life; washer, dryer, and refrigerator service stays steady in Lakewood, Falconer, and downtown Jamestown.",
   },
   ashtabula: {
     plumbing:
@@ -726,6 +738,18 @@ const CITY_NICHE_SNIPPETS: Record<string, Record<string, string>> = {
       "Long Ashtabula winters averaging 27\u00B0F keep wood stoves and fireplaces running hard. Lake-effect moisture accelerates chimney deterioration in downtown Ashtabula, the Harbor District, and along the shoreline. Annual inspection and cleaning are critical for fire safety.",
     "garage-door":
       "Heavy lake-effect snow and ice in Ashtabula put extra strain on garage doors and openers. Spring replacements and opener service are common across the Harbor District, Saybrook, and Geneva; freeze-thaw swings warp tracks and damage panels.",
+    "pest-control":
+      "Ashtabula's Lake Erie shoreline and humid summers drive steady pest pressure \u2014 mosquitoes, carpenter ants, mice in older Harbor District homes, and box elder bugs across the wine trail. Wine-country B&Bs in Geneva and Jefferson invest in proactive seasonal treatments to protect bookings.",
+    painting:
+      "Ashtabula's lake-effect winters and humid coastal summers demand high-quality exterior paint that can withstand 80\u00B0F annual swings. Historic Harbor District homes and Underground Railroad-era properties around the Hubbard House often need restoration painting. Interior work stays steady year-round in Saybrook and Geneva.",
+    foundation:
+      "Ashtabula's high water table along the Lake Erie shoreline, freeze-thaw cycles, and 110 inches of lake-effect snowmelt create real foundation pressure. Basement flooding is common in the Harbor District and along the lakefront; sump pump installs, crack sealing, and waterproofing peak every spring across Ashtabula County.",
+    concrete:
+      "Ashtabula's 110 inches of snow and aggressive road salt are extremely hard on driveways, sidewalks, and patios. Frost heaving and surface scaling keep concrete crews busy in Saybrook, Geneva, and Conneaut. Permits are required for most structural pours through the City of Ashtabula or the county.",
+    "windows-doors":
+      "Energy efficiency is critical in Ashtabula where winter temperatures average 27\u00B0F and snowfall pushes 110 inches. Many older Harbor District and downtown Ashtabula homes have single-pane windows that bleed heat. Ohio Residential Code requires modern energy ratings on all replacement windows.",
+    "appliance-repair":
+      "Ashtabula's roughly 18,000 residents and seasonal lakefront homeowners depend on working appliances through brutal lake-effect winters. Hard water common across Ashtabula County shortens appliance life. Washer, dryer, and refrigerator service stays steady in the Harbor District, Saybrook, and Geneva year-round.",
   },
 };
 
