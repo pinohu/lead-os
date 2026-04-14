@@ -23,19 +23,20 @@ const HEALTH_NICHES = new Set(["dental", "veterinary", "chiropractic"]);
 const PROFESSIONAL_NICHES = new Set(["legal", "accounting", "photography", "real-estate"]);
 
 export function getLocalContext(nicheSlug: string): string {
+  const cityName = cityConfig.name;
   if (HOME_SERVICE_NICHES.has(nicheSlug)) {
-    return "Erie's lake-effect climate, older housing stock, and freeze-thaw cycles create specific demands that require experienced local professionals.";
+    return `${cityName}'s regional climate, housing stock, and freeze-thaw cycles create specific demands that require experienced local professionals.`;
   }
   if (AUTO_NICHES.has(nicheSlug)) {
-    return "Erie's harsh winters, road salt, and pothole-heavy streets put extra wear on vehicles, making reliable local service essential.";
+    return `${cityName}'s winters, road salt, and seasonal road wear put extra strain on vehicles, making reliable local service essential.`;
   }
   if (HEALTH_NICHES.has(nicheSlug)) {
-    return "Erie residents deserve convenient access to quality healthcare providers who understand the needs of our community.";
+    return `${cityName} residents deserve convenient access to quality healthcare providers who understand the needs of our community.`;
   }
   if (PROFESSIONAL_NICHES.has(nicheSlug)) {
-    return "Erie's growing business community needs trusted local professionals who understand Pennsylvania regulations and the regional economy.";
+    return `${cityName}'s business community needs trusted local professionals who understand ${cityConfig.state} regulations and the regional economy.`;
   }
-  return "Erie residents and businesses trust local providers who are invested in our community's success.";
+  return `${cityName} residents and businesses trust local providers who are invested in our community's success.`;
 }
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -68,7 +69,12 @@ export interface LocalSeoData {
   nearbySearchTerms: string[];
 }
 
-// ── Erie Local SEO Data ────────────────────────────────────────────
+// ── Per-city Local SEO Data ────────────────────────────────────────
+// ERIE_LOCAL_SEO is the canonical Erie dataset. Other cities are
+// registered in LOCAL_SEO_BY_CITY below, keyed by city slug. The
+// `localSeo` export resolves to the dataset for the active deployment
+// (CITY_SLUG). If a city has no explicit dataset we fall back to a
+// minimal auto-generated one built from the city registry.
 
 export const ERIE_LOCAL_SEO: LocalSeoData = {
   city: "Erie",
@@ -153,6 +159,152 @@ export const ERIE_LOCAL_SEO: LocalSeoData = {
   ],
 };
 
+// ── Meadville Local SEO Data ───────────────────────────────────────
+// Crawford County seat, ~13K population, Allegheny College town.
+// Similar lake-effect climate as Erie but less extreme.
+
+export const MEADVILLE_LOCAL_SEO: LocalSeoData = {
+  city: "Meadville",
+  state: "Pennsylvania",
+  stateCode: "PA",
+
+  neighborhoods: [
+    "Downtown Meadville", "North Meadville", "South Meadville",
+    "West Mead Township", "East Mead Township", "Vernon Township",
+    "Hayfield Township", "Woodcock Township", "Saegertown",
+    "Cambridge Springs", "Conneaut Lake", "Linesville", "Cochranton",
+    "Townville", "Guys Mills", "Allegheny College area",
+  ],
+
+  landmarks: [
+    "Allegheny College", "Meadville Market House", "Diamond Park",
+    "Woodcock Creek Lake", "Pymatuning State Park", "Conneaut Lake Park",
+    "Baldwin-Reynolds House Museum", "Meadville Medical Center",
+    "French Creek", "Crawford County Courthouse",
+  ],
+
+  // 30-mile coverage zone centered on Meadville. Includes Cambridge
+  // Springs (16403) which is shared with Erie's drive-time ring.
+  zipCodes: [
+    "16335", "16354", "16327", "16407", "16424",
+    "16314", "16403", "16316", "16433",
+    // Overlap: Jamestown NY
+    "14701",
+  ],
+
+  countyName: "Crawford County",
+
+  climateNotes: [
+    "Meadville gets 60-80 inches of snow annually — heavy but less than Erie's lake-effect belt",
+    "Freeze-thaw cycles are common from November through March",
+    "Summer temperatures average 68-78\u00B0F with moderate humidity",
+    "French Creek flooding can affect low-lying parts of downtown in spring",
+  ],
+
+  avgWinterTemp: "26\u00B0F (-3\u00B0C)",
+  avgSummerTemp: "70\u00B0F (21\u00B0C)",
+  annualSnowfall: "70 inches",
+
+  buildingCodes: [
+    "Pennsylvania Uniform Construction Code (UCC)",
+    "International Building Code (IBC) adopted",
+    "Crawford County building permits required for most structural work",
+    "Plumbing work requires licensed plumber per PA Act 27",
+    "Electrical work requires licensed electrician per PA Act 1",
+  ],
+
+  licensingRequirements: [
+    "General contractors: PA Home Improvement Contractor Registration (HICPA)",
+    "Plumbers: PA licensed journeyman or master plumber",
+    "Electricians: PA licensed electrician",
+    "HVAC: EPA 608 certification for refrigerant handling",
+    "Roofers: PA Home Improvement Contractor Registration",
+  ],
+
+  permitInfo:
+    "Building permits are issued by Crawford County or the City of Meadville Code Enforcement Office. Most projects over $500 require a permit.",
+
+  population: 13000,
+  medianHomeValue: "$95,000",
+  medianIncome: "$36,000",
+  homeownershipRate: "55%",
+
+  geoCoordinates: { lat: 41.6414, lng: -80.1515 },
+
+  nearbySearchTerms: [
+    "in Meadville PA", "Meadville Pennsylvania", "near Meadville",
+    "Meadville area", "near me in Meadville", "Crawford County PA",
+    "around Meadville", "Vernon Township PA", "Saegertown PA",
+    "Conneaut Lake PA",
+  ],
+};
+
+// ── City dataset registry ──────────────────────────────────────────
+
+const LOCAL_SEO_BY_CITY: Record<string, LocalSeoData> = {
+  erie: ERIE_LOCAL_SEO,
+  meadville: MEADVILLE_LOCAL_SEO,
+};
+
+/**
+ * Look up the full dataset for a city slug. Returns `undefined` if the
+ * slug has no explicit dataset registered.
+ */
+export function getLocalSeoForCity(slug: string): LocalSeoData | undefined {
+  return LOCAL_SEO_BY_CITY[slug];
+}
+
+/**
+ * Build a minimal LocalSeoData from a CityConfig when the city has no
+ * explicit dataset. Covers the "we just added a new CITY_SLUG" case.
+ */
+function buildFallbackFromCityConfig(): LocalSeoData {
+  const serviceArea =
+    cityConfig.serviceArea.length > 0
+      ? cityConfig.serviceArea
+      : [cityConfig.name];
+  const zipCodes =
+    cityConfig.coverageZips && cityConfig.coverageZips.length > 0
+      ? cityConfig.coverageZips
+      : ["00000"];
+
+  return {
+    city: cityConfig.name,
+    state: cityConfig.state,
+    stateCode: cityConfig.stateCode,
+    neighborhoods: serviceArea,
+    landmarks: [],
+    zipCodes,
+    countyName: cityConfig.counties[0] ?? `${cityConfig.name} Area`,
+    climateNotes: [],
+    avgWinterTemp: "",
+    avgSummerTemp: "",
+    annualSnowfall: "",
+    buildingCodes: [],
+    licensingRequirements: [],
+    permitInfo: `Building permits are issued by ${cityConfig.counties[0] ?? cityConfig.name}.`,
+    population: cityConfig.population,
+    medianHomeValue: "",
+    medianIncome: "",
+    homeownershipRate: "",
+    geoCoordinates: cityConfig.coordinates,
+    nearbySearchTerms: [
+      `in ${cityConfig.name} ${cityConfig.stateCode}`,
+      `${cityConfig.name} ${cityConfig.state}`,
+      `near ${cityConfig.name}`,
+      `${cityConfig.name} area`,
+    ],
+  };
+}
+
+/**
+ * Active-city Local SEO dataset. Resolves to the explicit dataset when
+ * one is registered, otherwise a minimal fallback derived from the
+ * city registry.
+ */
+export const localSeo: LocalSeoData =
+  LOCAL_SEO_BY_CITY[cityConfig.slug] ?? buildFallbackFromCityConfig();
+
 // ── Niche-Specific Local SEO Snippets ──────────────────────────────
 // Each niche gets a custom paragraph weaving in climate, regulations,
 // neighborhoods, and local context.
@@ -231,22 +383,53 @@ const NICHE_SEO_SNIPPETS: Record<string, string> = {
     "Erie homeowners rely heavily on fireplaces and wood stoves during long, cold winters averaging 28\u00B0F. Lake-effect moisture accelerates chimney deterioration in neighborhoods like Downtown Erie, Glenwood, and Academy. Annual chimney inspections and cleanings are critical for fire safety, and Erie's freeze-thaw cycles can crack mortar joints and damage flue liners.",
 };
 
+// ── City-specific niche snippet overrides ──────────────────────────
+// Erie niches fall through to NICHE_SEO_SNIPPETS. Cities that need
+// different copy (e.g. Meadville has less lake-effect snow, smaller
+// housing stock) get an entry here.
+
+const CITY_NICHE_SNIPPETS: Record<string, Record<string, string>> = {
+  meadville: {
+    plumbing:
+      "Meadville's freeze-thaw cycles and roughly 70 inches of annual snowfall put steady pressure on plumbing systems. Frozen pipes and basement flooding are common in older homes near downtown and along French Creek. Pennsylvania law requires all plumbing work to be performed by a licensed plumber under PA Act 27.",
+    hvac:
+      "With winter temperatures averaging 26\u00B0F and 70 inches of snow each year, Meadville homeowners depend on reliable heating. Moderate Crawford County summers still demand working air conditioning in many older homes. All HVAC technicians must hold EPA 608 certification for refrigerant handling.",
+    handyman:
+      "Meadville's mix of 19th-century homes downtown, Allegheny College rentals, and newer developments in Vernon and West Mead keeps local handymen busy year-round. Freeze-thaw weather creates a steady drip of small repairs \u2014 gutter fixes, door adjustments, storm-window swaps \u2014 across Crawford County.",
+    electrical:
+      "Older housing stock in downtown Meadville and around Allegheny College often needs panel upgrades and rewiring to meet modern codes. Pennsylvania Act 1 requires all electrical work to be performed by a licensed electrician. Winter ice storms drive demand for generator installs across Crawford County.",
+  },
+};
+
 // ── Fallback snippet generator for niches without a custom entry ───
 
 function generateGenericSnippet(nicheSlug: string): string {
   const niche = getNicheBySlug(nicheSlug);
   const label = niche?.label ?? nicheSlug;
-  return `Erie, Pennsylvania residents rely on quality ${label.toLowerCase()} services throughout the year. With a population of approximately 95,000 and a homeownership rate of 52%, there is steady demand for ${label.toLowerCase()} across neighborhoods like Millcreek, Harborcreek, Downtown Erie, and Fairview. ${getLocalContext(nicheSlug)}`;
+  const seo = localSeo;
+  const neighborhoodSample = seo.neighborhoods.slice(0, 4).join(", ");
+  const population = seo.population.toLocaleString();
+  const ownership = seo.homeownershipRate || "a steady rate of";
+  return `${seo.city}, ${seo.state} residents rely on quality ${label.toLowerCase()} services throughout the year. With a population of approximately ${population} and a homeownership rate of ${ownership}, there is steady demand for ${label.toLowerCase()} across ${neighborhoodSample}. ${getLocalContext(nicheSlug)}`;
 }
 
 // ── Public API ─────────────────────────────────────────────────────
 
 /**
  * Returns a niche-specific local context paragraph for SEO content.
- * Weaves in Erie climate, neighborhoods, regulations, and local data.
+ * Prefers a city-specific override, falls back to the default (Erie)
+ * snippet, and finally to a generated generic snippet.
  */
 export function getLocalSeoSnippet(niche: string): string {
-  return NICHE_SEO_SNIPPETS[niche] ?? generateGenericSnippet(niche);
+  const cityOverrides = CITY_NICHE_SNIPPETS[cityConfig.slug];
+  if (cityOverrides?.[niche]) return cityOverrides[niche];
+  // For cities that aren't Erie, skip the Erie-specific snippets map
+  // and go straight to the generated snippet to avoid Erie copy leaking
+  // into other city deployments.
+  if (cityConfig.slug === "erie") {
+    return NICHE_SEO_SNIPPETS[niche] ?? generateGenericSnippet(niche);
+  }
+  return generateGenericSnippet(niche);
 }
 
 /**
@@ -256,7 +439,7 @@ export function getLocalSchemaOrg(niche: string): object {
   const nicheData = getNicheBySlug(niche);
   const label = nicheData?.label ?? niche;
   const description = nicheData?.description ?? "";
-  const seo = ERIE_LOCAL_SEO;
+  const seo = localSeo;
 
   return {
     "@context": "https://schema.org",
@@ -332,7 +515,7 @@ export function getNearbySearchVariations(niche: string): string[] {
   const nicheData = getNicheBySlug(niche);
   const label = nicheData?.label ?? niche;
   const terms = nicheData?.searchTerms ?? [niche];
-  const seo = ERIE_LOCAL_SEO;
+  const seo = localSeo;
 
   const variations: string[] = [];
 
@@ -356,21 +539,22 @@ export function getNearbySearchVariations(niche: string): string[] {
 export function getLocalMetaDescription(niche: string): string {
   const nicheData = getNicheBySlug(niche);
   const label = nicheData?.label ?? niche;
-  const seo = ERIE_LOCAL_SEO;
+  const seo = localSeo;
+  const serviceBlurb = seo.neighborhoods.slice(0, 3).join(", ");
 
-  return `Find trusted ${label.toLowerCase()} providers in ${seo.city}, ${seo.stateCode}. Compare verified professionals, read reviews, get free quotes. Serving Millcreek, Harborcreek, Fairview and surrounding areas.`;
+  return `Find trusted ${label.toLowerCase()} providers in ${seo.city}, ${seo.stateCode}. Compare verified professionals, read reviews, get free quotes. Serving ${serviceBlurb} and surrounding areas.`;
 }
 
 /**
  * Returns a list of neighborhoods for display in content.
  */
 export function getNeighborhoodList(): string[] {
-  return [...ERIE_LOCAL_SEO.neighborhoods];
+  return [...localSeo.neighborhoods];
 }
 
 /**
  * Returns a list of zip codes for display.
  */
 export function getZipCodes(): string[] {
-  return [...ERIE_LOCAL_SEO.zipCodes];
+  return [...localSeo.zipCodes];
 }
