@@ -75,4 +75,136 @@ describe("CityConfig structure", () => {
     expect(erie.metroArea.length).toBeGreaterThan(0);
     expect(erie.counties.length).toBeGreaterThanOrEqual(1);
   });
+
+  it("Erie has Launch Kit fields wired up", () => {
+    const erie = getCityBySlug("erie")!;
+    expect(erie.tagline).toBe("One pro. No bidding. Always Erie.");
+    expect(erie.coverageZips?.length ?? 0).toBeGreaterThanOrEqual(20);
+    expect(erie.overlapAreas?.length ?? 0).toBeGreaterThanOrEqual(1);
+    expect(erie.pilotCategories?.length ?? 0).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe("Meadville expansion city", () => {
+  it("resolves from the registry", () => {
+    const meadville = getCityBySlug("meadville");
+    expect(meadville).toBeDefined();
+    expect(meadville!.stateCode).toBe("PA");
+    expect(meadville!.domain).toBe("meadville.pro");
+    expect(meadville!.pricingMultiplier).toBeLessThan(1.0);
+  });
+
+  it("applies its pricing multiplier", () => {
+    // 1000 × 0.7 = 700
+    expect(getCityAdjustedPrice("meadville", 1000)).toBe(700);
+  });
+
+  it("is listed in the city slugs", () => {
+    const slugs = getAllCitySlugs();
+    expect(slugs).toContain("erie");
+    expect(slugs).toContain("meadville");
+  });
+});
+
+describe("Warren expansion city", () => {
+  it("resolves from the registry", () => {
+    const warren = getCityBySlug("warren");
+    expect(warren).toBeDefined();
+    expect(warren!.stateCode).toBe("PA");
+    expect(warren!.domain).toBe("warren.pro");
+    expect(warren!.pricingMultiplier).toBe(0.65);
+    expect(warren!.counties).toContain("Warren County");
+  });
+
+  it("applies its pricing multiplier (smaller market)", () => {
+    // 1000 × 0.65 = 650
+    expect(getCityAdjustedPrice("warren", 1000)).toBe(650);
+  });
+
+  it("appears in the city slugs list alongside Erie and Meadville", () => {
+    const slugs = getAllCitySlugs();
+    expect(slugs).toContain("warren");
+    expect(slugs).toContain("meadville");
+    expect(slugs).toContain("erie");
+  });
+
+  it("has Launch Kit fields wired up", () => {
+    const warren = getCityBySlug("warren")!;
+    expect(warren.coverageZips?.length ?? 0).toBeGreaterThanOrEqual(5);
+    expect(warren.pilotCategories?.length ?? 0).toBeGreaterThanOrEqual(3);
+    expect(warren.tagline).toMatch(/Warren/);
+  });
+});
+
+describe("Jamestown expansion city", () => {
+  it("resolves from the registry", () => {
+    const jamestown = getCityBySlug("jamestown");
+    expect(jamestown).toBeDefined();
+    expect(jamestown!.stateCode).toBe("NY");
+    expect(jamestown!.state).toBe("New York");
+    expect(jamestown!.domain).toBe("jamestown.pro");
+    expect(jamestown!.pricingMultiplier).toBe(0.8);
+    expect(jamestown!.counties).toContain("Chautauqua County");
+  });
+
+  it("applies its pricing multiplier (cross-state market)", () => {
+    // 1000 x 0.8 = 800
+    expect(getCityAdjustedPrice("jamestown", 1000)).toBe(800);
+  });
+
+  it("appears in the city slugs list", () => {
+    const slugs = getAllCitySlugs();
+    expect(slugs).toContain("jamestown");
+  });
+
+  it("has Launch Kit fields wired up", () => {
+    const jamestown = getCityBySlug("jamestown")!;
+    expect(jamestown.coverageZips?.length ?? 0).toBeGreaterThanOrEqual(5);
+    expect(jamestown.pilotCategories?.length ?? 0).toBeGreaterThanOrEqual(3);
+    expect(jamestown.tagline).toMatch(/Jamestown/);
+  });
+});
+
+describe("Ashtabula expansion city", () => {
+  it("resolves from the registry", () => {
+    const ashtabula = getCityBySlug("ashtabula");
+    expect(ashtabula).toBeDefined();
+    expect(ashtabula!.stateCode).toBe("OH");
+    expect(ashtabula!.state).toBe("Ohio");
+    expect(ashtabula!.domain).toBe("ashtabula.pro");
+    expect(ashtabula!.pricingMultiplier).toBe(0.75);
+    expect(ashtabula!.counties).toContain("Ashtabula County");
+  });
+
+  it("applies its pricing multiplier (coastal OH market)", () => {
+    // 1000 x 0.75 = 750
+    expect(getCityAdjustedPrice("ashtabula", 1000)).toBe(750);
+  });
+
+  it("appears in the city slugs list", () => {
+    const slugs = getAllCitySlugs();
+    expect(slugs).toContain("ashtabula");
+  });
+
+  it("has Launch Kit fields wired up", () => {
+    const ashtabula = getCityBySlug("ashtabula")!;
+    expect(ashtabula.coverageZips?.length ?? 0).toBeGreaterThanOrEqual(5);
+    expect(ashtabula.pilotCategories?.length ?? 0).toBeGreaterThanOrEqual(3);
+    expect(ashtabula.tagline).toMatch(/Ashtabula/);
+  });
+});
+
+describe("All five active cities", () => {
+  it("lists erie, meadville, warren, jamestown, ashtabula", () => {
+    const slugs = getAllCitySlugs();
+    expect(slugs).toEqual(
+      expect.arrayContaining([
+        "erie",
+        "meadville",
+        "warren",
+        "jamestown",
+        "ashtabula",
+      ]),
+    );
+  });
 });

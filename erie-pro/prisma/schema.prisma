@@ -82,6 +82,8 @@ enum CallOutcome {
 enum CheckoutSessionType {
   territory_claim
   lead_purchase
+  concierge_job
+  annual_membership
 }
 
 enum CheckoutSessionStatus {
@@ -331,8 +333,25 @@ model CheckoutSession {
   expiresAt         DateTime?
   completedAt       DateTime?
 
+  // ── Concierge ops fields ──────────────────────────────────────
+  // Populated by the ops team on /admin/concierge. Tracks who the
+  // job was assigned to, private notes, and when the job was
+  // actually delivered to the requester.
+  assignedProviderId String?
+  opsNotes           String?
+  fulfilledAt        DateTime?
+
+  // ── Annual membership renewal lifecycle ────────────────────────
+  // For sessionType="annual_membership". The cron writes these as
+  // it sends 30-day / 7-day reminders, and marks the membership
+  // expired at term end.
+  renewalReminder30SentAt DateTime?
+  renewalReminder7SentAt  DateTime?
+  expiredAt               DateTime?
+
   @@index([stripeSessionId])
   @@index([providerEmail])
+  @@index([sessionType, status])
   @@map("checkout_sessions")
 }
 
@@ -355,6 +374,24 @@ model LeadDispute {
   @@index([leadId])
   @@index([providerId])
   @@map("lead_disputes")
+}
+
+// ── Runtime Settings (key/value store) ──────────────────────────────
+// Generic setting store for ops-controlled runtime config that must
+// live outside env vars (e.g. founding-seat claimed count, current
+// launch-kit notes). Values are JSON-serialized strings so we can
+// put numbers, flags, or small objects behind the same interface.
+
+model Setting {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  value      String   // JSON-serialized
+  updatedAt  DateTime @updatedAt
+  updatedBy  String?  // email of admin who last touched it
+  createdAt  DateTime @default(now())
+
+  @@index([key])
+  @@map("settings")
 }
 
 // ── Audit Log ──────────────────────────────────────────────────────

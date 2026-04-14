@@ -15,7 +15,7 @@ import {
   getLocalSeoSnippet,
   getLocalSchemaOrg,
   getLocalMetaDescription,
-  ERIE_LOCAL_SEO,
+  localSeo,
 } from "@/lib/local-seo"
 import { Button } from "@/components/ui/button"
 import {
@@ -83,7 +83,7 @@ export default async function NichePage({ params }: Props) {
   // ── Local SEO data ──────────────────────────────────────────────
   const localSnippet = getLocalSeoSnippet(slug)
   const localSchema = getLocalSchemaOrg(slug)
-  const neighborhoods = ERIE_LOCAL_SEO.neighborhoods
+  const neighborhoods = localSeo.neighborhoods
 
   // ── Directory listings for subtle links ────────────────────────
   let directoryListings: Awaited<ReturnType<typeof getDirectoryListingsByNiche>> = []
@@ -172,7 +172,7 @@ export default async function NichePage({ params }: Props) {
       {/* ── Local SEO Context Section ─────────────────────────── */}
       <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
         <h2 className="mb-4 text-xl font-bold tracking-tight">
-          {withServices(niche.label)} in {ERIE_LOCAL_SEO.countyName}
+          {withServices(niche.label)} in {localSeo.countyName}
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
           {localSnippet}
@@ -321,7 +321,7 @@ export default async function NichePage({ params }: Props) {
                 desc: `${cityConfig.name} providers typically respond within hours, not days.`,
               },
               {
-                title: `Serving all of ${ERIE_LOCAL_SEO.countyName}`,
+                title: `Serving all of ${localSeo.countyName}`,
                 desc: `Coverage across ${neighborhoods.slice(0, 4).join(", ")}, and more.`,
               },
             ].map(({ title, desc }) => (

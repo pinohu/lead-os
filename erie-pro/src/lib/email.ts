@@ -404,6 +404,147 @@ export async function sendAdminVerificationAlert(
   });
 }
 
+/**
+ * Notify an assigned provider that a paid Concierge requester is waiting
+ * for them. Sent from /admin/concierge when ops assigns them a job.
+ */
+export async function sendConciergeAssignmentToPro(
+  providerEmail: string,
+  providerName: string,
+  details: {
+    requesterEmail: string;
+    niche: string;
+    city: string;
+    opsNotes: string | null;
+  }
+): Promise<boolean> {
+  const notesBlock = details.opsNotes
+    ? `<tr><td style="padding:8px 0;color:#6b7280;vertical-align:top">Ops notes:</td><td style="padding:8px 0;color:#111827">${escapeHtml(details.opsNotes)}</td></tr>`
+    : "";
+
+  return sendEmail({
+    to: providerEmail,
+    subject: `Concierge job assigned — ${escapeHtml(details.niche)} in ${escapeHtml(details.city)}`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">You've Been Assigned a Concierge Job</h2>
+      <p style="color:#374151;margin:0 0 16px">Hi ${escapeHtml(providerName)},</p>
+      <p style="color:#374151;margin:0 0 16px">A paying Concierge customer has been routed to you by the ${cityConfig.name} Pro ops team. Please reach out within <strong>2 hours</strong> for best results.</p>
+      <table style="width:100%;border-collapse:collapse;margin:0 0 24px">
+        <tr><td style="padding:8px 0;color:#6b7280;width:120px">Requester:</td><td style="padding:8px 0;color:#111827;font-weight:600"><a href="mailto:${escapeHtml(details.requesterEmail)}" style="color:#2563eb">${escapeHtml(details.requesterEmail)}</a></td></tr>
+        <tr><td style="padding:8px 0;color:#6b7280">Niche:</td><td style="padding:8px 0;color:#111827">${escapeHtml(details.niche)}</td></tr>
+        <tr><td style="padding:8px 0;color:#6b7280">City:</td><td style="padding:8px 0;color:#111827">${escapeHtml(details.city)}</td></tr>
+        ${notesBlock}
+      </table>
+      <a href="mailto:${escapeHtml(details.requesterEmail)}" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">Email Requester</a>
+      <p style="margin:16px 0 0;font-size:13px;color:#9ca3af">Concierge customers have paid a premium for a hand-picked referral. Fast, professional follow-up protects the ${cityConfig.name} Pro brand.</p>
+    `, providerEmail),
+    replyTo: `hello@${cityConfig.domain}`,
+  });
+}
+
+/**
+ * Let the Concierge requester know which local pro they've been
+ * matched with, so they aren't surprised when the pro calls.
+ */
+export async function sendConciergeHandoffToRequester(
+  requesterEmail: string,
+  details: {
+    providerName: string;
+    providerPhone: string | null;
+    niche: string;
+  }
+): Promise<boolean> {
+  const phoneLine = details.providerPhone
+    ? `<p style="color:#374151;margin:0 0 16px">Their direct number is <a href="tel:${escapeHtml(details.providerPhone)}" style="color:#2563eb">${escapeHtml(details.providerPhone)}</a> — feel free to call them if you'd prefer to move faster.</p>`
+    : "";
+
+  return sendEmail({
+    to: requesterEmail,
+    subject: `We matched you with ${escapeHtml(details.providerName)} — ${cityConfig.name} Pro`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">Your Concierge Match</h2>
+      <p style="color:#374151;margin:0 0 16px">Good news — your ${escapeHtml(details.niche)} Concierge request has been hand-matched to <strong>${escapeHtml(details.providerName)}</strong>, a verified ${cityConfig.name} pro.</p>
+      <p style="color:#374151;margin:0 0 16px">They'll reach out within the next few hours. You don't need to do anything — just wait for their call or email.</p>
+      ${phoneLine}
+      <p style="color:#6b7280;font-size:13px;margin:16px 0 0">If the match doesn't work out, reply to this email and we'll route you to another pro. Your Concierge fee covers the full match.</p>
+    `, requesterEmail),
+    replyTo: `hello@${cityConfig.domain}`,
+  });
+}
+
+/**
+ * Remind an Annual member that their $199/yr membership is approaching
+ * renewal. Sent at T-30 and T-7 from the cron. The member's
+ * subscription is on Stripe so we can't auto-charge them again from
+ * here — this is a heads-up + a save-saver call to action.
+ */
+export async function sendAnnualRenewalReminder(
+  requesterEmail: string,
+  details: {
+    daysLeft: number;
+    expiresOn: Date;
+  }
+): Promise<boolean> {
+  const expiryLabel = details.expiresOn.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+  const urgencyTone = details.daysLeft <= 7 ? "#dc2626" : "#2563eb";
+  const headline =
+    details.daysLeft <= 7
+      ? `Your ${cityConfig.name} Pro Annual membership expires in ${details.daysLeft} days`
+      : `${details.daysLeft} days until your ${cityConfig.name} Pro Annual renewal`;
+
+  return sendEmail({
+    to: requesterEmail,
+    subject: headline,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:${urgencyTone};font-size:20px">${escapeHtml(headline)}</h2>
+      <p style="color:#374151;margin:0 0 16px">Hi there,</p>
+      <p style="color:#374151;margin:0 0 16px">Your <strong>${cityConfig.name} Pro Annual</strong> membership ($199/yr) is set to lapse on <strong>${escapeHtml(expiryLabel)}</strong>. After that date, you'll lose access to unlimited Concierge matches and same-day priority.</p>
+      <h3 style="color:#111827;font-size:16px;margin:24px 0 12px">What you'll lose</h3>
+      <ul style="color:#374151;padding-left:20px;margin:0 0 24px">
+        <li style="margin:8px 0">Unlimited Concierge service requests (no per-job fee)</li>
+        <li style="margin:8px 0">Same-day priority routing on emergency jobs</li>
+        <li style="margin:8px 0">Direct phone access to the ${cityConfig.name} Pro ops team</li>
+      </ul>
+      <a href="https://${cityConfig.domain}/pros" style="display:inline-block;background:${urgencyTone};color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">Renew My Membership</a>
+      <p style="margin:24px 0 0;font-size:13px;color:#9ca3af">Questions? Reply to this email and the ops team will sort it out same-day.</p>
+    `, requesterEmail),
+    replyTo: `hello@${cityConfig.domain}`,
+  });
+}
+
+/**
+ * Notify an Annual member that their membership has lapsed. Sent
+ * once by the cron the day after the term ends.
+ */
+export async function sendAnnualMembershipExpired(
+  requesterEmail: string,
+  expiredOn: Date,
+): Promise<boolean> {
+  const expiryLabel = expiredOn.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  return sendEmail({
+    to: requesterEmail,
+    subject: `Your ${cityConfig.name} Pro Annual membership has expired`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">Membership Expired</h2>
+      <p style="color:#374151;margin:0 0 16px">Hi there,</p>
+      <p style="color:#374151;margin:0 0 16px">Your <strong>${cityConfig.name} Pro Annual</strong> membership lapsed on <strong>${escapeHtml(expiryLabel)}</strong>. Concierge requests will now be billed per-job at $29 instead of being included.</p>
+      <p style="color:#374151;margin:0 0 24px">You can re-up your Annual membership any time \u2014 we'll restore your benefits immediately.</p>
+      <a href="https://${cityConfig.domain}/pros" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:600">Re-Up Annual Membership</a>
+      <p style="margin:24px 0 0;font-size:13px;color:#9ca3af">If you'd rather stay on per-job Concierge, no action is needed. Reply if you have questions.</p>
+    `, requesterEmail),
+    replyTo: `hello@${cityConfig.domain}`,
+  });
+}
+
 export async function sendEmailVerification(
   email: string,
   token: string

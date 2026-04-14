@@ -1,5 +1,5 @@
 import { MapPin, Shield, FileText } from "lucide-react"
-import { ERIE_LOCAL_SEO } from "@/lib/local-seo"
+import { localSeo } from "@/lib/local-seo"
 import { cityConfig } from "@/lib/city-config"
 
 /**
@@ -8,7 +8,7 @@ import { cityConfig } from "@/lib/city-config"
  * LocalBusiness markup with geo coordinates.
  */
 export function LocalSeoFooter() {
-  const seo = ERIE_LOCAL_SEO
+  const seo = localSeo
 
   return (
     <section

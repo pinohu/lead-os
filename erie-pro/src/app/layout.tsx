@@ -217,18 +217,18 @@ export default function RootLayout({
                   </NavigationMenuList>
                 </NavigationMenu>
 
-                {/* Subtle "For Businesses" link */}
+                {/* Provider CTA — routes to the /pros landing page */}
                 <Link
-                  href="/for-business"
-                  className="ml-1 inline-flex h-9 items-center px-3 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                  href="/pros"
+                  className="ml-1 inline-flex h-9 items-center px-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  For Businesses
+                  For Pros
                 </Link>
 
                 <ThemeToggle />
 
                 <Button asChild size="sm" className="ml-2">
-                  <Link href="/#get-quote">Get a Free Quote</Link>
+                  <Link href="/#get-matched">Get Matched Free</Link>
                 </Button>
               </div>
 
@@ -299,10 +299,16 @@ export default function RootLayout({
                   </nav>
                 </div>
 
-                {/* Column 3: For Businesses */}
+                {/* Column 3: For Pros */}
                 <div>
-                  <h4 className="mb-3 text-sm font-semibold">For Businesses</h4>
-                  <nav aria-label="Business links" className="space-y-2">
+                  <h4 className="mb-3 text-sm font-semibold">For Pros</h4>
+                  <nav aria-label="Pro links" className="space-y-2">
+                    <Link
+                      href="/pros"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Become a Pro
+                    </Link>
                     <Link
                       href="/for-business/claim"
                       className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -319,13 +325,7 @@ export default function RootLayout({
                       href="/for-business"
                       className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      Pricing
-                    </Link>
-                    <Link
-                      href="/for-business#faq"
-                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      For Business FAQ
+                      Pricing &amp; Tiers
                     </Link>
                   </nav>
                 </div>
