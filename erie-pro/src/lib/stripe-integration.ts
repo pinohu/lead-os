@@ -253,7 +253,7 @@ export async function createLeadPurchaseCheckout(
         },
       ],
       success_url: `${APP_DOMAIN}/for-business/leads/success?session_id={CHECKOUT_SESSION_ID}&lead_id=${leadId}&niche=${niche}`,
-      cancel_url: `${APP_DOMAIN}/for-business/leads?cancelled=true`,
+      cancel_url: `${APP_DOMAIN}/for-business?cancelled=true&niche=${niche}`,
       metadata: { leadId, niche, temperature },
     });
 

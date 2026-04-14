@@ -250,7 +250,7 @@ export default function LeadPurchaseSuccessPage() {
       {/* Navigation */}
       <div className="flex flex-col gap-3 sm:flex-row">
         <Button asChild variant="outline" size="lg" className="flex-1">
-          <Link href={`/api/leads/purchase?niche=${purchase?.niche ?? ""}`}>
+          <Link href={`/for-business?niche=${purchase?.niche ?? ""}`}>
             Buy Another Lead
           </Link>
         </Button>
