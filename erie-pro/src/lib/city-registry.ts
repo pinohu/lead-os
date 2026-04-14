@@ -137,42 +137,69 @@ const CITIES: CityConfig[] = [
     ],
     pilotCategories: ["plumbing", "hvac", "handyman"],
   },
-  // {
-  //   slug: "jamestown",
-  //   name: "Jamestown",
-  //   state: "New York",
-  //   stateCode: "NY",
-  //   domain: "jamestown.pro",
-  //   population: 29000,
-  //   coordinates: { lat: 42.097, lng: -79.2353 },
-  //   serviceArea: [
-  //     "Jamestown", "Lakewood", "Falconer", "Celoron", "Frewsburg",
-  //     "Bemus Point", "Ashville", "Busti",
-  //   ],
-  //   tagline: "Jamestown's premier local service directory",
-  //   timezone: "America/New_York",
-  //   pricingMultiplier: 0.8,
-  //   metroArea: "Chautauqua County",
-  //   counties: ["Chautauqua County"],
-  // },
-  // {
-  //   slug: "ashtabula",
-  //   name: "Ashtabula",
-  //   state: "Ohio",
-  //   stateCode: "OH",
-  //   domain: "ashtabula.pro",
-  //   population: 18000,
-  //   coordinates: { lat: 41.865, lng: -80.789 },
-  //   serviceArea: [
-  //     "Ashtabula", "Geneva", "Conneaut", "Jefferson", "Kingsville",
-  //     "North Kingsville", "Saybrook", "Plymouth",
-  //   ],
-  //   tagline: "Ashtabula's trusted local service providers",
-  //   timezone: "America/New_York",
-  //   pricingMultiplier: 0.75,
-  //   metroArea: "Ashtabula County",
-  //   counties: ["Ashtabula County"],
-  // },
+  // Jamestown NY is the 4th city — the first cross-state
+  // deployment. Chautauqua Lake / Southern Tier market, decent
+  // population (~29K), priced slightly below Erie at 0.8x.
+  {
+    slug: "jamestown",
+    name: "Jamestown",
+    state: "New York",
+    stateCode: "NY",
+    domain: "jamestown.pro",
+    population: 29000,
+    coordinates: { lat: 42.0970, lng: -79.2353 },
+    serviceArea: [
+      "Jamestown", "Lakewood", "Falconer", "Celoron", "Frewsburg",
+      "Bemus Point", "Ashville", "Busti", "Kiantone", "Ellicott",
+      "Greenhurst", "Fluvanna",
+    ],
+    tagline: "One pro. No bidding. Always Jamestown.",
+    timezone: "America/New_York",
+    pricingMultiplier: 0.8,
+    metroArea: "Chautauqua County",
+    counties: ["Chautauqua County"],
+    // Chautauqua Lake corridor + southern-tier feeder ZIPs.
+    coverageZips: [
+      "14701", "14702", "14750", "14733", "14738",
+      "14712", "14710", "14767", "14784", "14772",
+    ],
+    overlapAreas: [
+      { city: "Warren", stateCode: "PA", zip: "16365" },
+    ],
+    pilotCategories: ["plumbing", "hvac", "handyman"],
+  },
+  // Ashtabula OH — 5th city, second cross-state deployment.
+  // Lake Erie coastline, northern-Ohio market, priced below Erie at
+  // 0.75x. Conneaut ZIP (44030) already overlaps with Erie's
+  // drive-time zone.
+  {
+    slug: "ashtabula",
+    name: "Ashtabula",
+    state: "Ohio",
+    stateCode: "OH",
+    domain: "ashtabula.pro",
+    population: 18000,
+    coordinates: { lat: 41.8650, lng: -80.7898 },
+    serviceArea: [
+      "Ashtabula", "Geneva", "Conneaut", "Jefferson", "Kingsville",
+      "North Kingsville", "Saybrook", "Plymouth", "Rock Creek",
+      "Andover", "Orwell",
+    ],
+    tagline: "One pro. No bidding. Always Ashtabula.",
+    timezone: "America/New_York",
+    pricingMultiplier: 0.75,
+    metroArea: "Ashtabula County",
+    counties: ["Ashtabula County"],
+    // Lake Erie coast ZIPs + inland county cluster.
+    coverageZips: [
+      "44004", "44005", "44010", "44030", "44041",
+      "44047", "44048", "44068", "44084",
+    ],
+    overlapAreas: [
+      { city: "Erie", stateCode: "PA", zip: "16505" },
+    ],
+    pilotCategories: ["plumbing", "hvac", "handyman"],
+  },
 ];
 
 /** Get all registered cities */

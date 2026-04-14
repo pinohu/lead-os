@@ -7,6 +7,8 @@ import {
   ERIE_LOCAL_SEO,
   MEADVILLE_LOCAL_SEO,
   WARREN_LOCAL_SEO,
+  JAMESTOWN_LOCAL_SEO,
+  ASHTABULA_LOCAL_SEO,
   getLocalSeoForCity,
   getLocalMetaDescription,
   getLocalContext,
@@ -60,6 +62,45 @@ describe("WARREN_LOCAL_SEO", () => {
   });
 });
 
+describe("JAMESTOWN_LOCAL_SEO", () => {
+  it("has Jamestown basics wired up", () => {
+    expect(JAMESTOWN_LOCAL_SEO.city).toBe("Jamestown");
+    expect(JAMESTOWN_LOCAL_SEO.stateCode).toBe("NY");
+    expect(JAMESTOWN_LOCAL_SEO.countyName).toBe("Chautauqua County");
+    expect(JAMESTOWN_LOCAL_SEO.population).toBe(29000);
+  });
+
+  it("references the National Comedy Center in landmarks", () => {
+    expect(JAMESTOWN_LOCAL_SEO.landmarks).toContain("National Comedy Center");
+  });
+
+  it("has distinctly NY-flavored copy (not PA lake-effect belt)", () => {
+    expect(JAMESTOWN_LOCAL_SEO.state).toBe("New York");
+    expect(JAMESTOWN_LOCAL_SEO.neighborhoods).toContain("Downtown Jamestown");
+    expect(JAMESTOWN_LOCAL_SEO.neighborhoods).toContain("Lakewood");
+  });
+});
+
+describe("ASHTABULA_LOCAL_SEO", () => {
+  it("has Ashtabula basics wired up", () => {
+    expect(ASHTABULA_LOCAL_SEO.city).toBe("Ashtabula");
+    expect(ASHTABULA_LOCAL_SEO.stateCode).toBe("OH");
+    expect(ASHTABULA_LOCAL_SEO.countyName).toBe("Ashtabula County");
+    expect(ASHTABULA_LOCAL_SEO.population).toBe(18000);
+  });
+
+  it("references coastal Lake Erie landmarks", () => {
+    expect(ASHTABULA_LOCAL_SEO.landmarks).toContain("Ashtabula Harbor");
+    expect(ASHTABULA_LOCAL_SEO.landmarks).toContain("Ashtabula Lift Bridge");
+  });
+
+  it("gets heavier lake-effect snow than Warren (coast vs plateau)", () => {
+    // Ashtabula is on the lake shoreline like Erie, so snowfall
+    // should match Erie's belt, not Warren's 80in.
+    expect(ASHTABULA_LOCAL_SEO.annualSnowfall).toMatch(/110/);
+  });
+});
+
 describe("getLocalSeoForCity", () => {
   it("resolves erie", () => {
     expect(getLocalSeoForCity("erie")).toBe(ERIE_LOCAL_SEO);
@@ -71,6 +112,14 @@ describe("getLocalSeoForCity", () => {
 
   it("resolves warren", () => {
     expect(getLocalSeoForCity("warren")).toBe(WARREN_LOCAL_SEO);
+  });
+
+  it("resolves jamestown", () => {
+    expect(getLocalSeoForCity("jamestown")).toBe(JAMESTOWN_LOCAL_SEO);
+  });
+
+  it("resolves ashtabula", () => {
+    expect(getLocalSeoForCity("ashtabula")).toBe(ASHTABULA_LOCAL_SEO);
   });
 
   it("returns undefined for an unknown slug", () => {

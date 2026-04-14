@@ -60,6 +60,70 @@ describe("sendEmailVerification", () => {
   });
 });
 
+describe("sendConciergeAssignmentToPro", () => {
+  it("returns true in dry-run mode", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendConciergeAssignmentToPro } = await import("../email");
+    const result = await sendConciergeAssignmentToPro(
+      "pro@example.com",
+      "Joe's Plumbing",
+      {
+        requesterEmail: "requester@example.com",
+        niche: "plumbing",
+        city: "erie",
+        opsNotes: "Call ASAP — basement flooding",
+      }
+    );
+    expect(result).toBe(true);
+  });
+
+  it("handles null ops notes", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendConciergeAssignmentToPro } = await import("../email");
+    const result = await sendConciergeAssignmentToPro(
+      "pro@example.com",
+      "Joe's Plumbing",
+      {
+        requesterEmail: "requester@example.com",
+        niche: "plumbing",
+        city: "erie",
+        opsNotes: null,
+      }
+    );
+    expect(result).toBe(true);
+  });
+});
+
+describe("sendConciergeHandoffToRequester", () => {
+  it("returns true in dry-run mode with phone", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendConciergeHandoffToRequester } = await import("../email");
+    const result = await sendConciergeHandoffToRequester(
+      "requester@example.com",
+      {
+        providerName: "Joe's Plumbing",
+        providerPhone: "+18145550101",
+        niche: "plumbing",
+      }
+    );
+    expect(result).toBe(true);
+  });
+
+  it("returns true without phone (phone-optional match)", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendConciergeHandoffToRequester } = await import("../email");
+    const result = await sendConciergeHandoffToRequester(
+      "requester@example.com",
+      {
+        providerName: "Joe's Plumbing",
+        providerPhone: null,
+        niche: "plumbing",
+      }
+    );
+    expect(result).toBe(true);
+  });
+});
+
 describe("sendSlaWarningEmail", () => {
   it("returns true in dry-run mode", async () => {
     vi.stubEnv("EMAILIT_API_KEY", "");

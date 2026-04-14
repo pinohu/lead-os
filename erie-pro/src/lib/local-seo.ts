@@ -315,12 +315,175 @@ export const WARREN_LOCAL_SEO: LocalSeoData = {
   ],
 };
 
+// Jamestown NY — the first cross-state dataset. Southern Tier /
+// Chautauqua Lake market, lake-effect snow from Chautauqua plus the
+// Lake Erie belt to the north.
+export const JAMESTOWN_LOCAL_SEO: LocalSeoData = {
+  city: "Jamestown",
+  state: "New York",
+  stateCode: "NY",
+
+  neighborhoods: [
+    "Downtown Jamestown", "North Side", "South Side", "East Jamestown",
+    "West Jamestown", "Lakewood", "Falconer", "Celoron", "Frewsburg",
+    "Bemus Point", "Ashville", "Busti", "Kiantone", "Greenhurst",
+    "Fluvanna",
+  ],
+
+  landmarks: [
+    "National Comedy Center", "Lucille Ball Desi Arnaz Museum",
+    "Chautauqua Lake", "Midway State Park", "Panama Rocks Scenic Park",
+    "Jamestown Community College", "Robert H. Jackson Center",
+    "Reg Lenna Center for the Arts", "Chautauqua Mall",
+    "Jamestown City Hall", "UPMC Chautauqua",
+  ],
+
+  zipCodes: [
+    "14701", "14702", "14750", "14733", "14738",
+    "14712", "14710", "14767", "14784", "14772",
+    // Overlap: Warren PA
+    "16365",
+  ],
+
+  countyName: "Chautauqua County",
+
+  climateNotes: [
+    "Jamestown averages 80-100 inches of snow, fed by Chautauqua Lake " +
+      "and Lake Erie bands to the north",
+    "Freeze-thaw cycles run mid-November through late March",
+    "Summer temperatures average 68-80\u00B0F with lake-moderated humidity",
+    "Ice storms and deep-freeze cold snaps are common in January-February",
+  ],
+
+  avgWinterTemp: "24\u00B0F (-4\u00B0C)",
+  avgSummerTemp: "70\u00B0F (21\u00B0C)",
+  annualSnowfall: "90 inches",
+
+  buildingCodes: [
+    "New York State Uniform Fire Prevention and Building Code",
+    "International Residential Code (IRC) adopted statewide",
+    "City of Jamestown Code Enforcement permits required for most work",
+    "Plumbing work requires NY state licensed plumber",
+    "Electrical work requires NY state licensed electrician",
+  ],
+
+  licensingRequirements: [
+    "General contractors: no state license, but Jamestown city registration",
+    "Plumbers: NY state licensed plumber",
+    "Electricians: NY state licensed electrician",
+    "HVAC: EPA 608 certification for refrigerant handling",
+    "Roofers: no state license, but liability insurance required",
+  ],
+
+  permitInfo:
+    "Building permits are issued by Jamestown City Code Enforcement or " +
+    "the Chautauqua County Department of Planning & Development. Projects " +
+    "over $500 generally require a permit.",
+
+  population: 29000,
+  medianHomeValue: "$75,000",
+  medianIncome: "$38,000",
+  homeownershipRate: "55%",
+
+  geoCoordinates: { lat: 42.0970, lng: -79.2353 },
+
+  nearbySearchTerms: [
+    "in Jamestown NY", "Jamestown New York", "near Jamestown",
+    "Jamestown area", "near me in Jamestown", "Chautauqua County NY",
+    "around Jamestown", "Lakewood NY", "Falconer NY", "Chautauqua Lake",
+    "Southern Tier NY",
+  ],
+};
+
+// Ashtabula OH — coastal Lake Erie market on the Ohio side of the
+// border. Gets heavy lake-effect snow like Erie PA, plus a thriving
+// wine-and-coast tourism economy along the Ashtabula County wine trail.
+export const ASHTABULA_LOCAL_SEO: LocalSeoData = {
+  city: "Ashtabula",
+  state: "Ohio",
+  stateCode: "OH",
+
+  neighborhoods: [
+    "Downtown Ashtabula", "Harbor District", "West Ashtabula",
+    "East Ashtabula", "Saybrook", "Plymouth", "Kingsville",
+    "North Kingsville", "Geneva", "Conneaut", "Jefferson",
+    "Rock Creek", "Andover",
+  ],
+
+  landmarks: [
+    "Ashtabula Harbor", "Ashtabula Lift Bridge", "Walnut Beach Park",
+    "Point Park", "Hubbard House Underground Railroad Museum",
+    "Ashtabula County Covered Bridges", "Geneva State Park",
+    "Ashtabula County Wine Trail", "Conneaut Township Park",
+    "Lake Shore Park", "Ashtabula County Medical Center",
+  ],
+
+  zipCodes: [
+    "44004", "44005", "44010", "44030", "44041",
+    "44047", "44048", "44068", "44084",
+    // Overlap: Erie PA
+    "16505",
+  ],
+
+  countyName: "Ashtabula County",
+
+  climateNotes: [
+    "Ashtabula sits in Lake Erie's snowbelt and averages 100+ inches " +
+      "of lake-effect snow each winter",
+    "Freeze-thaw cycles run November through early April along the coast",
+    "Summer temperatures average 68-80\u00B0F, moderated by the lake",
+    "Ice storms and whiteout-level snow squalls hit several times a year",
+  ],
+
+  avgWinterTemp: "27\u00B0F (-3\u00B0C)",
+  avgSummerTemp: "71\u00B0F (22\u00B0C)",
+  annualSnowfall: "110 inches",
+
+  buildingCodes: [
+    "Ohio Residential Code (based on IRC)",
+    "Ohio Building Code (commercial, based on IBC)",
+    "City of Ashtabula and Ashtabula County permits required for most work",
+    "Plumbing work requires Ohio state licensed plumber",
+    "Electrical work requires Ohio state licensed electrical contractor",
+  ],
+
+  licensingRequirements: [
+    "General contractors: Ohio doesn't state-license GCs, but local " +
+      "registration with Ashtabula and the county is standard",
+    "Plumbers: Ohio state licensed plumber",
+    "Electricians: Ohio state licensed electrical contractor",
+    "HVAC: Ohio HVAC contractor license + EPA 608 certification",
+    "Roofers: no state license, but liability insurance is standard",
+  ],
+
+  permitInfo:
+    "Building permits are issued by the City of Ashtabula Building " +
+    "Department or the Ashtabula County Department of Building " +
+    "Regulations. Projects over $500 generally require a permit.",
+
+  population: 18000,
+  medianHomeValue: "$90,000",
+  medianIncome: "$36,000",
+  homeownershipRate: "60%",
+
+  geoCoordinates: { lat: 41.8650, lng: -80.7898 },
+
+  nearbySearchTerms: [
+    "in Ashtabula OH", "Ashtabula Ohio", "near Ashtabula",
+    "Ashtabula area", "near me in Ashtabula", "Ashtabula County OH",
+    "around Ashtabula", "Geneva OH", "Conneaut OH",
+    "Lake Erie shoreline", "Ashtabula wine trail",
+  ],
+};
+
 // ── City dataset registry ──────────────────────────────────────────
 
 const LOCAL_SEO_BY_CITY: Record<string, LocalSeoData> = {
   erie: ERIE_LOCAL_SEO,
   meadville: MEADVILLE_LOCAL_SEO,
   warren: WARREN_LOCAL_SEO,
+  jamestown: JAMESTOWN_LOCAL_SEO,
+  ashtabula: ASHTABULA_LOCAL_SEO,
 };
 
 /**
@@ -511,6 +674,58 @@ const CITY_NICHE_SNIPPETS: Record<string, Record<string, string>> = {
       "Warren sits at the edge of the Allegheny National Forest, so mature trees are everywhere. Ice loads, summer thunderstorms, and emerald ash borer damage all drive tree-service demand. Emergency removal and storm cleanup run year-round across Warren County.",
     "auto-repair":
       "Long rural commutes through Warren, Pleasant, and Glade Townships combined with road salt and potholes mean steady wear on vehicles. Rust repair, suspension work, and winter tire swaps are mainstays. Pennsylvania requires annual inspections and emissions testing.",
+  },
+  jamestown: {
+    plumbing:
+      "Jamestown's Chautauqua Lake corridor and 90+ inches of annual snow put steady pressure on plumbing systems. Frozen pipes are common in older North Side and South Side homes, and Lakewood's lakefront properties need seasonal shut-offs. New York state law requires all plumbing work to be performed by a licensed plumber.",
+    hvac:
+      "With winter temperatures averaging 24\u00B0F and snow totals pushed up by both Lake Erie and Chautauqua Lake, Jamestown homeowners rely on heating nearly half the year. Moderate summers still demand reliable air conditioning in historic homes downtown and across Falconer and Celoron. EPA 608 certification is required for all refrigerant handling.",
+    handyman:
+      "Jamestown's century-old housing stock, Jamestown Community College rentals, and newer developments in Lakewood keep local handymen busy. Seasonal maintenance \u2014 gutter cleanouts, storm-window swaps, deck repairs \u2014 runs steady across Chautauqua County.",
+    electrical:
+      "Older housing stock in downtown Jamestown and the North Side often needs panel upgrades, rewiring, and surge protection. Lake-effect storms drive steady demand for generator installs across Lakewood, Falconer, and Busti. New York state licensed electricians are required for most work.",
+    roofing:
+      "Jamestown's 90 inches of snow, ice dams, and Chautauqua Lake humidity take a steady toll on roofs. Homes in Lakewood, Falconer, and the North Side often need replacement after heavy winters. Roofers in NY aren't state-licensed but are expected to carry full liability coverage.",
+    landscaping:
+      "Jamestown's growing season runs early May through late September, bracketed by deep winter and wet springs. Chautauqua Lake waterfront properties need erosion control and dock-area landscaping. Spring cleanups spike across Busti and Lakewood every April.",
+    cleaning:
+      "Jamestown homeowners, Jamestown Community College renters, and downtown storefronts keep local cleaners busy year-round. Road salt, freeze-thaw moisture, and lake humidity bring extra dirt indoors. Move-in / move-out cleans peak with the college calendar each May and August.",
+    "snow-removal":
+      "With 90 inches of snow each winter from combined Lake Erie and Chautauqua Lake bands, snow-removal is essential in Jamestown. Driveway plowing, walkway shoveling, and commercial lot clearing peak November through March across Lakewood, Falconer, and the North Side.",
+    "auto-repair":
+      "Jamestown's salted roads, harsh winters, and lake-effect storm damage are rough on vehicles. Rust repair, suspension work, and winter tire swaps stay busy year-round. New York State inspections are required annually, keeping local shops consistently booked.",
+    "tree-service":
+      "Jamestown's mature trees along the Chautauqua Lake corridor and in Busti and Kiantone take a beating from ice loads and summer thunderstorms. Emergency removal and storm cleanup are year-round needs across Chautauqua County.",
+    chimney:
+      "Long Jamestown winters averaging 24\u00B0F keep wood stoves and fireplaces running hard. Freeze-thaw cycles crack mortar and damage flue liners; annual inspection and cleaning are critical for fire safety, especially in the older housing stock on the North Side and around Jamestown Community College.",
+    "garage-door":
+      "Heavy snow and ice around Chautauqua Lake put extra strain on garage doors and openers. Spring replacements and opener service are common needs in Lakewood, Falconer, and Celoron; freeze-thaw swings regularly warp tracks and damage panels.",
+  },
+  ashtabula: {
+    plumbing:
+      "Ashtabula sits squarely in Lake Erie's snowbelt with 100+ inches of lake-effect snow each winter. Frozen pipes are common in Harbor District and older downtown housing stock; shoreline properties in Geneva and Conneaut need seasonal shut-offs. Ohio requires all plumbing work to be performed by a state-licensed plumber.",
+    hvac:
+      "Ashtabula winters average 27\u00B0F with heavy lake-effect snow. Homeowners across Saybrook, Plymouth, and Kingsville rely on furnaces and heat pumps nearly half the year; summer humidity off the lake keeps AC demand steady. EPA 608 certification and an Ohio HVAC contractor license are required for most work.",
+    handyman:
+      "Ashtabula's mix of 19th-century harbor homes, wine-country cottages, and newer Saybrook builds keeps local handymen busy year-round. Lake-effect weather drives steady small repairs \u2014 gutters, storm windows, deck patches \u2014 across Ashtabula County.",
+    electrical:
+      "Older housing stock in downtown Ashtabula and the Harbor District often needs panel upgrades, surge protection, and generator installs. Lake-effect outages are routine. Ohio requires a state-licensed electrical contractor for most work; Ashtabula County adds local permit requirements.",
+    roofing:
+      "Ashtabula's 110 inches of snow, ice dams, and coastal humidity punish roofs. Homes in the Harbor District, Geneva, and Conneaut regularly need tear-offs after heavy winters. Ohio doesn't state-license roofers, but Ashtabula-area homeowners expect full liability coverage.",
+    landscaping:
+      "Ashtabula's growing season runs early May through late September, with vineyard-friendly soil across Geneva, Harpersfield, and Jefferson. Waterfront properties need erosion control, and the county's wine-country homeowners invest heavily in hardscape and seasonal cleanups.",
+    cleaning:
+      "Ashtabula homeowners, wine-country B&Bs, and downtown storefronts keep local cleaners busy year-round. Road salt, lake moisture, and tourism season bring steady demand for deep cleans and move-in / move-out service across Saybrook, Geneva, and the Harbor District.",
+    "snow-removal":
+      "With 110 inches of lake-effect snow each winter, snow-removal is essential in Ashtabula. Driveway plowing, walkway shoveling, and commercial lot clearing peak November through March across the Harbor District, Saybrook, and the Ashtabula County wine trail.",
+    "auto-repair":
+      "Ashtabula's salted roads, harsh winters, and shoreline routes are rough on vehicles. Rust repair, suspension work, and winter tire swaps stay busy year-round. Ohio E-Check requirements in neighboring counties and steady commuter traffic keep local shops consistently booked.",
+    "tree-service":
+      "Ashtabula's mature trees along the Lake Erie shoreline and throughout the county's wine trail take a beating from ice loads and summer thunderstorms. Emergency removal and storm cleanup are year-round needs in Harbor, Saybrook, Geneva, and Jefferson.",
+    chimney:
+      "Long Ashtabula winters averaging 27\u00B0F keep wood stoves and fireplaces running hard. Lake-effect moisture accelerates chimney deterioration in downtown Ashtabula, the Harbor District, and along the shoreline. Annual inspection and cleaning are critical for fire safety.",
+    "garage-door":
+      "Heavy lake-effect snow and ice in Ashtabula put extra strain on garage doors and openers. Spring replacements and opener service are common across the Harbor District, Saybrook, and Geneva; freeze-thaw swings warp tracks and damage panels.",
   },
 };
 
