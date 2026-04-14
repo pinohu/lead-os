@@ -82,6 +82,8 @@ enum CallOutcome {
 enum CheckoutSessionType {
   territory_claim
   lead_purchase
+  concierge_job
+  annual_membership
 }
 
 enum CheckoutSessionStatus {
@@ -355,6 +357,24 @@ model LeadDispute {
   @@index([leadId])
   @@index([providerId])
   @@map("lead_disputes")
+}
+
+// ── Runtime Settings (key/value store) ──────────────────────────────
+// Generic setting store for ops-controlled runtime config that must
+// live outside env vars (e.g. founding-seat claimed count, current
+// launch-kit notes). Values are JSON-serialized strings so we can
+// put numbers, flags, or small objects behind the same interface.
+
+model Setting {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  value      String   // JSON-serialized
+  updatedAt  DateTime @updatedAt
+  updatedBy  String?  // email of admin who last touched it
+  createdAt  DateTime @default(now())
+
+  @@index([key])
+  @@map("settings")
 }
 
 // ── Audit Log ──────────────────────────────────────────────────────

@@ -75,4 +75,33 @@ describe("CityConfig structure", () => {
     expect(erie.metroArea.length).toBeGreaterThan(0);
     expect(erie.counties.length).toBeGreaterThanOrEqual(1);
   });
+
+  it("Erie has Launch Kit fields wired up", () => {
+    const erie = getCityBySlug("erie")!;
+    expect(erie.tagline).toBe("One pro. No bidding. Always Erie.");
+    expect(erie.coverageZips?.length ?? 0).toBeGreaterThanOrEqual(20);
+    expect(erie.overlapAreas?.length ?? 0).toBeGreaterThanOrEqual(1);
+    expect(erie.pilotCategories?.length ?? 0).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe("Meadville expansion city", () => {
+  it("resolves from the registry", () => {
+    const meadville = getCityBySlug("meadville");
+    expect(meadville).toBeDefined();
+    expect(meadville!.stateCode).toBe("PA");
+    expect(meadville!.domain).toBe("meadville.pro");
+    expect(meadville!.pricingMultiplier).toBeLessThan(1.0);
+  });
+
+  it("applies its pricing multiplier", () => {
+    // 1000 × 0.7 = 700
+    expect(getCityAdjustedPrice("meadville", 1000)).toBe(700);
+  });
+
+  it("is listed in the city slugs", () => {
+    const slugs = getAllCitySlugs();
+    expect(slugs).toContain("erie");
+    expect(slugs).toContain("meadville");
+  });
 });

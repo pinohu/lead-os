@@ -87,8 +87,8 @@ const reasons: Array<{ title: string; body: string; icon: React.ReactNode }> = [
   },
 ]
 
-export default function ProsPage() {
-  const offer = getFoundingOffer()
+export default async function ProsPage() {
+  const offer = await getFoundingOffer()
 
   const tiers: TierCard[] = [
     {

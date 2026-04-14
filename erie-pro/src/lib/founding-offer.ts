@@ -1,35 +1,27 @@
 // ── Founding-Member Offer ───────────────────────────────────────────
 // Launch Kit: first 40 Erie pros get a locked $39/month Pro rate for
-// 24 months (normally $99). This module exposes the config and a
-// read function for the live slot count. We keep it env-driven so the
-// count can be bumped without a redeploy.
+// 24 months (normally $99).
 //
-// Env:
-//   NEXT_PUBLIC_FOUNDING_CLAIMED=7   // set to the current live count
-//   NEXT_PUBLIC_FOUNDING_TOTAL=40
-//   NEXT_PUBLIC_FOUNDING_PRICE=39
-//   NEXT_PUBLIC_FOUNDING_NORMAL_PRICE=99
-//   NEXT_PUBLIC_FOUNDING_LOCK_MONTHS=24
+// Two sources of truth in priority order:
+//   1. Setting table (admin UI mutable, no redeploy)
+//   2. NEXT_PUBLIC_FOUNDING_* env vars (fallback for fresh installs)
 //
-// The public-namespaced values intentionally render on the server
-// during SSG, so a new build "bakes in" whatever count we set. The
-// route is revalidated hourly so an ISR nudge is enough to refresh.
+// We expose TWO reader APIs:
+//   - getFoundingOfferStatic(): sync, env-only. Safe at build time
+//     and in edge middleware. Used for bundling hints.
+//   - getFoundingOffer(): async, DB-backed with env fallback. Used
+//     by server components that want the live count.
 
 export interface FoundingOffer {
-  /** Total number of founding slots available for the city launch */
   totalSlots: number;
-  /** Slots already claimed (sourced from env or DB). */
   claimedSlots: number;
-  /** Remaining slots */
   remainingSlots: number;
-  /** Locked monthly price for founders (USD) */
   price: number;
-  /** Regular monthly price after the promo ends */
   normalPrice: number;
-  /** How many months the locked rate is guaranteed */
   lockMonths: number;
-  /** Whether the offer is sold out */
   isSoldOut: boolean;
+  /** "db" if any field came from the Setting table; "env" if pure env fallback. */
+  source: "db" | "env";
 }
 
 function envInt(key: string, fallback: number): number {
@@ -39,7 +31,8 @@ function envInt(key: string, fallback: number): number {
   return Number.isFinite(n) ? n : fallback;
 }
 
-export function getFoundingOffer(): FoundingOffer {
+/** Env-only synchronous read. Safe at build time. */
+export function getFoundingOfferStatic(): FoundingOffer {
   const totalSlots = envInt("NEXT_PUBLIC_FOUNDING_TOTAL", 40);
   const claimedSlots = Math.min(
     envInt("NEXT_PUBLIC_FOUNDING_CLAIMED", 0),
@@ -55,5 +48,56 @@ export function getFoundingOffer(): FoundingOffer {
     normalPrice: envInt("NEXT_PUBLIC_FOUNDING_NORMAL_PRICE", 99),
     lockMonths: envInt("NEXT_PUBLIC_FOUNDING_LOCK_MONTHS", 24),
     isSoldOut: remainingSlots === 0,
+    source: "env",
+  };
+}
+
+/**
+ * DB-backed read with env fallback. Server-only.
+ *
+ * The settings module is imported lazily so this file stays safe to
+ * import from pure-unit tests that don't have DATABASE_URL set.
+ */
+export async function getFoundingOffer(): Promise<FoundingOffer> {
+  const fallback = getFoundingOfferStatic();
+  const { getSetting, SETTING_KEYS } = await import("@/lib/settings");
+
+  const [
+    dbClaimed,
+    dbTotal,
+    dbPrice,
+    dbNormal,
+    dbLock,
+  ] = await Promise.all([
+    getSetting<number | null>(SETTING_KEYS.foundingClaimed, null),
+    getSetting<number | null>(SETTING_KEYS.foundingTotal, null),
+    getSetting<number | null>(SETTING_KEYS.foundingPrice, null),
+    getSetting<number | null>(SETTING_KEYS.foundingNormalPrice, null),
+    getSetting<number | null>(SETTING_KEYS.foundingLockMonths, null),
+  ]);
+
+  const touchedDb =
+    dbClaimed !== null ||
+    dbTotal !== null ||
+    dbPrice !== null ||
+    dbNormal !== null ||
+    dbLock !== null;
+
+  const totalSlots = typeof dbTotal === "number" ? dbTotal : fallback.totalSlots;
+  const claimedRaw =
+    typeof dbClaimed === "number" ? dbClaimed : fallback.claimedSlots;
+  const claimedSlots = Math.min(Math.max(0, claimedRaw), totalSlots);
+  const remainingSlots = Math.max(0, totalSlots - claimedSlots);
+
+  return {
+    totalSlots,
+    claimedSlots,
+    remainingSlots,
+    price: typeof dbPrice === "number" ? dbPrice : fallback.price,
+    normalPrice:
+      typeof dbNormal === "number" ? dbNormal : fallback.normalPrice,
+    lockMonths: typeof dbLock === "number" ? dbLock : fallback.lockMonths,
+    isSoldOut: remainingSlots === 0,
+    source: touchedDb ? "db" : "env",
   };
 }

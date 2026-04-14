@@ -34,6 +34,7 @@ const navSections = [
     label: "Business",
     items: [
       { href: "/admin/revenue", label: "Revenue", icon: "💰" },
+      { href: "/admin/founding", label: "Founding Offer", icon: "🔒" },
       { href: "/admin/calls", label: "Call Tracking", icon: "📞" },
     ],
   },

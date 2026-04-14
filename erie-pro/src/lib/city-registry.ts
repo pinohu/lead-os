@@ -72,25 +72,39 @@ const CITIES: CityConfig[] = [
       "plumbing", "hvac", "handyman", "cleaning", "snow-removal", "landscaping",
     ],
   },
-  // ── Expansion cities (uncomment when ready to deploy) ────────────
-  // {
-  //   slug: "meadville",
-  //   name: "Meadville",
-  //   state: "Pennsylvania",
-  //   stateCode: "PA",
-  //   domain: "meadville.pro",
-  //   population: 13000,
-  //   coordinates: { lat: 41.6414, lng: -80.1515 },
-  //   serviceArea: [
-  //     "Meadville", "Vernon Township", "West Mead", "East Mead",
-  //     "Hayfield", "Cambridge Springs", "Saegertown", "Conneaut Lake",
-  //   ],
-  //   tagline: "Meadville's trusted local service directory",
-  //   timezone: "America/New_York",
-  //   pricingMultiplier: 0.7,
-  //   metroArea: "Crawford County",
-  //   counties: ["Crawford County"],
-  // },
+  // ── Expansion cities ─────────────────────────────────────────────
+  // Meadville is the second city. Build with CITY_SLUG=meadville to
+  // verify the factory end-to-end before flipping a real domain.
+  {
+    slug: "meadville",
+    name: "Meadville",
+    state: "Pennsylvania",
+    stateCode: "PA",
+    domain: "meadville.pro",
+    population: 13000,
+    coordinates: { lat: 41.6414, lng: -80.1515 },
+    serviceArea: [
+      "Meadville", "Vernon Township", "West Mead", "East Mead",
+      "Hayfield", "Cambridge Springs", "Saegertown", "Conneaut Lake",
+      "Linesville", "Cochranton", "Townville",
+    ],
+    tagline: "One pro. No bidding. Always Meadville.",
+    timezone: "America/New_York",
+    pricingMultiplier: 0.7,
+    metroArea: "Crawford County",
+    counties: ["Crawford County"],
+    // Coverage: Meadville core + inner Crawford County. Cambridge
+    // Springs (16403) is shared with Erie's drive-time zone.
+    coverageZips: [
+      "16335", "16354", "16327", "16407", "16424",
+      "16314", "16403", "16316", "16433",
+    ],
+    overlapAreas: [
+      { city: "Jamestown", stateCode: "NY", zip: "14701" },
+    ],
+    // Three-category pilot focus, same pattern as Erie.
+    pilotCategories: ["plumbing", "hvac", "handyman"],
+  },
   // {
   //   slug: "warren",
   //   name: "Warren",

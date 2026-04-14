@@ -26,7 +26,8 @@ import {
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { niches } from "@/lib/niches"
-import { getAllRequesterTiers } from "@/lib/requester-tiers"
+import { getAllRequesterTiers, type RequesterTier } from "@/lib/requester-tiers"
+import { RequesterUpgradeButton } from "@/components/requester-upgrade-button"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -359,12 +360,14 @@ export default function HomePage() {
                         </li>
                       ))}
                     </ul>
-                    <Button asChild className="mt-5 w-full" variant={t.featured ? "default" : "outline"}>
-                      <Link href={`/contact?subject=${t.id}`}>
-                        {t.cta}
-                        <ArrowRight className="ml-1.5 h-4 w-4" />
-                      </Link>
-                    </Button>
+                    <div className="mt-5">
+                      <RequesterUpgradeButton
+                        plan={t.id as Exclude<RequesterTier, "free">}
+                        label={t.cta}
+                        variant={t.featured ? "default" : "outline"}
+                        className="w-full"
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               ))}
