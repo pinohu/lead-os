@@ -120,12 +120,12 @@ export default async function ConciergeInboxPage() {
                   : null
               return (
                 <li key={job.id} className="px-6 py-5">
-                  <div className="mb-3 flex items-start justify-between gap-4">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">
+                  <div className="mb-3 flex flex-wrap items-start justify-between gap-2 sm:flex-nowrap sm:gap-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="break-words font-medium text-gray-900 dark:text-white">
                         {job.providerEmail}
                       </p>
-                      <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                      <p className="mt-0.5 break-words text-xs text-gray-500 dark:text-gray-400">
                         Paid {formatDate(job.completedAt)} ·{" "}
                         {formatPrice(job.price)} · Session{" "}
                         <code className="rounded bg-gray-100 px-1 py-0.5 text-[11px] dark:bg-gray-800">
@@ -181,7 +181,7 @@ export default async function ConciergeInboxPage() {
                     <div className="flex items-end">
                       <button
                         type="submit"
-                        className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+                        className="w-full rounded-md bg-blue-600 px-3 py-2.5 text-sm font-medium text-white hover:bg-blue-700 sm:w-auto sm:py-1.5"
                       >
                         Save
                       </button>
@@ -192,7 +192,7 @@ export default async function ConciergeInboxPage() {
                     <input type="hidden" name="sessionId" value={job.id} />
                     <button
                       type="submit"
-                      className="text-xs font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+                      className="inline-flex w-full items-center justify-center rounded-md border border-emerald-200 px-3 py-2 text-xs font-medium text-emerald-700 hover:bg-emerald-50 dark:border-emerald-900/40 dark:text-emerald-400 dark:hover:bg-emerald-900/20 sm:w-auto"
                     >
                       ✓ Mark fulfilled
                     </button>
@@ -254,8 +254,10 @@ export default async function ConciergeInboxPage() {
             Annual members ({annualMembers.length})
           </h2>
           <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-            Unlimited Concierge matches + same-day priority. Call-list for
-            outreach.
+            Unlimited Concierge matches + same-day priority. Renewal cron
+            sends 30-day and 7-day reminders automatically — call any
+            <span className="font-semibold text-amber-700 dark:text-amber-400"> Expiring soon </span>
+            members below to save the renewal.
           </p>
         </div>
 
@@ -265,19 +267,64 @@ export default async function ConciergeInboxPage() {
           </div>
         ) : (
           <ul className="divide-y divide-gray-200 dark:divide-gray-800">
-            {annualMembers.map((m) => (
-              <li
-                key={m.id}
-                className="flex items-center justify-between px-6 py-3 text-sm"
-              >
-                <span className="font-medium text-gray-900 dark:text-white">
-                  {m.providerEmail}
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Joined {formatDate(m.completedAt)}
-                </span>
-              </li>
-            ))}
+            {annualMembers.map((m) => {
+              const completedAt = m.completedAt
+                ? new Date(m.completedAt)
+                : null
+              const expiresOn = completedAt
+                ? new Date(
+                    completedAt.getTime() + 365 * 24 * 60 * 60 * 1000,
+                  )
+                : null
+              const daysLeft = expiresOn
+                ? Math.round(
+                    (expiresOn.getTime() - Date.now()) /
+                      (24 * 60 * 60 * 1000),
+                  )
+                : null
+
+              const badge = m.expiredAt
+                ? { label: "Expired", tone: "red" as const }
+                : daysLeft != null && daysLeft <= 7
+                  ? { label: `${daysLeft}d left`, tone: "red" as const }
+                  : daysLeft != null && daysLeft <= 30
+                    ? { label: `${daysLeft}d left`, tone: "amber" as const }
+                    : null
+
+              return (
+                <li
+                  key={m.id}
+                  className="flex items-center justify-between gap-3 px-6 py-3 text-sm"
+                >
+                  <div className="min-w-0">
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      {m.providerEmail}
+                    </span>
+                    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                      Joined {formatDate(m.completedAt)}
+                      {expiresOn && !m.expiredAt
+                        ? ` · renews ${expiresOn.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+                        : ""}
+                      {m.renewalReminder30SentAt
+                        ? " · 30d reminder ✓"
+                        : ""}
+                      {m.renewalReminder7SentAt ? " · 7d reminder ✓" : ""}
+                    </p>
+                  </div>
+                  {badge && (
+                    <span
+                      className={
+                        badge.tone === "red"
+                          ? "shrink-0 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                          : "shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                      }
+                    >
+                      {badge.label}
+                    </span>
+                  )}
+                </li>
+              )
+            })}
           </ul>
         )}
       </section>

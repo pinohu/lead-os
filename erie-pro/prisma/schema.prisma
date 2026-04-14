@@ -341,6 +341,14 @@ model CheckoutSession {
   opsNotes           String?
   fulfilledAt        DateTime?
 
+  // ── Annual membership renewal lifecycle ────────────────────────
+  // For sessionType="annual_membership". The cron writes these as
+  // it sends 30-day / 7-day reminders, and marks the membership
+  // expired at term end.
+  renewalReminder30SentAt DateTime?
+  renewalReminder7SentAt  DateTime?
+  expiredAt               DateTime?
+
   @@index([stripeSessionId])
   @@index([providerEmail])
   @@index([sessionType, status])

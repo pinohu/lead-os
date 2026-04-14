@@ -124,6 +124,46 @@ describe("sendConciergeHandoffToRequester", () => {
   });
 });
 
+describe("sendAnnualRenewalReminder", () => {
+  it("returns true in dry-run mode (30-day variant)", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendAnnualRenewalReminder } = await import("../email");
+    const result = await sendAnnualRenewalReminder(
+      "member@example.com",
+      {
+        daysLeft: 30,
+        expiresOn: new Date("2027-04-14"),
+      }
+    );
+    expect(result).toBe(true);
+  });
+
+  it("returns true in dry-run mode (7-day urgent variant)", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendAnnualRenewalReminder } = await import("../email");
+    const result = await sendAnnualRenewalReminder(
+      "member@example.com",
+      {
+        daysLeft: 7,
+        expiresOn: new Date("2027-04-21"),
+      }
+    );
+    expect(result).toBe(true);
+  });
+});
+
+describe("sendAnnualMembershipExpired", () => {
+  it("returns true in dry-run mode", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendAnnualMembershipExpired } = await import("../email");
+    const result = await sendAnnualMembershipExpired(
+      "member@example.com",
+      new Date("2026-04-13"),
+    );
+    expect(result).toBe(true);
+  });
+});
+
 describe("sendSlaWarningEmail", () => {
   it("returns true in dry-run mode", async () => {
     vi.stubEnv("EMAILIT_API_KEY", "");
