@@ -26,6 +26,12 @@ export interface CityConfig {
   metroArea: string;
   /** Counties served */
   counties: string[];
+  /** 30-mile drive-time coverage zone: ZIP codes we route leads in */
+  coverageZips?: string[];
+  /** Cross-state overlap cities we route to if distance permits */
+  overlapAreas?: Array<{ city: string; stateCode: string; zip: string }>;
+  /** Pilot categories for the launch phase — featured first on the homepage */
+  pilotCategories?: string[];
 }
 
 const CITIES: CityConfig[] = [
@@ -38,14 +44,33 @@ const CITIES: CityConfig[] = [
     population: 95000,
     coordinates: { lat: 42.1292, lng: -80.0851 },
     serviceArea: [
-      "Erie", "Millcreek", "Harborcreek", "Fairview", "Summit Township",
-      "McKean", "Edinboro", "Waterford", "North East", "Girard",
+      "Erie", "Millcreek", "Harborcreek", "Wesleyville", "Lawrence Park",
+      "Fairview", "Girard", "Lake City", "Albion",
+      "North East", "Waterford", "Edinboro", "McKean", "Union City",
+      "Cambridge Springs",
     ],
-    tagline: "Erie's local business directory powered by AI",
+    tagline: "One pro. No bidding. Always Erie.",
     timezone: "America/New_York",
     pricingMultiplier: 1.0,
     metroArea: "Erie Metro Area",
     counties: ["Erie County"],
+    // 30-mile drive-time coverage zone per the Erie Pro Launch Kit.
+    // Core Erie + Millcreek/Harborcreek/Wesleyville/Lawrence Park + N/S/E/W overlap.
+    coverageZips: [
+      "16501", "16502", "16503", "16504", "16505", "16506", "16507",
+      "16508", "16509", "16510", "16511",                     // core Erie + inner ring
+      "16421", "16428",                                         // Harborcreek, North East
+      "16415", "16417", "16423", "16401",                       // Fairview, Girard, Lake City, Albion
+      "16441", "16412", "16426", "16438", "16403",              // Waterford, Edinboro, McKean, Union City, Cambridge Springs
+    ],
+    overlapAreas: [
+      { city: "Conneaut",     stateCode: "OH", zip: "44030" },
+      { city: "Findley Lake", stateCode: "NY", zip: "14736" },
+    ],
+    // First 3 pilot categories per the Launch Kit (90-day focus).
+    pilotCategories: [
+      "plumbing", "hvac", "handyman", "cleaning", "snow-removal", "landscaping",
+    ],
   },
   // ── Expansion cities (uncomment when ready to deploy) ────────────
   // {

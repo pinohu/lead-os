@@ -78,7 +78,10 @@ export const ERIE_LOCAL_SEO: LocalSeoData = {
   neighborhoods: [
     "Downtown Erie", "Glenwood", "Frontier", "Academy", "Lakeside",
     "Little Italy", "East Erie", "West Erie", "South Erie", "Bayfront",
-    "Presque Isle", "Millcreek", "Harborcreek", "Fairview", "Summit Township",
+    "Presque Isle", "Millcreek", "Harborcreek", "Wesleyville", "Lawrence Park",
+    "Fairview", "Girard", "Lake City", "Albion", "North East",
+    "Waterford", "Edinboro", "McKean", "Union City", "Cambridge Springs",
+    "Summit Township",
   ],
 
   landmarks: [
@@ -87,9 +90,21 @@ export const ERIE_LOCAL_SEO: LocalSeoData = {
     "Bicentennial Tower", "Perry Square", "UPMC Hamot", "Erie International Airport",
   ],
 
+  // 30-mile drive-time coverage zone per the Launch Kit. Source of truth
+  // is cityConfig.coverageZips; we mirror it here as an array literal so
+  // SEO rendering stays fully static.
   zipCodes: [
-    "16501", "16502", "16503", "16504", "16505",
-    "16506", "16507", "16508", "16509", "16510", "16511",
+    // Core Erie + inner ring
+    "16501", "16502", "16503", "16504", "16505", "16506", "16507",
+    "16508", "16509", "16510", "16511",
+    // Harborcreek, North East
+    "16421", "16428",
+    // Fairview, Girard, Lake City, Albion
+    "16415", "16417", "16423", "16401",
+    // Waterford, Edinboro, McKean, Union City, Cambridge Springs
+    "16441", "16412", "16426", "16438", "16403",
+    // Overlap: Conneaut, OH  +  Findley Lake, NY
+    "44030", "14736",
   ],
 
   countyName: "Erie County",
