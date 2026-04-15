@@ -18,8 +18,33 @@ function redactPhone(phone: string): string {
   return `***-**-${digits.slice(-4)}`;
 }
 
+/**
+ * Redact known secret formats inside a free-form string. Keeps a short
+ * prefix so operators can still distinguish environments at a glance
+ * (e.g. `sk_live_***` vs `sk_test_***`) without exposing the key body.
+ */
+function redactSecrets(str: string): string {
+  return (
+    str
+      // Stripe-style keys: sk_live_XXX, sk_test_XXX, pk_live_XXX, rk_XXX
+      .replace(/\b(sk|pk|rk)_(live|test)_[A-Za-z0-9]{4,}/g, "$1_$2_***")
+      // Stripe webhook signing secret
+      .replace(/\bwhsec_[A-Za-z0-9]{4,}/g, "whsec_***")
+      // GitHub tokens, generic high-entropy bearer tokens in headers
+      .replace(/\b(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{16,}/g, "$1_***")
+      // `Bearer <token>` / `Authorization: Bearer ...`
+      .replace(/\bBearer\s+[A-Za-z0-9._\-]{8,}/gi, "Bearer ***")
+      // Our own API key format: `ep_<64 hex>` (see /api/provider/api-keys)
+      .replace(/\bep_[a-f0-9]{16,}/g, "ep_***")
+  );
+}
+
 /** Redact PII patterns in a string */
 function redactString(str: string): string {
+  // Secret tokens first — running this before the phone/email regexes
+  // keeps long hex tokens from being partially eaten by the phone regex.
+  str = redactSecrets(str);
+
   // Email pattern
   str = str.replace(
     /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
@@ -35,6 +60,40 @@ function redactString(str: string): string {
   return str;
 }
 
+/**
+ * Field names whose values should be redacted regardless of content.
+ * Lowercased for case-insensitive matching. We redact the whole value
+ * (not a partial mask) because these fields are never safe to log.
+ */
+const SECRET_KEY_NAMES = new Set([
+  "password",
+  "passwordhash",
+  "passwordconfirm",
+  "currentpassword",
+  "newpassword",
+  "token",
+  "accesstoken",
+  "refreshtoken",
+  "idtoken",
+  "sessiontoken",
+  "apikey",
+  "api_key",
+  "rawkey",
+  "keyhash",
+  "secret",
+  "clientsecret",
+  "authsecret",
+  "webhooksecret",
+  "cronsecret",
+  "adminaccesskey",
+  "stripesecretkey",
+  "stripewebhooksecret",
+  "authorization",
+  "cookie",
+  "setcookie",
+  "set-cookie",
+]);
+
 /** Recursively redact PII from any value */
 function redactValue(value: unknown): unknown {
   if (typeof value === "string") return redactString(value);
@@ -46,7 +105,10 @@ function redactValue(value: unknown): unknown {
     const redacted: Record<string, unknown> = {};
     for (const [key, val] of Object.entries(value as Record<string, unknown>)) {
       const lk = key.toLowerCase();
-      if (lk === "email" || lk === "provideremail" || lk === "buyeremail") {
+      if (SECRET_KEY_NAMES.has(lk)) {
+        // Never recurse into a secret field — just mask the whole thing.
+        redacted[key] = "***";
+      } else if (lk === "email" || lk === "provideremail" || lk === "buyeremail") {
         redacted[key] = typeof val === "string" ? redactEmail(val) : "***";
       } else if (lk === "phone" || lk === "callerphone") {
         redacted[key] = typeof val === "string" ? redactPhone(val) : "***";
