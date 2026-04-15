@@ -163,8 +163,19 @@ export async function POST(req: NextRequest) {
 
 function resolveEmbedOrigin(origin: string | null): string {
   if (!origin) return "";
-  const allowedOrigins = (process.env.EMBED_ALLOWED_ORIGINS ?? "").split(",").map((o) => o.trim()).filter(Boolean);
-  if (allowedOrigins.length === 0) return origin;
+  const allowedOrigins = (process.env.EMBED_ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
+  // Fail CLOSED: if operator hasn't configured EMBED_ALLOWED_ORIGINS we
+  // used to mirror whatever the caller's Origin header said, which
+  // defaulted a fresh production deploy to Access-Control-Allow-Origin:
+  // <attacker>. Although the endpoint still requires a valid API key
+  // (so the attacker can't submit leads without one), a leaked key
+  // combined with permissive CORS meant any drive-by site could use a
+  // logged-in customer's browser as a zombie submitter. Require
+  // explicit allow-list configuration; deny otherwise.
+  if (allowedOrigins.length === 0) return "";
   return allowedOrigins.includes(origin) ? origin : "";
 }
 
