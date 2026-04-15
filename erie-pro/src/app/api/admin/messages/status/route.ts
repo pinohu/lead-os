@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/db"
-import { auth } from "@/lib/auth"
+import { requireAdmin } from "@/lib/require-admin"
 import { logger } from "@/lib/logger"
 import { MAX_BODY_SIZE } from "@/lib/validation"
 
@@ -15,13 +15,8 @@ const UpdateStatusSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     // ── Auth: require admin session ─────────────────────────────
-    const session = await auth()
-    if (!session?.user || (session.user as { role?: string }).role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      )
-    }
+    const unauthorized = await requireAdmin()
+    if (unauthorized) return unauthorized
 
     // ── Body size check ──────────────────────────────────────────
     const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10)

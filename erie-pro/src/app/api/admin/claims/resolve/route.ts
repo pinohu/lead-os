@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
-import { auth } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/require-admin";
 import { logger } from "@/lib/logger";
 import { sendEmail } from "@/lib/email";
 
@@ -19,13 +19,9 @@ const ResolveSchema = z.object({
 
 export async function POST(req: NextRequest) {
   // Admin auth guard
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "admin") {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized" },
-      { status: 401 }
-    );
-  }
+  const authResult = await requireAdminSession();
+  if (!authResult.ok) return authResult.response;
+  const { session } = authResult;
 
   try {
     // Support both JSON and form-encoded bodies (form submissions from admin page)

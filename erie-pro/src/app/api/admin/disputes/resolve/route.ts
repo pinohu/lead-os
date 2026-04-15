@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/db"
 import { audit } from "@/lib/audit-log"
-import { auth } from "@/lib/auth"
+import { requireAdmin } from "@/lib/require-admin"
 import { logger } from "@/lib/logger"
 import { sendDisputeResolutionEmail } from "@/lib/email"
 import { MAX_BODY_SIZE } from "@/lib/validation"
@@ -21,13 +21,8 @@ const ResolveSchema = z.object({
 
 export async function POST(req: NextRequest) {
   // Admin auth guard
-  const session = await auth()
-  if (!session?.user || (session.user as { role?: string }).role !== "admin") {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized" },
-      { status: 401 }
-    )
-  }
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
 
   try {
     // ── Body size check ──────────────────────────────────────────
