@@ -19,6 +19,16 @@ const config: NextConfig = {
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          // Isolate this origin's browsing context from any popups /
+          // windows it opens. `same-origin-allow-popups` is the variant
+          // that keeps Stripe's checkout popup flow working: our window
+          // is protected from `window.opener` tampering by any popup
+          // that navigates cross-origin, but we can still open Stripe
+          // in a popup and receive its postMessage replies.
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" },
+          // Block Flash / Silverlight / PDF legacy cross-domain policy
+          // loaders — they predate CSP and can bypass same-origin rules.
+          { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
           {
             key: "Content-Security-Policy",
             value: [
@@ -29,6 +39,10 @@ const config: NextConfig = {
               "img-src 'self' data: https://*.stripe.com https://*.googleusercontent.com https://*.googleapis.com https://*.gstatic.com",
               "connect-src 'self' https://api.stripe.com https://*.posthog.com https://*.sentry.io https://*.ingest.sentry.io",
               "frame-src https://js.stripe.com https://hooks.stripe.com https://www.google.com",
+              // Modern replacement for X-Frame-Options: DENY. Kept in
+              // addition to (not instead of) the header above because
+              // older browsers only honor the header form.
+              "frame-ancestors 'none'",
               "font-src 'self'",
               "object-src 'none'",
               "base-uri 'self'",
