@@ -5,6 +5,7 @@
 // PATCH:  Test webhook endpoint
 
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@/generated/prisma";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
@@ -21,6 +22,12 @@ const ALLOWED_EVENTS = [
   "lead.outcome",
   "lead.disputed",
 ];
+
+/** Hard cap on webhook endpoints per provider. */
+const MAX_WEBHOOKS = 5;
+
+/** Sentinel thrown inside the create transaction to signal cap exceeded. */
+class WebhookCapExceeded extends Error {}
 
 /** Resolve the authenticated user's provider ID */
 async function getProviderId(): Promise<string | null> {
@@ -108,26 +115,50 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Limit webhooks per provider
-    const count = await prisma.webhookEndpoint.count({ where: { providerId } });
-    if (count >= 5) {
-      return NextResponse.json(
-        { success: false, error: "Maximum of 5 webhook endpoints allowed" },
-        { status: 400 }
-      );
-    }
-
-    // Generate signing secret
+    // Generate signing secret up front so the Serializable transaction
+    // window only holds DB work.
     const secret = `whsec_${crypto.randomBytes(24).toString("hex")}`;
 
-    const endpoint = await prisma.webhookEndpoint.create({
-      data: {
-        providerId,
-        url: parsed.data.url,
-        events: parsed.data.events,
-        secret,
-      },
-    });
+    // Atomic count-then-create: see /api/provider/api-keys for the same
+    // pattern. Parallel POSTs from a single session could otherwise all
+    // observe count < 5 and mint 5+ endpoints before any of them wrote.
+    // Postgres SSI catches the predicate conflict and aborts all but
+    // one concurrent writer; the typed sentinel distinguishes real cap
+    // rejections from retry-able serialization failures.
+    let endpoint: Awaited<ReturnType<typeof prisma.webhookEndpoint.create>>;
+    try {
+      endpoint = await prisma.$transaction(
+        async (tx) => {
+          const count = await tx.webhookEndpoint.count({ where: { providerId } });
+          if (count >= MAX_WEBHOOKS) {
+            throw new WebhookCapExceeded();
+          }
+          return tx.webhookEndpoint.create({
+            data: {
+              providerId,
+              url: parsed.data.url,
+              events: parsed.data.events,
+              secret,
+            },
+          });
+        },
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      );
+    } catch (err) {
+      if (err instanceof WebhookCapExceeded) {
+        return NextResponse.json(
+          { success: false, error: `Maximum of ${MAX_WEBHOOKS} webhook endpoints allowed` },
+          { status: 400 }
+        );
+      }
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2034") {
+        return NextResponse.json(
+          { success: false, error: "Concurrent request conflict — retry." },
+          { status: 429 }
+        );
+      }
+      throw err;
+    }
 
     audit({
       action: "admin.action",
