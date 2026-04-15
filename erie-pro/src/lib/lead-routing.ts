@@ -222,6 +222,19 @@ export async function routeLead(
 
   // Find matching providers sorted by tier priority
   // Only route to providers with verified emails AND verified ownership
+  // AND an active (non-paused, non-deactivated) territory for this niche.
+  //
+  // Without the territory filter, the SLA-checker cron's auto-suspend
+  // path (>=5 SLA violations → Territory.isPaused=true for every
+  // territory) had no effect on new-lead routing. The provider still
+  // passed the subscription/verification gates here, so new leads kept
+  // flowing to the auto-paused provider — which is the exact scenario
+  // auto-suspension exists to prevent. reassignLead() already has the
+  // same filter (see the territories.some clause below), so this also
+  // brings the two code paths into sync — a concurrency-hardening win
+  // too: a stuck lead being reassigned was always protected, but an
+  // initial route at the same moment a provider was being auto-paused
+  // could still land on the paused provider under the old code.
   const allCandidates = await prisma.provider.findMany({
     where: {
       niche,
@@ -229,6 +242,14 @@ export async function routeLead(
       subscriptionStatus: "active",
       emailVerified: true,
       verificationStatus: { in: ["verified", "auto_verified", "admin_approved"] },
+      territories: {
+        some: {
+          niche,
+          city: { equals: city, mode: "insensitive" },
+          isPaused: false,
+          deactivatedAt: null,
+        },
+      },
     },
     orderBy: { tier: "asc" }, // primary < backup < overflow
   });
