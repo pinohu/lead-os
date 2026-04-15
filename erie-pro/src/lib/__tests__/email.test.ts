@@ -2,6 +2,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 beforeEach(() => {
   vi.restoreAllMocks();
+  // generateUnsubscribeToken (used when building every email body) requires
+  // a secret. Stub a fixed test value so unit tests don't rely on the
+  // developer's real NEXTAUTH_SECRET being set.
+  vi.stubEnv("NEXTAUTH_SECRET", "test-nextauth-secret-for-email-unit-tests");
 });
 
 describe("sendEmail", () => {

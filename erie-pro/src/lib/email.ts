@@ -2,9 +2,9 @@
 // Sends transactional emails via Emailit (when EMAILIT_API_KEY is set).
 // Falls back to console logging in dev/dry-run mode.
 
-import { createHash } from "crypto";
 import { cityConfig } from "@/lib/city-config";
 import { logger } from "@/lib/logger";
+import { generateUnsubscribeToken } from "@/lib/unsubscribe-token";
 
 /** Escape HTML special characters to prevent XSS in email templates */
 function escapeHtml(text: string): string {
@@ -29,16 +29,11 @@ const PHYSICAL_ADDRESS = `123 State St, Erie, PA 16501`;
 
 /** Build the CAN-SPAM compliant unsubscribe URL for a recipient */
 function getUnsubscribeUrl(recipientEmail: string): string {
-  // Include an HMAC token so unauthenticated GETs can't unsubscribe arbitrary
-  // emails. The token is stable per-email so links remain valid across sends.
-  const secret =
-    process.env.UNSUBSCRIBE_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
-    "default-unsubscribe-secret";
-  const token = createHash("sha256")
-    .update(`${recipientEmail.toLowerCase().trim()}:${secret}`)
-    .digest("hex")
-    .slice(0, 32);
+  // Include an HMAC-style token so unauthenticated GETs can't unsubscribe
+  // arbitrary emails. The token is stable per-email so links remain valid
+  // across sends, and generation is centralized in unsubscribe-token.ts so
+  // the receiving endpoint can't drift from the sender.
+  const token = generateUnsubscribeToken(recipientEmail);
   return `${SITE_URL}/api/unsubscribe?email=${encodeURIComponent(recipientEmail)}&token=${token}`;
 }
 
