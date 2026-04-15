@@ -64,15 +64,30 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Idempotency: check if we already processed this event (any action)
-    const existingLog = await prisma.auditLog.findFirst({
-      where: {
-        metadata: { path: ["stripeEventId"], equals: event.id },
-      },
-    });
-    if (existingLog) {
-      logger.info("webhook/stripe", "Duplicate event skipped:", event.id);
-      return NextResponse.json({ received: true, duplicate: true });
+    // ── Idempotency: atomic claim on Stripe event.id ─────────────
+    // Stripe retries webhooks aggressively on timeout or 5xx, and
+    // occasionally delivers the same event id concurrently. The old
+    // check (findFirst on auditLog metadata) was a TOCTOU race: two
+    // deliveries could both pass the read before either wrote the log
+    // row, resulting in double subscription activations, double emails,
+    // double welcome flows, etc.
+    //
+    // Collapse the race on a primary-key constraint: INSERT the event
+    // id into `stripe_webhook_events` up front. The DB guarantees
+    // exactly one INSERT wins; any concurrent retry sees a P2002
+    // unique-violation and exits cleanly as a duplicate without ever
+    // running a side effect.
+    try {
+      await prisma.stripeWebhookEvent.create({
+        data: { id: event.id, type: event.type },
+      });
+    } catch (err: unknown) {
+      const code = (err as { code?: string } | null)?.code;
+      if (code === "P2002") {
+        logger.info("webhook/stripe", "Duplicate event skipped:", event.id);
+        return NextResponse.json({ received: true, duplicate: true });
+      }
+      throw err;
     }
 
     // Handle the event

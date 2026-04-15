@@ -413,6 +413,24 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+// ── Stripe Webhook Idempotency ─────────────────────────────────────
+// Records every Stripe webhook event id we've successfully started
+// processing. The webhook handler INSERTs into this table before doing
+// any side-effect work, using the Stripe event.id as the primary key.
+// A Prisma unique-violation (P2002) is the signal that the event is a
+// duplicate delivery — we bail out before re-running any email, Stripe,
+// or DB side effect. This replaces the old auditLog metadata scan,
+// which was racy: two concurrent retries could both pass findFirst
+// before either wrote the marker row.
+
+model StripeWebhookEvent {
+  id        String   @id          // Stripe event.id (evt_...)
+  type      String
+  createdAt DateTime @default(now())
+
+  @@map("stripe_webhook_events")
+}
+
 // ── Auth (NextAuth v5) ─────────────────────────────────────────────
 
 model Account {
