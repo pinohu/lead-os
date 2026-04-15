@@ -88,7 +88,19 @@ export async function POST(req: NextRequest) {
     }
 
     const data = parsed.data;
-    const niche = data.niche || apiKey.provider.niche;
+    // Niche is pinned to the API key's owner. Letting the embed body
+    // override it would let a malicious provider (or anyone who
+    // exfiltrates an embed API key) post leads into a competitor's
+    // territory — same cross-tenant attack we closed in
+    // /api/leads/inbound. The widget's niche field is advisory only.
+    const niche = apiKey.provider.niche;
+    if (data.niche && data.niche !== niche) {
+      logger.warn("api/embed/submit", "Ignoring caller-supplied niche override", {
+        apiKeyId: apiKey.id,
+        keyNiche: niche,
+        bodyNiche: data.niche,
+      });
+    }
     const nameParts = data.name.trim().split(" ");
     const firstName = nameParts[0] || "";
     const lastName = nameParts.slice(1).join(" ") || "";

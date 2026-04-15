@@ -143,7 +143,23 @@ export async function POST(req: NextRequest) {
 
     // 5. Map fields
     const data = parsed.data;
-    const niche = data.niche || data.service || apiKey.provider.niche;
+    // Niche is pinned to the API key's owning provider. The old logic
+    // let the body override it via `data.niche` / `data.service`, which
+    // was a cross-tenant injection vector: a malicious provider with a
+    // legitimate API key for their own territory could POST with
+    // `{niche: "<competitor's niche>"}` and routeLead would route the
+    // lead into the competitor's queue — starting the competitor's SLA
+    // clock, incrementing pay-per-lead billing, and flooding their
+    // dashboard with attacker-crafted spam. The caller gets zero say in
+    // which territory a key-authenticated lead lands in.
+    const niche = apiKey.provider.niche;
+    if (data.niche && data.niche !== niche) {
+      logger.warn("api/leads/inbound", "Ignoring caller-supplied niche override", {
+        apiKeyId: apiKey.id,
+        keyNiche: niche,
+        bodyNiche: data.niche,
+      });
+    }
     const firstName =
       data.firstName || data.name?.split(" ")[0] || "";
     const lastName =
