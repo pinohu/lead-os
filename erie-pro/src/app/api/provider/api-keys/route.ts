@@ -4,12 +4,19 @@
 // DELETE: Revoke key by ID
 
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@/generated/prisma";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
 import crypto from "crypto";
+
+/** Hard cap on active API keys per provider. */
+const MAX_ACTIVE_API_KEYS = 10;
+
+/** Sentinel thrown inside the create transaction to signal cap exceeded. */
+class ApiKeyCapExceeded extends Error {}
 
 /** Resolve the authenticated user's provider ID */
 async function getProviderId(): Promise<string | null> {
@@ -95,29 +102,59 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Limit keys per provider to prevent abuse
-    const existingCount = await prisma.apiKey.count({
-      where: { providerId, isActive: true },
-    });
-    if (existingCount >= 10) {
-      return NextResponse.json(
-        { success: false, error: "Maximum of 10 active API keys allowed" },
-        { status: 400 }
-      );
-    }
-
-    // Generate raw key and hash it
+    // Generate raw key and hash it up front — we want the hash ready
+    // to commit inside the atomic transaction window. The raw key is
+    // only returned if the transaction actually succeeds.
     const rawKey = `ep_${crypto.randomBytes(32).toString("hex")}`;
     const keyHash = crypto.createHash("sha256").update(rawKey).digest("hex");
 
-    const apiKey = await prisma.apiKey.create({
-      data: {
-        keyHash,
-        label,
-        providerId,
-        permissions: ["leads:write"],
-      },
-    });
+    // Atomic count-then-create: the prior read-then-check-then-write
+    // let a single session with N parallel POSTs all observe
+    // `existingCount < 10` before any of them wrote, so the 10-key cap
+    // was trivially bypassed (each loser only paid a rate-limit token).
+    // Postgres Serializable isolation (SSI) tracks the read predicate
+    // on `isActive = true` AND the subsequent insert into that same
+    // predicate set — concurrent writers hit a serialization_failure
+    // which Prisma surfaces as P2034 and we return as 429. One winner,
+    // zero over-provisioning.
+    let apiKey: Awaited<ReturnType<typeof prisma.apiKey.create>>;
+    try {
+      apiKey = await prisma.$transaction(
+        async (tx) => {
+          const existingCount = await tx.apiKey.count({
+            where: { providerId, isActive: true },
+          });
+          if (existingCount >= MAX_ACTIVE_API_KEYS) {
+            throw new ApiKeyCapExceeded();
+          }
+          return tx.apiKey.create({
+            data: {
+              keyHash,
+              label,
+              providerId,
+              permissions: ["leads:write"],
+            },
+          });
+        },
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      );
+    } catch (err) {
+      if (err instanceof ApiKeyCapExceeded) {
+        return NextResponse.json(
+          { success: false, error: `Maximum of ${MAX_ACTIVE_API_KEYS} active API keys allowed` },
+          { status: 400 }
+        );
+      }
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2034") {
+        // Serialization conflict — another concurrent request was minting
+        // a key for this provider. Ask the caller to retry.
+        return NextResponse.json(
+          { success: false, error: "Concurrent request conflict — retry." },
+          { status: 429 }
+        );
+      }
+      throw err;
+    }
 
     // Audit
     audit({
