@@ -148,6 +148,38 @@ export async function sendConsumerConfirmation(
   });
 }
 
+export async function sendLeadStatusSummary(
+  consumerEmail: string,
+  leads: { niche: string; statusToken: string; createdAt: Date }[]
+): Promise<boolean> {
+  // Build one row per lead with a tokenised deep-link to its status page.
+  // Only leads actually owned by this email address are included (caller
+  // filters by `email`), so the recipient only sees their own requests.
+  const rows = leads
+    .map((lead) => {
+      const url = `${SITE_URL}/lead-status?token=${encodeURIComponent(lead.statusToken)}`;
+      const dateStr = lead.createdAt.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      return `<li style="margin:8px 0;color:#374151"><a href="${url}" style="color:#2563eb;text-decoration:underline">${escapeHtml(lead.niche)}</a> &middot; submitted ${dateStr}</li>`;
+    })
+    .join("");
+
+  return sendEmail({
+    to: consumerEmail,
+    subject: `Your service request status — ${cityConfig.name} Pro`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">Your Service Requests</h2>
+      <p style="color:#374151;margin:0 0 16px">Here are the secure status links for each of your recent requests. Click any link to view details for that request.</p>
+      <ul style="padding-left:20px;margin:0 0 24px">${rows}</ul>
+      <p style="color:#6b7280;font-size:13px;margin:0">If you did not request this status summary, you can safely ignore this email. These links are tied to your email address and only reveal your own requests.</p>
+    `, consumerEmail),
+    replyTo: `hello@${cityConfig.domain}`,
+  });
+}
+
 export async function sendNewLeadNotification(
   providerEmail: string,
   providerName: string,

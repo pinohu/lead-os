@@ -65,6 +65,7 @@ export default function LeadStatusPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
+  const [emailSentMessage, setEmailSentMessage] = useState<string | null>(null);
 
   // Auto-fetch by token on mount
   const [tokenFetched, setTokenFetched] = useState(false);
@@ -92,6 +93,7 @@ export default function LeadStatusPage() {
     setLoading(true);
     setError(null);
     setLeads([]);
+    setEmailSentMessage(null);
     setSearched(true);
 
     try {
@@ -102,7 +104,13 @@ export default function LeadStatusPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setLeads(data.leads);
+        // The API no longer returns lead data in the response body — it
+        // emails secure status links to the address instead, to prevent
+        // anyone who knows the email from enumerating its request history.
+        setEmailSentMessage(
+          data.message ??
+            "If this email is associated with any service requests, we've sent status links to that inbox. Please check your email."
+        );
       } else {
         setError(data.error ?? "Something went wrong");
       }
@@ -119,8 +127,8 @@ export default function LeadStatusPage() {
         Check Your Request Status
       </h1>
       <p className="text-gray-600 dark:text-gray-400 mb-8">
-        Enter the email you used when submitting your service request to see its
-        current status.
+        Enter the email you used when submitting your service request and
+        we&apos;ll send you a secure link to view its status.
       </p>
 
       {/* Email search form */}
@@ -149,10 +157,19 @@ export default function LeadStatusPage() {
         </div>
       )}
 
-      {/* Results */}
-      {searched && !loading && leads.length === 0 && !error && (
+      {/* Check-your-email confirmation after POST */}
+      {emailSentMessage && (
+        <div className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-200 mb-6">
+          {emailSentMessage}
+        </div>
+      )}
+
+      {/* GET-by-token empty state (token path only — POST no longer
+          returns the leads array, so the "no requests found" state only
+          fires for the ?token= lookup flow). */}
+      {searched && !loading && leads.length === 0 && !error && !emailSentMessage && (
         <p className="text-center text-gray-500 dark:text-gray-400 py-8">
-          No requests found for this email address.
+          No request found for this status link.
         </p>
       )}
 
