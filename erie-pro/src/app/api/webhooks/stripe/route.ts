@@ -216,12 +216,45 @@ export async function POST(req: NextRequest) {
           };
 
           const newStatus: SubscriptionStatus = statusMap[status] ?? provider.subscriptionStatus;
+          const oldStatus = provider.subscriptionStatus;
 
-          if (newStatus !== provider.subscriptionStatus || cancelAtPeriodEnd) {
-            await prisma.provider.update({
-              where: { id: provider.id },
+          if (newStatus !== oldStatus || cancelAtPeriodEnd) {
+            // Atomic claim on the status transition. The outer
+            // stripeWebhookEvent idempotency only dedupes same-event-id
+            // retries, so two DIFFERENT subscription.updated events for
+            // the same customer arriving close together (cancel →
+            // reactivate → change-plan storms during dunning recovery,
+            // Stripe Smart Retries, manual admin edits in the dashboard)
+            // both passed the `findFirst`-cached pre-check and BOTH
+            // raced downstream: duplicate audit rows, double past_due
+            // dunning emails, and — worst — the past_due→active
+            // reactivation branch would re-activate territories and
+            // send a second "welcome back" email because both
+            // deliveries cached the same stale oldStatus.
+            //
+            // Gate the transition on the observed oldStatus so the DB
+            // picks the single winner; losers see count === 0 and
+            // silently skip side effects. The losing event's intended
+            // transition was either subsumed by the winner or stale —
+            // the NEXT subscription.updated delivery from Stripe will
+            // carry the then-current state and can retry correctly.
+            const claim = await prisma.provider.updateMany({
+              where: { id: provider.id, subscriptionStatus: oldStatus },
               data: { subscriptionStatus: newStatus },
             });
+
+            if (claim.count !== 1) {
+              logger.info(
+                "webhook/stripe",
+                `Skipping subscription.updated — concurrent status transition already applied: ${provider.id} expected ${oldStatus}`
+              );
+              return NextResponse.json({
+                received: true,
+                handled: result.handled,
+                type: result.eventType,
+                skipped: "concurrent_status_transition",
+              });
+            }
 
             await audit({
               action: "subscription.status_changed",
@@ -229,16 +262,16 @@ export async function POST(req: NextRequest) {
               providerId: provider.id,
               metadata: {
                 stripeEventId: event.id,
-                oldStatus: provider.subscriptionStatus,
+                oldStatus,
                 newStatus,
                 cancelAtPeriodEnd,
               },
             });
 
-            logger.info("webhook/stripe", `Subscription updated for ${provider.id}: ${provider.subscriptionStatus} → ${newStatus}`);
+            logger.info("webhook/stripe", `Subscription updated for ${provider.id}: ${oldStatus} → ${newStatus}`);
 
             // 2.4: Auto-reactivate when payment recovers from past_due → active
-            if (newStatus === "active" && provider.subscriptionStatus === "past_due") {
+            if (newStatus === "active" && oldStatus === "past_due") {
               // Clear grace period
               await prisma.provider.update({
                 where: { id: provider.id },
