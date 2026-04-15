@@ -41,6 +41,34 @@ export function sanitizeText(text: string): string {
 
 // ── Shared Refinements ───────────────────────────────────────────────
 
+/**
+ * Validate a user-supplied website URL — http(s) schemes only.
+ *
+ * `z.string().url()` accepts ANY WHATWG-parseable URL, including
+ * `javascript:`, `data:`, `file:`, `vbscript:`, etc. These round-trip
+ * through the DB and get dropped into `<a href={website}>` on the
+ * provider profile page, at which point a click executes attacker JS
+ * in the victim's session (stored XSS against directory visitors).
+ *
+ * Lock the scheme to http/https at validation time so a malicious
+ * provider can't smuggle an active-content URL past zod.
+ */
+export const websiteUrlSchema = z
+  .string()
+  .url("Must be a valid URL")
+  .max(500, "URL too long")
+  .refine(
+    (raw) => {
+      try {
+        const u = new URL(raw);
+        return u.protocol === "http:" || u.protocol === "https:";
+      } catch {
+        return false;
+      }
+    },
+    "URL must use http:// or https://"
+  );
+
 const emailSchema = z
   .string()
   .email("Invalid email format")
