@@ -24,6 +24,10 @@ export const RATE_LIMITS = {
   // Public directory listing lookups — allow normal browsing but block
   // scraping bursts.
   listing: { limit: 60, windowSeconds: 60 } as RateLimitConfig,
+  // API key management (create/revoke) — auth-gated and hard-capped at
+  // 10 keys/provider, but add IP throttle as defense-in-depth against
+  // credential-stuffing attackers who land a valid session cookie.
+  "api-keys": { limit: 20, windowSeconds: 60 } as RateLimitConfig,
 } as const;
 
 // ── Postgres Rate Limiting (via Prisma) ─────────────────────────────

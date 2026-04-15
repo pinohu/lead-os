@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/rate-limit";
 import crypto from "crypto";
 
 /** Resolve the authenticated user's provider ID */
@@ -70,6 +71,12 @@ export async function GET() {
 
 // ── POST: Create API Key ───────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  // Each POST generates cryptographic material, writes to the DB, and
+  // triggers an audit-log write. Throttle before doing any of that so a
+  // compromised session cannot be used to create keys in a tight loop.
+  const limited = await checkRateLimit(req, "api-keys");
+  if (limited) return limited;
+
   try {
     const providerId = await getProviderId();
     if (!providerId) {
@@ -143,6 +150,11 @@ export async function POST(req: NextRequest) {
 
 // ── DELETE: Revoke API Key ─────────────────────────────────────────
 export async function DELETE(req: NextRequest) {
+  // Match POST: throttle revocation to blunt brute-force attempts to
+  // churn keys (e.g. cycle through IDs from a leaked listing).
+  const limited = await checkRateLimit(req, "api-keys");
+  if (limited) return limited;
+
   try {
     const providerId = await getProviderId();
     if (!providerId) {
