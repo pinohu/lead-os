@@ -29,19 +29,35 @@ export async function GET(req: NextRequest) {
 
     let deactivatedCount = 0;
     for (const provider of expiredProviders) {
-      // Deactivate all active territories
-      for (const territory of provider.territories) {
-        await deactivatePerks(territory.niche, territory.city);
-      }
-
-      await prisma.provider.update({
-        where: { id: provider.id },
+      // Atomic claim on the past_due → cancelled transition. Without
+      // this, two overlapping cron invocations (deploy race, manual
+      // admin kick, Vercel retry after a timeout) both see
+      // subscriptionStatus=past_due, both call deactivatePerks (which
+      // writes to shared Territory / perk rows and isn't guaranteed
+      // idempotent), both update the provider row (last-writer-wins
+      // clobber of churnedAt), and both send the deactivation email —
+      // the provider sees a duplicate "territory deactivated" in
+      // their inbox. Gate the destructive side effects behind the
+      // claim so exactly one caller wins.
+      const claim = await prisma.provider.updateMany({
+        where: {
+          id: provider.id,
+          subscriptionStatus: "past_due",
+          gracePeriodEndsAt: { lt: now },
+        },
         data: {
           subscriptionStatus: "cancelled",
           gracePeriodEndsAt: null,
           churnedAt: now,
         },
       });
+      if (claim.count === 0) continue;
+
+      // Deactivate all active territories (idempotent-enough inside
+      // the claim; only the winning caller reaches this).
+      for (const territory of provider.territories) {
+        await deactivatePerks(territory.niche, territory.city);
+      }
 
       await audit({
         action: "subscription.cancelled",
