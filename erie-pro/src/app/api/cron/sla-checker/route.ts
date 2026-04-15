@@ -53,10 +53,27 @@ export async function GET(req: NextRequest) {
         // re-attempt reassignment for the same stuck lead. That meant
         // ONE stuck lead could drive a provider from 1 violation to
         // the auto-suspend threshold (>=5) in about an hour without
-        // them ever missing a second lead. We now atomically null out
-        // the lead's slaDeadline at the end of escalation so the next
-        // cron pass's `slaDeadline: { lt: now }` filter no longer
-        // matches it — processing runs exactly once per escalation.
+        // them ever missing a second lead.
+        //
+        // Claim the escalation slot by atomically nulling slaDeadline
+        // at the TOP of this branch (previously at the bottom). The
+        // end-of-branch placement handled only the SEQUENTIAL case —
+        // two concurrent cron invocations (Vercel retry after timeout,
+        // manual admin kick, deploy overlap) both passed the outer
+        // `slaDeadline: { lt: now }` filter before either wrote, and
+        // both proceeded to increment slaViolationCount, send admin
+        // mail, and run audit logs. With 2-3 overlapping passes a
+        // single stuck lead could bump violationCount past the
+        // auto-suspend threshold in one cron window. Moving the claim
+        // up makes the DB the gate: exactly one caller flips
+        // slaDeadline<now → null; losers see count === 0 and skip all
+        // non-idempotent side effects below.
+        const claim = await prisma.lead.updateMany({
+          where: { id: lead.id, slaDeadline: { lt: now } },
+          data: { slaDeadline: null },
+        });
+        if (claim.count === 0) continue;
+
         const providerId = lead.routedTo.id;
 
         // Check if we already sent a warning for this lead (avoid double-processing)
@@ -171,16 +188,11 @@ export async function GET(req: NextRequest) {
         logger.warn("cron/sla-checker", `ESCALATION: Lead ${lead.id} — ${elapsedMinutes}min without response from ${lead.routedTo.id}`);
         escalations++;
 
-        // Take this lead out of future cron passes. If reassignLead
-        // succeeded earlier in this branch it already rewrote
-        // slaDeadline to a fresh future timestamp — this updateMany
-        // won't match on that row because the WHERE still requires
-        // slaDeadline < now. For the reassign-failed / no-backup case,
-        // nulling the deadline is what stops the runaway increment.
-        await prisma.lead.updateMany({
-          where: { id: lead.id, slaDeadline: { lt: now } },
-          data: { slaDeadline: null },
-        });
+        // NB: the slaDeadline=null claim already happened at the top of
+        // this branch. If reassignLead ran and rewrote slaDeadline to a
+        // fresh future timestamp, that value now lives on the lead row
+        // and the next cron pass's `slaDeadline: { lt: now }` filter
+        // will correctly skip this lead until the new deadline elapses.
       } else if (elapsedMs >= slaTimeoutMs) {
         // First offense: past SLA — send warning to provider.
         //
