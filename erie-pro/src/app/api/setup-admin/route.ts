@@ -6,10 +6,14 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { Prisma } from "@/generated/prisma";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import { getClientIp } from "@/lib/client-ip";
+
+/** Thrown inside the bootstrap transaction when an admin already exists. */
+class AdminAlreadyExists extends Error {}
 
 const SetupSchema = z.object({
   email: z
@@ -59,19 +63,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // ── Guard: check if admin already exists ──────────────────────────
-    const adminCount = await prisma.user.count({
-      where: { role: "admin" },
-    });
-
-    if (adminCount > 0) {
-      return NextResponse.json(
-        { error: "Admin already configured. Setup is disabled." },
-        { status: 403 }
-      );
-    }
-
-    // ── Parse & validate input ───────────────────────────────────────
+    // ── Parse & validate input FIRST ─────────────────────────────────
+    // We want zod to reject garbage bodies before paying the bcrypt /
+    // DB cost, but we MUST do the admin-exists check inside the
+    // transaction below (not up here) — otherwise two concurrent
+    // bootstrap requests each pass the count check, each create a
+    // Provider + User, and we end up with two admin accounts.
     const body = await request.json();
     const parsed = SetupSchema.safeParse(body);
 
@@ -86,46 +83,75 @@ export async function POST(request: Request) {
     const displayName = name || "Admin";
 
     // ── Hash password (bcrypt, 12 rounds — matches create-admin.ts) ──
+    // Computed outside the transaction window so bcrypt's ~200ms cost
+    // doesn't hold a SERIALIZABLE snapshot open.
     const passwordHash = await bcrypt.hash(password, 12);
-
-    // ── Create Provider record for password auth ─────────────────────
     const adminSlug = `admin-${email.split("@")[0]}`;
 
-    const provider = await prisma.provider.create({
-      data: {
-        slug: adminSlug,
-        businessName: `${displayName} (Admin)`,
-        niche: "admin",
-        phone: "0000000000",
-        email,
-        passwordHash,
-      },
-    });
+    // ── Atomic bootstrap ──────────────────────────────────────────────
+    // Wrap the count + Provider.create + User.upsert inside a single
+    // Serializable transaction. SSI detects concurrent admin bootstrap
+    // attempts by tracking the `role: "admin"` read predicate; only
+    // one transaction can commit. The other hits P2034 and we return
+    // 429 (retry into the now-closed 403 path).
+    let provider: Awaited<ReturnType<typeof prisma.provider.create>>;
+    let user: Awaited<ReturnType<typeof prisma.user.upsert>>;
+    try {
+      const result = await prisma.$transaction(
+        async (tx) => {
+          const adminCount = await tx.user.count({ where: { role: "admin" } });
+          if (adminCount > 0) {
+            throw new AdminAlreadyExists();
+          }
 
-    // ── Create or update User with admin role ────────────────────────
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+          const createdProvider = await tx.provider.create({
+            data: {
+              slug: adminSlug,
+              businessName: `${displayName} (Admin)`,
+              niche: "admin",
+              phone: "0000000000",
+              email,
+              passwordHash,
+            },
+          });
 
-    let user;
-    if (existingUser) {
-      user = await prisma.user.update({
-        where: { email },
-        data: {
-          role: "admin",
-          providerId: provider.id,
-          name: displayName,
-          emailVerified: new Date(),
+          const upsertedUser = await tx.user.upsert({
+            where: { email },
+            update: {
+              role: "admin",
+              providerId: createdProvider.id,
+              name: displayName,
+              emailVerified: new Date(),
+            },
+            create: {
+              email,
+              name: displayName,
+              role: "admin",
+              providerId: createdProvider.id,
+              emailVerified: new Date(),
+            },
+          });
+
+          return { provider: createdProvider, user: upsertedUser };
         },
-      });
-    } else {
-      user = await prisma.user.create({
-        data: {
-          email,
-          name: displayName,
-          role: "admin",
-          providerId: provider.id,
-          emailVerified: new Date(),
-        },
-      });
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      );
+      provider = result.provider;
+      user = result.user;
+    } catch (err) {
+      if (err instanceof AdminAlreadyExists) {
+        return NextResponse.json(
+          { error: "Admin already configured. Setup is disabled." },
+          { status: 403 }
+        );
+      }
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2034") {
+        return NextResponse.json(
+          { error: "Concurrent bootstrap in progress. Retry." },
+          { status: 429 }
+        );
+      }
+      throw err;
     }
 
     // ── Audit log ────────────────────────────────────────────────────
