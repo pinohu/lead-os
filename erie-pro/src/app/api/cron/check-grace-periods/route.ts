@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { deactivatePerks } from "@/lib/perk-manager";
 import { audit } from "@/lib/audit-log";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escapeHtml } from "@/lib/email";
 import { logger } from "@/lib/logger";
 import { requireCronAuth } from "@/lib/cron-auth";
 
@@ -50,12 +50,16 @@ export async function GET(req: NextRequest) {
         metadata: { reason: "grace_period_expired" },
       });
 
-      // Send final deactivation email
+      // Send final deactivation email. businessName is provider-
+      // supplied at claim time; escape per the Round AR / AU policy
+      // so re-display surfaces (admin mailbox triage, archive, etc.)
+      // don't execute whatever HTML the provider stuck in their name.
+      const safeDeactivateName = escapeHtml(provider.businessName);
       sendEmail({
         to: provider.email,
         subject: "Territory deactivated \u2014 payment not received",
         html: `
-          <p>Hi ${provider.businessName},</p>
+          <p>Hi ${safeDeactivateName},</p>
           <p>Your Erie Pro territory has been deactivated because your payment was not received within the 7-day grace period.</p>
           <p>If you'd like to reactivate, you can update your payment information and re-subscribe:</p>
           <p><a href="${siteUrl}/for-business/claim">Reactivate Territory</a></p>
@@ -80,11 +84,12 @@ export async function GET(req: NextRequest) {
       });
 
       for (const provider of upcomingProviders) {
+        const safeReminderName = escapeHtml(provider.businessName);
         sendEmail({
           to: provider.email,
           subject: `Reminder: ${daysOut} days left to update payment`,
           html: `
-            <p>Hi ${provider.businessName},</p>
+            <p>Hi ${safeReminderName},</p>
             <p>You have <strong>${daysOut} days</strong> remaining to update your payment information before your Erie Pro territory is deactivated.</p>
             <p><a href="${siteUrl}/dashboard/billing">Update Payment Info</a></p>
           `,

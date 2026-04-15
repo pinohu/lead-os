@@ -117,11 +117,17 @@ export async function POST(req: NextRequest) {
           });
 
           const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
+          // businessName is provider-supplied at claim time; escape
+          // before rendering inside any HTML email per the Round AR
+          // policy, so a malicious name like `<script>...</script>`
+          // can't execute in any re-display surface (bounced-mail
+          // triage, admin archive, forwarded investigations, etc.).
+          const safeDunningName = escapeHtml(provider.businessName);
           sendEmail({
             to: provider.email,
             subject: "Payment failed \u2014 7-day grace period started",
             html: `
-              <p>Hi ${provider.businessName},</p>
+              <p>Hi ${safeDunningName},</p>
               <p>Your most recent payment for your Erie Pro territory subscription has failed.</p>
               <p>You have a <strong>7-day grace period</strong> to update your payment information before your territory is deactivated.</p>
               <p><a href="${siteUrl}/dashboard/billing">Update Payment Info</a></p>
@@ -220,11 +226,12 @@ export async function POST(req: NextRequest) {
               }
 
               const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
+              const safeReactivateName = escapeHtml(provider.businessName);
               sendEmail({
                 to: provider.email,
                 subject: "Payment received \u2014 your territory is active again!",
                 html: `
-                  <p>Hi ${provider.businessName},</p>
+                  <p>Hi ${safeReactivateName},</p>
                   <p>Great news! Your payment has been processed successfully and your Erie Pro territory is active again.</p>
                   <p>Leads are now being routed to you. Check your dashboard for any new leads:</p>
                   <p><a href="${siteUrl}/dashboard">Go to Dashboard</a></p>
@@ -236,11 +243,12 @@ export async function POST(req: NextRequest) {
 
             // Notify provider if subscription is at risk
             if (newStatus === "past_due") {
+              const safePastDueName = escapeHtml(provider.businessName);
               sendEmail({
                 to: provider.email,
                 subject: "Your subscription is past due — action required",
                 html: `
-                  <p>Hi ${provider.businessName},</p>
+                  <p>Hi ${safePastDueName},</p>
                   <p>Your Erie Pro territory subscription is now past due. Your territory may be deactivated if payment is not received.</p>
                   <p><a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro"}/dashboard/settings">Update Payment Info</a></p>
                 `,
