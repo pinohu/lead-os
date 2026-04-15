@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { safeEqual } from "@/lib/timing-safe";
 import { createHash } from "crypto";
 
 const UnsubscribeSchema = z
@@ -106,7 +107,7 @@ export async function GET(req: NextRequest) {
   // Always require a valid token. Without this gate, anyone who knew/guessed
   // an email could unsubscribe legitimate users (harassment / DOS vector).
   const expectedToken = generateUnsubscribeToken(email);
-  if (!token || token !== expectedToken) {
+  if (!token || !safeEqual(token, expectedToken)) {
     return new NextResponse(
       "<html><body><h1>Invalid or Missing Token</h1><p>The unsubscribe link is invalid or expired. If you wish to unsubscribe, please use the link from your most recent email or contact support.</p></body></html>",
       { status: 403, headers: { "Content-Type": "text/html" } }

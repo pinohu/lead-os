@@ -19,16 +19,14 @@ import {
 } from "@/lib/email";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
+import { requireCronAuth } from "@/lib/cron-auth";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const TERM_DAYS = 365;
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const unauthorized = requireCronAuth(req);
+  if (unauthorized) return unauthorized;
 
   const now = new Date();
   // The cutoff dates are *upper bounds* — we want sessions completed

@@ -9,19 +9,12 @@ import { logger } from "@/lib/logger";
 import { audit } from "@/lib/audit-log";
 import { sendEmail } from "@/lib/email";
 import { cityConfig } from "@/lib/city-config";
+import { requireCronAuth } from "@/lib/cron-auth";
 
 export async function GET(req: NextRequest) {
-  // ── Validate cron secret ──────────────────────────────────────
-  // Defense-in-depth: if CRON_SECRET is unset, reject ALL requests
-  // (otherwise `Bearer undefined` would match a literal undefined env).
-  const authHeader = req.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized" },
-      { status: 401 }
-    );
-  }
+  // Constant-time cron-secret check (see src/lib/cron-auth.ts).
+  const unauthorized = requireCronAuth(req);
+  if (unauthorized) return unauthorized;
 
   try {
     const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000); // 48 hours ago

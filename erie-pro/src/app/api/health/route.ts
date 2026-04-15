@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { isCronAuthorized } from "@/lib/cron-auth";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -26,9 +27,9 @@ export async function GET(req: NextRequest) {
   const totalMs = Date.now() - start;
   const healthy = dbStatus === "ok";
 
-  const authHeader = req.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET;
-  const isAuthorized = cronSecret && authHeader === `Bearer ${cronSecret}`;
+  // Constant-time check — the detailed response reveals DB latency,
+  // commit SHA, and env-var presence, which is operator-only info.
+  const isAuthorized = isCronAuthorized(req);
 
   if (isAuthorized) {
     return NextResponse.json(

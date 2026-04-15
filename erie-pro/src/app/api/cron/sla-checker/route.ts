@@ -9,13 +9,11 @@ import { sendEmail } from "@/lib/email";
 import { logger } from "@/lib/logger";
 import { reassignLead } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
+import { requireCronAuth } from "@/lib/cron-auth";
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const unauthorized = requireCronAuth(req);
+  if (unauthorized) return unauthorized;
 
   const now = new Date();
   const slaTimeoutMs = 30 * 60 * 1000; // 30 minutes default
