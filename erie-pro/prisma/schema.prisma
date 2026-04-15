@@ -549,6 +549,13 @@ model DirectoryListing {
   claimedByProviderId String?
   source              String    @default("google_places")
   lastScrapedAt       DateTime?
+  // Timestamp of the most recent "claim your listing" outreach email we
+  // sent to this listing's contact address. Guards the /api/contact flow
+  // from being weaponised to mail-bomb unclaimed listing owners — callers
+  // must only fire a new outreach if this is null or older than the
+  // cooldown window (currently 7d). See the atomic updateMany in
+  // /api/contact/route.ts.
+  lastOutreachAt      DateTime?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
