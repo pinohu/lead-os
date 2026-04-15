@@ -10,6 +10,7 @@ import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { audit } from "@/lib/audit-log";
 import { deliverWebhookEvent } from "@/lib/webhook-delivery";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 import crypto from "crypto";
 
 // ── CORS Preflight ─────────────────────────────────────────────────
@@ -36,10 +37,25 @@ export async function POST(req: NextRequest) {
     const rateLimited = await checkRateLimit(req, "lead");
     if (rateLimited) return addCors(rateLimited, origin);
 
+    // Body size check — reject oversized uploads BEFORE we read/parse them
+    // or do any DB work. Without this an attacker could send arbitrarily
+    // large JSON bodies through this public endpoint.
+    const contentLength = parseInt(
+      req.headers.get("content-length") ?? "0",
+      10
+    );
+    if (contentLength > MAX_BODY_SIZE) {
+      return corsJson(
+        { success: false, error: "Request body too large" },
+        413,
+        origin
+      );
+    }
+
     // Validate API key
     const apiKeyRaw = req.headers.get("x-api-key");
     if (!apiKeyRaw) {
-      return corsJson({ success: false, error: "Missing API key" }, 401);
+      return corsJson({ success: false, error: "Missing API key" }, 401, origin);
     }
 
     const keyHash = crypto.createHash("sha256").update(apiKeyRaw).digest("hex");
@@ -49,7 +65,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!apiKey || !apiKey.isActive) {
-      return corsJson({ success: false, error: "Invalid API key" }, 401);
+      return corsJson({ success: false, error: "Invalid API key" }, 401, origin);
     }
 
     // Update lastUsedAt
@@ -59,13 +75,14 @@ export async function POST(req: NextRequest) {
 
     // Parse body
     const body = await req.json().catch(() => null);
-    if (!body) return corsJson({ success: false, error: "Invalid JSON" }, 400);
+    if (!body) return corsJson({ success: false, error: "Invalid JSON" }, 400, origin);
 
     const parsed = EmbedLeadSchema.safeParse(body);
     if (!parsed.success) {
       return corsJson(
         { success: false, error: parsed.error.issues.map((e) => e.message).join("; ") },
-        400
+        400,
+        origin
       );
     }
 
@@ -85,7 +102,7 @@ export async function POST(req: NextRequest) {
       },
     });
     if (suppressed) {
-      return corsJson({ success: false, error: "Contact opted out" }, 403);
+      return corsJson({ success: false, error: "Contact opted out" }, 403, origin);
     }
 
     // Route the lead
@@ -127,14 +144,18 @@ export async function POST(req: NextRequest) {
       }).catch(() => {});
     }
 
-    return corsJson({
-      success: true,
-      leadId: result.leadId,
-      routedTo: result.routedTo?.businessName ?? "Queued",
-    });
+    return corsJson(
+      {
+        success: true,
+        leadId: result.leadId,
+        routedTo: result.routedTo?.businessName ?? "Queued",
+      },
+      200,
+      origin
+    );
   } catch (err) {
     logger.error("api/embed/submit", "Error:", err);
-    return corsJson({ success: false, error: "Internal server error" }, 500);
+    return corsJson({ success: false, error: "Internal server error" }, 500, origin);
   }
 }
 
