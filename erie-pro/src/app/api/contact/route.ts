@@ -41,6 +41,15 @@ export async function POST(req: NextRequest) {
 
     const { name, email, phone, message, niche, listingId } = parsed.data;
 
+    // Belt-and-suspenders: the schema already rejects niches starting
+    // with `_` (reserved sentinels like `_ccpa_deletion` that the
+    // process-deletions cron treats as an unauthenticated erasure
+    // trigger — see validation.ts). Re-scrub here so a future schema
+    // regression can't silently re-open that unauthenticated
+    // victim-email → 48h auto-delete pipeline.
+    const safeNiche =
+      typeof niche === "string" && !niche.startsWith("_") ? niche : null;
+
     // Store contact message in database (Phase 1.5.11 fix)
     const contactMsg = await prisma.contactMessage.create({
       data: {
@@ -48,7 +57,7 @@ export async function POST(req: NextRequest) {
         email,
         phone: phone ?? null,
         message: message ?? null,
-        niche: niche ?? null,
+        niche: safeNiche,
       },
     });
 

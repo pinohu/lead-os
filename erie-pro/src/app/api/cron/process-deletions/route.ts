@@ -19,12 +19,24 @@ export async function GET(req: NextRequest) {
   try {
     const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000); // 48 hours ago
 
-    // Find CCPA deletion requests older than 48 hours
+    // Find CCPA deletion requests older than 48 hours.
+    //
+    // Defense-in-depth: the `status: "pending_deletion"` filter (set
+    // by an admin/staff tool once ownership of the email has been
+    // confirmed — today that's the manual mailto flow in
+    // dashboard/settings) is what authorizes destruction. A newly
+    // inserted ContactMessage defaults to `unread`, so even if a
+    // future schema regression re-opens /api/contact to accept the
+    // `_ccpa_deletion` sentinel, the cron still refuses to act on it
+    // until a human flips the row to `pending_deletion`. This closes
+    // the unauthenticated "submit victim's email, wait 48h, their
+    // data is gone" attack that the old `status: "unread"` filter
+    // enabled.
     const pendingDeletions = await prisma.contactMessage.findMany({
       where: {
         niche: "_ccpa_deletion",
         createdAt: { lt: cutoff },
-        status: "unread", // Only process unread (not yet processed)
+        status: "pending_deletion",
       },
     });
 
