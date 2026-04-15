@@ -20,6 +20,7 @@ import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
 import { hashVerificationToken } from "@/lib/verification-token";
+import { hashVerificationCode } from "@/lib/verification-code";
 
 export async function POST(req: NextRequest) {
   try {
@@ -441,13 +442,17 @@ async function handleCheckoutCompleted(
         });
 
         if (listing?.email) {
-          // Auto-send verification code to listing's email
+          // Auto-send verification code to listing's email. Only the
+          // HMAC-SHA256 digest of the code is persisted (see
+          // src/lib/verification-code.ts); the raw 6-digit code goes out
+          // via email and is never in the database at rest.
           const code = crypto.randomInt(100000, 999999).toString();
+          const hashedCode = hashVerificationCode(code);
           const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
           await prisma.provider.update({
             where: { id: provider.id },
             data: {
-              verificationCode: code,
+              verificationCode: hashedCode,
               verificationCodeExp: expiresAt,
               verificationStatus: "pending",
               verificationAttempts: 1,

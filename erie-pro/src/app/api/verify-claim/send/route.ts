@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
+import { hashVerificationCode } from "@/lib/verification-code";
 
 export async function POST(req: NextRequest) {
   try {
@@ -91,14 +92,18 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Generate 6-digit code
+    // Generate 6-digit code. The raw code goes out in email; only the
+    // HMAC-SHA256 digest is persisted. See src/lib/verification-code.ts —
+    // plain-hash would be brute-forceable (only 10^6 preimages) so we HMAC
+    // with NEXTAUTH_SECRET which an attacker with just the DB won't own.
     const code = crypto.randomInt(100000, 999999).toString();
+    const hashedCode = hashVerificationCode(code);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     await prisma.provider.update({
       where: { id: provider.id },
       data: {
-        verificationCode: code,
+        verificationCode: hashedCode,
         verificationCodeExp: expiresAt,
         verificationStatus: "pending",
         verificationAttempts: { increment: 1 },

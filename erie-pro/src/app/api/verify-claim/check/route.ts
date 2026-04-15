@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import { z } from "zod";
+import { verifyVerificationCode } from "@/lib/verification-code";
 
 const CheckSchema = z.object({
   code: z.string().length(6, "Code must be 6 digits").regex(/^\d{6}$/, "Code must be numeric"),
@@ -73,10 +74,13 @@ export async function POST(req: NextRequest) {
       data: { verificationAttempts: { increment: 1 } },
     });
 
-    // Constant-time comparison to prevent timing attacks
-    const codeBuffer = Buffer.from(parsed.data.code);
-    const storedBuffer = Buffer.from(provider.verificationCode);
-    if (codeBuffer.length !== storedBuffer.length || !codeBuffer.equals(storedBuffer)) {
+    // The stored value is an HMAC-SHA256 digest of the 6-digit code, so we
+    // can't string-compare the user-supplied raw code against it directly.
+    // verifyVerificationCode recomputes the digest and does a real constant-
+    // time compare via crypto.timingSafeEqual. (Buffer.equals is memcmp and
+    // short-circuits, which is what this route used to do despite the
+    // "constant-time" comment — see src/lib/verification-code.ts.)
+    if (!verifyVerificationCode(parsed.data.code, provider.verificationCode)) {
       const remaining = 10 - (provider.verificationAttempts + 1);
       return NextResponse.json(
         { success: false, error: `Incorrect code. ${remaining} attempts remaining.` },
