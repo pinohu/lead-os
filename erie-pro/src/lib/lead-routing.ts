@@ -606,6 +606,15 @@ export async function deliverBankedLeads(
 /**
  * Reassign a lead to a different provider in the same niche.
  * Used by the SLA enforcement system when a provider fails to respond.
+ *
+ * Atomic claim pattern: gate the update on the lead's CURRENT
+ * `routedToId` so a concurrent second call (cron retry, manual
+ * trigger, tab refresh) whose snapshot has already been invalidated
+ * can't clobber the first reassignment. The previous shape was
+ * findUnique → findFirst(backup) → update, a TOCTOU window wide
+ * enough that two racing callers both wrote and `totalLeads` got
+ * double-incremented — which then rolled into billing and SLA
+ * scoring as phantom leads nobody ever received.
  */
 export async function reassignLead(
   leadId: string
@@ -616,6 +625,8 @@ export async function reassignLead(
   });
   if (!lead || !lead.routedToId) return { success: false };
 
+  const originalProviderId = lead.routedToId;
+
   // Find another active, verified provider in the same niche (not the original)
   const backup = await prisma.provider.findFirst({
     where: {
@@ -624,7 +635,7 @@ export async function reassignLead(
       subscriptionStatus: "active",
       emailVerified: true,
       verificationStatus: { in: ["verified", "auto_verified", "admin_approved"] },
-      id: { not: lead.routedToId },
+      id: { not: originalProviderId },
       territories: {
         some: {
           niche: lead.niche,
@@ -638,9 +649,15 @@ export async function reassignLead(
 
   if (!backup) return { success: false };
 
-  // Reassign the lead
-  await prisma.lead.update({
-    where: { id: leadId },
+  // Reassign the lead only if it's still pointed at the SAME original
+  // provider we observed above. A concurrent reassignment that already
+  // moved the lead off originalProviderId will make this updateMany
+  // return count: 0, and we bail out cleanly instead of overwriting it.
+  const claim = await prisma.lead.updateMany({
+    where: {
+      id: leadId,
+      routedToId: originalProviderId,
+    },
     data: {
       routedToId: backup.id,
       routeType: "failover",
@@ -648,7 +665,11 @@ export async function reassignLead(
     },
   });
 
-  // Increment lead count on new provider
+  if (claim.count === 0) return { success: false };
+
+  // Increment lead count on new provider — only runs for the winning
+  // reassignment, so totalLeads / lastLeadAt stay consistent with the
+  // actual number of leads a provider was ever routed.
   await prisma.provider.update({
     where: { id: backup.id },
     data: {
