@@ -44,7 +44,27 @@ async function postgresRateLimit(
   const key = `${endpoint}:${ip}`;
   const windowStart = new Date(Date.now() - config.windowSeconds * 1000);
 
-  // Count recent entries within the window
+  // Insert-first-then-count: the previous count→check→insert ordering
+  // was a TOCTOU race. Under concurrency (which attackers ALWAYS use
+  // to beat rate limits — curl -P 100, botnet bursts, etc.) every
+  // request could read count < limit before any of them wrote, and
+  // all would sail through. A "5/min" claim endpoint was trivially
+  // bypassable with a parallel-burst of 100 requests.
+  //
+  // Swap the order: each request atomically inserts its own row FIRST,
+  // then counts rows (including its own) in the window. The DB row
+  // insert provides the serialization point — after 100 concurrent
+  // inserts, all 100 counts see 100, and everyone past the limit
+  // gets rejected. The first N <= limit requests still pass cleanly
+  // when traffic is normal.
+  //
+  // Note: we now use `>` not `>=` because the count includes the
+  // current request's own just-written row.
+  await prisma.rateLimitEntry.create({
+    data: { key },
+  });
+
+  // Count recent entries within the window (includes our own row)
   const count = await prisma.rateLimitEntry.count({
     where: {
       key,
@@ -52,7 +72,17 @@ async function postgresRateLimit(
     },
   });
 
-  if (count >= config.limit) {
+  // Fire-and-forget cleanup of expired entries (max once per cold start)
+  if (!cleanupScheduled) {
+    cleanupScheduled = true;
+    prisma.rateLimitEntry.deleteMany({
+      where: {
+        createdAt: { lt: new Date(Date.now() - 3600_000) }, // older than 1 hour
+      },
+    }).catch(() => {/* swallow — cleanup failure shouldn't block requests */});
+  }
+
+  if (count > config.limit) {
     // Find the oldest entry in the window to calculate retry-after
     const oldest = await prisma.rateLimitEntry.findFirst({
       where: { key, createdAt: { gt: windowStart } },
@@ -79,21 +109,6 @@ async function postgresRateLimit(
         },
       }
     );
-  }
-
-  // Record this request
-  await prisma.rateLimitEntry.create({
-    data: { key },
-  });
-
-  // Fire-and-forget cleanup of expired entries (max once per cold start)
-  if (!cleanupScheduled) {
-    cleanupScheduled = true;
-    prisma.rateLimitEntry.deleteMany({
-      where: {
-        createdAt: { lt: new Date(Date.now() - 3600_000) }, // older than 1 hour
-      },
-    }).catch(() => {/* swallow — cleanup failure shouldn't block requests */});
   }
 
   return null;
@@ -134,7 +149,15 @@ function inMemoryRateLimit(
   // Remove timestamps outside the window
   entry.timestamps = entry.timestamps.filter((t) => now - t < windowMs);
 
-  if (entry.timestamps.length >= config.limit) {
+  // Insert first (matching the postgres path's concurrency posture).
+  // Node.js is single-threaded per event-loop tick, but async
+  // continuations can still interleave between the read above and
+  // the write below. Insert-first means even interleaved callers
+  // count themselves and get rejected past the limit.
+  entry.timestamps.push(now);
+  windows.set(key, entry);
+
+  if (entry.timestamps.length > config.limit) {
     const retryAfter = Math.ceil(
       (entry.timestamps[0] + windowMs - now) / 1000
     );
@@ -154,10 +177,6 @@ function inMemoryRateLimit(
       }
     );
   }
-
-  // Record this request
-  entry.timestamps.push(now);
-  windows.set(key, entry);
 
   return null;
 }
