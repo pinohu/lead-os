@@ -49,13 +49,33 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Only forward image/* content types. If Google's CDN ever returned
-    // something else (error HTML, redirect landing page) we don't want to
-    // re-serve it under our origin where it could be treated as our content.
-    const upstreamType = response.headers.get("content-type") ?? "";
-    const contentType = upstreamType.startsWith("image/")
-      ? upstreamType
-      : "image/jpeg";
+    // Only forward a small allowlist of raster image content types. If
+    // Google's CDN ever returned something else (error HTML, redirect
+    // landing page, image/svg+xml — SVG permits inline <script>) we
+    // don't want to re-serve it under our origin where it could be
+    // treated as our content or executed. Check lowercased MIME only
+    // (ignore any parameters after ";") to make the match strict.
+    const upstreamType = (response.headers.get("content-type") ?? "").toLowerCase();
+    const rawMime = upstreamType.split(";")[0].trim();
+    const ALLOWED_IMAGE_MIMES = new Set([
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+      "image/avif",
+    ]);
+    if (!ALLOWED_IMAGE_MIMES.has(rawMime)) {
+      logger.warn(
+        "places-photo",
+        `Refusing to proxy non-image upstream content-type "${rawMime}" for ref: ${ref}`
+      );
+      return NextResponse.json(
+        { error: "Upstream returned unexpected content type" },
+        { status: 502 }
+      );
+    }
+    const contentType = rawMime;
 
     const imageBuffer = await response.arrayBuffer();
 
