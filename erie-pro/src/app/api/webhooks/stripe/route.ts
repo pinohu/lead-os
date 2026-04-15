@@ -115,42 +115,69 @@ export async function POST(req: NextRequest) {
         });
 
         if (provider) {
-          // Set 7-day grace period (only if not already in one)
-          const gracePeriodEndsAt = provider.gracePeriodEndsAt ?? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-          await prisma.provider.update({
-            where: { id: provider.id },
+          // Atomic transition into past_due + grace-period start.
+          //
+          // Two correctness issues this gate fixes:
+          //
+          //  (1) Late payment_failed after cancel. Stripe fires
+          //      invoice.payment_failed for the final unpaid invoice of
+          //      a cancelled subscription (sometimes days after
+          //      customer.subscription.deleted). The old code ran an
+          //      unguarded update that flipped the cancelled provider
+          //      back to past_due with a fresh gracePeriodEndsAt — the
+          //      grace-period cron would then try to re-cancel 7 days
+          //      later, re-invoke deactivatePerks, and send a duplicate
+          //      "territory deactivated" email to the former provider.
+          //
+          //  (2) Duplicate dunning emails on repeat failures. If a
+          //      provider is already in past_due with a live grace
+          //      window, a subsequent payment_failed (e.g. Stripe's
+          //      Smart Retries re-attempting) would fire another
+          //      "grace period started" email even though the grace
+          //      period is unchanged. Setting `gracePeriodEndsAt: null`
+          //      in the WHERE makes this a one-shot claim — only the
+          //      first failure per grace window wins the updateMany
+          //      and reaches the email/audit side effects.
+          const gracePeriodEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+          const claim = await prisma.provider.updateMany({
+            where: {
+              id: provider.id,
+              subscriptionStatus: { in: ["active", "trial"] },
+              gracePeriodEndsAt: null,
+            },
             data: {
               subscriptionStatus: "past_due",
               gracePeriodEndsAt,
             },
           });
 
-          const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
-          // businessName is provider-supplied at claim time; escape
-          // before rendering inside any HTML email per the Round AR
-          // policy, so a malicious name like `<script>...</script>`
-          // can't execute in any re-display surface (bounced-mail
-          // triage, admin archive, forwarded investigations, etc.).
-          const safeDunningName = escapeHtml(provider.businessName);
-          sendEmail({
-            to: provider.email,
-            subject: "Payment failed \u2014 7-day grace period started",
-            html: `
-              <p>Hi ${safeDunningName},</p>
-              <p>Your most recent payment for your Erie Pro territory subscription has failed.</p>
-              <p>You have a <strong>7-day grace period</strong> to update your payment information before your territory is deactivated.</p>
-              <p><a href="${siteUrl}/dashboard/billing">Update Payment Info</a></p>
-              <p>If you have questions, reply to this email or contact our support team.</p>
-            `,
-          }).catch((err) => { logger.error("stripe-webhook", "Failed to send dunning email", err) });
+          if (claim.count === 1) {
+            const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
+            // businessName is provider-supplied at claim time; escape
+            // before rendering inside any HTML email per the Round AR
+            // policy, so a malicious name like `<script>...</script>`
+            // can't execute in any re-display surface (bounced-mail
+            // triage, admin archive, forwarded investigations, etc.).
+            const safeDunningName = escapeHtml(provider.businessName);
+            sendEmail({
+              to: provider.email,
+              subject: "Payment failed \u2014 7-day grace period started",
+              html: `
+                <p>Hi ${safeDunningName},</p>
+                <p>Your most recent payment for your Erie Pro territory subscription has failed.</p>
+                <p>You have a <strong>7-day grace period</strong> to update your payment information before your territory is deactivated.</p>
+                <p><a href="${siteUrl}/dashboard/billing">Update Payment Info</a></p>
+                <p>If you have questions, reply to this email or contact our support team.</p>
+              `,
+            }).catch((err) => { logger.error("stripe-webhook", "Failed to send dunning email", err) });
 
-          await audit({
-            action: "subscription.payment_failed",
-            entityType: "subscription",
-            providerId: provider.id,
-            metadata: { stripeEventId: event.id, gracePeriodEndsAt: gracePeriodEndsAt.toISOString() },
-          }).catch((err) => { logger.error("stripe-webhook", "Failed to audit payment failure", err) });
+            await audit({
+              action: "subscription.payment_failed",
+              entityType: "subscription",
+              providerId: provider.id,
+              metadata: { stripeEventId: event.id, gracePeriodEndsAt: gracePeriodEndsAt.toISOString() },
+            }).catch((err) => { logger.error("stripe-webhook", "Failed to audit payment failure", err) });
+          }
         }
       }
     }
