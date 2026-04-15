@@ -182,7 +182,26 @@ export async function GET(req: NextRequest) {
           data: { slaDeadline: null },
         });
       } else if (elapsedMs >= slaTimeoutMs) {
-        // First offense: past SLA — send warning to provider
+        // First offense: past SLA — send warning to provider.
+        //
+        // Dedup against repeat cron passes. This branch fires whenever
+        // 30min < elapsed < 8h, which is a ~7.5-hour window. The cron
+        // runs every 15 min, so without a gate the same stuck lead
+        // would trigger ~30 warning emails to the same provider —
+        // email-bomb UX and it burns Emailit budget. The escalation
+        // branch above already uses the same `alreadyWarned`
+        // Notification lookup (line ~63); mirror it here so the
+        // warning fires exactly once per (provider, lead).
+        const alreadyWarned = await prisma.notification.findFirst({
+          where: {
+            providerId: lead.routedTo.id,
+            type: "sla_warning",
+            message: { contains: lead.id },
+          },
+          select: { id: true },
+        });
+        if (alreadyWarned) continue;
+
         const secondsRemaining = Math.max(0, Math.round((escalationTimeoutMs - elapsedMs) / 1000));
         await sendSlaWarning(lead.routedTo.id, lead.id, secondsRemaining);
         warningsSent++;
