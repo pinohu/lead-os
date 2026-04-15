@@ -3,11 +3,16 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { safeCallbackUrl } from "@/lib/safe-redirect";
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
+  // Validate `callbackUrl` is a same-origin relative path before we
+  // hand it to `router.push`. Otherwise `/login?callbackUrl=https://
+  // evil.example.com` becomes a post-login open-redirect / phishing
+  // gadget. See src/lib/safe-redirect.ts for the full reasoning.
+  const callbackUrl = safeCallbackUrl(searchParams.get("callbackUrl"));
   const error = searchParams.get("error");
 
   const [email, setEmail] = useState("");
