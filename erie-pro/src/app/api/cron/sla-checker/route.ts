@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { sendSlaWarning } from "@/lib/notifications";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escapeHtml } from "@/lib/email";
 import { logger } from "@/lib/logger";
 import { reassignLead } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
@@ -99,14 +99,25 @@ export async function GET(req: NextRequest) {
           if (violationCount >= 3) {
             const adminEmail = process.env.ADMIN_EMAIL;
             if (adminEmail) {
+              // Escape every user-controlled field — businessName and
+              // email are set by the provider at claim time, so an
+              // attacker with a claimed territory could embed HTML or
+              // <script> in their business name, trigger an SLA
+              // violation on purpose, and have it re-rendered in the
+              // admin's inbox. Modern mail clients sandbox HTML, but
+              // anywhere this alert is re-displayed (ticketing tools,
+              // admin dashboards, webhook dumps) inherits the risk.
+              const safeBusiness = escapeHtml(lead.routedTo.businessName);
+              const safeEmail = escapeHtml(lead.routedTo.email);
+              const safeLeadId = escapeHtml(lead.id);
               sendEmail({
                 to: adminEmail,
-                subject: `SLA Alert: ${lead.routedTo.businessName} has ${violationCount} violations`,
+                subject: `SLA Alert: ${safeBusiness} has ${violationCount} violations`,
                 html: `
                   <p><strong>SLA Violation Alert</strong></p>
-                  <p>Provider <strong>${lead.routedTo.businessName}</strong> (${lead.routedTo.email}) now has <strong>${violationCount} SLA violations</strong>.</p>
+                  <p>Provider <strong>${safeBusiness}</strong> (${safeEmail}) now has <strong>${violationCount} SLA violations</strong>.</p>
                   <p>${violationCount >= 5 ? "Territory has been auto-paused." : "Consider reviewing this provider."}</p>
-                  <p>Latest: Lead <code>${lead.id}</code> waited ${elapsedMinutes} minutes (${Math.round(elapsedMinutes / 60)} hours).</p>
+                  <p>Latest: Lead <code>${safeLeadId}</code> waited ${elapsedMinutes} minutes (${Math.round(elapsedMinutes / 60)} hours).</p>
                 `,
               }).catch((err) => { logger.error("cron/sla-checker", "Admin alert email failed", err) });
             }
@@ -138,14 +149,21 @@ export async function GET(req: NextRequest) {
         // Always send escalation email to admin
         const adminEmail = process.env.ADMIN_EMAIL;
         if (adminEmail) {
+          // Escape provider/lead fields in the admin-bound HTML — see
+          // the note on the violation alert above for why.
+          const safeBusiness = escapeHtml(lead.routedTo.businessName);
+          const safeProviderEmail = escapeHtml(lead.routedTo.email);
+          const safeLeadId = escapeHtml(lead.id);
+          const safeNiche = escapeHtml(lead.niche);
+          const safeCity = escapeHtml(lead.city);
           sendEmail({
             to: adminEmail,
-            subject: `SLA Escalation: Lead ${lead.id} waiting ${elapsedMinutes} minutes`,
+            subject: `SLA Escalation: Lead ${safeLeadId} waiting ${elapsedMinutes} minutes`,
             html: `
               <p><strong>SLA Escalation Alert</strong></p>
-              <p>Lead <code>${lead.id}</code> has been waiting <strong>${elapsedMinutes} minutes</strong> (${Math.round(elapsedMinutes / 60)} hours) without a response.</p>
-              <p>Provider: ${lead.routedTo.businessName} (${lead.routedTo.email})</p>
-              <p>Niche: ${lead.niche} | City: ${lead.city}</p>
+              <p>Lead <code>${safeLeadId}</code> has been waiting <strong>${elapsedMinutes} minutes</strong> (${Math.round(elapsedMinutes / 60)} hours) without a response.</p>
+              <p>Provider: ${safeBusiness} (${safeProviderEmail})</p>
+              <p>Niche: ${safeNiche} | City: ${safeCity}</p>
             `,
           }).catch((err) => { logger.error("cron/sla-checker", "Escalation email failed", err) });
         }

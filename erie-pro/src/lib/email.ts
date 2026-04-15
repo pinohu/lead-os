@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger";
 import { generateUnsubscribeToken } from "@/lib/unsubscribe-token";
 
 /** Escape HTML special characters to prevent XSS in email templates */
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

@@ -18,7 +18,7 @@ import { activatePerks, deactivatePerks } from "@/lib/perk-manager";
 import { deliverBankedLeads } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
-import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert, sendLeadPurchaseDelivery, sendLeadPurchaseRefundNotice } from "@/lib/email";
+import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert, sendLeadPurchaseDelivery, sendLeadPurchaseRefundNotice, escapeHtml } from "@/lib/email";
 import { hashVerificationToken } from "@/lib/verification-token";
 import { hashVerificationCode } from "@/lib/verification-code";
 
@@ -527,12 +527,14 @@ async function handleCheckoutCompleted(
     });
 
     if (adminEmail) {
+      const safeRequesterEmail = escapeHtml(requesterEmail);
+      const safeStripeSessionId = escapeHtml(stripeSessionId);
       sendEmail({
         to: adminEmail,
         subject: `[${cityConfig.slug}] New Concierge job — ${requesterEmail}`,
         html: `
-          <p>New Concierge job paid for by <strong>${requesterEmail}</strong>.</p>
-          <p>Stripe session: <code>${stripeSessionId}</code></p>
+          <p>New Concierge job paid for by <strong>${safeRequesterEmail}</strong>.</p>
+          <p>Stripe session: <code>${safeStripeSessionId}</code></p>
           <p>Follow up in the admin dashboard: <a href="${siteUrl}/admin">${siteUrl}/admin</a></p>
         `,
       }).catch((err) => {
@@ -585,12 +587,14 @@ async function handleCheckoutCompleted(
     });
 
     if (adminEmail) {
+      const safeRequesterEmail = escapeHtml(requesterEmail);
+      const safeStripeSessionId = escapeHtml(stripeSessionId);
       sendEmail({
         to: adminEmail,
         subject: `[${cityConfig.slug}] New Annual member — ${requesterEmail}`,
         html: `
-          <p>New Annual member: <strong>${requesterEmail}</strong>.</p>
-          <p>Stripe session: <code>${stripeSessionId}</code></p>
+          <p>New Annual member: <strong>${safeRequesterEmail}</strong>.</p>
+          <p>Stripe session: <code>${safeStripeSessionId}</code></p>
         `,
       }).catch((err) => {
         logger.error("stripe-webhook", "Annual ops alert failed", err);
@@ -694,6 +698,10 @@ async function handleCheckoutCompleted(
         .catch((err) => logger.error("stripe-webhook", "Refund notice email failed", err));
 
       if (adminEmail) {
+        const safeSession = escapeHtml(stripeSessionId);
+        const safeBuyer = escapeHtml(buyerEmail);
+        const safeLeadId = escapeHtml(leadId);
+        const safeNiche = escapeHtml(niche);
         sendEmail({
           to: adminEmail,
           subject: `[${cityConfig.slug}] REFUND NEEDED — lead_purchase race loss`,
@@ -701,10 +709,10 @@ async function handleCheckoutCompleted(
             <p>A buyer completed a <strong>lead_purchase</strong> checkout for a lead that was already sold.</p>
             <p>Refund is required in Stripe.</p>
             <ul>
-              <li>Stripe session: <code>${stripeSessionId}</code></li>
-              <li>Buyer email: <strong>${buyerEmail}</strong></li>
-              <li>Lead id: <code>${leadId}</code></li>
-              <li>Niche: ${niche}</li>
+              <li>Stripe session: <code>${safeSession}</code></li>
+              <li>Buyer email: <strong>${safeBuyer}</strong></li>
+              <li>Lead id: <code>${safeLeadId}</code></li>
+              <li>Niche: ${safeNiche}</li>
               <li>Amount: $${checkoutSession.price ?? "?"}</li>
             </ul>
           `,
