@@ -9,11 +9,13 @@ import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { safeEqual } from "@/lib/timing-safe";
 import { generateUnsubscribeToken } from "@/lib/unsubscribe-token";
+import { auth } from "@/lib/auth";
 
 const UnsubscribeSchema = z
   .object({
     email: z.string().email().transform((e) => e.toLowerCase().trim()).optional(),
     phone: z.string().min(10).optional(),
+    token: z.string().min(1).optional(),
   })
   .refine((data) => data.email || data.phone, {
     message: "Email or phone required",
@@ -24,30 +26,103 @@ export async function POST(req: NextRequest) {
   if (rateLimited) return rateLimited;
 
   try {
-    const body = await req.json().catch(() => null);
-    if (!body) {
+    // Accept either JSON body (programmatic) or form-encoded body
+    // (RFC 8058 email-client one-click unsubscribe). For one-click,
+    // the token/email live in the query string; pull them too.
+    const contentType = req.headers.get("content-type") ?? "";
+    let rawEmail: string | undefined;
+    let rawPhone: string | undefined;
+    let rawToken: string | undefined;
+
+    if (contentType.includes("application/json")) {
+      const body = await req.json().catch(() => null);
+      if (!body || typeof body !== "object") {
+        return NextResponse.json(
+          { success: false, error: "Invalid request body" },
+          { status: 400 }
+        );
+      }
+      const parsed = UnsubscribeSchema.safeParse(body);
+      if (!parsed.success) {
+        return NextResponse.json(
+          { success: false, error: parsed.error.issues.map((e) => e.message).join("; ") },
+          { status: 400 }
+        );
+      }
+      rawEmail = parsed.data.email;
+      rawPhone = parsed.data.phone;
+      rawToken = parsed.data.token;
+    }
+
+    // Also honour ?email=...&token=... query params so RFC 8058
+    // one-click POSTs (which deliver "List-Unsubscribe=One-Click" in
+    // the body and identify the recipient via query) work correctly.
+    const { searchParams } = new URL(req.url);
+    if (!rawEmail) rawEmail = searchParams.get("email")?.toLowerCase().trim() || undefined;
+    if (!rawToken) rawToken = searchParams.get("token") ?? undefined;
+
+    if (!rawEmail && !rawPhone) {
       return NextResponse.json(
-        { success: false, error: "Invalid request body" },
+        { success: false, error: "Email or phone required" },
         { status: 400 }
       );
     }
 
-    const parsed = UnsubscribeSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json(
-        { success: false, error: parsed.error.issues.map((e) => e.message).join("; ") },
-        { status: 400 }
-      );
+    // ── Authorization ────────────────────────────────────────────
+    // Without this gate the endpoint is a harassment / deliverability
+    // DoS vector: any unauthenticated attacker could POST an email and
+    // permanently suppress it — victim never receives another
+    // transactional email. Require ONE of:
+    //   (a) a valid per-email unsubscribe token (same mechanism as
+    //       the GET email-link flow, and what RFC 8058 one-click
+    //       effectively carries via the List-Unsubscribe URL), OR
+    //   (b) an authenticated session owned by the target email (user
+    //       unsubscribing themselves from a logged-in preferences UI).
+    // The phone-only path is guarded by (b) — no per-phone tokens
+    // exist today, so phone suppressions require an auth'd session.
+    let authorized = false;
+    if (rawEmail && rawToken) {
+      const expected = generateUnsubscribeToken(rawEmail);
+      if (safeEqual(rawToken, expected)) authorized = true;
+    }
+    if (!authorized) {
+      const session = await auth();
+      const sessionEmail = session?.user?.email?.toLowerCase().trim();
+      if (sessionEmail && rawEmail && sessionEmail === rawEmail) {
+        authorized = true;
+      } else if (sessionEmail && rawPhone && !rawEmail) {
+        // Authenticated user requesting to suppress a phone — only
+        // allowed if that phone is registered to their provider
+        // record. This avoids letting a logged-in user suppress an
+        // arbitrary phone number for harassment.
+        const user = await prisma.user.findUnique({ where: { email: sessionEmail } });
+        if (user?.providerId) {
+          const provider = await prisma.provider.findUnique({
+            where: { id: user.providerId },
+            select: { phone: true },
+          });
+          if (provider?.phone && provider.phone === rawPhone) authorized = true;
+        }
+      }
     }
 
-    const { email, phone } = parsed.data;
+    if (!authorized) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Unauthorized. Use the unsubscribe link from your most recent email, or sign in to manage preferences.",
+        },
+        { status: 403 }
+      );
+    }
 
     // Check if already suppressed
     const existing = await prisma.suppression.findFirst({
       where: {
         OR: [
-          ...(email ? [{ email }] : []),
-          ...(phone ? [{ phone }] : []),
+          ...(rawEmail ? [{ email: rawEmail }] : []),
+          ...(rawPhone ? [{ phone: rawPhone }] : []),
         ],
       },
     });
@@ -61,15 +136,15 @@ export async function POST(req: NextRequest) {
 
     await prisma.suppression.create({
       data: {
-        email: email ?? null,
-        phone: phone ?? null,
+        email: rawEmail ?? null,
+        phone: rawPhone ?? null,
         reason: "unsubscribe",
       },
     });
 
     logger.info("unsubscribe", "Contact suppressed", {
-      hasEmail: !!email,
-      hasPhone: !!phone,
+      hasEmail: !!rawEmail,
+      hasPhone: !!rawPhone,
     });
 
     return NextResponse.json({
