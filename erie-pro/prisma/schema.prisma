@@ -246,6 +246,11 @@ model LeadOutcome {
   satisfactionRating  Float?         // 0-5
   createdAt           DateTime       @default(now())
 
+  // One outcome row per (lead, provider). Providers update their
+  // existing outcome (responded → converted) via upsert instead of
+  // stacking new rows, which previously let a provider inflate
+  // convertedLeads by re-submitting the same conversion many times.
+  @@unique([leadId, providerId])
   @@index([leadId])
   @@index([providerId])
   @@map("lead_outcomes")
