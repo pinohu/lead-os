@@ -50,6 +50,19 @@ function clearLoginAttempts(email: string): void {
   loginAttempts.delete(email);
 }
 
+// Dummy bcrypt hash used to equalize response time between "user exists,
+// wrong password" and "user doesn't exist at all". Without this, the
+// missing-user path skipped bcrypt entirely and returned in ~1ms, while
+// the wrong-password path took ~100ms — a trivial timing oracle an
+// attacker could use to enumerate which emails have accounts.
+//
+// Generated once at module load via bcrypt.hashSync("invalid-placeholder", 12)
+// so every missing-user request still pays a real bcrypt.compare round.
+const DUMMY_BCRYPT_HASH = bcrypt.hashSync(
+  "dummy-password-never-matches-anything",
+  12
+);
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
@@ -81,6 +94,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
 
         if (!user) {
+          // Run bcrypt on a dummy hash to equalize timing with the
+          // "wrong password" branch — see DUMMY_BCRYPT_HASH comment.
+          await bcrypt.compare(password, DUMMY_BCRYPT_HASH);
           recordFailedLogin(email);
           return null;
         }
@@ -92,6 +108,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             where: { id: user.providerId },
           });
           if (!provider?.passwordHash) {
+            // Burn the bcrypt round here too so "user exists but no
+            // password set" looks identical to a successful-lookup
+            // wrong-password attempt.
+            await bcrypt.compare(password, DUMMY_BCRYPT_HASH);
             recordFailedLogin(email);
             return null;
           }
@@ -102,7 +122,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return null;
           }
         } else {
-          // No linked provider — reject login (no password to verify)
+          // No linked provider — reject login (no password to verify).
+          // Equalize with the wrong-password path.
+          await bcrypt.compare(password, DUMMY_BCRYPT_HASH);
           recordFailedLogin(email);
           return null;
         }
