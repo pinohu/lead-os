@@ -9,11 +9,56 @@ import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
 // ── Login Rate Limiter ──────────────────────────────────────────────
-// In-memory rate limiter: max 5 failed attempts per email per 15 minutes.
-// Provides brute-force protection within a single serverless instance.
+// Max 5 failed attempts per email per 15 minutes, backed by the
+// shared Postgres `rate_limit_entries` table so the gate works
+// across all Vercel serverless instances. An earlier version used an
+// in-memory Map, which is per-instance — a distributed brute-force
+// attacker hitting cold starts would sail past the "5 attempts" cap
+// because each fresh function invocation saw an empty Map.
+//
+// Falls back to a process-local Map only when the DB is unreachable
+// (same pattern as lib/rate-limit.ts); the app is unusable without
+// the DB anyway, so that fallback is cosmetic.
 const LOGIN_MAX_ATTEMPTS = 5;
 const LOGIN_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 
+function loginKey(email: string): string {
+  return `login-fail:${email}`;
+}
+
+async function isLoginRateLimited(email: string): Promise<boolean> {
+  const windowStart = new Date(Date.now() - LOGIN_WINDOW_MS);
+  try {
+    const count = await prisma.rateLimitEntry.count({
+      where: { key: loginKey(email), createdAt: { gt: windowStart } },
+    });
+    return count >= LOGIN_MAX_ATTEMPTS;
+  } catch {
+    return isLoginRateLimitedInMemory(email);
+  }
+}
+
+async function recordFailedLogin(email: string): Promise<void> {
+  try {
+    await prisma.rateLimitEntry.create({
+      data: { key: loginKey(email) },
+    });
+  } catch {
+    recordFailedLoginInMemory(email);
+  }
+}
+
+async function clearLoginAttempts(email: string): Promise<void> {
+  try {
+    await prisma.rateLimitEntry.deleteMany({
+      where: { key: loginKey(email) },
+    });
+  } catch {
+    clearLoginAttemptsInMemory(email);
+  }
+}
+
+// ── In-memory fallback (DB-unreachable only) ────────────────────────
 interface LoginAttempt {
   count: number;
   firstAttemptAt: number;
@@ -21,24 +66,20 @@ interface LoginAttempt {
 
 const loginAttempts = new Map<string, LoginAttempt>();
 
-function isLoginRateLimited(email: string): boolean {
+function isLoginRateLimitedInMemory(email: string): boolean {
   const now = Date.now();
   const attempt = loginAttempts.get(email);
   if (!attempt) return false;
-
-  // Window expired — clear and allow
   if (now - attempt.firstAttemptAt > LOGIN_WINDOW_MS) {
     loginAttempts.delete(email);
     return false;
   }
-
   return attempt.count >= LOGIN_MAX_ATTEMPTS;
 }
 
-function recordFailedLogin(email: string): void {
+function recordFailedLoginInMemory(email: string): void {
   const now = Date.now();
   const attempt = loginAttempts.get(email);
-
   if (!attempt || now - attempt.firstAttemptAt > LOGIN_WINDOW_MS) {
     loginAttempts.set(email, { count: 1, firstAttemptAt: now });
   } else {
@@ -46,7 +87,7 @@ function recordFailedLogin(email: string): void {
   }
 }
 
-function clearLoginAttempts(email: string): void {
+function clearLoginAttemptsInMemory(email: string): void {
   loginAttempts.delete(email);
 }
 
@@ -84,7 +125,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const password = credentials.password as string;
 
         // Rate limit check — block after too many failed attempts
-        if (isLoginRateLimited(email)) {
+        if (await isLoginRateLimited(email)) {
           return null;
         }
 
@@ -97,7 +138,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           // Run bcrypt on a dummy hash to equalize timing with the
           // "wrong password" branch — see DUMMY_BCRYPT_HASH comment.
           await bcrypt.compare(password, DUMMY_BCRYPT_HASH);
-          recordFailedLogin(email);
+          await recordFailedLogin(email);
           return null;
         }
 
@@ -112,25 +153,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // password set" looks identical to a successful-lookup
             // wrong-password attempt.
             await bcrypt.compare(password, DUMMY_BCRYPT_HASH);
-            recordFailedLogin(email);
+            await recordFailedLogin(email);
             return null;
           }
 
           const valid = await bcrypt.compare(password, provider.passwordHash);
           if (!valid) {
-            recordFailedLogin(email);
+            await recordFailedLogin(email);
             return null;
           }
         } else {
           // No linked provider — reject login (no password to verify).
           // Equalize with the wrong-password path.
           await bcrypt.compare(password, DUMMY_BCRYPT_HASH);
-          recordFailedLogin(email);
+          await recordFailedLogin(email);
           return null;
         }
 
         // Successful login — clear any failed attempt counter
-        clearLoginAttempts(email);
+        await clearLoginAttempts(email);
 
         return {
           id: user.id,
