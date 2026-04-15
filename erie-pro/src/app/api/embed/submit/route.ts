@@ -11,6 +11,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { audit } from "@/lib/audit-log";
 import { deliverWebhookEvent } from "@/lib/webhook-delivery";
 import { MAX_BODY_SIZE } from "@/lib/validation";
+import { getClientIp } from "@/lib/client-ip";
 import crypto from "crypto";
 
 // ── CORS Preflight ─────────────────────────────────────────────────
@@ -106,8 +107,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Route the lead
-    const tcpaIp =
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "embed";
+    const tcpaIp = getClientIp(req);
 
     const result = await routeLead(niche, apiKey.provider.city, {
       firstName,

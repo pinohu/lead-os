@@ -21,6 +21,7 @@ import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { hashVerificationToken } from "@/lib/verification-token";
+import { getClientIp } from "@/lib/client-ip";
 
 export async function GET(req: NextRequest) {
   // Rate limit: 5 verifications per minute per IP (prevent token brute-force)
@@ -83,7 +84,7 @@ export async function GET(req: NextRequest) {
       entityType: "provider",
       entityId: target.id,
       providerId: target.id,
-      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      ipAddress: getClientIp(req),
     });
 
     // Redirect to claim success or checkout

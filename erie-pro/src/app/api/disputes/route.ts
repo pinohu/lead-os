@@ -10,6 +10,7 @@ import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { MAX_BODY_SIZE, sanitizeText } from "@/lib/validation";
+import { getClientIp } from "@/lib/client-ip";
 
 const DisputeSchema = z.object({
   leadId: z.string().min(1, "Lead ID is required"),
@@ -118,7 +119,7 @@ export async function POST(req: NextRequest) {
       entityId: dispute.id,
       providerId,
       metadata: { leadId, reason },
-      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      ipAddress: getClientIp(req),
     });
 
     return NextResponse.json({

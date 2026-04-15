@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { getClientIp } from "@/lib/client-ip";
 
 const TerritoryStatusSchema = z.object({
   territoryId: z.string().min(1),
@@ -98,7 +99,7 @@ export async function PATCH(req: NextRequest) {
         niche: territory.niche,
         city: territory.city,
       },
-      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      ipAddress: getClientIp(req),
     });
 
     return NextResponse.json({

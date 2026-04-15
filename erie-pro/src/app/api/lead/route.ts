@@ -8,6 +8,7 @@ import { logger } from "@/lib/logger"
 import { audit } from "@/lib/audit-log"
 import { prisma } from "@/lib/db"
 import { deliverWebhookEvent } from "@/lib/webhook-delivery"
+import { getClientIp } from "@/lib/client-ip"
 
 export async function POST(request: NextRequest) {
   try {
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Record TCPA consent metadata ─────────────────────────────
-    const tcpaIpAddress = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown"
+    const tcpaIpAddress = getClientIp(request)
 
     // Route the lead through the distribution engine
     const result = await routeLead(niche, city, {

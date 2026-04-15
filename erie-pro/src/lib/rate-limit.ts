@@ -3,6 +3,7 @@
 // Falls back to in-memory sliding window for dev/testing without a DB.
 
 import { NextRequest, NextResponse } from "next/server";
+import { getClientIp } from "@/lib/client-ip";
 
 interface RateLimitConfig {
   /** Max requests allowed in the window */
@@ -117,14 +118,6 @@ if (typeof setInterval !== "undefined") {
       if (entry.timestamps.length === 0) windows.delete(key);
     }
   }, 300_000);
-}
-
-function getClientIp(req: NextRequest): string {
-  return (
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    req.headers.get("x-real-ip") ??
-    "unknown"
-  );
 }
 
 function inMemoryRateLimit(

@@ -10,6 +10,7 @@ import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { sanitizeText, MAX_BODY_SIZE } from "@/lib/validation";
+import { getClientIp } from "@/lib/client-ip";
 
 const UpdateProfileSchema = z.object({
   businessName: z.string().min(2).max(200).transform(sanitizeText).optional(),
@@ -98,7 +99,7 @@ export async function PATCH(req: NextRequest) {
       entityId: user.providerId,
       providerId: user.providerId,
       metadata: { type: "profile_update", fields: Object.keys(updates) },
-      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      ipAddress: getClientIp(req),
     });
 
     return NextResponse.json({

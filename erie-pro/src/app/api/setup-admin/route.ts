@@ -9,6 +9,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
+import { getClientIp } from "@/lib/client-ip";
 
 const SetupSchema = z.object({
   email: z
@@ -50,9 +51,7 @@ export async function POST(request: Request) {
     }
 
     // ── Rate limit: 5 attempts per minute per IP ──────────────────────
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-      ?? request.headers.get("x-real-ip")
-      ?? "unknown";
+    const ip = getClientIp(request);
     if (!checkSetupRateLimit(ip)) {
       return NextResponse.json(
         { error: "Too many attempts. Please try again later." },

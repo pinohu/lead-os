@@ -10,6 +10,7 @@ import { requireAdmin } from "@/lib/require-admin"
 import { logger } from "@/lib/logger"
 import { sendDisputeResolutionEmail } from "@/lib/email"
 import { MAX_BODY_SIZE } from "@/lib/validation"
+import { getClientIp } from "@/lib/client-ip"
 
 const ResolveSchema = z.object({
   disputeId: z.string().min(1, "Dispute ID is required"),
@@ -98,7 +99,7 @@ export async function POST(req: NextRequest) {
         leadId: existing.leadId,
         reason: existing.reason,
       },
-      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      ipAddress: getClientIp(req),
     })
 
     // Notify the provider of the resolution outcome
