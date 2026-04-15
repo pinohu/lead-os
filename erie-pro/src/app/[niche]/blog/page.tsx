@@ -30,6 +30,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { InternalLinks } from "@/components/internal-links"
+import { safeJsonLd } from "@/lib/jsonld"
 
 const AUTHOR = "Erie Pro Editorial Team"
 
@@ -186,7 +187,7 @@ export default async function NicheBlogPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "Blog",
             name: `${niche.label} Blog — ${cityConfig.domain}`,

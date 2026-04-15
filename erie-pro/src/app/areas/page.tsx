@@ -14,6 +14,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { safeJsonLd } from "@/lib/jsonld"
 
 export const metadata: Metadata = {
   title: `Service Areas — ${cityConfig.name} Metro | ${cityConfig.domain}`,
@@ -156,7 +157,7 @@ export default function AreasPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: cityConfig.domain,

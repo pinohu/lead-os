@@ -1,6 +1,7 @@
 import { MapPin, Shield, FileText } from "lucide-react"
 import { localSeo } from "@/lib/local-seo"
 import { cityConfig } from "@/lib/city-config"
+import { safeJsonLd } from "@/lib/jsonld"
 
 /**
  * Local SEO Footer — renders on every page with deep local signals.
@@ -80,7 +81,7 @@ export function LocalSeoFooter() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
             name: cityConfig.domain,

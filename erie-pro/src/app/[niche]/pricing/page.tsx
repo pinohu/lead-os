@@ -37,6 +37,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { InternalLinks } from "@/components/internal-links"
+import { safeJsonLd } from "@/lib/jsonld"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -81,7 +82,7 @@ export default async function NichePricingPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(pricingJsonLd) }}
       />
       <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}

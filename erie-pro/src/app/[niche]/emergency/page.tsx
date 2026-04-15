@@ -34,6 +34,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { safeJsonLd } from "@/lib/jsonld"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -99,7 +100,7 @@ export default async function NicheEmergencyPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(emergencyJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(emergencyJsonLd) }}
       />
       <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}

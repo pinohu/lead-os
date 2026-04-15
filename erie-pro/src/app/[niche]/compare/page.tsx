@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { InternalLinks } from "@/components/internal-links"
+import { safeJsonLd } from "@/lib/jsonld"
 
 type ComparisonValue = "yes" | "no" | "varies" | string
 
@@ -120,7 +121,7 @@ export default async function NicheComparePage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(compareJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(compareJsonLd) }}
       />
       <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}

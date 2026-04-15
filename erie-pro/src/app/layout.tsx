@@ -19,6 +19,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
+import { safeJsonLd } from "@/lib/jsonld"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
@@ -97,7 +98,7 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
         />
       </head>
       <body className={`${inter.className} antialiased`}>

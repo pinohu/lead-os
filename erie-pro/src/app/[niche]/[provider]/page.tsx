@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/accordion"
 import ContactForm from "@/components/contact-form"
 import { PhotoGalleryDialog } from "@/components/photo-gallery-dialog"
+import { safeJsonLd } from "@/lib/jsonld"
 
 type Props = { params: Promise<{ niche: string; provider: string }> }
 
@@ -1265,7 +1266,7 @@ export default async function ProviderPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@graph": [
               {

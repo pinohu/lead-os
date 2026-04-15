@@ -25,6 +25,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { safeJsonLd } from "@/lib/jsonld"
 
 // Keep the slot counter fresh without a redeploy.
 export const revalidate = 3600
@@ -192,7 +193,7 @@ export default async function ProsPage() {
     <main>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       {/* ── Hero ───────────────────────────────────────────────── */}
