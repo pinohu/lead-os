@@ -44,14 +44,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, status: "already_verified" });
     }
 
-    // Brute-force protection: max 10 total attempts
-    if (provider.verificationAttempts >= 10) {
-      return NextResponse.json(
-        { success: false, error: "Too many attempts. Contact support for manual verification." },
-        { status: 429 }
-      );
-    }
-
     // Must have a pending code
     if (!provider.verificationCode || !provider.verificationCodeExp) {
       return NextResponse.json(
@@ -68,11 +60,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Increment attempts
-    await prisma.provider.update({
-      where: { id: provider.id },
+    // Brute-force protection: atomic "check-and-increment" collapsing
+    // what used to be a (read attempts) → (compare < 10) → (increment)
+    // sequence. With the old shape an attacker could fan out N
+    // simultaneous requests at attempts=9 and all N would pass the
+    // `< 10` check before any single request bumped the counter,
+    // effectively multiplying the allowed attempts against a 6-digit
+    // code. updateMany filtered on `verificationAttempts: { lt: 10 }`
+    // makes the DB the gate: only attempts that flip the counter
+    // below-10→N+1 get through, all concurrent losers see count === 0.
+    const gated = await prisma.provider.updateMany({
+      where: { id: provider.id, verificationAttempts: { lt: 10 } },
       data: { verificationAttempts: { increment: 1 } },
     });
+
+    if (gated.count === 0) {
+      return NextResponse.json(
+        { success: false, error: "Too many attempts. Contact support for manual verification." },
+        { status: 429 }
+      );
+    }
 
     // The stored value is an HMAC-SHA256 digest of the 6-digit code, so we
     // can't string-compare the user-supplied raw code against it directly.
