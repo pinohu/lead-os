@@ -551,22 +551,30 @@ export async function getUnmatchedLeadsForNiche(niche: string): Promise<LeadRout
 
 /**
  * Mark an unmatched lead as purchased (pay-per-lead).
+ *
+ * Atomic claim pattern: the read-then-check-then-update shape would let
+ * two concurrent buyers both observe `routeType === "unmatched"` and
+ * both flip it to "overflow", effectively double-selling the same lead.
+ * `updateMany` with the compound WHERE makes the DB the gate — at most
+ * one writer sees `count === 1`; the rest see `count === 0` and bail.
+ * NB: function is currently unreferenced but hardened defensively so
+ * wiring it into a future pay-per-lead checkout path is safe-by-default.
  */
 export async function assignLeadToBuyer(
   leadId: string,
   buyerEmail: string
 ): Promise<LeadRouteResult | null> {
-  const lead = await prisma.lead.findUnique({
-    where: { id: leadId },
-    include: { routedTo: true },
-  });
-  if (!lead || lead.routeType !== "unmatched") return null;
-
-  const updated = await prisma.lead.update({
-    where: { id: leadId },
+  const claim = await prisma.lead.updateMany({
+    where: { id: leadId, routeType: "unmatched" },
     data: { routeType: "overflow" },
+  });
+  if (claim.count === 0) return null;
+
+  const updated = await prisma.lead.findUnique({
+    where: { id: leadId },
     include: { routedTo: true },
   });
+  if (!updated) return null;
 
   return leadToRouteResult(updated);
 }
