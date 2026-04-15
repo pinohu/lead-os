@@ -6,11 +6,28 @@ vi.mock("@/lib/auth", () => ({
   auth: () => authMock(),
 }));
 
+// Mock the prisma client — requireAdmin now re-reads the role from
+// the DB to catch stale JWT admin claims after a demote.
+const userFindUniqueMock = vi.fn();
+vi.mock("@/lib/db", () => ({
+  prisma: {
+    user: {
+      findUnique: (...args: unknown[]) => userFindUniqueMock(...args),
+    },
+  },
+}));
+
 import { requireAdmin, requireAdminSession } from "../require-admin";
+
+// Convenience: default to an admin row. Individual tests override.
+function stubAdminRow(role: string | null = "admin") {
+  userFindUniqueMock.mockResolvedValue(role === null ? null : { role });
+}
 
 describe("requireAdmin", () => {
   beforeEach(() => {
     authMock.mockReset();
+    userFindUniqueMock.mockReset();
   });
 
   afterEach(() => {
@@ -21,6 +38,7 @@ describe("requireAdmin", () => {
     authMock.mockResolvedValue({
       user: { id: "u1", email: "admin@example.com", role: "admin" },
     });
+    stubAdminRow("admin");
     expect(await requireAdmin()).toBeNull();
   });
 
@@ -62,11 +80,41 @@ describe("requireAdmin", () => {
     const res = await requireAdmin();
     expect(res!.status).toBe(401);
   });
+
+  it("rejects a stale JWT admin claim when DB role has been demoted", async () => {
+    authMock.mockResolvedValue({
+      user: { id: "u1", email: "admin@example.com", role: "admin" },
+    });
+    // DB says they've been demoted to provider
+    stubAdminRow("provider");
+    const res = await requireAdmin();
+    expect(res).not.toBeNull();
+    expect(res!.status).toBe(401);
+  });
+
+  it("rejects when user row has been deleted", async () => {
+    authMock.mockResolvedValue({
+      user: { id: "u1", email: "admin@example.com", role: "admin" },
+    });
+    stubAdminRow(null);
+    const res = await requireAdmin();
+    expect(res!.status).toBe(401);
+  });
+
+  it("fails closed when DB lookup throws", async () => {
+    authMock.mockResolvedValue({
+      user: { id: "u1", email: "admin@example.com", role: "admin" },
+    });
+    userFindUniqueMock.mockRejectedValue(new Error("DB down"));
+    const res = await requireAdmin();
+    expect(res!.status).toBe(401);
+  });
 });
 
 describe("requireAdminSession", () => {
   beforeEach(() => {
     authMock.mockReset();
+    userFindUniqueMock.mockReset();
   });
 
   it("returns ok:true with session for a valid admin", async () => {
@@ -74,6 +122,7 @@ describe("requireAdminSession", () => {
       user: { id: "u1", email: "admin@example.com", role: "admin" },
     };
     authMock.mockResolvedValue(sessionFixture);
+    stubAdminRow("admin");
     const res = await requireAdminSession();
     expect(res.ok).toBe(true);
     if (res.ok) {
@@ -94,6 +143,18 @@ describe("requireAdminSession", () => {
     authMock.mockResolvedValue({
       user: { id: "u1", email: "x@example.com", role: "provider" },
     });
+    const res = await requireAdminSession();
+    expect(res.ok).toBe(false);
+    if (!res.ok) {
+      expect(res.response.status).toBe(401);
+    }
+  });
+
+  it("returns ok:false when JWT admin claim is stale (DB says provider)", async () => {
+    authMock.mockResolvedValue({
+      user: { id: "u1", email: "x@example.com", role: "admin" },
+    });
+    stubAdminRow("provider");
     const res = await requireAdminSession();
     expect(res.ok).toBe(false);
     if (!res.ok) {
