@@ -38,18 +38,36 @@ function getUnsubscribeUrl(recipientEmail: string): string {
 }
 
 /**
+ * Strip CR/LF/NUL from values that end up in email headers
+ * (To, Subject, Reply-To). The Emailit HTTP API takes these as JSON
+ * fields and then hands them to its SMTP backend; if that backend
+ * doesn't sanitize, embedded \r\n in any of these fields would let an
+ * attacker inject additional headers (Bcc: exfiltrate, or a MIME
+ * boundary to rewrite the body). Several call sites derive these from
+ * user-controlled input — provider businessName (in subjects), contact-
+ * form email (in replyTo), admin-configured envs — and escapeHtml does
+ * nothing against header injection, so strip at the send boundary.
+ */
+function stripHeaderBreaks(value: string): string {
+  return value.replace(/[\r\n\u0000]+/g, " ").trim();
+}
+
+/**
  * Send an email. Returns true on success.
  * In dev or without EMAILIT_API_KEY, logs to console instead.
  */
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   const apiKey = process.env.EMAILIT_API_KEY;
-  const unsubscribeUrl = getUnsubscribeUrl(options.to);
+  const safeTo = stripHeaderBreaks(options.to);
+  const safeSubject = stripHeaderBreaks(options.subject);
+  const safeReplyTo = options.replyTo ? stripHeaderBreaks(options.replyTo) : undefined;
+  const unsubscribeUrl = getUnsubscribeUrl(safeTo);
 
   if (!apiKey) {
     if (process.env.NODE_ENV === "production") {
       throw new Error("EMAILIT_API_KEY is not configured. Cannot send emails in production.");
     }
-    logger.info("email", `[DRY RUN] Would send to ${options.to}: ${options.subject}`);
+    logger.info("email", `[DRY RUN] Would send to ${safeTo}: ${safeSubject}`);
     if (process.env.NODE_ENV === "development") {
       logger.debug("email", "HTML preview:", options.html.slice(0, 200));
     }
@@ -65,10 +83,10 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       },
       body: JSON.stringify({
         from: FROM_ADDRESS,
-        to: options.to,
-        subject: options.subject,
+        to: safeTo,
+        subject: safeSubject,
         html: options.html,
-        reply_to: options.replyTo,
+        reply_to: safeReplyTo,
         headers: {
           "List-Unsubscribe": `<${unsubscribeUrl}>`,
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
