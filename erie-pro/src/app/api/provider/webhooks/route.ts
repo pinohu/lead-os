@@ -11,6 +11,7 @@ import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import { sendTestWebhook } from "@/lib/webhook-delivery";
 import { checkFetchableUrl } from "@/lib/url-safety";
+import { checkRateLimit } from "@/lib/rate-limit";
 import crypto from "crypto";
 import { z } from "zod";
 
@@ -81,6 +82,13 @@ const CreateWebhookSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  // Throttle before any DB / crypto / audit writes: POST mints a signing
+  // secret and an audit row per call, PATCH burns an outbound HTTP
+  // request per call. Reusing the `api-keys` preset (20/min) matches
+  // the existing "session-gated management action" pattern.
+  const limited = await checkRateLimit(req, "api-keys");
+  if (limited) return limited;
+
   try {
     const providerId = await getProviderId();
     if (!providerId) {
@@ -187,6 +195,15 @@ export async function DELETE(req: NextRequest) {
 
 // ── PATCH: Test Webhook Endpoint ───────────────────────────────────
 export async function PATCH(req: NextRequest) {
+  // Each call fires an outbound HTTP request to the provider's
+  // webhook URL (see sendTestWebhook). Without throttling, a
+  // compromised session becomes a free outbound-request generator —
+  // the per-URL SSRF validator already blocks private IPs, but an
+  // attacker could still run arbitrary outbound traffic at whatever
+  // request rate their session allows. Match POST's preset.
+  const limited = await checkRateLimit(req, "api-keys");
+  if (limited) return limited;
+
   try {
     const providerId = await getProviderId();
     if (!providerId) {

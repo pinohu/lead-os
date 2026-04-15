@@ -8,7 +8,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { requireAdminSession } from "@/lib/require-admin";
 import { logger } from "@/lib/logger";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escapeHtml } from "@/lib/email";
 
 const ResolveSchema = z.object({
   providerId: z.string().min(1, "Provider ID is required"),
@@ -97,14 +97,22 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Notify the provider
+    // Notify the provider.
+    //
+    // businessName is claimant-supplied at signup, so it's untrusted
+    // even though the email lands in the claimant's own inbox — any
+    // re-display surface (admin mailbox viewing bounced mails,
+    // forwarding to an investigator, archival in a ticketing system)
+    // inherits whatever HTML/<script> the attacker embedded. Escape
+    // at render time per the policy established in Round AR.
     const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
+    const safeBusiness = escapeHtml(provider.businessName);
     if (status === "admin_approved") {
       sendEmail({
         to: provider.email,
         subject: "Your business ownership has been verified!",
         html: `
-          <p>Hi ${provider.businessName},</p>
+          <p>Hi ${safeBusiness},</p>
           <p>Great news! Your ownership claim has been approved by our team. Leads for your territory are now being routed to you.</p>
           <p><a href="${siteUrl}/dashboard">Go to Dashboard</a></p>
         `,
@@ -114,7 +122,7 @@ export async function POST(req: NextRequest) {
         to: provider.email,
         subject: "Ownership verification update",
         html: `
-          <p>Hi ${provider.businessName},</p>
+          <p>Hi ${safeBusiness},</p>
           <p>We were unable to verify your ownership of the business listing you claimed. Leads will not be routed until ownership is verified.</p>
           <p>If you believe this is an error, please reply to this email or <a href="${siteUrl}/contact">contact our support team</a> with proof of ownership (business license, utility bill, etc.).</p>
         `,
