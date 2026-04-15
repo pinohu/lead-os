@@ -49,13 +49,23 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const contentType = response.headers.get("content-type") ?? "image/jpeg";
+    // Only forward image/* content types. If Google's CDN ever returned
+    // something else (error HTML, redirect landing page) we don't want to
+    // re-serve it under our origin where it could be treated as our content.
+    const upstreamType = response.headers.get("content-type") ?? "";
+    const contentType = upstreamType.startsWith("image/")
+      ? upstreamType
+      : "image/jpeg";
+
     const imageBuffer = await response.arrayBuffer();
 
     return new NextResponse(imageBuffer, {
       status: 200,
       headers: {
         "Content-Type": contentType,
+        // Prevent the browser from MIME-sniffing our proxied response into
+        // anything other than the declared image type.
+        "X-Content-Type-Options": "nosniff",
         "Cache-Control": "public, max-age=86400, s-maxage=604800",
         "CDN-Cache-Control": "public, max-age=604800",
       },

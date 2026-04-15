@@ -10,6 +10,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import { sendTestWebhook } from "@/lib/webhook-delivery";
+import { checkFetchableUrl } from "@/lib/url-safety";
 import crypto from "crypto";
 import { z } from "zod";
 
@@ -60,11 +61,20 @@ export async function GET() {
 }
 
 // ── POST: Register New Webhook ─────────────────────────────────────
+// URL is validated with checkFetchableUrl at submit time to reject SSRF
+// targets (private IPs, .local hostnames, URLs with embedded credentials).
+// We still re-validate at delivery time in webhook-delivery.ts in case a
+// record was inserted through another path (admin tooling, migrations).
 const CreateWebhookSchema = z.object({
-  url: z.string().url("Must be a valid HTTPS URL").refine(
-    (url) => url.startsWith("https://"),
-    "Webhook URL must use HTTPS"
-  ),
+  url: z
+    .string()
+    .url("Must be a valid HTTPS URL")
+    .superRefine((url, ctx) => {
+      const result = checkFetchableUrl(url);
+      if (!result.ok) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: result.reason });
+      }
+    }),
   events: z
     .array(z.enum(ALLOWED_EVENTS as [string, ...string[]]))
     .min(1, "At least one event is required"),

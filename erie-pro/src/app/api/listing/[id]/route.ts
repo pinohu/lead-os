@@ -1,10 +1,15 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { getDirectoryListingById } from "@/lib/directory-store"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 export async function GET(
-  _req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Public endpoint — allow normal browsing but throttle scraping bursts.
+  const limited = await checkRateLimit(req, "listing")
+  if (limited) return limited
+
   const { id } = await params
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 })
 

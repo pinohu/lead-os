@@ -18,6 +18,12 @@ export const RATE_LIMITS = {
   contact: { limit: 5, windowSeconds: 60 } as RateLimitConfig,
   leadPurchase: { limit: 10, windowSeconds: 60 } as RateLimitConfig,
   "places-photo": { limit: 100, windowSeconds: 60 } as RateLimitConfig,
+  // Stripe checkout creation — each request bills Stripe API quota and
+  // leaves an abandoned session behind. Keep strict.
+  "checkout-requester": { limit: 5, windowSeconds: 60 } as RateLimitConfig,
+  // Public directory listing lookups — allow normal browsing but block
+  // scraping bursts.
+  listing: { limit: 60, windowSeconds: 60 } as RateLimitConfig,
 } as const;
 
 // ── Postgres Rate Limiting (via Prisma) ─────────────────────────────
