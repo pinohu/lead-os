@@ -3,6 +3,7 @@
 // Persistent via Prisma/Postgres. All functions are async.
 
 import { prisma } from "@/lib/db";
+import { logger } from "@/lib/logger";
 import { TIER_BENEFITS, type ProviderTier } from "./premium-rewards";
 
 // ── Types ─────────────────────────────────────────────────────────
@@ -117,22 +118,85 @@ export async function activatePerks(
   providerName: string,
   tier: ProviderTier
 ): Promise<PerkStatus> {
-  await prisma.territory.upsert({
-    where: { niche_city: { niche: niche.toLowerCase(), city: city.toLowerCase() } },
-    update: {
+  // Territory claim is exclusive — (niche, city) has @@unique in the schema.
+  // The naive `upsert` was NOT safe under concurrent Stripe checkouts: the
+  // /api/claim pre-check can let two different providers both pass when
+  // neither has completed checkout yet, and then BOTH of their Stripe
+  // webhooks race to "activate". With an upsert, the second webhook's
+  // UPDATE branch silently stomps the first provider's `providerId`,
+  // leaving the first payer with an active subscription and no territory.
+  //
+  // Fix: attempt to claim atomically, refusing to overwrite a DIFFERENT
+  // provider that already holds the territory.
+  //   1. `updateMany` filtered on (ours OR deactivated) — this re-claims
+  //      our own row or a previously released one without racing. Zero
+  //      rows updated means either no row exists OR a different active
+  //      provider holds it.
+  //   2. Fall back to `create`. If no row existed, this wins the unique
+  //      constraint. If the other branch is that a different provider
+  //      holds the territory, the unique constraint throws P2002 and we
+  //      log loudly so a human can refund the losing provider.
+  const nicheLc = niche.toLowerCase();
+  const cityLc = city.toLowerCase();
+
+  const claimed = await prisma.territory.updateMany({
+    where: {
+      niche: nicheLc,
+      city: cityLc,
+      OR: [
+        { providerId }, // re-claiming our own territory (idempotent webhook)
+        { deactivatedAt: { not: null } }, // abandoned — safe to take over
+      ],
+    },
+    data: {
       providerId,
       tier: "primary", // territory tier in DB is ProviderTier enum (primary/backup/overflow)
       deactivatedAt: null,
       isPaused: false,
       pausedAt: null,
     },
-    create: {
-      niche: niche.toLowerCase(),
-      city: city.toLowerCase(),
-      providerId,
-      tier: "primary",
-    },
   });
+
+  if (claimed.count === 0) {
+    try {
+      await prisma.territory.create({
+        data: {
+          niche: nicheLc,
+          city: cityLc,
+          providerId,
+          tier: "primary",
+        },
+      });
+    } catch (err: unknown) {
+      // Prisma unique constraint violation — a DIFFERENT active provider
+      // raced in and claimed this territory first. Do NOT overwrite them.
+      const code = (err as { code?: string } | null)?.code;
+      if (code === "P2002") {
+        const winner = await prisma.territory.findUnique({
+          where: { niche_city: { niche: nicheLc, city: cityLc } },
+          include: { provider: true },
+        });
+        logger.error(
+          "perk-manager",
+          "Territory claim conflict — refusing to overwrite active owner. " +
+            "Issue a refund for the losing provider.",
+          {
+            niche: nicheLc,
+            city: cityLc,
+            losingProviderId: providerId,
+            losingProviderName: providerName,
+            requestedTier: tier,
+            winningProviderId: winner?.providerId ?? null,
+            winningProviderName: winner?.provider?.businessName ?? null,
+          }
+        );
+        // Fall through to return the current (winner's) perk status so the
+        // caller sees the true DB state, not a fiction where they "own" it.
+      } else {
+        throw err;
+      }
+    }
+  }
 
   return getPerkStatus(niche, city);
 }
