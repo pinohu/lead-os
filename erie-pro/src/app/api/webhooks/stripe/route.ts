@@ -18,7 +18,7 @@ import { activatePerks, deactivatePerks } from "@/lib/perk-manager";
 import { deliverBankedLeads } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
-import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
+import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert, sendLeadPurchaseDelivery, sendLeadPurchaseRefundNotice } from "@/lib/email";
 import { hashVerificationToken } from "@/lib/verification-token";
 import { hashVerificationCode } from "@/lib/verification-code";
 
@@ -612,6 +612,114 @@ async function handleCheckoutCompleted(
     });
 
     logger.info("webhook/stripe", `Annual membership: ${stripeSessionId} (${requesterEmail})`);
+  } else if (checkoutSession.sessionType === "lead_purchase") {
+    // ── Pay-per-lead delivery ────────────────────────────────────
+    // A buyer paid for a single banked lead via
+    // createLeadPurchaseCheckout. Historical bug this fix closes:
+    // there was NO webhook handler for this session type at all, so
+    // buyers were charged and the lead was never marked sold or
+    // delivered. Two concurrent buyers could pay for the same lead
+    // (both checkouts created against leadId L while it was still
+    // `unmatched`), and the system silently pocketed both payments
+    // without delivering anything.
+    //
+    // Fix: atomically flip the lead from `unmatched` → `overflow` via
+    // updateMany with the pre-state in WHERE. The DB guarantees
+    // exactly one caller sees count === 1 and gets the lead. A late
+    // race-loser sees count === 0, which we surface to the buyer as a
+    // refund notice and alert ops so they actually process the
+    // refund in Stripe.
+    const leadId = checkoutSession.leadId;
+    const buyerEmail = checkoutSession.providerEmail;
+    const niche = checkoutSession.niche;
+    const adminEmail = process.env.ADMIN_EMAIL;
+
+    if (!leadId) {
+      logger.error("webhook/stripe", "lead_purchase session has no leadId", { stripeSessionId });
+      await prisma.checkoutSession.updateMany({
+        where: { stripeSessionId },
+        data: { status: "completed", completedAt: new Date() },
+      });
+      return;
+    }
+
+    const consumed = await prisma.lead.updateMany({
+      where: { id: leadId, routeType: "unmatched" },
+      data: { routeType: "overflow" },
+    });
+
+    await prisma.checkoutSession.updateMany({
+      where: { stripeSessionId },
+      data: { status: "completed", completedAt: new Date() },
+    });
+
+    if (consumed.count === 1) {
+      // Winner: fetch lead details and deliver to buyer.
+      const lead = await prisma.lead.findUnique({
+        where: { id: leadId },
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          message: true,
+        },
+      });
+
+      if (lead) {
+        const leadName = [lead.firstName, lead.lastName].filter(Boolean).join(" ") || "Lead";
+        sendLeadPurchaseDelivery(
+          buyerEmail,
+          leadName,
+          lead.email,
+          lead.phone,
+          niche,
+          lead.message
+        ).catch((err) => logger.error("stripe-webhook", "Lead delivery email failed", err));
+      }
+
+      await audit({
+        action: "lead.purchased",
+        entityType: "lead",
+        entityId: leadId,
+        metadata: { stripeEventId, stripeSessionId, buyerEmail, niche, price: checkoutSession.price },
+      }).catch((err) => logger.error("stripe-webhook", "Lead purchase audit failed", err));
+
+      logger.info("webhook/stripe", `Lead purchased: ${leadId} by ${buyerEmail}`);
+    } else {
+      // Race-loser: the lead was already sold to another buyer between
+      // this buyer's checkout creation and the webhook firing. Notify
+      // them a refund is coming and alert ops to actually issue it.
+      sendLeadPurchaseRefundNotice(buyerEmail, niche, stripeSessionId)
+        .catch((err) => logger.error("stripe-webhook", "Refund notice email failed", err));
+
+      if (adminEmail) {
+        sendEmail({
+          to: adminEmail,
+          subject: `[${cityConfig.slug}] REFUND NEEDED — lead_purchase race loss`,
+          html: `
+            <p>A buyer completed a <strong>lead_purchase</strong> checkout for a lead that was already sold.</p>
+            <p>Refund is required in Stripe.</p>
+            <ul>
+              <li>Stripe session: <code>${stripeSessionId}</code></li>
+              <li>Buyer email: <strong>${buyerEmail}</strong></li>
+              <li>Lead id: <code>${leadId}</code></li>
+              <li>Niche: ${niche}</li>
+              <li>Amount: $${checkoutSession.price ?? "?"}</li>
+            </ul>
+          `,
+        }).catch((err) => logger.error("stripe-webhook", "Refund ops alert failed", err));
+      }
+
+      await audit({
+        action: "lead.purchase_race_loss",
+        entityType: "lead",
+        entityId: leadId,
+        metadata: { stripeEventId, stripeSessionId, buyerEmail, niche, price: checkoutSession.price },
+      }).catch((err) => logger.error("stripe-webhook", "Race-loss audit failed", err));
+
+      logger.warn("webhook/stripe", `lead_purchase race loss — refund needed: ${stripeSessionId}`);
+    }
   } else {
     // Unknown session type — mark completed and log.
     await prisma.checkoutSession.updateMany({

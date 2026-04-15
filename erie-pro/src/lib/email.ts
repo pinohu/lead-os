@@ -180,6 +180,70 @@ export async function sendLeadStatusSummary(
   });
 }
 
+// ── Pay-per-Lead Purchase Delivery ──────────────────────────────────
+// Sent to a buyer after they pay for a banked lead on Stripe. Delivers
+// the lead's contact details so they can follow up immediately.
+//
+// Important: this function is the *only* path that exposes lead PII to
+// a pay-per-lead buyer. The Stripe webhook calls it only after an
+// atomic updateMany has flipped the lead's routeType from `unmatched`
+// to `overflow`, which guarantees we never email the same lead's
+// details to two concurrent buyers (see /api/webhooks/stripe).
+export async function sendLeadPurchaseDelivery(
+  buyerEmail: string,
+  leadName: string,
+  leadEmail: string,
+  leadPhone: string | null,
+  niche: string,
+  message: string | null
+): Promise<boolean> {
+  return sendEmail({
+    to: buyerEmail,
+    subject: `Your ${escapeHtml(niche)} lead — ${cityConfig.name} Pro`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">Your Lead Is Ready</h2>
+      <p style="color:#374151;margin:0 0 16px">Thanks for your purchase. Here are the lead's contact details — reach out quickly for the best conversion rates:</p>
+      <table style="width:100%;border-collapse:collapse;margin:0 0 24px">
+        <tr><td style="padding:8px 0;color:#6b7280;width:100px">Name:</td><td style="padding:8px 0;color:#111827;font-weight:600">${escapeHtml(leadName)}</td></tr>
+        <tr><td style="padding:8px 0;color:#6b7280">Email:</td><td style="padding:8px 0;color:#111827"><a href="mailto:${escapeHtml(leadEmail)}" style="color:#2563eb">${escapeHtml(leadEmail)}</a></td></tr>
+        ${leadPhone ? `<tr><td style="padding:8px 0;color:#6b7280">Phone:</td><td style="padding:8px 0;color:#111827"><a href="tel:${escapeHtml(leadPhone)}" style="color:#2563eb">${escapeHtml(leadPhone)}</a></td></tr>` : ""}
+        ${message ? `<tr><td style="padding:8px 0;color:#6b7280;vertical-align:top">Message:</td><td style="padding:8px 0;color:#111827">${escapeHtml(message)}</td></tr>` : ""}
+      </table>
+      <p style="color:#374151;margin:0 0 16px">This lead is yours exclusively — it will not be sold to another provider.</p>
+      <p style="color:#6b7280;font-size:13px;margin:0">Want recurring leads? <a href="https://${cityConfig.domain}/for-business" style="color:#2563eb">Claim the ${escapeHtml(niche)} territory</a> for ongoing exclusivity.</p>
+    `, buyerEmail),
+    replyTo: `hello@${cityConfig.domain}`,
+  });
+}
+
+// Sent to a buyer whose lead_purchase completed payment but lost the
+// race to another buyer on the same banked lead (two concurrent
+// checkouts against the same pre-paid leadId). The webhook detects the
+// race via updateMany.count === 0 and tells the loser they'll be
+// refunded. Ops gets a matching admin alert so they can actually
+// process the refund in Stripe.
+export async function sendLeadPurchaseRefundNotice(
+  buyerEmail: string,
+  niche: string,
+  stripeSessionId: string
+): Promise<boolean> {
+  const adminMailto = `mailto:hello@${cityConfig.domain}?subject=${encodeURIComponent(
+    `Refund request for ${stripeSessionId}`
+  )}`;
+  return sendEmail({
+    to: buyerEmail,
+    subject: `Refund on its way — ${escapeHtml(niche)} lead already sold`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">That Lead Was Just Sold</h2>
+      <p style="color:#374151;margin:0 0 16px">Thanks for your purchase. Unfortunately, another buyer completed checkout on this ${escapeHtml(niche)} lead a few moments before your payment cleared, so we can't deliver it to you.</p>
+      <p style="color:#374151;margin:0 0 16px"><strong>You will not be charged.</strong> Our team will issue a full refund to your original payment method within 1&ndash;2 business days.</p>
+      <p style="color:#374151;margin:0 0 16px">If you don't see the refund within 3 business days, please <a href="${adminMailto}" style="color:#2563eb">email us</a> with this reference: <code style="font-family:monospace;font-size:12px">${escapeHtml(stripeSessionId)}</code>.</p>
+      <p style="color:#6b7280;font-size:13px;margin:0">Want to avoid this? <a href="https://${cityConfig.domain}/for-business" style="color:#2563eb">Claim the territory</a> to receive every ${escapeHtml(niche)} lead in your area first.</p>
+    `, buyerEmail),
+    replyTo: `hello@${cityConfig.domain}`,
+  });
+}
+
 export async function sendNewLeadNotification(
   providerEmail: string,
   providerName: string,

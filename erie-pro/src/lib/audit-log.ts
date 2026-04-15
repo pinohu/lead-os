@@ -27,6 +27,7 @@ export type AuditAction =
   | "lead.submitted"
   | "lead.routed"
   | "lead.purchased"
+  | "lead.purchase_race_loss"
   | "lead.disputed"
   | "lead.dispute_resolved"
   | "lead.archived"
