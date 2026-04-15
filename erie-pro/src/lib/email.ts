@@ -48,7 +48,7 @@ function getUnsubscribeUrl(recipientEmail: string): string {
  * form email (in replyTo), admin-configured envs — and escapeHtml does
  * nothing against header injection, so strip at the send boundary.
  */
-function stripHeaderBreaks(value: string): string {
+export function stripHeaderBreaks(value: string): string {
   return value.replace(/[\r\n\u0000]+/g, " ").trim();
 }
 
