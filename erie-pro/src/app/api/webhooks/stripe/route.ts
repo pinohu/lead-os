@@ -77,6 +77,15 @@ export async function POST(req: NextRequest) {
     // exactly one INSERT wins; any concurrent retry sees a P2002
     // unique-violation and exits cleanly as a duplicate without ever
     // running a side effect.
+    //
+    // Rollback-on-failure: if ANY step below throws, we DELETE the claim
+    // row before surfacing the 500 so Stripe's next retry can actually
+    // reprocess the event. Without this, a partial failure (DB timeout
+    // mid-transaction, activatePerks hitting a network blip) would
+    // claim the event id, crash, return 500 → Stripe retries → retry
+    // sees the row as "already handled" → returns 200 duplicate → the
+    // half-finished work is NEVER completed. Subscription activations,
+    // territory creations, and welcome emails would silently go missing.
     try {
       await prisma.stripeWebhookEvent.create({
         data: { id: event.id, type: event.type },
@@ -90,6 +99,7 @@ export async function POST(req: NextRequest) {
       throw err;
     }
 
+    try {
     // Handle the event
     const result = await handleStripeWebhook(event);
 
@@ -282,6 +292,24 @@ export async function POST(req: NextRequest) {
       handled: result.handled,
       type: result.eventType,
     });
+    } catch (innerErr) {
+      // Roll back the idempotency claim so Stripe's next retry can
+      // actually reprocess this event. Without this, the claim row
+      // locks out the retry and the work is permanently lost.
+      // Best-effort: if the delete itself fails (DB still sick), we
+      // fall through and return 500 anyway so Stripe retries and the
+      // row will be cleaned up by the retry's P2002 rollback.
+      await prisma.stripeWebhookEvent
+        .delete({ where: { id: event.id } })
+        .catch((delErr) => {
+          logger.error(
+            "webhook/stripe",
+            "Failed to roll back idempotency claim after handler failure",
+            { eventId: event.id, delErr }
+          );
+        });
+      throw innerErr;
+    }
   } catch (err) {
     logger.error("webhook/stripe", "Error:", err);
     return NextResponse.json(
