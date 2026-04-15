@@ -11,13 +11,19 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { MAX_BODY_SIZE } from "@/lib/validation";
 
+// Note: `satisfactionRating` is DELIBERATELY not accepted from the
+// provider here. It aggregates into `provider.avgRating`, which is a
+// public-facing trust signal — letting the provider submit their own
+// rating would let them pad it to 5.0 for every lead they service.
+// Rating must be sourced from a consumer-facing flow (e.g. the
+// lead-status page or a post-job email survey), which can write the
+// LeadOutcome.satisfactionRating field directly when that ships.
 const OutcomeSchema = z.object({
   leadId: z.string().min(1, "Lead ID is required"),
   outcome: z.enum(["responded", "converted", "no_response", "declined", "cancelled"], {
     error: "Invalid outcome type",
   }),
   responseTimeSeconds: z.number().min(0).optional(),
-  satisfactionRating: z.number().min(0).max(5).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -58,7 +64,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { leadId, outcome, responseTimeSeconds, satisfactionRating } = parsed.data;
+    const { leadId, outcome, responseTimeSeconds } = parsed.data;
 
     // Verify user owns a provider
     const user = await prisma.user.findUnique({
@@ -82,14 +88,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create outcome record
+    // Create outcome record. satisfactionRating is left null on purpose —
+    // the provider does not rate themselves (see schema comment above).
     const record = await prisma.leadOutcome.create({
       data: {
         leadId,
         providerId: user.providerId,
         outcome,
         responseTimeSeconds: responseTimeSeconds ?? null,
-        satisfactionRating: satisfactionRating ?? null,
       },
     });
 
