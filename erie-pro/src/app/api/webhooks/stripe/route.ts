@@ -19,6 +19,7 @@ import { deliverBankedLeads } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
+import { hashVerificationToken } from "@/lib/verification-token";
 
 export async function POST(req: NextRequest) {
   try {
@@ -368,12 +369,16 @@ async function handleCheckoutCompleted(
 
     // 2.2: Send email verification if provider is not yet verified
     if (!provider.emailVerified) {
-      const token = crypto.randomUUID();
+      // Email the raw token, but store ONLY the hash so a DB-read
+      // attacker can't take over provider accounts by replaying the
+      // token against /api/verify-email.
+      const rawToken = crypto.randomUUID();
+      const hashedToken = hashVerificationToken(rawToken);
       await prisma.provider.update({
         where: { id: provider.id },
-        data: { emailVerifyToken: token },
+        data: { emailVerifyToken: hashedToken },
       });
-      sendEmailVerification(provider.email, token).catch((err) => {
+      sendEmailVerification(provider.email, rawToken).catch((err) => {
         logger.error("stripe-webhook", "Failed to send verification email", err);
       });
       logger.info("webhook/stripe", "Sent email verification to provider:", provider.id);

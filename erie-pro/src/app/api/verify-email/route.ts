@@ -1,12 +1,26 @@
 // ── Email Verification Endpoint ────────────────────────────────────────
 // GET /api/verify-email?token=xxx
 // Verifies a provider's email before allowing Stripe checkout.
+//
+// The emailVerifyToken on Provider is stored as a SHA-256 hash at rest
+// (see src/lib/verification-token.ts + stripe webhook). That prevents
+// a DB-read attacker (SQL injection elsewhere, backup leak, admin DB
+// access) from being able to replay the raw token against this endpoint.
+// We hash the URL-supplied token the same way before looking it up.
+//
+// Historical bug this fix closes: this route previously queried the
+// `verificationToken` table (which is used ONLY for password resets).
+// emailVerifyToken actually lives on the Provider row. Result: email
+// verification was completely non-functional, AND the query was matching
+// raw URL tokens against the reset-token unique column, which risked
+// accidental cross-flow token collisions going forward.
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { hashVerificationToken } from "@/lib/verification-token";
 
 export async function GET(req: NextRequest) {
   // Rate limit: 5 verifications per minute per IP (prevent token brute-force)
@@ -23,59 +37,40 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Look up the verification token
-    const verificationToken = await prisma.verificationToken.findUnique({
-      where: { token },
+    const hashedToken = hashVerificationToken(token);
+
+    // Look up the provider by hashed token
+    const provider = await prisma.provider.findFirst({
+      where: { emailVerifyToken: hashedToken },
     });
 
-    if (!verificationToken) {
+    if (!provider) {
       return NextResponse.json(
         { success: false, error: "Invalid or expired verification token" },
         { status: 404 }
       );
     }
 
-    // Check expiry
-    if (verificationToken.expires < new Date()) {
-      // Clean up expired token
-      await prisma.verificationToken.delete({
-        where: { token },
-      });
-      return NextResponse.json(
-        { success: false, error: "Verification token has expired. Please request a new one." },
-        { status: 410 }
-      );
-    }
-
-    // Mark the provider's email as verified
-    const provider = await prisma.provider.findFirst({
-      where: { email: verificationToken.identifier },
+    // Mark verified + clear the token (single-use). Doing both in one
+    // update prevents two concurrent GETs from both "succeeding" and
+    // also prevents the token from ever being re-consumable.
+    await prisma.provider.update({
+      where: { id: provider.id },
+      data: { emailVerified: true, emailVerifyToken: null },
     });
 
-    if (provider) {
-      await prisma.provider.update({
-        where: { id: provider.id },
-        data: { emailVerified: true },
-      });
-
-      await audit({
-        action: "provider.email_verified",
-        entityType: "provider",
-        entityId: provider.id,
-        providerId: provider.id,
-        ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
-      });
-    }
-
-    // Delete the used token
-    await prisma.verificationToken.delete({
-      where: { token },
+    await audit({
+      action: "provider.email_verified",
+      entityType: "provider",
+      entityId: provider.id,
+      providerId: provider.id,
+      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
     });
 
     // Redirect to claim success or checkout
     const redirectUrl = new URL("/for-business/claim", req.nextUrl.origin);
     redirectUrl.searchParams.set("verified", "true");
-    redirectUrl.searchParams.set("email", verificationToken.identifier);
+    redirectUrl.searchParams.set("email", provider.email);
 
     return NextResponse.redirect(redirectUrl);
   } catch (err) {
