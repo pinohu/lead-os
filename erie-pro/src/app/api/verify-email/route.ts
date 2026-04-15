@@ -39,38 +39,57 @@ export async function GET(req: NextRequest) {
   try {
     const hashedToken = hashVerificationToken(token);
 
-    // Look up the provider by hashed token
-    const provider = await prisma.provider.findFirst({
+    // Capture the provider identity BEFORE we consume the token so we
+    // can audit + redirect deterministically. We can't read it back after
+    // the update because the token (our only selector) has been cleared.
+    const target = await prisma.provider.findFirst({
       where: { emailVerifyToken: hashedToken },
+      select: { id: true, email: true },
     });
 
-    if (!provider) {
+    if (!target) {
       return NextResponse.json(
         { success: false, error: "Invalid or expired verification token" },
         { status: 404 }
       );
     }
 
-    // Mark verified + clear the token (single-use). Doing both in one
-    // update prevents two concurrent GETs from both "succeeding" and
-    // also prevents the token from ever being re-consumable.
-    await prisma.provider.update({
-      where: { id: provider.id },
+    // ── Atomic single-use consumption ────────────────────────────
+    // Previously: findFirst(emailVerifyToken) → update(by id). Two
+    // concurrent GETs (user double-clicks, email-prefetch bot, etc.)
+    // could both read the provider before either cleared the token and
+    // both would then "succeed", each writing emailVerified:true. The
+    // token is supposed to be single-use, so collapse consumption into
+    // one atomic updateMany whose WHERE pins both id AND the token hash:
+    // the DB guarantees exactly one caller flips the row from
+    // hashedToken → null, and the loser sees count === 0.
+    const consumed = await prisma.provider.updateMany({
+      where: { id: target.id, emailVerifyToken: hashedToken },
       data: { emailVerified: true, emailVerifyToken: null },
     });
+
+    if (consumed.count === 0) {
+      // Lost the race — another concurrent GET already consumed the
+      // token. Return the same generic error as a missing token so we
+      // don't leak whether the link was valid-but-raced vs. bogus.
+      return NextResponse.json(
+        { success: false, error: "Invalid or expired verification token" },
+        { status: 404 }
+      );
+    }
 
     await audit({
       action: "provider.email_verified",
       entityType: "provider",
-      entityId: provider.id,
-      providerId: provider.id,
+      entityId: target.id,
+      providerId: target.id,
       ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
     });
 
     // Redirect to claim success or checkout
     const redirectUrl = new URL("/for-business/claim", req.nextUrl.origin);
     redirectUrl.searchParams.set("verified", "true");
-    redirectUrl.searchParams.set("email", provider.email);
+    redirectUrl.searchParams.set("email", target.email);
 
     return NextResponse.redirect(redirectUrl);
   } catch (err) {
