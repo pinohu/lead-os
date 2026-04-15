@@ -50,6 +50,49 @@ export async function POST(req: NextRequest) {
 
     const { providerId, status } = parsed.data;
 
+    // Atomic claim on the resolvable states ("unverified" / "pending").
+    // The previous pattern was findUnique → check → update, a TOCTOU
+    // window where two admins clicking approve/reject at the same
+    // moment both read `pending`, both passed the eligibility gate,
+    // and both wrote — the second write silently clobbered the first,
+    // BOTH audit rows fired, and the decided state depended on who
+    // won the DB race. Collapsing the check into updateMany's WHERE
+    // gives the DB the sole decision authority: exactly one caller
+    // sees count === 1 and proceeds to emit audit + email.
+    const claim = await prisma.provider.updateMany({
+      where: {
+        id: providerId,
+        verificationStatus: { in: ["unverified", "pending"] },
+      },
+      data: {
+        verificationStatus: status,
+        verificationCode: null,
+        verificationCodeExp: null,
+      },
+    });
+
+    if (claim.count === 0) {
+      // Disambiguate: provider doesn't exist vs already resolved.
+      const existing = await prisma.provider.findUnique({
+        where: { id: providerId },
+        select: { verificationStatus: true },
+      });
+      if (!existing) {
+        return NextResponse.json(
+          { success: false, error: "Provider not found" },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json(
+        { success: false, error: `Claim already resolved as '${existing.verificationStatus}'` },
+        { status: 409 }
+      );
+    }
+
+    // Load the fresh provider row for the audit/email payload. Reads
+    // the row AFTER our own update, so `previousStatus` is sourced
+    // from the audit metadata we can't recover — pass the post-state
+    // name/email instead and tag the action with the new status.
     const provider = await prisma.provider.findUnique({
       where: { id: providerId },
       select: {
@@ -62,29 +105,13 @@ export async function POST(req: NextRequest) {
     });
 
     if (!provider) {
+      // Extraordinarily unlikely — we just updated this row. Treat as
+      // internal error so the admin retries rather than assuming success.
       return NextResponse.json(
-        { success: false, error: "Provider not found" },
-        { status: 404 }
+        { success: false, error: "Provider disappeared mid-update" },
+        { status: 500 }
       );
     }
-
-    // Only resolve claims that are unverified or pending
-    if (["verified", "auto_verified", "admin_approved", "rejected"].includes(provider.verificationStatus)) {
-      return NextResponse.json(
-        { success: false, error: `Claim already resolved as '${provider.verificationStatus}'` },
-        { status: 409 }
-      );
-    }
-
-    // Update verification status
-    await prisma.provider.update({
-      where: { id: providerId },
-      data: {
-        verificationStatus: status,
-        verificationCode: null,
-        verificationCodeExp: null,
-      },
-    });
 
     await audit({
       action: status === "admin_approved" ? "provider.admin_approved" : "provider.claim_rejected",
@@ -92,7 +119,7 @@ export async function POST(req: NextRequest) {
       entityId: providerId,
       providerId,
       metadata: {
-        previousStatus: provider.verificationStatus,
+        newStatus: status,
         resolvedBy: session.user.email ?? session.user.id,
       },
     });
