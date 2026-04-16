@@ -6,18 +6,35 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 import { verifyVerificationCode } from "@/lib/verification-code";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 
 const CheckSchema = z.object({
   code: z.string().length(6, "Code must be 6 digits").regex(/^\d{6}$/, "Code must be numeric"),
 });
 
 export async function POST(req: NextRequest) {
+  // IP-based rate limit — defense-in-depth alongside the per-provider
+  // atomic attempt counter below. Without this an attacker can flood
+  // the endpoint causing unnecessary auth + DB load even if each
+  // provider's own counter caps at 10.
+  const rateLimited = await checkRateLimit(req, "contact");
+  if (rateLimited) return rateLimited;
+
   try {
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
     }
 
     const body = await req.json().catch(() => null);

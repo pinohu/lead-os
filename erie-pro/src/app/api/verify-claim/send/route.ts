@@ -7,10 +7,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
 import { hashVerificationCode } from "@/lib/verification-code";
 
 export async function POST(req: NextRequest) {
+  // IP-based rate limit — defense-in-depth alongside the per-provider
+  // atomic attempt counter. Without this an attacker with a valid
+  // session can flood /send to email-bomb the listing owner and burn
+  // Emailit budget, even though each provider's counter caps at 10.
+  const rateLimited = await checkRateLimit(req, "contact");
+  if (rateLimited) return rateLimited;
+
   try {
     const session = await auth();
     if (!session?.user) {
