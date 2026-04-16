@@ -7,6 +7,7 @@
 
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
+import { verifyAdminRoleFresh } from "@/lib/require-admin"
 import { getFoundingOffer } from "@/lib/founding-offer"
 import {
   incrementFoundingClaimed,
@@ -19,6 +20,11 @@ export const dynamic = "force-dynamic"
 export default async function FoundingAdminPage() {
   const session = await auth()
   if (!session?.user) redirect("/login?callbackUrl=/admin/founding")
+  const role = (session.user as { role?: string }).role
+  if (role !== "admin") redirect("/dashboard")
+  // Fresh DB check — JWT role claim may be stale up to 30 days after demotion.
+  const stillAdmin = await verifyAdminRoleFresh((session.user as { id?: string }).id)
+  if (!stillAdmin) redirect("/dashboard")
 
   const offer = await getFoundingOffer()
   const adminEmail = session.user.email ?? undefined

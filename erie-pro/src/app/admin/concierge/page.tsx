@@ -11,6 +11,7 @@
 
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
+import { verifyAdminRoleFresh } from "@/lib/require-admin"
 import { prisma } from "@/lib/db"
 import {
   assignConciergeJob,
@@ -40,6 +41,9 @@ export default async function ConciergeInboxPage() {
   if (!session?.user) redirect("/login?callbackUrl=/admin/concierge")
   const role = (session.user as { role?: string }).role
   if (role !== "admin") redirect("/dashboard")
+  // Fresh DB check — JWT role claim may be stale up to 30 days after demotion.
+  const stillAdmin = await verifyAdminRoleFresh((session.user as { id?: string }).id)
+  if (!stillAdmin) redirect("/dashboard")
 
   // Fetch everything in parallel.
   const [openJobs, recentFulfilled, annualMembers, pros] = await Promise.all([
