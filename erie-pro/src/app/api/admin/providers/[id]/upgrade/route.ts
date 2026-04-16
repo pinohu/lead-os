@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/require-admin";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 
 const UpgradeSchema = z.object({
   tier: z.enum(["primary", "backup", "overflow"], {
@@ -25,6 +26,14 @@ export async function POST(req: NextRequest, context: RouteContext) {
   const { id } = await context.params;
 
   try {
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
+    }
+
     const body = await req.json().catch(() => null);
     if (!body) {
       return NextResponse.json(

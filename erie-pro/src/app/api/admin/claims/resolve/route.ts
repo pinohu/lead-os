@@ -9,6 +9,7 @@ import { audit } from "@/lib/audit-log";
 import { requireAdminSession } from "@/lib/require-admin";
 import { logger } from "@/lib/logger";
 import { sendEmail, escapeHtml } from "@/lib/email";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 
 const ResolveSchema = z.object({
   providerId: z.string().min(1, "Provider ID is required"),
@@ -24,6 +25,15 @@ export async function POST(req: NextRequest) {
   const { session } = authResult;
 
   try {
+    // Body size check
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
+    }
+
     // Support both JSON and form-encoded bodies (form submissions from admin page)
     let data: Record<string, unknown>;
     const contentType = req.headers.get("content-type") ?? "";

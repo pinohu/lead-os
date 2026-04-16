@@ -14,6 +14,7 @@ import {
 } from "@/lib/stripe-integration";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 
 const BodySchema = z.object({
   plan: z.enum(["concierge", "annual"]),
@@ -27,6 +28,14 @@ export async function POST(req: NextRequest) {
   // every attempt. Strict per-IP throttle prevents abuse.
   const limited = await checkRateLimit(req, "checkout-requester");
   if (limited) return limited;
+
+  const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+  if (contentLength > MAX_BODY_SIZE) {
+    return NextResponse.json(
+      { error: "Request body too large" },
+      { status: 413 },
+    );
+  }
 
   let body: unknown;
   try {

@@ -9,6 +9,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 
 const VALID_KEYS = [
   "new_leads",
@@ -100,6 +101,14 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
+    }
+
     const body = await req.json();
     const parsed = PrefsSchema.safeParse(body);
 

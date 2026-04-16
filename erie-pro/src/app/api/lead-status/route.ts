@@ -16,6 +16,7 @@ import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { sendLeadStatusSummary } from "@/lib/email";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 
 function formatLead(lead: {
   id: string;
@@ -110,6 +111,14 @@ export async function POST(req: NextRequest) {
   if (rateLimited) return rateLimited;
 
   try {
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
+    }
+
     const body = await req.json().catch(() => null);
     if (!body?.email || typeof body.email !== "string") {
       return NextResponse.json(
