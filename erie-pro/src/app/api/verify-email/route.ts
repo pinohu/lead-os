@@ -22,6 +22,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { hashVerificationToken } from "@/lib/verification-token";
 import { getClientIp } from "@/lib/client-ip";
+import { cityConfig } from "@/lib/city-config";
 
 export async function GET(req: NextRequest) {
   // Rate limit: 5 verifications per minute per IP (prevent token brute-force)
@@ -87,8 +88,14 @@ export async function GET(req: NextRequest) {
       ipAddress: getClientIp(req),
     });
 
-    // Redirect to claim success or checkout
-    const redirectUrl = new URL("/for-business/claim", req.nextUrl.origin);
+    // Redirect to claim success or checkout.
+    // Use the server-configured canonical URL, NOT req.nextUrl.origin —
+    // the latter reflects the Host header which is attacker-controlled
+    // on misconfigured proxies. Reflecting it would let a crafted Host
+    // redirect verified users to a phishing site while leaking their
+    // email in the query string.
+    const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? `https://${cityConfig.domain}`;
+    const redirectUrl = new URL("/for-business/claim", siteUrl);
     redirectUrl.searchParams.set("verified", "true");
     redirectUrl.searchParams.set("email", target.email);
 
