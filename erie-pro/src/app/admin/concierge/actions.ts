@@ -1,28 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { requireAdminAction } from "@/lib/require-admin";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import {
   sendConciergeAssignmentToPro,
   sendConciergeHandoffToRequester,
 } from "@/lib/email";
-
-async function requireAdmin(): Promise<{ id: string }> {
-  const session = await auth();
-  if (!session?.user) redirect("/login?callbackUrl=/admin/concierge");
-  const role = (session.user as { role?: string }).role;
-  if (role !== "admin") redirect("/dashboard");
-  const id =
-    (session.user as { id?: string }).id ??
-    (session.user as { email?: string }).email ??
-    "unknown";
-  return { id };
-}
 
 const AssignSchema = z.object({
   sessionId: z.string().min(1),
@@ -36,7 +23,7 @@ const AssignSchema = z.object({
  * cleared. Does NOT mark fulfilled — use markFulfilled for that.
  */
 export async function assignConciergeJob(formData: FormData): Promise<void> {
-  const { id: actor } = await requireAdmin();
+  const { userId: actor } = await requireAdminAction("/login?callbackUrl=/admin/concierge");
 
   const parsed = AssignSchema.safeParse({
     sessionId: formData.get("sessionId"),
@@ -145,7 +132,7 @@ const FulfillSchema = z.object({
  * off to a pro. Sets fulfilledAt to now.
  */
 export async function markConciergeFulfilled(formData: FormData): Promise<void> {
-  const { id: actor } = await requireAdmin();
+  const { userId: actor } = await requireAdminAction("/login?callbackUrl=/admin/concierge");
 
   const parsed = FulfillSchema.safeParse({
     sessionId: formData.get("sessionId"),
@@ -177,7 +164,7 @@ export async function markConciergeFulfilled(formData: FormData): Promise<void> 
  * Useful if the requester came back and said the pro didn't work out.
  */
 export async function reopenConciergeJob(formData: FormData): Promise<void> {
-  const { id: actor } = await requireAdmin();
+  const { userId: actor } = await requireAdminAction("/login?callbackUrl=/admin/concierge");
 
   const parsed = FulfillSchema.safeParse({
     sessionId: formData.get("sessionId"),

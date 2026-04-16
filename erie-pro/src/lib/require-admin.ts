@@ -107,3 +107,45 @@ export async function requireAdminSession(): Promise<AdminAuthResult> {
 
   return { ok: true, session: session as AuthenticatedSession };
 }
+
+/**
+ * Admin gate for "use server" actions that can't return NextResponse.
+ *
+ * Server actions must call `redirect()` on auth failure (Next.js server
+ * components don't consume response objects). The two admin action
+ * files (concierge/actions.ts, founding/actions.ts) previously had
+ * local `requireAdmin()` that checked the JWT claim but skipped the
+ * fresh DB role lookup — so a demoted admin's stale JWT kept granting
+ * access for up to 30 days. This function mirrors `requireAdminSession`
+ * but calls `redirect()` on failure, giving server actions the same
+ * fresh-DB safety as API routes.
+ */
+export async function requireAdminAction(
+  loginRedirect: string = "/login",
+): Promise<{ userId: string; email: string }> {
+  // Dynamic import: redirect() comes from next/navigation which is
+  // only available in server-component/action context, not in API
+  // route context. Importing at the top level would break API routes
+  // that also import from this module.
+  const { redirect } = await import("next/navigation");
+
+  const session = await auth();
+  // redirect() throws (returns `never`), but TS can't infer that from
+  // the dynamic import — it sees the return type as `void`. The non-null
+  // assertions below are safe because each preceding `redirect()` call
+  // diverges unconditionally before we reach them.
+  if (!session?.user) redirect(loginRedirect);
+  const user = session!.user!;
+
+  const role = (user as { role?: string }).role;
+  if (role !== "admin") redirect("/dashboard");
+
+  const userId = (user as { id?: string }).id ?? "";
+  const stillAdmin = await verifyAdminRoleFresh(userId);
+  if (!stillAdmin) redirect("/dashboard");
+
+  return {
+    userId,
+    email: user.email ?? "unknown",
+  };
+}
