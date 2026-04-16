@@ -187,6 +187,16 @@ export async function POST(req: NextRequest) {
 
 // ── DELETE: Remove Webhook ─────────────────────────────────────────
 export async function DELETE(req: NextRequest) {
+  // Match POST / PATCH. DELETE was the odd one out — no rate limit
+  // meant a compromised session could churn through endpoint deletions
+  // and generate an audit row per call. Owners are capped at 5
+  // endpoints, so a "churn" is only 5 DELETEs, but the audit-row spam
+  // is the real cost: an attacker can flood `audit_log` with
+  // webhook.deleted rows to hide other activity in the same window.
+  // The `api-keys` preset is the same gate the rest of this file uses.
+  const limited = await checkRateLimit(req, "api-keys");
+  if (limited) return limited;
+
   try {
     const providerId = await getProviderId();
     if (!providerId) {
