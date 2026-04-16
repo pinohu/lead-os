@@ -10,6 +10,7 @@ import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { audit } from "@/lib/audit-log";
 import { deliverWebhookEvent } from "@/lib/webhook-delivery";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 import crypto from "crypto";
 
 // ── CORS Preflight ─────────────────────────────────────────────────
@@ -64,6 +65,12 @@ export async function POST(req: NextRequest) {
     // 1. Rate limit
     const rateLimited = await checkRateLimit(req, "lead");
     if (rateLimited) return addCors(rateLimited, origin);
+
+    // 1b. Body size check — reject oversized uploads before reading
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
+      return corsJson({ success: false, error: "Request body too large" }, 413);
+    }
 
     // 2. Validate API key from X-API-Key header
     const apiKeyRaw = req.headers.get("x-api-key");
