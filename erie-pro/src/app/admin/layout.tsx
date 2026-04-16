@@ -5,6 +5,7 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
+import { verifyAdminRoleFresh } from "@/lib/require-admin"
 import { cityConfig } from "@/lib/city-config"
 import { prisma } from "@/lib/db"
 import Link from "next/link"
@@ -74,7 +75,11 @@ export default async function AdminLayout({
     redirect("/for-business")
   }
 
-  // Verify user is authenticated and has admin role
+  // Verify user is authenticated and has admin role.
+  // The JWT role claim can be stale for up to 30 days after a demotion,
+  // so we re-verify against the DB on every request (cheap single-column
+  // lookup, admin pages are low-traffic). See require-admin.ts for the
+  // full rationale.
   const session = await auth()
   if (!session?.user) {
     redirect("/login?callbackUrl=/admin")
@@ -82,7 +87,12 @@ export default async function AdminLayout({
 
   const userRole = (session.user as { role?: string }).role
   if (userRole !== "admin") {
-    // Non-admin users see a forbidden message
+    redirect("/dashboard")
+  }
+
+  const userId = (session.user as { id?: string }).id
+  const stillAdmin = await verifyAdminRoleFresh(userId)
+  if (!stillAdmin) {
     redirect("/dashboard")
   }
 

@@ -59,7 +59,7 @@ function unauthorized(): NextResponse {
  * deny-by-default — better to temporarily 401 a legitimate admin than
  * let a stale claim through.
  */
-async function verifyAdminRoleFresh(userId: string | undefined): Promise<boolean> {
+export async function verifyAdminRoleFresh(userId: string | undefined): Promise<boolean> {
   if (!userId) return false;
   try {
     const row = await prisma.user.findUnique({
