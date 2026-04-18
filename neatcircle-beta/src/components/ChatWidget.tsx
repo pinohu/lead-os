@@ -101,7 +101,7 @@ function generateResponse(input: string, conversationLength: number): string {
     return `Our ${niche} solutions start at $3,500 for Starter tier, $7,500 for Professional, and custom pricing for Enterprise. All include 209+ premium tools with zero recurring software fees.\n\nWant me to recommend the right tier for your business? [Try our ROI Calculator](/calculator) to see your projected savings.`;
   }
   if (lower.includes("how long") || lower.includes("timeline") || lower.includes("time to")) {
-    return "Most implementations are complete in 2-4 weeks. We handle everything - setup, migration, training, and ongoing support. The average client is fully operational in under 3 weeks.";
+    return "Implementation timeline varies based on your specific needs. We handle everything - setup, migration, training, and ongoing support.";
   }
   if (lower.includes("integrat") || lower.includes("connect") || lower.includes("work with")) {
     return "We integrate with 200+ platforms including QuickBooks, Stripe, Google Workspace, Slack, HubSpot, and many more. Our automation stack connects everything without recurring API fees. What tools are you currently using?";
@@ -110,7 +110,7 @@ function generateResponse(input: string, conversationLength: number): string {
     return `The fastest route is our [free ${niche} assessment](${getAssessmentHref()}) - 5 quick questions, under 2 minutes, and you get a personalized readiness score with specific recommendations.`;
   }
   if (lower.includes("roi") || lower.includes("sav") || lower.includes("return")) {
-    return "Our average client sees 3-5x ROI within 90 days. [Try our ROI Calculator](/calculator) to get your specific projected savings based on your team size and industry.";
+    return "Our average client sees strong ROI based on your specific situation. [Try our ROI Calculator](/calculator) to get your specific projected savings based on your team size and industry.";
   }
   if (lower.includes("demo") || lower.includes("meet") || lower.includes("call") || lower.includes("consult")) {
     return "I'd love to set that up! A free 30-minute strategy session will give you a clear picture of what's possible. Just share your email and preferred time, and we'll get it scheduled.";
@@ -119,7 +119,7 @@ function generateResponse(input: string, conversationLength: number): string {
     return "We also offer WhatsApp support for faster communication. Would you like to connect on WhatsApp for priority responses? Just share your phone number and we'll reach out.";
   }
   if (lower.includes("secur") || lower.includes("complian") || lower.includes("gdpr") || lower.includes("hipaa")) {
-    return "Security is built into everything we do. We use enterprise-grade encryption, SOC 2 compliant hosting, and all client data stays within your dedicated portal. For regulated industries, we implement industry-specific compliance controls.";
+    return "Security is built into everything we do. We use enterprise-grade encryption, enterprise-grade security standards, and all client data stays within your dedicated portal. For regulated industries, we implement industry-specific compliance controls.";
   }
   if (lower.includes("what do") || lower.includes("what is") || lower.includes("about") || lower.includes("who")) {
     return `${siteConfig.brandName} provides systematic process optimization for ${niche} businesses. We deploy 209+ premium business tools - client portals, CRM, automation, BI dashboards, compliance systems - all included with zero recurring software fees. Our clients typically save 20-30 hours/week.`;
@@ -351,7 +351,7 @@ export default function ChatWidget() {
             </div>
           </div>
 
-          <div className="flex-1 space-y-3 overflow-y-auto p-4">
+          <div className="flex-1 space-y-3 overflow-y-auto p-4" aria-live="polite" aria-relevant="additions">
             {messages.map((message, index) => (
               <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
@@ -380,6 +380,7 @@ export default function ChatWidget() {
               <button
                 onClick={handleSend}
                 disabled={!input.trim()}
+                aria-label="Send message"
                 className="rounded-lg bg-cyan px-3 py-2 text-white transition hover:bg-cyan-dark disabled:opacity-50"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

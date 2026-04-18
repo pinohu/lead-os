@@ -14,10 +14,10 @@ CREATE TABLE IF NOT EXISTS lead_os_audit_log (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_audit_log_tenant ON lead_os_audit_log(tenant_id);
-CREATE INDEX idx_audit_log_created ON lead_os_audit_log(created_at);
-CREATE INDEX idx_audit_log_action ON lead_os_audit_log(action);
-CREATE INDEX idx_audit_log_user ON lead_os_audit_log(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_tenant ON lead_os_audit_log(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_audit_log_created ON lead_os_audit_log(created_at);
+CREATE INDEX IF NOT EXISTS idx_audit_log_action ON lead_os_audit_log(action);
+CREATE INDEX IF NOT EXISTS idx_audit_log_user ON lead_os_audit_log(user_id);
 
 CREATE TABLE IF NOT EXISTS lead_os_config_changes (
   id TEXT PRIMARY KEY,
@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS lead_os_config_changes (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_config_changes_tenant ON lead_os_config_changes(tenant_id);
-CREATE INDEX idx_config_changes_key ON lead_os_config_changes(config_key);
+CREATE INDEX IF NOT EXISTS idx_config_changes_tenant ON lead_os_config_changes(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_config_changes_key ON lead_os_config_changes(config_key);
 
 CREATE TABLE IF NOT EXISTS lead_os_uptime_checks (
   id TEXT PRIMARY KEY,
@@ -41,5 +41,5 @@ CREATE TABLE IF NOT EXISTS lead_os_uptime_checks (
   checked_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_uptime_checks_component ON lead_os_uptime_checks(component);
-CREATE INDEX idx_uptime_checks_checked ON lead_os_uptime_checks(checked_at);
+CREATE INDEX IF NOT EXISTS idx_uptime_checks_component ON lead_os_uptime_checks(component);
+CREATE INDEX IF NOT EXISTS idx_uptime_checks_checked ON lead_os_uptime_checks(checked_at);

@@ -2,6 +2,9 @@
   "name": "lead-os-hosted-runtime",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "type": "module",
   "scripts": {
     "dev": "next dev",
@@ -13,7 +16,8 @@
     "next": "^15.5.12",
     "pg": "^8.20.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^22.15.21",

@@ -49,7 +49,7 @@ export function getOidcConfig(): OidcConfig | null {
   const issuerUrl = process.env.LEAD_OS_SSO_OIDC_ISSUER_URL;
   const callbackUrl =
     process.env.LEAD_OS_SSO_OIDC_CALLBACK_URL ??
-    `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/api/auth/sso/oidc/callback`;
+    `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/api/auth/sso/oidc/callback`;
 
   if (!clientId || !clientSecret || !issuerUrl) return null;
 
@@ -151,7 +151,7 @@ export function getSamlConfig(): SamlConfig | null {
     null;
   const assertionConsumerServiceUrl =
     process.env.LEAD_OS_SSO_SAML_ACS_URL ??
-    `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/api/auth/sso/saml/callback`;
+    `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/api/auth/sso/saml/callback`;
   const idpMetadataUrl = process.env.LEAD_OS_SSO_SAML_IDP_METADATA_URL ?? "";
   const idpSsoUrl = process.env.LEAD_OS_SSO_SAML_IDP_SSO_URL ?? "";
   const idpCertificate = process.env.LEAD_OS_SSO_SAML_IDP_CERT ?? "";

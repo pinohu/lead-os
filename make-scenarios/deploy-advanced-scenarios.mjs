@@ -43,7 +43,7 @@ import { join } from 'path';
 // ════════════════════════════════════════════════════════════════
 
 const API_BASE = 'https://integrator.boost.space/api/v2';
-const API_TOKEN = process.env.MAKE_API_TOKEN || '24595d5e-9b7f-48f9-ab61-9644c46ed7f9';
+const API_TOKEN = process.env.MAKE_API_TOKEN || '';
 
 const YD_API = 'https://yourdeputy-review.vercel.app/api/automations';
 const NC_API = 'https://neatcircle-beta.vercel.app/api/automations';
@@ -55,32 +55,32 @@ const DS_ID = 3748;
 const EMAILIT_URL = 'https://api.emailit.com/v1/emails';
 
 const DISCORD = {
-  newLeads: 'https://discord.com/api/webhooks/1480429578047717449/7bF_noLBXwykgIVye6hxYQ_e61-eDKS_OEyER_OpL8L0yxObOMDkCmqifgHPuEI3LoTp',
-  errors: 'https://discord.com/api/webhooks/1480423483207975066/ZWeuxptsElvzpj8Fzrd-Q3pPDGkL3StUpuNJybNwKlJwyVkGm8D6k_qjz6mdsSHZ7J4n',
-  wins: 'https://discord.com/api/webhooks/1480429754963333252/9tlYfvzLOon6LVB3juh3eN_BelV_V_DJzF6lMYrv_JccxnKjRNvqY2n_htd8r2-jshyw',
-  highValue: 'https://discord.com/api/webhooks/1480429897263480962/e-vvArec6HCRc_HpzxmWOpz3GbJ7ncekeLBD7hSnKHm4v-zXTwt8fm6DjrY7TUBeo6Ct',
+  newLeads: process.env.DISCORD_WEBHOOK_NEW_LEADS || '',
+  errors: process.env.DISCORD_WEBHOOK_ERRORS || '',
+  wins: process.env.DISCORD_WEBHOOK_WINS || '',
+  highValue: process.env.DISCORD_WEBHOOK_HIGH_VALUE || '',
 };
 
 const TELEGRAM = {
-  botToken: '8739229269:AAGYs6jIIjDa87y4TAVwn4QtTWBqliohDQI',
-  newLeads: '-1003809646667',
-  errors: '-1003751399010',
+  botToken: process.env.TELEGRAM_BOT_TOKEN || '',
+  newLeads: process.env.TELEGRAM_CHAT_NEW_LEADS || '',
+  errors: process.env.TELEGRAM_CHAT_ERRORS || '',
 };
 
 const EMAILIT = {
-  apiKey: 'secret_4lQqUaweMC1pmyCpwqdRy3ktjl9hzd6m',
+  apiKey: process.env.EMAILIT_API_KEY || '',
   domain: 'neatcircle.com',
   adminTo: 'ike@neatcircle.com',
 };
 
 const AITABLE = {
-  apiToken: 'usk8wYBrRgsc6RHxkZP9VAN',
-  datasheetId: 'dstBicDQKC6gpLAMYj',
+  apiToken: process.env.AITABLE_API_TOKEN || '',
+  datasheetId: process.env.AITABLE_DATASHEET_ID || '',
   apiBase: 'https://aitable.ai/fusion/v1',
 };
 
 const WBIZTOOL = {
-  apiKey: '54140a11389a13031a2eb19070ce35c5ce769a30',
+  apiKey: process.env.WBIZTOOL_API_KEY || '',
   instanceId: '12316',
   apiBase: 'https://app.wbiztool.com/api',
 };

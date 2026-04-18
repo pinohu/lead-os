@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
-import { embeddedSecrets } from "./embedded-secrets.ts";
 import {
   createMagicLinkUrl,
   decodeOperatorToken,
@@ -18,8 +17,12 @@ import { ensureTraceContext } from "./trace.ts";
 export const OPERATOR_SESSION_COOKIE = "leados_operator_session";
 export { sanitizeNextPath } from "./operator-auth-core.ts";
 
-function getAuthSecret() {
-  return process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? embeddedSecrets.cron.secret;
+function getAuthSecret(): string {
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET;
+  if (!secret) {
+    throw new Error("LEAD_OS_AUTH_SECRET or CRON_SECRET must be configured. Cannot issue or verify operator tokens without a signing secret.");
+  }
+  return secret;
 }
 
 export function getAllowedOperatorEmails() {

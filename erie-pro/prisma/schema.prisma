@@ -230,6 +230,8 @@ model Lead {
   @@index([niche, city])
   @@index([routedToId])
   @@index([routeType, niche])
+  @@index([email])
+  @@index([createdAt])
   @@map("leads")
 }
 
@@ -457,6 +459,7 @@ model User {
   accounts Account[]
   sessions Session[]
 
+  @@index([providerId])
   @@map("users")
 }
 
@@ -561,10 +564,9 @@ model ApiKey {
   keyHash     String    @unique
   label       String
   providerId  String
-  provider    Provider  @relation(fields: [providerId], references: [id])
+  provider    Provider  @relation(fields: [providerId], references: [id], onDelete: Cascade)
   permissions String[]  @default(["leads:write"])
   lastUsedAt  DateTime?
-  isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
 
   @@index([keyHash])
@@ -577,7 +579,7 @@ model ApiKey {
 model WebhookEndpoint {
   id          String   @id @default(cuid())
   providerId  String
-  provider    Provider @relation(fields: [providerId], references: [id])
+  provider    Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
   url         String
   secret      String
   events      String[] @default(["lead.created", "lead.routed"])

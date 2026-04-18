@@ -135,6 +135,26 @@ jobs:
           cache: npm
           cache-dependency-path: neatcircle-beta/package-lock.json
       - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm test
+      - run: npm run build
+
+  build-public:
+    name: Build Public Runtime
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lead-os-hosted-runtime-wt-public
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: lead-os-hosted-runtime-wt-public/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm test
       - run: npm run build
 
   security-audit:
@@ -147,10 +167,13 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - name: Audit Hybrid Runtime
         working-directory: lead-os-hosted-runtime-wt-hybrid
-        run: npm audit --audit-level=critical || true
+        run: npm audit --audit-level=critical
       - name: Audit Erie Pro
         working-directory: erie-pro
-        run: npm audit --audit-level=critical || true
+        run: npm audit --audit-level=critical
       - name: Audit NeatCircle
         working-directory: neatcircle-beta
-        run: npm audit --audit-level=critical || true
+        run: npm audit --audit-level=critical
+      - name: Audit Public Runtime
+        working-directory: lead-os-hosted-runtime-wt-public
+        run: npm audit --audit-level=critical

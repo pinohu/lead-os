@@ -333,7 +333,7 @@ export function generateSiteJsonLd(config: DynastyLandingConfig): SiteJsonLd {
   const base =
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXTAUTH_URL ??
-    "https://localhost:3000";
+    "";
   const url = `${base}/d/${config.slug}`;
 
   return {
@@ -380,7 +380,7 @@ export function generateSiteMeta(config: DynastyLandingConfig): SiteMeta {
   const base =
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXTAUTH_URL ??
-    "https://localhost:3000";
+    "";
   return {
     title: config.meta.title,
     description: config.meta.description,
