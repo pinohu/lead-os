@@ -32,12 +32,18 @@ export async function GET(req: NextRequest) {
     // the unauthenticated "submit victim's email, wait 48h, their
     // data is gone" attack that the old `status: "unread"` filter
     // enabled.
+    // Bounded `take:` so a backlog of pending deletions (e.g. after a
+    // long cron outage or a campaign-driven burst of CCPA requests)
+    // can't OOM the serverless function. Leftover rows are processed
+    // on subsequent daily runs — rows older than the 48h cutoff stay
+    // pending_deletion until we pick them up.
     const pendingDeletions = await prisma.contactMessage.findMany({
       where: {
         niche: "_ccpa_deletion",
         createdAt: { lt: cutoff },
         status: "pending_deletion",
       },
+      take: 500,
     });
 
     if (pendingDeletions.length === 0) {

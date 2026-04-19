@@ -19,12 +19,18 @@ export async function GET(req: NextRequest) {
 
   try {
     // ── 1. Deactivate expired grace periods ───────────────────────
+    // Bounded `take:` so a pathological backlog (thousands of expired
+    // providers after a long cron outage) can't OOM the serverless
+    // function. Leftover rows get picked up on the next daily run —
+    // each iteration does an atomic updateMany so there's no lost work
+    // if we only process the first 500 of a larger queue this pass.
     const expiredProviders = await prisma.provider.findMany({
       where: {
         gracePeriodEndsAt: { lt: now },
         subscriptionStatus: "past_due",
       },
       include: { territories: { where: { deactivatedAt: null } } },
+      take: 500,
     });
 
     let deactivatedCount = 0;
@@ -97,6 +103,7 @@ export async function GET(req: NextRequest) {
           gracePeriodEndsAt: { gte: windowStart, lte: windowEnd },
           subscriptionStatus: "past_due",
         },
+        take: 500,
       });
 
       for (const provider of upcomingProviders) {
