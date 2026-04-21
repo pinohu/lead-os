@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "agents": {
+    "scout": {
+      "enabled": true,
+      "priority": 2,
+      "triggers": ["lead.captured"],
+      "goal": "discover enrichment and nearby opportunities"
+    },
+    "qualifier": {
+      "enabled": true,
+      "priority": 1,
+      "triggers": ["lead.captured", "lead.scored"],
+      "goal": "score and qualify leads"
+    },
+    "closer": {
+      "enabled": true,
+      "priority": 1,
+      "triggers": ["lead.hot", "lead.burning"],
+      "goal": "start conversion actions"
+    },
+    "optimizer": {
+      "enabled": true,
+      "priority": 3,
+      "triggers": ["funnel.dropoff", "experiment.review"],
+      "goal": "improve funnel performance"
+    }
+  }
+}

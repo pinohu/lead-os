@@ -1,0 +1,12 @@
+{
+  "closer": {
+    "enabled": true,
+    "minScore": 70
+  },
+  "qualifier": {
+    "enabled": true
+  },
+  "optimizer": {
+    "enabled": false
+  }
+}
