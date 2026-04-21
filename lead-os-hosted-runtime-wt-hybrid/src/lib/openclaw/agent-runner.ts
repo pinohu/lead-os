@@ -1,4 +1,6 @@
 import { sendEmailAction, sendSmsAction, syncLeadToCrm } from "../providers";
+import { optimizeConfig } from "./optimizer";
+import { loadTenantAgentConfig } from "./config-loader";
 
 export async function runAgent(agentName, event) {
   switch (agentName) {
@@ -46,6 +48,20 @@ export async function runAgent(agentName, event) {
         agent: 'closer',
         result: 'actions-executed',
         details: results
+      };
+    }
+
+    case 'optimizer': {
+      const tenantId = event.trace?.tenant || "default";
+      const config = loadTenantAgentConfig(tenantId);
+      const result = optimizeConfig(config);
+
+      return {
+        agent: 'optimizer',
+        result: 'optimized',
+        stats: result.stats,
+        nextConfig: result.nextConfig,
+        changed: result.changed
       };
     }
 
