@@ -7,6 +7,8 @@ import { enforcePlanLimits } from "@/lib/plan-enforcer";
 import { resolveTenantFromRequest } from "@/lib/tenant-context";
 import { getClientIp } from "@/lib/request-utils";
 import { logger } from "@/lib/logger";
+import { orchestrate } from "@/lib/openclaw/orchestrator";
+import { runAgent } from "@/lib/openclaw/agent-runner";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 30 });
 
@@ -52,7 +54,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Ingress channel detection — enrich intake data with channel intelligence
     try {
       const { detectIngressChannel, resolveIngressDecision } = await import("@/lib/ingress-engine");
       const channel = detectIngressChannel(
@@ -70,7 +71,30 @@ export async function POST(request: Request) {
     }
 
     const result = await persistLead(body);
-    return NextResponse.json(result, { headers });
+
+    try {
+      const openClawEvent = {
+        eventType: "lead.captured",
+        leadKey: result.leadKey,
+        trace: result.trace,
+        metadata: {
+          score: result.score,
+          stage: result.stage,
+          hot: result.hot,
+          family: result.decision.family,
+          source: body.source,
+          email: result.record.email,
+          phone: result.record.phone,
+        },
+      };
+
+      const actions = await orchestrate(openClawEvent);
+      const agentResults = await Promise.all(actions.map((agent) => runAgent(agent, openClawEvent)));
+      return NextResponse.json({ ...result, openclaw: { actions, agentResults } }, { headers });
+    } catch (err) {
+      logger.warn("OpenClaw orchestration skipped", { error: err instanceof Error ? err.message : String(err) });
+      return NextResponse.json(result, { headers });
+    }
   } catch (error) {
     logger.error("POST /api/intake failed", {
       error: error instanceof Error ? error.message : String(error),
