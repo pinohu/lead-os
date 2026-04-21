@@ -1,6 +1,7 @@
 import { resolveNode } from "@/lib/geo/node-resolver";
 import { buildPageModel } from "@/lib/geo/page-builder";
 import { getAllowedOffers } from "@/lib/growth/rules-engine";
+import NodeLeadForm from "@/components/geo/node-lead-form";
 
 export default function NodePage({ params }) {
   const node = resolveNode(params);
@@ -9,7 +10,7 @@ export default function NodePage({ params }) {
   const offers = getAllowedOffers("directory");
 
   return (
-    <main style={{ padding: 40 }}>
+    <main style={{ padding: 40, maxWidth: 900, margin: "0 auto" }}>
       <h1>{page.title}</h1>
       <p>{page.summary}</p>
 
@@ -23,10 +24,16 @@ export default function NodePage({ params }) {
         <p>{page.localContext}</p>
       </section>
 
-      <button>{page.cta}</button>
+      {/* Lead Capture */}
+      <NodeLeadForm
+        state={node.state}
+        county={node.county}
+        city={node.city}
+        niche={node.niche}
+      />
 
       <section style={{ marginTop: 40 }}>
-        <h3>Available Partner Offers</h3>
+        <h3>Partner Offers</h3>
         <pre>{JSON.stringify(offers, null, 2)}</pre>
       </section>
     </main>
