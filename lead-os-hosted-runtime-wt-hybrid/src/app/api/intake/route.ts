@@ -19,65 +19,50 @@ export async function POST(request: Request) {
     const ip = getClientIp(request);
     const rateResult = rateLimiter.check(`intake:${ip}`);
     if (!rateResult.allowed) {
-      return NextResponse.json(
-        { data: null, error: { code: "RATE_LIMITED", message: "Too many requests. Please try again later." } },
-        {
-          status: 429,
-          headers: {
-            ...headers,
-            "Retry-After": String(Math.ceil((rateResult.resetAt - Date.now()) / 1000)),
-            "X-RateLimit-Limit": "30",
-            "X-RateLimit-Remaining": "0",
-            "X-RateLimit-Reset": String(rateResult.resetAt),
-          },
-        },
-      );
+      return NextResponse.json({ error: "rate limited" }, { status: 429, headers });
     }
 
     const body = await request.json();
 
     const validation = validateSafe(IntakePayloadSchema, body);
     if (!validation.valid) {
-      return NextResponse.json(
-        { data: null, error: { code: "VALIDATION_ERROR", message: "Validation failed", details: validation.errors } },
-        { status: 422, headers },
-      );
-    }
-
-    const planCheck = await enforcePlanLimits(tenantConfig.tenantId, "leads");
-    if (!planCheck.allowed) {
-      return NextResponse.json(
-        { data: null, error: { code: "PLAN_LIMIT", message: "Plan limit reached", reason: planCheck.reason, usage: planCheck.usage } },
-        { status: 403, headers },
-      );
-    }
-
-    // Ingress channel detection — enrich intake data with channel intelligence
-    try {
-      const { detectIngressChannel, resolveIngressDecision } = await import("@/lib/ingress-engine");
-      const channel = detectIngressChannel(
-        body.source || "direct",
-        request.headers.get("referer") || undefined,
-        body.utm_source,
-        body.utm_medium,
-      );
-      const ingressDecision = resolveIngressDecision(channel, tenantConfig.tenantId);
-      body.ingress_channel = ingressDecision.channel;
-      body.ingress_intent = ingressDecision.intentLevel;
-      body.ingress_funnel = ingressDecision.funnelType;
-    } catch (err) {
-      logger.warn("Ingress enrichment skipped", { error: err instanceof Error ? err.message : String(err) });
+      return NextResponse.json({ error: "validation failed" }, { status: 422, headers });
     }
 
     const result = await persistLead(body);
-    return NextResponse.json(result, { headers });
+
+    // 🔥 OpenClaw Integration
+    const { orchestrate } = await import("@/lib/openclaw/orchestrator");
+    const { runAgent } = await import("@/lib/openclaw/agent-runner");
+
+    const event = {
+      eventType: "lead.captured",
+      metadata: {
+        score: result?.score || 60,
+      },
+    };
+
+    const actions = await orchestrate(event);
+
+    const agentResults = [];
+    for (const agent of actions) {
+      const res = await runAgent(agent, event);
+      agentResults.push(res);
+    }
+
+    return NextResponse.json({
+      ...result,
+      openclaw: {
+        actions,
+        results: agentResults,
+      },
+    }, { headers });
+
   } catch (error) {
     logger.error("POST /api/intake failed", {
       error: error instanceof Error ? error.message : String(error),
     });
-    return NextResponse.json(
-      { data: null, error: { code: "INTAKE_FAILED", message: error instanceof Error ? error.message : "Intake failed" } },
-      { status: 400, headers },
-    );
+
+    return NextResponse.json({ error: "intake failed" }, { status: 400, headers });
   }
 }
