@@ -35,6 +35,14 @@ export function approveClaim(nodeId: string, ownerId: string) {
   return record;
 }
 
+export function suspendOwnership(nodeId: string, ownerId: string) {
+  const record = ownership.find(o => o.nodeId === nodeId && o.ownerId === ownerId);
+  if (!record) return null;
+
+  record.state = "at_risk";
+  return record;
+}
+
 export function getOwnership(nodeId: string) {
   return ownership.find(o => o.nodeId === nodeId && o.state === "active_exclusive") || ownership.find(o => o.nodeId === nodeId) || null;
 }
