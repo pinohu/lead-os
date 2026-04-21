@@ -9,6 +9,15 @@ export default function NodePage({ params }) {
 
   const offers = getAllowedOffers("directory");
 
+  async function claimNode() {
+    await fetch("/api/ownership/claim", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nodeId: node.id, ownerId: "demo-owner" }),
+    });
+    alert("Claim submitted");
+  }
+
   return (
     <main style={{ padding: 40, maxWidth: 900, margin: "0 auto" }}>
       <h1>{page.title}</h1>
@@ -23,6 +32,11 @@ export default function NodePage({ params }) {
         <h2>Local Service</h2>
         <p>{page.localContext}</p>
       </section>
+
+      {/* Claim CTA */}
+      <button onClick={claimNode} style={{ marginTop: 20 }}>
+        Claim this territory
+      </button>
 
       {/* Lead Capture */}
       <NodeLeadForm
