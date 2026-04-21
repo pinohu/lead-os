@@ -9,6 +9,7 @@ import { logger } from "@/lib/logger";
 import { resolveEffectiveOwner } from "@/lib/ownership/ownership-enforcement";
 import { sendEmailLead, sendSmsLead } from "@/lib/delivery/channels";
 import { pushToSuiteDash } from "@/lib/crm/suitedash";
+import { storeLead } from "@/lib/dashboard/lead-store";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 30 });
 
@@ -51,10 +52,20 @@ export async function POST(request: Request) {
       };
     }
 
+    const stored = storeLead({
+      id: result.id || Math.random().toString(36).slice(2),
+      nodeId,
+      ownerId: owner?.ownerId || null,
+      createdAt: new Date().toISOString(),
+      payload: result,
+      delivery,
+    });
+
     return NextResponse.json({
       ...result,
       routedTo: owner?.ownerId || null,
       delivery,
+      stored,
     }, { headers });
 
   } catch (error) {
