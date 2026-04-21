@@ -2,21 +2,15 @@ import { resolveNode } from "@/lib/geo/node-resolver";
 import { buildPageModel } from "@/lib/geo/page-builder";
 import { getAllowedOffers } from "@/lib/growth/rules-engine";
 import NodeLeadForm from "@/components/geo/node-lead-form";
+import TerritoryClaimPanel from "@/components/ownership/territory-claim-panel";
+import { getOwnership } from "@/lib/ownership/node-ownership-store";
 
 export default function NodePage({ params }) {
   const node = resolveNode(params);
   const page = buildPageModel(node);
 
   const offers = getAllowedOffers("directory");
-
-  async function claimNode() {
-    await fetch("/api/ownership/claim", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nodeId: node.id, ownerId: "demo-owner" }),
-    });
-    alert("Claim submitted");
-  }
+  const ownership = getOwnership(node.id);
 
   return (
     <main style={{ padding: 40, maxWidth: 900, margin: "0 auto" }}>
@@ -33,10 +27,11 @@ export default function NodePage({ params }) {
         <p>{page.localContext}</p>
       </section>
 
-      {/* Claim CTA */}
-      <button onClick={claimNode} style={{ marginTop: 20 }}>
-        Claim this territory
-      </button>
+      {/* Ownership-aware UI */}
+      <TerritoryClaimPanel
+        nodeId={node.id}
+        initialState={ownership?.state || "unclaimed"}
+      />
 
       {/* Lead Capture */}
       <NodeLeadForm
