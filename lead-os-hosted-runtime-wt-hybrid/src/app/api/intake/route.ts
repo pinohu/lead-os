@@ -3,10 +3,12 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { persistLead } from "@/lib/intake";
 import { IntakePayloadSchema, validateSafe } from "@/lib/canonical-schema";
 import { createRateLimiter } from "@/lib/rate-limiter";
-import { enforcePlanLimits } from "@/lib/plan-enforcer";
 import { resolveTenantFromRequest } from "@/lib/tenant-context";
 import { getClientIp } from "@/lib/request-utils";
 import { logger } from "@/lib/logger";
+import { resolveEffectiveOwner } from "@/lib/ownership/ownership-enforcement";
+import { sendEmailLead, sendSmsLead } from "@/lib/delivery/channels";
+import { pushToSuiteDash } from "@/lib/crm/suitedash";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 30 });
 
@@ -14,7 +16,7 @@ export async function POST(request: Request) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
 
   try {
-    const tenantConfig = await resolveTenantFromRequest(request);
+    await resolveTenantFromRequest(request);
 
     const ip = getClientIp(request);
     const rateResult = rateLimiter.check(`intake:${ip}`);
@@ -31,31 +33,28 @@ export async function POST(request: Request) {
 
     const result = await persistLead(body);
 
-    // 🔥 OpenClaw Integration
-    const { orchestrate } = await import("@/lib/openclaw/orchestrator");
-    const { runAgent } = await import("@/lib/openclaw/agent-runner");
+    const nodeId = `${body.metadata?.county}-${body.metadata?.city}-${body.niche}`;
+    const owner = resolveEffectiveOwner(nodeId);
 
-    const event = {
-      eventType: "lead.captured",
-      metadata: {
-        score: result?.score || 60,
-      },
-    };
+    let delivery = { delivered: false };
 
-    const actions = await orchestrate(event);
+    if (owner) {
+      const payload = { ownerId: owner.ownerId, nodeId, lead: result };
 
-    const agentResults = [];
-    for (const agent of actions) {
-      const res = await runAgent(agent, event);
-      agentResults.push(res);
+      const email = await sendEmailLead(payload);
+      const sms = await sendSmsLead(payload);
+      const crm = await pushToSuiteDash(payload);
+
+      delivery = {
+        delivered: true,
+        channels: [email, sms, crm],
+      };
     }
 
     return NextResponse.json({
       ...result,
-      openclaw: {
-        actions,
-        results: agentResults,
-      },
+      routedTo: owner?.ownerId || null,
+      delivery,
     }, { headers });
 
   } catch (error) {
