@@ -47,10 +47,10 @@ However, the audit identified **5 critical**, **8 high**, and **12 medium** seve
 
 | Package | Framework | Purpose | Routes | Tests |
 |---------|-----------|---------|--------|-------|
-| `lead-os-hosted-runtime-wt-hybrid` | Next.js 16 | Primary kernel runtime | ~500 | 175 |
+| `lead-os-runtime` | Next.js 16 | Primary kernel runtime | ~500 | 175 |
 | `erie-pro` | Next.js 15 | Territory platform (Prisma) | ~43 | 8 |
 | `neatcircle-beta` | Next.js 15 | Edge/marketing (Cloudflare) | ~28 | 6 |
-| `lead-os-hosted-runtime-wt-public` | Next.js 15 | Public runtime variant | ~15 | 11 |
+| `lead-os-embed-widgets` | Next.js 15 | Public runtime variant | ~15 | 11 |
 
 **No root `package.json`** — each package is independently managed with npm. The `_n8n_sources/` directory (~3,853 files) contains vendored reference material.
 
@@ -184,8 +184,8 @@ Both set `Access-Control-Allow-Origin: *`. While API-key-protected, this allows 
 
 | Package | `.env` excluded | `.env.local` excluded |
 |---------|-----------------|----------------------|
-| `lead-os-hosted-runtime-wt-hybrid` | NO | NO |
-| `lead-os-hosted-runtime-wt-public` | NO | NO |
+| `lead-os-runtime` | NO | NO |
+| `lead-os-embed-widgets` | NO | NO |
 | `neatcircle-beta` | NO | NO |
 | `erie-pro` | Yes | Yes |
 
@@ -234,7 +234,7 @@ Only enforces `min(8)`. No complexity requirements, no breach-database checking 
 
 ### M9. Public Runtime Test Script Uses Windows Syntax
 
-**Location:** `lead-os-hosted-runtime-wt-public/package.json`
+**Location:** `lead-os-embed-widgets/package.json`
 
 ```json
 "test": "set LEAD_OS_USE_AITABLE_PERSISTENCE=false&& set ..."
@@ -541,21 +541,21 @@ These practices are exemplary and should be maintained:
 
 ### Configuration Files
 - `.github/workflows/ci.yml`
-- `lead-os-hosted-runtime-wt-hybrid/package.json`, `tsconfig.json`, `next.config.mjs`, `vercel.json`, `Dockerfile`, `.env.example`, `.gitignore`
+- `lead-os-runtime/package.json`, `tsconfig.json`, `next.config.mjs`, `vercel.json`, `Dockerfile`, `.env.example`, `.gitignore`
 - `erie-pro/package.json`, `tsconfig.json`, `next.config.ts`, `.gitignore`
 - `neatcircle-beta/package.json`, `next.config.ts`, `.gitignore`, `.env.local`
-- `lead-os-hosted-runtime-wt-public/package.json`, `.gitignore`
+- `lead-os-embed-widgets/package.json`, `.gitignore`
 - `.gitignore` (root)
 - `.github/pull_request_template.md`
 
 ### Source Files (Sampled)
-- `lead-os-hosted-runtime-wt-hybrid/src/middleware.ts`
-- `lead-os-hosted-runtime-wt-hybrid/src/lib/auth-system.ts`
-- `lead-os-hosted-runtime-wt-hybrid/src/lib/operator-auth.ts`
-- `lead-os-hosted-runtime-wt-hybrid/src/lib/cors.ts`
-- `lead-os-hosted-runtime-wt-hybrid/src/lib/rate-limiter.ts`
-- `lead-os-hosted-runtime-wt-hybrid/src/lib/tenant.ts`
-- `lead-os-hosted-runtime-wt-hybrid/src/lib/db.ts`
+- `lead-os-runtime/src/middleware.ts`
+- `lead-os-runtime/src/lib/auth-system.ts`
+- `lead-os-runtime/src/lib/operator-auth.ts`
+- `lead-os-runtime/src/lib/cors.ts`
+- `lead-os-runtime/src/lib/rate-limiter.ts`
+- `lead-os-runtime/src/lib/tenant.ts`
+- `lead-os-runtime/src/lib/db.ts`
 - 10+ API route files across hybrid and Erie Pro
 - Erie Pro Prisma schema, auth config, middleware
 - Representative test files across all packages

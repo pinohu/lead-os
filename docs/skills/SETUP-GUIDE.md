@@ -20,7 +20,7 @@ cp -r docs/skills/agent-skills/* ~/.claude/skills/
 cp -r docs/skills/slash-commands/* ~/.claude/commands/
 
 # 3. Install dependencies for all 3 apps
-cd lead-os-hosted-runtime-wt-hybrid && npm install && cd ..
+cd lead-os-runtime && npm install && cd ..
 cd erie-pro && npm install && cd ..
 cd neatcircle-beta && npm install && cd ..
 

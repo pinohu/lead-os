@@ -51,7 +51,7 @@ describe('TenantScoring', () => {
 ### Running the Full Suite
 ```bash
 cd erie-pro && npm test          # ~2100 tests
-cd ../lead-os-hosted-runtime-wt-hybrid && npm test  # ~1500 tests
+cd ../lead-os-runtime && npm test  # ~1500 tests
 cd ../neatcircle && npm test     # ~551 tests
 ```
 Total expected: ~4151. If count drops, a test was deleted or skipped -- investigate immediately.

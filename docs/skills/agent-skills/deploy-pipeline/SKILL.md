@@ -35,7 +35,7 @@ Trigger this skill when:
 
 | Property | erie-pro | kernel |
 |----------|----------|--------|
-| Project Name | erie-pro | lead-os-hosted-runtime-wt-hybrid |
+| Project Name | erie-pro | lead-os-runtime |
 | Root Directory | erie-pro/ | ./ (repo root) |
 | Framework | Next.js | Next.js |
 | Build Command | next build | next build |
@@ -51,7 +51,7 @@ Trigger this skill when:
 Before any deployment, confirm builds pass locally:
 ```bash
 cd erie-pro && npm run build
-cd ../lead-os-hosted-runtime-wt-hybrid && npm run build
+cd ../lead-os-runtime && npm run build
 ```
 If either build fails, STOP. Do not deploy broken code. Invoke the audit-fix-optimize skill to resolve.
 

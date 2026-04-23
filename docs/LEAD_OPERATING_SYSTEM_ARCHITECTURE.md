@@ -2,19 +2,19 @@
 
 This document is the **canonical reference** for how Lead OS is structured so you can **replicate deployments**, **add niches as config**, and **avoid architectural drift**.
 
-> **Note:** As of March 2026, Lead OS is a unified monorepo. The kernel runtime (`lead-os-hosted-runtime-wt-hybrid`) contains all 488 source files, 278 API endpoints, 35 integration adapters, and 23 dashboard pages. See [LEAD-OS-COMPLETE-GUIDE.md](../LEAD-OS-COMPLETE-GUIDE.md) for the full platform documentation including the AppSumo integration roadmap.
+> **Note:** As of March 2026, Lead OS is a unified monorepo. The kernel runtime (`lead-os-runtime`) contains all 488 source files, 278 API endpoints, 35 integration adapters, and 23 dashboard pages. See [LEAD-OS-COMPLETE-GUIDE.md](../LEAD-OS-COMPLETE-GUIDE.md) for the full platform documentation including the AppSumo integration roadmap.
 
 **Repository**
 
 | Repository | Role |
 |------------|------|
-| [pinohu/lead-os](https://github.com/pinohu/lead-os) | Monorepo: kernel runtime (`lead-os-hosted-runtime-wt-hybrid`), edge layer (`neatcircle-beta`), blueprints, scenarios, **this doc** |
+| [pinohu/lead-os](https://github.com/pinohu/lead-os) | Monorepo: kernel runtime (`lead-os-runtime`), edge layer (`neatcircle-beta`), blueprints, scenarios, **this doc** |
 
 **Legacy repositories** (functionality merged into lead-os monorepo):
 
 | Repository | Status |
 |------------|--------|
-| pinohu/lead-os-hosted-runtime | Merged into `lead-os-hosted-runtime-wt-hybrid` |
+| pinohu/lead-os-hosted-runtime | Merged into `lead-os-runtime` |
 | pinohu/lead-os-embed-widgets | Merged — embed system now in `src/lib/integrations/embed-widgets-adapter.ts` |
 | pinohu/SuiteDash | CRM adapter now in `src/lib/integrations/` (SuiteDash + SalesNexus) |
 | pinohu/leadnest-flow-forge | Flow Forge adapter now in `src/lib/integrations/flow-forge-adapter.ts` |

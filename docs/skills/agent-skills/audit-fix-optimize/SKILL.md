@@ -36,7 +36,7 @@ Trigger this skill when:
 ### Step 1: Build All Codebases
 ```bash
 cd erie-pro && npm run build
-cd ../lead-os-hosted-runtime-wt-hybrid && npm run build
+cd ../lead-os-runtime && npm run build
 cd ../neatcircle && npm run build
 ```
 Record exit codes. If a build fails, capture the full error output before proceeding.
@@ -44,7 +44,7 @@ Record exit codes. If a build fails, capture the full error output before procee
 ### Step 2: Run Test Suite
 ```bash
 cd erie-pro && npm test
-cd ../lead-os-hosted-runtime-wt-hybrid && npm test
+cd ../lead-os-runtime && npm test
 cd ../neatcircle && npm test
 ```
 Expect ~4151 tests total. Record pass/fail/skip counts per codebase.

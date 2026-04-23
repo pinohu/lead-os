@@ -7,14 +7,14 @@ Run a comprehensive audit-fix-optimize cycle on the LeadOS monorepo. This is the
 ### Step 1: Build All 3 Codebases (parallel)
 ```bash
 cd erie-pro && npm run build
-cd lead-os-hosted-runtime-wt-hybrid && npm run build
+cd lead-os-runtime && npm run build
 cd neatcircle-beta && npm run build
 ```
 All three must produce 0 errors. Report page counts.
 
 ### Step 2: Run Test Suite
 ```bash
-cd lead-os-hosted-runtime-wt-hybrid && npm test
+cd lead-os-runtime && npm test
 ```
 Must show 4,151+ tests, 0 failures.
 

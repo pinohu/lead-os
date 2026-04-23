@@ -19,14 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: lead-os-hosted-runtime-wt-hybrid
+        working-directory: lead-os-runtime
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: lead-os-hosted-runtime-wt-hybrid/package-lock.json
+          cache-dependency-path: lead-os-runtime/package-lock.json
       - run: npm ci
       - run: npx tsc --noEmit
 
@@ -35,14 +35,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: lead-os-hosted-runtime-wt-hybrid
+        working-directory: lead-os-runtime
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: lead-os-hosted-runtime-wt-hybrid/package-lock.json
+          cache-dependency-path: lead-os-runtime/package-lock.json
       - run: npm ci
       - run: npm run test:ci
 
@@ -51,14 +51,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: lead-os-hosted-runtime-wt-hybrid
+        working-directory: lead-os-runtime
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: lead-os-hosted-runtime-wt-hybrid/package-lock.json
+          cache-dependency-path: lead-os-runtime/package-lock.json
       - run: npm ci
       - run: npm run build
 
@@ -137,6 +137,22 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+  build-embed-widgets:
+    name: Build Embed Widgets
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lead-os-embed-widgets
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: lead-os-embed-widgets/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
   security-audit:
     name: Dependency Audit
     runs-on: ubuntu-latest
@@ -146,11 +162,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Audit Hybrid Runtime
-        working-directory: lead-os-hosted-runtime-wt-hybrid
+        working-directory: lead-os-runtime
         run: npm audit --audit-level=critical || true
       - name: Audit Erie Pro
         working-directory: erie-pro
         run: npm audit --audit-level=critical || true
       - name: Audit NeatCircle
         working-directory: neatcircle-beta
+        run: npm audit --audit-level=critical || true
+      - name: Audit Embed Widgets
+        working-directory: lead-os-embed-widgets
         run: npm audit --audit-level=critical || true
