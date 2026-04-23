@@ -24,7 +24,8 @@
     "verify:backup-archive": "node scripts/verify-backup-archive.mjs",
     "detect:env": "node scripts/detect-env-presence.mjs",
     "gtm:print": "node --experimental-strip-types scripts/gtm-print.ts --",
-    "test:production-smoke": "node --import tsx scripts/production-smoke.ts"
+    "test:production-smoke": "node --import tsx scripts/production-smoke.ts",
+    "check:completeness": "node --import tsx scripts/check-completeness.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

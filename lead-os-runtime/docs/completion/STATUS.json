@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-04-23T20:02:06.736Z",
+  "environment": {
+    "baseUrl": "http://127.0.0.1:3110",
+    "tenantId": "default-tenant"
+  },
+  "summary": {
+    "passing": 17,
+    "failing": 0,
+    "unknown": 0,
+    "deferred": 0,
+    "result": "PASS"
+  },
+  "items": {
+    "runtime_health": {
+      "status": "passing",
+      "detail": "ok"
+    },
+    "runtime_system": {
+      "status": "passing",
+      "detail": "ok"
+    },
+    "intake_validation": {
+      "status": "passing",
+      "detail": "validated_by_live_intake_post"
+    },
+    "intake_persistence": {
+      "status": "passing",
+      "detail": "lead_id_returned"
+    },
+    "intake_routing": {
+      "status": "passing",
+      "detail": "routing_present"
+    },
+    "intake_delivery": {
+      "status": "passing",
+      "detail": "delivery_log_present"
+    },
+    "intake_idempotency": {
+      "status": "passing",
+      "detail": "replay_and_mismatch_enforced"
+    },
+    "operator_auth": {
+      "status": "passing",
+      "detail": "validated_by_ci_integration_suite"
+    },
+    "node_crud": {
+      "status": "passing",
+      "detail": "delete_route_present_and_tested"
+    },
+    "control_plane": {
+      "status": "passing",
+      "detail": "validated_by_ci_integration_suite"
+    },
+    "billing_enforcement": {
+      "status": "passing",
+      "detail": "validated_by_ci_integration_suite"
+    },
+    "stripe_webhook": {
+      "status": "passing",
+      "detail": "validated_by_ci_integration_suite"
+    },
+    "auth_enforced": {
+      "status": "passing",
+      "detail": "middleware_and_route_guards_present"
+    },
+    "tenant_alignment": {
+      "status": "passing",
+      "detail": "tenant_alignment_guards_present"
+    },
+    "input_validation": {
+      "status": "passing",
+      "detail": "zod_validation_present_on_mutation_routes"
+    },
+    "logging": {
+      "status": "passing",
+      "detail": "structured_logging_present_on_critical_paths"
+    },
+    "health_deep": {
+      "status": "passing",
+      "detail": "ok"
+    }
+  }
+}

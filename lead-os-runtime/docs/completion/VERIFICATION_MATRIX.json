@@ -1,0 +1,52 @@
+{
+  "checks": [
+    {
+      "id": "build_runtime",
+      "type": "build",
+      "command": "npm run build",
+      "required": true
+    },
+    {
+      "id": "tests_ci",
+      "type": "test",
+      "command": "npm run test:ci",
+      "required": true
+    },
+    {
+      "id": "migrations_verify",
+      "type": "migration",
+      "command": "npm run verify:migrations",
+      "required": true
+    },
+    {
+      "id": "health_live",
+      "type": "runtime",
+      "endpoint": "/api/health",
+      "required": true
+    },
+    {
+      "id": "health_deep_live",
+      "type": "runtime",
+      "endpoint": "/api/health/deep",
+      "required": true
+    },
+    {
+      "id": "system_live",
+      "type": "runtime",
+      "endpoint": "/api/system",
+      "required": true
+    },
+    {
+      "id": "intake_flow_live",
+      "type": "flow",
+      "endpoint": "/api/intake",
+      "required": true
+    },
+    {
+      "id": "smoke_production",
+      "type": "smoke",
+      "command": "npm run test:production-smoke",
+      "required": true
+    }
+  ]
+}

@@ -94,3 +94,65 @@ export async function PATCH(request: Request, context: NodeRouteContext) {
     data: node,
   })
 }
+
+export async function DELETE(request: Request, context: NodeRouteContext) {
+  const { session, response } = await requireOperatorApiSession(request)
+  if (!session?.email)
+    return response ?? NextResponse.json({ success: false, error: "unauthorized" }, { status: 401 })
+
+  const aligned = requireAlignedTenant(request)
+  if (!aligned.ok)
+    return NextResponse.json(
+      { success: false, error: aligned.message },
+      { status: aligned.status },
+    )
+
+  const { id } = await context.params
+  if (!/^\d+$/.test(id)) {
+    return NextResponse.json(
+      { success: false, error: "invalid_node_id" },
+      { status: 400 },
+    )
+  }
+
+  const deleted = await queryPostgres<{
+    id: string
+    node_key: string
+    sku_key: string
+  }>(
+    `DELETE FROM nodes
+      WHERE tenant_id = $1 AND id = $2::bigint
+  RETURNING id::text, node_key, sku_key`,
+    [tenantConfig.tenantId, id],
+  )
+
+  const node = deleted.rows[0]
+  if (!node) {
+    return NextResponse.json(
+      { success: false, error: "node_not_found" },
+      { status: 404 },
+    )
+  }
+
+  await logOperatorAudit({
+    actorEmail: session.email,
+    tenantId: tenantConfig.tenantId,
+    action: "node_delete",
+    resourceType: "nodes",
+    resourceId: id,
+    detail: {
+      nodeKey: node.node_key,
+      skuKey: node.sku_key,
+    },
+  })
+
+  return NextResponse.json({
+    success: true,
+    data: {
+      id: node.id,
+      nodeKey: node.node_key,
+      skuKey: node.sku_key,
+      deleted: true,
+    },
+  })
+}

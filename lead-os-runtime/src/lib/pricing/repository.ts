@@ -471,6 +471,32 @@ export async function updateNodeStatusByNodeKey(input: {
   return res.rowCount !== null && res.rowCount > 0;
 }
 
+export async function deleteNodeById(input: {
+  tenantId: string;
+  nodeId: string;
+}): Promise<{
+  deleted: boolean;
+  nodeKey?: string;
+  skuKey?: string;
+}> {
+  const res = await queryPostgres<{
+    node_key: string;
+    sku_key: string;
+  }>(
+    `DELETE FROM nodes
+      WHERE tenant_id = $1 AND id = $2::bigint
+  RETURNING node_key, sku_key`,
+    [input.tenantId, input.nodeId],
+  );
+  const row = res.rows[0];
+  if (!row) return { deleted: false };
+  return {
+    deleted: true,
+    nodeKey: row.node_key,
+    skuKey: row.sku_key,
+  };
+}
+
 export interface RecommendationRow {
   id: string;
   tenantId: string;

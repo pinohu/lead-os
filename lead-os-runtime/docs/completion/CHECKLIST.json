@@ -1,0 +1,133 @@
+{
+  "version": "tcs-v1.0",
+  "criticalItems": [
+    "runtime_health",
+    "runtime_system",
+    "intake_persistence",
+    "intake_idempotency",
+    "operator_auth",
+    "node_crud",
+    "control_plane",
+    "billing_enforcement",
+    "stripe_webhook",
+    "auth_enforced",
+    "tenant_alignment"
+  ],
+  "categories": [
+    {
+      "name": "Runtime Core",
+      "items": [
+        {
+          "id": "runtime_health",
+          "description": "/api/health works",
+          "status": "unknown"
+        },
+        {
+          "id": "runtime_system",
+          "description": "/api/system works",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "Intake Pipeline",
+      "items": [
+        {
+          "id": "intake_validation",
+          "description": "intake input validation enforced",
+          "status": "unknown"
+        },
+        {
+          "id": "intake_persistence",
+          "description": "valid intake persists lead",
+          "status": "unknown"
+        },
+        {
+          "id": "intake_routing",
+          "description": "intake response includes routing details",
+          "status": "unknown"
+        },
+        {
+          "id": "intake_delivery",
+          "description": "intake response includes assignment and delivery evidence",
+          "status": "unknown"
+        },
+        {
+          "id": "intake_idempotency",
+          "description": "same idempotency key replay + mismatch conflict behavior",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "Operator Platform",
+      "items": [
+        {
+          "id": "operator_auth",
+          "description": "operator routes enforce authenticated session/api-key",
+          "status": "unknown"
+        },
+        {
+          "id": "node_crud",
+          "description": "operator node GET/POST/PATCH/DELETE route surface present and tested",
+          "status": "unknown"
+        },
+        {
+          "id": "control_plane",
+          "description": "operator control-plane fetch works",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "Billing",
+      "items": [
+        {
+          "id": "billing_enforcement",
+          "description": "subscription state gates runtime behavior",
+          "status": "unknown"
+        },
+        {
+          "id": "stripe_webhook",
+          "description": "stripe webhook idempotency and sync path verified",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "Security",
+      "items": [
+        {
+          "id": "auth_enforced",
+          "description": "auth is enforced on non-public routes",
+          "status": "unknown"
+        },
+        {
+          "id": "tenant_alignment",
+          "description": "tenant mismatch blocked with 403",
+          "status": "unknown"
+        },
+        {
+          "id": "input_validation",
+          "description": "critical mutation routes validate payloads",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "Observability",
+      "items": [
+        {
+          "id": "logging",
+          "description": "critical flows emit structured logs",
+          "status": "unknown"
+        },
+        {
+          "id": "health_deep",
+          "description": "/api/health/deep reports component status",
+          "status": "unknown"
+        }
+      ]
+    }
+  ]
+}
