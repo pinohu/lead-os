@@ -1,5 +1,5 @@
 // db/migrate.mjs
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
@@ -17,9 +17,14 @@ async function migrate() {
   await client.connect();
 
   try {
-    const sql = readFileSync(join(__dirname, "migrations", "001_init.sql"), "utf8");
-    await client.query(sql);
-    console.log("Migration 001_init.sql applied successfully");
+    const dir = join(__dirname, "migrations");
+    const files = readdirSync(dir).filter((f) => f.endsWith(".sql")).sort();
+
+    for (const file of files) {
+      const sql = readFileSync(join(dir, file), "utf8");
+      await client.query(sql);
+      console.log(`Migration ${file} applied successfully`);
+    }
   } finally {
     await client.end();
   }

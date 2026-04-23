@@ -1,6 +1,5 @@
 // src/lib/db.ts
 import { Pool } from "pg";
-import type { QueryResult } from "pg";
 
 let pool: Pool | null = null;
 
@@ -22,11 +21,12 @@ function getPool(): Pool {
   return pool;
 }
 
-export async function query<T extends Record<string, unknown> = Record<string, unknown>>(
+export async function query<T>(
   text: string,
   params?: unknown[],
-): Promise<QueryResult<T>> {
-  return getPool().query<T>(text, params);
+): Promise<{ rows: T[]; rowCount: number | null }> {
+  const result = await getPool().query(text, params);
+  return { rows: result.rows as T[], rowCount: result.rowCount };
 }
 
 export async function healthCheck(): Promise<boolean> {
