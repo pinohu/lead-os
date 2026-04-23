@@ -18,6 +18,8 @@ import {
   scheduleFollowUp,
   updateActionLogStatus,
 } from "./repository"
+import { callIntegration } from "@/integrations/dispatcher"
+import { getApprovedEnvMap } from "@/lib/env-map"
 import type {
   ActionResult,
   AgentPermission,
@@ -154,6 +156,24 @@ export async function act(input: {
     if (input.decision.deliveryPath && hasPermission(input.permissions, "delivery_paths")) {
       actionType = actionType === "no_op" ? "delivery_override" : "compound_action"
       payload.deliveryPath = input.decision.deliveryPath
+      const envMap = getApprovedEnvMap()
+      const integrationResult = await callIntegration({
+        agent: input.agentId,
+        integration: "webhook",
+        action: "post",
+        payload: {
+          url:
+            input.decision.deliveryPath.config.url ??
+            envMap.email.EMAIL_WEBHOOK_URL ??
+            "",
+          body: {
+            category: input.decision.deliveryPath.category,
+            channel: input.decision.deliveryPath.channel,
+            source: "autonomy-action-engine",
+          },
+        },
+      })
+      payload.deliveryDispatch = integrationResult.data
       if (input.mode === "active") {
         const created = await createDeliveryOverride({
           tenantId: input.tenantId,
