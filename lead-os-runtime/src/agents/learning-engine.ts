@@ -1,6 +1,6 @@
 // src/agents/learning-engine.ts
 import { logger } from "@/lib/logger"
-import { appendLearningRows } from "./repository"
+import { appendLearningRows, insertAgentLearningRow } from "./repository"
 import type { AgentId, LearningOutcome, LearningResult } from "./types"
 
 function summarizeOutcomes(outcomes: LearningOutcome[]): LearningResult["summary"] {
@@ -35,6 +35,26 @@ export async function learn(input: {
   outcomes: LearningOutcome[]
 }): Promise<LearningResult> {
   const summary = summarizeOutcomes(input.outcomes)
+  const agentLearningIds: number[] = []
+  for (const outcome of input.outcomes) {
+    const rowId = await insertAgentLearningRow({
+      agentId: input.agentId,
+      learningInput: {
+        tenantId: input.tenantId,
+        leadKey: outcome.leadKey,
+        nodeKey: outcome.nodeKey ?? null,
+        category: outcome.category ?? null,
+      },
+      outcome: {
+        delivered: Boolean(outcome.delivered),
+        converted: Boolean(outcome.converted),
+        engagementScore: Number(outcome.engagementScore ?? 0),
+        failurePattern: outcome.failurePattern ?? null,
+        metadata: outcome.metadata ?? {},
+      },
+    })
+    if (rowId > 0) agentLearningIds.push(rowId)
+  }
   const learning = await appendLearningRows({
     tenantId: input.tenantId,
     agentId: input.agentId,
@@ -45,6 +65,7 @@ export async function learn(input: {
     tenantId: input.tenantId,
     agentId: input.agentId,
     rowsWritten: learning.rowsWritten,
+    agentLearningRows: agentLearningIds.length,
     nodeMetricRows: learning.nodeMetricRows,
     funnelMetricRows: learning.funnelMetricRows,
     summary,

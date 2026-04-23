@@ -12,11 +12,13 @@ import {
   insertExecutionRunStart,
   finishExecutionRun,
   insertAutonomyAuditRow,
-  isAutonomyEnabled,
-  isAgentKillSwitchEnabled,
   isPricingKillSwitchEnabled,
-  resolveAutonomyMode,
 } from "./repository"
+import {
+  isAgentKillSwitchEnabled,
+  isAutonomyEnabled,
+  resolveAutonomyMode,
+} from "@/lib/autonomy-config"
 import type {
   AgentId,
   AutonomyExecutionResult,
@@ -106,7 +108,7 @@ function blockedResult(input: {
 export async function executeAutonomyCycle(
   input: ExecuteAutonomyCycleInput,
 ): Promise<AutonomyExecutionResult> {
-  const mode = resolveAutonomyMode(input.modeOverride)
+  const mode = input.modeOverride ?? resolveAutonomyMode()
   if (!isAutonomyEnabled())
     return blockedResult({
       agentId: input.agentId,
@@ -274,7 +276,7 @@ export async function executeAutonomyFromRequest(input: {
         ok: false,
         tenantId: input.tenantId,
         agentId: "routing-agent",
-        mode: resolveAutonomyMode(input.modeOverride),
+        mode: input.modeOverride ?? resolveAutonomyMode(),
         reason: "invalid_agent_id",
       },
       response: Response.json(
@@ -292,7 +294,7 @@ export async function executeAutonomyFromRequest(input: {
         ok: false,
         tenantId: input.tenantId,
         agentId: parsedAgentId,
-        mode: resolveAutonomyMode(input.modeOverride),
+        mode: input.modeOverride ?? resolveAutonomyMode(),
         reason: "tenant_mismatch",
       },
       response: tenantCheck.response,
@@ -324,5 +326,43 @@ export async function revertAutonomyActionForTenant(input: {
     ok: reverted.ok,
     status: reverted.status,
     detail: reverted.detail,
+  }
+}
+
+export async function optimizeAutonomy(input: {
+  tenantId: string
+  agentId: AgentId
+  context: DecisionContext
+  modeOverride?: AutonomyMode
+}): Promise<{
+  ok: boolean
+  mode: AutonomyMode
+  recommendations: number
+}> {
+  const mode = input.modeOverride ?? resolveAutonomyMode()
+  try {
+    const result = await optimize({
+      tenantId: input.tenantId,
+      agentId: input.agentId,
+      mode,
+      context: input.context,
+    })
+    return {
+      ok: true,
+      mode: result.mode,
+      recommendations: result.recommendations.length,
+    }
+  } catch (error) {
+    logger.error("autonomy.optimize.failed", {
+      tenantId: input.tenantId,
+      agentId: input.agentId,
+      mode,
+      error: error instanceof Error ? error.message : String(error),
+    })
+    return {
+      ok: false,
+      mode,
+      recommendations: 0,
+    }
   }
 }

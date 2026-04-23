@@ -14,6 +14,43 @@ CREATE TABLE IF NOT EXISTS autonomy_agent_registry (
 CREATE INDEX IF NOT EXISTS idx_autonomy_agent_registry_tenant_enabled
   ON autonomy_agent_registry (tenant_id, enabled);
 
+CREATE TABLE IF NOT EXISTS agent_decisions (
+  id BIGSERIAL PRIMARY KEY,
+  agent_id TEXT NOT NULL,
+  context JSONB NOT NULL DEFAULT '{}'::jsonb,
+  decision JSONB NOT NULL DEFAULT '{}'::jsonb,
+  confidence DOUBLE PRECISION NOT NULL DEFAULT 0,
+  reasoning TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_agent_decisions_agent_created
+  ON agent_decisions (agent_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS agent_actions (
+  id BIGSERIAL PRIMARY KEY,
+  agent_id TEXT NOT NULL,
+  decision_id BIGINT REFERENCES agent_decisions(id) ON DELETE SET NULL,
+  action JSONB NOT NULL DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL,
+  reversible BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_agent_actions_agent_created
+  ON agent_actions (agent_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS agent_learning (
+  id BIGSERIAL PRIMARY KEY,
+  agent_id TEXT NOT NULL,
+  input JSONB NOT NULL DEFAULT '{}'::jsonb,
+  outcome JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_agent_learning_agent_created
+  ON agent_learning (agent_id, created_at DESC);
+
 CREATE TABLE IF NOT EXISTS autonomy_execution_runs (
   id BIGSERIAL PRIMARY KEY,
   tenant_id TEXT NOT NULL,

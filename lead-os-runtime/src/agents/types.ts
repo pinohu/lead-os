@@ -128,3 +128,5 @@ export interface AutonomyExecutionResult {
   optimization?: OptimizationResult
 }
 
+export type { AgentActionResult, AgentContext, AgentDecision, AgentLearningEvent } from "./agent-types"
+

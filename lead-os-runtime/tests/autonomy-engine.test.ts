@@ -2,12 +2,16 @@ import test from "node:test"
 import assert from "node:assert/strict"
 import { withEnv } from "./test-helpers.ts"
 import { setupIntegrationEnvironment } from "./helpers/integration-db.ts"
+import { queryPostgres } from "../src/lib/db.ts"
 import {
   executeAutonomyCycle,
   revertAutonomyActionForTenant,
 } from "../src/agents/execution-engine.ts"
 import {
   getActionLogByActionId,
+  getLatestAgentActionRows,
+  getLatestAgentDecisionRows,
+  getLatestAgentLearningRows,
   getFunnelVariantUsageCount,
   listAgentRegistrations,
   updateAgentEnabled,
@@ -64,6 +68,10 @@ test("autonomy shadow mode logs simulated idempotent action", async () => {
     PRICING_KILL_SWITCH: "false",
   })
   try {
+    const beforeRoutingOverrides = await queryPostgres<{ c: string }>(
+      "SELECT COUNT(*)::text AS c FROM autonomy_routing_overrides WHERE tenant_id = $1",
+      ["default-tenant"],
+    )
     const first = await executeAutonomyCycle({
       tenantId: "default-tenant",
       agentId: "routing-agent",
@@ -86,6 +94,16 @@ test("autonomy shadow mode logs simulated idempotent action", async () => {
     assert.equal(second.ok, true)
     assert.equal(second.action?.status, "replayed")
     assert.equal(second.action?.replayed, true)
+
+    const afterRoutingOverrides = await queryPostgres<{ c: string }>(
+      "SELECT COUNT(*)::text AS c FROM autonomy_routing_overrides WHERE tenant_id = $1",
+      ["default-tenant"],
+    )
+    assert.equal(
+      Number(afterRoutingOverrides.rows[0]?.c ?? "0"),
+      Number(beforeRoutingOverrides.rows[0]?.c ?? "0"),
+      "shadow mode must not create routing override mutations",
+    )
   } finally {
     restoreEnv()
     restoreDb()
@@ -242,6 +260,46 @@ test("billing inactive blocks autonomy actions", async () => {
       actionId: "autonomy-billing-block-1",
     })
     assert.equal(action, null)
+  } finally {
+    restoreEnv()
+    restoreDb()
+  }
+})
+
+test("decisions, actions, and learning rows are persisted", async () => {
+  const restoreDb = await setupIntegrationEnvironment({
+    LEAD_OS_BILLING_ENFORCE: "false",
+  })
+  const restoreEnv = withEnv({
+    AUTONOMY_ENABLED: "true",
+    AUTONOMY_MODE: "active",
+    AGENT_KILL_SWITCH: "false",
+  })
+  try {
+    const result = await executeAutonomyCycle({
+      tenantId: "default-tenant",
+      agentId: "routing-agent",
+      context: buildContext(),
+      outcomes: [
+        {
+          leadKey: "lead-autonomy-rows",
+          category: "general",
+          delivered: true,
+          converted: false,
+          engagementScore: 0.6,
+        },
+      ],
+      idempotencyKey: "autonomy-row-validation",
+    })
+    assert.equal(result.ok, true)
+
+    const decisions = await getLatestAgentDecisionRows({ agentId: "routing-agent" })
+    const actions = await getLatestAgentActionRows({ agentId: "routing-agent" })
+    const learning = await getLatestAgentLearningRows({ agentId: "routing-agent" })
+
+    assert.ok(decisions.length > 0, "decision row should exist")
+    assert.ok(actions.length > 0, "action row should exist")
+    assert.ok(learning.length > 0, "learning row should exist")
   } finally {
     restoreEnv()
     restoreDb()

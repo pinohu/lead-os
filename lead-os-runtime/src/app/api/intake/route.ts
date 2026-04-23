@@ -12,6 +12,7 @@ import { requireSafePublicExecution } from "@/lib/api/cron-public-guards"
 import { detectIngressChannel, recordIngressEvent, resolveIngressDecision } from "@/lib/ingress-engine"
 import { appendEvents, getProviderExecutions, getWorkflowRuns, recordProviderExecution, recordWorkflowRun } from "@/lib/runtime-store"
 import { createCanonicalEvent, ensureTraceContext } from "@/lib/trace"
+import { runAgents } from "@/agents/agent-runner"
 
 function hashPayload(body: unknown): string {
   return createHash("sha256").update(JSON.stringify(body ?? {})).digest("hex")
@@ -185,6 +186,22 @@ export async function POST(request: Request) {
       email,
       idempotent: Boolean(idempotencyKey),
       routing: ingress,
+    })
+    void runAgents({
+      tenantId: tenant.tenantId,
+      agentId: "routing-agent",
+      lead: {
+        id,
+        email,
+        category: ingress.channel,
+      },
+      routingResult: {
+        channel: ingress.channel,
+        intentLevel: ingress.intentLevel,
+        funnelType: ingress.funnelType,
+        scoreBoost: ingress.scoreBoost,
+      },
+      deliveryResult: deliveryLogs[0] ?? null,
     })
     return NextResponse.json(responseBody)
   } catch (error) {

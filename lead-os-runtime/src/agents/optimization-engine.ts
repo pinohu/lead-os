@@ -3,8 +3,14 @@ import { logger } from "@/lib/logger"
 import {
   ensureDefaultFunnelVariant,
   getRecentPerformanceHistory,
+  insertAgentLearningRow,
   listLatestFunnelMetrics,
 } from "./repository"
+import {
+  isAgentKillSwitchEnabled,
+  isAutonomyEnabled,
+  resolveAutonomyMode,
+} from "@/lib/autonomy-config"
 import type {
   AgentId,
   AutonomyMode,
@@ -25,6 +31,20 @@ export async function optimize(input: {
   mode: AutonomyMode
   context: DecisionContext
 }): Promise<OptimizationResult> {
+  const effectiveMode = resolveAutonomyMode()
+  if (!isAutonomyEnabled() || isAgentKillSwitchEnabled()) {
+    logger.info("autonomy.optimize.skipped", {
+      tenantId: input.tenantId,
+      agentId: input.agentId,
+      mode: effectiveMode,
+      skipReason: !isAutonomyEnabled() ? "autonomy_disabled" : "agent_kill_switch_enabled",
+    })
+    return {
+      mode: effectiveMode,
+      measuredAt: new Date().toISOString(),
+      recommendations: [],
+    }
+  }
   const measuredAt = new Date().toISOString()
   const category =
     String(input.context.leadData.category ?? "general").trim().toLowerCase() ||
@@ -91,14 +111,28 @@ export async function optimize(input: {
   logger.info("autonomy.optimize", {
     tenantId: input.tenantId,
     agentId: input.agentId,
-    mode: input.mode,
+    mode: effectiveMode,
     measuredAt,
     recommendationsCount: recommendations.length,
     confidence: decision.confidenceScore,
   })
+  await insertAgentLearningRow({
+    agentId: input.agentId,
+    learningInput: {
+      tenantId: input.tenantId,
+      category,
+      mode: effectiveMode,
+      measuredAt,
+    },
+    outcome: {
+      optimizationRecommendations: recommendations.length,
+      confidence: decision.confidenceScore,
+      recommendationTypes: recommendations.map((item) => item.type),
+    },
+  })
 
   return {
-    mode: input.mode,
+    mode: effectiveMode,
     measuredAt,
     recommendations,
     recommendedDecision: decision,

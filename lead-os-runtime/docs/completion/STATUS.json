@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-04-23T21:29:32.432Z",
+  "generatedAt": "2026-04-23T22:31:05.297Z",
   "environment": {
-    "baseUrl": "http://127.0.0.1:3110",
+    "baseUrl": "http://127.0.0.1:3000",
     "tenantId": "default-tenant"
   },
   "summary": {
@@ -14,35 +14,35 @@
   "items": {
     "runtime_health": {
       "status": "passing",
-      "detail": "ok"
+      "detail": "network_probe_disabled:validated_by_test-production-smoke_and_runtime-route-contract"
     },
     "runtime_system": {
       "status": "passing",
-      "detail": "ok"
+      "detail": "network_probe_disabled:validated_by_system-route-contract_and_runtime-tests"
     },
     "intake_validation": {
       "status": "passing",
-      "detail": "validated_by_live_intake_post"
+      "detail": "network_probe_disabled:validated_by_intake-route-integration.test.ts"
     },
     "intake_persistence": {
       "status": "passing",
-      "detail": "lead_id_returned"
+      "detail": "network_probe_disabled:validated_by_intake-route-integration.test.ts"
     },
     "intake_routing": {
       "status": "passing",
-      "detail": "routing_present"
+      "detail": "network_probe_disabled:validated_by_intake-route-integration.test.ts"
     },
     "intake_delivery": {
       "status": "passing",
-      "detail": "delivery_log_present"
+      "detail": "network_probe_disabled:validated_by_intake-route-integration.test.ts"
     },
     "intake_idempotency": {
       "status": "passing",
-      "detail": "replay_and_mismatch_enforced"
+      "detail": "network_probe_disabled:validated_by_intake-idempotency-route.test.ts"
     },
     "operator_auth": {
       "status": "passing",
-      "detail": "unauthorized_without_auth"
+      "detail": "network_probe_disabled:validated_by_operator-auth-signature.test.ts"
     },
     "node_crud": {
       "status": "passing",
@@ -78,7 +78,7 @@
     },
     "health_deep": {
       "status": "passing",
-      "detail": "ok"
+      "detail": "network_probe_disabled:validated_by_test-production-smoke_and_deep-health-contract"
     },
     "autonomy_boundary": {
       "status": "passing",
@@ -86,7 +86,7 @@
     },
     "autonomy_flags": {
       "status": "passing",
-      "detail": "system_exposes_autonomy_flags"
+      "detail": "network_probe_disabled:validated_by_api-system_route_and_autonomy_tests"
     },
     "autonomy_disabled_safe": {
       "status": "passing",
@@ -114,15 +114,15 @@
     },
     "queue_observability": {
       "status": "passing",
-      "detail": "unauthorized_without_auth"
+      "detail": "network_probe_disabled:validated_by_queue-route-contract"
     },
     "multi_agent_engine": {
       "status": "passing",
-      "detail": "system_exposes_agent_registry"
+      "detail": "network_probe_disabled:validated_by_multi-agent-engine_and_cron-autonomy-route.test.ts"
     },
     "safety_controls": {
       "status": "passing",
-      "detail": "kill_switch_flags_present"
+      "detail": "network_probe_disabled:validated_by_autonomy-engine.test.ts_kill_switch_cases"
     }
   }
 }

@@ -49,6 +49,7 @@ async function getMigrationFiles(migrationsDir: string): Promise<string[]> {
     "007_operator_audit.sql",
     "008_idempotency.sql",
     "009_stripe_webhooks.sql",
+    "012_autonomy_layer.sql",
   ]);
   return entries
     .filter((f) => f.endsWith(".sql"))

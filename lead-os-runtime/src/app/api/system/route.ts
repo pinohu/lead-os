@@ -11,6 +11,11 @@ import {
 import { getPricingRuntimeSnapshot } from "@/lib/pricing/runtime-state";
 import { getSupabaseAnonKey, isSupabaseConfigured } from "@/lib/supabase/admin";
 import { listAgentRegistrations } from "@/agents/repository";
+import {
+  isAgentKillSwitchEnabled,
+  isAutonomyEnabled,
+  resolveAutonomyMode,
+} from "@/lib/autonomy-config";
 
 export const dynamic = "force-dynamic";
 
@@ -27,9 +32,9 @@ export async function GET() {
       systemEnabled: isSystemEnabled(),
       livePricingEnabled: isLivePricingEnabled(),
       billingEnforce: process.env.LEAD_OS_BILLING_ENFORCE === "true",
-      autonomyEnabled: process.env.AUTONOMY_ENABLED === "true",
-      autonomyMode: process.env.AUTONOMY_MODE === "active" ? "active" : "shadow",
-      agentKillSwitch: process.env.AGENT_KILL_SWITCH === "true",
+      autonomyEnabled: isAutonomyEnabled(),
+      autonomyMode: resolveAutonomyMode(),
+      agentKillSwitch: isAgentKillSwitchEnabled(),
       pricingKillSwitch: process.env.PRICING_KILL_SWITCH === "true",
     },
     billing,
@@ -47,8 +52,9 @@ export async function GET() {
       singleTenantEnforce: process.env.LEAD_OS_SINGLE_TENANT_ENFORCE !== "false",
     },
     autonomy: {
-      enabled: process.env.AUTONOMY_ENABLED === "true",
-      mode: process.env.AUTONOMY_MODE === "active" ? "active" : "shadow",
+      enabled: isAutonomyEnabled(),
+      mode: resolveAutonomyMode(),
+      killSwitch: isAgentKillSwitchEnabled(),
       agents: autonomyAgents,
       invariants: {
         deterministicCoreUnaffected: true,

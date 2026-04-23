@@ -2,8 +2,10 @@
 import {
   ensureDefaultFunnelVariant,
   getRecentPerformanceHistory,
+  insertAgentDecisionRow,
   listActiveFunnelVariants,
 } from "./repository"
+import { logger } from "@/lib/logger"
 import type { AgentId, DecisionContext, DecisionResult } from "./types"
 
 const DEFAULT_CATEGORY = "general"
@@ -137,6 +139,8 @@ export async function decide(input: {
     },
     confidenceScore,
     reasoningMetadata: {
+      decisionType: "routing_override",
+      selectedNode: topNodeKey,
       category,
       selectedVariant,
       gtmState: input.context.gtmState,
@@ -147,5 +151,30 @@ export async function decide(input: {
       deterministicSelection: true,
     },
   }
+  const reasoning = `selected_node=${topNodeKey};variant=${selectedVariant};category=${category};deterministic=true`
+  const decisionId = await insertAgentDecisionRow({
+    agentId: input.agentId,
+    context: {
+      tenantId: input.tenantId,
+      ...input.context,
+    },
+    decision: {
+      decisionType: "routing_override",
+      selectedNode: topNodeKey,
+      confidence: confidenceScore,
+      reasoning,
+    },
+    confidence: confidenceScore,
+    reasoning,
+  })
+  decision.reasoningMetadata.decisionId = decisionId
+  logger.info("autonomy.decision.recorded", {
+    tenantId: input.tenantId,
+    agentId: input.agentId,
+    decisionId,
+    selectedNode: topNodeKey,
+    confidence: confidenceScore,
+    reasoning,
+  })
   return decision
 }

@@ -1,5 +1,10 @@
 // src/agents/repository.ts
 import { queryPostgres } from "@/lib/db"
+import {
+  isAgentKillSwitchEnabled as readAgentKillSwitch,
+  isAutonomyEnabled as readAutonomyEnabled,
+  resolveAutonomyMode as readAutonomyMode,
+} from "@/lib/autonomy-config"
 import type {
   AgentId,
   AgentPermission,
@@ -80,11 +85,11 @@ function parsePermissions(raw: unknown): AgentPermission[] {
 }
 
 export function isAutonomyEnabled(): boolean {
-  return process.env.AUTONOMY_ENABLED === "true"
+  return readAutonomyEnabled()
 }
 
 export function isAgentKillSwitchEnabled(): boolean {
-  return process.env.AGENT_KILL_SWITCH === "true"
+  return readAgentKillSwitch()
 }
 
 export function isPricingKillSwitchEnabled(): boolean {
@@ -95,7 +100,7 @@ export function resolveAutonomyMode(
   modeOverride?: AutonomyMode,
 ): AutonomyMode {
   if (modeOverride) return modeOverride
-  return process.env.AUTONOMY_MODE === "active" ? "active" : "shadow"
+  return readAutonomyMode()
 }
 
 export async function getOrCreateAgentRegistration(input: {
@@ -267,6 +272,64 @@ export async function insertAutonomyAuditRow(input: {
       toJson(input.affectedEntities),
     ],
   )
+}
+
+export async function insertAgentDecisionRow(input: {
+  agentId: string
+  context: Record<string, unknown>
+  decision: Record<string, unknown>
+  confidence: number
+  reasoning: string
+}): Promise<number> {
+  const result = await queryPostgres<{ id: number }>(
+    `INSERT INTO agent_decisions (agent_id, context, decision, confidence, reasoning)
+     VALUES ($1, $2::jsonb, $3::jsonb, $4, $5)
+     RETURNING id`,
+    [
+      input.agentId,
+      toJson(input.context),
+      toJson(input.decision),
+      input.confidence,
+      input.reasoning,
+    ],
+  )
+  return result.rows[0]?.id ?? 0
+}
+
+export async function insertAgentActionRow(input: {
+  agentId: string
+  decisionId?: number | null
+  action: Record<string, unknown>
+  status: string
+  reversible: boolean
+}): Promise<number> {
+  const result = await queryPostgres<{ id: number }>(
+    `INSERT INTO agent_actions (agent_id, decision_id, action, status, reversible)
+     VALUES ($1, $2, $3::jsonb, $4, $5)
+     RETURNING id`,
+    [
+      input.agentId,
+      input.decisionId ?? null,
+      toJson(input.action),
+      input.status,
+      input.reversible,
+    ],
+  )
+  return result.rows[0]?.id ?? 0
+}
+
+export async function insertAgentLearningRow(input: {
+  agentId: string
+  learningInput: Record<string, unknown>
+  outcome: Record<string, unknown>
+}): Promise<number> {
+  const result = await queryPostgres<{ id: number }>(
+    `INSERT INTO agent_learning (agent_id, input, outcome)
+     VALUES ($1, $2::jsonb, $3::jsonb)
+     RETURNING id`,
+    [input.agentId, toJson(input.learningInput), toJson(input.outcome)],
+  )
+  return result.rows[0]?.id ?? 0
 }
 
 export async function getActionLogByActionId(input: {
@@ -723,6 +786,24 @@ export async function getRecentPerformanceHistory(input: {
     : {}
 }
 
+export async function listActiveNodeKeys(input: {
+  tenantId: string
+}): Promise<string[]> {
+  try {
+    const result = await queryPostgres<{ node_key: string }>(
+      `SELECT node_key
+         FROM nodes
+        WHERE tenant_id = $1
+          AND status = 'active'
+        ORDER BY node_key ASC`,
+      [input.tenantId],
+    )
+    return result.rows.map((row) => row.node_key)
+  } catch {
+    return []
+  }
+}
+
 export async function listLatestFunnelMetrics(input: {
   tenantId: string
   category: string
@@ -750,5 +831,58 @@ export async function listLatestFunnelMetrics(input: {
     conversionRate: Number(row.conversion_rate),
     usageCount: row.usage_count,
   }))
+}
+
+export async function getLatestAgentDecisionRows(input: {
+  agentId: string
+  limit?: number
+}): Promise<Array<{ id: number; confidence: number; reasoning: string }>> {
+  const result = await queryPostgres<{
+    id: number
+    confidence: number
+    reasoning: string
+  }>(
+    `SELECT id, confidence, reasoning
+       FROM agent_decisions
+      WHERE agent_id = $1
+      ORDER BY created_at DESC
+      LIMIT $2`,
+    [input.agentId, input.limit ?? 10],
+  )
+  return result.rows
+}
+
+export async function getLatestAgentActionRows(input: {
+  agentId: string
+  limit?: number
+}): Promise<Array<{ id: number; status: string; reversible: boolean }>> {
+  const result = await queryPostgres<{
+    id: number
+    status: string
+    reversible: boolean
+  }>(
+    `SELECT id, status, reversible
+       FROM agent_actions
+      WHERE agent_id = $1
+      ORDER BY created_at DESC
+      LIMIT $2`,
+    [input.agentId, input.limit ?? 10],
+  )
+  return result.rows
+}
+
+export async function getLatestAgentLearningRows(input: {
+  agentId: string
+  limit?: number
+}): Promise<Array<{ id: number }>> {
+  const result = await queryPostgres<{ id: number }>(
+    `SELECT id
+       FROM agent_learning
+      WHERE agent_id = $1
+      ORDER BY created_at DESC
+      LIMIT $2`,
+    [input.agentId, input.limit ?? 10],
+  )
+  return result.rows
 }
 

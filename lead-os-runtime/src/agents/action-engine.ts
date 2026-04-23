@@ -9,6 +9,7 @@ import {
   getActionLogByActionId,
   getFunnelVariantUsageCount,
   incrementFunnelVariantUsage,
+  insertAgentActionRow,
   insertActionLog,
   insertAutonomyAuditRow,
   restoreFunnelVariantUsageCount,
@@ -216,6 +217,20 @@ export async function act(input: {
 
     const status: ActionResult["status"] =
       input.mode === "shadow" ? "simulated" : "applied"
+    const rawDecisionId = input.decision.reasoningMetadata.decisionId
+    const decisionId =
+      typeof rawDecisionId === "number"
+        ? rawDecisionId
+        : typeof rawDecisionId === "string" && rawDecisionId.trim()
+          ? Number(rawDecisionId)
+          : null
+    const actionRowId = await insertAgentActionRow({
+      agentId: input.agentId,
+      decisionId: Number.isFinite(decisionId ?? NaN) ? decisionId : null,
+      action: payload,
+      status,
+      reversible: true,
+    })
     await insertActionLog({
       tenantId: input.tenantId,
       actionId,
@@ -241,6 +256,7 @@ export async function act(input: {
       tenantId: input.tenantId,
       agentId: input.agentId,
       actionId,
+      actionRowId,
       mode: input.mode,
       status,
       actionType,

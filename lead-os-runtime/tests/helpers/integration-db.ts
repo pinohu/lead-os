@@ -55,7 +55,45 @@ export async function setupIntegrationEnvironment(
     "../../src/lib/db.ts"
   )
   await initializeDatabase()
+  try {
+    await queryPostgres(
+      `CREATE TABLE IF NOT EXISTS agent_decisions (
+         id BIGSERIAL PRIMARY KEY,
+         agent_id TEXT NOT NULL,
+         context JSONB NOT NULL DEFAULT '{}'::jsonb,
+         decision JSONB NOT NULL DEFAULT '{}'::jsonb,
+         confidence DOUBLE PRECISION NOT NULL DEFAULT 0,
+         reasoning TEXT NOT NULL DEFAULT '',
+         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+       )`,
+    )
+    await queryPostgres(
+      `CREATE TABLE IF NOT EXISTS agent_actions (
+         id BIGSERIAL PRIMARY KEY,
+         agent_id TEXT NOT NULL,
+         decision_id BIGINT REFERENCES agent_decisions(id) ON DELETE SET NULL,
+         action JSONB NOT NULL DEFAULT '{}'::jsonb,
+         status TEXT NOT NULL,
+         reversible BOOLEAN NOT NULL DEFAULT true,
+         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+       )`,
+    )
+    await queryPostgres(
+      `CREATE TABLE IF NOT EXISTS agent_learning (
+         id BIGSERIAL PRIMARY KEY,
+         agent_id TEXT NOT NULL,
+         input JSONB NOT NULL DEFAULT '{}'::jsonb,
+         outcome JSONB NOT NULL DEFAULT '{}'::jsonb,
+         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+       )`,
+    )
+  } catch {
+    // Keep helper resilient across partial migration states.
+  }
   const tablesToTruncate = [
+    "agent_learning",
+    "agent_actions",
+    "agent_decisions",
     "autonomy_execution_runs",
     "autonomy_agent_audit_log",
     "autonomy_action_log",
