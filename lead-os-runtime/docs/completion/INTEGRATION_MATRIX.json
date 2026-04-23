@@ -1,0 +1,46 @@
+{
+  "integrations": [
+    {
+      "name": "PostgreSQL",
+      "required": true,
+      "status": "required",
+      "behavior_if_missing": "fail_fast"
+    },
+    {
+      "name": "Stripe",
+      "required": false,
+      "status": "wired_optional",
+      "behavior_if_missing": "billing_webhook_sync_disabled"
+    },
+    {
+      "name": "Redis_BullMQ",
+      "required": false,
+      "status": "wired_optional",
+      "behavior_if_missing": "memory_fallback_dev_only"
+    },
+    {
+      "name": "SuiteDash",
+      "required": false,
+      "status": "wired_optional",
+      "behavior_if_missing": "skip_to_log_or_webhook_fallback"
+    },
+    {
+      "name": "Activepieces_Pabbly",
+      "required": false,
+      "status": "wired_optional",
+      "behavior_if_missing": "skip_to_log_fallback"
+    },
+    {
+      "name": "EmailProvider",
+      "required": false,
+      "status": "simulated_optional",
+      "behavior_if_missing": "log_only"
+    },
+    {
+      "name": "Widget",
+      "required": false,
+      "status": "separate_repo",
+      "behavior_if_missing": "backend_unaffected"
+    }
+  ]
+}

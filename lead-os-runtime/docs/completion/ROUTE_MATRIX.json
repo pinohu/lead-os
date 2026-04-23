@@ -1,0 +1,177 @@
+{
+  "routes": [
+    {
+      "route": "/api/intake",
+      "methods": [
+        "POST"
+      ],
+      "type": "public_write",
+      "auth": false,
+      "validation": true,
+      "tenant_enforced": true,
+      "billing_enforced": false,
+      "audit": true,
+      "tested": true
+    },
+    {
+      "route": "/api/health",
+      "methods": [
+        "GET"
+      ],
+      "type": "public_read",
+      "auth": false,
+      "validation": false,
+      "tenant_enforced": false,
+      "billing_enforced": false,
+      "audit": false,
+      "tested": true
+    },
+    {
+      "route": "/api/health/deep",
+      "methods": [
+        "GET"
+      ],
+      "type": "public_read",
+      "auth": false,
+      "validation": false,
+      "tenant_enforced": false,
+      "billing_enforced": false,
+      "audit": false,
+      "tested": true
+    },
+    {
+      "route": "/api/system",
+      "methods": [
+        "GET"
+      ],
+      "type": "public_read",
+      "auth": false,
+      "validation": false,
+      "tenant_enforced": false,
+      "billing_enforced": false,
+      "audit": false,
+      "tested": true
+    },
+    {
+      "route": "/api/queue",
+      "methods": [
+        "GET"
+      ],
+      "type": "internal_read",
+      "auth": true,
+      "validation": false,
+      "tenant_enforced": true,
+      "billing_enforced": false,
+      "audit": false,
+      "tested": true
+    },
+    {
+      "route": "/api/operator/control-plane",
+      "methods": [
+        "GET"
+      ],
+      "type": "operator_read",
+      "auth": true,
+      "validation": false,
+      "tenant_enforced": false,
+      "billing_enforced": true,
+      "audit": false,
+      "tested": true
+    },
+    {
+      "route": "/api/operator/nodes",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "type": "operator_write",
+      "auth": true,
+      "validation": true,
+      "tenant_enforced": true,
+      "billing_enforced": true,
+      "audit": true,
+      "tested": true
+    },
+    {
+      "route": "/api/operator/nodes/[id]",
+      "methods": [
+        "PATCH",
+        "DELETE"
+      ],
+      "type": "operator_write",
+      "auth": true,
+      "validation": true,
+      "tenant_enforced": true,
+      "billing_enforced": true,
+      "audit": true,
+      "tested": true
+    },
+    {
+      "route": "/api/operator/gtm",
+      "methods": [
+        "GET",
+        "POST",
+        "PATCH"
+      ],
+      "type": "operator_write",
+      "auth": true,
+      "validation": true,
+      "tenant_enforced": true,
+      "billing_enforced": true,
+      "audit": true,
+      "tested": true
+    },
+    {
+      "route": "/api/operator/actions",
+      "methods": [
+        "POST"
+      ],
+      "type": "operator_write",
+      "auth": true,
+      "validation": true,
+      "tenant_enforced": true,
+      "billing_enforced": true,
+      "audit": true,
+      "tested": true
+    },
+    {
+      "route": "/api/operator/autonomy",
+      "methods": [
+        "POST"
+      ],
+      "type": "operator_write",
+      "auth": true,
+      "validation": true,
+      "tenant_enforced": true,
+      "billing_enforced": true,
+      "audit": true,
+      "tested": true
+    },
+    {
+      "route": "/api/cron/autonomy",
+      "methods": [
+        "POST"
+      ],
+      "type": "internal_write",
+      "auth": true,
+      "validation": true,
+      "tenant_enforced": true,
+      "billing_enforced": true,
+      "audit": true,
+      "tested": true
+    },
+    {
+      "route": "/api/billing/stripe/webhook",
+      "methods": [
+        "POST"
+      ],
+      "type": "public_webhook",
+      "auth": false,
+      "validation": true,
+      "tenant_enforced": false,
+      "billing_enforced": false,
+      "audit": true,
+      "tested": true
+    }
+  ]
+}

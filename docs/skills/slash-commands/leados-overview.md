@@ -4,7 +4,7 @@ You are working on LeadOS — a multi-tenant lead generation operating system. T
 
 ## Three Applications
 
-### 1. Lead OS Kernel (`lead-os-hosted-runtime-wt-hybrid/`)
+### 1. Lead OS Kernel (`lead-os-runtime/`)
 - **Purpose**: Multi-tenant SaaS backend + dashboard — the engine
 - **URL**: https://lead-os-nine.vercel.app
 - **Stack**: Next.js 16.2, React 19, TypeScript 5.9, Tailwind + shadcn/ui
@@ -13,7 +13,7 @@ You are working on LeadOS — a multi-tenant lead generation operating system. T
 - **Key features**: 4D lead scoring, AI nurture sequences, 137+ integrations, Joy Layer, multi-tenant isolation, RBAC, 2FA/SSO
 - **Pricing**: $299/$599/$1,299/$2,999 per month
 - **Middleware**: Auth on all /api/* routes, public routes whitelisted in `src/middleware.ts`
-- **Vercel config**: Root directory set to `lead-os-hosted-runtime-wt-hybrid` via API
+- **Vercel config**: Root directory set to `lead-os-runtime` via API
 
 ### 2. Erie Pro (`erie-pro/`)
 - **Purpose**: Geographic territory platform — local service directory for Erie, PA
@@ -35,7 +35,7 @@ You are working on LeadOS — a multi-tenant lead generation operating system. T
 - All external integrations run in dry-run mode without env vars
 - shadcn HSL color tokens coexist with kernel's legacy CSS variables
 - Erie-pro uses `generateStaticParams()` for all dynamic routes — new niches auto-generate all 15 page types
-- Vercel deployment: kernel uses `rootDirectory: lead-os-hosted-runtime-wt-hybrid`, erie-pro auto-deploys from git
+- Vercel deployment: kernel uses `rootDirectory: lead-os-runtime`, erie-pro auto-deploys from git
 
 ## GitHub
 - Repo: https://github.com/pinohu/lead-os

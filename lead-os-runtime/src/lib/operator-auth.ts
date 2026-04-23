@@ -1,0 +1,192 @@
+import { createHmac, timingSafeEqual } from "crypto";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { NextResponse } from "next/server";
+import { embeddedSecrets } from "./embedded-secrets.ts";
+import {
+  createMagicLinkUrl,
+  decodeOperatorToken,
+  getAllowedOperatorEmails as resolveAllowedOperatorEmails,
+  isAllowedOperatorEmail as isAllowedOperatorEmailInList,
+  issueOperatorToken,
+  normalizeEmail,
+  sanitizeNextPath,
+} from "./operator-auth-core.ts";
+import { sendEmailAction } from "./providers.ts";
+import { tenantConfig } from "./tenant.ts";
+import { ensureTraceContext } from "./trace.ts";
+
+export const OPERATOR_SESSION_COOKIE = "leados_operator_session";
+export { sanitizeNextPath } from "./operator-auth-core.ts";
+
+function getAuthSecret() {
+  return process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? embeddedSecrets.cron.secret;
+}
+
+function verifyMiddlewareSignature(request: Request): boolean {
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? "";
+  const signature = request.headers.get("x-middleware-signature") ?? "";
+  const userId = request.headers.get("x-authenticated-user-id") ?? "";
+  const tenantId = request.headers.get("x-authenticated-tenant-id") ?? "";
+  const requestId = request.headers.get("x-request-id") ?? "";
+  if (!secret || !signature || !userId || !tenantId || !requestId) return false;
+
+  const payload = `${userId}:${tenantId}:${requestId}`;
+  const expected = createHmac("sha256", secret).update(payload).digest("hex");
+  const a = Buffer.from(expected);
+  const b = Buffer.from(signature);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+
+export function getAllowedOperatorEmails() {
+  return resolveAllowedOperatorEmails(process.env.LEAD_OS_OPERATOR_EMAILS, [
+    process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
+    tenantConfig.supportEmail,
+  ]);
+}
+
+export function isAllowedOperatorEmail(email: string) {
+  return isAllowedOperatorEmailInList(email, getAllowedOperatorEmails());
+}
+
+export async function createMagicLink(email: string, origin: string, nextPath?: string) {
+  const { url } = await createMagicLinkUrl(
+    email,
+    origin,
+    getAuthSecret(),
+    getAllowedOperatorEmails(),
+    nextPath,
+  );
+  return url;
+}
+
+export async function sendOperatorMagicLink(email: string, origin: string, nextPath?: string) {
+  const normalizedEmail = normalizeEmail(email);
+  const magicLink = await createMagicLink(normalizedEmail, origin, nextPath);
+  const trace = ensureTraceContext({
+    tenant: tenantConfig.tenantId,
+    source: "manual",
+    service: "operator-auth",
+    niche: "operations",
+    blueprintId: "operator-auth",
+    stepId: "magic-link",
+    email: normalizedEmail,
+  });
+
+  return sendEmailAction({
+    to: normalizedEmail,
+    subject: `${tenantConfig.brandName} operator sign-in link`,
+    html: `
+      <div style="font-family:Segoe UI,sans-serif;line-height:1.6;color:#0f172a">
+        <h1 style="font-size:24px;margin-bottom:12px">${tenantConfig.brandName} operator access</h1>
+        <p>Use the secure link below to sign in to the CX React operator dashboard.</p>
+        <p><a href="${magicLink}" style="display:inline-block;background:#14b8a6;color:#07142b;padding:12px 18px;border-radius:12px;font-weight:700;text-decoration:none">Open operator dashboard</a></p>
+        <p>This link expires in 15 minutes and only works for approved operator email addresses.</p>
+      </div>
+    `,
+    trace,
+  });
+}
+
+export async function createSessionToken(email: string) {
+  return issueOperatorToken(
+    {
+      type: "session",
+      email: normalizeEmail(email),
+      exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    },
+    getAuthSecret(),
+  );
+}
+
+export async function verifyMagicLinkToken(token: string) {
+  return decodeOperatorToken(token, "magic", getAuthSecret(), getAllowedOperatorEmails());
+}
+
+export async function verifySessionToken(token: string) {
+  return decodeOperatorToken(token, "session", getAuthSecret(), getAllowedOperatorEmails());
+}
+
+export async function getOperatorSessionFromCookieHeader(cookieHeader?: string | null) {
+  const rawCookie = cookieHeader
+    ?.split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${OPERATOR_SESSION_COOKIE}=`))
+    ?.slice(OPERATOR_SESSION_COOKIE.length + 1);
+
+  if (!rawCookie) return null;
+  return verifySessionToken(rawCookie);
+}
+
+export async function getOperatorSession() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(OPERATOR_SESSION_COOKIE)?.value;
+  if (!token) return null;
+  return verifySessionToken(token);
+}
+
+export function applyOperatorSession(response: NextResponse, token: string) {
+  response.cookies.set({
+    name: OPERATOR_SESSION_COOKIE,
+    value: token,
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60,
+  });
+}
+
+export function clearOperatorSession(response: NextResponse) {
+  response.cookies.set({
+    name: OPERATOR_SESSION_COOKIE,
+    value: "",
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    path: "/",
+    maxAge: 0,
+  });
+}
+
+export async function requireOperatorApiSession(request: Request) {
+  // Fast path: trust identity headers set by the Next.js middleware.
+  // When middleware already validated the operator cookie it attaches the
+  // identity as request headers, so we can skip re-parsing the JWT.
+  const userId = request.headers.get("x-authenticated-user-id");
+  const method = request.headers.get("x-authenticated-method");
+  const signatureTrusted = verifyMiddlewareSignature(request);
+  if (userId && method && signatureTrusted) {
+    return {
+      session: { email: userId, type: "session" as const, exp: 0 },
+      response: null,
+    };
+  }
+
+  // Fallback: full cookie validation for requests that bypass middleware.
+  const session = await getOperatorSessionFromCookieHeader(request.headers.get("cookie"));
+  if (!session) {
+    return {
+      session: null,
+      response: NextResponse.json(
+        {
+          success: false,
+          error: "Unauthorized",
+          signInUrl: `/auth/sign-in?next=${encodeURIComponent("/dashboard")}`,
+        },
+        { status: 401 },
+      ),
+    };
+  }
+
+  return { session, response: null };
+}
+
+export async function requireOperatorPageSession(nextPath: string) {
+  const session = await getOperatorSession();
+  if (!session) {
+    redirect(`/auth/sign-in?next=${encodeURIComponent(sanitizeNextPath(nextPath))}`);
+  }
+  return session;
+}

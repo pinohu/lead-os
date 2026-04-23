@@ -4,7 +4,7 @@
 
 | Project | ID | Root Directory | Auto-Deploy |
 |---------|-----|---------------|-------------|
-| lead-os | prj_K6ls4j85woFkbgI5KhsHUtL1nMQ4 | lead-os-hosted-runtime-wt-hybrid | Yes (from git) |
+| lead-os | prj_K6ls4j85woFkbgI5KhsHUtL1nMQ4 | lead-os-runtime | Yes (from git) |
 | erie-pro | prj_ZrLsCE8EKeas6mpWaUSWPgFdcatp | (repo root — erie-pro IS the root) | Yes (from git) |
 | neatcircle-beta | prj_N4ZiOoahdoThvrBRNoeghIm9J6mu | neatcircle-beta | Yes (from git) |
 
@@ -16,7 +16,7 @@ The kernel's root directory was set via Vercel API:
 curl -X PATCH "https://api.vercel.com/v9/projects/prj_K6ls4j85woFkbgI5KhsHUtL1nMQ4?teamId=team_fuTLGjBMk3NAD32Bm5hA7wkr" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"rootDirectory":"lead-os-hosted-runtime-wt-hybrid"}'
+  -d '{"rootDirectory":"lead-os-runtime"}'
 ```
 Deploy from REPO ROOT (not subdirectory — that would double the path):
 ```bash

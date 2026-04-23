@@ -24,7 +24,7 @@ git clone https://github.com/pinohu/lead-os.git
 cd lead-os
 
 # Install kernel runtime dependencies
-cd lead-os-hosted-runtime-wt-hybrid
+cd lead-os-runtime
 npm install
 
 # Install edge layer dependencies
@@ -64,7 +64,7 @@ Skip database setup entirely. The runtime defaults to in-memory storage when no 
 ### Kernel Runtime
 
 ```bash
-cd lead-os-hosted-runtime-wt-hybrid
+cd lead-os-runtime
 cp .env.sample .env
 ```
 
@@ -128,7 +128,7 @@ Open two terminal windows:
 ### Terminal 1: Kernel Runtime
 
 ```bash
-cd lead-os/lead-os-hosted-runtime-wt-hybrid
+cd lead-os/lead-os-runtime
 npm run dev
 # Starts on http://localhost:3000
 ```
@@ -196,7 +196,7 @@ curl -X POST http://localhost:3000/api/decision \
 ### Run Tests
 
 ```bash
-cd lead-os-hosted-runtime-wt-hybrid
+cd lead-os-runtime
 npm test
 
 cd ../neatcircle-beta
@@ -208,7 +208,7 @@ npm test
 ### 7.1 Kernel Runtime on Railway
 
 ```bash
-cd lead-os-hosted-runtime-wt-hybrid
+cd lead-os-runtime
 
 # Login and link to your Railway project
 railway login

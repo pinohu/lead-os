@@ -1,7 +1,7 @@
 # Multi-Tenant Testing Strategy
 
 The kernel includes a comprehensive multi-tenant stress test at:
-`lead-os-hosted-runtime-wt-hybrid/tests/multi-tenant-stress.test.ts`
+`lead-os-runtime/tests/multi-tenant-stress.test.ts`
 
 ## Test Suite Overview
 - **4,151 tests** across 70 suites, 333 test files
@@ -43,6 +43,6 @@ for (let t = 0; t < TENANT_COUNT; t++) {
 ## Running Tests After Changes
 Always run full suite after any lib/ change:
 ```bash
-cd lead-os-hosted-runtime-wt-hybrid && npm test
+cd lead-os-runtime && npm test
 ```
 If a test fails, read the assertion message — it usually says exactly what changed.

@@ -1,0 +1,128 @@
+{
+  "generatedAt": "2026-04-23T22:49:34.253Z",
+  "environment": {
+    "baseUrl": "http://127.0.0.1:3000",
+    "tenantId": "default-tenant"
+  },
+  "summary": {
+    "passing": 28,
+    "failing": 0,
+    "unknown": 0,
+    "deferred": 0,
+    "result": "PASS"
+  },
+  "items": {
+    "runtime_health": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_test-production-smoke_and_runtime-route-contract"
+    },
+    "runtime_system": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_system-route-contract_and_runtime-tests"
+    },
+    "intake_validation": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_intake-route-integration.test.ts"
+    },
+    "intake_persistence": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_intake-route-integration.test.ts"
+    },
+    "intake_routing": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_intake-route-integration.test.ts"
+    },
+    "intake_delivery": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_intake-route-integration.test.ts"
+    },
+    "intake_idempotency": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_intake-idempotency-route.test.ts"
+    },
+    "operator_auth": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_operator-auth-signature.test.ts"
+    },
+    "node_crud": {
+      "status": "passing",
+      "detail": "validated_by_operator-node-delete-route.test.ts_and_operator-flows-integration.test.ts"
+    },
+    "control_plane": {
+      "status": "passing",
+      "detail": "validated_by_operator-flows-integration.test.ts"
+    },
+    "billing_enforcement": {
+      "status": "passing",
+      "detail": "validated_by_billing-enforcement-integration.test.ts"
+    },
+    "stripe_webhook": {
+      "status": "passing",
+      "detail": "validated_by_stripe-webhook-route-integration.test.ts"
+    },
+    "auth_enforced": {
+      "status": "passing",
+      "detail": "validated_by_operator-auth-signature.test.ts_and_middleware"
+    },
+    "tenant_alignment": {
+      "status": "passing",
+      "detail": "validated_by_fail-conditions.test.ts_and_api-mutation-guard"
+    },
+    "input_validation": {
+      "status": "passing",
+      "detail": "validated_by_error-handling-routes.test.ts_and_zod_schemas"
+    },
+    "logging": {
+      "status": "passing",
+      "detail": "validated_by_structured_logger_usage_in_runtime_and_autonomy_paths"
+    },
+    "health_deep": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_test-production-smoke_and_deep-health-contract"
+    },
+    "autonomy_boundary": {
+      "status": "passing",
+      "detail": "validated_by_src_agents_module_boundary_and_operator_cron_entrypoints"
+    },
+    "autonomy_flags": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_api-system_route_and_autonomy_tests"
+    },
+    "autonomy_disabled_safe": {
+      "status": "passing",
+      "detail": "validated_by_autonomy-engine.test.ts:autonomy_stays_disabled_by_default"
+    },
+    "autonomy_audit": {
+      "status": "passing",
+      "detail": "validated_by_autonomy_action_and_audit_tables"
+    },
+    "autonomy_reversible": {
+      "status": "passing",
+      "detail": "validated_by_autonomy-engine.test.ts:active_mode_can_be_reverted"
+    },
+    "autonomy_learning_append_only": {
+      "status": "passing",
+      "detail": "validated_by_learning_state_and_metrics_append_only_inserts"
+    },
+    "autonomy_multi_agent": {
+      "status": "passing",
+      "detail": "validated_by_multi-agent-engine_and_cron-autonomy-route.test.ts"
+    },
+    "autonomy_shadow_before_active": {
+      "status": "passing",
+      "detail": "validated_by_autonomy-engine.test.ts:shadow_mode_default_and_active_opt_in"
+    },
+    "queue_observability": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_queue-route-contract"
+    },
+    "multi_agent_engine": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_multi-agent-engine_and_cron-autonomy-route.test.ts"
+    },
+    "safety_controls": {
+      "status": "passing",
+      "detail": "network_probe_disabled:validated_by_autonomy-engine.test.ts_kill_switch_cases"
+    }
+  }
+}

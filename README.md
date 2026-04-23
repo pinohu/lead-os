@@ -45,7 +45,7 @@ CX React captures visitor intent through embeddable widgets, scores and routes l
                                     |
                     +---------------+-----------------+
                     |        Kernel Runtime           |
-                    | (lead-os-hosted-runtime-wt-hybrid)|
+                    | (lead-os-runtime)|
                     |  Next.js 16 + PostgreSQL        |
                     |  539 pages, 499 API endpoints   |
                     +---------------+-----------------+
@@ -63,7 +63,7 @@ CX React captures visitor intent through embeddable widgets, scores and routes l
 |-------|---------|------|
 | Erie Pro | `erie-pro` | Geographic territory platform, 46 niches, 702 pages, exclusive city/niche claims |
 | Edge Layer | `neatcircle-beta` | Marketing site, behavioral tracking, experience personalization, widget orchestration, 152 pages |
-| Kernel Runtime | `lead-os-hosted-runtime-wt-hybrid` | Intake, scoring, funnel decisioning, AI agents, social content, marketplace, billing, provider orchestration, operator dashboard, 539 pages, 499 API endpoints |
+| Kernel Runtime | `lead-os-runtime` | Intake, scoring, funnel decisioning, AI agents, social content, marketplace, billing, provider orchestration, operator dashboard, 539 pages, 499 API endpoints |
 | Automation Layer | Activepieces + n8n + cron jobs | Durable multi-step workflows, retries, milestone-driven sequences |
 | CRM Layer | SuiteDash + SalesNexus | Contact management, deals, pipeline stages, human workflow |
 
@@ -92,7 +92,7 @@ CX React captures visitor intent through embeddable widgets, scores and routes l
 
 ```bash
 git clone https://github.com/pinohu/lead-os.git
-cd lead-os/lead-os-hosted-runtime-wt-hybrid
+cd lead-os/lead-os-runtime
 
 npm install
 npm run dev    # Starts at http://localhost:3000
@@ -282,14 +282,14 @@ All integrations operate in **dry-run mode** when their API key is not configure
 ### Vercel (recommended)
 
 ```bash
-cd lead-os-hosted-runtime-wt-hybrid
+cd lead-os-runtime
 vercel --prod
 ```
 
 ### Railway
 
 ```bash
-cd lead-os-hosted-runtime-wt-hybrid
+cd lead-os-runtime
 railway login && railway link && railway up
 ```
 
@@ -331,7 +331,7 @@ No env vars are required for development. For production, see the [Complete Guid
 ## Testing
 
 ```bash
-cd lead-os-hosted-runtime-wt-hybrid
+cd lead-os-runtime
 npm test
 ```
 
@@ -354,7 +354,7 @@ lead-os/
   LEAD-OS-COMPLETE-GUIDE.md              # Comprehensive platform guide
   README.md                              # This file
   docs/                                  # Architecture, API, setup docs
-  lead-os-hosted-runtime-wt-hybrid/      # Kernel runtime (system of record)
+  lead-os-runtime/                         # Kernel runtime (system of record)
     src/
       app/
         api/                             # 499 API endpoints
@@ -368,6 +368,9 @@ lead-os/
       lib/                               # 234 library modules
         integrations/                    # 62 integration adapters
     tests/                               # 4,187 test cases
+  lead-os-embed-widgets/                 # Widget/frontend/embed layer (WP/subdomain)
+    src/                                 # Widget boot, intake-facing frontend surfaces
+    public/embed/lead-os-embed.js        # Embed script artifact
   erie-pro/                              # Geographic territory platform (702 pages)
     src/
       app/                               # 46 niches x 15 page types + static

@@ -74,11 +74,11 @@ Path: `erie-pro/src/app/providers/signup/page.tsx`
 
 ### 5. kernel pricing config -- `PLATFORM_TIERS`
 Source of truth for kernel SaaS tier pricing.
-Path: `lead-os-hosted-runtime-wt-hybrid/src/config/pricing.ts`
+Path: `lead-os-runtime/src/config/pricing.ts`
 
 ### 6. kernel billing dashboard -- Display component
 Pricing shown in the agency admin billing page.
-Path: `lead-os-hosted-runtime-wt-hybrid/src/app/dashboard/billing/page.tsx`
+Path: `lead-os-runtime/src/app/dashboard/billing/page.tsx`
 
 ## Synchronization Workflow
 

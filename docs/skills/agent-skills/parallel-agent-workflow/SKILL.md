@@ -41,7 +41,7 @@ Launch all three builds as background agents:
 cd erie-pro && npm run build 2>&1 | tee /tmp/build-erie-pro.log
 
 # Agent 2 (background)
-cd lead-os-hosted-runtime-wt-hybrid && npm run build 2>&1 | tee /tmp/build-kernel.log
+cd lead-os-runtime && npm run build 2>&1 | tee /tmp/build-kernel.log
 
 # Agent 3 (background)
 cd neatcircle && npm run build 2>&1 | tee /tmp/build-neatcircle.log

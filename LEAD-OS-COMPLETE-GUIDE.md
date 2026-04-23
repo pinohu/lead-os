@@ -543,7 +543,7 @@ Capture leads and sell them to buyers. Dynamic pricing based on temperature and 
 ```bash
 # Clone the repository
 git clone https://github.com/pinohu/lead-os.git
-cd lead-os/lead-os-hosted-runtime-wt-hybrid
+cd lead-os/lead-os-runtime
 
 # Install dependencies
 npm install
