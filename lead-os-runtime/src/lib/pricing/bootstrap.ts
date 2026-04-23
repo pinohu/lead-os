@@ -11,6 +11,7 @@ import {
   PRICING_QUEUE_MAIN,
   PRICING_QUEUE_MEASURE,
   pushToDlq,
+  tryRunAutonomyAgentsByScheduler,
   tryDistributedSchedulerEnqueue,
 } from "./queue-client.ts";
 import {
@@ -159,14 +160,16 @@ async function startPricingWorkersInternal(opts: {
         clearInterval(globalForWorkers.__leadOsPricingScheduler);
       }
       globalForWorkers.__leadOsPricingScheduler = setInterval(() => {
-        tryDistributedSchedulerEnqueue().catch((err) =>
-          console.error("[pricing] scheduler enqueue:", err),
-        );
+        Promise.allSettled([
+          tryDistributedSchedulerEnqueue(),
+          tryRunAutonomyAgentsByScheduler(),
+        ]).catch((err) => console.error("[pricing] scheduler tick:", err));
       }, intervalMs);
       markSchedulerStarted();
-      tryDistributedSchedulerEnqueue().catch((err) =>
-        console.error("[pricing] initial scheduler enqueue:", err),
-      );
+      Promise.allSettled([
+        tryDistributedSchedulerEnqueue(),
+        tryRunAutonomyAgentsByScheduler(),
+      ]).catch((err) => console.error("[pricing] initial scheduler tick:", err));
     }
     pricingLog("info", "bullmq_workers_online", {
       scheduler: opts.enableScheduler,

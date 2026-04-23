@@ -2,10 +2,28 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 import { setupIntegrationEnvironment } from "./helpers/integration-db.ts"
+import { createHmac } from "crypto"
+
+function signMiddlewareIdentity(input: {
+  userId: string
+  tenantId: string
+  requestId: string
+}): string {
+  const payload = `${input.userId}:${input.tenantId}:${input.requestId}`
+  return createHmac(
+    "sha256",
+    process.env.LEAD_OS_AUTH_SECRET ?? "test-auth-secret",
+  )
+    .update(payload)
+    .digest("hex")
+}
 
 describe("error handling on critical routes", () => {
   it("operator actions returns structured invalid_json error", async () => {
+    const restore = await setupIntegrationEnvironment()
+    try {
     const { POST } = await import("../src/app/api/operator/actions/route.ts")
+    const requestId = "error-test-actions"
     const res = await POST(
       new Request("http://localhost/api/operator/actions", {
         method: "POST",
@@ -14,6 +32,13 @@ describe("error handling on critical routes", () => {
           "x-authenticated-user-id": "operator@example.com",
           "x-authenticated-method": "operator-cookie",
           "x-authenticated-tenant-id": "default-tenant",
+          "x-authenticated-role": "owner",
+          "x-request-id": requestId,
+          "x-middleware-signature": signMiddlewareIdentity({
+            userId: "operator@example.com",
+            tenantId: "default-tenant",
+            requestId,
+          }),
         },
         body: "{",
       }),
@@ -22,12 +47,16 @@ describe("error handling on critical routes", () => {
     const json = await res.json()
     assert.equal(json.ok, false)
     assert.equal(json.error, "invalid_json")
+    } finally {
+      restore()
+    }
   })
 
   it("operator GTM returns structured invalid_json error", async () => {
     const restore = await setupIntegrationEnvironment()
     try {
       const { PATCH } = await import("../src/app/api/operator/gtm/route.ts")
+      const requestId = "error-test-gtm"
       const res = await PATCH(
         new Request("http://localhost/api/operator/gtm", {
           method: "PATCH",
@@ -36,6 +65,13 @@ describe("error handling on critical routes", () => {
             "x-authenticated-user-id": "operator@example.com",
             "x-authenticated-method": "operator-cookie",
             "x-authenticated-tenant-id": "default-tenant",
+            "x-authenticated-role": "owner",
+            "x-request-id": requestId,
+            "x-middleware-signature": signMiddlewareIdentity({
+              userId: "operator@example.com",
+              tenantId: "default-tenant",
+              requestId,
+            }),
           },
           body: "{",
         }),

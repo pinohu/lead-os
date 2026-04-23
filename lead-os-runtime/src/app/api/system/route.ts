@@ -10,11 +10,13 @@ import {
 } from "@/lib/pricing/env";
 import { getPricingRuntimeSnapshot } from "@/lib/pricing/runtime-state";
 import { getSupabaseAnonKey, isSupabaseConfigured } from "@/lib/supabase/admin";
+import { listAgentRegistrations } from "@/agents/repository";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const billing = await getBillingGateState(tenantConfig.tenantId).catch(() => null);
+  const autonomyAgents = await listAgentRegistrations(tenantConfig.tenantId).catch(() => []);
   return NextResponse.json({
     ok: true,
     service: "lead-os",
@@ -25,6 +27,10 @@ export async function GET() {
       systemEnabled: isSystemEnabled(),
       livePricingEnabled: isLivePricingEnabled(),
       billingEnforce: process.env.LEAD_OS_BILLING_ENFORCE === "true",
+      autonomyEnabled: process.env.AUTONOMY_ENABLED === "true",
+      autonomyMode: process.env.AUTONOMY_MODE === "active" ? "active" : "shadow",
+      agentKillSwitch: process.env.AGENT_KILL_SWITCH === "true",
+      pricingKillSwitch: process.env.PRICING_KILL_SWITCH === "true",
     },
     billing,
     integrations: {
@@ -39,6 +45,17 @@ export async function GET() {
       workerEntry: "src/runtime/worker-entry.ts",
       buildId: process.env.LEAD_OS_BUILD_ID ?? process.env.VERCEL_GIT_COMMIT_SHA ?? null,
       singleTenantEnforce: process.env.LEAD_OS_SINGLE_TENANT_ENFORCE !== "false",
+    },
+    autonomy: {
+      enabled: process.env.AUTONOMY_ENABLED === "true",
+      mode: process.env.AUTONOMY_MODE === "active" ? "active" : "shadow",
+      agents: autonomyAgents,
+      invariants: {
+        deterministicCoreUnaffected: true,
+        reversibleActionsOnly: true,
+        billingGuarded: true,
+        tenantGuarded: true,
+      },
     },
   });
 }

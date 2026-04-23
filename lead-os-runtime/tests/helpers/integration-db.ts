@@ -56,6 +56,17 @@ export async function setupIntegrationEnvironment(
   )
   await initializeDatabase()
   const tablesToTruncate = [
+    "autonomy_execution_runs",
+    "autonomy_agent_audit_log",
+    "autonomy_action_log",
+    "autonomy_routing_overrides",
+    "autonomy_delivery_overrides",
+    "autonomy_follow_up_jobs",
+    "funnel_variants",
+    "funnel_performance_metrics",
+    "node_performance_metrics",
+    "learning_state",
+    "autonomy_agent_registry",
     "idempotency_records",
     "stripe_webhook_events",
     "operator_audit_log",

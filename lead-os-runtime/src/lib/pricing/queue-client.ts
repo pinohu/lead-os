@@ -3,6 +3,7 @@
 
 import type { PricingDlqJobData, PricingMeasureJobData, PricingTickJobData } from "./types.ts";
 import { getDefaultTenantId, getPricingTickIntervalMs, isRedisUrlConfigured } from "./env.ts";
+import { runEnabledAgents } from "@/agents/multi-agent-engine"
 
 export const PRICING_QUEUE_MAIN = "leados-pricing-main";
 export const PRICING_QUEUE_MEASURE = "leados-pricing-measure";
@@ -143,6 +144,59 @@ export async function tryDistributedSchedulerEnqueue(): Promise<boolean> {
     return true;
   } finally {
     await r.quit().catch(() => {});
+  }
+}
+
+export async function tryRunAutonomyAgentsByScheduler(input?: {
+  tenantId?: string
+  modeOverride?: "shadow" | "active"
+}): Promise<{
+  ran: boolean
+  reason?: string
+  count?: number
+}> {
+  if (!isRedisUrlConfigured()) {
+    return {
+      ran: false,
+      reason: "redis_not_configured",
+    }
+  }
+  const { default: IORedis } = await import("ioredis")
+  const lockTtl = 45
+  const redis = new IORedis(process.env.REDIS_URL!, { maxRetriesPerRequest: 1 })
+  try {
+    const locked = await redis.set(
+      "leados:autonomy:sched-lock",
+      "1",
+      "EX",
+      lockTtl,
+      "NX",
+    )
+    if (locked !== "OK") {
+      return {
+        ran: false,
+        reason: "scheduler_lock_not_acquired",
+      }
+    }
+    const result = await runEnabledAgents({
+      tenantId: input?.tenantId ?? getDefaultTenantId(),
+      modeOverride: input?.modeOverride,
+      context: {
+        leadData: { category: "general", leadKey: "scheduler-tick" },
+        tenantConfig: {},
+        performanceHistory: {},
+        gtmState: {
+          status: "in_progress",
+        },
+      },
+      outcomes: [],
+    })
+    return {
+      ran: true,
+      count: result.results.length,
+    }
+  } finally {
+    await redis.quit().catch(() => {})
   }
 }
 

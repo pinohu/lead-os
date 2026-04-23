@@ -1,5 +1,6 @@
 import assert from "node:assert/strict"
 import { after, before, beforeEach, describe, it } from "node:test"
+import { createHmac } from "crypto"
 import { initializeDatabase, queryPostgres } from "../src/lib/db.ts"
 import { OPERATOR_SESSION_COOKIE, createSessionToken } from "../src/lib/operator-auth.ts"
 import { resetIntakeIdempotencyCache } from "../src/lib/intake-idempotency-cache.ts"
@@ -9,11 +10,20 @@ describe("operator flows integration", () => {
   let sessionCookieHeader = ""
   let restoreDbEnv: (() => void) | null = null
 
-  function withOperatorIdentityHeaders(): HeadersInit {
+  function signIdentity(requestId: string): string {
+    return createHmac("sha256", process.env.LEAD_OS_AUTH_SECRET ?? "test-auth-secret")
+      .update(`operator@example.com:default-tenant:${requestId}`)
+      .digest("hex")
+  }
+
+  function withOperatorIdentityHeaders(requestId = "operator-test-request"): HeadersInit {
     return {
       "x-authenticated-user-id": "operator@example.com",
       "x-authenticated-method": "operator-cookie",
       "x-authenticated-tenant-id": "default-tenant",
+      "x-authenticated-role": "owner",
+      "x-middleware-signature": signIdentity(requestId),
+      "x-request-id": requestId,
     }
   }
 

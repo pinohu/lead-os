@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
@@ -20,6 +21,22 @@ export { sanitizeNextPath } from "./operator-auth-core.ts";
 
 function getAuthSecret() {
   return process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? embeddedSecrets.cron.secret;
+}
+
+function verifyMiddlewareSignature(request: Request): boolean {
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? "";
+  const signature = request.headers.get("x-middleware-signature") ?? "";
+  const userId = request.headers.get("x-authenticated-user-id") ?? "";
+  const tenantId = request.headers.get("x-authenticated-tenant-id") ?? "";
+  const requestId = request.headers.get("x-request-id") ?? "";
+  if (!secret || !signature || !userId || !tenantId || !requestId) return false;
+
+  const payload = `${userId}:${tenantId}:${requestId}`;
+  const expected = createHmac("sha256", secret).update(payload).digest("hex");
+  const a = Buffer.from(expected);
+  const b = Buffer.from(signature);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
 }
 
 export function getAllowedOperatorEmails() {
@@ -139,7 +156,8 @@ export async function requireOperatorApiSession(request: Request) {
   // identity as request headers, so we can skip re-parsing the JWT.
   const userId = request.headers.get("x-authenticated-user-id");
   const method = request.headers.get("x-authenticated-method");
-  if (userId && method) {
+  const signatureTrusted = verifyMiddlewareSignature(request);
+  if (userId && method && signatureTrusted) {
     return {
       session: { email: userId, type: "session" as const, exp: 0 },
       response: null,

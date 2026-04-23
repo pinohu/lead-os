@@ -11,6 +11,9 @@ describe("operator node delete route", () => {
       "x-authenticated-user-id": "operator@example.com",
       "x-authenticated-method": "operator-cookie",
       "x-authenticated-tenant-id": "default-tenant",
+      "x-authenticated-role": "owner",
+      "x-middleware-signature": "7117d44d3f2d66f867f2854376b197332cae7f4559f81c5eb524768b8f89123a",
+      "x-request-id": "operator-delete-test",
     }
   }
 
