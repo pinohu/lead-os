@@ -201,6 +201,36 @@ SUITEDASH_API_KEY=...        # CRM
 CRON_SECRET=your-random-secret
 ```
 
+## LeadOS Core Runtime (Vercel + Postgres)
+
+This repository now includes a minimal production runtime under `src/app/api` and `src/lib` for health checks, authenticated operator lead visibility, and lead intake persistence to PostgreSQL.
+
+### Required Environment Variables
+
+```bash
+DATABASE_URL=postgresql://user:password@host:5432/database
+LEAD_OS_AUTH_SECRET=replace-with-a-long-random-secret
+```
+
+### Runtime API Smoke Tests
+
+```bash
+# 1) Basic health
+curl -s http://localhost:3000/api/health
+
+# 2) Deep health (checks Postgres with SELECT 1)
+curl -s http://localhost:3000/api/health/deep
+
+# 3) Lead intake
+curl -s -X POST http://localhost:3000/api/intake \
+  -H "Content-Type: application/json" \
+  -d '{"email":"demo@example.com","firstName":"Demo","message":"Need a quote"}'
+
+# 4) Operator leads (auth required)
+curl -s http://localhost:3000/api/operator/leads \
+  -H "x-auth-secret: ${LEAD_OS_AUTH_SECRET}"
+```
+
 ## Deployment
 
 ### Railway (recommended)

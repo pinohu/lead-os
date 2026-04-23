@@ -13,7 +13,7 @@
     "worker:pricing": "node --experimental-strip-types src/runtime/worker-entry.ts",
     "prebuild": "node scripts/write-build-id.mjs",
     "build": "next build",
-    "start": "next start -H 0.0.0.0 -p ${PORT:-3000}",
+    "start": "next start",
     "cli": "node --experimental-strip-types src/cli/index.ts",
     "mcp": "node --experimental-strip-types src/mcp/index.ts",
     "test": "cross-env LEAD_OS_USE_AITABLE_PERSISTENCE=false LEAD_OS_ENABLE_LIVE_SENDS=false node --test --test-concurrency=1 --experimental-test-isolation=none --experimental-strip-types tests/**/*.test.ts",
