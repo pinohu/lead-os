@@ -28,8 +28,15 @@ export async function logOperatorAudit(input: OperatorAuditInput): Promise<void>
     );
   } catch (err) {
     console.error(
-      "[operator-audit] insert failed:",
-      err instanceof Error ? err.message : String(err),
-    );
+      JSON.stringify({
+        scope: "operator_audit",
+        level: "error",
+        step: "insert_failed",
+        actorEmail: input.actorEmail,
+        tenantId: input.tenantId,
+        action: input.action,
+        message: err instanceof Error ? err.message : String(err),
+      }),
+    )
   }
 }

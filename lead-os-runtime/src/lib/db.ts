@@ -10,6 +10,10 @@ import { runMigrations } from "./migration-runner.ts";
 let pool: Pool | null = null;
 let migrationsRun: Promise<void> | null = null;
 
+function isDbPoolDisabled(): boolean {
+  return process.env.LEAD_OS_DISABLE_DB_POOL === "true";
+}
+
 function requireDatabaseUrl(): string {
   const connectionString = process.env.DATABASE_URL?.trim();
   if (connectionString) return connectionString;
@@ -54,6 +58,7 @@ export async function query<T extends QueryResultRow = QueryResultRow>(
 
 export function getPool(): Pool {
   if (pool) return pool;
+  if (isDbPoolDisabled()) return null as unknown as Pool;
   const connectionString = requireDatabaseUrl();
   pool = new Pool({
     connectionString,
@@ -65,9 +70,19 @@ export function getPool(): Pool {
   return pool;
 }
 
+export function resetDatabasePoolForTests(): void {
+  if (pool) {
+    void pool.end().catch(() => {});
+  }
+  pool = null;
+  migrationsRun = null;
+}
+
 export async function initializeDatabase(): Promise<void> {
+  const activePool = getPool();
+  if (!activePool) return;
   if (migrationsRun) return migrationsRun;
-  migrationsRun = runMigrations(getPool()).catch((error) => {
+  migrationsRun = runMigrations(activePool).catch((error) => {
     migrationsRun = null;
     throw error;
   });
@@ -78,7 +93,11 @@ export async function queryPostgres<T extends QueryResultRow>(
   text: string,
   values: unknown[] = [],
 ): Promise<QueryResult<T>> {
-  return getPool().query<T>(text, values);
+  const activePool = getPool();
+  if (!activePool) {
+    throw new Error("DATABASE_URL is required for PostgreSQL connectivity.");
+  }
+  return activePool.query<T>(text, values);
 }
 
 export async function withTransaction<T>(

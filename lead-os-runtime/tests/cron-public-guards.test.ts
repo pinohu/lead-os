@@ -45,4 +45,13 @@ describe("cron-public-guards", () => {
     const res = requireDeployTenantIdOrFail("other-tenant", "test");
     assert.equal(res, null);
   });
+
+  it("requireDeployTenantIdOrFail blocks mismatched tenant when enforced", async () => {
+    process.env.LEAD_OS_SINGLE_TENANT_ENFORCE = "true";
+    const { tenantConfig } = await import("../src/lib/tenant.ts");
+    const mismatched = `${tenantConfig.tenantId}-other`;
+    const res = requireDeployTenantIdOrFail(mismatched, "test");
+    assert.ok(res);
+    assert.equal(res.status, 403);
+  });
 });

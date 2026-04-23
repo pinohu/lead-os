@@ -16,14 +16,15 @@
     "start": "next start",
     "cli": "node --experimental-strip-types src/cli/index.ts",
     "mcp": "node --experimental-strip-types src/mcp/index.ts",
-    "test": "cross-env LEAD_OS_USE_AITABLE_PERSISTENCE=false LEAD_OS_ENABLE_LIVE_SENDS=false node --test --test-concurrency=1 --experimental-test-isolation=none --experimental-strip-types tests/**/*.test.ts",
-    "test:ci": "cross-env LEAD_OS_USE_AITABLE_PERSISTENCE=false LEAD_OS_ENABLE_LIVE_SENDS=false node --test --test-concurrency=1 --experimental-test-isolation=none --experimental-strip-types tests/**/*.test.ts",
+    "test": "cross-env LEAD_OS_USE_AITABLE_PERSISTENCE=false LEAD_OS_ENABLE_LIVE_SENDS=false LEAD_OS_AUTH_SECRET=test-auth-secret LEAD_OS_DISABLE_DB_POOL=true node --import tsx --import ./tests/setup-global.ts --test --test-concurrency=1 tests/**/*.test.ts",
+    "test:ci": "cross-env LEAD_OS_USE_AITABLE_PERSISTENCE=false LEAD_OS_ENABLE_LIVE_SENDS=false LEAD_OS_AUTH_SECRET=test-auth-secret LEAD_OS_DISABLE_DB_POOL=true node --import tsx --import ./tests/setup-global.ts --test --test-concurrency=1 tests/**/*.test.ts",
     "verify:migrations": "node scripts/verify-migrations.mjs",
     "enumerate:api-routes": "node scripts/enumerate-api-routes.mjs",
     "enumerate:mutation-routes": "node scripts/enumerate-mutation-routes.mjs",
     "verify:backup-archive": "node scripts/verify-backup-archive.mjs",
     "detect:env": "node scripts/detect-env-presence.mjs",
-    "gtm:print": "node --experimental-strip-types scripts/gtm-print.ts --"
+    "gtm:print": "node --experimental-strip-types scripts/gtm-print.ts --",
+    "test:production-smoke": "node --import tsx scripts/production-smoke.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -61,8 +62,8 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "embla-carousel-react": "^8.6.0",
-    "ioredis": "^5.9.1",
     "input-otp": "^1.4.2",
+    "ioredis": "^5.9.1",
     "lucide-react": "^1.7.0",
     "next": "^16.2.1",
     "next-themes": "^0.4.6",
@@ -88,10 +89,11 @@
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "cross-env": "^7.0.3",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=20.0.0"
   },
   "repository": {
     "type": "git",
