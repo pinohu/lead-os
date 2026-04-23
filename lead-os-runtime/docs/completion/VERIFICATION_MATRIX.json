@@ -47,6 +47,24 @@
       "type": "smoke",
       "command": "npm run test:production-smoke",
       "required": true
+    },
+    {
+      "id": "autonomy_routes",
+      "type": "runtime",
+      "endpoint": "/api/operator/autonomy",
+      "required": true
+    },
+    {
+      "id": "autonomy_cron",
+      "type": "runtime",
+      "endpoint": "/api/cron/autonomy",
+      "required": true
+    },
+    {
+      "id": "autonomy_tests",
+      "type": "test",
+      "command": "node --import tsx --test tests/autonomy-engine.test.ts tests/operator-auth-signature.test.ts tests/cron-autonomy-route.test.ts",
+      "required": true
     }
   ]
 }

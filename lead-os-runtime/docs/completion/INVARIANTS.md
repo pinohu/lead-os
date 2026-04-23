@@ -21,3 +21,12 @@
 - Unauthorized operator access returns `401`.
 - Tenant mismatch on enforced paths returns `403`.
 - Cron/internal routes require cron auth guard and must fail closed when missing/invalid.
+
+## Autonomy rules
+- Agent execution is isolated under `src/agents/*`; deterministic core routes remain functional with autonomy disabled.
+- Feature flags govern all autonomy behavior: `AUTONOMY_ENABLED` and `AUTONOMY_MODE` (`shadow` default, `active` opt-in).
+- Kill switches (`AGENT_KILL_SWITCH`, `PRICING_KILL_SWITCH`) must block autonomous actions and report explicit blocked reasons.
+- Agent actions must be idempotent by `action_id`, reversible, and audit logged with `agent_id`, decision, action, affected entities, and timestamp.
+- Autonomy actions must not bypass billing checks or tenant alignment.
+- Learning writes are append-only (`learning_state`, metrics snapshots) and must not overwrite historical rows.
+- Multi-agent execution must declare agent scope/permissions and support per-agent disable.

@@ -63,7 +63,7 @@
       "tenant_enforced": true,
       "billing_enforced": false,
       "audit": false,
-      "tested": false
+      "tested": true
     },
     {
       "route": "/api/operator/control-plane",
@@ -127,6 +127,32 @@
         "POST"
       ],
       "type": "operator_write",
+      "auth": true,
+      "validation": true,
+      "tenant_enforced": true,
+      "billing_enforced": true,
+      "audit": true,
+      "tested": true
+    },
+    {
+      "route": "/api/operator/autonomy",
+      "methods": [
+        "POST"
+      ],
+      "type": "operator_write",
+      "auth": true,
+      "validation": true,
+      "tenant_enforced": true,
+      "billing_enforced": true,
+      "audit": true,
+      "tested": true
+    },
+    {
+      "route": "/api/cron/autonomy",
+      "methods": [
+        "POST"
+      ],
+      "type": "internal_write",
       "auth": true,
       "validation": true,
       "tenant_enforced": true,

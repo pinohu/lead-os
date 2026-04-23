@@ -11,7 +11,10 @@
     "billing_enforcement",
     "stripe_webhook",
     "auth_enforced",
-    "tenant_alignment"
+    "tenant_alignment",
+    "autonomy_disabled_safe",
+    "autonomy_audit",
+    "autonomy_reversible"
   ],
   "categories": [
     {
@@ -125,6 +128,51 @@
         {
           "id": "health_deep",
           "description": "/api/health/deep reports component status",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "Autonomy Layer",
+      "items": [
+        {
+          "id": "autonomy_boundary",
+          "description": "autonomy engines isolated under src/agents",
+          "status": "unknown"
+        },
+        {
+          "id": "autonomy_flags",
+          "description": "AUTONOMY_ENABLED and AUTONOMY_MODE enforced with kill switches",
+          "status": "unknown"
+        },
+        {
+          "id": "autonomy_disabled_safe",
+          "description": "core runtime functions when autonomy is disabled",
+          "status": "unknown"
+        },
+        {
+          "id": "autonomy_audit",
+          "description": "all autonomous actions are audit logged with affected entities",
+          "status": "unknown"
+        },
+        {
+          "id": "autonomy_reversible",
+          "description": "autonomy actions are reversible and can be reverted",
+          "status": "unknown"
+        },
+        {
+          "id": "autonomy_learning_append_only",
+          "description": "learning engine writes append-only rows to learning_state and metrics",
+          "status": "unknown"
+        },
+        {
+          "id": "autonomy_multi_agent",
+          "description": "routing/pricing/messaging/gtm agents execute through controlled engine",
+          "status": "unknown"
+        },
+        {
+          "id": "autonomy_shadow_before_active",
+          "description": "shadow mode validated and default before active mode",
           "status": "unknown"
         }
       ]
