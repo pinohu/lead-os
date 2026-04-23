@@ -92,6 +92,10 @@ export const ConversionEventSchema = z.object({
 export const IntakePayloadSchema = z
   .object({
     source: z.string().min(1).max(50),
+    /** When set, must match the tenant resolved from the request (x-tenant-id, ?tenant=, host). */
+    tenantId: z.string().min(1).max(64).regex(/^[a-z0-9_-]+$/i).optional(),
+    /** Local directory vertical (e.g. plumbing, hvac). */
+    category: z.string().min(1).max(64).optional(),
     email: z.string().email().optional(),
     phone: z.string().max(30).optional(),
     firstName: z.string().max(100).optional(),

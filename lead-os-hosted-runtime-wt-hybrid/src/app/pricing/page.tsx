@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Pricing — Lead OS",
+  title: "Pricing — CX React",
   description:
     "Enterprise lead generation pricing. Replace 15-20 SaaS tools with one platform. Plans from $299/mo.",
 };
@@ -102,7 +102,7 @@ export default function PricingPage() {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: [
-      { "@type": "Question", name: "Can I try Lead OS before committing?", acceptedAnswer: { "@type": "Answer", text: "Yes. Every plan starts with a 14-day free trial. You can test everything in sandbox mode before going live." } },
+      { "@type": "Question", name: "Can I try CX React before committing?", acceptedAnswer: { "@type": "Answer", text: "Yes. Every plan starts with a 14-day free trial. You can test everything in sandbox mode before going live." } },
       { "@type": "Question", name: "Can I change plans later?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. Upgrade or downgrade at any time from your dashboard. Changes take effect at the start of your next billing cycle." } },
       { "@type": "Question", name: "What happens if I exceed my lead limit?", acceptedAnswer: { "@type": "Answer", text: "We will notify you when you reach 80% of your limit. If you go over, new leads are queued (not lost) until you upgrade or the next billing cycle starts." } },
       { "@type": "Question", name: "Do you offer annual billing?", acceptedAnswer: { "@type": "Answer", text: "Yes. Annual plans save 20%. Contact us or select annual billing during checkout." } },
@@ -114,7 +114,7 @@ export default function PricingPage() {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "@id": `${baseUrl}/#app`,
-    name: "Lead OS",
+    name: "CX React",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description: "Enterprise lead generation platform. Replace 15-20 SaaS tools with one platform.",
@@ -196,7 +196,7 @@ export default function PricingPage() {
       </div>
 
       <section className="text-center mb-16" aria-labelledby="why-choose-heading">
-        <h2 id="why-choose-heading" className="text-foreground text-2xl font-bold mb-8">Why Teams Choose Lead OS</h2>
+        <h2 id="why-choose-heading" className="text-foreground text-2xl font-bold mb-8">Why Teams Choose CX React</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
           {[
             {
@@ -244,7 +244,7 @@ export default function PricingPage() {
         <h2 id="faq-heading" className="text-foreground text-2xl font-bold mb-8">Frequently Asked Questions</h2>
         <div className="max-w-2xl mx-auto text-left space-y-0">
           {[
-            { q: "Can I try Lead OS before committing?", a: "Yes. Every plan starts with a 14-day free trial. You can test everything in sandbox mode before going live." },
+            { q: "Can I try CX React before committing?", a: "Yes. Every plan starts with a 14-day free trial. You can test everything in sandbox mode before going live." },
             { q: "Can I change plans later?", a: "Absolutely. Upgrade or downgrade at any time from your dashboard. Changes take effect at the start of your next billing cycle." },
             { q: "What happens if I exceed my lead limit?", a: "We will notify you when you reach 80% of your limit. If you go over, new leads are queued (not lost) until you upgrade or the next billing cycle starts." },
             { q: "Do you offer annual billing?", a: "Yes. Annual plans save 20%. Contact us or select annual billing during checkout." },

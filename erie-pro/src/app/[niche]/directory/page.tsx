@@ -169,8 +169,11 @@ export default async function NicheDirectoryPage({ params }: Props) {
       </div>
 
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <section className="border-b bg-muted/30 pb-12 pt-10">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
+      <section className="relative border-b pb-12 pt-10 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-muted/30 to-primary/10 dark:from-primary/10 dark:via-background dark:to-primary/5" />
+        <div className="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-primary/5 blur-3xl" />
+        <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6">
+          <div className="mb-4 text-5xl">{niche.icon}</div>
           <Badge variant="secondary" className="mb-4">
             <Building2 className="mr-1.5 h-3 w-3" />
             Local Directory
@@ -257,13 +260,23 @@ export default async function NicheDirectoryPage({ params }: Props) {
         {/* Real listings from Google Places */}
         {hasListings && (
           <div className="grid gap-3">
-            {listings.map((listing) => {
+            {listings.map((listing, idx) => {
               const todayHours = getTodayHours(listing.hoursJson)
+              // Rotate through accent colors for visual variety
+              const colors = [
+                "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+                "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+                "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+                "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+                "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300",
+                "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
+              ]
+              const colorClass = colors[idx % colors.length]
               return (
-                <Card key={listing.id} className="hover:border-primary/30 transition-colors">
+                <Card key={listing.id} className="hover:border-primary/30 hover:shadow-sm transition-all">
                   <CardContent className="flex items-center gap-4 py-4">
-                    <Avatar className="h-12 w-12 bg-muted">
-                      <AvatarFallback className="text-sm">
+                    <Avatar className={`h-12 w-12 ${colorClass}`}>
+                      <AvatarFallback className={`text-sm font-bold ${colorClass}`}>
                         {listing.businessName.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
@@ -275,6 +288,11 @@ export default async function NicheDirectoryPage({ params }: Props) {
                         >
                           {listing.businessName}
                         </Link>
+                        {listing.website && (
+                          <a href={listing.website} target="_blank" rel="noopener noreferrer" className="text-muted-foreground/40 hover:text-primary">
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
                       </div>
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                         {listing.rating && (

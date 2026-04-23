@@ -80,9 +80,12 @@ export async function decodeOperatorToken(
   if (!body || !signature) return null;
 
   const expectedSignature = await signValue(body, secret);
-  if (signature.length !== expectedSignature.length) return null;
-  const signatureValid = timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
-  if (!signatureValid) return null;
+  if (expectedSignature.length !== signature.length) return null;
+  const isValid = timingSafeEqual(
+    Buffer.from(expectedSignature),
+    Buffer.from(signature),
+  );
+  if (!isValid) return null;
 
   try {
     const payload = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as OperatorTokenPayload;

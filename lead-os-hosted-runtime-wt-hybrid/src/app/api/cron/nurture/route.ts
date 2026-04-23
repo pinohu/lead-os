@@ -1,5 +1,8 @@
+// src/app/api/cron/nurture/route.ts
 import { createHmac } from "crypto";
 import { NextResponse } from "next/server";
+import { requireCronAuthOrFail } from "@/lib/api/cron-public-guards";
+import { logApiMutationAudit } from "@/lib/api/api-mutation-audit";
 import { resolveNextNurtureStage } from "@/lib/automation";
 import { sendEmail } from "@/lib/email-sender";
 import { getTemplate, type EmailContext } from "@/lib/email-templates";
@@ -9,7 +12,8 @@ import { resolveTenantConfig } from "@/lib/tenant";
 import { createCanonicalEvent } from "@/lib/trace";
 
 function generateUnsubscribeToken(email: string, tenant: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "unsubscribe-token-secret";
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "";
+  if (!secret) return "";
   return createHmac("sha256", secret)
     .update(`${email.toLowerCase().trim()}::${tenant}`)
     .digest("hex")
@@ -22,13 +26,8 @@ function buildUnsubscribeUrl(siteUrl: string, email: string, tenantId: string): 
 }
 
 export async function GET(request: Request) {
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) {
-    return NextResponse.json({ data: null, error: { code: "SERVICE_UNAVAILABLE", message: "Cron not configured" } }, { status: 503 });
-  }
-  if (request.headers.get("authorization") !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ data: null, error: { code: "UNAUTHORIZED", message: "Unauthorized" } }, { status: 401 });
-  }
+  const authFail = requireCronAuthOrFail(request);
+  if (authFail) return authFail;
 
   const processed: Array<{ leadKey: string; stage: string; channels: string[] }> = [];
 
@@ -100,18 +99,18 @@ export async function GET(request: Request) {
     }
 
     if (stage.channels.includes("whatsapp") && lead.phone) {
-      const tenant = await resolveTenantConfig(lead.trace.tenant ?? "default-tenant");
+      const t = await resolveTenantConfig(lead.trace.tenant ?? "default-tenant");
       await sendWhatsAppAction({
         phone: lead.phone,
-        body: `Hi ${lead.firstName ?? "there"}, ${stage.label.toLowerCase()} from ${tenant.brandName}. Visit ${tenant.siteUrl} for your next step.`,
+        body: `Hi ${lead.firstName ?? "there"}, ${stage.label.toLowerCase()} from ${t.brandName}. Visit ${t.siteUrl} for your next step.`,
       });
       channels.push("whatsapp");
     }
     if (stage.channels.includes("sms") && lead.phone) {
-      const tenant = await resolveTenantConfig(lead.trace.tenant ?? "default-tenant");
+      const t = await resolveTenantConfig(lead.trace.tenant ?? "default-tenant");
       await sendSmsAction({
         phone: lead.phone,
-        body: `${lead.firstName ?? "Hi"}, ${stage.label.toLowerCase()} from ${tenant.brandName}: ${tenant.siteUrl}`,
+        body: `${lead.firstName ?? "Hi"}, ${stage.label.toLowerCase()} from ${t.brandName}: ${t.siteUrl}`,
       });
       channels.push("sms");
     }
@@ -127,6 +126,14 @@ export async function GET(request: Request) {
     ]);
     processed.push({ leadKey: lead.leadKey, stage: stage.id, channels });
   }
+
+  await logApiMutationAudit({
+    route: "/api/cron/nurture",
+    method: "GET",
+    actorHint: "cron@system",
+    outcome: "success",
+    detail: { count: processed.length },
+  });
 
   return NextResponse.json({
     data: { processed, count: processed.length },

@@ -220,7 +220,10 @@ export type CanonicalEventType =
   | "referral_invite_sent"
   | "review_requested"
   | "lead_milestone_reached"
-  | "customer_milestone_reached";
+  | "customer_milestone_reached"
+  | "directory_routed"
+  | "directory_route_failed"
+  | "directory_route_blocked";
 
 export interface TriggerDefinition {
   event: TriggerEvent;

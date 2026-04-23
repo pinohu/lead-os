@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
+import { headers } from "next/headers";
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { tenantConfig } from "@/lib/tenant";
@@ -17,7 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://cxreact.com"),
   title: {
     default: `${tenantConfig.brandName} — Enterprise Lead Generation Platform`,
     template: `%s | ${tenantConfig.brandName}`,
@@ -66,7 +67,8 @@ const footerLegal = [
   { label: "Cookie Policy", href: "/privacy#cookies" },
 ];
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const nonce = (await headers()).get("x-csp-nonce") ?? "";
   const partneroProgramId = process.env.PARTNERO_PROGRAM_ID ?? embeddedSecrets.partnero.programId;
   const partneroAssetsHost = process.env.PARTNERO_ASSETS_HOST ?? embeddedSecrets.partnero.assetsHost;
   const brandName = tenantConfig.brandName;
@@ -78,18 +80,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#4f46e5" />
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@graph": [
                 {
                   "@type": "Organization",
-                  "@id": "https://leadgen-os.com/#organization",
+                  "@id": "https://cxreact.com/#organization",
                   name: tenantConfig.brandName,
-                  url: "https://leadgen-os.com",
+                  url: "https://cxreact.com",
                   logo: {
                     "@type": "ImageObject",
-                    url: "https://leadgen-os.com/og-image.png",
+                    url: "https://cxreact.com/og-image.png",
                     width: 1200,
                     height: 630,
                   },
@@ -99,31 +102,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 },
                 {
                   "@type": "WebSite",
-                  "@id": "https://leadgen-os.com/#website",
-                  url: "https://leadgen-os.com",
+                  "@id": "https://cxreact.com/#website",
+                  url: "https://cxreact.com",
                   name: `${tenantConfig.brandName} — Enterprise Lead Generation Platform`,
-                  publisher: { "@id": "https://leadgen-os.com/#organization" },
+                  publisher: { "@id": "https://cxreact.com/#organization" },
                   potentialAction: {
                     "@type": "SearchAction",
                     target: {
                       "@type": "EntryPoint",
-                      urlTemplate: "https://leadgen-os.com/industries?q={search_term_string}",
+                      urlTemplate: "https://cxreact.com/industries?q={search_term_string}",
                     },
                     "query-input": "required name=search_term_string",
                   },
                 },
                 {
                   "@type": "SoftwareApplication",
-                  "@id": "https://leadgen-os.com/#app",
+                  "@id": "https://cxreact.com/#app",
                   name: `${tenantConfig.brandName} Platform`,
                   applicationCategory: "BusinessApplication",
                   operatingSystem: "Web",
                   offers: {
                     "@type": "Offer",
-                    url: "https://leadgen-os.com/pricing",
+                    url: "https://cxreact.com/pricing",
                     priceCurrency: "USD",
                   },
-                  publisher: { "@id": "https://leadgen-os.com/#organization" },
+                  publisher: { "@id": "https://cxreact.com/#organization" },
                 },
               ],
             }),
@@ -143,6 +146,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Script
             id="partnero-js"
             strategy="afterInteractive"
+            nonce={nonce}
             dangerouslySetInnerHTML={{
               __html: `(function(p,t,n,e,r,o){ p['__partnerObject']=r;function f(){var c={ a:arguments,q:[]};var r=this.push(c);return "number"!=typeof r?r:f.bind(c.q);}f.q=f.q||[];p[r]=p[r]||f.bind(f.q);p[r].q=p[r].q||f.q;o=t.createElement(n);var _=t.getElementsByTagName(n)[0];o.async=1;o.src=e+'?v'+(~~(new Date().getTime()/1e6));_.parentNode.insertBefore(o,_);})(window, document, 'script', 'https://app.partnero.com/js/universal.js', 'po');po('settings', 'assets_host', '${partneroAssetsHost}');po('program', '${partneroProgramId}', 'load');`,
             }}
@@ -215,6 +219,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             src={process.env.NEXT_PUBLIC_UMAMI_URL}
             data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
             strategy="afterInteractive"
+            nonce={nonce}
           />
         ) : null}
         </ThemeProvider>

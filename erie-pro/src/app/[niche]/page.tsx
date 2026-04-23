@@ -15,7 +15,7 @@ import {
   getLocalSeoSnippet,
   getLocalSchemaOrg,
   getLocalMetaDescription,
-  ERIE_LOCAL_SEO,
+  localSeo,
 } from "@/lib/local-seo"
 import { Button } from "@/components/ui/button"
 import {
@@ -62,6 +62,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode} — Get a Free Quote`,
       description,
       url: `https://${cityConfig.domain}/${slug}`,
+      images: [
+        {
+          url: `https://${cityConfig.domain}/api/og/${slug}`,
+          width: 1200,
+          height: 630,
+          alt: `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode}`,
+        },
+      ],
     },
     alternates: { canonical: `https://${cityConfig.domain}/${slug}` },
   }
@@ -75,7 +83,7 @@ export default async function NichePage({ params }: Props) {
   // ── Local SEO data ──────────────────────────────────────────────
   const localSnippet = getLocalSeoSnippet(slug)
   const localSchema = getLocalSchemaOrg(slug)
-  const neighborhoods = ERIE_LOCAL_SEO.neighborhoods
+  const neighborhoods = localSeo.neighborhoods
 
   // ── Directory listings for subtle links ────────────────────────
   let directoryListings: Awaited<ReturnType<typeof getDirectoryListingsByNiche>> = []
@@ -112,8 +120,13 @@ export default async function NichePage({ params }: Props) {
       <FeaturedProvider niche={niche.slug} city={cityConfig.slug} />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="border-b bg-muted/30 pb-12 pt-16">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
+      <section className="relative border-b pb-12 pt-16 overflow-hidden">
+        {/* Decorative gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-muted/30 to-primary/10 dark:from-primary/10 dark:via-background dark:to-primary/5" />
+        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-primary/5 blur-3xl" />
+        <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6">
+          <div className="mb-6 text-6xl">{niche.icon}</div>
           <Badge variant="secondary" className="mb-4">
             <MapPin className="mr-1.5 h-3 w-3" />
             {cityConfig.name}, {cityConfig.stateCode}
@@ -159,7 +172,7 @@ export default async function NichePage({ params }: Props) {
       {/* ── Local SEO Context Section ─────────────────────────── */}
       <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
         <h2 className="mb-4 text-xl font-bold tracking-tight">
-          {withServices(niche.label)} in {ERIE_LOCAL_SEO.countyName}
+          {withServices(niche.label)} in {localSeo.countyName}
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
           {localSnippet}
@@ -308,7 +321,7 @@ export default async function NichePage({ params }: Props) {
                 desc: `${cityConfig.name} providers typically respond within hours, not days.`,
               },
               {
-                title: `Serving all of ${ERIE_LOCAL_SEO.countyName}`,
+                title: `Serving all of ${localSeo.countyName}`,
                 desc: `Coverage across ${neighborhoods.slice(0, 4).join(", ")}, and more.`,
               },
             ].map(({ title, desc }) => (

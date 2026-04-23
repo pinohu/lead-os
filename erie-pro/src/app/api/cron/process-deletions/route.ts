@@ -12,8 +12,11 @@ import { cityConfig } from "@/lib/city-config";
 
 export async function GET(req: NextRequest) {
   // ── Validate cron secret ──────────────────────────────────────
+  // Defense-in-depth: if CRON_SECRET is unset, reject ALL requests
+  // (otherwise `Bearer undefined` would match a literal undefined env).
   const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json(
       { success: false, error: "Unauthorized" },
       { status: 401 }

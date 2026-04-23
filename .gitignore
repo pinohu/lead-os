@@ -9,3 +9,9 @@ lead-os-embed-widgets/
 .env.production
 .env.*.local
 .vercel
+
+# Windows / Google Drive metadata (do not commit)
+desktop.ini
+Desktop.ini
+**/desktop.ini
+Thumbs.db

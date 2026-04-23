@@ -13,6 +13,7 @@ import {
 } from "@/lib/stripe-integration";
 import { prisma } from "@/lib/db";
 import type { SubscriptionStatus } from "@/generated/prisma";
+import { cityConfig } from "@/lib/city-config";
 import { activatePerks, deactivatePerks } from "@/lib/perk-manager";
 import { deliverBankedLeads } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
@@ -473,11 +474,125 @@ async function handleCheckoutCompleted(
       providerId: provider.id,
       deliveredLeads: actualDelivered,
     });
-  } else {
-    // Non-territory-claim sessions: just mark as completed
+  } else if (checkoutSession.sessionType === "concierge_job") {
+    // ── Concierge job: $29 one-time ──────────────────────────────
+    // The ops team needs to see this in their inbox so they can call
+    // pros on the requester's behalf. Requester gets a confirmation.
     await prisma.checkoutSession.updateMany({
       where: { stripeSessionId },
       data: { status: "completed", completedAt: new Date() },
     });
+
+    const requesterEmail = checkoutSession.providerEmail;
+    const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? `https://${cityConfig.domain}`;
+    const adminEmail = process.env.ADMIN_EMAIL;
+
+    sendEmail({
+      to: requesterEmail,
+      subject: `${cityConfig.name} Pro — we've got your concierge request`,
+      html: `
+        <p>Thanks — payment received for your Concierge match.</p>
+        <p>Our team will call 2–3 vetted pros in your area and text you
+        the one to book within the next few business hours.</p>
+        <p>Reply to this email if anything about the job changes (access,
+        timing, scope).</p>
+      `,
+    }).catch((err) => {
+      logger.error("stripe-webhook", "Concierge confirmation email failed", err);
+    });
+
+    if (adminEmail) {
+      sendEmail({
+        to: adminEmail,
+        subject: `[${cityConfig.slug}] New Concierge job — ${requesterEmail}`,
+        html: `
+          <p>New Concierge job paid for by <strong>${requesterEmail}</strong>.</p>
+          <p>Stripe session: <code>${stripeSessionId}</code></p>
+          <p>Follow up in the admin dashboard: <a href="${siteUrl}/admin">${siteUrl}/admin</a></p>
+        `,
+      }).catch((err) => {
+        logger.error("stripe-webhook", "Concierge ops alert failed", err);
+      });
+    }
+
+    await audit({
+      action: "concierge.paid",
+      entityType: "checkout_session",
+      entityId: checkoutSession.id,
+      metadata: {
+        stripeEventId,
+        stripeSessionId,
+        requesterEmail,
+        price: checkoutSession.price,
+      },
+    }).catch((err) => {
+      logger.error("stripe-webhook", "Concierge audit failed", err);
+    });
+
+    logger.info("webhook/stripe", `Concierge job paid: ${stripeSessionId} (${requesterEmail})`);
+  } else if (checkoutSession.sessionType === "annual_membership") {
+    // ── Annual membership: $199/yr ───────────────────────────────
+    // Mark completed, welcome the requester, note for ops.
+    await prisma.checkoutSession.updateMany({
+      where: { stripeSessionId },
+      data: { status: "completed", completedAt: new Date() },
+    });
+
+    const requesterEmail = checkoutSession.providerEmail;
+    const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? `https://${cityConfig.domain}`;
+    const adminEmail = process.env.ADMIN_EMAIL;
+
+    sendEmail({
+      to: requesterEmail,
+      subject: `Welcome to ${cityConfig.name} Pro Annual`,
+      html: `
+        <p>Welcome! Your Annual membership is active for the next 12 months.</p>
+        <ul>
+          <li>Unlimited Concierge matches</li>
+          <li>Same-day priority when pros are available</li>
+          <li>Direct line to our ops team</li>
+        </ul>
+        <p>To kick off a job, reply to this email or visit
+        <a href="${siteUrl}">${cityConfig.domain}</a>.</p>
+      `,
+    }).catch((err) => {
+      logger.error("stripe-webhook", "Annual welcome email failed", err);
+    });
+
+    if (adminEmail) {
+      sendEmail({
+        to: adminEmail,
+        subject: `[${cityConfig.slug}] New Annual member — ${requesterEmail}`,
+        html: `
+          <p>New Annual member: <strong>${requesterEmail}</strong>.</p>
+          <p>Stripe session: <code>${stripeSessionId}</code></p>
+        `,
+      }).catch((err) => {
+        logger.error("stripe-webhook", "Annual ops alert failed", err);
+      });
+    }
+
+    await audit({
+      action: "annual.subscribed",
+      entityType: "checkout_session",
+      entityId: checkoutSession.id,
+      metadata: {
+        stripeEventId,
+        stripeSessionId,
+        requesterEmail,
+        price: checkoutSession.price,
+      },
+    }).catch((err) => {
+      logger.error("stripe-webhook", "Annual audit failed", err);
+    });
+
+    logger.info("webhook/stripe", `Annual membership: ${stripeSessionId} (${requesterEmail})`);
+  } else {
+    // Unknown session type — mark completed and log.
+    await prisma.checkoutSession.updateMany({
+      where: { stripeSessionId },
+      data: { status: "completed", completedAt: new Date() },
+    });
+    logger.warn("webhook/stripe", `Unhandled checkout session type: ${checkoutSession.sessionType}`);
   }
 }

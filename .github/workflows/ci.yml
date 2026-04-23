@@ -15,7 +15,7 @@ env:
 
 jobs:
   typecheck:
-    name: Type Check
+    name: Type Check (Hybrid)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,7 +31,7 @@ jobs:
       - run: npx tsc --noEmit
 
   test:
-    name: Test
+    name: Test (Hybrid)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -62,6 +62,65 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+  typecheck-erie:
+    name: Type Check (Erie Pro)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: erie-pro
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: erie-pro/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+
+  test-erie:
+    name: Test (Erie Pro)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: erie-pro
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: erie-pro/package-lock.json
+      - run: npm ci
+      - run: npm test
+
+  build-erie:
+    name: Build Erie Pro
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: erie-pro
+    # Next 15's "collecting page data" step imports route modules, which
+    # eagerly read DATABASE_URL (Prisma) and STRIPE_SECRET_KEY (stripe-
+    # integration). CI doesn't have real secrets, so we feed dummies that
+    # satisfy the runtime checks without touching anything external.
+    env:
+      DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+      STRIPE_SECRET_KEY: "sk_test_dummy_for_build_only"
+      STRIPE_WEBHOOK_SECRET: "whsec_dummy_for_build_only"
+      NEXTAUTH_SECRET: "ci-dummy-secret-not-used-at-runtime"
+      NEXTAUTH_URL: "http://localhost:3000"
+      SKIP_ENV_VALIDATION: "true"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: erie-pro/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
   build-edge:
     name: Build Edge Layer
     runs-on: ubuntu-latest
@@ -77,3 +136,21 @@ jobs:
           cache-dependency-path: neatcircle-beta/package-lock.json
       - run: npm ci
       - run: npm run build
+
+  security-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Audit Hybrid Runtime
+        working-directory: lead-os-hosted-runtime-wt-hybrid
+        run: npm audit --audit-level=critical || true
+      - name: Audit Erie Pro
+        working-directory: erie-pro
+        run: npm audit --audit-level=critical || true
+      - name: Audit NeatCircle
+        working-directory: neatcircle-beta
+        run: npm audit --audit-level=critical || true

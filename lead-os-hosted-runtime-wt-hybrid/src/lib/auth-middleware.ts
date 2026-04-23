@@ -18,29 +18,41 @@ export interface AuthFromHeaders {
   method: string;
 }
 
+const MIDDLEWARE_SIGNATURE_KEY = process.env.LEAD_OS_AUTH_SECRET ?? "";
+
+function verifyMiddlewareSignature(
+  signature: string,
+  userId: string,
+  tenantId: string,
+  requestId: string,
+): boolean {
+  if (!MIDDLEWARE_SIGNATURE_KEY) return false;
+  const payload = `${userId}:${tenantId}:${requestId}`;
+  const expected = createHmac("sha256", MIDDLEWARE_SIGNATURE_KEY)
+    .update(payload)
+    .digest("hex");
+  if (expected.length !== signature.length) return false;
+  return timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+}
+
 /**
  * Reads identity headers set by the Next.js middleware after successful
- * authentication. Verifies the middleware signature to prevent header spoofing.
- * Returns null when the middleware did not authenticate the request.
+ * authentication. Verifies the middleware HMAC signature to prevent header
+ * spoofing. Returns null when the signature is missing, invalid, or the
+ * middleware secret is not configured — failing closed.
  */
 export function getAuthFromHeaders(request: Request): AuthFromHeaders | null {
   const userId = request.headers.get("x-authenticated-user-id");
   const role = request.headers.get("x-authenticated-role");
   const tenantId = request.headers.get("x-authenticated-tenant-id") ?? "";
   const signature = request.headers.get("x-middleware-signature");
-  const requestId = request.headers.get("x-request-id") ?? "";
+  const requestId = request.headers.get("x-request-id");
 
-  if (!userId || !role || !signature) return null;
+  if (!userId || !role) return null;
 
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? "";
-  if (!secret) return null;
-
-  const payload = `${userId}:${tenantId}:${requestId}`;
-  const expected = createHmac("sha256", secret).update(payload).digest("hex");
-
-  if (expected.length !== signature.length) return null;
-  const valid = timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
-  if (!valid) return null;
+  // Fail closed: require a valid HMAC signature from middleware.
+  if (!signature || !requestId) return null;
+  if (!verifyMiddlewareSignature(signature, userId, tenantId, requestId)) return null;
 
   return {
     userId,

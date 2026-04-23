@@ -5,6 +5,14 @@ import {
   upsertSubscription,
   type SubscriptionRecord,
 } from "./billing-store.ts";
+import { pricingLog } from "./pricing/logger";
+import { releaseStripeWebhookEventClaim, tryClaimStripeWebhookEvent } from "./billing/stripe-webhook-idempotency";
+import {
+  catalogPlanIdToBillingPlanKey,
+  mapStripeStatusToBillingSubscriptionStatus,
+  resolvePlanKeyFromStripeSubscription,
+  upsertBillingSubscriptionFromStripe,
+} from "./billing/stripe-billing-subscription-sync";
 
 function getStripeClient(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -122,21 +130,49 @@ export interface WebhookHandleResult {
   eventType: string;
   handled: boolean;
   tenantId?: string;
+  duplicate?: boolean;
 }
 
-export async function handleStripeWebhook(
-  payload: string,
-  signature: string,
+function subscriptionStatusMap(): Record<string, SubscriptionRecord["status"]> {
+  return {
+    active: "active",
+    past_due: "past_due",
+    canceled: "cancelled",
+    trialing: "trialing",
+    incomplete: "trialing",
+    incomplete_expired: "cancelled",
+    unpaid: "past_due",
+    paused: "past_due",
+  };
+}
+
+async function syncBillingEntitlementsRow(params: {
+  tenantId: string;
+  sub: Stripe.Subscription;
+  catalogPlanId?: string;
+}): Promise<void> {
+  const { tenantId, sub, catalogPlanId } = params;
+  const planKey = catalogPlanId
+    ? catalogPlanIdToBillingPlanKey(catalogPlanId)
+    : resolvePlanKeyFromStripeSubscription(sub);
+  const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer?.id ?? "";
+  const period = extractPeriodFromSubscription(sub);
+  await upsertBillingSubscriptionFromStripe({
+    tenantId,
+    stripeCustomerId: customerId,
+    stripeSubscriptionId: sub.id,
+    planKey,
+    status: mapStripeStatusToBillingSubscriptionStatus(sub.status),
+    currentPeriodEndIso: period.end,
+  });
+}
+
+async function dispatchStripeWebhookEvent(
+  event: Stripe.Event,
+  stripe: Stripe,
+  now: string,
 ): Promise<WebhookHandleResult> {
-  const stripe = getStripeClient();
-  const webhookSecret = getWebhookSecret();
-
-  if (!stripe || !webhookSecret) {
-    return { eventType: "unknown", handled: false };
-  }
-
-  const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
-  const now = new Date().toISOString();
+  const sm = subscriptionStatusMap();
 
   switch (event.type) {
     case "checkout.session.completed": {
@@ -157,6 +193,18 @@ export async function handleStripeWebhook(
         const period = extractPeriodFromSubscription(sub);
         periodStart = period.start;
         periodEnd = period.end;
+        await syncBillingEntitlementsRow({ tenantId, sub, catalogPlanId: planId });
+      } else {
+        await upsertBillingSubscriptionFromStripe({
+          tenantId,
+          stripeCustomerId: typeof session.customer === "string"
+            ? session.customer
+            : session.customer?.id ?? "",
+          stripeSubscriptionId: "",
+          planKey: catalogPlanIdToBillingPlanKey(planId),
+          status: "active",
+          currentPeriodEndIso: periodEnd,
+        });
       }
 
       await upsertSubscription({
@@ -172,6 +220,34 @@ export async function handleStripeWebhook(
         updatedAt: now,
       });
 
+      pricingLog("info", "stripe_webhook_checkout_completed", { tenantId, planId, subscriptionId });
+      return { eventType: event.type, handled: true, tenantId };
+    }
+
+    case "customer.subscription.created": {
+      const sub = event.data.object as Stripe.Subscription;
+      const tenantId = sub.metadata?.tenantId;
+      if (!tenantId) break;
+
+      const planIdFromMeta = sub.metadata?.planId ?? "managed-growth";
+      const period = extractPeriodFromSubscription(sub);
+      const stripeCustomerId = typeof sub.customer === "string" ? sub.customer : sub.customer?.id ?? "";
+
+      await upsertSubscription({
+        tenantId,
+        planId: planIdFromMeta,
+        stripeCustomerId,
+        stripeSubscriptionId: sub.id,
+        status: sm[sub.status] ?? "trialing",
+        currentPeriodStart: period.start,
+        currentPeriodEnd: period.end,
+        cancelAtPeriodEnd: sub.cancel_at_period_end,
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await syncBillingEntitlementsRow({ tenantId, sub, catalogPlanId: planIdFromMeta });
+      pricingLog("info", "stripe_webhook_subscription_created", { tenantId, subscriptionId: sub.id });
       return { eventType: event.type, handled: true, tenantId };
     }
 
@@ -181,25 +257,40 @@ export async function handleStripeWebhook(
       if (!tenantId) break;
 
       const existing = await getSubscription(tenantId);
-      if (!existing) break;
-
-      const statusMap: Record<string, SubscriptionRecord["status"]> = {
-        active: "active",
-        past_due: "past_due",
-        canceled: "cancelled",
-        trialing: "trialing",
-      };
-
       const period = extractPeriodFromSubscription(sub);
+      const planIdFromMeta = sub.metadata?.planId;
+
+      if (!existing) {
+        const planId = planIdFromMeta ?? "managed-growth";
+        const stripeCustomerId = typeof sub.customer === "string" ? sub.customer : sub.customer?.id ?? "";
+        await upsertSubscription({
+          tenantId,
+          planId,
+          stripeCustomerId,
+          stripeSubscriptionId: sub.id,
+          status: sm[sub.status] ?? "active",
+          currentPeriodStart: period.start,
+          currentPeriodEnd: period.end,
+          cancelAtPeriodEnd: sub.cancel_at_period_end,
+          createdAt: now,
+          updatedAt: now,
+        });
+        await syncBillingEntitlementsRow({ tenantId, sub, catalogPlanId: planId });
+        pricingLog("info", "stripe_webhook_subscription_updated_backfill", { tenantId, subscriptionId: sub.id });
+        return { eventType: event.type, handled: true, tenantId };
+      }
+
       await upsertSubscription({
         ...existing,
-        status: statusMap[sub.status] ?? existing.status,
+        status: sm[sub.status] ?? existing.status,
         currentPeriodStart: period.start,
         currentPeriodEnd: period.end,
         cancelAtPeriodEnd: sub.cancel_at_period_end,
         updatedAt: now,
       });
 
+      await syncBillingEntitlementsRow({ tenantId, sub, catalogPlanId: planIdFromMeta });
+      pricingLog("info", "stripe_webhook_subscription_updated", { tenantId, subscriptionId: sub.id });
       return { eventType: event.type, handled: true, tenantId };
     }
 
@@ -218,6 +309,18 @@ export async function handleStripeWebhook(
         updatedAt: now,
       });
 
+      const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer?.id ?? "";
+      const period = extractPeriodFromSubscription(sub);
+      await upsertBillingSubscriptionFromStripe({
+        tenantId,
+        stripeCustomerId: customerId,
+        stripeSubscriptionId: sub.id,
+        planKey: resolvePlanKeyFromStripeSubscription(sub),
+        status: "canceled",
+        currentPeriodEndIso: period.end,
+      });
+
+      pricingLog("info", "stripe_webhook_subscription_deleted", { tenantId, subscriptionId: sub.id });
       return { eventType: event.type, handled: true, tenantId };
     }
 
@@ -244,11 +347,49 @@ export async function handleStripeWebhook(
         updatedAt: now,
       });
 
+      await syncBillingEntitlementsRow({ tenantId, sub });
+      pricingLog("warn", "stripe_webhook_invoice_payment_failed", { tenantId, subscriptionId });
       return { eventType: event.type, handled: true, tenantId };
     }
   }
 
   return { eventType: event.type, handled: false };
+}
+
+export async function handleStripeWebhook(
+  payload: string,
+  signature: string,
+): Promise<WebhookHandleResult> {
+  const stripe = getStripeClient();
+  const webhookSecret = getWebhookSecret();
+
+  if (!stripe || !webhookSecret) {
+    return { eventType: "unknown", handled: false };
+  }
+
+  const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+  const now = new Date().toISOString();
+
+  const claimed = await tryClaimStripeWebhookEvent(event.id);
+  if (!claimed) {
+    pricingLog("info", "stripe_webhook_duplicate_event", { eventId: event.id, type: event.type });
+    return { eventType: event.type, handled: true, duplicate: true };
+  }
+
+  try {
+    const result = await dispatchStripeWebhookEvent(event, stripe, now);
+    if (!result.handled) {
+      await releaseStripeWebhookEventClaim(event.id);
+    }
+    return result;
+  } catch (err) {
+    await releaseStripeWebhookEventClaim(event.id);
+    pricingLog("warn", "stripe_webhook_processing_failed", {
+      eventId: event.id,
+      message: err instanceof Error ? err.message : String(err),
+    });
+    throw err;
+  }
 }
 
 export interface SubscriptionStatus {

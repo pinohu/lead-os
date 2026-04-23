@@ -16,7 +16,21 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic"
 
-const navSections = [
+type BadgeKey = "claims" | "disputes" | "messages" | "concierge"
+
+interface NavItem {
+  href: string
+  label: string
+  icon: string
+  badgeKey?: BadgeKey
+}
+
+interface NavSection {
+  label: string
+  items: NavItem[]
+}
+
+const navSections: NavSection[] = [
   {
     label: "Operations",
     items: [
@@ -28,12 +42,15 @@ const navSections = [
       { href: "/admin/claims", label: "Claims", icon: "🛡️", badgeKey: "claims" as const },
       { href: "/admin/disputes", label: "Disputes", icon: "⚖️", badgeKey: "disputes" as const },
       { href: "/admin/messages", label: "Messages", icon: "💬", badgeKey: "messages" as const },
+      { href: "/admin/failovers", label: "Failover Log", icon: "🔁" },
     ],
   },
   {
     label: "Business",
     items: [
       { href: "/admin/revenue", label: "Revenue", icon: "💰" },
+      { href: "/admin/founding", label: "Founding Offer", icon: "🔒" },
+      { href: "/admin/concierge", label: "Concierge Inbox", icon: "🛎️", badgeKey: "concierge" as const },
       { href: "/admin/calls", label: "Call Tracking", icon: "📞" },
     ],
   },
@@ -70,16 +87,24 @@ export default async function AdminLayout({
   }
 
   // Fetch badge counts for sidebar
-  const [pendingClaims, pendingDisputes, unreadMessages] = await Promise.all([
+  const [pendingClaims, pendingDisputes, unreadMessages, openConcierge] = await Promise.all([
     prisma.provider.count({ where: { verificationStatus: { in: ["unverified", "pending"] } } }),
     prisma.leadDispute.count({ where: { status: "pending" } }),
     prisma.contactMessage.count({ where: { status: "unread" } }),
+    prisma.checkoutSession.count({
+      where: {
+        sessionType: "concierge_job",
+        status: "completed",
+        fulfilledAt: null,
+      },
+    }),
   ])
 
   const badges: Record<string, number> = {
     claims: pendingClaims,
     disputes: pendingDisputes,
     messages: unreadMessages,
+    concierge: openConcierge,
   }
 
   return (

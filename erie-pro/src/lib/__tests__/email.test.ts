@@ -60,6 +60,110 @@ describe("sendEmailVerification", () => {
   });
 });
 
+describe("sendConciergeAssignmentToPro", () => {
+  it("returns true in dry-run mode", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendConciergeAssignmentToPro } = await import("../email");
+    const result = await sendConciergeAssignmentToPro(
+      "pro@example.com",
+      "Joe's Plumbing",
+      {
+        requesterEmail: "requester@example.com",
+        niche: "plumbing",
+        city: "erie",
+        opsNotes: "Call ASAP — basement flooding",
+      }
+    );
+    expect(result).toBe(true);
+  });
+
+  it("handles null ops notes", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendConciergeAssignmentToPro } = await import("../email");
+    const result = await sendConciergeAssignmentToPro(
+      "pro@example.com",
+      "Joe's Plumbing",
+      {
+        requesterEmail: "requester@example.com",
+        niche: "plumbing",
+        city: "erie",
+        opsNotes: null,
+      }
+    );
+    expect(result).toBe(true);
+  });
+});
+
+describe("sendConciergeHandoffToRequester", () => {
+  it("returns true in dry-run mode with phone", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendConciergeHandoffToRequester } = await import("../email");
+    const result = await sendConciergeHandoffToRequester(
+      "requester@example.com",
+      {
+        providerName: "Joe's Plumbing",
+        providerPhone: "+18145550101",
+        niche: "plumbing",
+      }
+    );
+    expect(result).toBe(true);
+  });
+
+  it("returns true without phone (phone-optional match)", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendConciergeHandoffToRequester } = await import("../email");
+    const result = await sendConciergeHandoffToRequester(
+      "requester@example.com",
+      {
+        providerName: "Joe's Plumbing",
+        providerPhone: null,
+        niche: "plumbing",
+      }
+    );
+    expect(result).toBe(true);
+  });
+});
+
+describe("sendAnnualRenewalReminder", () => {
+  it("returns true in dry-run mode (30-day variant)", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendAnnualRenewalReminder } = await import("../email");
+    const result = await sendAnnualRenewalReminder(
+      "member@example.com",
+      {
+        daysLeft: 30,
+        expiresOn: new Date("2027-04-14"),
+      }
+    );
+    expect(result).toBe(true);
+  });
+
+  it("returns true in dry-run mode (7-day urgent variant)", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendAnnualRenewalReminder } = await import("../email");
+    const result = await sendAnnualRenewalReminder(
+      "member@example.com",
+      {
+        daysLeft: 7,
+        expiresOn: new Date("2027-04-21"),
+      }
+    );
+    expect(result).toBe(true);
+  });
+});
+
+describe("sendAnnualMembershipExpired", () => {
+  it("returns true in dry-run mode", async () => {
+    vi.stubEnv("EMAILIT_API_KEY", "");
+    const { sendAnnualMembershipExpired } = await import("../email");
+    const result = await sendAnnualMembershipExpired(
+      "member@example.com",
+      new Date("2026-04-13"),
+    );
+    expect(result).toBe(true);
+  });
+});
+
 describe("sendSlaWarningEmail", () => {
   it("returns true in dry-run mode", async () => {
     vi.stubEnv("EMAILIT_API_KEY", "");

@@ -33,7 +33,7 @@ import {
   createCanonicalEvent,
   ensureTraceContext,
 } from "./trace.ts";
-import { tenantConfig } from "./tenant.ts";
+import { tenantConfig, type TenantConfig } from "./tenant.ts";
 import type { FunnelFamily } from "./runtime-schema.ts";
 import { incrementUsage } from "./billing-store.ts";
 import { enforcePlanLimits } from "./plan-enforcer.ts";
@@ -77,6 +77,10 @@ export interface HostedLeadPayload {
   contentEngaged?: boolean;
   preferredFamily?: FunnelFamily;
   dryRun?: boolean;
+  /** Optional; validated against resolved tenant in API route. */
+  tenantId?: string;
+  /** Directory vertical (Erie.pro and similar). */
+  category?: string;
 }
 
 export interface IntakeResult {
@@ -344,10 +348,13 @@ export function validateLeadPayload(payload: HostedLeadPayload) {
   }
 }
 
-export async function processLeadIntake(payload: HostedLeadPayload): Promise<IntakeResult> {
+export async function processLeadIntake(
+  payload: HostedLeadPayload,
+  runtimeTenant: TenantConfig = tenantConfig,
+): Promise<IntakeResult> {
   validateLeadPayload(payload);
 
-  const tenantId = tenantConfig.tenantId;
+  const tenantId = runtimeTenant.tenantId;
   const planCheck = await enforcePlanLimits(tenantId, "leads");
   if (!planCheck.allowed) {
     throw new Error(`Plan limit reached: ${planCheck.reason ?? "lead quota exceeded"}`);
@@ -386,9 +393,9 @@ export async function processLeadIntake(payload: HostedLeadPayload): Promise<Int
     visitorId: payload.visitorId,
     sessionId: payload.sessionId,
     leadKey,
-    tenant: tenantConfig.tenantId,
+    tenant: runtimeTenant.tenantId,
     source: payload.source,
-    service: payload.service ?? tenantConfig.defaultService,
+    service: payload.service ?? runtimeTenant.defaultService,
     niche: decision.traceDefaults.niche,
     blueprintId: payload.blueprintId ?? decision.traceDefaults.blueprintId,
     stepId: payload.stepId ?? decision.traceDefaults.stepId,
@@ -435,7 +442,7 @@ export async function processLeadIntake(payload: HostedLeadPayload): Promise<Int
       email: normalizedEmail,
       fullName: `${firstName} ${lastName}`.trim(),
       company: payload.company,
-      brandName: tenantConfig.brandName,
+      brandName: runtimeTenant.brandName,
     }),
     createCanonicalEvent(trace, replayed ? "lead_deduped" : "lead_captured", "web", replayed ? "DEDUPED" : "CAPTURED", {
       email: normalizedEmail,
@@ -516,7 +523,7 @@ export async function processLeadIntake(payload: HostedLeadPayload): Promise<Int
             score,
             stage,
             family: decision.family,
-            checkoutUrl: `${tenantConfig.siteUrl}${decision.destination}`,
+            checkoutUrl: `${runtimeTenant.siteUrl}${decision.destination}`,
           },
         }
       : null,
@@ -630,8 +637,8 @@ export async function processLeadIntake(payload: HostedLeadPayload): Promise<Int
           "Emailit",
           () => sendEmailAction({
             to: normalizedEmail,
-            subject: `${tenantConfig.brandName}: your next step`,
-            html: `<p>Hi ${firstName},</p><p>We received your ${payload.source.replace(/_/g, " ")} submission and mapped your next best step to the <strong>${decision.family}</strong> funnel.</p><p><a href="${tenantConfig.siteUrl}${decision.destination}">${decision.ctaLabel}</a></p>`,
+            subject: `${runtimeTenant.brandName}: your next step`,
+            html: `<p>Hi ${firstName},</p><p>We received your ${payload.source.replace(/_/g, " ")} submission and mapped your next best step to the <strong>${decision.family}</strong> funnel.</p><p><a href="${runtimeTenant.siteUrl}${decision.destination}">${decision.ctaLabel}</a></p>`,
             trace,
           }),
           {
@@ -645,7 +652,7 @@ export async function processLeadIntake(payload: HostedLeadPayload): Promise<Int
           "WbizTool",
           () => sendWhatsAppAction({
             phone: normalizedPhone,
-            body: `Hi ${firstName}, ${tenantConfig.brandName} received your request. Next step: ${tenantConfig.siteUrl}${decision.destination}`,
+            body: `Hi ${firstName}, ${runtimeTenant.brandName} received your request. Next step: ${runtimeTenant.siteUrl}${decision.destination}`,
           }),
           {
             to: normalizedPhone,
@@ -658,7 +665,7 @@ export async function processLeadIntake(payload: HostedLeadPayload): Promise<Int
           "Easy Text Marketing",
           () => sendSmsAction({
             phone: normalizedPhone,
-            body: `${tenantConfig.brandName}: continue here ${tenantConfig.siteUrl}${decision.destination}`,
+            body: `${runtimeTenant.brandName}: continue here ${runtimeTenant.siteUrl}${decision.destination}`,
           }),
           {
             to: normalizedPhone,
@@ -927,6 +934,9 @@ export async function processLeadIntake(payload: HostedLeadPayload): Promise<Int
   };
 }
 
-export async function persistLead(payload: HostedLeadPayload) {
-  return processLeadIntake(payload);
+export async function persistLead(
+  payload: HostedLeadPayload,
+  runtimeTenant: TenantConfig = tenantConfig,
+): Promise<IntakeResult> {
+  return processLeadIntake(payload, runtimeTenant);
 }

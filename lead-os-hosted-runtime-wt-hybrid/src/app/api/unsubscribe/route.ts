@@ -42,7 +42,8 @@ export async function GET(request: Request) {
 }
 
 function generateUnsubscribeToken(email: string, tenant: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "unsubscribe-token-secret";
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "";
+  if (!secret) return "";
   return createHmac("sha256", secret)
     .update(`${email.toLowerCase().trim()}::${tenant}`)
     .digest("hex")

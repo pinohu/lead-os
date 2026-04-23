@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: FunnelFamilyPageProps): Promi
   const { family } = await params;
   const label = family.charAt(0).toUpperCase() + family.slice(1).replace(/-/g, " ");
   return {
-    title: `${label} Funnel | Lead OS`,
+    title: `${label} Funnel | CX React`,
     description: `Explore the ${label} funnel family — adaptive lead capture, scoring, and nurture automation.`,
   };
 }
@@ -71,7 +71,7 @@ export default async function FunnelFamilyPage({ params, searchParams }: FunnelF
     "@type": "WebPage",
     "@id": `${baseUrl}/funnel/${family}#webpage`,
     url: `${baseUrl}/funnel/${family}`,
-    name: `${graph.name} for ${niche.label} | Lead OS`,
+    name: `${graph.name} for ${niche.label} | CX React`,
     description: `Explore the ${graph.name} funnel family — adaptive lead capture, scoring, and nurture automation for ${niche.label}.`,
     isPartOf: { "@id": `${baseUrl}/#website` },
   };

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
-  title: "Industries | Lead OS",
+  title: "Industries | CX React",
   description:
     "Pre-built lead generation systems for 16+ industries. Launch a new client in minutes, not weeks.",
 };
@@ -19,7 +19,7 @@ export default function IndustriesPage() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "@id": `${baseUrl}/industries#industries`,
-    name: "Industries | Lead OS",
+    name: "Industries | CX React",
     description: "Pre-built lead generation systems for 16+ industries. Launch a new client in minutes, not weeks.",
     numberOfItems: niches.length,
     itemListElement: niches.map((niche, i) => ({
@@ -42,7 +42,7 @@ export default function IndustriesPage() {
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Every industry has different lead sources, sales cycles, and buyer behavior.
-          Lead OS ships with pre-built funnels, scoring rules, and nurture sequences
+          CX React ships with pre-built funnels, scoring rules, and nurture sequences
           tuned to each vertical -- so you can onboard a new client and go live the same day.
         </p>
       </div>

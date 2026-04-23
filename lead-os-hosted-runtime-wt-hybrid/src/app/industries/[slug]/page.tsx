@@ -59,10 +59,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const niche = getNiche(slug);
   if (!niche) return {};
   return {
-    title: `${niche.label} Growth System | Lead OS`,
+    title: `${niche.label} Growth System | CX React`,
     description: `${niche.summary} Discover purpose-built funnels, scoring, and automation for ${niche.label.toLowerCase()} businesses.`,
     openGraph: {
-      title: `${niche.label} | Lead OS`,
+      title: `${niche.label} | CX React`,
       description: niche.summary,
       images: [{ url: buildOgImageUrl(niche.label, niche.summary, niche.slug), width: 1200, height: 630 }],
     },
@@ -205,7 +205,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">For your role</p>
               <h3 className="text-foreground">Built for agencies &amp; operators</h3>
               <p>
-                See how Lead&nbsp;OS fits your workflow — whether you run an
+                See how CX React fits your workflow — whether you run an
                 agency, a franchise, or an in-house growth team.
               </p>
               <div className="flex flex-wrap gap-3">

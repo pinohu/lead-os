@@ -6,6 +6,8 @@ import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import LeadOutcomeButton from "./lead-outcome-button";
+import { SlaPanel } from "./sla-panel";
+import { SlaCountdown } from "./sla-countdown";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +56,9 @@ export default async function LeadsPage({
         <p className="text-sm text-gray-500 dark:text-gray-600">{total} total leads</p>
       </div>
 
+      {/* ── SLA Summary Panel ────────────────────────────────────── */}
+      <SlaPanel providerId={user.providerId} />
+
       {/* ── Temperature Filter ──────────────────────────────────── */}
       <div className="flex gap-2">
         {["all", "cold", "warm", "hot", "burning"].map((temp) => (
@@ -90,6 +95,8 @@ export default async function LeadsPage({
                   <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Email</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Phone</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Temp</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Route</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">SLA</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Outcome</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Date</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-500 dark:text-gray-600">Actions</th>
@@ -130,6 +137,28 @@ export default async function LeadsPage({
                         >
                           {lead.temperature}
                         </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium uppercase ${
+                            lead.routeType === "failover"
+                              ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                              : lead.routeType === "overflow"
+                              ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400"
+                              : lead.routeType === "unmatched"
+                              ? "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                              : "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                          }`}
+                        >
+                          {lead.routeType}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        {lead.slaDeadline && !outcome ? (
+                          <SlaCountdown deadline={lead.slaDeadline} />
+                        ) : (
+                          <span className="text-xs text-gray-400">—</span>
+                        )}
                       </td>
                       <td className="py-3 px-4">
                         <LeadOutcomeButton

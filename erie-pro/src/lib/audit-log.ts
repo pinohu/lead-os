@@ -31,7 +31,12 @@ export type AuditAction =
   | "lead.dispute_resolved"
   | "lead.archived"
   | "admin.login"
-  | "admin.action";
+  | "admin.action"
+  | "concierge.paid"
+  | "annual.subscribed"
+  | "founding.increment_claimed"
+  | "founding.save"
+  | "founding.reset_to_env";
 
 export type AuditEntityType =
   | "provider"
@@ -39,9 +44,11 @@ export type AuditEntityType =
   | "territory"
   | "subscription"
   | "checkout"
+  | "checkout_session"
   | "dispute"
   | "api_key"
-  | "webhook";
+  | "webhook"
+  | "setting";
 
 interface AuditEntry {
   action: AuditAction;

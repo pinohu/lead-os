@@ -17,6 +17,21 @@
 services:
 
   # ---------------------------------------------------------------------------
+  # redis — optional queue backend for BullMQ pricing autopilot
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "${REDIS_HOST_PORT:-6379}:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
   # db — PostgreSQL 16
   # Exposes 5432 on the host for local tooling (psql, TablePlus, etc.).
   # The app connects via the internal Docker network using the service name
@@ -74,6 +89,7 @@ services:
 
       # ---- Tenant identity ---------------------------------------------------
       LEAD_OS_TENANT_ID:          ${LEAD_OS_TENANT_ID:-local-tenant}
+      LEAD_OS_DIRECTORY_TENANTS:  ${LEAD_OS_DIRECTORY_TENANTS:-erie}
       NEXT_PUBLIC_BRAND_NAME:     ${NEXT_PUBLIC_BRAND_NAME:-Lead OS}
       NEXT_PUBLIC_SITE_URL:       ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
       NEXT_PUBLIC_SUPPORT_EMAIL:  ${NEXT_PUBLIC_SUPPORT_EMAIL:-support@example.com}
@@ -94,8 +110,23 @@ services:
       STRIPE_WEBHOOK_SECRET:        ${STRIPE_WEBHOOK_SECRET:-}
       NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${NEXT_PUBLIC_STRIPE_PUBLIC_KEY:-}
 
-      # BullMQ / Redis (BullMQ gracefully degrades when Redis is absent)
+      # BullMQ / Redis — set e.g. redis://redis:6379 when using the bundled redis service
       REDIS_URL: ${REDIS_URL:-}
+
+      # Supabase (optional mirror + managed Postgres REST)
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      SUPABASE_KEY: ${SUPABASE_KEY:-}
+
+      # Pricing autopilot
+      SYSTEM_ENABLED: ${SYSTEM_ENABLED:-true}
+      ENABLE_LIVE_PRICING: ${ENABLE_LIVE_PRICING:-false}
+      PRICING_TICK_INTERVAL_MS: ${PRICING_TICK_INTERVAL_MS:-60000}
+      PRICING_MEASUREMENT_DELAY_MS: ${PRICING_MEASUREMENT_DELAY_MS:-3600000}
+      PRICING_MAX_ABS_CHANGE_PCT: ${PRICING_MAX_ABS_CHANGE_PCT:-0.05}
+      PRICING_MIN_CHANGE_INTERVAL_MS: ${PRICING_MIN_CHANGE_INTERVAL_MS:-3600000}
+      PRICING_KILL_SWITCH: ${PRICING_KILL_SWITCH:-false}
 
       # SuiteDash CRM
       SUITEDASH_PUBLIC_ID:  ${SUITEDASH_PUBLIC_ID:-}
@@ -107,8 +138,44 @@ services:
       # Operator access
       LEAD_OS_OPERATOR_EMAILS: ${LEAD_OS_OPERATOR_EMAILS:-}
 
+      LEAD_OS_BILLING_ENFORCE: ${LEAD_OS_BILLING_ENFORCE:-false}
+
     # The app's own health check is defined in the Dockerfile; compose will
     # surface it in `docker compose ps`.
+
+  # ---------------------------------------------------------------------------
+  # worker — BullMQ pricing runtime (run alongside `app` when REDIS_URL is set)
+  # ---------------------------------------------------------------------------
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      LEAD_OS_DATABASE_URL: >-
+        postgresql://lead_os:${POSTGRES_PASSWORD:-lead_os_dev_password}@db:5432/lead_os
+      DATABASE_URL: >-
+        postgresql://lead_os:${POSTGRES_PASSWORD:-lead_os_dev_password}@db:5432/lead_os
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      LEAD_OS_TENANT_ID: ${LEAD_OS_TENANT_ID:-local-tenant}
+      LEAD_OS_AUTH_SECRET: ${LEAD_OS_AUTH_SECRET:-CHANGE_ME_auth_secret_32_chars_min}
+      CRON_SECRET: ${CRON_SECRET:-CHANGE_ME_cron_secret_32_chars_min}
+      SYSTEM_ENABLED: ${SYSTEM_ENABLED:-true}
+      ENABLE_LIVE_PRICING: ${ENABLE_LIVE_PRICING:-false}
+      PRICING_TICK_INTERVAL_MS: ${PRICING_TICK_INTERVAL_MS:-60000}
+      PRICING_MEASUREMENT_DELAY_MS: ${PRICING_MEASUREMENT_DELAY_MS:-3600000}
+      PRICING_KILL_SWITCH: ${PRICING_KILL_SWITCH:-false}
+      LEAD_OS_PRICING_ENABLE_SCHEDULER: ${LEAD_OS_PRICING_ENABLE_SCHEDULER:-true}
+      LEAD_OS_BILLING_ENFORCE: ${LEAD_OS_BILLING_ENFORCE:-false}
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      SUPABASE_KEY: ${SUPABASE_KEY:-}
 
 volumes:
   # Persistent named volume for PostgreSQL data.

@@ -9,10 +9,10 @@ import { CALCULATOR_PRESETS } from "@/lib/calculator-presets";
 import { buildOgImageUrl } from "@/lib/og-url";
 
 export const metadata: Metadata = {
-  title: "ROI Calculator | Lead OS",
+  title: "ROI Calculator | CX React",
   description: "Estimate the upside of automating your lead capture, scoring, and nurture. Industry-specific calculators for 16 verticals.",
   openGraph: {
-    title: "ROI Calculator | Lead OS",
+    title: "ROI Calculator | CX React",
     description: "Estimate the upside of automating your lead capture, scoring, and nurture.",
     images: [{ url: buildOgImageUrl("ROI Calculator", "Estimate the upside of automating your lead pipeline", "general"), width: 1200, height: 630 }],
   },

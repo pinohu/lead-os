@@ -127,12 +127,12 @@ export default async function SettingsPage() {
               Sign Out
             </button>
           </form>
-          <Link
-            href="/api/privacy/delete-data"
+          <a
+            href={`mailto:hello@${cityConfig.domain}?subject=Data%20Deletion%20Request&body=Please%20delete%20my%20account%20and%20all%20associated%20data.%20Email%20on%20file%3A%20${encodeURIComponent(user.email ?? "")}`}
             className="rounded-md border border-red-300 dark:border-red-800 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
           >
             Request Data Deletion
-          </Link>
+          </a>
         </div>
       </section>
     </div>

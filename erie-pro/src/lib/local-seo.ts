@@ -23,19 +23,20 @@ const HEALTH_NICHES = new Set(["dental", "veterinary", "chiropractic"]);
 const PROFESSIONAL_NICHES = new Set(["legal", "accounting", "photography", "real-estate"]);
 
 export function getLocalContext(nicheSlug: string): string {
+  const cityName = cityConfig.name;
   if (HOME_SERVICE_NICHES.has(nicheSlug)) {
-    return "Erie's lake-effect climate, older housing stock, and freeze-thaw cycles create specific demands that require experienced local professionals.";
+    return `${cityName}'s regional climate, housing stock, and freeze-thaw cycles create specific demands that require experienced local professionals.`;
   }
   if (AUTO_NICHES.has(nicheSlug)) {
-    return "Erie's harsh winters, road salt, and pothole-heavy streets put extra wear on vehicles, making reliable local service essential.";
+    return `${cityName}'s winters, road salt, and seasonal road wear put extra strain on vehicles, making reliable local service essential.`;
   }
   if (HEALTH_NICHES.has(nicheSlug)) {
-    return "Erie residents deserve convenient access to quality healthcare providers who understand the needs of our community.";
+    return `${cityName} residents deserve convenient access to quality healthcare providers who understand the needs of our community.`;
   }
   if (PROFESSIONAL_NICHES.has(nicheSlug)) {
-    return "Erie's growing business community needs trusted local professionals who understand Pennsylvania regulations and the regional economy.";
+    return `${cityName}'s business community needs trusted local professionals who understand ${cityConfig.state} regulations and the regional economy.`;
   }
-  return "Erie residents and businesses trust local providers who are invested in our community's success.";
+  return `${cityName} residents and businesses trust local providers who are invested in our community's success.`;
 }
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -68,7 +69,12 @@ export interface LocalSeoData {
   nearbySearchTerms: string[];
 }
 
-// ── Erie Local SEO Data ────────────────────────────────────────────
+// ── Per-city Local SEO Data ────────────────────────────────────────
+// ERIE_LOCAL_SEO is the canonical Erie dataset. Other cities are
+// registered in LOCAL_SEO_BY_CITY below, keyed by city slug. The
+// `localSeo` export resolves to the dataset for the active deployment
+// (CITY_SLUG). If a city has no explicit dataset we fall back to a
+// minimal auto-generated one built from the city registry.
 
 export const ERIE_LOCAL_SEO: LocalSeoData = {
   city: "Erie",
@@ -78,7 +84,10 @@ export const ERIE_LOCAL_SEO: LocalSeoData = {
   neighborhoods: [
     "Downtown Erie", "Glenwood", "Frontier", "Academy", "Lakeside",
     "Little Italy", "East Erie", "West Erie", "South Erie", "Bayfront",
-    "Presque Isle", "Millcreek", "Harborcreek", "Fairview", "Summit Township",
+    "Presque Isle", "Millcreek", "Harborcreek", "Wesleyville", "Lawrence Park",
+    "Fairview", "Girard", "Lake City", "Albion", "North East",
+    "Waterford", "Edinboro", "McKean", "Union City", "Cambridge Springs",
+    "Summit Township",
   ],
 
   landmarks: [
@@ -87,9 +96,21 @@ export const ERIE_LOCAL_SEO: LocalSeoData = {
     "Bicentennial Tower", "Perry Square", "UPMC Hamot", "Erie International Airport",
   ],
 
+  // 30-mile drive-time coverage zone per the Launch Kit. Source of truth
+  // is cityConfig.coverageZips; we mirror it here as an array literal so
+  // SEO rendering stays fully static.
   zipCodes: [
-    "16501", "16502", "16503", "16504", "16505",
-    "16506", "16507", "16508", "16509", "16510", "16511",
+    // Core Erie + inner ring
+    "16501", "16502", "16503", "16504", "16505", "16506", "16507",
+    "16508", "16509", "16510", "16511",
+    // Harborcreek, North East
+    "16421", "16428",
+    // Fairview, Girard, Lake City, Albion
+    "16415", "16417", "16423", "16401",
+    // Waterford, Edinboro, McKean, Union City, Cambridge Springs
+    "16441", "16412", "16426", "16438", "16403",
+    // Overlap: Conneaut, OH  +  Findley Lake, NY
+    "44030", "14736",
   ],
 
   countyName: "Erie County",
@@ -137,6 +158,392 @@ export const ERIE_LOCAL_SEO: LocalSeoData = {
     "Millcreek PA", "Harborcreek PA", "Fairview PA",
   ],
 };
+
+// ── Meadville Local SEO Data ───────────────────────────────────────
+// Crawford County seat, ~13K population, Allegheny College town.
+// Similar lake-effect climate as Erie but less extreme.
+
+export const MEADVILLE_LOCAL_SEO: LocalSeoData = {
+  city: "Meadville",
+  state: "Pennsylvania",
+  stateCode: "PA",
+
+  neighborhoods: [
+    "Downtown Meadville", "North Meadville", "South Meadville",
+    "West Mead Township", "East Mead Township", "Vernon Township",
+    "Hayfield Township", "Woodcock Township", "Saegertown",
+    "Cambridge Springs", "Conneaut Lake", "Linesville", "Cochranton",
+    "Townville", "Guys Mills", "Allegheny College area",
+  ],
+
+  landmarks: [
+    "Allegheny College", "Meadville Market House", "Diamond Park",
+    "Woodcock Creek Lake", "Pymatuning State Park", "Conneaut Lake Park",
+    "Baldwin-Reynolds House Museum", "Meadville Medical Center",
+    "French Creek", "Crawford County Courthouse",
+  ],
+
+  // 30-mile coverage zone centered on Meadville. Includes Cambridge
+  // Springs (16403) which is shared with Erie's drive-time ring.
+  zipCodes: [
+    "16335", "16354", "16327", "16407", "16424",
+    "16314", "16403", "16316", "16433",
+    // Overlap: Jamestown NY
+    "14701",
+  ],
+
+  countyName: "Crawford County",
+
+  climateNotes: [
+    "Meadville gets 60-80 inches of snow annually — heavy but less than Erie's lake-effect belt",
+    "Freeze-thaw cycles are common from November through March",
+    "Summer temperatures average 68-78\u00B0F with moderate humidity",
+    "French Creek flooding can affect low-lying parts of downtown in spring",
+  ],
+
+  avgWinterTemp: "26\u00B0F (-3\u00B0C)",
+  avgSummerTemp: "70\u00B0F (21\u00B0C)",
+  annualSnowfall: "70 inches",
+
+  buildingCodes: [
+    "Pennsylvania Uniform Construction Code (UCC)",
+    "International Building Code (IBC) adopted",
+    "Crawford County building permits required for most structural work",
+    "Plumbing work requires licensed plumber per PA Act 27",
+    "Electrical work requires licensed electrician per PA Act 1",
+  ],
+
+  licensingRequirements: [
+    "General contractors: PA Home Improvement Contractor Registration (HICPA)",
+    "Plumbers: PA licensed journeyman or master plumber",
+    "Electricians: PA licensed electrician",
+    "HVAC: EPA 608 certification for refrigerant handling",
+    "Roofers: PA Home Improvement Contractor Registration",
+  ],
+
+  permitInfo:
+    "Building permits are issued by Crawford County or the City of Meadville Code Enforcement Office. Most projects over $500 require a permit.",
+
+  population: 13000,
+  medianHomeValue: "$95,000",
+  medianIncome: "$36,000",
+  homeownershipRate: "55%",
+
+  geoCoordinates: { lat: 41.6414, lng: -80.1515 },
+
+  nearbySearchTerms: [
+    "in Meadville PA", "Meadville Pennsylvania", "near Meadville",
+    "Meadville area", "near me in Meadville", "Crawford County PA",
+    "around Meadville", "Vernon Township PA", "Saegertown PA",
+    "Conneaut Lake PA",
+  ],
+};
+
+// ── Warren Local SEO Data ──────────────────────────────────────────
+// Allegheny National Forest gateway, ~9.4K population, heavy snow
+// corridor with a small dense core and rural outer ring.
+
+export const WARREN_LOCAL_SEO: LocalSeoData = {
+  city: "Warren",
+  state: "Pennsylvania",
+  stateCode: "PA",
+
+  neighborhoods: [
+    "Downtown Warren", "North Warren", "South Warren",
+    "Pleasant Township", "Glade Township", "Conewango Township",
+    "Youngsville", "Sugar Grove", "Sheffield", "Tidioute",
+    "Clarendon", "Russell", "Starbrick", "Allegheny Reservoir area",
+  ],
+
+  landmarks: [
+    "Allegheny National Forest", "Kinzua Dam", "Allegheny Reservoir",
+    "Struthers Library Theatre", "Warren County Courthouse",
+    "Warren General Hospital", "Crescent Park", "Betts Park",
+    "Chapman State Park", "Kinzua Bridge State Park",
+  ],
+
+  zipCodes: [
+    "16365", "16371", "16372", "16347",
+    "16353", "16438", "16340", "16254",
+    // Overlap: Jamestown NY
+    "14701",
+  ],
+
+  countyName: "Warren County",
+
+  climateNotes: [
+    "Warren averages 70-90 inches of snow per winter along the Allegheny plateau",
+    "Freeze-thaw cycles run November through March",
+    "Summer temperatures average 66-78\u00B0F with forest humidity",
+    "Ice storms are a recurring hazard in the National Forest corridor",
+  ],
+
+  avgWinterTemp: "25\u00B0F (-4\u00B0C)",
+  avgSummerTemp: "68\u00B0F (20\u00B0C)",
+  annualSnowfall: "80 inches",
+
+  buildingCodes: [
+    "Pennsylvania Uniform Construction Code (UCC)",
+    "International Building Code (IBC) adopted",
+    "Warren County building permits required for most structural work",
+    "Plumbing work requires licensed plumber per PA Act 27",
+    "Electrical work requires licensed electrician per PA Act 1",
+  ],
+
+  licensingRequirements: [
+    "General contractors: PA Home Improvement Contractor Registration (HICPA)",
+    "Plumbers: PA licensed journeyman or master plumber",
+    "Electricians: PA licensed electrician",
+    "HVAC: EPA 608 certification for refrigerant handling",
+    "Roofers: PA Home Improvement Contractor Registration",
+  ],
+
+  permitInfo:
+    "Building permits are issued by Warren County or the City of Warren Code Enforcement. Most projects over $500 require a permit.",
+
+  population: 9400,
+  medianHomeValue: "$85,000",
+  medianIncome: "$42,000",
+  homeownershipRate: "62%",
+
+  geoCoordinates: { lat: 41.8439, lng: -79.1453 },
+
+  nearbySearchTerms: [
+    "in Warren PA", "Warren Pennsylvania", "near Warren", "Warren area",
+    "near me in Warren", "Warren County PA", "around Warren",
+    "Youngsville PA", "Sheffield PA", "Allegheny National Forest",
+  ],
+};
+
+// Jamestown NY — the first cross-state dataset. Southern Tier /
+// Chautauqua Lake market, lake-effect snow from Chautauqua plus the
+// Lake Erie belt to the north.
+export const JAMESTOWN_LOCAL_SEO: LocalSeoData = {
+  city: "Jamestown",
+  state: "New York",
+  stateCode: "NY",
+
+  neighborhoods: [
+    "Downtown Jamestown", "North Side", "South Side", "East Jamestown",
+    "West Jamestown", "Lakewood", "Falconer", "Celoron", "Frewsburg",
+    "Bemus Point", "Ashville", "Busti", "Kiantone", "Greenhurst",
+    "Fluvanna",
+  ],
+
+  landmarks: [
+    "National Comedy Center", "Lucille Ball Desi Arnaz Museum",
+    "Chautauqua Lake", "Midway State Park", "Panama Rocks Scenic Park",
+    "Jamestown Community College", "Robert H. Jackson Center",
+    "Reg Lenna Center for the Arts", "Chautauqua Mall",
+    "Jamestown City Hall", "UPMC Chautauqua",
+  ],
+
+  zipCodes: [
+    "14701", "14702", "14750", "14733", "14738",
+    "14712", "14710", "14767", "14784", "14772",
+    // Overlap: Warren PA
+    "16365",
+  ],
+
+  countyName: "Chautauqua County",
+
+  climateNotes: [
+    "Jamestown averages 80-100 inches of snow, fed by Chautauqua Lake " +
+      "and Lake Erie bands to the north",
+    "Freeze-thaw cycles run mid-November through late March",
+    "Summer temperatures average 68-80\u00B0F with lake-moderated humidity",
+    "Ice storms and deep-freeze cold snaps are common in January-February",
+  ],
+
+  avgWinterTemp: "24\u00B0F (-4\u00B0C)",
+  avgSummerTemp: "70\u00B0F (21\u00B0C)",
+  annualSnowfall: "90 inches",
+
+  buildingCodes: [
+    "New York State Uniform Fire Prevention and Building Code",
+    "International Residential Code (IRC) adopted statewide",
+    "City of Jamestown Code Enforcement permits required for most work",
+    "Plumbing work requires NY state licensed plumber",
+    "Electrical work requires NY state licensed electrician",
+  ],
+
+  licensingRequirements: [
+    "General contractors: no state license, but Jamestown city registration",
+    "Plumbers: NY state licensed plumber",
+    "Electricians: NY state licensed electrician",
+    "HVAC: EPA 608 certification for refrigerant handling",
+    "Roofers: no state license, but liability insurance required",
+  ],
+
+  permitInfo:
+    "Building permits are issued by Jamestown City Code Enforcement or " +
+    "the Chautauqua County Department of Planning & Development. Projects " +
+    "over $500 generally require a permit.",
+
+  population: 29000,
+  medianHomeValue: "$75,000",
+  medianIncome: "$38,000",
+  homeownershipRate: "55%",
+
+  geoCoordinates: { lat: 42.0970, lng: -79.2353 },
+
+  nearbySearchTerms: [
+    "in Jamestown NY", "Jamestown New York", "near Jamestown",
+    "Jamestown area", "near me in Jamestown", "Chautauqua County NY",
+    "around Jamestown", "Lakewood NY", "Falconer NY", "Chautauqua Lake",
+    "Southern Tier NY",
+  ],
+};
+
+// Ashtabula OH — coastal Lake Erie market on the Ohio side of the
+// border. Gets heavy lake-effect snow like Erie PA, plus a thriving
+// wine-and-coast tourism economy along the Ashtabula County wine trail.
+export const ASHTABULA_LOCAL_SEO: LocalSeoData = {
+  city: "Ashtabula",
+  state: "Ohio",
+  stateCode: "OH",
+
+  neighborhoods: [
+    "Downtown Ashtabula", "Harbor District", "West Ashtabula",
+    "East Ashtabula", "Saybrook", "Plymouth", "Kingsville",
+    "North Kingsville", "Geneva", "Conneaut", "Jefferson",
+    "Rock Creek", "Andover",
+  ],
+
+  landmarks: [
+    "Ashtabula Harbor", "Ashtabula Lift Bridge", "Walnut Beach Park",
+    "Point Park", "Hubbard House Underground Railroad Museum",
+    "Ashtabula County Covered Bridges", "Geneva State Park",
+    "Ashtabula County Wine Trail", "Conneaut Township Park",
+    "Lake Shore Park", "Ashtabula County Medical Center",
+  ],
+
+  zipCodes: [
+    "44004", "44005", "44010", "44030", "44041",
+    "44047", "44048", "44068", "44084",
+    // Overlap: Erie PA
+    "16505",
+  ],
+
+  countyName: "Ashtabula County",
+
+  climateNotes: [
+    "Ashtabula sits in Lake Erie's snowbelt and averages 100+ inches " +
+      "of lake-effect snow each winter",
+    "Freeze-thaw cycles run November through early April along the coast",
+    "Summer temperatures average 68-80\u00B0F, moderated by the lake",
+    "Ice storms and whiteout-level snow squalls hit several times a year",
+  ],
+
+  avgWinterTemp: "27\u00B0F (-3\u00B0C)",
+  avgSummerTemp: "71\u00B0F (22\u00B0C)",
+  annualSnowfall: "110 inches",
+
+  buildingCodes: [
+    "Ohio Residential Code (based on IRC)",
+    "Ohio Building Code (commercial, based on IBC)",
+    "City of Ashtabula and Ashtabula County permits required for most work",
+    "Plumbing work requires Ohio state licensed plumber",
+    "Electrical work requires Ohio state licensed electrical contractor",
+  ],
+
+  licensingRequirements: [
+    "General contractors: Ohio doesn't state-license GCs, but local " +
+      "registration with Ashtabula and the county is standard",
+    "Plumbers: Ohio state licensed plumber",
+    "Electricians: Ohio state licensed electrical contractor",
+    "HVAC: Ohio HVAC contractor license + EPA 608 certification",
+    "Roofers: no state license, but liability insurance is standard",
+  ],
+
+  permitInfo:
+    "Building permits are issued by the City of Ashtabula Building " +
+    "Department or the Ashtabula County Department of Building " +
+    "Regulations. Projects over $500 generally require a permit.",
+
+  population: 18000,
+  medianHomeValue: "$90,000",
+  medianIncome: "$36,000",
+  homeownershipRate: "60%",
+
+  geoCoordinates: { lat: 41.8650, lng: -80.7898 },
+
+  nearbySearchTerms: [
+    "in Ashtabula OH", "Ashtabula Ohio", "near Ashtabula",
+    "Ashtabula area", "near me in Ashtabula", "Ashtabula County OH",
+    "around Ashtabula", "Geneva OH", "Conneaut OH",
+    "Lake Erie shoreline", "Ashtabula wine trail",
+  ],
+};
+
+// ── City dataset registry ──────────────────────────────────────────
+
+const LOCAL_SEO_BY_CITY: Record<string, LocalSeoData> = {
+  erie: ERIE_LOCAL_SEO,
+  meadville: MEADVILLE_LOCAL_SEO,
+  warren: WARREN_LOCAL_SEO,
+  jamestown: JAMESTOWN_LOCAL_SEO,
+  ashtabula: ASHTABULA_LOCAL_SEO,
+};
+
+/**
+ * Look up the full dataset for a city slug. Returns `undefined` if the
+ * slug has no explicit dataset registered.
+ */
+export function getLocalSeoForCity(slug: string): LocalSeoData | undefined {
+  return LOCAL_SEO_BY_CITY[slug];
+}
+
+/**
+ * Build a minimal LocalSeoData from a CityConfig when the city has no
+ * explicit dataset. Covers the "we just added a new CITY_SLUG" case.
+ */
+function buildFallbackFromCityConfig(): LocalSeoData {
+  const serviceArea =
+    cityConfig.serviceArea.length > 0
+      ? cityConfig.serviceArea
+      : [cityConfig.name];
+  const zipCodes =
+    cityConfig.coverageZips && cityConfig.coverageZips.length > 0
+      ? cityConfig.coverageZips
+      : ["00000"];
+
+  return {
+    city: cityConfig.name,
+    state: cityConfig.state,
+    stateCode: cityConfig.stateCode,
+    neighborhoods: serviceArea,
+    landmarks: [],
+    zipCodes,
+    countyName: cityConfig.counties[0] ?? `${cityConfig.name} Area`,
+    climateNotes: [],
+    avgWinterTemp: "",
+    avgSummerTemp: "",
+    annualSnowfall: "",
+    buildingCodes: [],
+    licensingRequirements: [],
+    permitInfo: `Building permits are issued by ${cityConfig.counties[0] ?? cityConfig.name}.`,
+    population: cityConfig.population,
+    medianHomeValue: "",
+    medianIncome: "",
+    homeownershipRate: "",
+    geoCoordinates: cityConfig.coordinates,
+    nearbySearchTerms: [
+      `in ${cityConfig.name} ${cityConfig.stateCode}`,
+      `${cityConfig.name} ${cityConfig.state}`,
+      `near ${cityConfig.name}`,
+      `${cityConfig.name} area`,
+    ],
+  };
+}
+
+/**
+ * Active-city Local SEO dataset. Resolves to the explicit dataset when
+ * one is registered, otherwise a minimal fallback derived from the
+ * city registry.
+ */
+export const localSeo: LocalSeoData =
+  LOCAL_SEO_BY_CITY[cityConfig.slug] ?? buildFallbackFromCityConfig();
 
 // ── Niche-Specific Local SEO Snippets ──────────────────────────────
 // Each niche gets a custom paragraph weaving in climate, regulations,
@@ -216,22 +623,165 @@ const NICHE_SEO_SNIPPETS: Record<string, string> = {
     "Erie homeowners rely heavily on fireplaces and wood stoves during long, cold winters averaging 28\u00B0F. Lake-effect moisture accelerates chimney deterioration in neighborhoods like Downtown Erie, Glenwood, and Academy. Annual chimney inspections and cleanings are critical for fire safety, and Erie's freeze-thaw cycles can crack mortar joints and damage flue liners.",
 };
 
+// ── City-specific niche snippet overrides ──────────────────────────
+// Erie niches fall through to NICHE_SEO_SNIPPETS. Cities that need
+// different copy (e.g. Meadville has less lake-effect snow, smaller
+// housing stock) get an entry here.
+
+const CITY_NICHE_SNIPPETS: Record<string, Record<string, string>> = {
+  meadville: {
+    plumbing:
+      "Meadville's freeze-thaw cycles and roughly 70 inches of annual snowfall put steady pressure on plumbing systems. Frozen pipes and basement flooding are common in older homes near downtown and along French Creek. Pennsylvania law requires all plumbing work to be performed by a licensed plumber under PA Act 27.",
+    hvac:
+      "With winter temperatures averaging 26\u00B0F and 70 inches of snow each year, Meadville homeowners depend on reliable heating. Moderate Crawford County summers still demand working air conditioning in many older homes. All HVAC technicians must hold EPA 608 certification for refrigerant handling.",
+    handyman:
+      "Meadville's mix of 19th-century homes downtown, Allegheny College rentals, and newer developments in Vernon and West Mead keeps local handymen busy year-round. Freeze-thaw weather creates a steady drip of small repairs \u2014 gutter fixes, door adjustments, storm-window swaps \u2014 across Crawford County.",
+    electrical:
+      "Older housing stock in downtown Meadville and around Allegheny College often needs panel upgrades and rewiring to meet modern codes. Pennsylvania Act 1 requires all electrical work to be performed by a licensed electrician. Winter ice storms drive demand for generator installs across Crawford County.",
+    roofing:
+      "Meadville's 70 inches of annual snow, freeze-thaw cycles, and French Creek valley humidity take a steady toll on roofs. Homes in Vernon Township, West Mead, and downtown Meadville regularly need patch work and replacements after heavy winters. Pennsylvania requires roofing contractors to hold a Home Improvement Contractor Registration (HICPA).",
+    landscaping:
+      "Meadville's growing season runs roughly late April through early October, bracketed by heavy snow and ice. Homeowners across Vernon, Hayfield, and Saegertown invest in spring cleanups, drainage work, and winter prep. Wet springs along French Creek drive demand for grading and drainage solutions.",
+    cleaning:
+      "Meadville homeowners, Allegheny College tenants, and downtown businesses keep local cleaners busy year-round. Road salt, freeze-thaw moisture, and humid summers bring extra dirt indoors. Move-in / move-out cleans spike every May and August with the college calendar.",
+    "snow-removal":
+      "With roughly 70 inches of snow each winter, Meadville residents and small businesses rely heavily on driveway plowing, sidewalk shoveling, and commercial lot clearing. Demand peaks from December through March across Vernon, West Mead, and the city proper.",
+    "auto-repair":
+      "Meadville's salted roads, harsh winters, and rural routes through Crawford County are rough on vehicles. Rust repair, alignment work, and brake service stay steady year-round. Pennsylvania requires annual safety inspections and emissions testing, keeping local shops consistently booked.",
+    "tree-service":
+      "Ice loads, windstorms off Lake Erie's southern edge, and mature shade trees around Allegheny College and the Diamond make tree service essential in Meadville. Emergency removal spikes during winter ice storms and summer thunderstorms across Crawford County.",
+    chimney:
+      "Long Crawford County winters averaging 26\u00B0F keep Meadville wood stoves and fireplaces running hard. Freeze-thaw cycles crack mortar joints and flue liners; annual inspection and cleaning is critical for fire safety, especially in the older housing stock near downtown and Allegheny College.",
+    "garage-door":
+      "Heavy snow and ice in Meadville put extra strain on garage doors and openers. Spring replacement, weatherstripping upgrades, and opener service are common needs in Vernon Township, Saegertown, and across the city. Freeze-thaw swings can warp tracks and damage panels.",
+    painting:
+      "Meadville's humid summers and frigid winters demand high-quality exterior paint that can flex with the temperature swing. Historic homes downtown and around Allegheny College frequently need restoration painting; interior work is popular year-round in Vernon and West Mead.",
+  },
+  warren: {
+    plumbing:
+      "Warren's 80 inches of annual snow and rural well-and-septic coverage make plumbing service a year-round priority. Frozen pipes and well-pump failures are common in Pleasant Township, Glade Township, and the Allegheny National Forest edge communities. Pennsylvania law requires licensed plumbers under PA Act 27.",
+    hvac:
+      "Warren winters average 25\u00B0F along the Allegheny plateau, with heavy snow from November through March. Wood stoves, oil heat, and propane are all common so HVAC pros handle a wide range of systems. EPA 608 certification is required for all refrigerant work.",
+    handyman:
+      "Warren homeowners across Conewango Township, Youngsville, and Sheffield rely on handymen for seasonal maintenance \u2014 gutter cleaning before winter, storm-damage patches after ice storms, and deck repairs every spring. Older downtown housing keeps the repair pipeline steady.",
+    electrical:
+      "Warren's older housing stock and rural extensions in the National Forest corridor often need panel upgrades, surge protection, and backup generator installs. Ice-storm outages are routine here. PA Act 1 requires all electrical work to be performed by a licensed electrician.",
+    roofing:
+      "Warren's 80 inches of snowfall and ice dams from the Allegheny plateau are rough on roofs. Homes in Pleasant Township and along the reservoir frequently need replacement after heavy winters. Pennsylvania requires HICPA registration for all roofing contractors.",
+    "snow-removal":
+      "With 80 inches of snow per winter, snow-removal is essential in Warren. Driveway plowing, walkway shoveling, and commercial lot clearing peak from December through early March across the city and outlying townships.",
+    "tree-service":
+      "Warren sits at the edge of the Allegheny National Forest, so mature trees are everywhere. Ice loads, summer thunderstorms, and emerald ash borer damage all drive tree-service demand. Emergency removal and storm cleanup run year-round across Warren County.",
+    "auto-repair":
+      "Long rural commutes through Warren, Pleasant, and Glade Townships combined with road salt and potholes mean steady wear on vehicles. Rust repair, suspension work, and winter tire swaps are mainstays. Pennsylvania requires annual inspections and emissions testing.",
+  },
+  jamestown: {
+    plumbing:
+      "Jamestown's Chautauqua Lake corridor and 90+ inches of annual snow put steady pressure on plumbing systems. Frozen pipes are common in older North Side and South Side homes, and Lakewood's lakefront properties need seasonal shut-offs. New York state law requires all plumbing work to be performed by a licensed plumber.",
+    hvac:
+      "With winter temperatures averaging 24\u00B0F and snow totals pushed up by both Lake Erie and Chautauqua Lake, Jamestown homeowners rely on heating nearly half the year. Moderate summers still demand reliable air conditioning in historic homes downtown and across Falconer and Celoron. EPA 608 certification is required for all refrigerant handling.",
+    handyman:
+      "Jamestown's century-old housing stock, Jamestown Community College rentals, and newer developments in Lakewood keep local handymen busy. Seasonal maintenance \u2014 gutter cleanouts, storm-window swaps, deck repairs \u2014 runs steady across Chautauqua County.",
+    electrical:
+      "Older housing stock in downtown Jamestown and the North Side often needs panel upgrades, rewiring, and surge protection. Lake-effect storms drive steady demand for generator installs across Lakewood, Falconer, and Busti. New York state licensed electricians are required for most work.",
+    roofing:
+      "Jamestown's 90 inches of snow, ice dams, and Chautauqua Lake humidity take a steady toll on roofs. Homes in Lakewood, Falconer, and the North Side often need replacement after heavy winters. Roofers in NY aren't state-licensed but are expected to carry full liability coverage.",
+    landscaping:
+      "Jamestown's growing season runs early May through late September, bracketed by deep winter and wet springs. Chautauqua Lake waterfront properties need erosion control and dock-area landscaping. Spring cleanups spike across Busti and Lakewood every April.",
+    cleaning:
+      "Jamestown homeowners, Jamestown Community College renters, and downtown storefronts keep local cleaners busy year-round. Road salt, freeze-thaw moisture, and lake humidity bring extra dirt indoors. Move-in / move-out cleans peak with the college calendar each May and August.",
+    "snow-removal":
+      "With 90 inches of snow each winter from combined Lake Erie and Chautauqua Lake bands, snow-removal is essential in Jamestown. Driveway plowing, walkway shoveling, and commercial lot clearing peak November through March across Lakewood, Falconer, and the North Side.",
+    "auto-repair":
+      "Jamestown's salted roads, harsh winters, and lake-effect storm damage are rough on vehicles. Rust repair, suspension work, and winter tire swaps stay busy year-round. New York State inspections are required annually, keeping local shops consistently booked.",
+    "tree-service":
+      "Jamestown's mature trees along the Chautauqua Lake corridor and in Busti and Kiantone take a beating from ice loads and summer thunderstorms. Emergency removal and storm cleanup are year-round needs across Chautauqua County.",
+    chimney:
+      "Long Jamestown winters averaging 24\u00B0F keep wood stoves and fireplaces running hard. Freeze-thaw cycles crack mortar and damage flue liners; annual inspection and cleaning are critical for fire safety, especially in the older housing stock on the North Side and around Jamestown Community College.",
+    "garage-door":
+      "Heavy snow and ice around Chautauqua Lake put extra strain on garage doors and openers. Spring replacements and opener service are common needs in Lakewood, Falconer, and Celoron; freeze-thaw swings regularly warp tracks and damage panels.",
+    "pest-control":
+      "Jamestown's lakefront properties along Chautauqua Lake and humid Southern Tier summers create steady demand for pest control. Carpenter ants, mice, and box elder bugs are common in older North Side and Frewsburg homes; mosquito mitigation peaks May through September around Bemus Point and Celoron.",
+    painting:
+      "Jamestown's century-old housing stock around the Reg Lenna Center and the North Side often needs restoration painting. Lake humidity and 90+ inches of snow demand exterior coatings that can flex with temperature swings. Interior repaints stay busy year-round in Lakewood, Falconer, and Busti.",
+    foundation:
+      "Jamestown's freeze-thaw cycles, high water table near Chautauqua Lake, and heavy lake-effect snowmelt create serious foundation pressure. Basement flooding is common in older homes on the North Side and South Side; sump pump installs and crack sealing peak each spring after the thaw.",
+    concrete:
+      "Jamestown's 90 inches of annual snow and freeze-thaw cycles are punishing for driveways, sidewalks, and patios. Salt damage and frost heaving keep concrete crews busy in Lakewood, Falconer, and Busti. New York permit requirements apply for most structural pours.",
+    "windows-doors":
+      "Energy efficiency is critical in Jamestown where winter temperatures average 24\u00B0F and snowfall pushes 90 inches. Many century-old homes around Jamestown Community College and the Reg Lenna corridor have original single-pane windows that drive up heating costs. NY state codes require modern energy ratings on replacements.",
+    "appliance-repair":
+      "Jamestown's roughly 29,000 residents and lakefront seasonal homeowners depend on working appliances through deep winters. Hard water common in Chautauqua County shortens appliance life; washer, dryer, and refrigerator service stays steady in Lakewood, Falconer, and downtown Jamestown.",
+  },
+  ashtabula: {
+    plumbing:
+      "Ashtabula sits squarely in Lake Erie's snowbelt with 100+ inches of lake-effect snow each winter. Frozen pipes are common in Harbor District and older downtown housing stock; shoreline properties in Geneva and Conneaut need seasonal shut-offs. Ohio requires all plumbing work to be performed by a state-licensed plumber.",
+    hvac:
+      "Ashtabula winters average 27\u00B0F with heavy lake-effect snow. Homeowners across Saybrook, Plymouth, and Kingsville rely on furnaces and heat pumps nearly half the year; summer humidity off the lake keeps AC demand steady. EPA 608 certification and an Ohio HVAC contractor license are required for most work.",
+    handyman:
+      "Ashtabula's mix of 19th-century harbor homes, wine-country cottages, and newer Saybrook builds keeps local handymen busy year-round. Lake-effect weather drives steady small repairs \u2014 gutters, storm windows, deck patches \u2014 across Ashtabula County.",
+    electrical:
+      "Older housing stock in downtown Ashtabula and the Harbor District often needs panel upgrades, surge protection, and generator installs. Lake-effect outages are routine. Ohio requires a state-licensed electrical contractor for most work; Ashtabula County adds local permit requirements.",
+    roofing:
+      "Ashtabula's 110 inches of snow, ice dams, and coastal humidity punish roofs. Homes in the Harbor District, Geneva, and Conneaut regularly need tear-offs after heavy winters. Ohio doesn't state-license roofers, but Ashtabula-area homeowners expect full liability coverage.",
+    landscaping:
+      "Ashtabula's growing season runs early May through late September, with vineyard-friendly soil across Geneva, Harpersfield, and Jefferson. Waterfront properties need erosion control, and the county's wine-country homeowners invest heavily in hardscape and seasonal cleanups.",
+    cleaning:
+      "Ashtabula homeowners, wine-country B&Bs, and downtown storefronts keep local cleaners busy year-round. Road salt, lake moisture, and tourism season bring steady demand for deep cleans and move-in / move-out service across Saybrook, Geneva, and the Harbor District.",
+    "snow-removal":
+      "With 110 inches of lake-effect snow each winter, snow-removal is essential in Ashtabula. Driveway plowing, walkway shoveling, and commercial lot clearing peak November through March across the Harbor District, Saybrook, and the Ashtabula County wine trail.",
+    "auto-repair":
+      "Ashtabula's salted roads, harsh winters, and shoreline routes are rough on vehicles. Rust repair, suspension work, and winter tire swaps stay busy year-round. Ohio E-Check requirements in neighboring counties and steady commuter traffic keep local shops consistently booked.",
+    "tree-service":
+      "Ashtabula's mature trees along the Lake Erie shoreline and throughout the county's wine trail take a beating from ice loads and summer thunderstorms. Emergency removal and storm cleanup are year-round needs in Harbor, Saybrook, Geneva, and Jefferson.",
+    chimney:
+      "Long Ashtabula winters averaging 27\u00B0F keep wood stoves and fireplaces running hard. Lake-effect moisture accelerates chimney deterioration in downtown Ashtabula, the Harbor District, and along the shoreline. Annual inspection and cleaning are critical for fire safety.",
+    "garage-door":
+      "Heavy lake-effect snow and ice in Ashtabula put extra strain on garage doors and openers. Spring replacements and opener service are common across the Harbor District, Saybrook, and Geneva; freeze-thaw swings warp tracks and damage panels.",
+    "pest-control":
+      "Ashtabula's Lake Erie shoreline and humid summers drive steady pest pressure \u2014 mosquitoes, carpenter ants, mice in older Harbor District homes, and box elder bugs across the wine trail. Wine-country B&Bs in Geneva and Jefferson invest in proactive seasonal treatments to protect bookings.",
+    painting:
+      "Ashtabula's lake-effect winters and humid coastal summers demand high-quality exterior paint that can withstand 80\u00B0F annual swings. Historic Harbor District homes and Underground Railroad-era properties around the Hubbard House often need restoration painting. Interior work stays steady year-round in Saybrook and Geneva.",
+    foundation:
+      "Ashtabula's high water table along the Lake Erie shoreline, freeze-thaw cycles, and 110 inches of lake-effect snowmelt create real foundation pressure. Basement flooding is common in the Harbor District and along the lakefront; sump pump installs, crack sealing, and waterproofing peak every spring across Ashtabula County.",
+    concrete:
+      "Ashtabula's 110 inches of snow and aggressive road salt are extremely hard on driveways, sidewalks, and patios. Frost heaving and surface scaling keep concrete crews busy in Saybrook, Geneva, and Conneaut. Permits are required for most structural pours through the City of Ashtabula or the county.",
+    "windows-doors":
+      "Energy efficiency is critical in Ashtabula where winter temperatures average 27\u00B0F and snowfall pushes 110 inches. Many older Harbor District and downtown Ashtabula homes have single-pane windows that bleed heat. Ohio Residential Code requires modern energy ratings on all replacement windows.",
+    "appliance-repair":
+      "Ashtabula's roughly 18,000 residents and seasonal lakefront homeowners depend on working appliances through brutal lake-effect winters. Hard water common across Ashtabula County shortens appliance life. Washer, dryer, and refrigerator service stays steady in the Harbor District, Saybrook, and Geneva year-round.",
+  },
+};
+
 // ── Fallback snippet generator for niches without a custom entry ───
 
 function generateGenericSnippet(nicheSlug: string): string {
   const niche = getNicheBySlug(nicheSlug);
   const label = niche?.label ?? nicheSlug;
-  return `Erie, Pennsylvania residents rely on quality ${label.toLowerCase()} services throughout the year. With a population of approximately 95,000 and a homeownership rate of 52%, there is steady demand for ${label.toLowerCase()} across neighborhoods like Millcreek, Harborcreek, Downtown Erie, and Fairview. ${getLocalContext(nicheSlug)}`;
+  const seo = localSeo;
+  const neighborhoodSample = seo.neighborhoods.slice(0, 4).join(", ");
+  const population = seo.population.toLocaleString();
+  const ownership = seo.homeownershipRate || "a steady rate of";
+  return `${seo.city}, ${seo.state} residents rely on quality ${label.toLowerCase()} services throughout the year. With a population of approximately ${population} and a homeownership rate of ${ownership}, there is steady demand for ${label.toLowerCase()} across ${neighborhoodSample}. ${getLocalContext(nicheSlug)}`;
 }
 
 // ── Public API ─────────────────────────────────────────────────────
 
 /**
  * Returns a niche-specific local context paragraph for SEO content.
- * Weaves in Erie climate, neighborhoods, regulations, and local data.
+ * Prefers a city-specific override, falls back to the default (Erie)
+ * snippet, and finally to a generated generic snippet.
  */
 export function getLocalSeoSnippet(niche: string): string {
-  return NICHE_SEO_SNIPPETS[niche] ?? generateGenericSnippet(niche);
+  const cityOverrides = CITY_NICHE_SNIPPETS[cityConfig.slug];
+  if (cityOverrides?.[niche]) return cityOverrides[niche];
+  // For cities that aren't Erie, skip the Erie-specific snippets map
+  // and go straight to the generated snippet to avoid Erie copy leaking
+  // into other city deployments.
+  if (cityConfig.slug === "erie") {
+    return NICHE_SEO_SNIPPETS[niche] ?? generateGenericSnippet(niche);
+  }
+  return generateGenericSnippet(niche);
 }
 
 /**
@@ -241,7 +791,7 @@ export function getLocalSchemaOrg(niche: string): object {
   const nicheData = getNicheBySlug(niche);
   const label = nicheData?.label ?? niche;
   const description = nicheData?.description ?? "";
-  const seo = ERIE_LOCAL_SEO;
+  const seo = localSeo;
 
   return {
     "@context": "https://schema.org",
@@ -317,7 +867,7 @@ export function getNearbySearchVariations(niche: string): string[] {
   const nicheData = getNicheBySlug(niche);
   const label = nicheData?.label ?? niche;
   const terms = nicheData?.searchTerms ?? [niche];
-  const seo = ERIE_LOCAL_SEO;
+  const seo = localSeo;
 
   const variations: string[] = [];
 
@@ -341,21 +891,22 @@ export function getNearbySearchVariations(niche: string): string[] {
 export function getLocalMetaDescription(niche: string): string {
   const nicheData = getNicheBySlug(niche);
   const label = nicheData?.label ?? niche;
-  const seo = ERIE_LOCAL_SEO;
+  const seo = localSeo;
+  const serviceBlurb = seo.neighborhoods.slice(0, 3).join(", ");
 
-  return `Find trusted ${label.toLowerCase()} providers in ${seo.city}, ${seo.stateCode}. Compare verified professionals, read reviews, get free quotes. Serving Millcreek, Harborcreek, Fairview and surrounding areas.`;
+  return `Find trusted ${label.toLowerCase()} providers in ${seo.city}, ${seo.stateCode}. Compare verified professionals, read reviews, get free quotes. Serving ${serviceBlurb} and surrounding areas.`;
 }
 
 /**
  * Returns a list of neighborhoods for display in content.
  */
 export function getNeighborhoodList(): string[] {
-  return [...ERIE_LOCAL_SEO.neighborhoods];
+  return [...localSeo.neighborhoods];
 }
 
 /**
  * Returns a list of zip codes for display.
  */
 export function getZipCodes(): string[] {
-  return [...ERIE_LOCAL_SEO.zipCodes];
+  return [...localSeo.zipCodes];
 }

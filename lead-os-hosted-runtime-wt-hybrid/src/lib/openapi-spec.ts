@@ -2,10 +2,10 @@ export function buildOpenApiSpec(): object {
   return {
     openapi: "3.1.0",
     info: {
-      title: "Lead OS API",
+      title: "CX React API",
       version: "2026-03-30",
       description: "Autonomous lead acquisition, scoring, nurturing, and marketplace API. 295+ endpoints across intake, scoring, marketplace, billing, and operator management.",
-      contact: { name: "Lead OS Support", url: "https://github.com/pinohu/lead-os" },
+      contact: { name: "CX React Support", url: "https://github.com/pinohu/lead-os" },
       license: { name: "MIT", url: "https://opensource.org/licenses/MIT" },
     },
     servers: [

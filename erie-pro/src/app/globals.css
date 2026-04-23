@@ -3,53 +3,59 @@
 @tailwind utilities;
 
 @layer base {
+  /* ── Erie Pro brand palette ──────────────────────────────────────────
+   * Erie Red       #C8102E  →  352 85% 42%   (SeaWolves / Otters)
+   * Bayfront Blue  #1F3A5F  →  215 51% 25%   (Lake Erie depth)
+   * Steel Gray     #4A4A4A  →  0 0% 29%      (rust-belt honesty)
+   * Tagline: One pro. No bidding. Always Erie.
+   */
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --foreground: 215 30% 14%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 215 30% 14%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 243 75% 52%;
+    --popover-foreground: 215 30% 14%;
+    --primary: 352 85% 42%;            /* Erie Red */
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 6% 10%;
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 38%;
-    --accent: 240 5% 96%;
-    --accent-foreground: 240 6% 10%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 243 75% 52%;
+    --secondary: 215 51% 25%;          /* Bayfront Blue */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 215 20% 95%;
+    --muted-foreground: 215 15% 35%;
+    --accent: 215 51% 25%;             /* Bayfront Blue accent */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 352 85% 42%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 15% 86%;
+    --input: 215 15% 86%;
+    --ring: 352 85% 42%;
     --radius: 0.5rem;
-    --success: 142 71% 45%;
+    --success: 142 71% 38%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 0%;
+    --warning: 38 92% 46%;
+    --warning-foreground: 0 0% 10%;
   }
 
   .dark {
-    --background: 240 10% 4%;
+    --background: 215 35% 8%;
     --foreground: 0 0% 98%;
-    --card: 240 8% 8%;
+    --card: 215 35% 11%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 8% 8%;
+    --popover: 215 35% 11%;
     --popover-foreground: 0 0% 98%;
-    --primary: 243 75% 65%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 240 4% 16%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 5% 13%;
-    --muted-foreground: 240 5% 72%;
-    --accent: 240 5% 15%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 4% 22%;
-    --input: 240 4% 22%;
-    --ring: 243 75% 65%;
+    --primary: 352 85% 56%;            /* Erie Red (lifted for dark) */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 45% 35%;          /* Bayfront Blue (lifted) */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 215 25% 16%;
+    --muted-foreground: 215 15% 72%;
+    --accent: 215 45% 35%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 352 85% 56%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 25% 22%;
+    --input: 215 25% 22%;
+    --ring: 352 85% 56%;
   }
 }
 

@@ -253,7 +253,7 @@ export async function createLeadPurchaseCheckout(
         },
       ],
       success_url: `${APP_DOMAIN}/for-business/leads/success?session_id={CHECKOUT_SESSION_ID}&lead_id=${leadId}&niche=${niche}`,
-      cancel_url: `${APP_DOMAIN}/for-business/leads?cancelled=true`,
+      cancel_url: `${APP_DOMAIN}/for-business?cancelled=true&niche=${niche}`,
       metadata: { leadId, niche, temperature },
     });
 
@@ -482,6 +482,215 @@ export async function getCheckoutSession(sessionId: string) {
  */
 export function isStripeDryRun(): boolean {
   return isDryRun;
+}
+
+// ── Requester upgrades: Concierge + Annual ─────────────────────────
+// These are the only two paid offers on the requester side. Free
+// matching remains the default.
+//
+// Concierge: one-time $29 per job. We call pros on the requester's
+// behalf and text them the one to book.
+//
+// Annual: $199/yr subscription. Unlimited Concierge jobs for 12
+// months + same-day priority.
+//
+// Price can be overridden with a real Stripe Price ID via env
+// (STRIPE_PRICE_CONCIERGE / STRIPE_PRICE_ANNUAL). If not set, we
+// use inline price_data so the flow works without Stripe dashboard
+// setup — handy for the first 40 members.
+
+export const CONCIERGE_PRICE_USD = 29;
+export const ANNUAL_PRICE_USD = 199;
+
+const CONCIERGE_STRIPE_PRICE_ID = process.env.STRIPE_PRICE_CONCIERGE ?? "";
+const ANNUAL_STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ANNUAL ?? "";
+
+export interface RequesterCheckout {
+  plan: "concierge" | "annual";
+  email: string;
+  price: number;
+  checkoutUrl: string;
+  sessionId: string;
+}
+
+/**
+ * One-time Concierge charge ($29) for white-glove matching on a
+ * single job. `context` is a short description ("plumbing emergency",
+ * "roof estimate") that we stash on the checkout session metadata so
+ * the ops team has it when they pick up the request.
+ */
+export async function createConciergeCheckout(
+  email: string,
+  context: string,
+): Promise<RequesterCheckout> {
+  const price = CONCIERGE_PRICE_USD;
+  const normalizedEmail = email.toLowerCase();
+
+  if (!isDryRun && stripe) {
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      customer_email: email,
+      line_items: CONCIERGE_STRIPE_PRICE_ID
+        ? [{ price: CONCIERGE_STRIPE_PRICE_ID, quantity: 1 }]
+        : [
+            {
+              price_data: {
+                currency: "usd",
+                unit_amount: price * 100,
+                product_data: {
+                  name: `${cityConfig.domain} — Concierge match`,
+                  description:
+                    "We call 2–3 local pros on your behalf and text you the one to book.",
+                },
+              },
+              quantity: 1,
+            },
+          ],
+      success_url: `${APP_DOMAIN}/concierge/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${APP_DOMAIN}/#upgrade-heading?cancelled=true`,
+      metadata: { plan: "concierge", context },
+    });
+
+    await prisma.checkoutSession.create({
+      data: {
+        sessionType: "concierge_job",
+        stripeSessionId: session.id,
+        niche: "concierge",
+        city: cityConfig.slug,
+        providerEmail: normalizedEmail,
+        price,
+        status: "pending",
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+    });
+
+    return {
+      plan: "concierge",
+      email,
+      price,
+      checkoutUrl: session.url ?? `${APP_DOMAIN}/concierge/success?session_id=${session.id}`,
+      sessionId: session.id,
+    };
+  }
+
+  // Dry-run fallback
+  const sessionId = `cs_mock_concierge_${Date.now().toString(36)}_${Math.random()
+    .toString(36)
+    .substring(2, 8)}`;
+
+  await prisma.checkoutSession.create({
+    data: {
+      sessionType: "concierge_job",
+      stripeSessionId: sessionId,
+      niche: "concierge",
+      city: cityConfig.slug,
+      providerEmail: normalizedEmail,
+      price,
+      status: "pending",
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    },
+  });
+
+  if (process.env.NODE_ENV === "development") {
+    logger.info("stripe", `DRY-RUN Concierge session: ${sessionId}`);
+  }
+
+  return {
+    plan: "concierge",
+    email,
+    price,
+    checkoutUrl: `${APP_DOMAIN}/concierge/success?session_id=${sessionId}&dry_run=1`,
+    sessionId,
+  };
+}
+
+/**
+ * Annual requester membership ($199/yr subscription). Unlimited
+ * Concierge matches for 12 months + same-day priority.
+ */
+export async function createAnnualMembershipCheckout(
+  email: string,
+): Promise<RequesterCheckout> {
+  const price = ANNUAL_PRICE_USD;
+  const normalizedEmail = email.toLowerCase();
+
+  if (!isDryRun && stripe) {
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      customer_email: email,
+      line_items: ANNUAL_STRIPE_PRICE_ID
+        ? [{ price: ANNUAL_STRIPE_PRICE_ID, quantity: 1 }]
+        : [
+            {
+              price_data: {
+                currency: "usd",
+                unit_amount: price * 100,
+                recurring: { interval: "year" },
+                product_data: {
+                  name: `${cityConfig.domain} — Annual Member`,
+                  description:
+                    "Unlimited Concierge matches for 12 months + same-day priority.",
+                },
+              },
+              quantity: 1,
+            },
+          ],
+      success_url: `${APP_DOMAIN}/concierge/success?session_id={CHECKOUT_SESSION_ID}&plan=annual`,
+      cancel_url: `${APP_DOMAIN}/#upgrade-heading?cancelled=true`,
+      metadata: { plan: "annual" },
+    });
+
+    await prisma.checkoutSession.create({
+      data: {
+        sessionType: "annual_membership",
+        stripeSessionId: session.id,
+        niche: "membership",
+        city: cityConfig.slug,
+        providerEmail: normalizedEmail,
+        price,
+        status: "pending",
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+    });
+
+    return {
+      plan: "annual",
+      email,
+      price,
+      checkoutUrl: session.url ?? `${APP_DOMAIN}/concierge/success?session_id=${session.id}&plan=annual`,
+      sessionId: session.id,
+    };
+  }
+
+  // Dry-run fallback
+  const sessionId = `cs_mock_annual_${Date.now().toString(36)}_${Math.random()
+    .toString(36)
+    .substring(2, 8)}`;
+
+  await prisma.checkoutSession.create({
+    data: {
+      sessionType: "annual_membership",
+      stripeSessionId: sessionId,
+      niche: "membership",
+      city: cityConfig.slug,
+      providerEmail: normalizedEmail,
+      price,
+      status: "pending",
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    },
+  });
+
+  if (process.env.NODE_ENV === "development") {
+    logger.info("stripe", `DRY-RUN Annual membership session: ${sessionId}`);
+  }
+
+  return {
+    plan: "annual",
+    email,
+    price,
+    checkoutUrl: `${APP_DOMAIN}/concierge/success?session_id=${sessionId}&plan=annual&dry_run=1`,
+    sessionId,
+  };
 }
 
 export { STRIPE_WEBHOOK_SECRET, NICHE_PRICING };

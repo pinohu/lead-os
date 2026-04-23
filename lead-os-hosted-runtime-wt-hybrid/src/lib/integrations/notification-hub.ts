@@ -182,7 +182,8 @@ async function sendViaNovu(notification: Notification): Promise<NotificationResu
 // ---------------------------------------------------------------------------
 
 function buildNotificationUnsubscribeUrl(siteUrl: string, email: string, tenantId: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "unsubscribe-token-secret";
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET;
+  if (!secret) return `${siteUrl}/api/unsubscribe`;
   const token = createHmac("sha256", secret)
     .update(`${email.toLowerCase().trim()}::${tenantId}`)
     .digest("hex")
