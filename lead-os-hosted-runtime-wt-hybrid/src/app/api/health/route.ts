@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { recordCheck } from "@/lib/uptime-tracker";
+import { getPricingRuntimeSnapshot } from "@/lib/pricing/runtime-state.ts";
 
 export async function GET() {
   let dbStatus = "unknown";
@@ -23,6 +24,10 @@ export async function GET() {
   recordCheck("database", dbStatus === "healthy" ? "healthy" : dbStatus === "down" ? "down" : "healthy", dbLatency);
   recordCheck("api", "healthy", 0);
 
+  const pricing = getPricingRuntimeSnapshot();
+  const pricingStatus =
+    pricing.lastTickError ? "degraded" : "healthy";
+
   return NextResponse.json({
     status: dbStatus === "down" ? "degraded" : "ok",
     service: "lead-os",
@@ -32,6 +37,12 @@ export async function GET() {
     components: {
       api: "healthy",
       database: dbStatus,
+      pricing_autopilot: pricingStatus,
+      pricing_workers: pricing.workersStarted
+        ? "bullmq"
+        : pricing.memorySchedulerStarted
+          ? "memory_scheduler"
+          : "idle",
     },
   });
 }

@@ -49,6 +49,9 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
+ARG LEAD_OS_BUILD_ID=unknown
+ENV LEAD_OS_BUILD_ID=${LEAD_OS_BUILD_ID}
+
 # Build. next build reads next.config.mjs and emits .next/standalone.
 RUN npm run build
 
@@ -59,7 +62,7 @@ RUN npm run build
 # -----------------------------------------------------------------------------
 FROM node:22-alpine AS runner
 
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat wget
 
 WORKDIR /app
 
@@ -101,3 +104,35 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
 
 # server.js is emitted by Next.js standalone output.
 CMD ["node", "server.js"]
+
+# -----------------------------------------------------------------------------
+# Stage 4: worker — BullMQ pricing workers + in-process scheduler (no Next.js)
+# Build:  docker build --target worker -t lead-os-worker .
+# Compose: service `worker` with build.target: worker
+# -----------------------------------------------------------------------------
+FROM node:22-alpine AS worker
+
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser  --system --uid 1001 nextjs
+
+ARG LEAD_OS_BUILD_ID=unknown
+ENV LEAD_OS_BUILD_ID=${LEAD_OS_BUILD_ID}
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --frozen-lockfile
+
+COPY --chown=nextjs:nodejs src ./src
+COPY --chown=nextjs:nodejs db ./db
+COPY --chown=nextjs:nodejs tsconfig.json ./
+COPY --chown=nextjs:nodejs scripts ./scripts
+
+USER nextjs
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+CMD ["node", "--experimental-strip-types", "src/runtime/worker-entry.ts"]

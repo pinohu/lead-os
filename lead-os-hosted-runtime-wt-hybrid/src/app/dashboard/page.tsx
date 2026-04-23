@@ -16,7 +16,7 @@ import { getBookingJobs, getCanonicalEvents, getDocumentJobs, getLeadRecords, ge
 import { tenantConfig } from "@/lib/tenant";
 
 export default async function DashboardPage() {
-  const session = (await getOperatorSession()) ?? { email: "demo@localhost" };
+  const session = (await getOperatorSession())!;
   const [leads, events, bookingJobs, documentJobs, workflowRuns] = await Promise.all([
     getLeadRecords(),
     getCanonicalEvents(),

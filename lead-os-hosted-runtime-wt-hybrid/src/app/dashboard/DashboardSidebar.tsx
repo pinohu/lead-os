@@ -33,6 +33,8 @@ import {
   TrendingUp,
   Zap,
   Briefcase,
+  Rocket,
+  Gauge,
   PanelLeft,
   ChevronDown,
   Menu,
@@ -68,6 +70,8 @@ const NAV_GROUPS: NavGroup[] = [
     icon: <Eye size={ICON_SIZE} />,
     items: [
       { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={ICON_SIZE} /> },
+      { href: "/dashboard/control-plane", label: "Control plane", icon: <Gauge size={ICON_SIZE} /> },
+      { href: "/dashboard/gtm", label: "GTM execution", icon: <Rocket size={ICON_SIZE} /> },
       { href: "/dashboard/radar", label: "Radar", icon: <Radar size={ICON_SIZE} /> },
     ],
   },

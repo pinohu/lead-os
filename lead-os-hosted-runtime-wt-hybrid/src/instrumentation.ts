@@ -1,0 +1,13 @@
+// src/instrumentation.ts
+// Node runtime bootstrap: pricing BullMQ workers + distributed scheduler (skipped on Edge / Vercel workers).
+
+export async function register(): Promise<void> {
+  if (process.env.NEXT_RUNTIME === "edge") return;
+
+  try {
+    const { startPricingRuntimeWeb } = await import("@/lib/pricing/bootstrap.ts");
+    await startPricingRuntimeWeb();
+  } catch (err) {
+    console.error("[instrumentation] pricing bootstrap failed:", err);
+  }
+}

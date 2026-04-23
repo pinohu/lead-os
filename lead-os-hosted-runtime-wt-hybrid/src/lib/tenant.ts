@@ -1,3 +1,4 @@
+// src/lib/tenant.ts
 import { embeddedSecrets } from "./embedded-secrets.ts";
 import { hasAnyEnv } from "./request-utils.ts";
 

@@ -128,6 +128,15 @@ Hosted runtime (Next.js 16.2 + PostgreSQL)
 - 13-step automated provisioning with subdomain + landing page deployment
 - 137 provider integrations (all with dry-run fallback)
 
+### Runtime, pricing autopilot, and control plane
+- **Web vs worker:** `src/instrumentation.ts` calls `startPricingRuntimeWeb()` — with `REDIS_URL` set it **does not** embed BullMQ workers in Next.js; run **`npm run worker`** (`src/runtime/worker-entry.ts`) or Docker **`--target worker`**. Memory fallback runs on the **web** process only in **non-production** when Redis is absent.
+- **Queues & DLQ:** BullMQ queues (`leados-pricing-*`) plus **persisted** dead letters in Postgres (`dead_letter_jobs`).
+- **Billing:** Migration `007` adds plans/subscriptions and `operator_audit_log`. `LEAD_OS_BILLING_ENFORCE=true` gates pricing ticks on active subscriptions, plan flags, and node counts (see `src/lib/billing/entitlements.ts`).
+- **Observability:** `/api/health`, `/api/health/deep`, `/api/system` (includes billing snapshot), `/api/queue` (cron secret or authenticated operator/API identity).
+- **Operator UI:** `/dashboard/control-plane` — flags, billing, queue stats, nodes, recommendations, outcomes, DLQ rows, and **confirmed actions** (`POST /api/operator/actions`).
+- **Tenant alignment for mutations:** new operator routes use `requireOperatorApiSession` plus `requireAlignedTenant` from `src/lib/api-mutation-guard.ts` (API-key tenant header must match `LEAD_OS_TENANT_ID`).
+- **Documentation:** [Operator runbook](./docs/OPERATOR_RUNBOOK.md), [Deployment guide](./docs/DEPLOYMENT.md), [System hardening](./docs/SYSTEM-HARDENING.md).
+
 ## Quick Start
 
 ```bash
@@ -150,6 +159,16 @@ npx tsc --noEmit
 ```
 
 No environment variables are required for local development. The system runs entirely in-memory with dry-run mode for all external integrations.
+
+**Erie.pro directory demo (Postgres + billing + routing):** see [docs/ERIE-PRO.md](./docs/ERIE-PRO.md) and `.env.erie.example`.
+
+**Revenue use cases (1–10):** [docs/GO-TO-MARKET-USE-CASES.md](./docs/GO-TO-MARKET-USE-CASES.md) · `src/config/gtm-use-cases.ts`
+
+### GTM execution (CLI + operator dashboard)
+
+- **CLI:** `npm run gtm:print` prints every row from `GTM_USE_CASES` (add `--json`, `--id=1`, or `--slug=erie-plumbing` / canonical slugs). Exits non-zero if the config fails validation.
+- **Dashboard:** `/dashboard/gtm` (operator session required) shows all plays, **week-one launch checklist**, derived execution links, env keys, and editable **rollout status** + notes stored in Postgres (`db/migrations/011_gtm_use_case_statuses.sql`).
+- **API:** `GET /api/operator/gtm` returns merged config + status; `PATCH` or `POST` with `{ slug, status?, notes? }` updates persistence. Mutations require aligned tenant headers when present and append **`operator_audit_log`** + API mutation audit rows.
 
 ## Environment Variables
 
@@ -212,13 +231,19 @@ docker build -t lead-os . && docker run -p 3000:3000 lead-os
 | `/` | Public landing page |
 | `/onboard` | Client self-service signup |
 | `/auth/sign-in` | Operator login (magic link) |
-| `/dashboard` | Operator dashboard (29 pages) |
+| `/dashboard` | Operator dashboard |
+| `/dashboard/control-plane` | Runtime, queues, pricing, nodes, DLQ (read-only) |
 | `/dashboard/prospects` | Prospect discovery and management |
 | `/dashboard/experiments` | A/B experiment management |
 | `/dashboard/competitors` | Competitive analysis |
 | `/lp/[slug]` | Auto-generated GMB landing pages |
 | `/marketplace` | Public lead marketplace |
 | `/api/health` | System health check |
+| `/api/health/deep` | Deep health (DB, Redis, pricing runtime, DLQ) |
+| `/api/system` | Public system snapshot (flags, no secrets) |
+| `/api/queue` | Queue metrics (cron secret or operator session) |
+| `/api/operator/control-plane` | Control plane JSON (authenticated) |
+| `POST /api/operator/actions` | Operator mutations (DLQ, nodes, pricing) |
 | `/api/intake` | Lead intake endpoint |
 | `/api/gmb/ingest` | GMB listing ingestion & LP generation |
 | `/api/gmb/ingest/[slug]` | Landing page CRUD (GET/PATCH/DELETE) |
