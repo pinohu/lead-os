@@ -4,14 +4,21 @@ import {
   synthesizeLeadOsManifest,
   type WebsiteIntelligenceInput,
 } from "@/lib/website-intelligence";
+import { validateExternalUrl } from "@/lib/validate-url";
 
-async function fetchTargetHtml(url: string) {
-  const response = await fetch(url, {
+async function fetchTargetHtml(rawUrl: string) {
+  const check = validateExternalUrl(rawUrl);
+  if (!check.valid) {
+    throw new Error(`URL rejected: ${check.reason}`);
+  }
+
+  const response = await fetch(check.url.href, {
     headers: {
       "user-agent": "LeadOS-IntelligenceBot/1.0 (+https://github.com/pinohu/lead-os)",
       accept: "text/html,application/xhtml+xml",
     },
     cache: "no-store",
+    redirect: "follow",
   });
 
   if (!response.ok) {

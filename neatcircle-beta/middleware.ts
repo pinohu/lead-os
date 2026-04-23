@@ -53,12 +53,75 @@ function allow(request: NextRequest) {
   return applyResponseHeaders(request, NextResponse.next());
 }
 
+// --------------- Inline rate limiter (edge-compatible) ---------------
+interface RLEntry { count: number; resetAt: number }
+const rlStore = new Map<string, RLEntry>();
+const GENERAL_WINDOW_MS = 60_000;
+const GENERAL_MAX = 30;
+const ANALYZE_WINDOW_MS = 60_000;
+const ANALYZE_MAX = 5;
+
+function getClientIp(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0]?.trim() || "unknown";
+  return request.headers.get("x-real-ip")?.trim() || "unknown";
+}
+
+function checkRateLimit(key: string, maxRequests: number, windowMs: number): { allowed: boolean; remaining: number; resetAt: number } {
+  const now = Date.now();
+  const entry = rlStore.get(key);
+
+  if (!entry || entry.resetAt <= now) {
+    rlStore.set(key, { count: 1, resetAt: now + windowMs });
+    return { allowed: true, remaining: maxRequests - 1, resetAt: now + windowMs };
+  }
+
+  entry.count++;
+  if (entry.count > maxRequests) {
+    return { allowed: false, remaining: 0, resetAt: entry.resetAt };
+  }
+
+  return { allowed: true, remaining: maxRequests - entry.count, resetAt: entry.resetAt };
+}
+
+// Periodic cleanup (best-effort in edge; runs per-invocation instead of setInterval)
+let lastCleanup = 0;
+function maybeCleanup() {
+  const now = Date.now();
+  if (now - lastCleanup < 30_000) return;
+  lastCleanup = now;
+  for (const [key, entry] of rlStore) {
+    if (entry.resetAt <= now) rlStore.delete(key);
+  }
+}
+// ---------------------------------------------------------------------
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (request.method === "OPTIONS") {
     return allow(request);
   }
+
+  // --- Rate limiting for /api/* routes ---
+  if (pathname.startsWith("/api/")) {
+    maybeCleanup();
+    const ip = getClientIp(request);
+
+    if (pathname.startsWith("/api/intelligence/analyze")) {
+      const rl = checkRateLimit(`analyze:${ip}`, ANALYZE_MAX, ANALYZE_WINDOW_MS);
+      if (!rl.allowed) {
+        return reject(429, "Too many requests. Please try again later.");
+      }
+    }
+
+    const rl = checkRateLimit(`api:${ip}`, GENERAL_MAX, GENERAL_WINDOW_MS);
+    if (!rl.allowed) {
+      return reject(429, "Too many requests. Please try again later.");
+    }
+  }
+
+  // --- Existing auth checks ---
 
   if (pathname === "/api/automations/health") {
     return allow(request);
@@ -124,8 +187,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/api/automations/:path*",
-    "/api/dashboard/metrics",
-    "/api/cron/nurture",
+    "/api/:path*",
   ],
 };

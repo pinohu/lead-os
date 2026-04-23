@@ -20,7 +20,8 @@ const UnsubscribeSchema = z
 
 /** Generate a simple HMAC token for email unsubscribe links */
 function generateUnsubscribeToken(email: string): string {
-  const secret = process.env.UNSUBSCRIBE_SECRET || process.env.NEXTAUTH_SECRET || "default-unsubscribe-secret";
+  const secret = process.env.UNSUBSCRIBE_SECRET || process.env.NEXTAUTH_SECRET;
+  if (!secret) throw new Error("UNSUBSCRIBE_SECRET or NEXTAUTH_SECRET must be configured");
   return createHash("sha256").update(`${email}:${secret}`).digest("hex").slice(0, 32);
 }
 
