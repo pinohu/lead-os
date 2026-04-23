@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const validated = validateWithSchema(raw.data, CronOptimizeBodySchema);
   if (!validated.ok) {
     const res = validated.response;
-    for (const [k, v] of headers.entries()) {
+    for (const [k, v] of Object.entries(headers)) {
       res.headers.set(k, v);
     }
     return res;
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   const tenantId = body.tenantId ?? tenantConfig.tenantId;
   const tenantFail = requireDeployTenantIdOrFail(tenantId, "cron_optimize");
   if (tenantFail) {
-    for (const [k, v] of headers.entries()) {
+    for (const [k, v] of Object.entries(headers)) {
       tenantFail.headers.set(k, v);
     }
     return tenantFail;

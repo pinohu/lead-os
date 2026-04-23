@@ -128,8 +128,9 @@ export async function assertPricingExecutionAllowed(tenantId: string): Promise<{
 
 export function assertApiAccessTierAllows(
   state: BillingGateState,
-  requiredTier: "standard" | "full",
+  requiredTier: "none" | "standard" | "full",
 ): boolean {
+  if (requiredTier === "none") return true;
   if (!state.enforcement) return true;
   const tier = state.apiAccessTier ?? "none";
   if (requiredTier === "standard") return tier === "standard" || tier === "full";

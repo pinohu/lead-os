@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const validated = validateWithSchema(raw.data, CronExperimentsBodySchema);
   if (!validated.ok) {
     const res = validated.response;
-    for (const [k, v] of headers.entries()) {
+    for (const [k, v] of Object.entries(headers)) {
       res.headers.set(k, v);
     }
     return res;
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   const tenantId = validated.data.tenantId ?? tenantConfig.tenantId;
   const tenantFail = requireDeployTenantIdOrFail(tenantId, "cron_experiments");
   if (tenantFail) {
-    for (const [k, v] of headers.entries()) {
+    for (const [k, v] of Object.entries(headers)) {
       tenantFail.headers.set(k, v);
     }
     return tenantFail;

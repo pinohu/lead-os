@@ -55,6 +55,10 @@ const PUBLIC_EXACT: Set<string> = new Set([
   "/api/contact",
 ]);
 
+const X_AUTH_SECRET_EXACT: Set<string> = new Set([
+  "/api/operator/leads",
+]);
+
 const PUBLIC_PREFIXES: string[] = [
   "/api/tracking/",
   "/api/embed/",
@@ -78,6 +82,10 @@ function isPublicRoute(pathname: string, method: string): boolean {
   }
 
   return false;
+}
+
+function isXAuthSecretRoute(pathname: string): boolean {
+  return X_AUTH_SECRET_EXACT.has(pathname);
 }
 
 // ---------------------------------------------------------------------------
@@ -378,6 +386,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     }
     return applySecurityHeaders(nextWithNonce(), requestId, cspNonce);
   }
+
+  // Explicit x-auth-secret routes bypass global auth-system guards and enforce
+  // route-local auth (requireAuth) for minimal operator access surfaces.
+  if (isXAuthSecretRoute(pathname))
+    return applySecurityHeaders(nextWithNonce(), requestId, cspNonce);
 
   // Cron secret — fast path, no DB required. Timing-safe comparison.
   const cronSecret = request.headers.get("x-cron-secret");

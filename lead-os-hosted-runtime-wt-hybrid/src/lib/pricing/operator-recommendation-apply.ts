@@ -165,7 +165,7 @@ export async function operatorForceApplyRecommendation(input: {
     recommendationId: reco.id,
     status: "applied",
     appliedHistoryId: historyId,
-    metadataPatch: { changeLogId, historyId, source: "operator" },
+    metadataPatch: { changeLogId: changeId, historyId, source: "operator" },
   });
 
   const delayMs = getPricingMeasurementDelayMs();
