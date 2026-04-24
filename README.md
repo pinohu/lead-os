@@ -4,6 +4,8 @@ Programmable, multi-tenant lead generation infrastructure. One runtime, many nic
 
 **New here?** Read **[`docs/START-HERE.md`](docs/START-HERE.md)** first (clone → run → Postgres → operator → production checks). It is the **novice entry** path and the reconciliation point between marketing, `/docs`, and repo truth.
 
+**Doc–code parity (kernel):** after clone, run `npm run verify:product-surfaces` inside `lead-os-hosted-runtime-wt-hybrid/`. Scope and limits are defined in [`lead-os-hosted-runtime-wt-hybrid/docs/CLAIMS-VERIFICATION.md`](lead-os-hosted-runtime-wt-hybrid/docs/CLAIMS-VERIFICATION.md).
+
 CX React captures visitor intent through embeddable widgets, scores and routes leads through configurable funnel graphs, orchestrates multi-channel follow-up (email, SMS, WhatsApp, chat, voice), generates AI-powered content, and syncs outcomes to your CRM and automation bus. It replaces 15-20 separate SaaS products with a single deployable runtime.
 
 ## By the numbers (verify — do not treat as warranties)
@@ -338,6 +340,8 @@ The hybrid kernel ships a large `node:test` tree under `tests/`. Counts change f
 | Document | Purpose |
 |----------|---------|
 | [**Start here (novices)**](docs/START-HERE.md) | Single path: clone → run kernel → Postgres/migrations → operator → production checks; reconciles marketing vs shipped behavior |
+| [Claims verification (kernel)](lead-os-hosted-runtime-wt-hybrid/docs/CLAIMS-VERIFICATION.md) | Defines which Markdown claims are binding and what `npm run verify:product-surfaces` checks |
+| [GitHub + Vercel automation](docs/GITHUB_VERCEL_AUTOMATION.md) | CI gates, Vercel Git deploy, optional migration workflow, Dependabot |
 | [Complete Guide](LEAD-OS-COMPLETE-GUIDE.md) | Full platform documentation (architecture, API reference, deployment, economics, AppSumo roadmap) |
 | [API Reference](docs/API_REFERENCE.md) | Detailed endpoint documentation |
 | [Setup Guide](docs/SETUP_GUIDE.md) | Step-by-step installation |
@@ -394,4 +398,4 @@ lead-os/
 
 ## License
 
-MIT
+The **kernel** (`lead-os-hosted-runtime-wt-hybrid/`) is **private — all rights reserved** (see that folder’s README). Other packages in this monorepo may carry their own terms. There is **no** blanket MIT grant at the repository root.

@@ -1,6 +1,6 @@
 # Start here — Lead OS monorepo (novice path)
 
-This file is the **single entry point** for humans and for checking that marketing, the app, and the repo agree. If anything below disagrees with another doc, **this file plus** `lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md` win until you fix the drift.
+This file is the **single entry point** for humans and for checking that marketing, the app, and the repo agree. If anything below disagrees with another doc, **this file plus** `lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md` **plus** `lead-os-hosted-runtime-wt-hybrid/docs/CLAIMS-VERIFICATION.md` (what is machine-checked) win until you fix the drift.
 
 ## 1. What you are looking at
 
@@ -71,6 +71,7 @@ From `lead-os-hosted-runtime-wt-hybrid/`:
 npm test
 npx tsc --noEmit
 npm run build
+npm run verify:product-surfaces
 npm run verify:migrations   # when DATABASE_URL is set
 ```
 

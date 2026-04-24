@@ -35,7 +35,7 @@ export default function IndustriesPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(industriesJsonLd) }} />
-    <main id="main-content" className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="text-center mb-12">
         <Badge variant="secondary" className="mb-4">Industries we serve</Badge>
         <h1 className="text-foreground text-4xl font-extrabold tracking-tight mb-4">
@@ -68,7 +68,7 @@ export default function IndustriesPage() {
           </Card>
         ))}
       </div>
-    </main>
+    </div>
     </>
   );
 }

@@ -2,9 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [master, main]
   pull_request:
-    branches: [master]
+    branches: [master, main]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,6 +29,7 @@ jobs:
           cache: npm
           cache-dependency-path: lead-os-hosted-runtime-wt-hybrid/package-lock.json
       - run: npm ci
+      - run: npm run verify:product-surfaces
       - run: npx tsc --noEmit
 
   test:
@@ -44,6 +46,7 @@ jobs:
           cache: npm
           cache-dependency-path: lead-os-hosted-runtime-wt-hybrid/package-lock.json
       - run: npm ci
+      - run: npm run verify:product-surfaces
       - run: npm run test:ci
 
   build-hybrid:
@@ -60,6 +63,7 @@ jobs:
           cache: npm
           cache-dependency-path: lead-os-hosted-runtime-wt-hybrid/package-lock.json
       - run: npm ci
+      - run: npm run verify:product-surfaces
       - run: npm run build
 
   typecheck-erie:

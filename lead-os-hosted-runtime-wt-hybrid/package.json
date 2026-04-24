@@ -18,6 +18,7 @@
     "mcp": "node --experimental-strip-types src/mcp/index.ts",
     "test": "cross-env LEAD_OS_USE_AITABLE_PERSISTENCE=false LEAD_OS_ENABLE_LIVE_SENDS=false node --test --test-concurrency=1 --experimental-test-isolation=none --experimental-strip-types tests/**/*.test.ts",
     "test:ci": "cross-env LEAD_OS_USE_AITABLE_PERSISTENCE=false LEAD_OS_ENABLE_LIVE_SENDS=false node --test --test-concurrency=1 --experimental-test-isolation=none --experimental-strip-types tests/**/*.test.ts",
+    "verify:product-surfaces": "node scripts/verify-product-surfaces.mjs",
     "verify:migrations": "node scripts/verify-migrations.mjs",
     "enumerate:api-routes": "node scripts/enumerate-api-routes.mjs",
     "enumerate:mutation-routes": "node scripts/enumerate-mutation-routes.mjs",

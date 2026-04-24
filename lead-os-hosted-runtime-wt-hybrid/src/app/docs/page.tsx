@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function DocsHubPage() {
   return (
-    <main id="main-content" className="max-w-4xl mx-auto px-4 py-10 space-y-8">
+    <div className="max-w-4xl mx-auto px-4 py-10 space-y-8">
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Documentation</p>
         <h1 className="text-3xl font-bold tracking-tight mt-1">Product &amp; operator docs</h1>
@@ -114,6 +114,6 @@ export default function DocsHubPage() {
           {tenantConfig.supportEmail}
         </a>
       </p>
-    </main>
+    </div>
   );
 }

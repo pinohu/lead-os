@@ -8,8 +8,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <main
-      id="main-content"
+    <div
       role="alert"
       aria-live="assertive"
       className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center"
@@ -39,6 +38,6 @@ export default function GlobalError({
           Go home
         </a>
       </div>
-    </main>
+    </div>
   );
 }

@@ -75,12 +75,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const partneroProgramId = process.env.PARTNERO_PROGRAM_ID ?? embeddedSecrets.partnero.programId;
   const partneroAssetsHost = process.env.PARTNERO_ASSETS_HOST ?? embeddedSecrets.partnero.assetsHost;
   const brandName = tenantConfig.brandName;
+  const siteBase = tenantConfig.siteUrl.replace(/\/$/, "");
 
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#4f46e5" />
+        <meta name="theme-color" content={tenantConfig.accent} />
         <script
           type="application/ld+json"
           nonce={nonce}
@@ -90,46 +91,46 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               "@graph": [
                 {
                   "@type": "Organization",
-                  "@id": "https://cxreact.com/#organization",
+                  "@id": `${siteBase}/#organization`,
                   name: tenantConfig.brandName,
-                  url: "https://cxreact.com",
+                  url: siteBase,
                   logo: {
                     "@type": "ImageObject",
-                    url: "https://cxreact.com/og-image.png",
+                    url: `${siteBase}/og-image.png`,
                     width: 1200,
                     height: 630,
                   },
                   description:
-                    "Multi-tenant lead generation infrastructure. Capture, score, route, nurture, and convert leads with configurable funnel graphs, AI-powered content, and 137+ integrations.",
+                    "Lead capture, scoring, routing, and nurture for agencies, SaaS teams, lead-gen operators, consultants, and franchises — configurable funnels, operator dashboard, and APIs (integrations require credentials).",
                   sameAs: [],
                 },
                 {
                   "@type": "WebSite",
-                  "@id": "https://cxreact.com/#website",
-                  url: "https://cxreact.com",
-                  name: `${tenantConfig.brandName} — Enterprise Lead Generation Platform`,
-                  publisher: { "@id": "https://cxreact.com/#organization" },
+                  "@id": `${siteBase}/#website`,
+                  url: siteBase,
+                  name: `${tenantConfig.brandName} — Lead OS for multi-industry operators`,
+                  publisher: { "@id": `${siteBase}/#organization` },
                   potentialAction: {
                     "@type": "SearchAction",
                     target: {
                       "@type": "EntryPoint",
-                      urlTemplate: "https://cxreact.com/industries?q={search_term_string}",
+                      urlTemplate: `${siteBase}/industries?q={search_term_string}`,
                     },
                     "query-input": "required name=search_term_string",
                   },
                 },
                 {
                   "@type": "SoftwareApplication",
-                  "@id": "https://cxreact.com/#app",
+                  "@id": `${siteBase}/#app`,
                   name: `${tenantConfig.brandName} Platform`,
                   applicationCategory: "BusinessApplication",
                   operatingSystem: "Web",
                   offers: {
                     "@type": "Offer",
-                    url: "https://cxreact.com/pricing",
+                    url: `${siteBase}/pricing`,
                     priceCurrency: "USD",
                   },
-                  publisher: { "@id": "https://cxreact.com/#organization" },
+                  publisher: { "@id": `${siteBase}/#organization` },
                 },
               ],
             }),
@@ -138,8 +139,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className={`${inter.className} bg-background text-foreground antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md">
-          Skip to content
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md"
+        >
+          Skip to main content
         </a>
 
         {/* ── Header ──────────────────────────────────────── */}
@@ -156,7 +160,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           />
         ) : null}
 
-        <div id="main-content">{children}</div>
+        <main id="main-content" tabIndex={-1} className="outline-none min-w-0">
+          {children}
+        </main>
 
         {/* ── Footer ──────────────────────────────────────── */}
         <footer className="border-t border-border mt-8" role="contentinfo">
@@ -166,7 +172,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <div className="col-span-2 md:col-span-1">
                 <p className="font-semibold text-foreground">{brandName}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Enterprise lead generation infrastructure for every vertical.
+                  Lead capture, scoring, and nurture for operators across industries — configure, do not fork.
                 </p>
               </div>
 

@@ -182,7 +182,7 @@ export default function HomePage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
-    <main id="main-content">
+    <div>
       {/* ── Hero ──────────────────────────────────────────── */}
       <section className="relative overflow-hidden" aria-labelledby="hero-heading">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
@@ -464,7 +464,7 @@ export default function HomePage() {
           </Button>
         </div>
       </section>
-    </main>
+    </div>
     </>
   );
 }

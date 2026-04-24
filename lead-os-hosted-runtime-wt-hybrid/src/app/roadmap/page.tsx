@@ -74,11 +74,11 @@ export default function RoadmapPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(roadmapJsonLd) }} />
-      <main id="main-content" className="max-w-6xl mx-auto px-4 py-12">
+      <div className="max-w-6xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
         <h1 className="text-foreground text-2xl font-extrabold mb-2">Product Roadmap</h1>
         <p className="text-foreground max-w-lg mx-auto">
-          See what we are building next to help your agency grow. Have a feature request?{" "}
+          See what we are building next across the platform. Have a feature request?{" "}
           <Link href="/contact" className="text-primary underline">
             Let us know
           </Link>.
@@ -117,7 +117,7 @@ export default function RoadmapPage() {
           </section>
         ))}
       </div>
-    </main>
+    </div>
     </>
   );
 }

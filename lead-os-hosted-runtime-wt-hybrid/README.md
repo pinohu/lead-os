@@ -6,7 +6,7 @@ CX React is a white-label, multi-tenant lead generation, scoring, nurturing, and
 
 - **Public URLs** (landing, pricing, personas, offers index) intentionally describe *capabilities you can enable* when Postgres, Redis, workers, and provider keys are configured.
 - **Operator surfaces** (`/dashboard/*`, control plane, GTM) reflect what you run day-to-day.
-- **Truth table:** See [`docs/PRODUCT-SURFACES.md`](./docs/PRODUCT-SURFACES.md). In deployed apps, `/docs` links to the documentation hub (API OpenAPI, SLA summary, repo docs).
+- **Truth table:** See [`docs/PRODUCT-SURFACES.md`](./docs/PRODUCT-SURFACES.md). **Claims contract + CI-style check:** [`docs/CLAIMS-VERIFICATION.md`](./docs/CLAIMS-VERIFICATION.md) — run `npm run verify:product-surfaces` before asserting doc–code parity. In deployed apps, `/docs` links to the documentation hub (API OpenAPI, SLA summary, repo docs).
 - **First clone / novice path (whole monorepo):** [`../docs/START-HERE.md`](../docs/START-HERE.md) — use this before mixing marketing language with deployment steps.
 
 ## By the numbers (approximate — verify on your branch)
@@ -40,7 +40,7 @@ Hosted runtime (Next.js 16.2 + PostgreSQL)
   -> /lp/[slug]                # Auto-generated landing pages
   -> /assess/[slug]            # Dynamic assessments
   -> /calculator               # ROI calculators
-  -> /dashboard/*              # 27-page operator dashboard
+  -> /dashboard/*              # 31 operator dashboard routes (see list below)
 ```
 
 ## Technology Stack
@@ -173,6 +173,8 @@ No environment variables are required for local development. The system runs ent
 
 ## Environment Variables
 
+**Vercel shared variable names** that differ from this repo (e.g. `AITABLE_API_KEY` vs `AITABLE_API_TOKEN`) are normalized at server startup; see [`docs/ENV-VAULT-TO-CANONICAL.md`](./docs/ENV-VAULT-TO-CANONICAL.md).
+
 ```bash
 # Database (enables persistent storage)
 DATABASE_URL=postgresql://user:pass@host:5432/leados
@@ -253,9 +255,11 @@ docker build -t lead-os . && docker run -p 3000:3000 lead-os
 | `/api/gbp-sync` | GBP sync job management |
 | `/api/gbp-sync/due` | Cron-triggered due job polling |
 
-## Operator Dashboard Pages (27)
+## Operator dashboard routes (31 `page.tsx` files)
 
-Dashboard, Agents, Analytics, Attribution, Billing, Bookings, Competitors, Creative, Credentials, Distribution, Documents, Experiments, Feedback, Health, Joy, Lead Magnets, Leads, Leads Detail, Marketing Ingestion, Marketplace, Pipeline, Prospects, Providers, Radar, Revenue, Scoring, Settings, Tenants, Workflows
+Home, Agents, Analytics, Attribution, Billing, Bookings, Competitors, Control plane, Creative, Credentials, Distribution, Documents, Experiments, Feedback, GTM, Health, Joy, Lead Magnets, Leads, Leads detail, Marketing ingestion, Marketplace, Pipeline, Prospects, Providers, Radar, Revenue, Scoring, Settings, Tenants, Workflows
+
+Reconcile with `src/app/dashboard/**/page.tsx` (count changes when routes are added).
 
 ## WordPress Pairing
 

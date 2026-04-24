@@ -2,6 +2,8 @@
 
 This file maps **public URLs** in `lead-os-hosted-runtime-wt-hybrid` to **intent** so operators and founders do not confuse marketing depth with “every route is a separate product.”
 
+**Machine check:** from this package run `npm run verify:product-surfaces` (see [`CLAIMS-VERIFICATION.md`](./CLAIMS-VERIFICATION.md) for what that does and does not cover).
+
 **First-time setup (entire monorepo):** start at [`docs/START-HERE.md`](../../docs/START-HERE.md) from the repository root (same folder that contains `lead-os-hosted-runtime-wt-hybrid/`).
 
 ## Public marketing & conversion
@@ -11,9 +13,13 @@ This file maps **public URLs** in `lead-os-hosted-runtime-wt-hybrid` to **intent
 | `/` | Universal entry: positioning, paths by role, CTAs to `/onboard`, `/demo`, `/pricing`. |
 | `/pricing` | SaaS-style plans; CTA to `/onboard?plan=…`. |
 | `/onboard` | Self-serve wizard; calls `/api/onboarding`. |
+| `/setup` | First-run setup wizard (also linked from root README access table). |
+| `/preferences` | Operator/user preference surface when enabled. |
+| `/manage-data` | Data subject export / deletion requests (see also `/privacy/manage` when linked from policies). |
 | `/demo` | Narrated tour of capabilities. |
 | `/calculator` | ROI / savings style calculator. |
 | `/contact`, `/help`, `/changelog`, `/roadmap` | Support and trust content. |
+| `/privacy/manage` | Consent / preference center when linked from privacy policy. |
 | `/industries`, `/industries/[slug]` | Vertical pages; `[slug]` must exist in `nicheCatalog`. |
 | `/for/[persona]` | Role-based landings; keys in `PERSONA_BLUEPRINTS` (`agencies`, `saas-founders`, `lead-gen`, `consultants`, `franchises`). |
 | `/offers`, `/offers/[slug]` | Offer paths; `[slug]` from `nicheCatalog`. |
@@ -23,6 +29,9 @@ This file maps **public URLs** in `lead-os-hosted-runtime-wt-hybrid` to **intent
 | `/funnel/[family]` | Funnel family explorer; `family` must exist in default funnel graphs. |
 | `/embed/[niche]` | Embed surface. |
 | `/p/[tenantSlug]/[pageSlug]` | Tenant-scoped pages when configured. |
+| `/assess/[slug]` | Dynamic assessment flows. |
+| `/resources/[slug]` | Resource/download pages when catalogued. |
+| `/sites/[deploymentId]` | Published site / deployment status views when configured. |
 | `/auth/sign-in`, `/auth/check-email` | Operator magic-link flow. |
 
 ## Documentation hub (in-app)

@@ -40,7 +40,7 @@ export function ExperienceScaffold({
   niche,
 }: ExperienceScaffoldProps) {
   return (
-    <main id="main-content" data-niche={niche ?? undefined}>
+    <div data-niche={niche ?? undefined}>
       {/* ── Hero ──────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
@@ -166,6 +166,6 @@ export function ExperienceScaffold({
         </Button>
         <p className="text-xs text-center text-muted-foreground mt-1">{profile.returnOffer}</p>
       </div>
-    </main>
+    </div>
   );
 }

@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(privacyJsonLd) }} />
-    <main id="main-content" className="min-h-screen">
+    <div className="min-h-screen">
       <section className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Legal</p>
@@ -418,7 +418,7 @@ export default function PrivacyPolicyPage() {
           </p>
         </section>
       </article>
-    </main>
+    </div>
     </>
   );
 }

@@ -1163,7 +1163,7 @@ export function DynastyLandingPage({ config }: DynastyLandingPageProps) {
           fontFamily: FONT_STACK,
         }}
       >
-        <main id="main-content" tabIndex={-1} className="outline-none">
+        <div tabIndex={-1} className="outline-none">
           <HeroSection hero={config.hero} {...sharedProps} />
           <ProblemSection problem={config.problem} {...sharedProps} />
           <SolutionSection solution={config.solution} {...sharedProps} />
@@ -1172,7 +1172,7 @@ export function DynastyLandingPage({ config }: DynastyLandingPageProps) {
           <SocialProofSection socialProof={config.socialProof} {...sharedProps} />
           <ObjectionsSection objections={config.objections} {...sharedProps} />
           <FinalCtaSection finalCta={config.finalCta} {...sharedProps} />
-        </main>
+        </div>
 
         <FooterSection footer={config.footer} colors={colors} />
       </div>

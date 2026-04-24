@@ -135,7 +135,7 @@ export default function PricingPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingFaqJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppJsonLd) }} />
-      <main id="main-content" className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="text-center mb-12">
         <Badge variant="secondary" className="mb-4">Pricing</Badge>
         <h1 className="text-foreground text-4xl font-extrabold tracking-tight mb-3">
@@ -284,7 +284,7 @@ export default function PricingPage() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
     </>
   );
 }

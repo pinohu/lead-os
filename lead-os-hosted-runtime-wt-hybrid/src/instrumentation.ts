@@ -5,6 +5,13 @@ export async function register(): Promise<void> {
   if (process.env.NEXT_RUNTIME === "edge") return;
 
   try {
+    const { applyEnvVaultAliases } = await import("@/lib/env-vault-aliases.ts");
+    applyEnvVaultAliases();
+  } catch (err) {
+    console.error("[instrumentation] env vault aliases failed:", err);
+  }
+
+  try {
     const { startPricingRuntimeWeb } = await import("@/lib/pricing/bootstrap.ts");
     await startPricingRuntimeWeb();
   } catch (err) {

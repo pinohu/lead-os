@@ -107,7 +107,7 @@ export default function HelpCenterPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(helpFaqJsonLd) }} />
-      <main id="main-content" className="max-w-3xl mx-auto px-4 py-12">
+      <div className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-foreground text-2xl font-extrabold mb-2">Help Center</h1>
       <p className="text-foreground mb-8">
         Find answers to common questions about CX React.
@@ -176,7 +176,7 @@ export default function HelpCenterPage() {
           Contact Support
         </Link>
       </section>
-    </main>
+    </div>
     </>
   );
 }

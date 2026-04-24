@@ -1,0 +1,37 @@
+# Optional: run against a real Postgres (e.g. staging). Set repo secret HYBRID_DATABASE_URL.
+name: Hybrid migrations verify
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: hybrid-migrations-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  verify:
+    name: verify:migrations
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lead-os-hosted-runtime-wt-hybrid
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: lead-os-hosted-runtime-wt-hybrid/package-lock.json
+      - run: npm ci
+      - name: npm run verify:migrations
+        env:
+          DATABASE_URL: ${{ secrets.HYBRID_DATABASE_URL }}
+        run: |
+          if [ -z "${DATABASE_URL}" ]; then
+            echo "::error::Set repository secret HYBRID_DATABASE_URL to a Postgres URL before running this workflow."
+            exit 1
+          fi
+          npm run verify:migrations

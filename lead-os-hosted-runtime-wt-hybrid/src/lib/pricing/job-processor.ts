@@ -228,7 +228,7 @@ export async function runPricingTickJob(
         recommendationId,
         status: "applied",
         appliedHistoryId: historyId,
-        metadataPatch: { changeLogId, historyId },
+        metadataPatch: { changeLogId: changeId, historyId },
       });
 
       const delayMs = getPricingMeasurementDelayMs();

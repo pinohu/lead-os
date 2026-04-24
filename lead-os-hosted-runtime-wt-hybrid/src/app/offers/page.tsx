@@ -14,7 +14,7 @@ export default function OffersIndexPage() {
   const niches = Object.values(nicheCatalog).filter((n) => n.slug !== "general");
 
   return (
-    <main id="main-content" className="max-w-5xl mx-auto px-4 py-10 space-y-8">
+    <div className="max-w-5xl mx-auto px-4 py-10 space-y-8">
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Offers</p>
         <h1 className="text-3xl font-bold tracking-tight mt-1">Offer paths by industry</h1>
@@ -74,6 +74,6 @@ export default function OffersIndexPage() {
           {tenantConfig.supportEmail}
         </a>
       </p>
-    </main>
+    </div>
   );
 }

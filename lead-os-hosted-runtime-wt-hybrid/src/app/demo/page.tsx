@@ -94,7 +94,7 @@ export default function DemoPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(demoJsonLd) }} />
-    <main id="main-content" className="max-w-5xl mx-auto px-4 py-12">
+    <div className="max-w-5xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
         <h1 className="text-foreground text-2xl font-extrabold mb-3">
           See What Your Agency Could Look Like
@@ -161,7 +161,7 @@ export default function DemoPage() {
           </Link>
         </div>
       </section>
-    </main>
+    </div>
     </>
   );
 }

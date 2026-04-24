@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function DocsApiPage() {
   return (
-    <main id="main-content" className="max-w-3xl mx-auto px-4 py-10 space-y-6">
+    <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Documentation</p>
         <h1 className="text-3xl font-bold tracking-tight mt-1">API reference</h1>
@@ -46,6 +46,6 @@ export default function DocsApiPage() {
         </Link>
         .
       </p>
-    </main>
+    </div>
   );
 }

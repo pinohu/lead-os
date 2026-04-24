@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function DocsSlaPage() {
   return (
-    <main id="main-content" className="max-w-3xl mx-auto px-4 py-10 space-y-6">
+    <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Documentation</p>
         <h1 className="text-3xl font-bold tracking-tight mt-1">Service Level Agreement</h1>
@@ -47,6 +47,6 @@ export default function DocsSlaPage() {
       <Button asChild variant="outline">
         <Link href="/docs">Back to docs hub</Link>
       </Button>
-    </main>
+    </div>
   );
 }

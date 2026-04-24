@@ -69,7 +69,7 @@ export default function ContactPage() {
     return (
       <>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }} />
-      <main id="main-content" className="max-w-lg mx-auto px-4 py-12 text-center">
+      <div className="max-w-lg mx-auto px-4 py-12 text-center">
         <h1 className="text-foreground text-2xl font-bold mb-3">Message Sent</h1>
         <p className="text-foreground mb-6">
           Thank you for reaching out. We will get back to you within 24 hours.
@@ -77,7 +77,7 @@ export default function ContactPage() {
         <Link href="/" className="text-primary underline">
           Return home
         </Link>
-      </main>
+      </div>
       </>
     );
   }
@@ -85,7 +85,7 @@ export default function ContactPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }} />
-    <main id="main-content" className="max-w-lg mx-auto px-4 py-12">
+    <div className="max-w-lg mx-auto px-4 py-12">
       <h1 className="text-foreground text-2xl font-extrabold mb-2">Talk to Our Team</h1>
       <p className="text-foreground mb-8">
         Get personalized onboarding for your agency, ask about enterprise plans, or connect with our support team.
@@ -191,7 +191,7 @@ export default function ContactPage() {
           {" "}Most inquiries get a response within 4 business hours.
         </p>
       </div>
-    </main>
+    </div>
     </>
   );
 }
