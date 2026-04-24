@@ -26,30 +26,23 @@ Lead OS is a white-label, multi-tenant lead generation, scoring, nurturing, and 
 - **Niche-agnostic**: A built-in niche generator auto-configures the entire system for any industry (legal, dental, HVAC, real estate, coaching, etc.) using rule-based template composition. No LLM dependency for configuration.
 - **Multi-tenant from day one**: Each client gets isolated data, scoring weights, funnels, branding, and provider credentials. Managed via API or self-service onboarding wizard.
 - **Four revenue models in one codebase**: Sell it as a managed service, a white-label SaaS, an implementation + retainer, or a lead marketplace. All four work simultaneously.
-- **137 provider integrations**: From AI (OpenAI, Anthropic) to CRM (SuiteDash, SalesNexus) to email (Sinosend) to SMS (EasyText) to video (Zebracat, Meiro, Gumlet) to page builders (Brizy, GrapesJS) to automation (Activepieces, n8n) to analytics (Umami, Plerdy) to booking (Trafft, Lunacal). Every provider operates in dry-run mode without API keys, so the system always works.
+- **137 provider integrations**: From AI (OpenAI, Anthropic) to CRM (SuiteDash, SalesNexus) to email (Sinosend) to SMS (EasyText) to video (Zebracat, Meiro, Gumlet) to page builders (Brizy, GrapesJS) to automation (Activepieces, n8n) to analytics (Umami, Plerdy) to booking (Trafft, Lunacal). Adapters **simulate** or dry-run when API keys are absent so local development and demos do not call third parties — this is **not** the same as production-grade connectivity until keys and webhooks are configured.
 - **Embeddable**: Drop a `<script>` tag on any website. The widget system renders lead capture forms, assessments, calculators, and chat interfaces without requiring the client to change their website.
 - **AI-powered content pipeline**: Generates social media content (angles, hooks, scripts), adapts it across 12 platform variants (TikTok, IG Reels, YouTube Shorts, LinkedIn, X, Threads), tracks performance, and auto-generates DM conversion sequences.
 
 ### By the numbers
 
-| Metric | Count |
-|--------|-------|
-| Total source files | 1,100+ |
-| Lines of code | 210,000+ |
-| API endpoints | 499 |
-| UI pages | 60 |
-| Dashboard pages | 29 |
-| Provider integrations | 137 |
-| Lib modules | 234 |
-| Integration adapters | 62 |
-| Funnel node types | 98 |
-| Industry templates | 13 |
-| Test files | 175 |
-| Test cases | 4,187 |
-| Test pass rate | 100% |
-| Erie-Pro niches | 46 |
-| Erie-Pro pages | 702 |
-| Total deployed pages | 1,393 |
+| Metric | Notes |
+|--------|--------|
+| Total source files / LOC | Order-of-magnitude only — verify with `git` / IDE on your checkout. |
+| API endpoints | Run `npm run enumerate:api-routes` in `lead-os-hosted-runtime-wt-hybrid`; static “499” style counts go stale quickly. |
+| UI + dashboard pages | Varies by App Router tree — inspect `src/app`. |
+| Provider integrations / adapters | Large catalog; many paths require credentials. |
+| Funnel node types | See `src/lib/funnel-library.ts` and related config. |
+| Industry templates | `nicheCatalog` exposes **16** public marketing slugs; `INDUSTRY_TEMPLATES` in `niche-templates.ts` groups **13** `IndustryCategory` banks — both are true at different layers. |
+| Tests | Many `node:test` files under `lead-os-hosted-runtime-wt-hybrid/tests` — run **`npm test`**; do not treat any fixed “N cases, 100%” figure as a warranty. |
+| Erie-Pro | See `erie-pro/README.md` and that package’s build output for current SSG scope. |
+| Deployed pages | Sum of all products — **not** centrally enforced by CI in this repo; treat as illustrative unless you regenerate from builds. |
 
 ---
 
@@ -1194,13 +1187,13 @@ Estimated effort per adapter: 200-400 lines, following the pattern established b
 
 ## Summary
 
-Lead OS is a 210,000+-line, 1,100+-file production platform that unifies lead generation, scoring, nurturing, AI content creation, automated prospecting, A/B experiment optimization, competitive analysis, billing, and marketplace operations into a single deployable runtime. It includes Erie-Pro, a 702-page geographic monopoly engine spanning 46 niches. It serves any industry through automated niche configuration, supports four simultaneous revenue models, integrates with 137 external services, and reaches break-even with a single client.
+Lead OS is a large, multi-package monorepo: the **kernel** (`lead-os-hosted-runtime-wt-hybrid`) unifies lead generation, scoring, nurturing, AI-assisted content, prospecting, experiments, competitive signals, billing hooks, and marketplace surfaces behind one deployable runtime. **Erie.pro** (`erie-pro`) is a separate Next.js territory product — see its README for what is actually built in that tree. The kernel serves many industries via `nicheCatalog` and templates, supports multiple revenue *models* in configuration, and can integrate with many external systems when operators supply keys. Economic “break-even” depends entirely on your pricing and cost structure — it is **not** a property of the repository alone.
 
 Key additions since initial release:
 - **Automated Prospecting Engine**: Discovery scout finds businesses, scores digital presence gaps, classifies opportunities (managed-service, white-label, affiliate, partner), generates personalized outreach, and auto-ingests into the lead pipeline
 - **Autoresearch Experiment Engine**: Z-test evaluation of running A/B tests with early stopping, auto-rollback, and auto-promotion across 5 optimization surfaces
 - **Competitive Analysis Pipeline**: Scrape competitor websites, extract design tokens and funnel patterns, process marketing artifacts into actionable intelligence
-- **Erie-Pro Geographic Monopoly Engine**: 702 pages across 46 niches with city hub pages, niche landing pages, and provider profile pages for local market domination
-- **Enhanced Dashboard**: 29 pages including prospects, competitors, marketing ingestion, leads, and expanded credentials with verification
+- **Erie-Pro territory stack**: Geographic / niche sites as implemented in the `erie-pro` package (verify with `npm run build` there).
+- **Enhanced operator dashboard**: Multi-surface console under `/dashboard/*` (exact screens evolve — see `src/app/dashboard`).
 
-The system is deployed, tested (4,187 passing test cases, 0 TypeScript errors), security-audited, and performance-optimized. It is live at https://github.com/pinohu/lead-os and can be deployed to Vercel, Railway, or any Node.js host in under 10 minutes.
+CI and local quality depend on your branch: run **`npm test`** and **`npx tsc --noEmit`** in `lead-os-hosted-runtime-wt-hybrid`, and read `docs/CODEBASE_AUDIT.md` as a **dated snapshot** of issues that may already be fixed. Source: https://github.com/pinohu/lead-os — production deploy time varies with migrations, Redis, Postgres, and secrets; **“under 10 minutes”** only applies to a minimal demo configuration.

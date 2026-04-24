@@ -208,3 +208,9 @@
 3. Check routing: are leads reaching providers? (`/dashboard/pipeline`)
 4. Check providers: are they converting leads to bookings? (provider feedback)
 5. Identify the bottleneck and address that specific stage
+
+---
+
+## Documentation map
+
+Kernel route inventory: [`../../PRODUCT-SURFACES.md`](../../PRODUCT-SURFACES.md). This launch pack is **playbook content** — validate each dashboard path exists on your deployed commit.

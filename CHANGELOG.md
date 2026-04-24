@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Customer intelligence tests (9 cases)
 - Intelligence-driven nurture tests (11 cases)
 - Catalog expansion tests (140 cases)
-- Total: 4,151 tests, 0 failures
+- Total tests reported in that release snapshot: **4,151** with **0** failures (historical figure — run `npm test` in `lead-os-hosted-runtime-wt-hybrid` on current `master` for today’s totals)
 
 ### Added — Documentation
 - Valuation & Pricing Guide with market data

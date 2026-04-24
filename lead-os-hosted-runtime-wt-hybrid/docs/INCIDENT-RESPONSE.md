@@ -1,5 +1,7 @@
 # Lead OS Incident Response Runbook
 
+> **Scope:** Internal procedures for teams operating a Lead OS deployment. **Customer-facing emails, Slack channels, and phone trees are yours to configure.** Replace `YOUR_SUPPORT_EMAIL` in templates. Admin-style HTTP routes (`/api/admin/*`) require appropriate authentication in production — verify against OpenAPI (`/api/docs/openapi.json`) before relying on them in an incident.
+
 ## 1. Severity Levels
 
 | Level | Description | Response Time | Escalation |
@@ -75,7 +77,7 @@ Estimated resolution: [Time or "Investigating"]
 
 We will provide updates every [30 minutes / 1 hour].
 
-For urgent inquiries, contact support@leadgen-os.com.
+For urgent inquiries, contact YOUR_SUPPORT_EMAIL (from `NEXT_PUBLIC_SUPPORT_EMAIL` or your ticketing system).
 ```
 
 ### Post-Mortem Summary

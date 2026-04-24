@@ -167,3 +167,9 @@ Use this format to track outreach progress per city:
 | Launch | Day 5-14 | 2-3 | 15-25 |
 | Scale | Day 14-30 | 3-5 | 30-50 |
 | Mature | Month 2+ | 5-8 | 75-100 |
+
+---
+
+## Documentation map
+
+Kernel marketing vs operator boundaries: [`../../PRODUCT-SURFACES.md`](../../PRODUCT-SURFACES.md). Sample outreach tables are **templates**, not logged customer data.

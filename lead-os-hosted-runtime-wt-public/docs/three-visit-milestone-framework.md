@@ -155,3 +155,9 @@ This framework shifts LeadOS from:
 to:
 
 - repeat-behavior engineering software
+
+---
+
+## Documentation map
+
+Canonical kernel inventory: `../lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md`.

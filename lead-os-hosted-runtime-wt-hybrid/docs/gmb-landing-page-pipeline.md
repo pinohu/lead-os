@@ -246,3 +246,9 @@ The tenant provisioner now runs 13 steps:
 11. **send-welcome-email** (new, optional) — LLM-generated or template welcome email
 12. create-operator
 13. send-welcome
+
+---
+
+## Documentation map
+
+Which HTTP surfaces are public vs operator-only is summarized in [`PRODUCT-SURFACES.md`](./PRODUCT-SURFACES.md). Subdomains like `{slug}.leados.io` are **examples** — bind to your real DNS and TLS policy before customer-facing claims.

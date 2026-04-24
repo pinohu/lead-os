@@ -25,3 +25,9 @@
 3. Hybrid mode
    - embed chat/form widget on WordPress
    - host long-form funnels on the subdomain
+
+---
+
+## Documentation map
+
+Public vs operator URLs for the kernel are summarized in [`PRODUCT-SURFACES.md`](./PRODUCT-SURFACES.md). Deployed runtimes expose a short hub at **`/docs`**.

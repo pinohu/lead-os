@@ -52,8 +52,8 @@ Each skill is a folder containing `SKILL.md` with YAML frontmatter metadata. Age
 | Skill | Purpose |
 |-------|---------|
 | `leados-orchestrator` | Routes requests to specialist skills, spawns sub-agents |
-| `audit-fix-optimize` | Build all 3 codebases, run 4,151 tests, verify, fix, deploy |
-| `completeness-testing` | Test all 697 URLs across 3 production sites |
+| `audit-fix-optimize` | Build all 3 codebases, run hybrid `npm test`, verify, fix, deploy |
+| `completeness-testing` | Smoke URLs from live sitemaps + PRODUCT-SURFACES (no fixed 697 matrix) |
 | `code-review` | TypeScript, accessibility, security, dead links, WCAG AA |
 | `deploy-pipeline` | Vercel production deploy with pre/post verification |
 | `ux-accessibility` | WCAG AA enforcement, form rules, admin protection |
@@ -67,7 +67,7 @@ Each skill is a folder containing `SKILL.md` with YAML frontmatter metadata. Age
 | `local-seo-strategy` | 44 niches x 15 pages, Schema.org, unique meta |
 | `enterprise-pricing` | $299-$2,999 kernel + $300-$1,500 territory pricing |
 | `nextjs-architecture` | SSG, middleware auth, subdomain routing |
-| `multi-tenant-testing` | 4,151 tests, 10-subtest stress test |
+| `multi-tenant-testing` | Hybrid `npm test` including `multi-tenant-stress.test.ts` patterns |
 | `parallel-agent-workflow` | Concurrent builds, simultaneous audits |
 | `business-operations` | Territory claims, lead routing, premium tiers |
 | `api-design-reviewer` | REST conventions, validation, error responses |

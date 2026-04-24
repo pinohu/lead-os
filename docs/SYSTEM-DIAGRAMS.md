@@ -12,7 +12,7 @@ Shows how the Edge Layer, Kernel Runtime, Intelligence Layer, and Data Infrastru
 flowchart TB
     subgraph EDGE["Edge Layer (neatcircle-beta)"]
         direction LR
-        E1["Marketing Site\n152 pages"]
+        E1["Marketing Site\n(edge / NeatCircle)"]
         E2["Service Pages\n16 services"]
         E3["Location Pages\n5 GMB profiles"]
         E4["Industry Pages\n16 verticals"]

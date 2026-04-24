@@ -4,10 +4,9 @@ The kernel includes a comprehensive multi-tenant stress test at:
 `lead-os-hosted-runtime-wt-hybrid/tests/multi-tenant-stress.test.ts`
 
 ## Test Suite Overview
-- **4,151 tests** across 70 suites, 333 test files
-- Run with: `npm test` (uses Node.js built-in test runner)
-- Average runtime: 12-14 seconds
-- Test command: `node --test --test-concurrency=1 --experimental-test-isolation=none --experimental-strip-types tests/**/*.test.ts`
+- Large `node:test` suite under `tests/**/*.test.ts` — **run `npm test`** in `lead-os-hosted-runtime-wt-hybrid` and report the runner summary (counts change by branch).
+- Uses Node.js built-in test runner via the `npm test` script in that package’s `package.json`.
+- Runtime varies by machine; do not assume a fixed wall-clock duration.
 
 ## Multi-Tenant Stress Test (10 subtests)
 1. **Runtime store isolation**: 50 tenants × 5 leads, verify key isolation

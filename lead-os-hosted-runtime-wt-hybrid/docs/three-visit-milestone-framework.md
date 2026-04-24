@@ -155,3 +155,9 @@ This framework shifts LeadOS from:
 to:
 
 - repeat-behavior engineering software
+
+---
+
+## Documentation map
+
+Kernel route inventory: [`PRODUCT-SURFACES.md`](./PRODUCT-SURFACES.md). Deployed apps: **`/docs`**.

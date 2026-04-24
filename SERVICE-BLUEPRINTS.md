@@ -1,5 +1,7 @@
 # Lead OS: Service Blueprints
 
+> **Composite personas:** Names, company sizes, and “hours per week” figures are **illustrative** service-design narratives. They are **not** customer research transcripts. When marketing externally, replace with your own validated stories and permissions.
+
 ## How to Read These Blueprints
 
 Each blueprint maps the **end-to-end journey** for a specific persona through Lead OS. The format follows the service blueprint methodology:

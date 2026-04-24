@@ -1,5 +1,7 @@
 # Lead OS API Reference
 
+> **Canonical contract:** The hosted kernel serves **OpenAPI 3.1** at **`/api/docs/openapi.json`** and a human entry point at **`/docs/api`** when that deployment is built from `lead-os-hosted-runtime-wt-hybrid`. This Markdown file is a **narrative companion** — it can lag behind generated routers. For route-level truth on a branch, run `npm run enumerate:api-routes` in the hybrid package and diff against this doc.
+
 Complete reference for all API endpoints across the kernel runtime and edge layer.
 
 ## Authentication

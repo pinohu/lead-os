@@ -1,43 +1,30 @@
 # LeadOS Codebase Overview
 
-You are working on LeadOS — a multi-tenant lead generation operating system. The monorepo at `C:\Users\VRLab\OneDrive - Gannon University\Microsoft Copilot Chat Files\Desktop\APPS\LeadOS` contains three deployable applications:
+You are working on **Lead OS** — a monorepo whose **kernel** is `lead-os-hosted-runtime-wt-hybrid/` (Next.js App Router, operator dashboard, public marketing routes, and `/api/*`). Sister deployables include **`erie-pro/`** (territory / local sites) and **`neatcircle-beta/`** (edge marketing, Cloudflare Workers). A lighter **`lead-os-hosted-runtime-wt-public/`** variant also exists.
 
-## Three Applications
+## Canonical documentation (read first)
 
-### 1. Lead OS Kernel (`lead-os-hosted-runtime-wt-hybrid/`)
-- **Purpose**: Multi-tenant SaaS backend + dashboard — the engine
-- **URL**: https://lead-os-nine.vercel.app
-- **Stack**: Next.js 16.2, React 19, TypeScript 5.9, Tailwind + shadcn/ui
-- **Pages**: 539 (60 UI + 498 API routes)
-- **Tests**: 4,151 (100% pass rate)
-- **Key features**: 4D lead scoring, AI nurture sequences, 137+ integrations, Joy Layer, multi-tenant isolation, RBAC, 2FA/SSO
-- **Pricing**: $299/$599/$1,299/$2,999 per month
-- **Middleware**: Auth on all /api/* routes, public routes whitelisted in `src/middleware.ts`
-- **Vercel config**: Root directory set to `lead-os-hosted-runtime-wt-hybrid` via API
+- **Route & surface truth table:** `lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md` — which URLs are public marketing vs operator vs API-only; deployed apps mirror part of this at **`/docs`**.
+- **Operator operations:** `lead-os-hosted-runtime-wt-hybrid/docs/OPERATOR_RUNBOOK.md`
+- **Shipping & infra:** `lead-os-hosted-runtime-wt-hybrid/docs/DEPLOYMENT.md`
+- **SLA template (legal placeholders):** `lead-os-hosted-runtime-wt-hybrid/docs/SLA.md`
 
-### 2. Erie Pro (`erie-pro/`)
-- **Purpose**: Geographic territory platform — local service directory for Erie, PA
-- **URL**: https://erie-pro.vercel.app
-- **Stack**: Next.js 15.5, React 19, TypeScript 5.9, Tailwind + shadcn/ui (52 components)
-- **Pages**: 630 (44 niches × 15 page types + static pages)
-- **Key features**: Territory claim model, 3-tier premium system, lead routing with SLA, demand-based pricing ($300-$1,500/mo)
-- **Data files**: niches.ts (44 entries), niche-content.ts (3,276 lines), glossary-data.ts (44 niches), seasonal-data.ts (44 niches), internal-linking.ts, local-seo.ts, provider-store.ts, premium-rewards.ts
-- **API endpoints**: /api/lead, /api/claim, /api/contact
+## Kernel (`lead-os-hosted-runtime-wt-hybrid/`)
 
-### 3. NeatCircle (`neatcircle-beta/`)
-- **Purpose**: Agency marketing site — sells managed services to agencies
-- **URL**: https://neatcircle.com
-- **Stack**: Next.js 15.5, React 19, TypeScript 5.9, Tailwind + shadcn/ui
-- **Pages**: 152
+- **Stack:** Next.js (see that package’s `package.json` for exact version), React, TypeScript strict, Tailwind, Radix/shadcn-style UI.
+- **Tests:** `npm test` runs the Node.js test runner over `tests/**/*.test.ts`. **Do not** hard-code “N tests, 100% pass” in agent output — counts change by branch.
+- **API surface:** Run `npm run enumerate:api-routes` for an up-to-date list; OpenAPI JSON is served at **`/api/docs/openapi.json`** when the app is running.
+- **Auth:** Public routes, operator magic-link sessions for `/dashboard/*`, API keys, and cron secrets are all used depending on the route — see middleware and `docs/SYSTEM-HARDENING.md`.
+- **Integrations:** Many adapters **dry-run** or stub when credentials are missing; production behavior requires env keys per `.env.example`.
 
-## Key Architecture Decisions
-- Kernel handles backend logic; erie-pro and neatcircle handle marketing
-- All external integrations run in dry-run mode without env vars
-- shadcn HSL color tokens coexist with kernel's legacy CSS variables
-- Erie-pro uses `generateStaticParams()` for all dynamic routes — new niches auto-generate all 15 page types
-- Vercel deployment: kernel uses `rootDirectory: lead-os-hosted-runtime-wt-hybrid`, erie-pro auto-deploys from git
+## Erie Pro (`erie-pro/`)
 
-## GitHub
-- Repo: https://github.com/pinohu/lead-os
-- Branch: master
-- Team: team_fuTLGjBMk3NAD32Bm5hA7wkr
+- Territory / niche marketing site — **see that folder’s `README.md` and `npm run build` output** for current static generation scope and example URLs. Do not copy stale page counts from old prompts.
+
+## NeatCircle (`neatcircle-beta/`)
+
+- Edge / marketing Workers app — see package `README.md` and Wrangler config.
+
+## Git
+
+- Upstream example: `https://github.com/pinohu/lead-os` (clone path on your machine will differ).

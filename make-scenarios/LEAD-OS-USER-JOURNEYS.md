@@ -1,5 +1,7 @@
 # Lead OS — Enhanced User Journeys (All 22 Scenarios)
 
+> **Planning artifact:** This file blends **product vision**, **partner stack assumptions** (for example Boost.space / “V10” language inside the narrative), and **kernel capabilities** that may or may not exist on your branch. Before promising a layer to customers, trace it to code in `lead-os-hosted-runtime-wt-hybrid/` or to an explicit integration doc. Route-level truth for the kernel is in `lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md`.
+
 ## How This Document Works
 
 Each of the 22 AI Concierge scenarios is mapped through all 12 Lead OS layers. The document shows:

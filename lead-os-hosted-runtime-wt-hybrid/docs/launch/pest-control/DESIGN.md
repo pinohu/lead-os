@@ -228,3 +228,9 @@
 - SendGrid/Emailit: transactional email
 - Google Search Console: SEO monitoring
 - Google Analytics: traffic and conversion tracking
+
+---
+
+## Documentation map
+
+Kernel surfaces: [`../../PRODUCT-SURFACES.md`](../../PRODUCT-SURFACES.md). Integration bullets above are **targets** until wired with real credentials and tested end-to-end.

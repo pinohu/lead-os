@@ -4,27 +4,17 @@ Programmable, multi-tenant lead generation infrastructure. One runtime, many nic
 
 CX React captures visitor intent through embeddable widgets, scores and routes leads through configurable funnel graphs, orchestrates multi-channel follow-up (email, SMS, WhatsApp, chat, voice), generates AI-powered content, and syncs outcomes to your CRM and automation bus. It replaces 15-20 separate SaaS products with a single deployable runtime.
 
-## By the Numbers
+## By the numbers (verify — do not treat as warranties)
 
-| Metric | Count |
-|--------|-------|
-| Source files | 1,100+ |
-| Lines of code | 210,000+ |
-| API endpoints | 499 |
-| UI pages | 60 |
-| Dashboard pages | 31 |
-| Provider integrations | 137 |
-| Lib modules | 234 |
-| Test files | 175 |
-| Test cases | 4,187 |
-| Test pass rate | 100% |
-| Erie-Pro pages | 702 |
-| NeatCircle pages | 152 |
-| Total deployed pages | 1,393 |
-| Service niches (Erie) | 46 |
-| Integration adapters | 62 |
-| Funnel node types | 98 |
-| Industry templates | 16 |
+Kernel metrics and how to reproduce them live in **`lead-os-hosted-runtime-wt-hybrid/README.md`**. This table is a **high-level map** only; run `npm test`, `npm run enumerate:api-routes`, and each package’s own `npm run build` before quoting counts externally.
+
+| Area | Pointer |
+|------|---------|
+| Kernel (CX React / Lead OS runtime) | `lead-os-hosted-runtime-wt-hybrid/` — primary tests, APIs, operator UI |
+| Erie.pro territory app | `erie-pro/` — see that package’s README for route counts and `npm run build` output |
+| NeatCircle edge / marketing | `neatcircle-beta/` |
+| Public runtime variant | `lead-os-hosted-runtime-wt-public/` |
+| Route & marketing truth table | `lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md` and deployed `/docs` |
 
 ## Architecture
 
@@ -33,21 +23,21 @@ CX React captures visitor intent through embeddable widgets, scores and routes l
                     |         Erie Pro                |
                     |          (erie-pro)             |
                     |  Next.js 15 + Tailwind          |
-                    |  46 niches, 702 pages            |
+                    |  territory + niche sites (SSG)   |
                     +---------------+-----------------+
                                     |
                     +---------------+-----------------+
                     |         Edge Layer              |
                     |       (neatcircle-beta)         |
                     |  Next.js 15 + Tailwind          |
-                    |  Agency marketing, 152 pages    |
+                    |  marketing / edge surfaces      |
                     +---------------+-----------------+
                                     |
                     +---------------+-----------------+
                     |        Kernel Runtime           |
                     | (lead-os-hosted-runtime-wt-hybrid)|
                     |  Next.js 16 + PostgreSQL        |
-                    |  539 pages, 499 API endpoints   |
+                    |  App Router + APIs (see hybrid) |
                     +---------------+-----------------+
                                     |
       +----------+----------+------+------+----------+
@@ -61,9 +51,9 @@ CX React captures visitor intent through embeddable widgets, scores and routes l
 
 | Layer | Package | Role |
 |-------|---------|------|
-| Erie Pro | `erie-pro` | Geographic territory platform, 46 niches, 702 pages, exclusive city/niche claims |
-| Edge Layer | `neatcircle-beta` | Marketing site, behavioral tracking, experience personalization, widget orchestration, 152 pages |
-| Kernel Runtime | `lead-os-hosted-runtime-wt-hybrid` | Intake, scoring, funnel decisioning, AI agents, social content, marketplace, billing, provider orchestration, operator dashboard, 539 pages, 499 API endpoints |
+| Erie Pro | `erie-pro` | Geographic territory platform (see package README for current route counts and deployment URLs) |
+| Edge Layer | `neatcircle-beta` | Marketing / edge surfaces (Cloudflare Workers — see package README) |
+| Kernel Runtime | `lead-os-hosted-runtime-wt-hybrid` | Intake, scoring, funnels, marketplace, billing, integrations, operator dashboard — canonical API list: `npm run enumerate:api-routes` |
 | Automation Layer | Activepieces + n8n + cron jobs | Durable multi-step workflows, retries, milestone-driven sequences |
 | CRM Layer | SuiteDash + SalesNexus | Contact management, deals, pipeline stages, human workflow |
 
@@ -100,13 +90,13 @@ npm run dev    # Starts at http://localhost:3000
 
 No environment variables are required for local development. The system runs entirely in-memory with dry-run mode for all external integrations.
 
-## Live Deployments
+## Example deployments (URLs drift — confirm before linking)
 
-| Site | URL | Purpose |
-|------|-----|---------|
-| Lead OS Kernel | https://lead-os-nine.vercel.app | Dashboard, API, 499 endpoints |
-| Erie Pro | https://erie-pro.vercel.app | Territory platform, 46 niches |
-| NeatCircle | https://neatcircle.com | Agency marketing site |
+| Site | URL (example) | Purpose |
+|------|-----------------|---------|
+| Lead OS Kernel | `https://lead-os-nine.vercel.app` | Public demo / staging style hostnames used in docs — **not** guaranteed permanent |
+| Erie Pro | `https://erie-pro.vercel.app` | Territory app demo |
+| NeatCircle | `https://neatcircle.com` | Edge / marketing |
 
 ### Verify
 
@@ -123,7 +113,7 @@ Returns `{ "success": true, "service": "lead-os-hosted-runtime", ... }`.
 | `/` | Public landing page |
 | `/onboard` | Client self-service signup wizard |
 | `/setup` | First-run setup wizard |
-| `/dashboard` | Operator dashboard (31 pages) |
+| `/dashboard` | Operator dashboard (multi-page; requires operator session) |
 | `/marketplace` | Public lead marketplace |
 | `/auth/sign-in` | Operator login (magic link) |
 | `/assess/:slug` | Dynamic assessment forms |
@@ -339,7 +329,7 @@ cd lead-os-hosted-runtime-wt-hybrid
 npm test
 ```
 
-4,187 test cases using Node.js native test runner with TypeScript support. Tests run with in-memory storage and dry-run mode.
+The hybrid kernel ships a large `node:test` tree under `tests/`. Counts change frequently — **run `npm test`** for the authoritative result. Most external integrations use **dry-run** behavior when API keys are absent.
 
 ## Documentation
 
@@ -361,8 +351,8 @@ lead-os/
   lead-os-hosted-runtime-wt-hybrid/      # Kernel runtime (system of record)
     src/
       app/
-        api/                             # 499 API endpoints
-        dashboard/                       # 31 operator dashboard pages
+        api/                             # App Router API routes (enumerate with npm script in hybrid)
+        dashboard/                       # Operator dashboard routes
         auth/                            # Authentication pages
         onboard/                         # Self-service onboarding
         setup/                           # First-run setup wizard
@@ -371,15 +361,15 @@ lead-os/
         calculator/                      # ROI calculator
       lib/                               # 234 library modules
         integrations/                    # 62 integration adapters
-    tests/                               # 4,187 test cases
-  erie-pro/                              # Geographic territory platform (702 pages)
+    tests/                               # node:test suite (see hybrid package)
+  erie-pro/                              # Geographic territory platform (see erie-pro README + build output)
     src/
       app/                               # 46 niches x 15 page types + static
       lib/                               # niches, content, glossary, seasonal, SEO
       components/ui/                     # 52 shadcn components
-  neatcircle-beta/                       # Edge / marketing layer (152 pages)
+  neatcircle-beta/                       # Edge / marketing layer (Cloudflare Workers)
   Funnel Blueprints/                     # Funnel blueprint documents
-  _n8n_sources/                          # n8n workflow sources
+  _n8n_sources/                          # Vendored upstream n8n/MCP reference (see _n8n_sources/README.md)
   make-scenarios/                        # Make.com scenario exports
 ```
 

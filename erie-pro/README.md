@@ -1,12 +1,14 @@
 # erie.pro — Distributed Local Lead Monopoly System
 
-A geographic territory platform for local lead acquisition and exclusive provider routing. Part of the LeadOS ecosystem.
+A geographic territory platform for local lead acquisition and exclusive provider routing. Part of the Lead OS monorepo.
 
-## Live
+> **Truth vs marketing:** Tables below describe the **product design** for this package (routes, tiers, systems). They are **not** automatically validated on every commit. Always run `npm run build` / `npm test` here and compare live URLs to what you actually deployed. Kernel route inventory and “what is public vs operator-only” live in **`../lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md`**.
 
-- **Site**: https://erie-pro.vercel.app
-- **Kernel**: https://lead-os-nine.vercel.app (LeadOS backend)
-- **Marketing**: https://www.neatcircle.com (NeatCircle edge layer)
+## Live (examples — confirm DNS)
+
+- **Site**: https://erie-pro.vercel.app (demo-style hostname used in docs; may change)
+- **Kernel**: https://lead-os-nine.vercel.app (example kernel host — configure your own `NEXT_PUBLIC_SITE_URL` in production)
+- **Marketing**: https://www.neatcircle.com (NeatCircle edge layer — separate package `neatcircle-beta/`)
 
 ## Architecture
 

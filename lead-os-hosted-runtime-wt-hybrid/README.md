@@ -8,20 +8,16 @@ CX React is a white-label, multi-tenant lead generation, scoring, nurturing, and
 - **Operator surfaces** (`/dashboard/*`, control plane, GTM) reflect what you run day-to-day.
 - **Truth table:** See [`docs/PRODUCT-SURFACES.md`](./docs/PRODUCT-SURFACES.md). In deployed apps, `/docs` links to the documentation hub (API OpenAPI, SLA summary, repo docs).
 
-## By the Numbers
+## By the numbers (approximate — verify on your branch)
 
-| Metric | Count |
-|--------|-------|
-| Total source files | 1,004 |
-| Lines of code | 210,000+ |
-| API endpoints | 498 |
-| UI pages | 60 |
-| Dashboard pages | 29 |
-| Provider integrations | 137 |
-| Lib modules | 233 |
-| Test files | 333 |
-| Test cases | 4,151 |
-| Test pass rate | 100% |
+| Metric | How to verify / notes |
+|--------|------------------------|
+| Total source files / LOC | Changes every commit; use your IDE or `git ls-files src \| wc -l` — figures here are **order-of-magnitude** only. |
+| API routes | Run `npm run enumerate:api-routes` — treat the script output as more current than any static table. |
+| UI + dashboard pages | Count varies with App Router folders; see `src/app/`. |
+| Provider integrations | See integration adapters under `src/lib` / `src/app/api` — many require API keys and run in **dry-run** without them. |
+| Test files | `tests/**/*.test.ts` (large suite of `node:test` files). |
+| Test cases / pass rate | Run `npm test` — **do not** treat README numbers as CI proof; counts change when tests are added or split. |
 
 ## Architecture
 
@@ -157,11 +153,9 @@ npm run dev
 
 # Run tests
 npm test
-# 4,151 tests, 100% pass rate
 
 # Type check
 npx tsc --noEmit
-# 0 errors
 ```
 
 No environment variables are required for local development. The system runs entirely in-memory with dry-run mode for all external integrations.

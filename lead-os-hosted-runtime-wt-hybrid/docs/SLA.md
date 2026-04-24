@@ -1,8 +1,10 @@
 # Lead OS Service Level Agreement (SLA)
 
 **Effective Date:** March 30, 2026
-**Last Updated:** March 30, 2026
+**Last Updated:** April 22, 2026
 **Version:** 1.0
+
+> **Template — not a self-executing contract.** This Markdown file is a **starting point** for your legal and ops teams. It does **not** create monitoring, status pages, support desks, backups, or credits until you configure infrastructure, publish your real URLs and emails, and **sign** customer-facing agreements. Replace every placeholder (`YOUR_*`) below. **RPO/RTO, synthetic monitoring regions, and backup frequency** in §8 are **design targets** that only apply when you implement the backup and Postgres posture described in [`DEPLOYMENT.md`](./DEPLOYMENT.md) (continuous backup / PITR, staffed on-call, etc.). For what the open-source kernel ships without extra infra, see [`PRODUCT-SURFACES.md`](./PRODUCT-SURFACES.md) and the in-app summary at `/docs/sla`.
 
 ---
 
@@ -81,9 +83,9 @@ This SLA does **not** apply to downtime caused by:
 
 ### 5.2 Status Page
 
-- **Public URL**: `https://status.leadgen-os.com`
-- Real-time component status, uptime history (30-day and 90-day), and incident timeline.
-- Subscribers receive email/SMS notifications for status changes.
+- **Public URL**: `YOUR_STATUS_PAGE_URL` (configure your Better Stack, Instatus, Atlassian Statuspage, or self-hosted status deployment; example only: `https://status.example.com`)
+- Real-time component status, uptime history (30-day and 90-day), and incident timeline — **after** you connect probes to `/api/health` and `/api/health/deep` from production.
+- Subscribers receive email/SMS notifications for status changes when your status product is configured.
 
 ---
 
@@ -122,18 +124,20 @@ Performance targets are measured across all monitoring regions and exclude clien
 
 ## 8. Data Protection
 
-- **Backup Frequency**: Continuous WAL streaming with daily full snapshots.
-- **Recovery Point Objective (RPO)**: < 1 hour.
-- **Recovery Time Objective (RTO)**: < 4 hours.
-- **Retention**: 30-day backup retention with geographic redundancy.
+Targets below assume **managed PostgreSQL** (or equivalent) with **continuous backup / PITR** and object-store or cross-region snapshot policy enabled by the operator. A default local or single-region install **does not** automatically meet these numbers.
+
+- **Backup Frequency**: Continuous WAL streaming with daily full snapshots (when configured per `DEPLOYMENT.md`).
+- **Recovery Point Objective (RPO)**: < 1 hour (requires WAL archiving and tested restore drills).
+- **Recovery Time Objective (RTO)**: < 4 hours (requires runbooks, spare capacity, and verified failover).
+- **Retention**: 30-day backup retention with geographic redundancy (policy choice — document yours).
 
 ---
 
 ## 9. Contact
 
-- **Support Portal**: https://support.leadgen-os.com
-- **Email**: support@leadgen-os.com
-- **Emergency Hotline**: Available to Enterprise plan customers (details in onboarding pack).
+- **Support Portal**: `YOUR_SUPPORT_PORTAL_URL` (e.g. Zendesk, Linear Asks, or `/help` on your own domain)
+- **Email**: `YOUR_SUPPORT_EMAIL` (map from `NEXT_PUBLIC_SUPPORT_EMAIL` in production)
+- **Emergency Hotline**: Available to Enterprise plan customers only when you publish a real roster (not included in the repository).
 
 ---
 

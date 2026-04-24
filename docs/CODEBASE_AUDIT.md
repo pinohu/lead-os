@@ -1,9 +1,11 @@
 # Lead OS — Comprehensive Codebase Audit
 
-**Date:** 2026-04-04
-**Scope:** All four primary packages + CI/CD + infrastructure configs
-**Auditor:** Automated deep-dive analysis
-**Remediation Status:** In progress — CRITICAL and HIGH issues resolved
+> **Snapshot notice (read before acting):** This document is a **point-in-time automated report from 2026-04-04**. Counts, severities, and especially **“production secrets committed”** / **“auth bypass”** style claims may already be **remediated** or may not apply to your branch. Before operational response, **re-run** secret scanning, `git log -S`, and the relevant `npm test` / `npm run build` commands on the commit you ship. For current public vs operator routes, prefer **`lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md`**.
+
+**Date:** 2026-04-04  
+**Scope:** All four primary packages + CI/CD + infrastructure configs  
+**Auditor:** Automated deep-dive analysis  
+**Remediation Status:** Historical — verify current state independently  
 
 ---
 
@@ -47,7 +49,7 @@ However, the audit identified **5 critical**, **8 high**, and **12 medium** seve
 
 | Package | Framework | Purpose | Routes | Tests |
 |---------|-----------|---------|--------|-------|
-| `lead-os-hosted-runtime-wt-hybrid` | Next.js 16 | Primary kernel runtime | ~500 | 175 |
+| `lead-os-hosted-runtime-wt-hybrid` | Next.js 16 | Primary kernel runtime | ~500 (run `npm run enumerate:api-routes`) | Many `tests/**/*.test.ts` — run `npm test` |
 | `erie-pro` | Next.js 15 | Territory platform (Prisma) | ~43 | 8 |
 | `neatcircle-beta` | Next.js 15 | Edge/marketing (Cloudflare) | ~28 | 6 |
 | `lead-os-hosted-runtime-wt-public` | Next.js 15 | Public runtime variant | ~15 | 11 |

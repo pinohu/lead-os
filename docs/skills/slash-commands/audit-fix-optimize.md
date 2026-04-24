@@ -16,13 +16,13 @@ All three must produce 0 errors. Report page counts.
 ```bash
 cd lead-os-hosted-runtime-wt-hybrid && npm test
 ```
-Must show 4,151+ tests, 0 failures.
+Must finish with **0 failing tests** in `lead-os-hosted-runtime-wt-hybrid` (`npm test`). Ignore any historical “N tests” figure in old docs.
 
 ### Step 3: Live Site Health Check
 ```bash
-curl https://lead-os-nine.vercel.app/api/health  # Must return {"status":"ok"}
-curl -so /dev/null -w "%{http_code}" https://erie-pro.vercel.app/  # Must be 200
-curl -so /dev/null -w "%{http_code}" https://www.neatcircle.com/  # Must be 200
+curl "https://YOUR_KERNEL_HOST/api/health"   # substitute production or staging URL
+curl -so /dev/null -w "%{http_code}" "https://YOUR_ERIE_HOST/"   # optional: only if you operate this deploy
+curl -so /dev/null -w "%{http_code}" "https://YOUR_NEATCIRCLE_HOST/"  # optional
 ```
 
 ### Step 4: Endpoint Verification
@@ -54,7 +54,7 @@ When a build fails:
 6. Commit with descriptive message explaining what was fixed and why
 
 ## Expected Results
-- erie-pro: 630 pages, 0 errors
-- hybrid runtime: 539 pages, 0 errors, 4,151 tests pass
-- neatcircle: 152 pages, 0 errors
-- Total: 1,321 pages across 3 sites
+- **erie-pro:** `npm run build` exits 0 — note the build’s own page count output if needed.
+- **hybrid runtime:** `npm run build` exits 0; `npm test` exits 0.
+- **neatcircle-beta:** `npm run build` (or Cloudflare preview pipeline) exits 0 per that package’s docs.
+- Do **not** sum page counts across sites as a product metric unless you regenerate them from build logs on the same commit.

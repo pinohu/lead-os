@@ -2,6 +2,8 @@
 
 Lead OS Hosted Runtime is the deployable subdomain app for WordPress and external websites.
 
+> **Relationship to the kernel:** The actively developed “full” runtime (operator dashboard, marketplace, billing, most `/api/*`) is **`../lead-os-hosted-runtime-wt-hybrid/`**. This `lead-os-hosted-runtime-wt-public` tree is a **lighter variant** — compare `package.json`, routes, and env before assuming feature parity. See **`../lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md`** for the canonical surface map of the hybrid app.
+
 It is intended to run on a dedicated lead subdomain such as:
 
 - `leads.example.com`

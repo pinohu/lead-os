@@ -11,7 +11,7 @@ description: Deploy LeadOS applications to Vercel production -- kernel from repo
 
 ## Overview
 
-This skill handles the full deployment lifecycle for LeadOS applications on Vercel. The critical nuance is that kernel deploys from the monorepo root while erie-pro deploys from its subdirectory, and Vercel's rootDirectory setting must be correct or builds will fail with double-path errors. This skill knows the project IDs, the API patterns to fix misconfigurations, and the post-deploy checks to confirm success.
+This skill handles the deployment lifecycle for Lead OS apps on Vercel (and similar). The critical nuance is that the **kernel** often builds from the monorepo root with `rootDirectory` pointing at `lead-os-hosted-runtime-wt-hybrid`, while **`erie-pro`** builds from its subdirectory — mis-set `rootDirectory` causes double-path errors. **Project IDs and tokens are environment-specific**; read them from your Vercel/CI settings, not from static tables in this repo.
 
 ## Core Capabilities
 
@@ -108,7 +108,7 @@ If post-deploy checks fail:
 - **API route 404s** -- If pages work but `/api/*` routes 404, the outputDirectory is misconfigured. Ensure it is `.next` (or unset to use the default) and that rootDirectory is correct.
 - **Environment variables** -- If the deploy succeeds but the app errors at runtime, check that all required env vars are set in the Vercel project settings for the Production environment.
 - **Branch protection** -- Vercel only auto-deploys from the branch configured in project settings. If deploying from a feature branch, use `vercel --prod` explicitly.
-- **Build timeout** -- Vercel free tier has a 45-minute build limit. If erie-pro's 630 pages cause a timeout, enable ISR for low-traffic pages.
+- **Build timeout** — Vercel (and similar) impose build time limits. If `erie-pro` SSG grows large, split work, enable incremental strategies that Next.js supports for that app, or move cold paths to dynamic rendering — verify against current `next.config` for that package.
 
 ## Output Format
 

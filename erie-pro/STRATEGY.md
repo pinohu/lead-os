@@ -1,6 +1,8 @@
 # ERIE.PRO DIRECTORY NETWORK
 ## Distributed Local Lead Monopoly System (LeadOS-Powered)
 
+> **Strategy vs shipped code:** This document describes a **go-to-market and systems architecture vision**. Execution details (exact page counts, DNS layouts, Stripe flows) live in the `erie-pro/` codebase and its README. Kernel boundaries and public URLs for the hosted runtime are summarized in **`../lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md`**.
+
 ## 1. Executive Overview
 
 A nationwide, multi-niche, city-level lead acquisition and routing system.

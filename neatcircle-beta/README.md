@@ -1,6 +1,6 @@
-# Lead OS
+# NeatCircle (edge / marketing) — `neatcircle-beta`
 
-Lead OS is a full-stack Next.js lead capture and funnel automation platform.
+Cloudflare Workers–oriented Next.js app (OpenNext) for marketing and edge experiences. The **kernel** (APIs, operator dashboard, billing, marketplace) lives in **`../lead-os-hosted-runtime-wt-hybrid/`**. Read **`../lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md`** before linking to kernel routes from this site so you do not promise operator-only URLs publicly.
 
 ## Local Development
 

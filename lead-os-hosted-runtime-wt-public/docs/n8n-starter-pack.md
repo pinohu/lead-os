@@ -75,3 +75,9 @@ And one-click provisioning endpoints at:
 3. Use `/api/n8n/workflows/<slug>` when you want the raw JSON export instead.
 4. Replace any placeholder URLs or model settings that need tenant-specific behavior.
 5. Validate workflows in n8n before connecting them to production traffic.
+
+---
+
+## Documentation map
+
+Canonical kernel inventory: `../lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md`.

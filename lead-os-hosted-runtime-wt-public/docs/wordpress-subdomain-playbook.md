@@ -25,3 +25,9 @@
 3. Hybrid mode
    - embed chat/form widget on WordPress
    - host long-form funnels on the subdomain
+
+---
+
+## Documentation map
+
+Canonical kernel route inventory: `../lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md`. Deployed kernel includes **`/docs`**.
