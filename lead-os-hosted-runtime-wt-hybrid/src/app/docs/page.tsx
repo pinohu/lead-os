@@ -4,8 +4,10 @@ import { tenantConfig } from "@/lib/tenant";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+/** GitHub `HEAD` tracks the repository default branch. Paths are from monorepo root. */
 const REPO_DOCS_BASE =
-  "https://github.com/pinohu/lead-os/blob/main/lead-os/lead-os-hosted-runtime-wt-hybrid/docs";
+  "https://github.com/pinohu/lead-os/blob/HEAD/lead-os-hosted-runtime-wt-hybrid/docs";
+const REPO_ROOT_DOCS_BASE = "https://github.com/pinohu/lead-os/blob/HEAD/docs";
 
 export const metadata: Metadata = {
   title: "Documentation hub",
@@ -25,6 +27,20 @@ export default function DocsHubPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
+        <Card className="border-primary/30 bg-primary/[0.04] sm:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-lg">New here — read this first</CardTitle>
+            <CardDescription>One page: clone, run the kernel, Postgres + migrations, operator login, production checks.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild>
+              <a href={`${REPO_ROOT_DOCS_BASE}/START-HERE.md`} target="_blank" rel="noreferrer">
+                START-HERE.md (novice path)
+              </a>
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">API reference</CardTitle>
@@ -40,7 +56,7 @@ export default function DocsHubPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Service level (SLA)</CardTitle>
-            <CardDescription>Uptime targets and covered services for enterprise agreements.</CardDescription>
+            <CardDescription>Template Markdown — customize placeholders, monitoring, and legal review before customer contracts.</CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild variant="secondary">

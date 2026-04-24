@@ -2,7 +2,7 @@
 // Derive actionable links from technicalAnchors + known repo paths (no invented metrics).
 
 const REPO_BLOB_BASE =
-  "https://github.com/pinohu/lead-os/blob/main/lead-os/lead-os-hosted-runtime-wt-hybrid";
+  "https://github.com/pinohu/lead-os/blob/HEAD/lead-os-hosted-runtime-wt-hybrid";
 
 export interface ExecutionSurfaceLink {
   label: string;

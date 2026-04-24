@@ -2,6 +2,8 @@
 
 This file maps **public URLs** in `lead-os-hosted-runtime-wt-hybrid` to **intent** so operators and founders do not confuse marketing depth with “every route is a separate product.”
 
+**First-time setup (entire monorepo):** start at [`docs/START-HERE.md`](../../docs/START-HERE.md) from the repository root (same folder that contains `lead-os-hosted-runtime-wt-hybrid/`).
+
 ## Public marketing & conversion
 
 | Path | Intent |

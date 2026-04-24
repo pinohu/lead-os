@@ -13,7 +13,8 @@
 
    ```bash
    git clone https://github.com/pinohu/lead-os.git
-   cd lead-os/lead-os-hosted-runtime-wt-hybrid
+   cd lead-os
+   cd lead-os-hosted-runtime-wt-hybrid
    ```
 
 2. Install dependencies:

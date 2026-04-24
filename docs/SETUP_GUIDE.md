@@ -2,6 +2,8 @@
 
 Step-by-step instructions for setting up Lead OS for local development and deploying to production.
 
+**If this is your first clone:** read **[`START-HERE.md`](START-HERE.md)** for the shortest correct path and for how this guide relates to in-app **`/docs`** and **`PRODUCT-SURFACES.md`**.
+
 ## 1. Prerequisites
 
 | Tool | Version | Purpose |
@@ -53,7 +55,14 @@ docker run -d \
 # postgresql://leados:leados@localhost:5432/lead_os
 ```
 
-The runtime auto-creates all required tables on first connection. No manual migration step is needed.
+Schema comes from **`lead-os-hosted-runtime-wt-hybrid/db/migrations/*.sql`**. When `LEAD_OS_DATABASE_URL` / `DATABASE_URL` is set, the kernel’s **`initializeDatabase()`** path runs the migration runner (see `src/lib/db.ts`). You do **not** paste raw SQL by hand for baseline tables — you **do** verify applied migrations before production:
+
+```bash
+cd lead-os-hosted-runtime-wt-hybrid
+npm run verify:migrations
+```
+
+See **`lead-os-hosted-runtime-wt-hybrid/docs/DEPLOYMENT.md`** for ordering, billing migrations, and worker requirements.
 
 ### Option B: In-Memory (quick start, no persistence across restarts)
 
@@ -65,7 +74,7 @@ Skip database setup entirely. The runtime defaults to in-memory storage when no 
 
 ```bash
 cd lead-os-hosted-runtime-wt-hybrid
-cp .env.sample .env
+cp .env.example .env.local
 ```
 
 Edit `.env` with your values. At minimum, set these for a functional development environment:
@@ -127,8 +136,10 @@ Open two terminal windows:
 
 ### Terminal 1: Kernel Runtime
 
+From the **repository root** (the directory created by `git clone`, usually named `lead-os`):
+
 ```bash
-cd lead-os/lead-os-hosted-runtime-wt-hybrid
+cd lead-os-hosted-runtime-wt-hybrid
 npm run dev
 # Starts on http://localhost:3000
 ```
@@ -136,9 +147,9 @@ npm run dev
 ### Terminal 2: Edge Layer
 
 ```bash
-cd lead-os/neatcircle-beta
+cd neatcircle-beta
 npm run dev
-# Starts on http://localhost:3001
+# Port from that package’s README / Next defaults
 ```
 
 ## 6. Verify Installation
@@ -149,12 +160,11 @@ npm run dev
 # Kernel runtime health
 curl http://localhost:3000/api/health
 
-# Expected response:
+# Example shape (fields vary by version):
 # {
-#   "success": true,
-#   "service": "lead-os-hosted-runtime",
-#   "tenantId": "dev-tenant",
-#   "brandName": "My Dev Brand",
+#   "status": "ok",
+#   "service": "lead-os",
+#   "components": { "api": "healthy", "database": "healthy" | "not_configured" | "down", ... },
 #   ...
 # }
 ```
@@ -287,7 +297,7 @@ RUNTIME_URL=https://api.yourdomain.com
 
 # 1. Health check
 curl "$RUNTIME_URL/api/health"
-# Verify: success=true, correct tenantId, persistenceMode="postgresql"
+# Verify: status is ok (or degraded only when you understand why), database component matches your intent
 
 # 2. Automation health
 curl "$RUNTIME_URL/api/automations/health"
@@ -314,9 +324,9 @@ curl -X POST "$RUNTIME_URL/api/intake" \
 
 ### Checklist
 
-- [ ] `/api/health` returns `success: true`
-- [ ] `persistenceMode` is `postgresql` (not `memory`)
-- [ ] `liveMode` matches `LEAD_OS_ENABLE_LIVE_SENDS` setting
+- [ ] `/api/health` returns `status: "ok"` or a documented `degraded` state you accept
+- [ ] `components.database` is `healthy` when Postgres is required (otherwise `not_configured` only for non-prod demos)
+- [ ] Outbound sends match `LEAD_OS_ENABLE_LIVE_SENDS` and provider keys (use `/api/automations/health` or dashboard credentials view)
 - [ ] CRM provider (SuiteDash) shows as configured
 - [ ] Email provider (Emailit) shows as configured
 - [ ] Widget origins are set (not open CORS in production)

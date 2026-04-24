@@ -21,7 +21,7 @@ import type { GtmUseCaseWithStatus } from "@/lib/gtm/merge";
 import { GTM_OPERATOR_STATUSES, type GtmOperatorStatus } from "@/lib/gtm/status";
 
 const REPO_DOC_ERIE =
-  "https://github.com/pinohu/lead-os/blob/main/lead-os/lead-os-hosted-runtime-wt-hybrid/docs/ERIE-PRO.md";
+  "https://github.com/pinohu/lead-os/blob/HEAD/lead-os-hosted-runtime-wt-hybrid/docs/ERIE-PRO.md";
 
 interface GtmOperatorBoardProps {
   initialCases: GtmUseCaseWithStatus[];

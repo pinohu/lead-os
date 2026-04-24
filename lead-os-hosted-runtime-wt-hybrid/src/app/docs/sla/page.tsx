@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SLA_SOURCE =
-  "https://github.com/pinohu/lead-os/blob/main/lead-os/lead-os-hosted-runtime-wt-hybrid/docs/SLA.md";
+  "https://github.com/pinohu/lead-os/blob/HEAD/lead-os-hosted-runtime-wt-hybrid/docs/SLA.md";
 
 export const metadata: Metadata = {
   title: "Service Level Agreement",
-  description: "Lead OS uptime and service commitments — full text in repository docs/SLA.md.",
+  description:
+    "SLA template and commercial targets — replace placeholders and legal review before customer commitments. Full Markdown in docs/SLA.md.",
 };
 
 export default function DocsSlaPage() {
@@ -18,21 +19,22 @@ export default function DocsSlaPage() {
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Documentation</p>
         <h1 className="text-3xl font-bold tracking-tight mt-1">Service Level Agreement</h1>
         <p className="text-muted-foreground mt-2">
-          Commercial uptime and maintenance rules are defined in version-controlled Markdown so legal and engineering
-          stay aligned. The summary below is informational only; the binding text is in the linked document.
+          The linked <code className="text-xs">docs/SLA.md</code> file is a <strong>template</strong>: replace{" "}
+          <code className="text-xs">YOUR_*</code> URLs and emails, wire real monitoring and backups, and have counsel
+          approve text before you attach it to contracts. The bullets below are not a substitute for that process.
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Summary</CardTitle>
-          <CardDescription>From docs/SLA.md — verify dates in source before contracts.</CardDescription>
+          <CardDescription>From docs/SLA.md — confirm version date and placeholders before any customer signature.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground leading-relaxed">
           <ul className="list-disc pl-5 space-y-2">
-            <li>Production targets include monthly uptime commitments for core APIs and the dashboard.</li>
-            <li>Outbound webhooks and background agent execution carry slightly lower targets than core API.</li>
-            <li>Scheduled maintenance windows and exclusions are spelled out in the full SLA.</li>
+            <li>Targets for core API and dashboard uptime apply only when you operate the monitoring described in the SLA and measure production traffic.</li>
+            <li>Webhook and background-job targets are lower than core API — see the table in the source file.</li>
+            <li>Maintenance windows, exclusions, credits, and backup/RPO language are all in the Markdown — nothing here is binding until your legal process says so.</li>
           </ul>
           <Button asChild className="mt-4">
             <a href={SLA_SOURCE} target="_blank" rel="noreferrer">

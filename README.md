@@ -1,6 +1,8 @@
 # CX React
 
-Programmable, multi-tenant lead generation infrastructure. One runtime, many niches -- deploy a complete lead-gen platform for any industry in minutes with config, not code.
+Programmable, multi-tenant lead generation infrastructure. One runtime, many niches — configure industries and funnels without shipping a fork for every vertical.
+
+**New here?** Read **[`docs/START-HERE.md`](docs/START-HERE.md)** first (clone → run → Postgres → operator → production checks). It is the **novice entry** path and the reconciliation point between marketing, `/docs`, and repo truth.
 
 CX React captures visitor intent through embeddable widgets, scores and routes leads through configurable funnel graphs, orchestrates multi-channel follow-up (email, SMS, WhatsApp, chat, voice), generates AI-powered content, and syncs outcomes to your CRM and automation bus. It replaces 15-20 separate SaaS products with a single deployable runtime.
 
@@ -335,6 +337,7 @@ The hybrid kernel ships a large `node:test` tree under `tests/`. Counts change f
 
 | Document | Purpose |
 |----------|---------|
+| [**Start here (novices)**](docs/START-HERE.md) | Single path: clone → run kernel → Postgres/migrations → operator → production checks; reconciles marketing vs shipped behavior |
 | [Complete Guide](LEAD-OS-COMPLETE-GUIDE.md) | Full platform documentation (architecture, API reference, deployment, economics, AppSumo roadmap) |
 | [API Reference](docs/API_REFERENCE.md) | Detailed endpoint documentation |
 | [Setup Guide](docs/SETUP_GUIDE.md) | Step-by-step installation |

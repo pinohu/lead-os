@@ -7,6 +7,7 @@ CX React is a white-label, multi-tenant lead generation, scoring, nurturing, and
 - **Public URLs** (landing, pricing, personas, offers index) intentionally describe *capabilities you can enable* when Postgres, Redis, workers, and provider keys are configured.
 - **Operator surfaces** (`/dashboard/*`, control plane, GTM) reflect what you run day-to-day.
 - **Truth table:** See [`docs/PRODUCT-SURFACES.md`](./docs/PRODUCT-SURFACES.md). In deployed apps, `/docs` links to the documentation hub (API OpenAPI, SLA summary, repo docs).
+- **First clone / novice path (whole monorepo):** [`../docs/START-HERE.md`](../docs/START-HERE.md) — use this before mixing marketing language with deployment steps.
 
 ## By the numbers (approximate — verify on your branch)
 
