@@ -18,26 +18,26 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://cxreact.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl || "https://cxreact.com"),
   title: {
-    default: `${tenantConfig.brandName} — Enterprise Lead Generation Platform`,
+    default: `${tenantConfig.brandName} — Lead capture, scoring & nurture for every growth model`,
     template: `%s | ${tenantConfig.brandName}`,
   },
   description:
-    "Multi-tenant lead generation infrastructure. Capture, score, route, nurture, and convert leads with configurable funnel graphs, AI-powered content, and 137+ integrations.",
+    "One runtime for agencies, SaaS teams, lead-gen operators, consultants, and franchises: capture, score, route, and nurture demand with configurable funnels, operator dashboards, APIs, and 130+ integration adapters (credentials required).",
   openGraph: {
-    title: `${tenantConfig.brandName} — Enterprise Lead Generation Platform`,
+    title: `${tenantConfig.brandName} — Lead OS for multi-industry operators`,
     description:
-      "One runtime, many niches. Deploy a complete lead-gen platform for any industry in minutes.",
+      "Same engine for many industries and motions: intake, scoring, routing, marketplace hooks, and billing surfaces you configure.",
     type: "website",
     siteName: tenantConfig.brandName,
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: `${tenantConfig.brandName} platform` }],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${tenantConfig.brandName} — Enterprise Lead Generation Platform`,
+    title: `${tenantConfig.brandName} — Lead OS for multi-industry operators`,
     description:
-      "One runtime, many niches. Deploy a complete lead-gen platform for any industry in minutes.",
+      "Same engine for many industries and motions: intake, scoring, routing, marketplace hooks, and billing surfaces you configure.",
   },
   icons: { icon: "/icon.svg" },
 };

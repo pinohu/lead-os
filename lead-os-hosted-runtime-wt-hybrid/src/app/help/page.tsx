@@ -17,10 +17,10 @@ const faqData: FaqCategory[] = [
   {
     title: "Getting Started",
     items: [
-      { question: "What is CX React?", answer: "CX React is a white-label lead generation platform built for agencies. It captures leads through embeddable widgets, scores them automatically, routes them to the right team member, and nurtures them across email, SMS, and chat. It replaces 15-20 separate tools with one dashboard you can brand as your own." },
+      { question: "What is CX React?", answer: "CX React is a configurable lead operating system for agencies, SaaS teams, lead-gen shops, consultants, and franchise operators. It captures leads through embeddable widgets and API intake, scores and routes them, and nurtures across email, SMS, and chat when providers are connected — with one operator dashboard and APIs you control." },
       { question: "How do I get started?", answer: "Head to the onboarding page to start the setup wizard. Choose your industry, pick a plan, add your branding, and connect your tools. The system automatically configures lead scoring, assessment questions, and nurture sequences for your industry." },
-      { question: "How do I capture my first lead?", answer: "After onboarding, add the provided widget to your client's website. Visitors will see your configured form, quiz, calculator, or chat widget. When they submit, the lead is automatically scored, routed, and entered into your nurture sequence." },
-      { question: "What does the dashboard show?", answer: "The dashboard gives you full visibility into your lead generation operations: KPIs, lead management, pipeline status, AI-generated content, A/B test results, billing, and client performance. Everything you need to run your agency from one screen." },
+      { question: "How do I capture my first lead?", answer: "After onboarding, add the provided widget to your site or your customer’s site (agencies often embed per client). Visitors see your configured form, quiz, calculator, or chat widget. On submit, the lead is scored, routed, and entered into the nurture sequence you enabled." },
+      { question: "What does the dashboard show?", answer: "The dashboard summarizes lead operations: KPIs, pipeline status, experiments, billing signals, and workspace-level performance. Whether you run one product, many territories, or many client accounts, it is the same control plane." },
       { question: "Can I add a new niche without coding?", answer: "Yes. CX React treats niches as configuration, not code. Enter your industry name and the system auto-generates scoring weights, assessment questions, lead magnets, nurture content, and funnel configurations." },
     ],
   },
@@ -37,7 +37,7 @@ const faqData: FaqCategory[] = [
   {
     title: "Integrations",
     items: [
-      { question: "How do I connect my CRM?", answer: "Go to Dashboard > Credentials and add your CRM connection (SuiteDash, SalesNexus, or others). CX React will automatically sync leads, deals, and pipeline stages. All integrations run in sandbox mode until you connect your accounts." },
+      { question: "How do I connect my CRM?", answer: "Go to Dashboard > Credentials and add the CRM or ops tool connectors you use. Sync behavior depends on which adapters are enabled for your deployment. All integrations stay in sandbox or stub mode until real API keys are present." },
       { question: "How do I set up email nurturing?", answer: "Connect your email provider in Dashboard > Credentials. CX React includes pre-built 7-stage nurture sequences that automatically adapt messaging based on how engaged each lead is and what industry they are in." },
       { question: "How do I configure SMS?", answer: "Connect your SMS provider in Dashboard > Credentials. SMS is part of the multi-channel nurture sequence and can be turned on or off for each stage of your funnel." },
       { question: "Can I get real-time notifications when something happens?", answer: "Yes. CX React sends real-time notifications when key events occur -- like a new lead coming in, a lead changing stages, or a conversion. Configure these alerts in Dashboard > Settings." },
@@ -57,10 +57,10 @@ const faqData: FaqCategory[] = [
   {
     title: "Setup and Security",
     items: [
-      { question: "Do you have developer documentation?", answer: "Yes. Full API documentation is available for teams that want to build custom integrations. Contact support or visit our developer docs for details." },
-      { question: "How do I add the widget to my client's site?", answer: "After onboarding, you get an embed code for each client. It works on any website and can be configured as a popup, inline form, chat bubble, or full-page assessment." },
+      { question: "Do you have developer documentation?", answer: "Yes. Start at the in-app documentation hub at /docs (OpenAPI JSON at /api/docs/openapi.json). For runbooks and deployment detail, see the docs folder in the repository linked from /docs." },
+      { question: "How do I add the widget to a website?", answer: "After onboarding you get embed snippets per workspace or niche. They work on any normal web stack as a popup, inline form, chat bubble, or full-page assessment." },
       { question: "Can I use my own domain?", answer: "Yes. Set up your custom domain in Dashboard > Settings. Your clients will see your brand and your URL -- not ours." },
-      { question: "How is my data protected?", answer: "CX React uses bank-level encryption, secure authentication, and enterprise-grade security controls. Each client's data is completely isolated so there is no cross-contamination between accounts." },
+      { question: "How is my data protected?", answer: "Traffic uses TLS in production configurations; operator areas use magic-link sessions; data access is parameterized in the app layer. Tenant isolation depends on your Postgres/RLS and deployment model — review docs/SOC2-CONTROLS.md and your own threat model before promising compliance downstream." },
       { question: "Is CX React GDPR compliant?", answer: "Yes. CX React includes built-in tools for data export, data deletion, and consent management. See our Privacy Policy for full details." },
     ],
   },

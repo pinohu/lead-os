@@ -1,31 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 
 type InquiryType = "sales" | "support" | "partnership" | "other";
 
-const contactJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ContactPage",
-  "@id": "https://leadgen-os.com/contact#webpage",
-  url: "https://leadgen-os.com/contact",
-  name: "Contact CX React",
-  description: "Questions about CX React? Reach out to our sales, support, or partnership team.",
-  isPartOf: { "@id": "https://leadgen-os.com/#website" },
-  mainEntity: {
-    "@type": "Organization",
-    "@id": "https://leadgen-os.com/#organization",
-    name: "CX React",
-    url: "https://leadgen-os.com",
-    contactPoint: [
-      { "@type": "ContactPoint", email: "support@leadgen-os.com", contactType: "customer support", availableLanguage: "English" },
-      { "@type": "ContactPoint", email: "legal@leadgen-os.com", contactType: "legal" },
-    ],
-  },
-};
+function publicSiteUrl() {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxreact.com";
+  return raw.replace(/\/$/, "");
+}
+
+function publicSupportEmail() {
+  return process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@example.com";
+}
+
+function publicBrandName() {
+  return process.env.NEXT_PUBLIC_BRAND_NAME ?? "CX React";
+}
 
 export default function ContactPage() {
+  const contactJsonLd = useMemo(() => {
+    const baseUrl = publicSiteUrl();
+    const supportEmail = publicSupportEmail();
+    const brandName = publicBrandName();
+    return {
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      "@id": `${baseUrl}/contact#webpage`,
+      url: `${baseUrl}/contact`,
+      name: `Contact ${brandName}`,
+      description: `Questions about ${brandName}? Reach out to our sales, support, or partnership team.`,
+      isPartOf: { "@id": `${baseUrl}/#website` },
+      mainEntity: {
+        "@type": "Organization",
+        "@id": `${baseUrl}/#organization`,
+        name: brandName,
+        url: baseUrl,
+        contactPoint: [
+          { "@type": "ContactPoint", email: supportEmail, contactType: "customer support", availableLanguage: "English" },
+          { "@type": "ContactPoint", email: supportEmail, contactType: "legal" },
+        ],
+      },
+    };
+  }, []);
   const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -170,7 +187,7 @@ export default function ContactPage() {
       <div className="mt-8 p-6 bg-muted rounded-lg">
         <p className="text-sm text-muted-foreground">
           You can also reach us directly at{" "}
-          <a href="mailto:support@leadgen-os.com" className="text-primary">support@leadgen-os.com</a>.
+          <a href={`mailto:${publicSupportEmail()}`} className="text-primary">{publicSupportEmail()}</a>.
           {" "}Most inquiries get a response within 4 business hours.
         </p>
       </div>

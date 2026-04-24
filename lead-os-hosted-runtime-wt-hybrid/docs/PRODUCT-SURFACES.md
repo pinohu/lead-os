@@ -47,3 +47,7 @@ All files under `docs/*.md` (DEPLOYMENT, OPERATOR_RUNBOOK, GTM, ERIE-PRO, etc.) 
 1. **Navigation** must only link to `[slug]` values generated from `nicheCatalog` or documented persona keys.  
 2. **Claims** on the marketing site should align with `docs/SLA.md` and deployment reality (DB, workers, keys).  
 3. **Demo data** must always be labeled on `/marketplace` when active.
+
+## Example hostnames in the repository
+
+Some Markdown and Kubernetes samples still use **`leadgen-os.com`** (status URL, support portal, example ingress hosts). Those are **illustrative defaults** for a generic deployment — they are not a promise that those DNS names exist for your fork. Production values should always come from **`NEXT_PUBLIC_SITE_URL`**, **`NEXT_PUBLIC_SUPPORT_EMAIL`**, and your real status/help URLs. The in-app marketing pages prefer **`tenantConfig`** / `NEXT_PUBLIC_*` fallbacks (`cxreact.com` in local templates) over hardcoded production domains.

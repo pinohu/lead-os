@@ -90,17 +90,17 @@ const enterpriseFeatures = [
 ];
 
 const joyOvernight = [
-  "Churn prevention \u2014 disengaged leads auto re-engaged across all clients",
-  "Warm leads going cold \u2014 next nurture step sent per client playbook",
-  "Pipeline thin for a client \u2014 prospecting activated automatically",
-  "Client report auto-generated with key metrics",
+  "Churn prevention \u2014 disengaged leads re-engaged per workspace playbook",
+  "Warm leads going cold \u2014 next nurture step queued from the active funnel graph",
+  "Pipeline gaps \u2014 prospecting or partner routes fire when thresholds trip",
+  "Roll-up report generated for each workspace you track (brand, territory, or account)",
 ];
 
 const joyMorning = [
-  "\u201c12 new leads came in across 6 clients while you slept\u201d",
-  "\u201c23.4 hours saved this month \u2014 worth $3,510\u201d",
-  "\u201c2 clients need attention. 13 are on autopilot.\u201d",
-  "One recommended action per client for the day",
+  "\u201cNew demand landed overnight across your workspaces — scored and queued\u201d",
+  "\u201cHours reclaimed from manual follow-ups — tied to the automations you enabled\u201d",
+  "\u201cA short list of workspaces that need a human nudge today\u201d",
+  "One prioritized action per workspace so the day starts with clarity",
 ];
 
 const audiencePaths = [
@@ -361,7 +361,7 @@ export default function HomePage() {
           {[
             {
               title: "Tool consolidation",
-              body: "Retire overlapping CRM, nurture, and analytics subscriptions per client or per brand when APIs are connected.",
+              body: "Retire overlapping CRM, nurture, and analytics subscriptions per brand, territory, or client workspace when APIs are connected.",
             },
             {
               title: "Faster activation",
