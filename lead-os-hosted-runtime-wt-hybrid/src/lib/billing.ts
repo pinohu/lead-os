@@ -1,5 +1,9 @@
 import Stripe from "stripe";
 import { getPlanById, type PlanDefinition } from "./plan-catalog.ts";
+
+/** Stripe v22+ — avoid `Stripe.Checkout.SessionCreateParams` (not exported on `Checkout` in ESM builds). */
+type StripeCheckoutSessionCreateParams = Parameters<Stripe["checkout"]["sessions"]["create"]>[0];
+type StripeCheckoutLineItem = NonNullable<StripeCheckoutSessionCreateParams["line_items"]>[number];
 import {
   getSubscription,
   upsertSubscription,
@@ -60,7 +64,7 @@ export async function createCheckoutSession(
     };
   }
 
-  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+  const lineItems: StripeCheckoutLineItem[] = [];
 
   if (plan.setupFee > 0) {
     lineItems.push({
