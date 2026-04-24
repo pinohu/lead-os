@@ -163,12 +163,12 @@ export async function replayDeadLetterJobById(deadLetterId: string): Promise<voi
 
   if (row.jobName === "tick" && payload.kind === "tick") {
     const q = await getMainQueue();
-    await q.add("tick", payload as PricingTickJobData, {});
+    await q.add("tick", payload as unknown as PricingTickJobData, {});
     return;
   }
   if (row.jobName === "measure" && payload.kind === "measure") {
     const q = await getMeasureQueue();
-    await q.add("measure", payload as PricingMeasureJobData, {
+    await q.add("measure", payload as unknown as PricingMeasureJobData, {
       jobId: `replay-dlq-${deadLetterId}-${Date.now()}`,
     });
     return;
