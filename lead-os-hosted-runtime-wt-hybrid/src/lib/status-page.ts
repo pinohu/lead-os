@@ -9,6 +9,7 @@ import {
   getRecentChecks,
 } from "./uptime-tracker";
 import { getTenantAuditLog } from "./agent-audit-log";
+import { tenantConfig } from "./tenant.ts";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -144,7 +145,7 @@ export async function buildStatusPayload(): Promise<StatusPayload> {
     incidents: await extractIncidents(),
     page: {
       name: "CX React Status",
-      url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://leadgen-os.com",
+      url: (process.env.NEXT_PUBLIC_SITE_URL ?? tenantConfig.siteUrl).replace(/\/$/, ""),
     },
   };
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
   title: "Roadmap",
@@ -54,7 +55,7 @@ const columns: { label: string; color: string; twColor: string; items: RoadmapIt
 ];
 
 export default function RoadmapPage() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl).replace(/\/$/, "");
   const roadmapJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
   title: "See CX React in Action | Demo",
@@ -72,7 +73,7 @@ const demos = [
 ];
 
 export default function DemoPage() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl).replace(/\/$/, "");
 
   const demoJsonLd = {
     "@context": "https://schema.org",

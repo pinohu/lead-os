@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
 import { nicheCatalog } from "@/lib/catalog";
+import { tenantConfig } from "@/lib/tenant";
 
 const PERSONA_SLUGS = ["agencies", "saas-founders", "lead-gen", "consultants", "franchises"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl).replace(/\/$/, "");
   const now = new Date();
   const nicheSlugs = Object.keys(nicheCatalog);
 
@@ -25,6 +26,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/auth/sign-in`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${baseUrl}/manage-data`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
     { url: `${baseUrl}/preferences`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${baseUrl}/docs`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
+    { url: `${baseUrl}/docs/api`, lastModified: now, changeFrequency: "weekly", priority: 0.5 },
+    { url: `${baseUrl}/docs/sla`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${baseUrl}/offers`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
 
     // ─── Industry directory ────────────────────────────────
     { url: `${baseUrl}/industries`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
@@ -33,6 +38,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+
+    ...nicheSlugs.map((slug) => ({
+      url: `${baseUrl}/offers/${slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.75,
     })),
 
     // ─── Assessments per niche ────────────────────────────

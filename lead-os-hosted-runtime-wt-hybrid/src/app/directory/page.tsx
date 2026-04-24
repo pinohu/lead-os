@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { nicheCatalog } from "@/lib/catalog";
+import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
   title: "Business Directory | CX React",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function DirectoryIndexPage() {
   const niches = Object.values(nicheCatalog);
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl).replace(/\/$/, "");
 
   const directoryJsonLd = {
     "@context": "https://schema.org",

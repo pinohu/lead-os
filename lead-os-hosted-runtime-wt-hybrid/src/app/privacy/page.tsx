@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | CX React",
@@ -7,7 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl).replace(/\/$/, "");
+  const privacyEmail = process.env.NEXT_PUBLIC_PRIVACY_EMAIL ?? tenantConfig.supportEmail;
 
   const privacyJsonLd = {
     "@context": "https://schema.org",
@@ -50,11 +52,11 @@ export default function PrivacyPolicyPage() {
             <strong>CX React Privacy Team</strong>
             <br />
             Email:{" "}
-            <a href="mailto:privacy@leadgen-os.com">privacy@leadgen-os.com</a>
+            <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a>
             <br />
             Website:{" "}
-            <a href="https://leadgen-os.com" rel="noopener noreferrer">
-              https://leadgen-os.com
+            <a href={baseUrl} rel="noopener noreferrer">
+              {baseUrl}
             </a>
           </address>
         </section>
@@ -285,7 +287,7 @@ export default function PrivacyPolicyPage() {
             <li>
               <strong>Right to rectification (Art. 16):</strong> Request correction of inaccurate
               personal data. Contact us at{" "}
-              <a href="mailto:privacy@leadgen-os.com">privacy@leadgen-os.com</a>.
+              <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a>.
             </li>
             <li>
               <strong>Right to restriction (Art. 18):</strong> Request that we restrict processing
@@ -334,7 +336,7 @@ export default function PrivacyPolicyPage() {
           </ul>
           <p className="mt-3">
             To exercise your CCPA rights, contact us at{" "}
-            <a href="mailto:privacy@leadgen-os.com">privacy@leadgen-os.com</a> or use our data
+            <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a> or use our data
             endpoints: <a href="/api/gdpr/export">export your data</a> or{" "}
             <a href="/api/gdpr/delete">request deletion</a>.
           </p>
@@ -366,7 +368,7 @@ export default function PrivacyPolicyPage() {
             CX React is not directed to individuals under the age of 16. We do not knowingly collect
             personal data from children. If you believe a child has provided personal data to us,
             contact us at{" "}
-            <a href="mailto:privacy@leadgen-os.com">privacy@leadgen-os.com</a> and we will delete
+            <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a> and we will delete
             it promptly.
           </p>
         </section>
@@ -408,7 +410,7 @@ export default function PrivacyPolicyPage() {
             <strong>CX React Privacy Team</strong>
             <br />
             Email:{" "}
-            <a href="mailto:privacy@leadgen-os.com">privacy@leadgen-os.com</a>
+            <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a>
           </address>
           <p className="mt-3">
             If you are located in the EEA and believe your rights have been violated, you have the

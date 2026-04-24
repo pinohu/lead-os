@@ -10,7 +10,7 @@ const NICHE_ACCENTS: Record<string, string> = {
 };
 
 export function buildOgImageUrl(title: string, subtitle: string, niche = "general"): string {
-  const base = tenantConfig.siteUrl || "https://leadgen-os.com";
+  const base = tenantConfig.siteUrl.replace(/\/$/, "");
   const accent = NICHE_ACCENTS[niche] ?? "#c4632d";
   const params = new URLSearchParams({ title, subtitle, niche, accent });
   return `${base}/api/og?${params.toString()}`;

@@ -62,7 +62,7 @@ export default async function AssessmentPage({ params, searchParams }: Assessmen
     referrer: headerStore.get("referer") ?? undefined,
   });
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl).replace(/\/$/, "");
   const assessJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",

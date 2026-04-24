@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -7,7 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default function TermsOfServicePage() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl).replace(/\/$/, "");
+  const legalEmail = process.env.NEXT_PUBLIC_LEGAL_EMAIL ?? tenantConfig.supportEmail;
 
   const termsJsonLd = {
     "@context": "https://schema.org",
@@ -120,7 +122,7 @@ export default function TermsOfServicePage() {
 
         <section className="mb-8">
           <h2 className="text-foreground text-xl font-semibold mb-3">14. Contact Information</h2>
-          <p>For questions about these Terms, please contact us at <a href="mailto:legal@leadgen-os.com" className="text-primary underline">legal@leadgen-os.com</a> or visit our <a href="/contact" className="text-primary underline">contact page</a>.</p>
+          <p>For questions about these Terms, please contact us at <a href={`mailto:${legalEmail}`} className="text-primary underline">{legalEmail}</a> or visit our <a href="/contact" className="text-primary underline">contact page</a>.</p>
         </section>
       </article>
     </main>

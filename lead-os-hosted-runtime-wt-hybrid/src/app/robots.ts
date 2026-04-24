@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
+import { tenantConfig } from "@/lib/tenant";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl).replace(/\/$/, "");
 
   return {
     rules: [

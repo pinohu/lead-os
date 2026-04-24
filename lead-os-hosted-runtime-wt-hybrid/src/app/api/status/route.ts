@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUptimePercentage, getAllComponents, getRecentChecks } from "@/lib/uptime-tracker";
+import { tenantConfig } from "@/lib/tenant";
 
 const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 const NINETY_DAYS = 90 * 24 * 60 * 60 * 1000;
@@ -28,7 +29,7 @@ export async function GET() {
     ],
     page: {
       name: "CX React Status",
-      url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://leadgen-os.com",
+      url: (process.env.NEXT_PUBLIC_SITE_URL ?? tenantConfig.siteUrl).replace(/\/$/, ""),
     },
   });
 }
