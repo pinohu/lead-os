@@ -8,7 +8,7 @@
 2. **Persist** — Lead stored via existing `persistLead` / runtime store with tenant from resolved config.
 3. **Directory routing** — When `LEAD_OS_DIRECTORY_TENANTS` includes the resolved tenant (default `erie`), and `category` is set, the system resolves an **active** `nodes` row by `metadata.category`, checks **billing** if `LEAD_OS_BILLING_ENFORCE=true`, writes **`lead_os_directory_routes`**, emits canonical events, and calls **`sendLead()`** (SuiteDash → Activepieces → generic webhook → simulated log).
 4. **Control plane** — Operator actions unchanged; use `/dashboard/control-plane` with operator cookie/JWT.
-5. **GTM tracking** — Use **`/dashboard/gtm`** (or `npm run gtm:print -- --slug=erie-plumbing`) to record Erie-first rollout status against the canonical GTM config; see [GO-TO-MARKET-USE-CASES.md](./GO-TO-MARKET-USE-CASES.md#operator-tooling-execution).
+5. **GTM tracking** — Use **`/dashboard/gtm`** (or `npm run gtm:print -- --slug=erie-plumbing`) to record Erie-first rollout status against the canonical GTM config; see [GO-TO-MARKET-USE-CASES.md](./GO-TO-MARKET-USE-CASES.md#operator-tooling-execution). Public route map: [PRODUCT-SURFACES.md](./PRODUCT-SURFACES.md); deployed docs hub: **`/docs`**.
 
 ## Database seed
 

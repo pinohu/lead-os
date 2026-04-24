@@ -2,6 +2,8 @@
 
 This document ties each revenue play to **what already runs in this repo** after the Erie / directory / billing / integration work. Keep **`src/config/gtm-use-cases.ts`** in sync when you change flows.
 
+For a **route-level map** of what visitors can open without authentication vs what requires an operator session, see [`PRODUCT-SURFACES.md`](./PRODUCT-SURFACES.md) (and the in-app hub at **`/docs`** on a running deployment).
+
 | # | Play | Applied via (runtime) | This week (concrete) |
 |---|------|-------------------------|----------------------|
 | **1** | Erie.pro exclusive niche (plumbing first) | `POST /api/intake` + `x-tenant-id: erie` + `category` → `directory-lead-flow` → nodes `010` seed → `lead-delivery-hub` | Plumbing page → form → `npm run verify:migrations` → test lead → 20 plumber calls |

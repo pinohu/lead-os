@@ -2,6 +2,12 @@
 
 CX React is a white-label, multi-tenant lead generation, scoring, nurturing, and monetization platform deployable for **any business niche**. It is a complete revenue engine that replaces 15-20 separate SaaS products by unifying lead capture, scoring, AI content generation, multi-channel nurturing, CRM sync, experiment optimization, automated prospecting, competitive analysis, booking, analytics, and billing into a single deployable runtime.
 
+### Public marketing vs runtime depth
+
+- **Public URLs** (landing, pricing, personas, offers index) intentionally describe *capabilities you can enable* when Postgres, Redis, workers, and provider keys are configured.
+- **Operator surfaces** (`/dashboard/*`, control plane, GTM) reflect what you run day-to-day.
+- **Truth table:** See [`docs/PRODUCT-SURFACES.md`](./docs/PRODUCT-SURFACES.md). In deployed apps, `/docs` links to the documentation hub (API OpenAPI, SLA summary, repo docs).
+
 ## By the Numbers
 
 | Metric | Count |

@@ -130,6 +130,10 @@ Returns `{ "success": true, "service": "lead-os-hosted-runtime", ... }`.
 | `/calculator` | ROI/savings calculator |
 | `/api/health` | System health check |
 | `/api/intake` | Lead intake endpoint |
+| `/docs` | In-app documentation hub (API OpenAPI, SLA summary, repo doc links) on the hosted runtime |
+| `/offers` | Index of catalog-backed offer paths (kernel deployment) |
+
+See **`lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md`** for a full public vs operator route map.
 
 ## Core Features
 

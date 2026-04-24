@@ -871,6 +871,18 @@ export default function PublicMarketplacePage() {
         </div>
       </section>
 
+      {isDemo ? (
+        <div
+          role="alert"
+          className="mt-4 rounded-lg border-2 border-amber-500/50 bg-amber-500/15 px-4 py-4 text-sm font-medium text-amber-950"
+        >
+          <strong>Sample data mode.</strong> The live marketplace API did not return listings (timeout, error, or
+          empty catalog). The cards below are <strong>illustrative only</strong> — not real purchasable leads. Fix
+          database connectivity and <code className="text-xs">/api/marketplace/leads</code> to show production
+          inventory.
+        </div>
+      ) : null}
+
       {/* Filters + Sort + Search */}
       <section
         className="rounded-xl border border-border bg-card p-6 mt-6"
@@ -974,16 +986,6 @@ export default function PublicMarketplacePage() {
           }`}
         >
           {claimResult}
-        </div>
-      )}
-
-      {/* Demo mode banner */}
-      {isDemo && (
-        <div
-          role="status"
-          className="mt-4 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-[0.85rem] font-semibold text-amber-800"
-        >
-          Demo mode — Showing sample leads. Live leads will appear once the system is connected to a database.
         </div>
       )}
 

@@ -16,6 +16,8 @@ This document describes how to operate the hosted runtime safely: health checks,
 | `GET /api/health` | Public | Liveness; includes pricing worker tick summary when available. |
 | `GET /api/health/deep` | Public | Postgres, Redis, DLQ row count, pricing runtime snapshot. |
 | `GET /api/system` | Public | High-level flags and integration hints (no secrets). |
+| `GET /docs` | Public | In-app documentation hub (links to OpenAPI JSON, SLA summary, repo Markdown). |
+| `GET /docs/api` | Public | Human-readable API entry + link to `/api/docs/openapi.json`. |
 | `GET /api/queue` | `CRON_SECRET` / `LEAD_OS_AUTH_SECRET` **or** operator session / API identity | BullMQ counts + persisted DLQ row count. |
 | `GET /api/operator/control-plane` | Operator session / middleware identity | JSON snapshot aligned with the dashboard control plane. |
 | `GET /api/operator/gtm` | Operator session | Merged go-to-market use cases from `src/config/gtm-use-cases.ts` plus persisted rollout status (`gtm_use_case_statuses`, migration `011`). |

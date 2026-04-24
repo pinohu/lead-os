@@ -21,19 +21,18 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/cn";
+import { nicheCatalog } from "@/lib/catalog";
 import * as React from "react";
 
-const industries = [
-  { title: "Plumbing", href: "/industries/plumbing", description: "Residential & commercial plumbing leads" },
-  { title: "HVAC", href: "/industries/hvac", description: "Heating, ventilation & air conditioning" },
-  { title: "Roofing", href: "/industries/roofing", description: "Roof repair, replacement & inspection" },
-  { title: "Electrical", href: "/industries/electrical", description: "Licensed electrician lead generation" },
-  { title: "Landscaping", href: "/industries/landscaping", description: "Lawn care & landscape design" },
-  { title: "Pest Control", href: "/industries/pest-control", description: "Extermination & prevention services" },
-  { title: "Legal", href: "/industries/legal", description: "Law firm & attorney lead funnels" },
-  { title: "Dental", href: "/industries/dental", description: "Dental practice patient acquisition" },
-  { title: "Real Estate", href: "/industries/real-estate", description: "Agent & brokerage lead systems" },
-];
+/** Only catalog-backed slugs so every nav link resolves to a real /industries/[slug] page. */
+const industriesNav = Object.values(nicheCatalog)
+  .filter((n) => n.slug !== "general")
+  .slice(0, 9)
+  .map((n) => ({
+    title: n.label,
+    href: `/industries/${n.slug}`,
+    description: n.summary,
+  }));
 
 const resources = [
   { title: "Help Center", href: "/help", description: "Guides, FAQs, and support" },
@@ -44,9 +43,11 @@ const resources = [
 
 const mobileLinks = [
   { label: "Industries", href: "/industries" },
+  { label: "Offers", href: "/offers" },
   { label: "Pricing", href: "/pricing" },
   { label: "Directory", href: "/directory" },
   { label: "Marketplace", href: "/marketplace" },
+  { label: "Docs", href: "/docs" },
   { label: "Help Center", href: "/help" },
   { label: "Changelog", href: "/changelog" },
   { label: "Roadmap", href: "/roadmap" },
@@ -84,7 +85,7 @@ export function SiteHeader({ brandName }: SiteHeaderProps) {
                 <NavigationMenuTrigger>Industries</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[500px] gap-2 p-4 md:grid-cols-3">
-                    {industries.map((item) => (
+                    {industriesNav.map((item) => (
                       <li key={item.title}>
                         <NavigationMenuLink asChild>
                           <Link
@@ -122,6 +123,22 @@ export function SiteHeader({ brandName }: SiteHeaderProps) {
                 <Link href="/pricing" legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Pricing
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <Link href="/offers" legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Offers
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <Link href="/docs" legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Docs
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>

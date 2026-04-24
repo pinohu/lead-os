@@ -44,6 +44,7 @@ export const metadata: Metadata = {
 
 const footerPlatform = [
   { label: "Industries", href: "/industries" },
+  { label: "Offers", href: "/offers" },
   { label: "Pricing", href: "/pricing" },
   { label: "Directory", href: "/directory" },
   { label: "Marketplace", href: "/marketplace" },
@@ -56,14 +57,16 @@ const footerResources = [
   { label: "Changelog", href: "/changelog" },
   { label: "Roadmap", href: "/roadmap" },
   { label: "Contact", href: "/contact" },
-  { label: "API Docs", href: "/docs/api" },
+  { label: "Documentation hub", href: "/docs" },
+  { label: "API reference", href: "/docs/api" },
+  { label: "SLA", href: "/docs/sla" },
   { label: "Setup Guide", href: "/setup" },
 ];
 
 const footerLegal = [
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },
-  { label: "Manage Data", href: "/privacy/manage" },
+  { label: "Manage data (GDPR)", href: "/manage-data" },
   { label: "Cookie Policy", href: "/privacy#cookies" },
 ];
 

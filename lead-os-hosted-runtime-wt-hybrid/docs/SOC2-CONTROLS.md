@@ -1,5 +1,7 @@
 # Lead OS SOC 2 Controls Mapping
 
+> **Governance note:** This mapping is a **design-time control catalog** for engineering and auditors. It is **not** a certificate, attestation report, or guarantee that every referenced file path exists in every deployment variant. Validate each control against the branch you ship before customer-facing claims.
+
 This document maps Lead OS platform features to SOC 2 Type II Trust Service Criteria.
 
 ## CC6.1 - Logical Access Security

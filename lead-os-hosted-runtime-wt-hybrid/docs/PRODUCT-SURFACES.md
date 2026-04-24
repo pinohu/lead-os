@@ -1,0 +1,49 @@
+# Product surfaces — what exists on this deployment
+
+This file maps **public URLs** in `lead-os-hosted-runtime-wt-hybrid` to **intent** so operators and founders do not confuse marketing depth with “every route is a separate product.”
+
+## Public marketing & conversion
+
+| Path | Intent |
+|------|--------|
+| `/` | Universal entry: positioning, paths by role, CTAs to `/onboard`, `/demo`, `/pricing`. |
+| `/pricing` | SaaS-style plans; CTA to `/onboard?plan=…`. |
+| `/onboard` | Self-serve wizard; calls `/api/onboarding`. |
+| `/demo` | Narrated tour of capabilities. |
+| `/calculator` | ROI / savings style calculator. |
+| `/contact`, `/help`, `/changelog`, `/roadmap` | Support and trust content. |
+| `/industries`, `/industries/[slug]` | Vertical pages; `[slug]` must exist in `nicheCatalog`. |
+| `/for/[persona]` | Role-based landings; keys in `PERSONA_BLUEPRINTS` (`agencies`, `saas-founders`, `lead-gen`, `consultants`, `franchises`). |
+| `/offers`, `/offers/[slug]` | Offer paths; `[slug]` from `nicheCatalog`. |
+| `/lp/[slug]` | Generated landing pages from `listLandingPages()` (published only). |
+| `/marketplace` | Lead marketplace UI; may show **demo** leads if API/DB unavailable (see on-page banner). |
+| `/directory`, `/directory/[vertical]` | Directory marketing. |
+| `/funnel/[family]` | Funnel family explorer; `family` must exist in default funnel graphs. |
+| `/embed/[niche]` | Embed surface. |
+| `/p/[tenantSlug]/[pageSlug]` | Tenant-scoped pages when configured. |
+| `/auth/sign-in`, `/auth/check-email` | Operator magic-link flow. |
+
+## Documentation hub (in-app)
+
+| Path | Intent |
+|------|--------|
+| `/docs` | Index: API spec, SLA source, operator links. |
+| `/docs/api` | Machine-readable API: OpenAPI JSON + human links. |
+| `/docs/sla` | Summary + link to full `docs/SLA.md` in the repository. |
+
+## Operator-only (not public offers)
+
+| Path prefix | Intent |
+|-------------|--------|
+| `/dashboard/*` | Authenticated operator console. |
+| `/api/*` (except health/docs where public) | Programmatic contracts; many require auth or secrets. |
+
+## Repository-only docs (not automatically served as HTML)
+
+All files under `docs/*.md` (DEPLOYMENT, OPERATOR_RUNBOOK, GTM, ERIE-PRO, etc.) are **source** documentation. The in-app `/docs/sla` page links to the canonical Markdown on GitHub for the full SLA text.
+
+## Cohesion rules
+
+1. **Navigation** must only link to `[slug]` values generated from `nicheCatalog` or documented persona keys.  
+2. **Claims** on the marketing site should align with `docs/SLA.md` and deployment reality (DB, workers, keys).  
+3. **Demo data** must always be labeled on `/marketplace` when active.

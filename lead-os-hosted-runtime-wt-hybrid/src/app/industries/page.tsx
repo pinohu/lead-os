@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { nicheCatalog } from "@/lib/catalog";
+import { tenantConfig } from "@/lib/tenant";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function IndustriesPage() {
   const niches = Object.values(nicheCatalog);
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leadgen-os.com";
+  const baseUrl = tenantConfig.siteUrl.replace(/\/$/, "");
 
   const industriesJsonLd = {
     "@context": "https://schema.org",

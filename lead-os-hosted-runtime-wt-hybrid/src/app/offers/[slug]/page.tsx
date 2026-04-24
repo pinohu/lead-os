@@ -71,9 +71,21 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
       profile={profile}
       niche={niche.slug}
       metrics={[
-        { label: "Primary engine", value: "ThriveCart", detail: "Checkout and recovery are already connected." },
-        { label: "Recovery ladder", value: "1h / 24h / 48h", detail: "Abandonment recovery sequence is prewired." },
-        { label: "Post-purchase", value: "Onboarding ready", detail: "Portal invite, activation, and continuity can begin immediately." },
+        {
+          label: "Checkout integrations",
+          value: "Stripe-ready",
+          detail: "Wire your billing provider (e.g. Stripe) and cart webhooks; third-party carts require your keys.",
+        },
+        {
+          label: "Recovery ladder",
+          value: "Configurable",
+          detail: "Design abandonment sequences in nurture workflows — timing depends on your automation setup.",
+        },
+        {
+          label: "Post-purchase",
+          value: "Handoff-ready",
+          detail: "Route won deals into CRM + onboarding playbooks when SuiteDash / webhooks are configured.",
+        },
       ]}
     >
       <section className="grid md:grid-cols-2 gap-6">

@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - **Node.js 20+**
-- **PostgreSQL** with migrations from `db/migrations/` applied in order (through **`010_erie_directory_seed.sql`** for Erie.pro directory demo + **`009_stripe_webhook_idempotency_billing_cols.sql`** for Stripe webhook idempotency + `billing_subscriptions` Stripe linkage; **`007_billing_entitlements_audit.sql`** for billing gates + operator audit log).
+- **PostgreSQL** with migrations from `db/migrations/` applied in order (through **`011_gtm_use_case_statuses.sql`** for operator GTM status + **`010_erie_directory_seed.sql`** for Erie.pro directory demo + **`009_stripe_webhook_idempotency_billing_cols.sql`** for Stripe webhook idempotency + `billing_subscriptions` Stripe linkage; **`007_billing_entitlements_audit.sql`** for billing gates + operator audit log).
 - **LEAD_OS_AUTH_SECRET** (required for API middleware signature and operator JWTs).
 - **CRON_SECRET** (or **LEAD_OS_AUTH_SECRET** as fallback for cron Bearer / `x-cron-secret`) if you call cron routes; cron POST/GET handlers validate this in-route as well as in middleware.
 - **STRIPE_WEBHOOK_SECRET** / **STRIPE_SECRET_KEY** for `/api/billing/webhook` and **`/api/billing/stripe/webhook`** (public; configure both URLs in Stripe if you use the new path).
@@ -51,6 +51,7 @@ The worker stage runs `node --experimental-strip-types src/runtime/worker-entry.
 ## Vercel
 
 - Configure all secrets from `.env.example` in the Vercel project settings.
+- After deploy, smoke-test **`/`**, **`/docs`**, **`/api/health`**, and **`/marketplace`** (if the marketplace API is empty or errors, the UI shows an explicit **sample data** banner — ensure production inventory is wired before go-live marketing).
 - Cron entries are defined in `vercel.json` (e.g. pricing tick). Verify `CRON_SECRET` matches what Vercel sends if you validate cron requests.
 - **`/api/cron/*` POST/GET handlers** (discovery, optimize, experiments, pricing-tick, nurture) require **`CRON_SECRET`** (or `LEAD_OS_AUTH_SECRET` as fallback) in the handler itself — session/API-key access alone is **not** enough to invoke those mutation endpoints. Use **`/api/operator/actions`** (authenticated) for operator-triggered equivalents where applicable.
 - Redis: use a managed Redis URL for production if you rely on BullMQ; otherwise pricing runs in degraded/no-queue mode.
