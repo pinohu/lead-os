@@ -1,49 +1,48 @@
-# Vercel Deployment Strategy
+# Vercel deployment strategy
 
-## Three Projects on One Team
+> **Do not commit secrets or stable infra identifiers into docs.** Project IDs, team IDs, and bearer tokens belong in your password manager or CI variables — rotate anything that was ever pasted into chat or Markdown.
 
-| Project | ID | Root Directory | Auto-Deploy |
-|---------|-----|---------------|-------------|
-| lead-os | prj_K6ls4j85woFkbgI5KhsHUtL1nMQ4 | lead-os-hosted-runtime-wt-hybrid | Yes (from git) |
-| erie-pro | prj_ZrLsCE8EKeas6mpWaUSWPgFdcatp | (repo root — erie-pro IS the root) | Yes (from git) |
-| neatcircle-beta | prj_N4ZiOoahdoThvrBRNoeghIm9J6mu | neatcircle-beta | Yes (from git) |
+## Typical layout (monorepo)
 
-Team ID: `team_fuTLGjBMk3NAD32Bm5hA7wkr`
+| Logical app | Vercel `rootDirectory` | Notes |
+|-------------|------------------------|--------|
+| Kernel (`lead-os-hosted-runtime-wt-hybrid`) | `lead-os-hosted-runtime-wt-hybrid` | Usually linked from **repo root** so `app/` paths resolve once |
+| `erie-pro` | `erie-pro` **or** standalone repo | Match how the Vercel project was first imported |
+| `neatcircle-beta` | `neatcircle-beta` | Workers/OpenNext flow may differ — see that package’s README |
 
-## Deploying the Kernel
-The kernel's root directory was set via Vercel API:
+Configure the three values in the Vercel dashboard or with `PATCH /v9/projects/{id}` using **`VERCEL_TOKEN`** from your environment — do not hard-code IDs in this repository.
+
+## Kernel deploy (pattern)
+
 ```bash
-curl -X PATCH "https://api.vercel.com/v9/projects/prj_K6ls4j85woFkbgI5KhsHUtL1nMQ4?teamId=team_fuTLGjBMk3NAD32Bm5hA7wkr" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"rootDirectory":"lead-os-hosted-runtime-wt-hybrid"}'
-```
-Deploy from REPO ROOT (not subdirectory — that would double the path):
-```bash
-cd lead-os  # repo root
+cd /path/to/lead-os   # monorepo root
 npx vercel --prod --yes
 ```
 
-## Deploying Erie-Pro
+Ensure the linked Git integration uses the same `rootDirectory` you expect; otherwise Next.js will double-prefix paths.
+
+## Erie Pro deploy (pattern)
+
 ```bash
-cd erie-pro
+cd /path/to/lead-os/erie-pro
 npx vercel --prod --yes
 ```
 
-## Auth Token Location
-`C:\Users\VRLab\AppData\Roaming\com.vercel.cli\Data\auth.json`
+## Auth token
 
-## Post-Deploy Verification
-Always wait 10-12 seconds after deploy, then:
+Use `vercel login` on the machine doing deploys. Token storage location is **platform-specific** (see Vercel CLI docs) — never paste absolute paths from another developer’s laptop into shared docs.
+
+## Post-deploy verification
+
+Substitute your real hosts:
+
 ```bash
-curl -sI https://lead-os-nine.vercel.app/ | head -3  # Should be 200
-curl -s https://lead-os-nine.vercel.app/api/health    # Should be {"status":"ok"}
-curl -sI https://erie-pro.vercel.app/ | head -3       # Should be 200
+curl -sI "https://$KERNEL_HOST/" | head -n 3
+curl -sS "https://$KERNEL_HOST/api/health"
 ```
 
-## Common Issues
-- **Kernel 404**: Root directory not set → fix via API PATCH
-- **API routes 404**: `outputDirectory: ".next"` in vercel.json → REMOVE IT (Vercel's Next.js adapter handles this)
-- **API capture 401**: Endpoint not in PUBLIC_EXACT set in middleware.ts → add it
-- **Erie-pro stale deploy**: Git push triggers auto-deploy on lead-os project (wrong root) → manually deploy erie-pro
-- **Double path error**: Deploying kernel from subdirectory when rootDirectory is already set → deploy from repo root instead
+## Common issues
+
+- **404 / double path** — `rootDirectory` mismatch; redeploy from the directory Vercel expects.
+- **Cron or API auth failures** — compare `src/middleware.ts` allowlists with the route you are probing.
+- **Stale content** — confirm the deployment finished and CDN cache headers.
