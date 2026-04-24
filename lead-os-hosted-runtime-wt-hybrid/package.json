@@ -57,7 +57,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@supabase/supabase-js": "^2.86.0",
     "autoprefixer": "^10.4.27",
-    "bullmq": "^5.71.1",
+    "bullmq": "^5.76.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
