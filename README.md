@@ -69,7 +69,7 @@ Kernel metrics and how to reproduce them live in **`lead-os-hosted-runtime-wt-hy
 | Language | TypeScript | 5.9.3 |
 | Frontend | React, Tailwind CSS | 19.1.0 |
 | Database | PostgreSQL (via `pg`) | 8.20 |
-| Payments | Stripe | 21.0.1 |
+| Payments | Stripe | 22.1.0 |
 | Validation | Zod | 4.3.6 |
 | Queue | BullMQ | 5.71.1 |
 | AI | OpenAI / Anthropic | via `ai-client.ts` |

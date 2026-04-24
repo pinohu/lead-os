@@ -51,7 +51,7 @@ Hosted runtime (Next.js 16.2 + PostgreSQL)
 | Language | TypeScript 5.9.3 (strict mode) |
 | Runtime | Node.js 20+ |
 | Database | PostgreSQL (pg 8.20) + in-memory fallback |
-| Payment | Stripe (stripe 21.0.1) |
+| Payment | Stripe (stripe 22.1.0) |
 | Validation | Zod 4.3.6 |
 | Queue | BullMQ 5.71.1 |
 | UI | React 19.1.0 |
