@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { niches } from "@/lib/niches"
+import { cityConfig } from "@/lib/city-config"
 
 const VALID_NICHES = new Set(niches.map((n) => n.slug))
 
@@ -9,12 +10,32 @@ export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()
 
   // ── www → non-www redirect ─────────────────────────────────────
+  // Canonical-host allowlist: the previous version constructed the
+  // 301 target from whatever `Host:` said, which is a full open-
+  // redirect primitive if this service is ever deployed behind a
+  // proxy that doesn't filter arbitrary host headers. An attacker
+  // sending `Host: www.evil.com` would receive a 301 to
+  // `https://evil.com/...`, turning our domain into a trust-washing
+  // link for phishing/SEO-poisoning. Vercel's edge host-routing
+  // currently blocks this in prod, but we shouldn't rely on an
+  // external gate for correctness — require the stripped host to
+  // live under our configured canonical domain before redirecting.
   if (hostname.startsWith("www.")) {
-    const newHost = hostname.replace(/^www\./, "")
-    return NextResponse.redirect(
-      new URL(`https://${newHost}${pathname}${url.search}`),
-      301
-    )
+    const newHost = hostname.slice(4) // drop "www."
+    // Strip port (":3000") for comparison; redirect URL is HTTPS so
+    // port doesn't survive anyway.
+    const bareHost = newHost.split(":")[0].toLowerCase()
+    const canonical = cityConfig.domain.toLowerCase()
+    const allowed =
+      bareHost === canonical || bareHost.endsWith(`.${canonical}`)
+    if (allowed) {
+      return NextResponse.redirect(
+        new URL(`https://${bareHost}${pathname}${url.search}`),
+        301
+      )
+    }
+    // Untrusted host — fall through and let the app handle it
+    // (usually a 404 from the route handler).
   }
 
   // ── Subdomain rewriting ────────────────────────────────────────

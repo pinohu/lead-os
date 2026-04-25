@@ -4,20 +4,15 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/require-admin";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(req: NextRequest, context: RouteContext) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "admin") {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized" },
-      { status: 401 }
-    );
-  }
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
 
   const { id } = await context.params;
 

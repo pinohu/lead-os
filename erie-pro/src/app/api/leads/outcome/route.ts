@@ -11,13 +11,19 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { MAX_BODY_SIZE } from "@/lib/validation";
 
+// Note: `satisfactionRating` and `responseTimeSeconds` are DELIBERATELY
+// not accepted from the provider here. Both feed public-facing trust
+// signals (provider.avgRating, provider.avgResponseTime) that inform
+// directory ranking and lead routing — letting providers submit their
+// own values would let them pad their metrics to look better than
+// reality. Rating must come from a consumer-facing flow (post-job
+// survey). Response time is derived server-side from lead.createdAt
+// and the moment this endpoint receives the outcome.
 const OutcomeSchema = z.object({
   leadId: z.string().min(1, "Lead ID is required"),
   outcome: z.enum(["responded", "converted", "no_response", "declined", "cancelled"], {
     error: "Invalid outcome type",
   }),
-  responseTimeSeconds: z.number().min(0).optional(),
-  satisfactionRating: z.number().min(0).max(5).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -58,7 +64,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { leadId, outcome, responseTimeSeconds, satisfactionRating } = parsed.data;
+    const { leadId, outcome } = parsed.data;
 
     // Verify user owns a provider
     const user = await prisma.user.findUnique({
@@ -82,14 +88,36 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create outcome record
-    const record = await prisma.leadOutcome.create({
-      data: {
+    // Server-computed response time so providers can't fake sub-minute
+    // response times to lower their public avgResponseTime. The first
+    // outcome submission freezes the value (preserved by upsert on
+    // update); subsequent outcome changes (responded → converted) keep
+    // the original first-response time.
+    const nowMs = Date.now();
+    const computedResponseSeconds = Math.max(
+      0,
+      Math.floor((nowMs - lead.createdAt.getTime()) / 1000)
+    );
+
+    // Upsert against the (leadId, providerId) unique index (see
+    // schema + migration 20260415030000). Previously this was a raw
+    // `create`, which let the same provider stack N outcome rows for
+    // one lead — every "converted" row incremented the count aggregate,
+    // inflating provider.convertedLeads as a ranking/trust signal.
+    const record = await prisma.leadOutcome.upsert({
+      where: { leadId_providerId: { leadId, providerId: user.providerId } },
+      create: {
         leadId,
         providerId: user.providerId,
         outcome,
-        responseTimeSeconds: responseTimeSeconds ?? null,
-        satisfactionRating: satisfactionRating ?? null,
+        responseTimeSeconds: computedResponseSeconds,
+      },
+      update: {
+        // Only the outcome changes on re-submission (e.g.
+        // responded → converted). responseTimeSeconds is intentionally
+        // not updated — it was the real first-response latency and
+        // must stay frozen.
+        outcome,
       },
     });
 
@@ -125,7 +153,7 @@ export async function POST(req: NextRequest) {
       entityType: "lead",
       entityId: leadId,
       providerId: user.providerId,
-      metadata: { outcome, responseTimeSeconds },
+      metadata: { outcome, responseTimeSeconds: record.responseTimeSeconds },
     });
 
     return NextResponse.json({

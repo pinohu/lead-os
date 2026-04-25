@@ -222,6 +222,19 @@ export async function routeLead(
 
   // Find matching providers sorted by tier priority
   // Only route to providers with verified emails AND verified ownership
+  // AND an active (non-paused, non-deactivated) territory for this niche.
+  //
+  // Without the territory filter, the SLA-checker cron's auto-suspend
+  // path (>=5 SLA violations → Territory.isPaused=true for every
+  // territory) had no effect on new-lead routing. The provider still
+  // passed the subscription/verification gates here, so new leads kept
+  // flowing to the auto-paused provider — which is the exact scenario
+  // auto-suspension exists to prevent. reassignLead() already has the
+  // same filter (see the territories.some clause below), so this also
+  // brings the two code paths into sync — a concurrency-hardening win
+  // too: a stuck lead being reassigned was always protected, but an
+  // initial route at the same moment a provider was being auto-paused
+  // could still land on the paused provider under the old code.
   const allCandidates = await prisma.provider.findMany({
     where: {
       niche,
@@ -229,6 +242,14 @@ export async function routeLead(
       subscriptionStatus: "active",
       emailVerified: true,
       verificationStatus: { in: ["verified", "auto_verified", "admin_approved"] },
+      territories: {
+        some: {
+          niche,
+          city: { equals: city, mode: "insensitive" },
+          isPaused: false,
+          deactivatedAt: null,
+        },
+      },
     },
     orderBy: { tier: "asc" }, // primary < backup < overflow
   });
@@ -551,22 +572,30 @@ export async function getUnmatchedLeadsForNiche(niche: string): Promise<LeadRout
 
 /**
  * Mark an unmatched lead as purchased (pay-per-lead).
+ *
+ * Atomic claim pattern: the read-then-check-then-update shape would let
+ * two concurrent buyers both observe `routeType === "unmatched"` and
+ * both flip it to "overflow", effectively double-selling the same lead.
+ * `updateMany` with the compound WHERE makes the DB the gate — at most
+ * one writer sees `count === 1`; the rest see `count === 0` and bail.
+ * NB: function is currently unreferenced but hardened defensively so
+ * wiring it into a future pay-per-lead checkout path is safe-by-default.
  */
 export async function assignLeadToBuyer(
   leadId: string,
   buyerEmail: string
 ): Promise<LeadRouteResult | null> {
-  const lead = await prisma.lead.findUnique({
-    where: { id: leadId },
-    include: { routedTo: true },
-  });
-  if (!lead || lead.routeType !== "unmatched") return null;
-
-  const updated = await prisma.lead.update({
-    where: { id: leadId },
+  const claim = await prisma.lead.updateMany({
+    where: { id: leadId, routeType: "unmatched" },
     data: { routeType: "overflow" },
+  });
+  if (claim.count === 0) return null;
+
+  const updated = await prisma.lead.findUnique({
+    where: { id: leadId },
     include: { routedTo: true },
   });
+  if (!updated) return null;
 
   return leadToRouteResult(updated);
 }
@@ -598,6 +627,15 @@ export async function deliverBankedLeads(
 /**
  * Reassign a lead to a different provider in the same niche.
  * Used by the SLA enforcement system when a provider fails to respond.
+ *
+ * Atomic claim pattern: gate the update on the lead's CURRENT
+ * `routedToId` so a concurrent second call (cron retry, manual
+ * trigger, tab refresh) whose snapshot has already been invalidated
+ * can't clobber the first reassignment. The previous shape was
+ * findUnique → findFirst(backup) → update, a TOCTOU window wide
+ * enough that two racing callers both wrote and `totalLeads` got
+ * double-incremented — which then rolled into billing and SLA
+ * scoring as phantom leads nobody ever received.
  */
 export async function reassignLead(
   leadId: string
@@ -608,6 +646,8 @@ export async function reassignLead(
   });
   if (!lead || !lead.routedToId) return { success: false };
 
+  const originalProviderId = lead.routedToId;
+
   // Find another active, verified provider in the same niche (not the original)
   const backup = await prisma.provider.findFirst({
     where: {
@@ -616,7 +656,7 @@ export async function reassignLead(
       subscriptionStatus: "active",
       emailVerified: true,
       verificationStatus: { in: ["verified", "auto_verified", "admin_approved"] },
-      id: { not: lead.routedToId },
+      id: { not: originalProviderId },
       territories: {
         some: {
           niche: lead.niche,
@@ -630,9 +670,15 @@ export async function reassignLead(
 
   if (!backup) return { success: false };
 
-  // Reassign the lead
-  await prisma.lead.update({
-    where: { id: leadId },
+  // Reassign the lead only if it's still pointed at the SAME original
+  // provider we observed above. A concurrent reassignment that already
+  // moved the lead off originalProviderId will make this updateMany
+  // return count: 0, and we bail out cleanly instead of overwriting it.
+  const claim = await prisma.lead.updateMany({
+    where: {
+      id: leadId,
+      routedToId: originalProviderId,
+    },
     data: {
       routedToId: backup.id,
       routeType: "failover",
@@ -640,7 +686,11 @@ export async function reassignLead(
     },
   });
 
-  // Increment lead count on new provider
+  if (claim.count === 0) return { success: false };
+
+  // Increment lead count on new provider — only runs for the winning
+  // reassignment, so totalLeads / lastLeadAt stay consistent with the
+  // actual number of leads a provider was ever routed.
   await prisma.provider.update({
     where: { id: backup.id },
     data: {

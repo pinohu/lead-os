@@ -6,9 +6,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
-import { auth } from "@/lib/auth";
+import { requireAdminSession } from "@/lib/require-admin";
 import { logger } from "@/lib/logger";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, escapeHtml } from "@/lib/email";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 
 const ResolveSchema = z.object({
   providerId: z.string().min(1, "Provider ID is required"),
@@ -19,15 +20,20 @@ const ResolveSchema = z.object({
 
 export async function POST(req: NextRequest) {
   // Admin auth guard
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "admin") {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized" },
-      { status: 401 }
-    );
-  }
+  const authResult = await requireAdminSession();
+  if (!authResult.ok) return authResult.response;
+  const { session } = authResult;
 
   try {
+    // Body size check
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
+    }
+
     // Support both JSON and form-encoded bodies (form submissions from admin page)
     let data: Record<string, unknown>;
     const contentType = req.headers.get("content-type") ?? "";
@@ -54,6 +60,49 @@ export async function POST(req: NextRequest) {
 
     const { providerId, status } = parsed.data;
 
+    // Atomic claim on the resolvable states ("unverified" / "pending").
+    // The previous pattern was findUnique → check → update, a TOCTOU
+    // window where two admins clicking approve/reject at the same
+    // moment both read `pending`, both passed the eligibility gate,
+    // and both wrote — the second write silently clobbered the first,
+    // BOTH audit rows fired, and the decided state depended on who
+    // won the DB race. Collapsing the check into updateMany's WHERE
+    // gives the DB the sole decision authority: exactly one caller
+    // sees count === 1 and proceeds to emit audit + email.
+    const claim = await prisma.provider.updateMany({
+      where: {
+        id: providerId,
+        verificationStatus: { in: ["unverified", "pending"] },
+      },
+      data: {
+        verificationStatus: status,
+        verificationCode: null,
+        verificationCodeExp: null,
+      },
+    });
+
+    if (claim.count === 0) {
+      // Disambiguate: provider doesn't exist vs already resolved.
+      const existing = await prisma.provider.findUnique({
+        where: { id: providerId },
+        select: { verificationStatus: true },
+      });
+      if (!existing) {
+        return NextResponse.json(
+          { success: false, error: "Provider not found" },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json(
+        { success: false, error: `Claim already resolved as '${existing.verificationStatus}'` },
+        { status: 409 }
+      );
+    }
+
+    // Load the fresh provider row for the audit/email payload. Reads
+    // the row AFTER our own update, so `previousStatus` is sourced
+    // from the audit metadata we can't recover — pass the post-state
+    // name/email instead and tag the action with the new status.
     const provider = await prisma.provider.findUnique({
       where: { id: providerId },
       select: {
@@ -66,29 +115,13 @@ export async function POST(req: NextRequest) {
     });
 
     if (!provider) {
+      // Extraordinarily unlikely — we just updated this row. Treat as
+      // internal error so the admin retries rather than assuming success.
       return NextResponse.json(
-        { success: false, error: "Provider not found" },
-        { status: 404 }
+        { success: false, error: "Provider disappeared mid-update" },
+        { status: 500 }
       );
     }
-
-    // Only resolve claims that are unverified or pending
-    if (["verified", "auto_verified", "admin_approved", "rejected"].includes(provider.verificationStatus)) {
-      return NextResponse.json(
-        { success: false, error: `Claim already resolved as '${provider.verificationStatus}'` },
-        { status: 409 }
-      );
-    }
-
-    // Update verification status
-    await prisma.provider.update({
-      where: { id: providerId },
-      data: {
-        verificationStatus: status,
-        verificationCode: null,
-        verificationCodeExp: null,
-      },
-    });
 
     await audit({
       action: status === "admin_approved" ? "provider.admin_approved" : "provider.claim_rejected",
@@ -96,19 +129,27 @@ export async function POST(req: NextRequest) {
       entityId: providerId,
       providerId,
       metadata: {
-        previousStatus: provider.verificationStatus,
+        newStatus: status,
         resolvedBy: session.user.email ?? session.user.id,
       },
     });
 
-    // Notify the provider
+    // Notify the provider.
+    //
+    // businessName is claimant-supplied at signup, so it's untrusted
+    // even though the email lands in the claimant's own inbox — any
+    // re-display surface (admin mailbox viewing bounced mails,
+    // forwarding to an investigator, archival in a ticketing system)
+    // inherits whatever HTML/<script> the attacker embedded. Escape
+    // at render time per the policy established in Round AR.
     const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
+    const safeBusiness = escapeHtml(provider.businessName);
     if (status === "admin_approved") {
       sendEmail({
         to: provider.email,
         subject: "Your business ownership has been verified!",
         html: `
-          <p>Hi ${provider.businessName},</p>
+          <p>Hi ${safeBusiness},</p>
           <p>Great news! Your ownership claim has been approved by our team. Leads for your territory are now being routed to you.</p>
           <p><a href="${siteUrl}/dashboard">Go to Dashboard</a></p>
         `,
@@ -118,7 +159,7 @@ export async function POST(req: NextRequest) {
         to: provider.email,
         subject: "Ownership verification update",
         html: `
-          <p>Hi ${provider.businessName},</p>
+          <p>Hi ${safeBusiness},</p>
           <p>We were unable to verify your ownership of the business listing you claimed. Leads will not be routed until ownership is verified.</p>
           <p>If you believe this is an error, please reply to this email or <a href="${siteUrl}/contact">contact our support team</a> with proof of ownership (business license, utility bill, etc.).</p>
         `,

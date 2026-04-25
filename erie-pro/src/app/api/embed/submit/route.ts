@@ -10,6 +10,8 @@ import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { audit } from "@/lib/audit-log";
 import { deliverWebhookEvent } from "@/lib/webhook-delivery";
+import { MAX_BODY_SIZE } from "@/lib/validation";
+import { getClientIp } from "@/lib/client-ip";
 import crypto from "crypto";
 
 // ── CORS Preflight ─────────────────────────────────────────────────
@@ -36,10 +38,25 @@ export async function POST(req: NextRequest) {
     const rateLimited = await checkRateLimit(req, "lead");
     if (rateLimited) return addCors(rateLimited, origin);
 
+    // Body size check — reject oversized uploads BEFORE we read/parse them
+    // or do any DB work. Without this an attacker could send arbitrarily
+    // large JSON bodies through this public endpoint.
+    const contentLength = parseInt(
+      req.headers.get("content-length") ?? "0",
+      10
+    );
+    if (contentLength > MAX_BODY_SIZE) {
+      return corsJson(
+        { success: false, error: "Request body too large" },
+        413,
+        origin
+      );
+    }
+
     // Validate API key
     const apiKeyRaw = req.headers.get("x-api-key");
     if (!apiKeyRaw) {
-      return corsJson({ success: false, error: "Missing API key" }, 401);
+      return corsJson({ success: false, error: "Missing API key" }, 401, origin);
     }
 
     const keyHash = crypto.createHash("sha256").update(apiKeyRaw).digest("hex");
@@ -49,7 +66,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!apiKey || !apiKey.isActive) {
-      return corsJson({ success: false, error: "Invalid API key" }, 401);
+      return corsJson({ success: false, error: "Invalid API key" }, 401, origin);
     }
 
     // Update lastUsedAt
@@ -59,18 +76,31 @@ export async function POST(req: NextRequest) {
 
     // Parse body
     const body = await req.json().catch(() => null);
-    if (!body) return corsJson({ success: false, error: "Invalid JSON" }, 400);
+    if (!body) return corsJson({ success: false, error: "Invalid JSON" }, 400, origin);
 
     const parsed = EmbedLeadSchema.safeParse(body);
     if (!parsed.success) {
       return corsJson(
         { success: false, error: parsed.error.issues.map((e) => e.message).join("; ") },
-        400
+        400,
+        origin
       );
     }
 
     const data = parsed.data;
-    const niche = data.niche || apiKey.provider.niche;
+    // Niche is pinned to the API key's owner. Letting the embed body
+    // override it would let a malicious provider (or anyone who
+    // exfiltrates an embed API key) post leads into a competitor's
+    // territory — same cross-tenant attack we closed in
+    // /api/leads/inbound. The widget's niche field is advisory only.
+    const niche = apiKey.provider.niche;
+    if (data.niche && data.niche !== niche) {
+      logger.warn("api/embed/submit", "Ignoring caller-supplied niche override", {
+        apiKeyId: apiKey.id,
+        keyNiche: niche,
+        bodyNiche: data.niche,
+      });
+    }
     const nameParts = data.name.trim().split(" ");
     const firstName = nameParts[0] || "";
     const lastName = nameParts.slice(1).join(" ") || "";
@@ -85,12 +115,11 @@ export async function POST(req: NextRequest) {
       },
     });
     if (suppressed) {
-      return corsJson({ success: false, error: "Contact opted out" }, 403);
+      return corsJson({ success: false, error: "Contact opted out" }, 403, origin);
     }
 
     // Route the lead
-    const tcpaIp =
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "embed";
+    const tcpaIp = getClientIp(req);
 
     const result = await routeLead(niche, apiKey.provider.city, {
       firstName,
@@ -127,14 +156,18 @@ export async function POST(req: NextRequest) {
       }).catch(() => {});
     }
 
-    return corsJson({
-      success: true,
-      leadId: result.leadId,
-      routedTo: result.routedTo?.businessName ?? "Queued",
-    });
+    return corsJson(
+      {
+        success: true,
+        leadId: result.leadId,
+        routedTo: result.routedTo?.businessName ?? "Queued",
+      },
+      200,
+      origin
+    );
   } catch (err) {
     logger.error("api/embed/submit", "Error:", err);
-    return corsJson({ success: false, error: "Internal server error" }, 500);
+    return corsJson({ success: false, error: "Internal server error" }, 500, origin);
   }
 }
 
@@ -142,8 +175,19 @@ export async function POST(req: NextRequest) {
 
 function resolveEmbedOrigin(origin: string | null): string {
   if (!origin) return "";
-  const allowedOrigins = (process.env.EMBED_ALLOWED_ORIGINS ?? "").split(",").map((o) => o.trim()).filter(Boolean);
-  if (allowedOrigins.length === 0) return origin;
+  const allowedOrigins = (process.env.EMBED_ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
+  // Fail CLOSED: if operator hasn't configured EMBED_ALLOWED_ORIGINS we
+  // used to mirror whatever the caller's Origin header said, which
+  // defaulted a fresh production deploy to Access-Control-Allow-Origin:
+  // <attacker>. Although the endpoint still requires a valid API key
+  // (so the attacker can't submit leads without one), a leaked key
+  // combined with permissive CORS meant any drive-by site could use a
+  // logged-in customer's browser as a zombie submitter. Require
+  // explicit allow-list configuration; deny otherwise.
+  if (allowedOrigins.length === 0) return "";
   return allowedOrigins.includes(origin) ? origin : "";
 }
 

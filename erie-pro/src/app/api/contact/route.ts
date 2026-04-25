@@ -41,6 +41,15 @@ export async function POST(req: NextRequest) {
 
     const { name, email, phone, message, niche, listingId } = parsed.data;
 
+    // Belt-and-suspenders: the schema already rejects niches starting
+    // with `_` (reserved sentinels like `_ccpa_deletion` that the
+    // process-deletions cron treats as an unauthenticated erasure
+    // trigger — see validation.ts). Re-scrub here so a future schema
+    // regression can't silently re-open that unauthenticated
+    // victim-email → 48h auto-delete pipeline.
+    const safeNiche =
+      typeof niche === "string" && !niche.startsWith("_") ? niche : null;
+
     // Store contact message in database (Phase 1.5.11 fix)
     const contactMsg = await prisma.contactMessage.create({
       data: {
@@ -48,7 +57,7 @@ export async function POST(req: NextRequest) {
         email,
         phone: phone ?? null,
         message: message ?? null,
-        niche: niche ?? null,
+        niche: safeNiche,
       },
     });
 
@@ -74,38 +83,75 @@ export async function POST(req: NextRequest) {
 
         // Listing outreach: if this contact came from an unclaimed listing,
         // email the business owner to pitch claiming their listing.
+        //
+        // This path was previously a mail-bomb vector: any visitor could
+        // POST /api/contact with an arbitrary listingId and the listing
+        // owner would receive an outreach email for each submission.
+        // IP rate limits alone didn't help, since an attacker can rotate
+        // IPs but still target the same victim listing. We now enforce a
+        // per-listing cooldown via an atomic `updateMany` guarded by
+        // `lastOutreachAt` — only the request that actually flips the
+        // timestamp proceeds to send the email, so at most one outreach
+        // lands per listing per cooldown window.
+        const OUTREACH_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
         if (listingId) {
           try {
             const listing = await prisma.directoryListing.findUnique({
               where: { id: listingId },
-              select: { id: true, businessName: true, niche: true, email: true, website: true },
+              select: { id: true, businessName: true, niche: true, email: true, website: true, claimedByProviderId: true },
             });
 
-            if (listing && !listing.email) {
-              logger.info("listing-outreach", `Listing ${listing.businessName} has no email — skipping outreach`);
-            } else if (listing?.email) {
-              // Count leads this month for this listing
-              const monthStart = new Date();
-              monthStart.setDate(1);
-              monthStart.setHours(0, 0, 0, 0);
-              const leadCount = await prisma.contactMessage.count({
+            if (!listing) {
+              // unknown listing — nothing to do
+            } else if (listing.claimedByProviderId) {
+              // Already claimed; the owner doesn't need a pitch email.
+            } else if (!listing.email) {
+              logger.info(
+                "listing-outreach",
+                `Listing ${listing.businessName} has no email — skipping outreach`
+              );
+            } else {
+              // Atomic claim of the outreach slot for this listing.
+              // Only the request whose updateMany affects one row is
+              // allowed to send; all others see 0 and skip.
+              const cutoff = new Date(Date.now() - OUTREACH_COOLDOWN_MS);
+              const claimed = await prisma.directoryListing.updateMany({
                 where: {
-                  niche: listing.niche,
-                  createdAt: { gte: monthStart },
+                  id: listing.id,
+                  OR: [
+                    { lastOutreachAt: null },
+                    { lastOutreachAt: { lt: cutoff } },
+                  ],
                 },
+                data: { lastOutreachAt: new Date() },
               });
 
-              const claimUrl = `https://${cityConfig.domain}/for-business/claim?niche=${encodeURIComponent(listing.niche)}&listing=${encodeURIComponent(listing.id)}`;
+              if (claimed.count > 0) {
+                // Count leads this month for this listing
+                const monthStart = new Date();
+                monthStart.setDate(1);
+                monthStart.setHours(0, 0, 0, 0);
+                const leadCount = await prisma.contactMessage.count({
+                  where: {
+                    niche: listing.niche,
+                    createdAt: { gte: monthStart },
+                  },
+                });
 
-              tasks.push(
-                sendListingOutreach(listing.email, {
-                  businessName: listing.businessName,
-                  niche: listing.niche,
-                  leadCount,
-                  listingId: listing.id,
-                  claimUrl,
-                }).catch((err) => { logger.error("email", "Listing outreach failed", err); })
-              );
+                const claimUrl = `https://${cityConfig.domain}/for-business/claim?niche=${encodeURIComponent(listing.niche)}&listing=${encodeURIComponent(listing.id)}`;
+
+                tasks.push(
+                  sendListingOutreach(listing.email, {
+                    businessName: listing.businessName,
+                    niche: listing.niche,
+                    leadCount,
+                    listingId: listing.id,
+                    claimUrl,
+                  }).catch((err) => {
+                    logger.error("email", "Listing outreach failed", err);
+                  })
+                );
+              }
             }
           } catch (err) {
             logger.error("listing-outreach", "Failed to look up listing for outreach", err);

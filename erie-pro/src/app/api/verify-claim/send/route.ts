@@ -7,9 +7,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
+import { hashVerificationCode } from "@/lib/verification-code";
 
 export async function POST(req: NextRequest) {
+  // IP-based rate limit — defense-in-depth alongside the per-provider
+  // atomic attempt counter. Without this an attacker with a valid
+  // session can flood /send to email-bomb the listing owner and burn
+  // Emailit budget, even though each provider's counter caps at 10.
+  const rateLimited = await checkRateLimit(req, "contact");
+  if (rateLimited) return rateLimited;
+
   try {
     const session = await auth();
     if (!session?.user) {
@@ -39,8 +48,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Rate limit: max 5 code sends per provider
-    if (provider.verificationAttempts >= 10) {
+    // Atomic rate limit — see /check for the same pattern. The old
+    // read-then-increment shape let an attacker who held a valid
+    // session fan out N parallel /send requests: all N would see
+    // `verificationAttempts < 10` before any one of them bumped the
+    // counter, so a single attempt round could blast >10 verification
+    // codes at the listing owner's inbox (email bombing, burning the
+    // Emailit budget, diluting admin trust signal). The DB is now the
+    // gate: exactly the attempts that flip the counter below-10→N+1
+    // proceed; parallel losers see count === 0 and get 429.
+    //
+    // NB: we intentionally leave the atomic bump BEFORE the listing
+    // lookup branches below so even the "no listing email, admin
+    // review" paths cost an attempt — otherwise a script could pound
+    // /send forever as long as the listing happens to lack an email.
+    const gated = await prisma.provider.updateMany({
+      where: { id: provider.id, verificationAttempts: { lt: 10 } },
+      data: { verificationAttempts: { increment: 1 } },
+    });
+    if (gated.count === 0) {
       return NextResponse.json(
         { success: false, error: "Too many verification attempts. Contact support." },
         { status: 429 }
@@ -91,17 +117,22 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Generate 6-digit code
+    // Generate 6-digit code. The raw code goes out in email; only the
+    // HMAC-SHA256 digest is persisted. See src/lib/verification-code.ts —
+    // plain-hash would be brute-forceable (only 10^6 preimages) so we HMAC
+    // with NEXTAUTH_SECRET which an attacker with just the DB won't own.
     const code = crypto.randomInt(100000, 999999).toString();
+    const hashedCode = hashVerificationCode(code);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
+    // verificationAttempts was already incremented atomically above
+    // when we claimed the rate-limit slot — don't double-count here.
     await prisma.provider.update({
       where: { id: provider.id },
       data: {
-        verificationCode: code,
+        verificationCode: hashedCode,
         verificationCodeExp: expiresAt,
         verificationStatus: "pending",
-        verificationAttempts: { increment: 1 },
       },
     });
 

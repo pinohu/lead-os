@@ -32,6 +32,7 @@ import { FeaturedProvider } from "@/components/featured-provider"
 import { getDirectoryListingsByNiche } from "@/lib/directory-store"
 import { getFeaturedProviderId } from "@/lib/perk-manager"
 import LeadForm from "@/components/lead-form"
+import { safeJsonLd } from "@/lib/jsonld"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -374,7 +375,7 @@ export default async function NichePage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(localSchema),
+          __html: safeJsonLd(localSchema),
         }}
       />
 

@@ -353,10 +353,21 @@ export async function handleStripeWebhook(
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = invoice.customer as string;
 
-      // Mark provider as past_due
+      // Gate the past_due transition on non-terminal pre-state. Stripe
+      // fires invoice.payment_failed for cancelled subscriptions whose
+      // final invoice is unpaid (sometimes days after
+      // customer.subscription.deleted). Without this guard we'd flip a
+      // cancelled provider back to past_due — the grace-period cron
+      // would then try to re-cancel 7 days later, re-invoke
+      // deactivatePerks on an already-deactivated territory, and send a
+      // duplicate "territory deactivated" email to the (now-former)
+      // provider. Only move forward-in-lifecycle transitions.
       if (customerId) {
         await prisma.provider.updateMany({
-          where: { stripeCustomerId: customerId },
+          where: {
+            stripeCustomerId: customerId,
+            subscriptionStatus: { in: ["active", "trial", "past_due"] },
+          },
           data: { subscriptionStatus: "past_due" },
         });
       }

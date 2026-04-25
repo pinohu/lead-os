@@ -41,6 +41,34 @@ export function sanitizeText(text: string): string {
 
 // ── Shared Refinements ───────────────────────────────────────────────
 
+/**
+ * Validate a user-supplied website URL — http(s) schemes only.
+ *
+ * `z.string().url()` accepts ANY WHATWG-parseable URL, including
+ * `javascript:`, `data:`, `file:`, `vbscript:`, etc. These round-trip
+ * through the DB and get dropped into `<a href={website}>` on the
+ * provider profile page, at which point a click executes attacker JS
+ * in the victim's session (stored XSS against directory visitors).
+ *
+ * Lock the scheme to http/https at validation time so a malicious
+ * provider can't smuggle an active-content URL past zod.
+ */
+export const websiteUrlSchema = z
+  .string()
+  .url("Must be a valid URL")
+  .max(500, "URL too long")
+  .refine(
+    (raw) => {
+      try {
+        const u = new URL(raw);
+        return u.protocol === "http:" || u.protocol === "https:";
+      } catch {
+        return false;
+      }
+    },
+    "URL must use http:// or https://"
+  );
+
 const emailSchema = z
   .string()
   .email("Invalid email format")
@@ -152,7 +180,17 @@ export const ContactRequestSchema = z.object({
     .max(5000, "Message too long")
     .transform(sanitizeText)
     .optional(),
-  niche: z.string().max(100).optional(),
+  // Underscore-prefixed niches are reserved internal sentinels (e.g.
+  // `_ccpa_deletion`, which the process-deletions cron treats as a
+  // data-erasure request). Letting the public /api/contact endpoint
+  // write those sentinels verbatim would let an unauthenticated caller
+  // enqueue a victim's email for auto-deletion 48h later. Real niche
+  // slugs are plain lowercase words/hyphens; reject `_…` outright.
+  niche: z
+    .string()
+    .max(100)
+    .regex(/^[^_]/, "Invalid niche")
+    .optional(),
   /** When set, this contact came from an unclaimed directory listing page */
   listingId: z.string().max(100).optional(),
 });

@@ -49,13 +49,43 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const contentType = response.headers.get("content-type") ?? "image/jpeg";
+    // Only forward a small allowlist of raster image content types. If
+    // Google's CDN ever returned something else (error HTML, redirect
+    // landing page, image/svg+xml — SVG permits inline <script>) we
+    // don't want to re-serve it under our origin where it could be
+    // treated as our content or executed. Check lowercased MIME only
+    // (ignore any parameters after ";") to make the match strict.
+    const upstreamType = (response.headers.get("content-type") ?? "").toLowerCase();
+    const rawMime = upstreamType.split(";")[0].trim();
+    const ALLOWED_IMAGE_MIMES = new Set([
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+      "image/avif",
+    ]);
+    if (!ALLOWED_IMAGE_MIMES.has(rawMime)) {
+      logger.warn(
+        "places-photo",
+        `Refusing to proxy non-image upstream content-type "${rawMime}" for ref: ${ref}`
+      );
+      return NextResponse.json(
+        { error: "Upstream returned unexpected content type" },
+        { status: 502 }
+      );
+    }
+    const contentType = rawMime;
+
     const imageBuffer = await response.arrayBuffer();
 
     return new NextResponse(imageBuffer, {
       status: 200,
       headers: {
         "Content-Type": contentType,
+        // Prevent the browser from MIME-sniffing our proxied response into
+        // anything other than the declared image type.
+        "X-Content-Type-Options": "nosniff",
         "Cache-Control": "public, max-age=86400, s-maxage=604800",
         "CDN-Cache-Control": "public, max-age=604800",
       },

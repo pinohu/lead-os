@@ -1,27 +1,28 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/db"
-import { auth } from "@/lib/auth"
+import { requireAdmin } from "@/lib/require-admin"
 import { logger } from "@/lib/logger"
 import { MAX_BODY_SIZE } from "@/lib/validation"
 
 const UpdateStatusSchema = z.object({
   messageId: z.string().min(1, "messageId is required"),
-  status: z.enum(["read", "replied"], {
-    error: 'status must be "read" or "replied"',
+  // `pending_deletion` gates the process-deletions cron: only rows
+  // admin-promoted via this route are eligible for the 48h auto-erase
+  // path (see src/app/api/cron/process-deletions/route.ts). Before
+  // flipping an admin is expected to have confirmed email ownership
+  // out-of-band — the UI button that submits this value should not be
+  // reachable without that verification step.
+  status: z.enum(["read", "replied", "pending_deletion"], {
+    error: 'status must be "read", "replied", or "pending_deletion"',
   }),
 })
 
 export async function POST(req: NextRequest) {
   try {
     // ── Auth: require admin session ─────────────────────────────
-    const session = await auth()
-    if (!session?.user || (session.user as { role?: string }).role !== "admin") {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      )
-    }
+    const unauthorized = await requireAdmin()
+    if (unauthorized) return unauthorized
 
     // ── Body size check ──────────────────────────────────────────
     const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10)

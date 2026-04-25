@@ -11,7 +11,17 @@ function getCookie(name: string): string | null {
 
 function setCookie(name: string, value: string, days: number) {
   const expires = new Date(Date.now() + days * 864e5).toUTCString();
-  document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires};path=/;SameSite=Lax`;
+  // `Secure` cannot be set from plain-HTTP contexts (browsers reject
+  // the whole cookie), so gate it on the current protocol. In
+  // production this is always HTTPS; local dev over HTTP still gets a
+  // working consent cookie.
+  const secure =
+    typeof location !== "undefined" && location.protocol === "https:"
+      ? ";Secure"
+      : "";
+  document.cookie = `${name}=${encodeURIComponent(
+    value,
+  )};expires=${expires};path=/;SameSite=Lax${secure}`;
 }
 
 export function CookieBanner() {

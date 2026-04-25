@@ -146,11 +146,32 @@ export async function POST(req: NextRequest) {
     });
 
     // ── Link the directory listing to this provider ──────────────
+    // Previously a raw `update` here: two concurrent claimers could
+    // both pass the pre-check on line 82-90, both create Provider rows
+    // with the same claimedListingId, and then race this update — last
+    // write wins and silently steals the listing from the first caller.
+    // Swap to an atomic updateMany filtered on `claimedByProviderId:
+    // null`: the DB guarantees exactly one caller flips it, the loser
+    // gets count === 0 and we roll back the Provider we just created
+    // so they can retry cleanly on a different territory.
     if (listing) {
-      await prisma.directoryListing.update({
-        where: { id: listing.id },
+      const linked = await prisma.directoryListing.updateMany({
+        where: { id: listing.id, claimedByProviderId: null },
         data: { claimedByProviderId: provider.id },
       });
+
+      if (linked.count === 0) {
+        // Race-lost: another concurrent claimer took this listing
+        // between our pre-check and this write. Clean up the Provider
+        // row so we don't leave an orphan linked to the same listing.
+        await prisma.provider.delete({ where: { id: provider.id } }).catch((e) =>
+          logger.error("/api/claim", "Failed to rollback provider after listing race", e)
+        );
+        return NextResponse.json(
+          { success: false, error: "This listing has already been claimed." },
+          { status: 409 }
+        );
+      }
     }
 
     // ── Create Stripe Checkout Session ────────────────────────────

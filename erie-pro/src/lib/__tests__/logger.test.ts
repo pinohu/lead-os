@@ -37,4 +37,74 @@ describe("logger", () => {
     expect(output).toContain("something broke");
     spy.mockRestore();
   });
+
+  // ── Secret redaction ──────────────────────────────────────────────
+
+  it("redacts the value of any `password` field", async () => {
+    const mod = await import("../logger");
+    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    mod.logger.info("auth", { email: "jane@example.com", password: "hunter2" });
+    const out = spy.mock.calls[0][0] as string;
+    expect(out).not.toContain("hunter2");
+    expect(out).toContain("***");
+    spy.mockRestore();
+  });
+
+  it("redacts passwordHash, apiKey, rawKey, token, authorization fields", async () => {
+    const mod = await import("../logger");
+    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    mod.logger.info("x", {
+      passwordHash: "$2b$10$abcdefghijklmnopqrstuv",
+      apiKey: "ep_abcdef1234567890abcdef1234567890",
+      rawKey: "ep_f00df00df00df00df00df00df00df00d",
+      token: "jwt.something.signed",
+      authorization: "Bearer xyz.abc.def",
+    });
+    const out = spy.mock.calls[0][0] as string;
+    expect(out).not.toMatch(/\$2b\$10/);
+    expect(out).not.toMatch(/ep_[a-f0-9]+/);
+    expect(out).not.toContain("jwt.something.signed");
+    expect(out).not.toMatch(/Bearer\s+xyz/);
+    spy.mockRestore();
+  });
+
+  it("redacts Stripe secret keys embedded in free-form strings", async () => {
+    const mod = await import("../logger");
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    mod.logger.error(
+      "stripe",
+      "Failed with key sk_live_abcd1234EFGHwxyz5678 and whsec_qwertyuiop123456"
+    );
+    const out = spy.mock.calls[0][0] as string;
+    expect(out).not.toMatch(/sk_live_abcd1234EFGHwxyz5678/);
+    expect(out).not.toMatch(/whsec_qwertyuiop123456/);
+    expect(out).toContain("sk_live_***");
+    expect(out).toContain("whsec_***");
+    spy.mockRestore();
+  });
+
+  it("redacts `Bearer <token>` in headers strings", async () => {
+    const mod = await import("../logger");
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    mod.logger.warn(
+      "proxy",
+      "Incoming request authorization: Bearer abcd1234efgh5678.jwt.payload"
+    );
+    const out = spy.mock.calls[0][0] as string;
+    expect(out).not.toMatch(/Bearer\s+abcd/);
+    expect(out).toContain("Bearer ***");
+    spy.mockRestore();
+  });
+
+  it("still redacts emails and phone numbers (regression check)", async () => {
+    const mod = await import("../logger");
+    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    mod.logger.info("contact", "Contact jane@example.com or (814) 555-0199");
+    const out = spy.mock.calls[0][0] as string;
+    expect(out).not.toContain("jane@example.com");
+    expect(out).not.toContain("555-0199");
+    expect(out).toContain("j***@example.com");
+    expect(out).toContain("***-**-0199");
+    spy.mockRestore();
+  });
 });

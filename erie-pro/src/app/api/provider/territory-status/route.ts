@@ -9,6 +9,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { getClientIp } from "@/lib/client-ip";
 
 const TerritoryStatusSchema = z.object({
   territoryId: z.string().min(1),
@@ -69,10 +70,22 @@ export async function PATCH(req: NextRequest) {
     const now = new Date();
     const isPause = parsed.data.action === "pause";
 
+    // Toggle the USER-INITIATED pause field only. Do NOT touch
+    // `deactivatedAt` — that field tracks subscription-level lifecycle
+    // (cancellation, grace-period expiry, admin suspension). Previously
+    // this endpoint wrote `deactivatedAt: null` on "resume", which let
+    // a provider whose subscription had been cancelled silently revive
+    // their territory without paying: cancellation → deactivatedAt set
+    // by Stripe webhook → provider hits "resume" → deactivatedAt cleared
+    // → territory active again. `isPaused` / `pausedAt` is the correct
+    // surface for self-serve pausing; lead-routing already gates on
+    // both `isPaused: false` AND `deactivatedAt: null` so either flag
+    // being set is enough to stop lead delivery.
     await prisma.territory.update({
       where: { id: territory.id },
       data: {
-        deactivatedAt: isPause ? now : null,
+        isPaused: isPause,
+        pausedAt: isPause ? now : null,
       },
     });
 
@@ -86,14 +99,15 @@ export async function PATCH(req: NextRequest) {
         niche: territory.niche,
         city: territory.city,
       },
-      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      ipAddress: getClientIp(req),
     });
 
     return NextResponse.json({
       success: true,
       territory: {
         id: territory.id,
-        deactivatedAt: isPause ? now.toISOString() : null,
+        isPaused: isPause,
+        pausedAt: isPause ? now.toISOString() : null,
       },
     });
   } catch (err) {

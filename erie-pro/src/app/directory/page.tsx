@@ -23,6 +23,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { safeJsonLd } from "@/lib/jsonld"
 
 export const metadata: Metadata = {
   title: `Business Directory — ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
@@ -85,7 +86,7 @@ export default async function DirectoryIndexPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <main>
         {/* Breadcrumb */}

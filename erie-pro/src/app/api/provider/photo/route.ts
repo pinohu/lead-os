@@ -7,9 +7,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { SUPPORTED_IMAGE_TYPES, verifyImageUpload } from "@/lib/image-signature";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 export async function POST(req: NextRequest) {
   const rateLimited = await checkRateLimit(req, "contact");
@@ -51,8 +51,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Validate content type
-  if (!ALLOWED_TYPES.includes(file.type)) {
+  // Quick reject on client-reported type so we don't even read the bytes
+  // of an obviously wrong upload.
+  if (!SUPPORTED_IMAGE_TYPES.includes(file.type as typeof SUPPORTED_IMAGE_TYPES[number])) {
     return NextResponse.json(
       {
         success: false,
@@ -74,10 +75,24 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Convert to base64 data URL
     const buffer = Buffer.from(await file.arrayBuffer());
+
+    // Defense-in-depth: client-declared Content-Type can lie. Verify the
+    // magic bytes actually match an accepted image format. Without this
+    // check, an attacker could upload HTML/SVG-with-<script> or a polyglot
+    // with an `image/jpeg` Content-Type and we'd happily store it.
+    const verified = verifyImageUpload(buffer, file.type);
+    if (!verified.ok) {
+      return NextResponse.json(
+        { success: false, error: verified.reason },
+        { status: 400 }
+      );
+    }
+
+    // Use the verified MIME type (never the client-claimed one) in the
+    // data URL so the rendered Content-Type always matches the content.
     const base64 = buffer.toString("base64");
-    const dataUrl = `data:${file.type};base64,${base64}`;
+    const dataUrl = `data:${verified.mime};base64,${base64}`;
 
     // Update provider
     await prisma.provider.update({

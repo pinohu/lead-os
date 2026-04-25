@@ -9,13 +9,17 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
-import { sanitizeText, MAX_BODY_SIZE } from "@/lib/validation";
+import { sanitizeText, websiteUrlSchema, MAX_BODY_SIZE } from "@/lib/validation";
+import { getClientIp } from "@/lib/client-ip";
 
 const UpdateProfileSchema = z.object({
   businessName: z.string().min(2).max(200).transform(sanitizeText).optional(),
   phone: z.string().min(10).max(20).optional(),
   description: z.string().max(2000).transform(sanitizeText).optional(),
-  website: z.string().url().max(500).optional().nullable(),
+  // Lock to http/https only — bare z.url() would let a provider store
+  // a `javascript:` URL that executes on click from the public profile
+  // page's "Visit Website" link (stored XSS). See websiteUrlSchema.
+  website: websiteUrlSchema.optional().nullable(),
   serviceAreas: z.array(z.string().max(100)).max(20).optional(),
   employeeCount: z.string().max(20).optional(),
   license: z.string().max(100).transform(sanitizeText).optional(),
@@ -98,7 +102,7 @@ export async function PATCH(req: NextRequest) {
       entityId: user.providerId,
       providerId: user.providerId,
       metadata: { type: "profile_update", fields: Object.keys(updates) },
-      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      ipAddress: getClientIp(req),
     });
 
     return NextResponse.json({

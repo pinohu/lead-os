@@ -6,17 +6,35 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
+import { verifyVerificationCode } from "@/lib/verification-code";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 
 const CheckSchema = z.object({
   code: z.string().length(6, "Code must be 6 digits").regex(/^\d{6}$/, "Code must be numeric"),
 });
 
 export async function POST(req: NextRequest) {
+  // IP-based rate limit — defense-in-depth alongside the per-provider
+  // atomic attempt counter below. Without this an attacker can flood
+  // the endpoint causing unnecessary auth + DB load even if each
+  // provider's own counter caps at 10.
+  const rateLimited = await checkRateLimit(req, "contact");
+  if (rateLimited) return rateLimited;
+
   try {
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
     }
 
     const body = await req.json().catch(() => null);
@@ -43,14 +61,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, status: "already_verified" });
     }
 
-    // Brute-force protection: max 10 total attempts
-    if (provider.verificationAttempts >= 10) {
-      return NextResponse.json(
-        { success: false, error: "Too many attempts. Contact support for manual verification." },
-        { status: 429 }
-      );
-    }
-
     // Must have a pending code
     if (!provider.verificationCode || !provider.verificationCodeExp) {
       return NextResponse.json(
@@ -67,16 +77,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Increment attempts
-    await prisma.provider.update({
-      where: { id: provider.id },
+    // Brute-force protection: atomic "check-and-increment" collapsing
+    // what used to be a (read attempts) → (compare < 10) → (increment)
+    // sequence. With the old shape an attacker could fan out N
+    // simultaneous requests at attempts=9 and all N would pass the
+    // `< 10` check before any single request bumped the counter,
+    // effectively multiplying the allowed attempts against a 6-digit
+    // code. updateMany filtered on `verificationAttempts: { lt: 10 }`
+    // makes the DB the gate: only attempts that flip the counter
+    // below-10→N+1 get through, all concurrent losers see count === 0.
+    const gated = await prisma.provider.updateMany({
+      where: { id: provider.id, verificationAttempts: { lt: 10 } },
       data: { verificationAttempts: { increment: 1 } },
     });
 
-    // Constant-time comparison to prevent timing attacks
-    const codeBuffer = Buffer.from(parsed.data.code);
-    const storedBuffer = Buffer.from(provider.verificationCode);
-    if (codeBuffer.length !== storedBuffer.length || !codeBuffer.equals(storedBuffer)) {
+    if (gated.count === 0) {
+      return NextResponse.json(
+        { success: false, error: "Too many attempts. Contact support for manual verification." },
+        { status: 429 }
+      );
+    }
+
+    // The stored value is an HMAC-SHA256 digest of the 6-digit code, so we
+    // can't string-compare the user-supplied raw code against it directly.
+    // verifyVerificationCode recomputes the digest and does a real constant-
+    // time compare via crypto.timingSafeEqual. (Buffer.equals is memcmp and
+    // short-circuits, which is what this route used to do despite the
+    // "constant-time" comment — see src/lib/verification-code.ts.)
+    if (!verifyVerificationCode(parsed.data.code, provider.verificationCode)) {
       const remaining = 10 - (provider.verificationAttempts + 1);
       return NextResponse.json(
         { success: false, error: `Incorrect code. ${remaining} attempts remaining.` },

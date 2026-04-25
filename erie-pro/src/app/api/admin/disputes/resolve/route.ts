@@ -6,10 +6,11 @@ import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/db"
 import { audit } from "@/lib/audit-log"
-import { auth } from "@/lib/auth"
+import { requireAdmin } from "@/lib/require-admin"
 import { logger } from "@/lib/logger"
 import { sendDisputeResolutionEmail } from "@/lib/email"
 import { MAX_BODY_SIZE } from "@/lib/validation"
+import { getClientIp } from "@/lib/client-ip"
 
 const ResolveSchema = z.object({
   disputeId: z.string().min(1, "Dispute ID is required"),
@@ -21,13 +22,8 @@ const ResolveSchema = z.object({
 
 export async function POST(req: NextRequest) {
   // Admin auth guard
-  const session = await auth()
-  if (!session?.user || (session.user as { role?: string }).role !== "admin") {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized" },
-      { status: 401 }
-    )
-  }
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
 
   try {
     // ── Body size check ──────────────────────────────────────────
@@ -60,50 +56,73 @@ export async function POST(req: NextRequest) {
 
     const { disputeId, status, creditAmount } = parsed.data
 
-    // Verify the dispute exists and is pending
-    const existing = await prisma.leadDispute.findUnique({
-      where: { id: disputeId },
+    // Atomic claim pattern: the prior findUnique→check→update shape let
+    // two concurrent admin clicks (approve + deny, or same button twice)
+    // both observe status === "pending" before either wrote, so the
+    // second update silently overwrote the first — losing one resolver's
+    // audit intent and making final credit amount nondeterministic.
+    // `updateMany` with a compound WHERE makes the DB the gate: exactly
+    // one admin flips pending→resolved; concurrent losers see count === 0
+    // and get the same 409 "already resolved" as a late click.
+    const claim = await prisma.leadDispute.updateMany({
+      where: { id: disputeId, status: "pending" },
+      data: {
+        status,
+        resolvedAt: new Date(),
+        creditAmount: creditAmount ?? null,
+      },
     })
-    if (!existing) {
-      return NextResponse.json(
-        { success: false, error: "Dispute not found" },
-        { status: 404 }
-      )
-    }
-    if (existing.status !== "pending") {
+
+    if (claim.count === 0) {
+      // Distinguish 404 (never existed) from 409 (already resolved).
+      const existing = await prisma.leadDispute.findUnique({
+        where: { id: disputeId },
+        select: { status: true },
+      })
+      if (!existing) {
+        return NextResponse.json(
+          { success: false, error: "Dispute not found" },
+          { status: 404 }
+        )
+      }
       return NextResponse.json(
         { success: false, error: `Dispute already resolved as '${existing.status}'` },
         { status: 409 }
       )
     }
 
-    // Update the dispute
-    const updated = await prisma.leadDispute.update({
+    // Fetch the resolved dispute with related data for the notification email.
+    // `updateMany` doesn't support `include`, so this is a separate read —
+    // no race here since the row is now in a terminal state (our atomic
+    // update above is the only path that writes it post-resolve).
+    const updated = await prisma.leadDispute.findUnique({
       where: { id: disputeId },
-      data: {
-        status,
-        resolvedAt: new Date(),
-        creditAmount: creditAmount ?? null,
-      },
       include: {
         lead: { select: { firstName: true, lastName: true, niche: true } },
         provider: { select: { businessName: true, email: true } },
       },
     })
+    if (!updated) {
+      // Shouldn't happen — we just updated it — but bail defensively.
+      return NextResponse.json(
+        { success: false, error: "Dispute not found" },
+        { status: 404 }
+      )
+    }
 
     // Record audit log
     await audit({
       action: "lead.dispute_resolved",
       entityType: "dispute",
       entityId: disputeId,
-      providerId: existing.providerId,
+      providerId: updated.providerId,
       metadata: {
         status,
         creditAmount: creditAmount ?? null,
-        leadId: existing.leadId,
-        reason: existing.reason,
+        leadId: updated.leadId,
+        reason: updated.reason,
       },
-      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      ipAddress: getClientIp(req),
     })
 
     // Notify the provider of the resolution outcome
@@ -120,7 +139,7 @@ export async function POST(req: NextRequest) {
           leadName,
           niche: updated.lead?.niche ?? "service",
           creditAmount: creditAmount ?? null,
-          reason: existing.reason,
+          reason: updated.reason,
         }
       ).catch((err) => {
         // Non-blocking: log but don't fail the resolution

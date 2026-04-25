@@ -246,6 +246,11 @@ model LeadOutcome {
   satisfactionRating  Float?         // 0-5
   createdAt           DateTime       @default(now())
 
+  // One outcome row per (lead, provider). Providers update their
+  // existing outcome (responded → converted) via upsert instead of
+  // stacking new rows, which previously let a provider inflate
+  // convertedLeads by re-submitting the same conversion many times.
+  @@unique([leadId, providerId])
   @@index([leadId])
   @@index([providerId])
   @@map("lead_outcomes")
@@ -371,6 +376,7 @@ model LeadDispute {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
+  @@unique([leadId, providerId])
   @@index([leadId])
   @@index([providerId])
   @@map("lead_disputes")
@@ -411,6 +417,24 @@ model AuditLog {
   @@index([providerId])
   @@index([entityType, entityId])
   @@map("audit_logs")
+}
+
+// ── Stripe Webhook Idempotency ─────────────────────────────────────
+// Records every Stripe webhook event id we've successfully started
+// processing. The webhook handler INSERTs into this table before doing
+// any side-effect work, using the Stripe event.id as the primary key.
+// A Prisma unique-violation (P2002) is the signal that the event is a
+// duplicate delivery — we bail out before re-running any email, Stripe,
+// or DB side effect. This replaces the old auditLog metadata scan,
+// which was racy: two concurrent retries could both pass findFirst
+// before either wrote the marker row.
+
+model StripeWebhookEvent {
+  id        String   @id          // Stripe event.id (evt_...)
+  type      String
+  createdAt DateTime @default(now())
+
+  @@map("stripe_webhook_events")
 }
 
 // ── Auth (NextAuth v5) ─────────────────────────────────────────────
@@ -531,6 +555,13 @@ model DirectoryListing {
   claimedByProviderId String?
   source              String    @default("google_places")
   lastScrapedAt       DateTime?
+  // Timestamp of the most recent "claim your listing" outreach email we
+  // sent to this listing's contact address. Guards the /api/contact flow
+  // from being weaponised to mail-bomb unclaimed listing owners — callers
+  // must only fire a new outreach if this is null or older than the
+  // cooldown window (currently 7d). See the atomic updateMany in
+  // /api/contact/route.ts.
+  lastOutreachAt      DateTime?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 

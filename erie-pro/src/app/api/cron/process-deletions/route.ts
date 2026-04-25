@@ -9,30 +9,41 @@ import { logger } from "@/lib/logger";
 import { audit } from "@/lib/audit-log";
 import { sendEmail } from "@/lib/email";
 import { cityConfig } from "@/lib/city-config";
+import { requireCronAuth } from "@/lib/cron-auth";
 
 export async function GET(req: NextRequest) {
-  // ── Validate cron secret ──────────────────────────────────────
-  // Defense-in-depth: if CRON_SECRET is unset, reject ALL requests
-  // (otherwise `Bearer undefined` would match a literal undefined env).
-  const authHeader = req.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json(
-      { success: false, error: "Unauthorized" },
-      { status: 401 }
-    );
-  }
+  // Constant-time cron-secret check (see src/lib/cron-auth.ts).
+  const unauthorized = requireCronAuth(req);
+  if (unauthorized) return unauthorized;
 
   try {
     const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000); // 48 hours ago
 
-    // Find CCPA deletion requests older than 48 hours
+    // Find CCPA deletion requests older than 48 hours.
+    //
+    // Defense-in-depth: the `status: "pending_deletion"` filter (set
+    // by an admin/staff tool once ownership of the email has been
+    // confirmed — today that's the manual mailto flow in
+    // dashboard/settings) is what authorizes destruction. A newly
+    // inserted ContactMessage defaults to `unread`, so even if a
+    // future schema regression re-opens /api/contact to accept the
+    // `_ccpa_deletion` sentinel, the cron still refuses to act on it
+    // until a human flips the row to `pending_deletion`. This closes
+    // the unauthenticated "submit victim's email, wait 48h, their
+    // data is gone" attack that the old `status: "unread"` filter
+    // enabled.
+    // Bounded `take:` so a backlog of pending deletions (e.g. after a
+    // long cron outage or a campaign-driven burst of CCPA requests)
+    // can't OOM the serverless function. Leftover rows are processed
+    // on subsequent daily runs — rows older than the 48h cutoff stay
+    // pending_deletion until we pick them up.
     const pendingDeletions = await prisma.contactMessage.findMany({
       where: {
         niche: "_ccpa_deletion",
         createdAt: { lt: cutoff },
-        status: "unread", // Only process unread (not yet processed)
+        status: "pending_deletion",
       },
+      take: 500,
     });
 
     if (pendingDeletions.length === 0) {

@@ -23,6 +23,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { safeJsonLd } from "@/lib/jsonld"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -140,7 +141,7 @@ export default async function NicheDirectoryPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(directoryJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(directoryJsonLd) }}
       />
       <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}

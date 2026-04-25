@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/accordion"
 import { ServiceSearch } from "@/components/service-search"
 import { HomepageLeadForm } from "@/components/homepage-lead-form"
+import { safeJsonLd } from "@/lib/jsonld"
 
 const nicheIcons: Record<string, React.ReactNode> = {
   plumbing: <Wrench className="h-6 w-6" aria-hidden="true" />,
@@ -577,7 +578,7 @@ export default function HomePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@graph": [
               {

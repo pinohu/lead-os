@@ -3,12 +3,12 @@
 // password hash, and deletes the consumed token.
 
 import { NextRequest, NextResponse } from "next/server";
-import { createHash } from "crypto";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { MAX_BODY_SIZE } from "@/lib/validation";
+import { hashVerificationToken } from "@/lib/verification-token";
 import bcrypt from "bcryptjs";
 
 const ResetPasswordSchema = z.object({
@@ -16,10 +16,6 @@ const ResetPasswordSchema = z.object({
   token: z.string().min(1, "Reset token is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
-
-function hashToken(token: string): string {
-  return createHash("sha256").update(token).digest("hex");
-}
 
 export async function POST(req: NextRequest) {
   // ── Rate limit: 5 reset attempts per minute per IP ──────────────
@@ -55,10 +51,16 @@ export async function POST(req: NextRequest) {
   const { email, token: rawToken, password } = parsed.data;
 
   try {
-    const hashedToken = hashToken(rawToken);
+    const hashedToken = hashVerificationToken(rawToken);
 
-    // Look up valid (non-expired) token
-    const record = await prisma.verificationToken.findFirst({
+    // ── Atomic single-use consumption ─────────────────────────────
+    // Consume the token FIRST via deleteMany; only proceed if exactly
+    // one row was removed. The old flow updated the password and then
+    // deleted the token, which meant two concurrent requests carrying
+    // the same token could both succeed and race on the final password
+    // value. Deleting first collapses that race: the DB will let
+    // exactly one request's deleteMany affect 1 row; the other sees 0.
+    const consumed = await prisma.verificationToken.deleteMany({
       where: {
         identifier: email,
         token: hashedToken,
@@ -66,7 +68,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (!record) {
+    if (consumed.count === 0) {
       return NextResponse.json(
         {
           success: false,
@@ -85,23 +87,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Hash new password
+    // Hash new password (outside the consume step so bcrypt work doesn't
+    // widen the window where two racing requests might both read the token)
     const passwordHash = await bcrypt.hash(password, 12);
 
     // Update provider password
     await prisma.provider.update({
       where: { id: user.providerId },
       data: { passwordHash },
-    });
-
-    // Delete used token
-    await prisma.verificationToken.delete({
-      where: {
-        identifier_token: {
-          identifier: email,
-          token: hashedToken,
-        },
-      },
     });
 
     return NextResponse.json({ success: true });

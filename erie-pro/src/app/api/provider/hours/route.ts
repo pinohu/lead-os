@@ -7,6 +7,7 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 
 const TimeSchema = z.string().regex(/^\d{2}:\d{2}$/, "Must be HH:MM format");
 
@@ -74,6 +75,14 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json(
       { success: false, error: "Authentication required" },
       { status: 401 }
+    );
+  }
+
+  const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+  if (contentLength > MAX_BODY_SIZE) {
+    return NextResponse.json(
+      { success: false, error: "Request body too large" },
+      { status: 413 }
     );
   }
 

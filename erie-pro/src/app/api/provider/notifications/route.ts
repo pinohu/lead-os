@@ -9,6 +9,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { MAX_BODY_SIZE } from "@/lib/validation";
 
 const VALID_KEYS = [
   "new_leads",
@@ -22,12 +23,29 @@ const PrefsSchema = z.object({
   prefs: z.record(z.enum(VALID_KEYS), z.boolean()),
 });
 
+// Resolve the authenticated session to the Provider row the user
+// actually owns. Previously both handlers did `provider.findFirst` by
+// `session.user.email`, which was doubly wrong: (a) Provider.email is
+// not unique, so users sharing an email (admin impersonation, shared
+// inbox, data-entry collision) could end up editing another provider's
+// prefs, and (b) the canonical link from user → provider is the
+// `user.providerId` column set at claim/signup, which the email lookup
+// bypasses entirely. Use the FK like every other authed provider
+// endpoint so tenant isolation is airtight.
+async function resolveOwnProviderId(userId: string): Promise<string | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { providerId: true },
+  });
+  return user?.providerId ?? null;
+}
+
 export async function GET(req: NextRequest) {
   const rateLimited = await checkRateLimit(req, "contact");
   if (rateLimited) return rateLimited;
 
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json(
       { success: false, error: "Authentication required" },
       { status: 401 }
@@ -35,8 +53,16 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const provider = await prisma.provider.findFirst({
-      where: { email: session.user.email ?? "" },
+    const providerId = await resolveOwnProviderId(session.user.id);
+    if (!providerId) {
+      return NextResponse.json(
+        { success: false, error: "No provider linked to this account" },
+        { status: 403 }
+      );
+    }
+
+    const provider = await prisma.provider.findUnique({
+      where: { id: providerId },
       select: { notificationPrefs: true },
     });
 
@@ -67,7 +93,7 @@ export async function PATCH(req: NextRequest) {
   if (rateLimited) return rateLimited;
 
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json(
       { success: false, error: "Authentication required" },
       { status: 401 }
@@ -75,6 +101,14 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
+    const contentLength = parseInt(req.headers.get("content-length") ?? "0", 10);
+    if (contentLength > MAX_BODY_SIZE) {
+      return NextResponse.json(
+        { success: false, error: "Request body too large" },
+        { status: 413 }
+      );
+    }
+
     const body = await req.json();
     const parsed = PrefsSchema.safeParse(body);
 
@@ -85,24 +119,21 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const provider = await prisma.provider.findFirst({
-      where: { email: session.user.email ?? "" },
-    });
-
-    if (!provider) {
+    const providerId = await resolveOwnProviderId(session.user.id);
+    if (!providerId) {
       return NextResponse.json(
-        { success: false, error: "Provider not found" },
-        { status: 404 }
+        { success: false, error: "No provider linked to this account" },
+        { status: 403 }
       );
     }
 
     await prisma.provider.update({
-      where: { id: provider.id },
+      where: { id: providerId },
       data: { notificationPrefs: parsed.data.prefs },
     });
 
     logger.info("Provider notification prefs updated", {
-      providerId: provider.id,
+      providerId,
       prefs: parsed.data.prefs,
     });
 

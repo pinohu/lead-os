@@ -4,6 +4,7 @@
 
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { checkFetchableUrl } from "@/lib/url-safety";
 import crypto from "crypto";
 
 /** Maximum retry attempts per delivery */
@@ -64,6 +65,25 @@ async function deliverToEndpoint(
   secret: string,
   body: string
 ): Promise<void> {
+  // Defense-in-depth: re-check URL safety at delivery time in case a row
+  // was created through a path that bypassed API-level validation (admin
+  // tooling, seed script, migration). If the URL is unsafe, disable the
+  // endpoint and skip — never pivot to internal infra.
+  const safety = checkFetchableUrl(url);
+  if (!safety.ok) {
+    logger.warn(
+      "webhook-delivery",
+      `Refusing to deliver to unsafe URL (${safety.reason}): ${url}`
+    );
+    await prisma.webhookEndpoint
+      .update({
+        where: { id: endpointId },
+        data: { isActive: false },
+      })
+      .catch(() => {});
+    return;
+  }
+
   const signature = signPayload(body, secret);
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
@@ -82,9 +102,27 @@ async function deliverToEndpoint(
         },
         body,
         signal: controller.signal,
+        // SSRF hardening: checkFetchableUrl validates the initial host,
+        // but fetch()'s default `redirect: "follow"` would let a public
+        // endpoint 302 us to 169.254.169.254 / 127.0.0.1 / etc., bypassing
+        // the host check entirely. Refuse redirects outright — if a
+        // provider relocates their endpoint they must update the URL.
+        redirect: "manual",
       });
 
       clearTimeout(timeout);
+
+      // Treat any 3xx as a non-retryable unsafe-redirect failure. With
+      // redirect:"manual" the response's status is the raw 3xx; we never
+      // actually follow it so no request is sent to the redirect target.
+      if (res.status >= 300 && res.status < 400) {
+        logger.warn(
+          "webhook-delivery",
+          `Refusing to follow redirect (${res.status}) from ${url} — update endpoint URL`
+        );
+        await incrementFailCount(endpointId);
+        return;
+      }
 
       if (res.ok) {
         // Success — reset fail count
@@ -174,6 +212,14 @@ export async function sendTestWebhook(
     });
     if (!endpoint) return { success: false, error: "Endpoint not found" };
 
+    const safety = checkFetchableUrl(endpoint.url);
+    if (!safety.ok) {
+      return {
+        success: false,
+        error: `Webhook URL is not allowed (${safety.reason})`,
+      };
+    }
+
     const body = JSON.stringify({
       event: "test",
       timestamp: new Date().toISOString(),
@@ -196,9 +242,21 @@ export async function sendTestWebhook(
       },
       body,
       signal: controller.signal,
+      // See deliverToEndpoint — never follow redirects on provider-supplied
+      // URLs, since a 3xx to an internal host would bypass checkFetchableUrl.
+      redirect: "manual",
     });
 
     clearTimeout(timeout);
+
+    if (res.status >= 300 && res.status < 400) {
+      return {
+        success: false,
+        status: res.status,
+        error:
+          "Endpoint returned a redirect — webhook URLs must resolve directly (no 3xx).",
+      };
+    }
 
     return { success: res.ok, status: res.status };
   } catch (err) {

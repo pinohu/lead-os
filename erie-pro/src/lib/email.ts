@@ -2,12 +2,12 @@
 // Sends transactional emails via Emailit (when EMAILIT_API_KEY is set).
 // Falls back to console logging in dev/dry-run mode.
 
-import { createHash } from "crypto";
 import { cityConfig } from "@/lib/city-config";
 import { logger } from "@/lib/logger";
+import { generateUnsubscribeToken } from "@/lib/unsubscribe-token";
 
 /** Escape HTML special characters to prevent XSS in email templates */
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -29,17 +29,27 @@ const PHYSICAL_ADDRESS = `123 State St, Erie, PA 16501`;
 
 /** Build the CAN-SPAM compliant unsubscribe URL for a recipient */
 function getUnsubscribeUrl(recipientEmail: string): string {
-  // Include an HMAC token so unauthenticated GETs can't unsubscribe arbitrary
-  // emails. The token is stable per-email so links remain valid across sends.
-  const secret =
-    process.env.UNSUBSCRIBE_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
-    "default-unsubscribe-secret";
-  const token = createHash("sha256")
-    .update(`${recipientEmail.toLowerCase().trim()}:${secret}`)
-    .digest("hex")
-    .slice(0, 32);
+  // Include an HMAC-style token so unauthenticated GETs can't unsubscribe
+  // arbitrary emails. The token is stable per-email so links remain valid
+  // across sends, and generation is centralized in unsubscribe-token.ts so
+  // the receiving endpoint can't drift from the sender.
+  const token = generateUnsubscribeToken(recipientEmail);
   return `${SITE_URL}/api/unsubscribe?email=${encodeURIComponent(recipientEmail)}&token=${token}`;
+}
+
+/**
+ * Strip CR/LF/NUL from values that end up in email headers
+ * (To, Subject, Reply-To). The Emailit HTTP API takes these as JSON
+ * fields and then hands them to its SMTP backend; if that backend
+ * doesn't sanitize, embedded \r\n in any of these fields would let an
+ * attacker inject additional headers (Bcc: exfiltrate, or a MIME
+ * boundary to rewrite the body). Several call sites derive these from
+ * user-controlled input — provider businessName (in subjects), contact-
+ * form email (in replyTo), admin-configured envs — and escapeHtml does
+ * nothing against header injection, so strip at the send boundary.
+ */
+export function stripHeaderBreaks(value: string): string {
+  return value.replace(/[\r\n\u0000]+/g, " ").trim();
 }
 
 /**
@@ -48,13 +58,16 @@ function getUnsubscribeUrl(recipientEmail: string): string {
  */
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   const apiKey = process.env.EMAILIT_API_KEY;
-  const unsubscribeUrl = getUnsubscribeUrl(options.to);
+  const safeTo = stripHeaderBreaks(options.to);
+  const safeSubject = stripHeaderBreaks(options.subject);
+  const safeReplyTo = options.replyTo ? stripHeaderBreaks(options.replyTo) : undefined;
+  const unsubscribeUrl = getUnsubscribeUrl(safeTo);
 
   if (!apiKey) {
     if (process.env.NODE_ENV === "production") {
       throw new Error("EMAILIT_API_KEY is not configured. Cannot send emails in production.");
     }
-    logger.info("email", `[DRY RUN] Would send to ${options.to}: ${options.subject}`);
+    logger.info("email", `[DRY RUN] Would send to ${safeTo}: ${safeSubject}`);
     if (process.env.NODE_ENV === "development") {
       logger.debug("email", "HTML preview:", options.html.slice(0, 200));
     }
@@ -70,10 +83,10 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       },
       body: JSON.stringify({
         from: FROM_ADDRESS,
-        to: options.to,
-        subject: options.subject,
+        to: safeTo,
+        subject: safeSubject,
         html: options.html,
-        reply_to: options.replyTo,
+        reply_to: safeReplyTo,
         headers: {
           "List-Unsubscribe": `<${unsubscribeUrl}>`,
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
@@ -149,6 +162,102 @@ export async function sendConsumerConfirmation(
       </ul>
       <p style="color:#6b7280;font-size:13px;margin:0">You consented to be contacted when you submitted this request. If you no longer wish to be contacted, reply to this email with &quot;cancel&quot; and we will remove your request.</p>
     `, consumerEmail),
+    replyTo: `hello@${cityConfig.domain}`,
+  });
+}
+
+export async function sendLeadStatusSummary(
+  consumerEmail: string,
+  leads: { niche: string; statusToken: string; createdAt: Date }[]
+): Promise<boolean> {
+  // Build one row per lead with a tokenised deep-link to its status page.
+  // Only leads actually owned by this email address are included (caller
+  // filters by `email`), so the recipient only sees their own requests.
+  const rows = leads
+    .map((lead) => {
+      const url = `${SITE_URL}/lead-status?token=${encodeURIComponent(lead.statusToken)}`;
+      const dateStr = lead.createdAt.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      return `<li style="margin:8px 0;color:#374151"><a href="${url}" style="color:#2563eb;text-decoration:underline">${escapeHtml(lead.niche)}</a> &middot; submitted ${dateStr}</li>`;
+    })
+    .join("");
+
+  return sendEmail({
+    to: consumerEmail,
+    subject: `Your service request status — ${cityConfig.name} Pro`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">Your Service Requests</h2>
+      <p style="color:#374151;margin:0 0 16px">Here are the secure status links for each of your recent requests. Click any link to view details for that request.</p>
+      <ul style="padding-left:20px;margin:0 0 24px">${rows}</ul>
+      <p style="color:#6b7280;font-size:13px;margin:0">If you did not request this status summary, you can safely ignore this email. These links are tied to your email address and only reveal your own requests.</p>
+    `, consumerEmail),
+    replyTo: `hello@${cityConfig.domain}`,
+  });
+}
+
+// ── Pay-per-Lead Purchase Delivery ──────────────────────────────────
+// Sent to a buyer after they pay for a banked lead on Stripe. Delivers
+// the lead's contact details so they can follow up immediately.
+//
+// Important: this function is the *only* path that exposes lead PII to
+// a pay-per-lead buyer. The Stripe webhook calls it only after an
+// atomic updateMany has flipped the lead's routeType from `unmatched`
+// to `overflow`, which guarantees we never email the same lead's
+// details to two concurrent buyers (see /api/webhooks/stripe).
+export async function sendLeadPurchaseDelivery(
+  buyerEmail: string,
+  leadName: string,
+  leadEmail: string,
+  leadPhone: string | null,
+  niche: string,
+  message: string | null
+): Promise<boolean> {
+  return sendEmail({
+    to: buyerEmail,
+    subject: `Your ${escapeHtml(niche)} lead — ${cityConfig.name} Pro`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">Your Lead Is Ready</h2>
+      <p style="color:#374151;margin:0 0 16px">Thanks for your purchase. Here are the lead's contact details — reach out quickly for the best conversion rates:</p>
+      <table style="width:100%;border-collapse:collapse;margin:0 0 24px">
+        <tr><td style="padding:8px 0;color:#6b7280;width:100px">Name:</td><td style="padding:8px 0;color:#111827;font-weight:600">${escapeHtml(leadName)}</td></tr>
+        <tr><td style="padding:8px 0;color:#6b7280">Email:</td><td style="padding:8px 0;color:#111827"><a href="mailto:${escapeHtml(leadEmail)}" style="color:#2563eb">${escapeHtml(leadEmail)}</a></td></tr>
+        ${leadPhone ? `<tr><td style="padding:8px 0;color:#6b7280">Phone:</td><td style="padding:8px 0;color:#111827"><a href="tel:${escapeHtml(leadPhone)}" style="color:#2563eb">${escapeHtml(leadPhone)}</a></td></tr>` : ""}
+        ${message ? `<tr><td style="padding:8px 0;color:#6b7280;vertical-align:top">Message:</td><td style="padding:8px 0;color:#111827">${escapeHtml(message)}</td></tr>` : ""}
+      </table>
+      <p style="color:#374151;margin:0 0 16px">This lead is yours exclusively — it will not be sold to another provider.</p>
+      <p style="color:#6b7280;font-size:13px;margin:0">Want recurring leads? <a href="https://${cityConfig.domain}/for-business" style="color:#2563eb">Claim the ${escapeHtml(niche)} territory</a> for ongoing exclusivity.</p>
+    `, buyerEmail),
+    replyTo: `hello@${cityConfig.domain}`,
+  });
+}
+
+// Sent to a buyer whose lead_purchase completed payment but lost the
+// race to another buyer on the same banked lead (two concurrent
+// checkouts against the same pre-paid leadId). The webhook detects the
+// race via updateMany.count === 0 and tells the loser they'll be
+// refunded. Ops gets a matching admin alert so they can actually
+// process the refund in Stripe.
+export async function sendLeadPurchaseRefundNotice(
+  buyerEmail: string,
+  niche: string,
+  stripeSessionId: string
+): Promise<boolean> {
+  const adminMailto = `mailto:hello@${cityConfig.domain}?subject=${encodeURIComponent(
+    `Refund request for ${stripeSessionId}`
+  )}`;
+  return sendEmail({
+    to: buyerEmail,
+    subject: `Refund on its way — ${escapeHtml(niche)} lead already sold`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 16px;color:#111827;font-size:20px">That Lead Was Just Sold</h2>
+      <p style="color:#374151;margin:0 0 16px">Thanks for your purchase. Unfortunately, another buyer completed checkout on this ${escapeHtml(niche)} lead a few moments before your payment cleared, so we can't deliver it to you.</p>
+      <p style="color:#374151;margin:0 0 16px"><strong>You will not be charged.</strong> Our team will issue a full refund to your original payment method within 1&ndash;2 business days.</p>
+      <p style="color:#374151;margin:0 0 16px">If you don't see the refund within 3 business days, please <a href="${adminMailto}" style="color:#2563eb">email us</a> with this reference: <code style="font-family:monospace;font-size:12px">${escapeHtml(stripeSessionId)}</code>.</p>
+      <p style="color:#6b7280;font-size:13px;margin:0">Want to avoid this? <a href="https://${cityConfig.domain}/for-business" style="color:#2563eb">Claim the territory</a> to receive every ${escapeHtml(niche)} lead in your area first.</p>
+    `, buyerEmail),
     replyTo: `hello@${cityConfig.domain}`,
   });
 }

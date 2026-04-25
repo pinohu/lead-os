@@ -4,7 +4,7 @@
 // whether the email exists (prevents enumeration).
 
 import { NextRequest, NextResponse } from "next/server";
-import { createHash, randomUUID } from "crypto";
+import { randomUUID } from "crypto";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { cityConfig } from "@/lib/city-config";
@@ -12,14 +12,11 @@ import { sendEmail } from "@/lib/email";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { MAX_BODY_SIZE } from "@/lib/validation";
+import { hashVerificationToken } from "@/lib/verification-token";
 
 const ForgotPasswordSchema = z.object({
   email: z.string().email("Valid email is required").transform((e) => e.toLowerCase().trim()),
 });
-
-function hashToken(token: string): string {
-  return createHash("sha256").update(token).digest("hex");
-}
 
 export async function POST(req: NextRequest) {
   // Rate limit using the "contact" preset
@@ -70,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     // Generate token
     const rawToken = randomUUID();
-    const hashedToken = hashToken(rawToken);
+    const hashedToken = hashVerificationToken(rawToken);
     const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
     // Delete any existing reset tokens for this email

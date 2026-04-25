@@ -18,7 +18,9 @@ import { activatePerks, deactivatePerks } from "@/lib/perk-manager";
 import { deliverBankedLeads } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
-import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
+import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert, sendLeadPurchaseDelivery, sendLeadPurchaseRefundNotice, escapeHtml } from "@/lib/email";
+import { hashVerificationToken } from "@/lib/verification-token";
+import { hashVerificationCode } from "@/lib/verification-code";
 
 export async function POST(req: NextRequest) {
   try {
@@ -62,17 +64,42 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Idempotency: check if we already processed this event (any action)
-    const existingLog = await prisma.auditLog.findFirst({
-      where: {
-        metadata: { path: ["stripeEventId"], equals: event.id },
-      },
-    });
-    if (existingLog) {
-      logger.info("webhook/stripe", "Duplicate event skipped:", event.id);
-      return NextResponse.json({ received: true, duplicate: true });
+    // ── Idempotency: atomic claim on Stripe event.id ─────────────
+    // Stripe retries webhooks aggressively on timeout or 5xx, and
+    // occasionally delivers the same event id concurrently. The old
+    // check (findFirst on auditLog metadata) was a TOCTOU race: two
+    // deliveries could both pass the read before either wrote the log
+    // row, resulting in double subscription activations, double emails,
+    // double welcome flows, etc.
+    //
+    // Collapse the race on a primary-key constraint: INSERT the event
+    // id into `stripe_webhook_events` up front. The DB guarantees
+    // exactly one INSERT wins; any concurrent retry sees a P2002
+    // unique-violation and exits cleanly as a duplicate without ever
+    // running a side effect.
+    //
+    // Rollback-on-failure: if ANY step below throws, we DELETE the claim
+    // row before surfacing the 500 so Stripe's next retry can actually
+    // reprocess the event. Without this, a partial failure (DB timeout
+    // mid-transaction, activatePerks hitting a network blip) would
+    // claim the event id, crash, return 500 → Stripe retries → retry
+    // sees the row as "already handled" → returns 200 duplicate → the
+    // half-finished work is NEVER completed. Subscription activations,
+    // territory creations, and welcome emails would silently go missing.
+    try {
+      await prisma.stripeWebhookEvent.create({
+        data: { id: event.id, type: event.type },
+      });
+    } catch (err: unknown) {
+      const code = (err as { code?: string } | null)?.code;
+      if (code === "P2002") {
+        logger.info("webhook/stripe", "Duplicate event skipped:", event.id);
+        return NextResponse.json({ received: true, duplicate: true });
+      }
+      throw err;
     }
 
+    try {
     // Handle the event
     const result = await handleStripeWebhook(event);
 
@@ -88,36 +115,69 @@ export async function POST(req: NextRequest) {
         });
 
         if (provider) {
-          // Set 7-day grace period (only if not already in one)
-          const gracePeriodEndsAt = provider.gracePeriodEndsAt ?? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-          await prisma.provider.update({
-            where: { id: provider.id },
+          // Atomic transition into past_due + grace-period start.
+          //
+          // Two correctness issues this gate fixes:
+          //
+          //  (1) Late payment_failed after cancel. Stripe fires
+          //      invoice.payment_failed for the final unpaid invoice of
+          //      a cancelled subscription (sometimes days after
+          //      customer.subscription.deleted). The old code ran an
+          //      unguarded update that flipped the cancelled provider
+          //      back to past_due with a fresh gracePeriodEndsAt — the
+          //      grace-period cron would then try to re-cancel 7 days
+          //      later, re-invoke deactivatePerks, and send a duplicate
+          //      "territory deactivated" email to the former provider.
+          //
+          //  (2) Duplicate dunning emails on repeat failures. If a
+          //      provider is already in past_due with a live grace
+          //      window, a subsequent payment_failed (e.g. Stripe's
+          //      Smart Retries re-attempting) would fire another
+          //      "grace period started" email even though the grace
+          //      period is unchanged. Setting `gracePeriodEndsAt: null`
+          //      in the WHERE makes this a one-shot claim — only the
+          //      first failure per grace window wins the updateMany
+          //      and reaches the email/audit side effects.
+          const gracePeriodEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+          const claim = await prisma.provider.updateMany({
+            where: {
+              id: provider.id,
+              subscriptionStatus: { in: ["active", "trial"] },
+              gracePeriodEndsAt: null,
+            },
             data: {
               subscriptionStatus: "past_due",
               gracePeriodEndsAt,
             },
           });
 
-          const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
-          sendEmail({
-            to: provider.email,
-            subject: "Payment failed \u2014 7-day grace period started",
-            html: `
-              <p>Hi ${provider.businessName},</p>
-              <p>Your most recent payment for your Erie Pro territory subscription has failed.</p>
-              <p>You have a <strong>7-day grace period</strong> to update your payment information before your territory is deactivated.</p>
-              <p><a href="${siteUrl}/dashboard/billing">Update Payment Info</a></p>
-              <p>If you have questions, reply to this email or contact our support team.</p>
-            `,
-          }).catch((err) => { logger.error("stripe-webhook", "Failed to send dunning email", err) });
+          if (claim.count === 1) {
+            const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
+            // businessName is provider-supplied at claim time; escape
+            // before rendering inside any HTML email per the Round AR
+            // policy, so a malicious name like `<script>...</script>`
+            // can't execute in any re-display surface (bounced-mail
+            // triage, admin archive, forwarded investigations, etc.).
+            const safeDunningName = escapeHtml(provider.businessName);
+            sendEmail({
+              to: provider.email,
+              subject: "Payment failed \u2014 7-day grace period started",
+              html: `
+                <p>Hi ${safeDunningName},</p>
+                <p>Your most recent payment for your Erie Pro territory subscription has failed.</p>
+                <p>You have a <strong>7-day grace period</strong> to update your payment information before your territory is deactivated.</p>
+                <p><a href="${siteUrl}/dashboard/billing">Update Payment Info</a></p>
+                <p>If you have questions, reply to this email or contact our support team.</p>
+              `,
+            }).catch((err) => { logger.error("stripe-webhook", "Failed to send dunning email", err) });
 
-          await audit({
-            action: "subscription.payment_failed",
-            entityType: "subscription",
-            providerId: provider.id,
-            metadata: { stripeEventId: event.id, gracePeriodEndsAt: gracePeriodEndsAt.toISOString() },
-          }).catch((err) => { logger.error("stripe-webhook", "Failed to audit payment failure", err) });
+            await audit({
+              action: "subscription.payment_failed",
+              entityType: "subscription",
+              providerId: provider.id,
+              metadata: { stripeEventId: event.id, gracePeriodEndsAt: gracePeriodEndsAt.toISOString() },
+            }).catch((err) => { logger.error("stripe-webhook", "Failed to audit payment failure", err) });
+          }
         }
       }
     }
@@ -156,12 +216,45 @@ export async function POST(req: NextRequest) {
           };
 
           const newStatus: SubscriptionStatus = statusMap[status] ?? provider.subscriptionStatus;
+          const oldStatus = provider.subscriptionStatus;
 
-          if (newStatus !== provider.subscriptionStatus || cancelAtPeriodEnd) {
-            await prisma.provider.update({
-              where: { id: provider.id },
+          if (newStatus !== oldStatus || cancelAtPeriodEnd) {
+            // Atomic claim on the status transition. The outer
+            // stripeWebhookEvent idempotency only dedupes same-event-id
+            // retries, so two DIFFERENT subscription.updated events for
+            // the same customer arriving close together (cancel →
+            // reactivate → change-plan storms during dunning recovery,
+            // Stripe Smart Retries, manual admin edits in the dashboard)
+            // both passed the `findFirst`-cached pre-check and BOTH
+            // raced downstream: duplicate audit rows, double past_due
+            // dunning emails, and — worst — the past_due→active
+            // reactivation branch would re-activate territories and
+            // send a second "welcome back" email because both
+            // deliveries cached the same stale oldStatus.
+            //
+            // Gate the transition on the observed oldStatus so the DB
+            // picks the single winner; losers see count === 0 and
+            // silently skip side effects. The losing event's intended
+            // transition was either subsumed by the winner or stale —
+            // the NEXT subscription.updated delivery from Stripe will
+            // carry the then-current state and can retry correctly.
+            const claim = await prisma.provider.updateMany({
+              where: { id: provider.id, subscriptionStatus: oldStatus },
               data: { subscriptionStatus: newStatus },
             });
+
+            if (claim.count !== 1) {
+              logger.info(
+                "webhook/stripe",
+                `Skipping subscription.updated — concurrent status transition already applied: ${provider.id} expected ${oldStatus}`
+              );
+              return NextResponse.json({
+                received: true,
+                handled: result.handled,
+                type: result.eventType,
+                skipped: "concurrent_status_transition",
+              });
+            }
 
             await audit({
               action: "subscription.status_changed",
@@ -169,16 +262,16 @@ export async function POST(req: NextRequest) {
               providerId: provider.id,
               metadata: {
                 stripeEventId: event.id,
-                oldStatus: provider.subscriptionStatus,
+                oldStatus,
                 newStatus,
                 cancelAtPeriodEnd,
               },
             });
 
-            logger.info("webhook/stripe", `Subscription updated for ${provider.id}: ${provider.subscriptionStatus} → ${newStatus}`);
+            logger.info("webhook/stripe", `Subscription updated for ${provider.id}: ${oldStatus} → ${newStatus}`);
 
             // 2.4: Auto-reactivate when payment recovers from past_due → active
-            if (newStatus === "active" && provider.subscriptionStatus === "past_due") {
+            if (newStatus === "active" && oldStatus === "past_due") {
               // Clear grace period
               await prisma.provider.update({
                 where: { id: provider.id },
@@ -203,11 +296,12 @@ export async function POST(req: NextRequest) {
               }
 
               const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
+              const safeReactivateName = escapeHtml(provider.businessName);
               sendEmail({
                 to: provider.email,
                 subject: "Payment received \u2014 your territory is active again!",
                 html: `
-                  <p>Hi ${provider.businessName},</p>
+                  <p>Hi ${safeReactivateName},</p>
                   <p>Great news! Your payment has been processed successfully and your Erie Pro territory is active again.</p>
                   <p>Leads are now being routed to you. Check your dashboard for any new leads:</p>
                   <p><a href="${siteUrl}/dashboard">Go to Dashboard</a></p>
@@ -219,11 +313,12 @@ export async function POST(req: NextRequest) {
 
             // Notify provider if subscription is at risk
             if (newStatus === "past_due") {
+              const safePastDueName = escapeHtml(provider.businessName);
               sendEmail({
                 to: provider.email,
                 subject: "Your subscription is past due — action required",
                 html: `
-                  <p>Hi ${provider.businessName},</p>
+                  <p>Hi ${safePastDueName},</p>
                   <p>Your Erie Pro territory subscription is now past due. Your territory may be deactivated if payment is not received.</p>
                   <p><a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro"}/dashboard/settings">Update Payment Info</a></p>
                 `,
@@ -257,6 +352,24 @@ export async function POST(req: NextRequest) {
       handled: result.handled,
       type: result.eventType,
     });
+    } catch (innerErr) {
+      // Roll back the idempotency claim so Stripe's next retry can
+      // actually reprocess this event. Without this, the claim row
+      // locks out the retry and the work is permanently lost.
+      // Best-effort: if the delete itself fails (DB still sick), we
+      // fall through and return 500 anyway so Stripe retries and the
+      // row will be cleaned up by the retry's P2002 rollback.
+      await prisma.stripeWebhookEvent
+        .delete({ where: { id: event.id } })
+        .catch((delErr) => {
+          logger.error(
+            "webhook/stripe",
+            "Failed to roll back idempotency claim after handler failure",
+            { eventId: event.id, delErr }
+          );
+        });
+      throw innerErr;
+    }
   } catch (err) {
     logger.error("webhook/stripe", "Error:", err);
     return NextResponse.json(
@@ -368,12 +481,16 @@ async function handleCheckoutCompleted(
 
     // 2.2: Send email verification if provider is not yet verified
     if (!provider.emailVerified) {
-      const token = crypto.randomUUID();
+      // Email the raw token, but store ONLY the hash so a DB-read
+      // attacker can't take over provider accounts by replaying the
+      // token against /api/verify-email.
+      const rawToken = crypto.randomUUID();
+      const hashedToken = hashVerificationToken(rawToken);
       await prisma.provider.update({
         where: { id: provider.id },
-        data: { emailVerifyToken: token },
+        data: { emailVerifyToken: hashedToken },
       });
-      sendEmailVerification(provider.email, token).catch((err) => {
+      sendEmailVerification(provider.email, rawToken).catch((err) => {
         logger.error("stripe-webhook", "Failed to send verification email", err);
       });
       logger.info("webhook/stripe", "Sent email verification to provider:", provider.id);
@@ -436,13 +553,17 @@ async function handleCheckoutCompleted(
         });
 
         if (listing?.email) {
-          // Auto-send verification code to listing's email
+          // Auto-send verification code to listing's email. Only the
+          // HMAC-SHA256 digest of the code is persisted (see
+          // src/lib/verification-code.ts); the raw 6-digit code goes out
+          // via email and is never in the database at rest.
           const code = crypto.randomInt(100000, 999999).toString();
+          const hashedCode = hashVerificationCode(code);
           const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
           await prisma.provider.update({
             where: { id: provider.id },
             data: {
-              verificationCode: code,
+              verificationCode: hashedCode,
               verificationCodeExp: expiresAt,
               verificationStatus: "pending",
               verificationAttempts: 1,
@@ -502,12 +623,14 @@ async function handleCheckoutCompleted(
     });
 
     if (adminEmail) {
+      const safeRequesterEmail = escapeHtml(requesterEmail);
+      const safeStripeSessionId = escapeHtml(stripeSessionId);
       sendEmail({
         to: adminEmail,
         subject: `[${cityConfig.slug}] New Concierge job — ${requesterEmail}`,
         html: `
-          <p>New Concierge job paid for by <strong>${requesterEmail}</strong>.</p>
-          <p>Stripe session: <code>${stripeSessionId}</code></p>
+          <p>New Concierge job paid for by <strong>${safeRequesterEmail}</strong>.</p>
+          <p>Stripe session: <code>${safeStripeSessionId}</code></p>
           <p>Follow up in the admin dashboard: <a href="${siteUrl}/admin">${siteUrl}/admin</a></p>
         `,
       }).catch((err) => {
@@ -560,12 +683,14 @@ async function handleCheckoutCompleted(
     });
 
     if (adminEmail) {
+      const safeRequesterEmail = escapeHtml(requesterEmail);
+      const safeStripeSessionId = escapeHtml(stripeSessionId);
       sendEmail({
         to: adminEmail,
         subject: `[${cityConfig.slug}] New Annual member — ${requesterEmail}`,
         html: `
-          <p>New Annual member: <strong>${requesterEmail}</strong>.</p>
-          <p>Stripe session: <code>${stripeSessionId}</code></p>
+          <p>New Annual member: <strong>${safeRequesterEmail}</strong>.</p>
+          <p>Stripe session: <code>${safeStripeSessionId}</code></p>
         `,
       }).catch((err) => {
         logger.error("stripe-webhook", "Annual ops alert failed", err);
@@ -587,6 +712,118 @@ async function handleCheckoutCompleted(
     });
 
     logger.info("webhook/stripe", `Annual membership: ${stripeSessionId} (${requesterEmail})`);
+  } else if (checkoutSession.sessionType === "lead_purchase") {
+    // ── Pay-per-lead delivery ────────────────────────────────────
+    // A buyer paid for a single banked lead via
+    // createLeadPurchaseCheckout. Historical bug this fix closes:
+    // there was NO webhook handler for this session type at all, so
+    // buyers were charged and the lead was never marked sold or
+    // delivered. Two concurrent buyers could pay for the same lead
+    // (both checkouts created against leadId L while it was still
+    // `unmatched`), and the system silently pocketed both payments
+    // without delivering anything.
+    //
+    // Fix: atomically flip the lead from `unmatched` → `overflow` via
+    // updateMany with the pre-state in WHERE. The DB guarantees
+    // exactly one caller sees count === 1 and gets the lead. A late
+    // race-loser sees count === 0, which we surface to the buyer as a
+    // refund notice and alert ops so they actually process the
+    // refund in Stripe.
+    const leadId = checkoutSession.leadId;
+    const buyerEmail = checkoutSession.providerEmail;
+    const niche = checkoutSession.niche;
+    const adminEmail = process.env.ADMIN_EMAIL;
+
+    if (!leadId) {
+      logger.error("webhook/stripe", "lead_purchase session has no leadId", { stripeSessionId });
+      await prisma.checkoutSession.updateMany({
+        where: { stripeSessionId },
+        data: { status: "completed", completedAt: new Date() },
+      });
+      return;
+    }
+
+    const consumed = await prisma.lead.updateMany({
+      where: { id: leadId, routeType: "unmatched" },
+      data: { routeType: "overflow" },
+    });
+
+    await prisma.checkoutSession.updateMany({
+      where: { stripeSessionId },
+      data: { status: "completed", completedAt: new Date() },
+    });
+
+    if (consumed.count === 1) {
+      // Winner: fetch lead details and deliver to buyer.
+      const lead = await prisma.lead.findUnique({
+        where: { id: leadId },
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          message: true,
+        },
+      });
+
+      if (lead) {
+        const leadName = [lead.firstName, lead.lastName].filter(Boolean).join(" ") || "Lead";
+        sendLeadPurchaseDelivery(
+          buyerEmail,
+          leadName,
+          lead.email,
+          lead.phone,
+          niche,
+          lead.message
+        ).catch((err) => logger.error("stripe-webhook", "Lead delivery email failed", err));
+      }
+
+      await audit({
+        action: "lead.purchased",
+        entityType: "lead",
+        entityId: leadId,
+        metadata: { stripeEventId, stripeSessionId, buyerEmail, niche, price: checkoutSession.price },
+      }).catch((err) => logger.error("stripe-webhook", "Lead purchase audit failed", err));
+
+      logger.info("webhook/stripe", `Lead purchased: ${leadId} by ${buyerEmail}`);
+    } else {
+      // Race-loser: the lead was already sold to another buyer between
+      // this buyer's checkout creation and the webhook firing. Notify
+      // them a refund is coming and alert ops to actually issue it.
+      sendLeadPurchaseRefundNotice(buyerEmail, niche, stripeSessionId)
+        .catch((err) => logger.error("stripe-webhook", "Refund notice email failed", err));
+
+      if (adminEmail) {
+        const safeSession = escapeHtml(stripeSessionId);
+        const safeBuyer = escapeHtml(buyerEmail);
+        const safeLeadId = escapeHtml(leadId);
+        const safeNiche = escapeHtml(niche);
+        sendEmail({
+          to: adminEmail,
+          subject: `[${cityConfig.slug}] REFUND NEEDED — lead_purchase race loss`,
+          html: `
+            <p>A buyer completed a <strong>lead_purchase</strong> checkout for a lead that was already sold.</p>
+            <p>Refund is required in Stripe.</p>
+            <ul>
+              <li>Stripe session: <code>${safeSession}</code></li>
+              <li>Buyer email: <strong>${safeBuyer}</strong></li>
+              <li>Lead id: <code>${safeLeadId}</code></li>
+              <li>Niche: ${safeNiche}</li>
+              <li>Amount: $${checkoutSession.price ?? "?"}</li>
+            </ul>
+          `,
+        }).catch((err) => logger.error("stripe-webhook", "Refund ops alert failed", err));
+      }
+
+      await audit({
+        action: "lead.purchase_race_loss",
+        entityType: "lead",
+        entityId: leadId,
+        metadata: { stripeEventId, stripeSessionId, buyerEmail, niche, price: checkoutSession.price },
+      }).catch((err) => logger.error("stripe-webhook", "Race-loss audit failed", err));
+
+      logger.warn("webhook/stripe", `lead_purchase race loss — refund needed: ${stripeSessionId}`);
+    }
   } else {
     // Unknown session type — mark completed and log.
     await prisma.checkoutSession.updateMany({

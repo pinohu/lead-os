@@ -5,6 +5,7 @@
 import { prisma } from "@/lib/db";
 import { cityConfig } from "@/lib/city-config";
 import { logger } from "@/lib/logger";
+import { stripHeaderBreaks } from "@/lib/email";
 import type {
   Notification as PrismaNotification,
   NotificationType,
@@ -110,10 +111,18 @@ async function sendEmail(
   subject: string,
   body: string
 ): Promise<boolean> {
+  // Defense-in-depth against SMTP header injection: strip CR/LF/NUL
+  // from fields that map onto RFC 5322 headers (To, Subject). Parallel
+  // to the stripHeaderBreaks guard in @/lib/email sendEmail — the two
+  // Emailit clients exist for historical reasons and must both be
+  // guarded. See email.ts for the attack description.
+  const safeTo = stripHeaderBreaks(to);
+  const safeSubject = stripHeaderBreaks(subject);
+
   if (isDryRun) {
     if (process.env.NODE_ENV === "development") {
-      logger.info("notifications", `DRY-RUN Email to: ${to.substring(0, 3)}***`);
-      logger.info("notifications", `  Subject: ${subject}`);
+      logger.info("notifications", `DRY-RUN Email to: ${safeTo.substring(0, 3)}***`);
+      logger.info("notifications", `  Subject: ${safeSubject}`);
     }
     return true;
   }
@@ -129,8 +138,8 @@ async function sendEmail(
         },
         body: JSON.stringify({
           from: `${FROM_NAME} <${FROM_EMAIL}>`,
-          to,
-          subject,
+          to: safeTo,
+          subject: safeSubject,
           text: body,
         }),
       });

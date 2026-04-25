@@ -20,6 +20,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { safeJsonLd } from "@/lib/jsonld"
 
 export const metadata: Metadata = {
   title: `All Services — ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
@@ -48,7 +49,7 @@ export default function ServicesPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(servicesJsonLd) }}
       />
       <main>
       {/* ── Breadcrumb ────────────────────────────────────────── */}

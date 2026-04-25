@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { isFeatureEnabled } from "@/lib/feature-flags";
 import { logger } from "@/lib/logger";
+import { cityConfig } from "@/lib/city-config";
 
 export async function POST(req: NextRequest) {
   if (!isFeatureEnabled("stripe_billing_portal")) {
@@ -49,9 +50,15 @@ export async function POST(req: NextRequest) {
     const stripe = (await import("stripe")).default;
     const stripeClient = new stripe(process.env.STRIPE_SECRET_KEY!);
 
+    // Use the server-configured canonical URL, NOT the incoming Host header.
+    // The Host header is attacker-controlled (e.g. via a misconfigured proxy
+    // or a crafted request) — reflecting it into Stripe's return_url would
+    // let an attacker cause the billing portal to redirect users to a
+    // phishing site after they finish managing their subscription.
+    const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? `https://${cityConfig.domain}`;
     const portalSession = await stripeClient.billingPortal.sessions.create({
       customer: provider.stripeCustomerId,
-      return_url: `https://${req.headers.get("host")}/dashboard/settings`,
+      return_url: `${siteUrl}/dashboard/settings`,
     });
 
     return NextResponse.json({

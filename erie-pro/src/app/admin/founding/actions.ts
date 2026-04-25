@@ -8,19 +8,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { requireAdminAction } from "@/lib/require-admin";
 import { getFoundingOffer } from "@/lib/founding-offer";
 import { setSetting, SETTING_KEYS } from "@/lib/settings";
-
-async function requireAdmin(): Promise<string> {
-  const session = await auth();
-  if (!session?.user) redirect("/login?callbackUrl=/admin/founding");
-  if ((session.user as { role?: string }).role !== "admin") {
-    redirect("/dashboard");
-  }
-  return session.user.email ?? "unknown";
-}
 
 function parseInt0(raw: FormDataEntryValue | null, fallback: number): number {
   if (typeof raw !== "string") return fallback;
@@ -34,7 +25,7 @@ function refreshPublic() {
 }
 
 export async function incrementFoundingClaimed(formData: FormData) {
-  const admin = await requireAdmin();
+  const { email: admin } = await requireAdminAction("/login?callbackUrl=/admin/founding");
   const current = await getFoundingOffer();
   const next = Math.min(current.claimedSlots + 1, current.totalSlots);
 
@@ -61,7 +52,7 @@ export async function incrementFoundingClaimed(formData: FormData) {
 }
 
 export async function saveFoundingOffer(formData: FormData) {
-  const admin = await requireAdmin();
+  const { email: admin } = await requireAdminAction("/login?callbackUrl=/admin/founding");
   const current = await getFoundingOffer();
 
   const claimedSlots = parseInt0(formData.get("claimedSlots"), current.claimedSlots);
@@ -106,7 +97,7 @@ export async function saveFoundingOffer(formData: FormData) {
 }
 
 export async function resetFoundingOfferToEnv(formData: FormData) {
-  const admin = await requireAdmin();
+  const { email: admin } = await requireAdminAction("/login?callbackUrl=/admin/founding");
 
   await prisma.setting.deleteMany({
     where: {

@@ -2,10 +2,15 @@
 // GET /verify-email?token=xxx
 // Server component that verifies the provider's email from a token link.
 // Redirects to dashboard on success, shows error message on failure.
+//
+// Tokens are stored as SHA-256 hashes at rest (see src/lib/verification-token.ts
+// and the Stripe webhook that seeds them). We hash the URL-supplied token the
+// same way before looking it up so a DB-read attacker can't replay raw tokens.
 
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
+import { hashVerificationToken } from "@/lib/verification-token";
 
 interface PageProps {
   searchParams: Promise<{ token?: string }>;
@@ -25,9 +30,10 @@ export default async function VerifyEmailPage({ searchParams }: PageProps) {
     );
   }
 
-  // Look up provider by verification token
+  // Look up provider by verification token (hashed at rest)
+  const hashedToken = hashVerificationToken(token);
   const provider = await prisma.provider.findFirst({
-    where: { emailVerifyToken: token },
+    where: { emailVerifyToken: hashedToken },
     select: { id: true, email: true, emailVerified: true },
   });
 

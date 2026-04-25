@@ -10,6 +10,7 @@ import { audit } from "@/lib/audit-log";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { MAX_BODY_SIZE, sanitizeText } from "@/lib/validation";
+import { getClientIp } from "@/lib/client-ip";
 
 const DisputeSchema = z.object({
   leadId: z.string().min(1, "Lead ID is required"),
@@ -84,27 +85,33 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check for duplicate dispute
-    const existingDispute = await prisma.leadDispute.findFirst({
-      where: { leadId, providerId },
-    });
-    if (existingDispute) {
-      return NextResponse.json(
-        { success: false, error: "A dispute has already been filed for this lead" },
-        { status: 409 }
-      );
+    // Create the dispute. The DB has a UNIQUE (leadId, providerId)
+    // index backing this write, so the previous "findFirst then create"
+    // dedupe — which was racy and let a provider win a double-credit by
+    // submitting two disputes in parallel — is now collapsed into a
+    // single atomic INSERT. A duplicate surfaces as Prisma P2002 and is
+    // mapped to 409 so the caller sees the same "already filed" error.
+    let dispute;
+    try {
+      dispute = await prisma.leadDispute.create({
+        data: {
+          leadId,
+          providerId,
+          reason,
+          description: description ?? null,
+          status: "pending",
+        },
+      });
+    } catch (err: unknown) {
+      const code = (err as { code?: string } | null)?.code;
+      if (code === "P2002") {
+        return NextResponse.json(
+          { success: false, error: "A dispute has already been filed for this lead" },
+          { status: 409 }
+        );
+      }
+      throw err;
     }
-
-    // Create the dispute
-    const dispute = await prisma.leadDispute.create({
-      data: {
-        leadId,
-        providerId,
-        reason,
-        description: description ?? null,
-        status: "pending",
-      },
-    });
 
     await audit({
       action: "lead.disputed",
@@ -112,7 +119,7 @@ export async function POST(req: NextRequest) {
       entityId: dispute.id,
       providerId,
       metadata: { leadId, reason },
-      ipAddress: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      ipAddress: getClientIp(req),
     });
 
     return NextResponse.json({
