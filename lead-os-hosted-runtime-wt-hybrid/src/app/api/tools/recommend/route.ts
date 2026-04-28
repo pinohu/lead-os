@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { buildCorsHeaders } from "@/lib/cors";
 import { getRecommendedTools, getToolsByPriority } from "@/lib/tool-catalog";
-
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
 
 const VALID_GOALS = [
   "increase-leads",
@@ -35,12 +30,13 @@ const bodySchema = z.object({
     .optional(),
 });
 
-export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+export function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, { status: 204, headers: buildCorsHeaders(request.headers.get("origin")) });
 }
 
 export async function POST(request: NextRequest) {
   const requestId = crypto.randomUUID();
+  const corsHeaders = buildCorsHeaders(request.headers.get("origin"));
 
   let body: unknown;
   try {
@@ -56,7 +52,7 @@ export async function POST(request: NextRequest) {
         },
         meta: { requestId },
       },
-      { status: 400, headers: CORS_HEADERS }
+      { status: 400, headers: corsHeaders }
     );
   }
 
@@ -76,7 +72,7 @@ export async function POST(request: NextRequest) {
         },
         meta: { requestId },
       },
-      { status: 422, headers: CORS_HEADERS }
+      { status: 422, headers: corsHeaders }
     );
   }
 
@@ -110,6 +106,6 @@ export async function POST(request: NextRequest) {
         validGoals: VALID_GOALS,
       },
     },
-    { status: 200, headers: CORS_HEADERS }
+    { status: 200, headers: corsHeaders }
   );
 }
