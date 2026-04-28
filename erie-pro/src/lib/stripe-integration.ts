@@ -31,18 +31,21 @@ export interface StripeWebhookResult {
 const STRIPE_SECRET_KEY = getEnvValue("STRIPE_SECRET_KEY");
 const STRIPE_WEBHOOK_SECRET = getStripeWebhookSecret();
 const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL ?? `https://${cityConfig.domain}`;
+const isProductionDeployment =
+  process.env.NODE_ENV === "production" && process.env.VERCEL_ENV !== "preview";
 
 // Production guard: Stripe keys MUST be present when running in production.
-// Dry-run mode is NEVER allowed in production — it would silently skip real payments.
-if (process.env.NODE_ENV === "production" && !STRIPE_SECRET_KEY) {
+// Dry-run mode is NEVER allowed in the real production deployment — it would
+// silently skip real payments. Vercel preview builds are allowed to run dry
+// because preview envs intentionally do not receive live Stripe credentials.
+if (isProductionDeployment && !STRIPE_SECRET_KEY) {
   throw new Error(
     "[stripe-integration] STRIPE_SECRET_KEY is required in production. " +
     "Set the STRIPE_SECRET_KEY environment variable to your Stripe secret key."
   );
 }
 
-const isProduction = process.env.NODE_ENV === "production";
-const isDryRun = isProduction ? false : !STRIPE_SECRET_KEY;
+const isDryRun = isProductionDeployment ? false : !STRIPE_SECRET_KEY;
 
 // Initialize Stripe SDK (only when key is set)
 const stripe = isDryRun ? null : new Stripe(STRIPE_SECRET_KEY);
