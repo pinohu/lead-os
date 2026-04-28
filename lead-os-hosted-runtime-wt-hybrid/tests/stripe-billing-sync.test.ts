@@ -4,7 +4,7 @@ import { describe, it } from "node:test";
 import {
   catalogPlanIdToBillingPlanKey,
   mapStripeStatusToBillingSubscriptionStatus,
-} from "../src/lib/billing/stripe-billing-subscription-sync";
+} from "../src/lib/billing/stripe-billing-subscription-sync.ts";
 
 describe("stripe billing subscription sync helpers", () => {
   it("maps Stripe statuses into billing_subscriptions CHECK values", () => {

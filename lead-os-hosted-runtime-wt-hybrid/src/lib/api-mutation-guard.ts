@@ -1,7 +1,7 @@
 // src/lib/api-mutation-guard.ts
 // Tenant alignment for authenticated API routes (operator + tenant users).
 
-import { tenantConfig } from "@/lib/tenant";
+import { tenantConfig } from "./tenant.ts";
 
 export function getRequestTenantId(request: Request): string | null {
   return request.headers.get("x-authenticated-tenant-id");

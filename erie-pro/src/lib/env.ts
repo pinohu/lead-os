@@ -4,6 +4,9 @@
 
 import { z } from "zod";
 import { logger } from "@/lib/logger";
+import { applyEnvAliases } from "@/lib/env-aliases";
+
+applyEnvAliases();
 
 /** Treat empty strings as undefined so `.optional()` works with blank env vars */
 const emptyToUndefined = z.string().transform((v) => (v === "" ? undefined : v));

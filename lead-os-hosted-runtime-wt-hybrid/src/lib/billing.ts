@@ -2,21 +2,21 @@ import Stripe from "stripe";
 import { getPlanById, type PlanDefinition } from "./plan-catalog.ts";
 
 /** Stripe v22+ — avoid `Stripe.Checkout.SessionCreateParams` (not exported on `Checkout` in ESM builds). */
-type StripeCheckoutSessionCreateParams = Parameters<Stripe["checkout"]["sessions"]["create"]>[0];
+type StripeCheckoutSessionCreateParams = NonNullable<Parameters<Stripe["checkout"]["sessions"]["create"]>[0]>;
 type StripeCheckoutLineItem = NonNullable<StripeCheckoutSessionCreateParams["line_items"]>[number];
 import {
   getSubscription,
   upsertSubscription,
   type SubscriptionRecord,
 } from "./billing-store.ts";
-import { pricingLog } from "./pricing/logger";
-import { releaseStripeWebhookEventClaim, tryClaimStripeWebhookEvent } from "./billing/stripe-webhook-idempotency";
+import { pricingLog } from "./pricing/logger.ts";
+import { releaseStripeWebhookEventClaim, tryClaimStripeWebhookEvent } from "./billing/stripe-webhook-idempotency.ts";
 import {
   catalogPlanIdToBillingPlanKey,
   mapStripeStatusToBillingSubscriptionStatus,
   resolvePlanKeyFromStripeSubscription,
   upsertBillingSubscriptionFromStripe,
-} from "./billing/stripe-billing-subscription-sync";
+} from "./billing/stripe-billing-subscription-sync.ts";
 
 function getStripeClient(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY;

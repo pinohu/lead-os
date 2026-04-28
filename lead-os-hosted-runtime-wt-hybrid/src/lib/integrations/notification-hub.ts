@@ -1,6 +1,6 @@
-import { createHmac } from "crypto";
 import { sendEmail } from "../email-sender.ts";
 import { getTemplate } from "../email-templates.ts";
+import { createSelfServiceToken } from "../self-service-tokens.ts";
 import { resolveTenantConfig } from "../tenant.ts";
 
 export type NotificationChannel =
@@ -181,13 +181,9 @@ async function sendViaNovu(notification: Notification): Promise<NotificationResu
 // Direct dispatch fallbacks
 // ---------------------------------------------------------------------------
 
-function buildNotificationUnsubscribeUrl(siteUrl: string, email: string, tenantId: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET;
-  if (!secret) return `${siteUrl}/api/unsubscribe`;
-  const token = createHmac("sha256", secret)
-    .update(`${email.toLowerCase().trim()}::${tenantId}`)
-    .digest("hex")
-    .slice(0, 24);
+function buildNotificationUnsubscribeUrl(siteUrl: string, email: string, tenantId: string): string | null {
+  const token = createSelfServiceToken("unsubscribe", email, tenantId, 24);
+  if (!token) return null;
   return `${siteUrl}/api/unsubscribe?email=${encodeURIComponent(email)}&tenant=${encodeURIComponent(tenantId)}&token=${token}`;
 }
 
@@ -202,6 +198,14 @@ async function dispatchEmail(notification: Notification, tmpl: TemplateDefinitio
   const tenant = await resolveTenantConfig(notification.tenantId);
   const subject = renderTemplate(tmpl.subject, notification.data);
   const html = `<p>${renderTemplate(tmpl.body, notification.data).replace(/\n/g, "<br>")}</p>`;
+  const unsubscribeUrl = buildNotificationUnsubscribeUrl(
+    tenant.siteUrl,
+    notification.recipientEmail,
+    notification.tenantId,
+  );
+  if (!unsubscribeUrl) {
+    return { id, channel: "email", status: "failed", timestamp };
+  }
 
   const emailTemplate = getTemplate("transactional-plain");
 
@@ -222,7 +226,7 @@ async function dispatchEmail(notification: Notification, tmpl: TemplateDefinitio
       brandName: tenant.brandName,
       siteUrl: tenant.siteUrl,
       supportEmail: tenant.supportEmail,
-      unsubscribeUrl: buildNotificationUnsubscribeUrl(tenant.siteUrl, notification.recipientEmail, notification.tenantId),
+      unsubscribeUrl,
       currentYear: new Date().getFullYear().toString(),
       recipientEmail: notification.recipientEmail,
       previewText: subject,

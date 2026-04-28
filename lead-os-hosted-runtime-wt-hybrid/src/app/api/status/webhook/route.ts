@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { logAuditEntry, persistAuditEntry } from "@/lib/agent-audit-log";
 import { recordCheck } from "@/lib/uptime-tracker";
-import { embeddedSecrets } from "@/lib/embedded-secrets";
+import { timingSafeEqual } from "crypto";
 
 // ---------------------------------------------------------------------------
 // POST /api/status/webhook
@@ -19,11 +19,16 @@ interface WebhookBody {
 
 export async function POST(request: Request) {
   // ── Auth ────────────────────────────────────────────────────────────────
-  const secret =
-    process.env.CRON_SECRET ?? embeddedSecrets?.cron?.secret ?? "";
+  const secret = process.env.CRON_SECRET ?? "";
   const authHeader = request.headers.get("x-cron-secret") ?? request.headers.get("authorization")?.replace("Bearer ", "") ?? "";
 
-  if (!secret || authHeader !== secret) {
+  const authOk =
+    Boolean(secret) &&
+    Boolean(authHeader) &&
+    Buffer.from(authHeader).length === Buffer.from(secret).length &&
+    timingSafeEqual(Buffer.from(authHeader), Buffer.from(secret));
+
+  if (!authOk) {
     return NextResponse.json(
       { success: false, error: "Unauthorized" },
       { status: 401 },

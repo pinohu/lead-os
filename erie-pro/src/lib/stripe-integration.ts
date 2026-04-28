@@ -6,6 +6,7 @@ import Stripe from "stripe";
 import { prisma } from "@/lib/db";
 import { cityConfig } from "@/lib/city-config";
 import { logger } from "@/lib/logger";
+import { getStripeWebhookSecret, getEnvValue } from "@/lib/env-aliases";
 
 // ── Public Interfaces ──────────────────────────────────────────────
 
@@ -27,8 +28,8 @@ export interface StripeWebhookResult {
 
 // ── Configuration ──────────────────────────────────────────────────
 
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY ?? "";
-const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET ?? "";
+const STRIPE_SECRET_KEY = getEnvValue("STRIPE_SECRET_KEY");
+const STRIPE_WEBHOOK_SECRET = getStripeWebhookSecret();
 const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL ?? `https://${cityConfig.domain}`;
 
 // Production guard: Stripe keys MUST be present when running in production.

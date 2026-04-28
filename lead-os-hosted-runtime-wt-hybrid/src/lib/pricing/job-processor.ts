@@ -1,8 +1,8 @@
 // src/lib/pricing/job-processor.ts
 // Node scan → simulation → recommendations → safety → history / outcomes / apply.
 
-import { initializeDatabase } from "@/lib/db.ts";
-import { assertPricingExecutionAllowed } from "@/lib/billing/entitlements";
+import { initializeDatabase } from "../db.ts";
+import { assertPricingExecutionAllowed } from "../billing/entitlements.ts";
 import { evolveDemandScore, runPriceSimulation } from "./autopilot-engine.ts";
 import { evaluateSafety, evaluateShadowStructuralSafety } from "./safety-policy.ts";
 import {

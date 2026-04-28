@@ -4,6 +4,7 @@
 
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { decryptWebhookSecret } from "@/lib/webhook-secret";
 import crypto from "crypto";
 
 /** Maximum retry attempts per delivery */
@@ -48,7 +49,7 @@ export async function deliverWebhookEvent(
 
     // Deliver to each endpoint in parallel
     await Promise.allSettled(
-      endpoints.map((ep) => deliverToEndpoint(ep.id, ep.url, ep.secret, body))
+      endpoints.map((ep) => deliverToEndpoint(ep.id, ep.url, decryptWebhookSecret(ep.secret), body))
     );
   } catch (err) {
     logger.error("webhook-delivery", "Failed to deliver webhook event:", err);
@@ -180,7 +181,7 @@ export async function sendTestWebhook(
       data: { message: "This is a test webhook from Erie Pro" },
     });
 
-    const signature = signPayload(body, endpoint.secret);
+    const signature = signPayload(body, decryptWebhookSecret(endpoint.secret));
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10_000);

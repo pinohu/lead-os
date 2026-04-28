@@ -7,7 +7,8 @@ import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { createHash } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
+import { getAuthSecret, getEnvValue } from "@/lib/env-aliases";
 
 const UnsubscribeSchema = z
   .object({
@@ -18,10 +19,28 @@ const UnsubscribeSchema = z
     message: "Email or phone required",
   });
 
-/** Generate a simple HMAC token for email unsubscribe links */
+function getUnsubscribeSecret(): string {
+  const secret = getEnvValue("UNSUBSCRIBE_SECRET") || getAuthSecret();
+  if (secret) return secret;
+
+  if (process.env.NODE_ENV !== "production") {
+    return "dev-only-unsubscribe-secret";
+  }
+
+  throw new Error("UNSUBSCRIBE_SECRET or AUTH_SECRET is required for unsubscribe links");
+}
+
+/** Generate an HMAC token for email unsubscribe links. */
 function generateUnsubscribeToken(email: string): string {
-  const secret = process.env.UNSUBSCRIBE_SECRET || process.env.NEXTAUTH_SECRET || "default-unsubscribe-secret";
-  return createHash("sha256").update(`${email}:${secret}`).digest("hex").slice(0, 32);
+  return createHmac("sha256", getUnsubscribeSecret())
+    .update(email.toLowerCase().trim())
+    .digest("hex")
+    .slice(0, 32);
+}
+
+function tokenMatches(actual: string, expected: string) {
+  if (actual.length !== expected.length) return false;
+  return timingSafeEqual(Buffer.from(actual), Buffer.from(expected));
 }
 
 export async function POST(req: NextRequest) {
@@ -105,8 +124,17 @@ export async function GET(req: NextRequest) {
 
   // Always require a valid token. Without this gate, anyone who knew/guessed
   // an email could unsubscribe legitimate users (harassment / DOS vector).
-  const expectedToken = generateUnsubscribeToken(email);
-  if (!token || token !== expectedToken) {
+  let expectedToken: string;
+  try {
+    expectedToken = generateUnsubscribeToken(email);
+  } catch {
+    return new NextResponse(
+      "<html><body><h1>Unavailable</h1><p>Unsubscribe links are temporarily unavailable. Please contact support.</p></body></html>",
+      { status: 503, headers: { "Content-Type": "text/html" } }
+    );
+  }
+
+  if (!token || !tokenMatches(token, expectedToken)) {
     return new NextResponse(
       "<html><body><h1>Invalid or Missing Token</h1><p>The unsubscribe link is invalid or expired. If you wish to unsubscribe, please use the link from your most recent email or contact support.</p></body></html>",
       { status: 403, headers: { "Content-Type": "text/html" } }

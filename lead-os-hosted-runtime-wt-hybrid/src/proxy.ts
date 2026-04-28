@@ -4,8 +4,6 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
 import { startTrace } from "@/lib/request-tracer";
 
-export const runtime = "nodejs";
-
 // ---------------------------------------------------------------------------
 // Rate limiter for auth endpoints — 10 requests per minute per IP
 // ---------------------------------------------------------------------------
@@ -53,6 +51,7 @@ const PUBLIC_EXACT: Set<string> = new Set([
   "/api/unsubscribe",
   "/api/setup/status",
   "/api/contact",
+  "/api/gdpr/self-service",
 ]);
 
 const PUBLIC_PREFIXES: string[] = [
@@ -60,7 +59,6 @@ const PUBLIC_PREFIXES: string[] = [
   "/api/embed/",
   "/api/widgets/boot",
   "/api/auth/",
-  "/api/gdpr/",
   "/api/preferences",
   "/api/webhooks/stripe",
   "/api/billing/webhook",
@@ -200,7 +198,7 @@ async function forwardWithIdentityAndPolicies(
         cspNonce,
       );
     }
-    if (!assertApiAccessTierAllows(state, tier)) {
+    if (tier !== "none" && !assertApiAccessTierAllows(state, tier)) {
       pricingLog("warn", "billing_middleware_blocked", {
         pathname,
         method,
@@ -259,7 +257,7 @@ function getClientIp(request: NextRequest): string {
   return request.headers.get("x-real-ip") ?? "unknown";
 }
 
-export async function middleware(request: NextRequest): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const requestId = crypto.randomUUID();
   const cspNonce = randomBytes(16).toString("base64");
   const { pathname } = request.nextUrl;

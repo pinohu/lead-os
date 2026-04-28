@@ -1,6 +1,6 @@
-import { createHmac } from "crypto";
 import { NextResponse } from "next/server";
 import { processUnsubscribe } from "@/lib/email-sender";
+import { createSelfServiceToken, verifySelfServiceToken } from "@/lib/self-service-tokens";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -15,11 +15,14 @@ export async function GET(request: Request) {
     });
   }
 
-  const expectedToken = generateUnsubscribeToken(email, tenant);
+  if (!process.env.LEAD_OS_AUTH_SECRET?.trim()) {
+    return new NextResponse(renderPage("Temporarily Unavailable", "Email preference links are not configured. Please contact support."), {
+      status: 503,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
+  }
 
-  // Support legacy tokens during migration
-  const legacyToken = simpleHash(email + tenant);
-  if (token !== expectedToken && token !== legacyToken) {
+  if (!token || !validateUnsubscribeToken(email, tenant, token)) {
     return new NextResponse(renderPage("Invalid Request", "The unsubscribe link is invalid or has expired. Please use the link from your most recent email."), {
       status: 400,
       headers: { "Content-Type": "text/html; charset=utf-8" },
@@ -42,21 +45,11 @@ export async function GET(request: Request) {
 }
 
 function generateUnsubscribeToken(email: string, tenant: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "";
-  if (!secret) return "";
-  return createHmac("sha256", secret)
-    .update(`${email.toLowerCase().trim()}::${tenant}`)
-    .digest("hex")
-    .slice(0, 24);
+  return createSelfServiceToken("unsubscribe", email, tenant, 24) ?? "";
 }
 
-function simpleHash(input: string): string {
-  let hash = 0;
-  for (let i = 0; i < input.length; i++) {
-    const char = input.charCodeAt(i);
-    hash = ((hash << 5) - hash + char) | 0;
-  }
-  return Math.abs(hash).toString(36);
+function validateUnsubscribeToken(email: string, tenant: string, token: string): boolean {
+  return verifySelfServiceToken("unsubscribe", email, tenant, token, 24);
 }
 
 function escapeHtml(text: string): string {

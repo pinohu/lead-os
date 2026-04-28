@@ -588,3 +588,16 @@ model WebhookEndpoint {
   @@index([providerId])
   @@map("webhook_endpoints")
 }
+
+model LoginAttempt {
+  keyHash        String   @id @map("key_hash")
+  emailHash      String   @map("email_hash")
+  ipHash         String   @map("ip_hash")
+  attemptCount   Int      @default(0) @map("attempt_count")
+  firstAttemptAt DateTime @default(now()) @map("first_attempt_at")
+  lastAttemptAt  DateTime @default(now()) @map("last_attempt_at")
+
+  @@index([emailHash])
+  @@index([lastAttemptAt])
+  @@map("login_attempts")
+}

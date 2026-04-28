@@ -1,8 +1,8 @@
 // src/lib/billing/billing-gate-cache.ts
 // Short-TTL cache for billing gate queries to avoid Postgres on every middleware hop.
 
-import type { BillingGateState } from "@/lib/billing/entitlements";
-import { getBillingGateState } from "@/lib/billing/entitlements";
+import type { BillingGateState } from "./entitlements.ts";
+import { getBillingGateState } from "./entitlements.ts";
 
 const TTL_MS = Math.max(5_000, Number(process.env.LEAD_OS_BILLING_CACHE_TTL_MS ?? 60_000));
 

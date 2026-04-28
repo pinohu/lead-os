@@ -1,16 +1,15 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
-import { embeddedSecrets } from "./embedded-secrets.ts";
 import {
   createMagicLinkUrl,
   decodeOperatorToken,
-  getAllowedOperatorEmails as resolveAllowedOperatorEmails,
   isAllowedOperatorEmail as isAllowedOperatorEmailInList,
   issueOperatorToken,
   normalizeEmail,
   sanitizeNextPath,
 } from "./operator-auth-core.ts";
+import { getConfiguredOperatorEmails, getOperatorAuthSecret } from "./operator-auth-config.ts";
 import { sendEmailAction } from "./providers.ts";
 import { tenantConfig } from "./tenant.ts";
 import { ensureTraceContext } from "./trace.ts";
@@ -19,15 +18,11 @@ export const OPERATOR_SESSION_COOKIE = "leados_operator_session";
 export { sanitizeNextPath } from "./operator-auth-core.ts";
 
 function getAuthSecret() {
-  return process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? embeddedSecrets.cron.secret;
+  return getOperatorAuthSecret();
 }
 
 export function getAllowedOperatorEmails() {
-  return resolveAllowedOperatorEmails(process.env.LEAD_OS_OPERATOR_EMAILS, [
-    process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
-    tenantConfig.supportEmail,
-    "polycarpohu@gmail.com",
-  ]);
+  return getConfiguredOperatorEmails();
 }
 
 export function isAllowedOperatorEmail(email: string) {

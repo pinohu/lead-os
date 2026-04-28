@@ -2,9 +2,10 @@
 // Sends transactional emails via Emailit (when EMAILIT_API_KEY is set).
 // Falls back to console logging in dev/dry-run mode.
 
-import { createHash } from "crypto";
+import { createHmac } from "crypto";
 import { cityConfig } from "@/lib/city-config";
 import { logger } from "@/lib/logger";
+import { getAuthSecret, getEnvValue } from "@/lib/env-aliases";
 
 /** Escape HTML special characters to prevent XSS in email templates */
 function escapeHtml(text: string): string {
@@ -31,12 +32,12 @@ const PHYSICAL_ADDRESS = `123 State St, Erie, PA 16501`;
 function getUnsubscribeUrl(recipientEmail: string): string {
   // Include an HMAC token so unauthenticated GETs can't unsubscribe arbitrary
   // emails. The token is stable per-email so links remain valid across sends.
-  const secret =
-    process.env.UNSUBSCRIBE_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
-    "default-unsubscribe-secret";
-  const token = createHash("sha256")
-    .update(`${recipientEmail.toLowerCase().trim()}:${secret}`)
+  const secret = getEnvValue("UNSUBSCRIBE_SECRET") || getAuthSecret();
+  if (!secret && process.env.NODE_ENV === "production") {
+    throw new Error("UNSUBSCRIBE_SECRET or AUTH_SECRET is required for unsubscribe links");
+  }
+  const token = createHmac("sha256", secret || "dev-only-unsubscribe-secret")
+    .update(recipientEmail.toLowerCase().trim())
     .digest("hex")
     .slice(0, 32);
   return `${SITE_URL}/api/unsubscribe?email=${encodeURIComponent(recipientEmail)}&token=${token}`;

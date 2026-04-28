@@ -2,9 +2,9 @@
 // Maps Stripe subscription state → billing_subscriptions (migration 007).
 
 import type Stripe from "stripe";
-import { getPool, queryPostgres } from "@/lib/db";
-import { PLAN_CATALOG, getPlanById } from "@/lib/plan-catalog";
-import { pricingLog } from "@/lib/pricing/logger";
+import { getPool, queryPostgres } from "../db.ts";
+import { PLAN_CATALOG, getPlanById } from "../plan-catalog.ts";
+import { pricingLog } from "../pricing/logger.ts";
 
 export type BillingSubscriptionRowStatus = "active" | "canceled" | "past_due" | "trialing";
 

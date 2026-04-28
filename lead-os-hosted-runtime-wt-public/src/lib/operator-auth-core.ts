@@ -50,6 +50,15 @@ export function isAllowedOperatorEmail(email: string, allowedEmails: string[]) {
   return allowedEmails.includes(normalizeEmail(email));
 }
 
+function timingSafeStringEqual(actual: string, expected: string) {
+  if (actual.length !== expected.length) return false;
+  let mismatch = 0;
+  for (let index = 0; index < expected.length; index++) {
+    mismatch |= actual.charCodeAt(index) ^ expected.charCodeAt(index);
+  }
+  return mismatch === 0;
+}
+
 async function signValue(value: string, secret: string) {
   const key = await crypto.subtle.importKey(
     "raw",
@@ -78,7 +87,7 @@ export async function decodeOperatorToken(
   if (!body || !signature) return null;
 
   const expectedSignature = await signValue(body, secret);
-  if (signature !== expectedSignature) return null;
+  if (!timingSafeStringEqual(signature, expectedSignature)) return null;
 
   try {
     const payload = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as OperatorTokenPayload;

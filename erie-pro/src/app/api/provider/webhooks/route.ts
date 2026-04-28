@@ -10,6 +10,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import { sendTestWebhook } from "@/lib/webhook-delivery";
+import { encryptWebhookSecret } from "@/lib/webhook-secret";
 import crypto from "crypto";
 import { z } from "zod";
 
@@ -107,7 +108,7 @@ export async function POST(req: NextRequest) {
         providerId,
         url: parsed.data.url,
         events: parsed.data.events,
-        secret,
+        secret: encryptWebhookSecret(secret),
       },
     });
 

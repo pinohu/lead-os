@@ -1,5 +1,7 @@
 # Lead OS — Comprehensive Codebase Audit
 
+> **Superseded status (2026-04-27):** This historical 2026-04-04 report is retained for audit trail only. The 2026-04-27 remediation pass fixed the current hybrid GDPR operator auth bypass, public-runtime fail-open auth/cron/CORS behavior, dependency advisories, CI audit enforcement, Erie admin setup race, Erie shared login rate limiting, and outbound webhook-secret encryption-at-rest for new webhooks. Re-run current tests, audits, and secret-history checks before treating any historical finding below as still open.
+
 > **Snapshot notice (read before acting):** This document is a **point-in-time automated report from 2026-04-04**. Counts, severities, and especially **“production secrets committed”** / **“auth bypass”** style claims may already be **remediated** or may not apply to your branch. Before operational response, **re-run** secret scanning, `git log -S`, and the relevant `npm test` / `npm run build` commands on the commit you ship. For current public vs operator routes, prefer **`lead-os-hosted-runtime-wt-hybrid/docs/PRODUCT-SURFACES.md`**.
 
 **Date:** 2026-04-04  
