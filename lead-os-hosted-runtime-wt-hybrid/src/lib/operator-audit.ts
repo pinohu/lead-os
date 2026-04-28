@@ -1,7 +1,7 @@
 // src/lib/operator-audit.ts
 // Persisted audit trail for operator mutations.
 
-import { queryPostgres } from "@/lib/db";
+import { queryPostgres } from "./db.ts";
 
 export interface OperatorAuditInput {
   actorEmail: string;

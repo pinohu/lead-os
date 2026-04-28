@@ -2,12 +2,28 @@
 // Stripe subscription webhooks (public; signature-verified; idempotent).
 
 import { NextResponse } from "next/server";
-import { handleStripeWebhook } from "@/lib/billing";
+import { getStripeWebhookConfigStatus, handleStripeWebhook } from "@/lib/billing";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
+    const configStatus = getStripeWebhookConfigStatus();
+    if (configStatus.productionMissing) {
+      return NextResponse.json(
+        {
+          data: null,
+          error: {
+            code: "STRIPE_WEBHOOK_UNAVAILABLE",
+            message: "Stripe webhook production configuration is missing",
+            missing: configStatus.missing,
+          },
+          meta: null,
+        },
+        { status: 503 },
+      );
+    }
+
     const signature = request.headers.get("stripe-signature");
     if (!signature) {
       return NextResponse.json(

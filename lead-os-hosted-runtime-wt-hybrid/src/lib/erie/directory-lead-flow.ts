@@ -1,14 +1,14 @@
 // src/lib/erie/directory-lead-flow.ts
 // Erie.pro-style directory routing: category → node, billing gate, delivery, persistence.
 
-import { getPool, queryPostgres } from "@/lib/db";
-import { getBillingGateState } from "@/lib/billing/entitlements";
-import { appendEvents } from "@/lib/runtime-store";
-import { createCanonicalEvent } from "@/lib/trace";
-import type { TraceContext } from "@/lib/trace";
-import { sendLead } from "@/lib/integrations/lead-delivery-hub";
-import { logger } from "@/lib/logger";
-import type { IntegrationSendResult } from "@/lib/integrations/lead-delivery-hub";
+import { getPool, queryPostgres } from "../db.ts";
+import { getBillingGateState } from "../billing/entitlements.ts";
+import { appendEvents } from "../runtime-store.ts";
+import { createCanonicalEvent } from "../trace.ts";
+import type { TraceContext } from "../trace.ts";
+import { sendLead } from "../integrations/lead-delivery-hub.ts";
+import { logger } from "../logger.ts";
+import type { IntegrationSendResult } from "../integrations/lead-delivery-hub.ts";
 
 export interface DirectoryLeadFlowInput {
   tenantId: string;

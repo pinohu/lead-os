@@ -1,11 +1,11 @@
 // ---------------------------------------------------------------------------
 // SSO — SAML & OIDC single sign-on (lightweight, zero heavy dependencies).
-// Uses only Node.js built-ins + fetch. JWT parsing is base64url-only (no
-// signature verification against JWKS — the token comes straight from the
-// IdP token endpoint over TLS, so it's trusted by transport).
+// Uses only Node.js built-ins + fetch. OIDC ID tokens are verified against
+// JWKS before claims are trusted. SAML assertions fail closed until XML
+// signature verification is wired through a dedicated SAML library.
 // ---------------------------------------------------------------------------
 
-import { randomBytes } from "crypto";
+import { createPublicKey, randomBytes, verify, type JsonWebKey } from "crypto";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -17,6 +17,7 @@ export interface OidcConfig {
   issuerUrl: string;
   callbackUrl: string;
   scopes: string[];
+  jwksUrl?: string;
 }
 
 export interface SamlConfig {
@@ -47,6 +48,7 @@ export function getOidcConfig(): OidcConfig | null {
   const clientId = process.env.LEAD_OS_SSO_OIDC_CLIENT_ID;
   const clientSecret = process.env.LEAD_OS_SSO_OIDC_CLIENT_SECRET;
   const issuerUrl = process.env.LEAD_OS_SSO_OIDC_ISSUER_URL;
+  const jwksUrl = process.env.LEAD_OS_SSO_OIDC_JWKS_URL;
   const callbackUrl =
     process.env.LEAD_OS_SSO_OIDC_CALLBACK_URL ??
     `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/api/auth/sso/oidc/callback`;
@@ -55,7 +57,7 @@ export function getOidcConfig(): OidcConfig | null {
 
   const scopes = (process.env.LEAD_OS_SSO_OIDC_SCOPES ?? "openid email profile").split(/[\s,]+/);
 
-  return { clientId, clientSecret, issuerUrl, callbackUrl, scopes };
+  return { clientId, clientSecret, issuerUrl, callbackUrl, scopes, jwksUrl };
 }
 
 /**
@@ -111,19 +113,147 @@ export async function exchangeOidcCode(
   };
 }
 
+type JwtHeader = {
+  alg?: string;
+  kid?: string;
+  typ?: string;
+};
+
+type JwksDocument = {
+  keys?: JsonWebKey[];
+};
+
+export interface ParseIdTokenOptions {
+  config: OidcConfig;
+  expectedNonce: string;
+}
+
+function normalizeIssuer(issuerUrl: string): string {
+  return issuerUrl.replace(/\/$/, "");
+}
+
+function decodeJwtJson<T>(value: string): T {
+  return JSON.parse(Buffer.from(value, "base64url").toString("utf-8")) as T;
+}
+
+async function resolveJwksUrl(config: OidcConfig): Promise<string> {
+  if (config.jwksUrl) return config.jwksUrl;
+
+  const discoveryUrl = `${normalizeIssuer(config.issuerUrl)}/.well-known/openid-configuration`;
+  const res = await fetch(discoveryUrl);
+  if (!res.ok) {
+    throw new Error(`OIDC discovery failed (${res.status})`);
+  }
+
+  const discovery = (await res.json()) as { jwks_uri?: string };
+  if (!discovery.jwks_uri) {
+    throw new Error("OIDC discovery document missing jwks_uri");
+  }
+  return discovery.jwks_uri;
+}
+
+async function fetchJwks(config: OidcConfig): Promise<JsonWebKey[]> {
+  const jwksUrl = await resolveJwksUrl(config);
+  const res = await fetch(jwksUrl);
+  if (!res.ok) {
+    throw new Error(`OIDC JWKS fetch failed (${res.status})`);
+  }
+
+  const jwks = (await res.json()) as JwksDocument;
+  if (!Array.isArray(jwks.keys) || jwks.keys.length === 0) {
+    throw new Error("OIDC JWKS document has no signing keys");
+  }
+  return jwks.keys;
+}
+
+async function verifyIdTokenSignature(
+  header: JwtHeader,
+  signingInput: string,
+  signature: Buffer,
+  config: OidcConfig,
+): Promise<void> {
+  if (header.alg !== "RS256") {
+    throw new Error("OIDC ID token alg is unsupported; RS256 verification is required");
+  }
+
+  const keys = await fetchJwks(config);
+  const jwk = keys.find((key) => {
+    const candidate = key as JsonWebKey & { kid?: string; use?: string };
+    const jwkKid = typeof candidate.kid === "string" ? candidate.kid : undefined;
+    const jwkAlg = typeof candidate.alg === "string" ? candidate.alg : undefined;
+    const jwkUse = typeof candidate.use === "string" ? candidate.use : undefined;
+    return candidate.kty === "RSA" &&
+      (!header.kid || jwkKid === header.kid) &&
+      (!jwkAlg || jwkAlg === "RS256") &&
+      (!jwkUse || jwkUse === "sig");
+  });
+
+  if (!jwk) {
+    throw new Error("OIDC JWKS does not contain a matching RS256 signing key");
+  }
+
+  const publicKey = createPublicKey({ key: jwk, format: "jwk" });
+  const ok = verify("RSA-SHA256", Buffer.from(signingInput), publicKey, signature);
+  if (!ok) {
+    throw new Error("OIDC ID token signature verification failed");
+  }
+}
+
+function validateIdTokenClaims(payload: Record<string, unknown>, options: ParseIdTokenOptions): void {
+  const issuer = payload.iss as string | undefined;
+  if (normalizeIssuer(issuer ?? "") !== normalizeIssuer(options.config.issuerUrl)) {
+    throw new Error("OIDC ID token issuer mismatch");
+  }
+
+  const audience = payload.aud;
+  const audienceOk = typeof audience === "string"
+    ? audience === options.config.clientId
+    : Array.isArray(audience) && audience.includes(options.config.clientId);
+  if (!audienceOk) {
+    throw new Error("OIDC ID token audience mismatch");
+  }
+
+  if (!options.expectedNonce || payload.nonce !== options.expectedNonce) {
+    throw new Error("OIDC ID token nonce verification failed");
+  }
+
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const exp = typeof payload.exp === "number" ? payload.exp : 0;
+  if (!exp || exp <= nowSeconds) {
+    throw new Error("OIDC ID token is expired");
+  }
+
+  const nbf = typeof payload.nbf === "number" ? payload.nbf : undefined;
+  if (nbf && nbf > nowSeconds + 60) {
+    throw new Error("OIDC ID token is not yet valid");
+  }
+}
+
 /**
- * Decode an ID token (JWT) by base64url-decoding the payload.
- * No cryptographic signature verification — the token was received directly
- * from the IdP over TLS, so transport-level trust is sufficient for most
- * enterprise deployments.
+ * Verify and parse an OIDC ID token.
+ * Fails closed unless nonce and JWKS-backed signature verification complete.
  */
-export async function parseIdToken(idToken: string): Promise<SsoUserInfo> {
+export async function parseIdToken(
+  idToken: string,
+  options?: ParseIdTokenOptions,
+): Promise<SsoUserInfo> {
+  if (!options) {
+    throw new Error("OIDC ID token verification options are required");
+  }
+
   const parts = idToken.split(".");
   if (parts.length !== 3) throw new Error("Malformed ID token");
 
-  const payload = JSON.parse(
-    Buffer.from(parts[1], "base64url").toString("utf-8"),
-  ) as Record<string, unknown>;
+  const header = decodeJwtJson<JwtHeader>(parts[0]);
+  const payload = decodeJwtJson<Record<string, unknown>>(parts[1]);
+
+  await verifyIdTokenSignature(
+    header,
+    `${parts[0]}.${parts[1]}`,
+    Buffer.from(parts[2], "base64url"),
+    options.config,
+  );
+  validateIdTokenClaims(payload, options);
 
   const email = (payload.email as string) ?? "";
   const name =
@@ -156,7 +286,7 @@ export function getSamlConfig(): SamlConfig | null {
   const idpSsoUrl = process.env.LEAD_OS_SSO_SAML_IDP_SSO_URL ?? "";
   const idpCertificate = process.env.LEAD_OS_SSO_SAML_IDP_CERT ?? "";
 
-  if (!entityId || !idpSsoUrl) return null;
+  if (!entityId || !idpSsoUrl || !idpCertificate) return null;
 
   return {
     entityId,
@@ -195,16 +325,16 @@ export function buildSamlAuthnRequest(config: SamlConfig): string {
 
 /**
  * Parse a SAML Response XML to extract user identity.
- *
- * This is a lightweight string-based parser that covers the standard
- * response format from Okta, Azure AD, Google Workspace, and most SAML 2.0
- * IdPs. It does NOT verify XML signatures — for production hardening,
- * add certificate-based signature validation.
+ * Fails closed until XML signature verification is implemented.
  */
 export function parseSamlResponse(
   samlResponseB64: string,
-  _config: SamlConfig,
+  config: SamlConfig,
 ): SsoUserInfo | null {
+  // TODO(security): integrate a dedicated SAML XML signature verifier and
+  // validate the assertion with config.idpCertificate before parsing claims.
+  if (!config.idpCertificate) return null;
+
   let xml: string;
   try {
     xml = Buffer.from(samlResponseB64, "base64").toString("utf-8");
@@ -212,47 +342,11 @@ export function parseSamlResponse(
     return null;
   }
 
-  // Extract NameID (email)
-  const nameIdMatch = xml.match(/<(?:saml2?:)?NameID[^>]*>([^<]+)<\//);
-  const email = nameIdMatch?.[1]?.trim() ?? "";
-  if (!email) return null;
-
-  // Extract common attributes
-  const attrMap: Record<string, string> = {};
-  const attrRegex =
-    /<(?:saml2?:)?Attribute\s+Name="([^"]+)"[^>]*>\s*<(?:saml2?:)?AttributeValue[^>]*>([^<]+)<\//g;
-  let match: RegExpExecArray | null;
-  while ((match = attrRegex.exec(xml)) !== null) {
-    attrMap[match[1]] = match[2].trim();
+  if (!xml.includes("<Signature") && !xml.includes(":Signature")) {
+    return null;
   }
 
-  const givenName =
-    attrMap["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"] ??
-    attrMap["firstName"] ??
-    attrMap["first_name"] ??
-    "";
-  const surname =
-    attrMap["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"] ??
-    attrMap["lastName"] ??
-    attrMap["last_name"] ??
-    "";
-  const displayName =
-    attrMap["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] ??
-    attrMap["displayName"] ??
-    ([givenName, surname].filter(Boolean).join(" ") || email);
-
-  // Extract SessionIndex or assertion ID as sub
-  const sessionMatch = xml.match(/SessionIndex="([^"]+)"/);
-  const assertionIdMatch = xml.match(/<(?:saml2?:)?Assertion[^>]+ID="([^"]+)"/);
-  const sub = sessionMatch?.[1] ?? assertionIdMatch?.[1] ?? email;
-
-  return {
-    email,
-    name: displayName,
-    sub,
-    provider: "saml",
-    raw: { ...attrMap, nameId: email },
-  };
+  return null;
 }
 
 // ---------------------------------------------------------------------------

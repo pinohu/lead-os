@@ -54,6 +54,6 @@ export const tenantConfig: TenantConfig = {
 
 export function isAllowedWidgetOrigin(origin?: string | null) {
   if (!origin) return false;
-  if (tenantConfig.widgetOrigins.length === 0) return true;
+  if (tenantConfig.widgetOrigins.length === 0) return false;
   return tenantConfig.widgetOrigins.includes(origin);
 }

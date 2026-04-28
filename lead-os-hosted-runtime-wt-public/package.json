@@ -7,10 +7,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p ${PORT:-3000}",
-    "test": "LEAD_OS_USE_AITABLE_PERSISTENCE=false LEAD_OS_ENABLE_LIVE_SENDS=false node --test --test-concurrency=1 --test-isolation=none --experimental-strip-types tests/**/*.test.ts"
+    "test": "cross-env LEAD_OS_USE_AITABLE_PERSISTENCE=false LEAD_OS_ENABLE_LIVE_SENDS=false node --test --test-concurrency=1 --experimental-test-isolation=none --experimental-strip-types tests/**/*.test.ts"
   },
   "dependencies": {
-    "next": "^15.5.12",
+    "next": "^15.5.15",
     "pg": "^8.20.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
@@ -20,6 +20,10 @@
     "@types/pg": "^8.18.0",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
+    "cross-env": "^7.0.3",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "postcss": "^8.5.12"
   }
 }

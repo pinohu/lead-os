@@ -1,5 +1,4 @@
 // src/app/api/cron/nurture/route.ts
-import { createHmac } from "crypto";
 import { NextResponse } from "next/server";
 import { requireCronAuthOrFail } from "@/lib/api/cron-public-guards";
 import { logApiMutationAudit } from "@/lib/api/api-mutation-audit";
@@ -8,16 +7,12 @@ import { sendEmail } from "@/lib/email-sender";
 import { getTemplate, type EmailContext } from "@/lib/email-templates";
 import { sendSmsAction, sendWhatsAppAction } from "@/lib/providers";
 import { appendEvents, getLeadRecords, markNurtureStageSent } from "@/lib/runtime-store";
+import { createSelfServiceToken } from "@/lib/self-service-tokens";
 import { resolveTenantConfig } from "@/lib/tenant";
 import { createCanonicalEvent } from "@/lib/trace";
 
 function generateUnsubscribeToken(email: string, tenant: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "";
-  if (!secret) return "";
-  return createHmac("sha256", secret)
-    .update(`${email.toLowerCase().trim()}::${tenant}`)
-    .digest("hex")
-    .slice(0, 24);
+  return createSelfServiceToken("unsubscribe", email, tenant, 24) ?? "";
 }
 
 function buildUnsubscribeUrl(siteUrl: string, email: string, tenantId: string): string {
@@ -28,6 +23,12 @@ function buildUnsubscribeUrl(siteUrl: string, email: string, tenantId: string): 
 export async function GET(request: Request) {
   const authFail = requireCronAuthOrFail(request);
   if (authFail) return authFail;
+  if (!process.env.LEAD_OS_AUTH_SECRET?.trim()) {
+    return NextResponse.json(
+      { data: null, error: { code: "SERVICE_UNAVAILABLE", message: "Self-service links are not configured" } },
+      { status: 503 },
+    );
+  }
 
   const processed: Array<{ leadKey: string; stage: string; channels: string[] }> = [];
 

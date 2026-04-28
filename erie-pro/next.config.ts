@@ -1,10 +1,16 @@
 import type { NextConfig } from "next";
 
+const stripePublishableKey =
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? process.env.STRIPE_PUBLISHABLE_KEY;
+
 const config: NextConfig = {
   poweredByHeader: false,
   compress: true,
   reactStrictMode: true,
   serverExternalPackages: ["@prisma/client"],
+  ...(stripePublishableKey
+    ? { env: { NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: stripePublishableKey } }
+    : {}),
   images: {
     formats: ["image/avif", "image/webp"],
   },
@@ -23,8 +29,7 @@ const config: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              // TODO: Replace 'unsafe-inline' with nonce-based CSP once Next.js nonce infrastructure is configured
-              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.posthog.com https://*.sentry.io",
+              "script-src 'self' https://js.stripe.com https://*.posthog.com https://*.sentry.io",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https://*.stripe.com https://*.googleusercontent.com https://*.googleapis.com https://*.gstatic.com",
               "connect-src 'self' https://api.stripe.com https://*.posthog.com https://*.sentry.io https://*.ingest.sentry.io",

@@ -1,9 +1,9 @@
 // src/lib/gtm/store.ts
 // Postgres persistence for GTM operator status (per tenant + canonical slug).
 
-import { getPool, queryPostgres } from "@/lib/db";
-import type { GtmOperatorStatus } from "@/lib/gtm/status";
-import { isGtmOperatorStatus } from "@/lib/gtm/status";
+import { getPool, queryPostgres } from "../db.ts";
+import type { GtmOperatorStatus } from "./status.ts";
+import { isGtmOperatorStatus } from "./status.ts";
 
 export interface GtmStatusRow {
   slug: string;

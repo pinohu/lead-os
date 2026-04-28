@@ -2,7 +2,7 @@
 // CRUD for scraped Google Places listings.
 // Mirrors provider-store.ts patterns.
 
-import { prisma } from "@/lib/db";
+import { isDatabaseReadSkipped, prisma } from "@/lib/db";
 import type { DirectoryListing } from "@/generated/prisma";
 
 export type { DirectoryListing };
@@ -30,12 +30,14 @@ export function generateListingSlug(
 export async function getDirectoryListingBySlug(
   slug: string
 ): Promise<DirectoryListing | null> {
+  if (isDatabaseReadSkipped()) return null;
   return prisma.directoryListing.findUnique({ where: { slug } });
 }
 
 export async function getDirectoryListingById(
   id: string
 ): Promise<DirectoryListing | null> {
+  if (isDatabaseReadSkipped()) return null;
   return prisma.directoryListing.findUnique({ where: { id } });
 }
 
@@ -43,6 +45,7 @@ export async function getDirectoryListingsByNiche(
   niche: string,
   options?: { limit?: number; orderBy?: "rating" | "reviewCount" | "businessName" }
 ): Promise<DirectoryListing[]> {
+  if (isDatabaseReadSkipped()) return [];
   const { limit = 50, orderBy = "rating" } = options ?? {};
   return prisma.directoryListing.findMany({
     where: { niche, isActive: true },
@@ -54,12 +57,14 @@ export async function getDirectoryListingsByNiche(
 export async function getDirectoryListingByGooglePlaceId(
   googlePlaceId: string
 ): Promise<DirectoryListing | null> {
+  if (isDatabaseReadSkipped()) return null;
   return prisma.directoryListing.findUnique({ where: { googlePlaceId } });
 }
 
 export async function getAllDirectoryListingSlugs(): Promise<
   { niche: string; slug: string; updatedAt: Date }[]
 > {
+  if (isDatabaseReadSkipped()) return [];
   return prisma.directoryListing.findMany({
     where: { isActive: true },
     select: { niche: true, slug: true, updatedAt: true },
@@ -69,6 +74,7 @@ export async function getAllDirectoryListingSlugs(): Promise<
 export async function getDirectoryListingCount(
   niche?: string
 ): Promise<number> {
+  if (isDatabaseReadSkipped()) return 0;
   return prisma.directoryListing.count({
     where: { isActive: true, ...(niche ? { niche } : {}) },
   });

@@ -1,6 +1,7 @@
 node_modules/
 .next/
 *.tsbuildinfo
+lead-os-hosted-runtime-wt-hybrid/public/build-id.json
 backups/
 lead-os-hosted-runtime/
 lead-os-embed-widgets/

@@ -1,14 +1,15 @@
-// ── Admin Bootstrap API ─────────────────────────────────────────────
-// One-time endpoint to create the first admin user.
-// Returns 403 if any admin user already exists.
-// Gated by ALLOW_ADMIN_SETUP=true environment variable.
+// One-time admin bootstrap endpoint.
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
+
+const ADMIN_SETUP_LOCK_ID = 730017001;
+const ADMIN_SETUP_TOKEN_HEADER = "x-admin-setup-token";
 
 const SetupSchema = z.object({
   email: z
@@ -23,6 +24,10 @@ const SetupSchema = z.object({
   name: z
     .string()
     .max(200, "Name too long")
+    .optional(),
+  token: z
+    .string()
+    .max(512, "Setup token too long")
     .optional(),
 });
 
@@ -39,41 +44,52 @@ function checkSetupRateLimit(ip: string): boolean {
   return entry.count <= 5;
 }
 
+function digestToken(value: string): Buffer {
+  return crypto.createHash("sha256").update(value).digest();
+}
+
+function isValidAdminSetupToken(token: string | null | undefined): boolean {
+  const expected = process.env.ADMIN_SETUP_TOKEN?.trim();
+  const candidate = token?.trim();
+  if (!expected || !candidate) return false;
+
+  return crypto.timingSafeEqual(digestToken(candidate), digestToken(expected));
+}
+
 export async function POST(request: Request) {
   try {
-    // ── Gate: require explicit opt-in via environment variable ─────────
-    if (process.env.ALLOW_ADMIN_SETUP !== "true") {
+    if (process.env.ALLOW_ADMIN_SETUP !== "true" || !process.env.ADMIN_SETUP_TOKEN?.trim()) {
       return NextResponse.json(
-        { error: "Admin setup is disabled. Set ALLOW_ADMIN_SETUP=true to enable." },
-        { status: 403 }
+        { error: "Admin setup is disabled." },
+        { status: 403 },
       );
     }
 
-    // ── Rate limit: 5 attempts per minute per IP ──────────────────────
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
       ?? request.headers.get("x-real-ip")
       ?? "unknown";
     if (!checkSetupRateLimit(ip)) {
       return NextResponse.json(
         { error: "Too many attempts. Please try again later." },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
-    // ── Guard: check if admin already exists ──────────────────────────
-    const adminCount = await prisma.user.count({
-      where: { role: "admin" },
-    });
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
 
-    if (adminCount > 0) {
+    const setupToken =
+      request.headers.get(ADMIN_SETUP_TOKEN_HEADER) ??
+      ("token" in body && typeof body.token === "string" ? body.token : null);
+    if (!isValidAdminSetupToken(setupToken)) {
       return NextResponse.json(
-        { error: "Admin already configured. Setup is disabled." },
-        { status: 403 }
+        { error: "Invalid setup token." },
+        { status: 403 },
       );
     }
 
-    // ── Parse & validate input ───────────────────────────────────────
-    const body = await request.json();
     const parsed = SetupSchema.safeParse(body);
 
     if (!parsed.success) {
@@ -85,59 +101,71 @@ export async function POST(request: Request) {
 
     const { email, password, name } = parsed.data;
     const displayName = name || "Admin";
-
-    // ── Hash password (bcrypt, 12 rounds — matches create-admin.ts) ──
     const passwordHash = await bcrypt.hash(password, 12);
-
-    // ── Create Provider record for password auth ─────────────────────
     const adminSlug = `admin-${email.split("@")[0]}`;
 
-    const provider = await prisma.provider.create({
-      data: {
-        slug: adminSlug,
-        businessName: `${displayName} (Admin)`,
-        niche: "admin",
-        phone: "0000000000",
-        email,
-        passwordHash,
-      },
+    const setupResult = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(${ADMIN_SETUP_LOCK_ID})`;
+
+      const adminCount = await tx.user.count({
+        where: { role: "admin" },
+      });
+
+      if (adminCount > 0) {
+        return null;
+      }
+
+      const provider = await tx.provider.create({
+        data: {
+          slug: adminSlug,
+          businessName: `${displayName} (Admin)`,
+          niche: "admin",
+          phone: "0000000000",
+          email,
+          passwordHash,
+        },
+      });
+
+      const existingUser = await tx.user.findUnique({ where: { email } });
+      const user = existingUser
+        ? await tx.user.update({
+          where: { email },
+          data: {
+            role: "admin",
+            providerId: provider.id,
+            name: displayName,
+            emailVerified: new Date(),
+          },
+        })
+        : await tx.user.create({
+          data: {
+            email,
+            name: displayName,
+            role: "admin",
+            providerId: provider.id,
+            emailVerified: new Date(),
+          },
+        });
+
+      return { provider, user };
     });
 
-    // ── Create or update User with admin role ────────────────────────
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-
-    let user;
-    if (existingUser) {
-      user = await prisma.user.update({
-        where: { email },
-        data: {
-          role: "admin",
-          providerId: provider.id,
-          name: displayName,
-          emailVerified: new Date(),
-        },
-      });
-    } else {
-      user = await prisma.user.create({
-        data: {
-          email,
-          name: displayName,
-          role: "admin",
-          providerId: provider.id,
-          emailVerified: new Date(),
-        },
-      });
+    if (!setupResult) {
+      return NextResponse.json(
+        { error: "Admin already configured. Setup is disabled." },
+        { status: 403 },
+      );
     }
 
-    // ── Audit log ────────────────────────────────────────────────────
     await audit({
       action: "admin.action",
       entityType: "provider",
-      entityId: provider.id,
-      providerId: provider.id,
+      entityId: setupResult.provider.id,
+      providerId: setupResult.provider.id,
+      ipAddress: ip,
       metadata: {
         description: "First admin account created via bootstrap setup",
-        userId: user.id,
+        userId: setupResult.user.id,
         email,
       },
     });
@@ -150,7 +178,7 @@ export async function POST(request: Request) {
     logger.error("setup-admin", "Admin setup error:", err);
     return NextResponse.json(
       { error: "Internal server error. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

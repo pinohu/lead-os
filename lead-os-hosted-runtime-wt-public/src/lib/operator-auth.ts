@@ -1,16 +1,20 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
-import { embeddedSecrets } from "./embedded-secrets.ts";
 import {
   createMagicLinkUrl,
   decodeOperatorToken,
-  getAllowedOperatorEmails as resolveAllowedOperatorEmails,
   isAllowedOperatorEmail as isAllowedOperatorEmailInList,
   issueOperatorToken,
   normalizeEmail,
+  resolveTrustedAuthRequest,
   sanitizeNextPath,
 } from "./operator-auth-core.ts";
+import {
+  getCanonicalSiteOrigin,
+  getConfiguredOperatorEmails,
+  getOperatorAuthSecret,
+} from "./operator-auth-config.ts";
 import { sendEmailAction } from "./providers.ts";
 import { tenantConfig } from "./tenant.ts";
 import { ensureTraceContext } from "./trace.ts";
@@ -19,35 +23,45 @@ export const OPERATOR_SESSION_COOKIE = "leados_operator_session";
 export { sanitizeNextPath } from "./operator-auth-core.ts";
 
 function getAuthSecret() {
-  return process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? embeddedSecrets.cron.secret;
+  return getOperatorAuthSecret();
 }
 
 export function getAllowedOperatorEmails() {
-  return resolveAllowedOperatorEmails(process.env.LEAD_OS_OPERATOR_EMAILS, [
-    process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
-    tenantConfig.supportEmail,
-    "polycarpohu@gmail.com",
-  ]);
+  return getConfiguredOperatorEmails();
+}
+
+export function getOperatorCanonicalOrigin() {
+  return getCanonicalSiteOrigin();
+}
+
+export function getTrustedOperatorAuthRequest(request: Request) {
+  return resolveTrustedAuthRequest(request.url, getOperatorCanonicalOrigin());
+}
+
+export function createOperatorAuthUrl(path: string) {
+  return new URL(path, getOperatorCanonicalOrigin());
 }
 
 export function isAllowedOperatorEmail(email: string) {
   return isAllowedOperatorEmailInList(email, getAllowedOperatorEmails());
 }
 
-export async function createMagicLink(email: string, origin: string, nextPath?: string) {
+export async function createMagicLink(email: string, nextPath?: string) {
+  const audience = getOperatorCanonicalOrigin();
   const { url } = await createMagicLinkUrl(
     email,
-    origin,
+    audience,
     getAuthSecret(),
     getAllowedOperatorEmails(),
     nextPath,
+    audience,
   );
   return url;
 }
 
-export async function sendOperatorMagicLink(email: string, origin: string, nextPath?: string) {
+export async function sendOperatorMagicLink(email: string, nextPath?: string) {
   const normalizedEmail = normalizeEmail(email);
-  const magicLink = await createMagicLink(normalizedEmail, origin, nextPath);
+  const magicLink = await createMagicLink(normalizedEmail, nextPath);
   const trace = ensureTraceContext({
     tenant: tenantConfig.tenantId,
     source: "manual",
@@ -79,17 +93,18 @@ export async function createSessionToken(email: string) {
       type: "session",
       email: normalizeEmail(email),
       exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
+      aud: getOperatorCanonicalOrigin(),
     },
     getAuthSecret(),
   );
 }
 
-export async function verifyMagicLinkToken(token: string) {
-  return decodeOperatorToken(token, "magic", getAuthSecret(), getAllowedOperatorEmails());
+export async function verifyMagicLinkToken(token: string, expectedAudience = getOperatorCanonicalOrigin()) {
+  return decodeOperatorToken(token, "magic", getAuthSecret(), getAllowedOperatorEmails(), expectedAudience);
 }
 
-export async function verifySessionToken(token: string) {
-  return decodeOperatorToken(token, "session", getAuthSecret(), getAllowedOperatorEmails());
+export async function verifySessionToken(token: string, expectedAudience?: string) {
+  return decodeOperatorToken(token, "session", getAuthSecret(), getAllowedOperatorEmails(), expectedAudience);
 }
 
 export async function getOperatorSessionFromCookieHeader(cookieHeader?: string | null) {

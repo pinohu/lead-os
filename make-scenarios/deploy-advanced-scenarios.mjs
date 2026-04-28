@@ -38,12 +38,22 @@ import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
 
+function requiredEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable ${name}. Set it in your shell or CI secret store; do not commit it.`);
+  }
+  return value;
+}
+
+
+
 // ════════════════════════════════════════════════════════════════
 // CONFIGURATION
 // ════════════════════════════════════════════════════════════════
 
 const API_BASE = 'https://integrator.boost.space/api/v2';
-const API_TOKEN = process.env.MAKE_API_TOKEN || '24595d5e-9b7f-48f9-ab61-9644c46ed7f9';
+const API_TOKEN = requiredEnv('MAKE_API_TOKEN');
 
 const YD_API = 'https://yourdeputy-review.vercel.app/api/automations';
 const NC_API = 'https://neatcircle-beta.vercel.app/api/automations';
@@ -55,32 +65,32 @@ const DS_ID = 3748;
 const EMAILIT_URL = 'https://api.emailit.com/v1/emails';
 
 const DISCORD = {
-  newLeads: 'https://discord.com/api/webhooks/1480429578047717449/7bF_noLBXwykgIVye6hxYQ_e61-eDKS_OEyER_OpL8L0yxObOMDkCmqifgHPuEI3LoTp',
-  errors: 'https://discord.com/api/webhooks/1480423483207975066/ZWeuxptsElvzpj8Fzrd-Q3pPDGkL3StUpuNJybNwKlJwyVkGm8D6k_qjz6mdsSHZ7J4n',
-  wins: 'https://discord.com/api/webhooks/1480429754963333252/9tlYfvzLOon6LVB3juh3eN_BelV_V_DJzF6lMYrv_JccxnKjRNvqY2n_htd8r2-jshyw',
-  highValue: 'https://discord.com/api/webhooks/1480429897263480962/e-vvArec6HCRc_HpzxmWOpz3GbJ7ncekeLBD7hSnKHm4v-zXTwt8fm6DjrY7TUBeo6Ct',
+  newLeads: requiredEnv('DISCORD_NEW_LEADS_WEBHOOK_URL'),
+  errors: requiredEnv('DISCORD_ERRORS_WEBHOOK_URL'),
+  wins: requiredEnv('DISCORD_WINS_WEBHOOK_URL'),
+  highValue: requiredEnv('DISCORD_HIGH_VALUE_WEBHOOK_URL'),
 };
 
 const TELEGRAM = {
-  botToken: '8739229269:AAGYs6jIIjDa87y4TAVwn4QtTWBqliohDQI',
+  botToken: requiredEnv('TELEGRAM_BOT_TOKEN'),
   newLeads: '-1003809646667',
   errors: '-1003751399010',
 };
 
 const EMAILIT = {
-  apiKey: 'secret_4lQqUaweMC1pmyCpwqdRy3ktjl9hzd6m',
+  apiKey: requiredEnv('EMAILIT_API_KEY'),
   domain: 'neatcircle.com',
   adminTo: 'ike@neatcircle.com',
 };
 
 const AITABLE = {
-  apiToken: 'usk8wYBrRgsc6RHxkZP9VAN',
+  apiToken: requiredEnv('AITABLE_API_TOKEN'),
   datasheetId: 'dstBicDQKC6gpLAMYj',
   apiBase: 'https://aitable.ai/fusion/v1',
 };
 
 const WBIZTOOL = {
-  apiKey: '54140a11389a13031a2eb19070ce35c5ce769a30',
+  apiKey: requiredEnv('WBIZTOOL_API_KEY'),
   instanceId: '12316',
   apiBase: 'https://app.wbiztool.com/api',
 };

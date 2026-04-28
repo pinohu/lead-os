@@ -1,8 +1,8 @@
 // src/lib/billing/entitlements.ts
 // Plan limits and pricing execution gates (Postgres-backed when migration 007 applied).
 
-import { queryPostgres } from "@/lib/db";
-import { pricingLog } from "@/lib/pricing/logger";
+import { queryPostgres } from "../db.ts";
+import { pricingLog } from "../pricing/logger.ts";
 
 export interface BillingGateState {
   enforcement: boolean;

@@ -2,8 +2,8 @@
 // Normalized outbound hooks: sendLead(), notifyClient(), triggerWorkflow().
 // Never log secrets; integrations optional with safe fallbacks.
 
-import { logger } from "@/lib/logger";
-import { createContact, type SuiteDashContactPayload } from "@/lib/suitedash";
+import { logger } from "../logger.ts";
+import { createContact, type SuiteDashContactPayload } from "../suitedash.ts";
 
 export interface DirectoryLeadPayload {
   tenantId: string;

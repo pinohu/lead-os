@@ -1,8 +1,8 @@
 // src/lib/api/api-mutation-audit.ts
 // Persisted audit for API mutations (uses operator_audit_log; best-effort).
 
-import { logOperatorAudit } from "@/lib/operator-audit";
-import { tenantConfig } from "@/lib/tenant";
+import { logOperatorAudit } from "../operator-audit.ts";
+import { tenantConfig } from "../tenant.ts";
 
 const API_ACTOR = "api-mutation@internal";
 

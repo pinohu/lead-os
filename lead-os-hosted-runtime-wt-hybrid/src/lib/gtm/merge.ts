@@ -1,10 +1,10 @@
 // src/lib/gtm/merge.ts
 // Merge canonical GTM config with persisted operator status.
 
-import type { GtmUseCase } from "@/config/gtm-use-cases";
-import { executionSurfacesForUseCase } from "@/lib/gtm/execution-links";
-import type { GtmStatusRow } from "@/lib/gtm/store";
-import type { GtmOperatorStatus } from "@/lib/gtm/status";
+import type { GtmUseCase } from "../../config/gtm-use-cases.ts";
+import { executionSurfacesForUseCase } from "./execution-links.ts";
+import type { GtmStatusRow } from "./store.ts";
+import type { GtmOperatorStatus } from "./status.ts";
 
 export interface GtmUseCaseWithStatus extends GtmUseCase {
   status: GtmOperatorStatus;

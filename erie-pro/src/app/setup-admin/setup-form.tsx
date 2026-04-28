@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 
-export default function SetupForm() {
+interface SetupFormProps {
+  setupToken: string;
+}
+
+export default function SetupForm({ setupToken }: SetupFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,11 +34,15 @@ export default function SetupForm() {
     try {
       const res = await fetch("/api/setup-admin", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Admin-Setup-Token": setupToken,
+        },
         body: JSON.stringify({
           email: email.toLowerCase().trim(),
           password,
           name: displayName.trim() || undefined,
+          token: setupToken,
         }),
       });
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { registerWebhook, listWebhooks } from "@/lib/webhook-registry";
+import { tenantConfig } from "@/lib/tenant";
 
 const MAX_URL_LENGTH = 2048;
 const MAX_EVENTS = 50;
@@ -14,10 +15,18 @@ export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const tenantId = url.searchParams.get("tenantId");
+    const authenticatedTenantId = auth.session?.tenantId ?? tenantConfig.tenantId;
     if (!tenantId) {
       return NextResponse.json(
         { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId is required" }, meta: null },
         { status: 400, headers },
+      );
+    }
+
+    if (tenantId !== authenticatedTenantId) {
+      return NextResponse.json(
+        { data: null, error: { code: "FORBIDDEN", message: "tenantId does not match authenticated tenant" }, meta: null },
+        { status: 403, headers },
       );
     }
 
@@ -41,11 +50,19 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
+    const authenticatedTenantId = auth.session?.tenantId ?? tenantConfig.tenantId;
 
     if (!body.tenantId || typeof body.tenantId !== "string") {
       return NextResponse.json(
         { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId is required" }, meta: null },
         { status: 400, headers },
+      );
+    }
+
+    if (body.tenantId !== authenticatedTenantId) {
+      return NextResponse.json(
+        { data: null, error: { code: "FORBIDDEN", message: "tenantId does not match authenticated tenant" }, meta: null },
+        { status: 403, headers },
       );
     }
 

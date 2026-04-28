@@ -11,6 +11,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   NODE_VERSION: "22"
 
@@ -115,6 +118,7 @@ jobs:
       NEXTAUTH_SECRET: "ci-dummy-secret-not-used-at-runtime"
       NEXTAUTH_URL: "http://localhost:3000"
       SKIP_ENV_VALIDATION: "true"
+      SKIP_DATABASE_READS_DURING_BUILD: "true"
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -122,6 +126,46 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: erie-pro/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  test-public-runtime:
+    name: Test Public Runtime
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lead-os-hosted-runtime-wt-public
+    env:
+      LEAD_OS_AUTH_SECRET: "ci-public-auth-secret-not-used-at-runtime"
+      CRON_SECRET: "ci-public-cron-secret-not-used-at-runtime"
+      LEAD_OS_WIDGET_ORIGINS: "https://example.com"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: lead-os-hosted-runtime-wt-public/package-lock.json
+      - run: npm ci
+      - run: npm test
+
+  build-public-runtime:
+    name: Build Public Runtime
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lead-os-hosted-runtime-wt-public
+    env:
+      LEAD_OS_AUTH_SECRET: "ci-public-auth-secret-not-used-at-runtime"
+      CRON_SECRET: "ci-public-cron-secret-not-used-at-runtime"
+      LEAD_OS_WIDGET_ORIGINS: "https://example.com"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: lead-os-hosted-runtime-wt-public/package-lock.json
       - run: npm ci
       - run: npm run build
 
@@ -151,10 +195,23 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - name: Audit Hybrid Runtime
         working-directory: lead-os-hosted-runtime-wt-hybrid
-        run: npm audit --audit-level=critical || true
+        run: npm audit --audit-level=high
+      - name: Audit Public Runtime
+        working-directory: lead-os-hosted-runtime-wt-public
+        run: npm audit --audit-level=high
       - name: Audit Erie Pro
         working-directory: erie-pro
-        run: npm audit --audit-level=critical || true
+        run: npm audit --audit-level=high
       - name: Audit NeatCircle
         working-directory: neatcircle-beta
-        run: npm audit --audit-level=critical || true
+        run: npm audit --audit-level=high
+
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: node scripts/secret-scan.mjs

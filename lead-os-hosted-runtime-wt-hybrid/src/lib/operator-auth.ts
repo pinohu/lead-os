@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
-import { embeddedSecrets } from "./embedded-secrets.ts";
 import {
   createMagicLinkUrl,
   decodeOperatorToken,
@@ -14,13 +13,11 @@ import {
 import { sendEmailAction } from "./providers.ts";
 import { tenantConfig } from "./tenant.ts";
 import { ensureTraceContext } from "./trace.ts";
+import { getSignedOperatorSessionFromHeaders } from "./operator-session-headers.ts";
+import { getOperatorAuthSecret } from "./operator-auth-secret.ts";
 
 export const OPERATOR_SESSION_COOKIE = "leados_operator_session";
 export { sanitizeNextPath } from "./operator-auth-core.ts";
-
-function getAuthSecret() {
-  return process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? embeddedSecrets.cron.secret;
-}
 
 export function getAllowedOperatorEmails() {
   return resolveAllowedOperatorEmails(process.env.LEAD_OS_OPERATOR_EMAILS, [
@@ -37,7 +34,7 @@ export async function createMagicLink(email: string, origin: string, nextPath?: 
   const { url } = await createMagicLinkUrl(
     email,
     origin,
-    getAuthSecret(),
+    getOperatorAuthSecret(),
     getAllowedOperatorEmails(),
     nextPath,
   );
@@ -77,18 +74,19 @@ export async function createSessionToken(email: string) {
     {
       type: "session",
       email: normalizeEmail(email),
+      tenantId: tenantConfig.tenantId,
       exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
     },
-    getAuthSecret(),
+    getOperatorAuthSecret(),
   );
 }
 
 export async function verifyMagicLinkToken(token: string) {
-  return decodeOperatorToken(token, "magic", getAuthSecret(), getAllowedOperatorEmails());
+  return decodeOperatorToken(token, "magic", getOperatorAuthSecret(), getAllowedOperatorEmails());
 }
 
 export async function verifySessionToken(token: string) {
-  return decodeOperatorToken(token, "session", getAuthSecret(), getAllowedOperatorEmails());
+  return decodeOperatorToken(token, "session", getOperatorAuthSecret(), getAllowedOperatorEmails());
 }
 
 export async function getOperatorSessionFromCookieHeader(cookieHeader?: string | null) {
@@ -134,16 +132,9 @@ export function clearOperatorSession(response: NextResponse) {
 }
 
 export async function requireOperatorApiSession(request: Request) {
-  // Fast path: trust identity headers set by the Next.js middleware.
-  // When middleware already validated the operator cookie it attaches the
-  // identity as request headers, so we can skip re-parsing the JWT.
-  const userId = request.headers.get("x-authenticated-user-id");
-  const method = request.headers.get("x-authenticated-method");
-  if (userId && method) {
-    return {
-      session: { email: userId, type: "session" as const, exp: 0 },
-      response: null,
-    };
+  const headerSession = getSignedOperatorSessionFromHeaders(request.headers);
+  if (headerSession) {
+    return { session: headerSession, response: null };
   }
 
   // Fallback: full cookie validation for requests that bypass middleware.

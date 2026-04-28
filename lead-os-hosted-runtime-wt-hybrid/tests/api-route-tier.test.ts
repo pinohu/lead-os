@@ -1,7 +1,7 @@
 // tests/api-route-tier.test.ts
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { getRequiredApiAccessTier } from "../src/lib/billing/api-route-tier";
+import { getRequiredApiAccessTier } from "../src/lib/billing/api-route-tier.ts";
 
 describe("getRequiredApiAccessTier", () => {
   it("requires full tier for operator APIs", () => {

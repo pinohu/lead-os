@@ -1,0 +1,23 @@
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+.git
+.vercel
+node_modules
+**/node_modules
+_n8n_sources
+Funnel Blueprints
+make-scenarios
+.next
+**/.next
+.open-next
+**/.open-next
+.wrangler
+**/.wrangler
+coverage
+**/coverage
+*.tsbuildinfo
+public/build-id.json
+**/public/build-id.json

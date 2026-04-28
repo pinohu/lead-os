@@ -16,25 +16,35 @@ import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
 
+function requiredEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable ${name}. Set it in your shell or CI secret store; do not commit it.`);
+  }
+  return value;
+}
+
+
+
 // ── Config ──
 
 const API_BASE = 'https://integrator.boost.space/api/v2';
-const API_TOKEN = process.env.MAKE_API_TOKEN || '24595d5e-9b7f-48f9-ab61-9644c46ed7f9';
+const API_TOKEN = requiredEnv('MAKE_API_TOKEN');
 
 const EMAILIT = {
-  apiKey: 'secret_4lQqUaweMC1pmyCpwqdRy3ktjl9hzd6m',
+  apiKey: requiredEnv('EMAILIT_API_KEY'),
   domain: 'neatcircle.com',
   adminTo: 'ike@neatcircle.com',
 };
 
 const AITABLE = {
-  apiToken: 'usk8wYBrRgsc6RHxkZP9VAN',
+  apiToken: requiredEnv('AITABLE_API_TOKEN'),
   datasheetId: 'dstBicDQKC6gpLAMYj',
   apiBase: 'https://aitable.ai/fusion/v1',
 };
 
 const DISCORD = {
-  wins: 'https://discord.com/api/webhooks/1480429754963333252/9tlYfvzLOon6LVB3juh3eN_BelV_V_DJzF6lMYrv_JccxnKjRNvqY2n_htd8r2-jshyw',
+  wins: requiredEnv('DISCORD_WINS_WEBHOOK_URL'),
 };
 
 const EMAILIT_URL = 'https://api.emailit.com/v1/emails';

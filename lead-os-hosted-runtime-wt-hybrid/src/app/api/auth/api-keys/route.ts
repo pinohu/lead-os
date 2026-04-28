@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-middleware";
-import { createApiKey, getUserById } from "@/lib/auth-system";
+import { createApiKey, getUserById, listApiKeys } from "@/lib/auth-system";
 
 export async function GET(request: Request) {
   const { context, response } = await requireAuth(request);
@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     );
   }
 
-  const keys = user.apiKeys.map((k) => ({
+  const keys = (await listApiKeys(context.userId)).map((k) => ({
     id: k.id,
     name: k.name,
     prefix: k.prefix,

@@ -15,7 +15,7 @@ import {
 import { enqueueMeasureJob } from "./queue-client.ts";
 import { getPricingMeasurementDelayMs, isLivePricingEnabled } from "./env.ts";
 import { pricingLog } from "./logger.ts";
-import { initializeDatabase, queryPostgres } from "@/lib/db";
+import { initializeDatabase, queryPostgres } from "../db.ts";
 import type { PricingNodeRow } from "./types.ts";
 
 async function getNodeForTenant(tenantId: string, nodeId: string): Promise<PricingNodeRow | undefined> {

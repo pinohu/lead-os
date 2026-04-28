@@ -4,7 +4,8 @@
 // Once an admin is created, this page redirects to /admin.
 
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import crypto from "crypto";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import SetupForm from "./setup-form";
 
@@ -15,7 +16,32 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminSetupPage() {
+type AdminSetupPageProps = {
+  searchParams?: Promise<{ token?: string | string[] }>;
+};
+
+function digestToken(value: string): Buffer {
+  return crypto.createHash("sha256").update(value).digest();
+}
+
+function isValidSetupToken(token: string | undefined): boolean {
+  const expected = process.env.ADMIN_SETUP_TOKEN?.trim();
+  const candidate = token?.trim();
+  if (process.env.ALLOW_ADMIN_SETUP !== "true" || !expected || !candidate) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(digestToken(candidate), digestToken(expected));
+}
+
+export default async function AdminSetupPage({ searchParams }: AdminSetupPageProps) {
+  const params = await searchParams;
+  const tokenParam = params?.token;
+  const setupToken = Array.isArray(tokenParam) ? tokenParam[0] : tokenParam;
+  if (!isValidSetupToken(setupToken)) {
+    notFound();
+  }
+
   // Check if any admin users already exist
   const adminCount = await prisma.user.count({
     where: { role: "admin" },
@@ -70,7 +96,7 @@ export default async function AdminSetupPage() {
         </div>
 
         {/* Form */}
-        <SetupForm />
+        <SetupForm setupToken={setupToken ?? ""} />
       </div>
     </main>
   );

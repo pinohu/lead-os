@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { processWelcomeSequenceDue } from "@/lib/welcome-sequence";
+import { requireCronAuthOrFail } from "@/lib/api/cron-public-guards";
 
 export const dynamic = "force-dynamic";
 
@@ -10,21 +11,8 @@ export const dynamic = "force-dynamic";
  * Authenticated via CRON_SECRET bearer token for use by external cron triggers.
  */
 export async function GET(request: Request) {
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (!cronSecret) {
-    return NextResponse.json(
-      { data: null, error: { code: "NOT_CONFIGURED", message: "Cron not configured" }, meta: null },
-      { status: 503 },
-    );
-  }
-
-  if (request.headers.get("authorization") !== `Bearer ${cronSecret}`) {
-    return NextResponse.json(
-      { data: null, error: { code: "UNAUTHORIZED", message: "Unauthorized" }, meta: null },
-      { status: 401 },
-    );
-  }
+  const authFailure = requireCronAuthOrFail(request);
+  if (authFailure) return authFailure;
 
   try {
     const result = await processWelcomeSequenceDue();

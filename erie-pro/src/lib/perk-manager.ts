@@ -2,7 +2,7 @@
 // Activates/deactivates ALL premium benefits based on subscription status.
 // Persistent via Prisma/Postgres. All functions are async.
 
-import { prisma } from "@/lib/db";
+import { isDatabaseReadSkipped, prisma } from "@/lib/db";
 import { TIER_BENEFITS, type ProviderTier } from "./premium-rewards";
 
 // ── Types ─────────────────────────────────────────────────────────
@@ -76,6 +76,20 @@ function mapMonthlyFeeToTier(monthlyFee: number): ProviderTier {
 // ── Core Functions ────────────────────────────────────────────────
 
 export async function getPerkStatus(niche: string, city: string): Promise<PerkStatus> {
+  if (isDatabaseReadSkipped()) {
+    return {
+      niche,
+      city,
+      providerId: null,
+      providerName: null,
+      subscriptionActive: false,
+      tier: null,
+      perks: { ...EMPTY_PERKS },
+      activatedAt: null,
+      deactivatedAt: null,
+    };
+  }
+
   const territory = await prisma.territory.findUnique({
     where: { niche_city: { niche: niche.toLowerCase(), city: city.toLowerCase() } },
     include: { provider: true },
@@ -190,10 +204,12 @@ export async function hasPerk(
 }
 
 export async function getActiveTerritoryCount(): Promise<number> {
+  if (isDatabaseReadSkipped()) return 0;
   return prisma.territory.count({ where: { deactivatedAt: null } });
 }
 
 export async function getAllActivePerks(): Promise<PerkStatus[]> {
+  if (isDatabaseReadSkipped()) return [];
   const territories = await prisma.territory.findMany({
     where: { deactivatedAt: null },
     include: { provider: true },

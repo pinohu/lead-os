@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next"
 import { niches } from "@/lib/niches"
 import { cityConfig } from "@/lib/city-config"
 import { getAllDirectoryListingSlugs } from "@/lib/directory-store"
-import { prisma } from "@/lib/db"
+import { isDatabaseReadSkipped, prisma } from "@/lib/db"
 
 const BASE = `https://${cityConfig.domain}`
 
@@ -73,10 +73,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const [listings, providers] = await Promise.all([
       getAllDirectoryListingSlugs(),
-      prisma.provider.findMany({
-        where: { subscriptionStatus: { in: ["active", "trial"] } },
-        select: { slug: true, niche: true, updatedAt: true },
-      }),
+      isDatabaseReadSkipped()
+        ? Promise.resolve([])
+        : prisma.provider.findMany({
+            where: { subscriptionStatus: { in: ["active", "trial"] } },
+            select: { slug: true, niche: true, updatedAt: true },
+          }),
     ])
 
     const seen = new Set<string>()

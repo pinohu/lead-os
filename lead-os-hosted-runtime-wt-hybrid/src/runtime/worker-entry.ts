@@ -14,3 +14,5 @@ console.log("[lead-os-worker] build", buildId);
 const { startPricingRuntimeWorker } = await import("../lib/pricing/bootstrap.ts");
 await startPricingRuntimeWorker();
 console.log("[lead-os-worker] Pricing worker bootstrap complete (see structured logs for BullMQ state).");
+
+export {};

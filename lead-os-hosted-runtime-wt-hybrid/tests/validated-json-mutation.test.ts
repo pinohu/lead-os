@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { z } from "zod";
-import { readJsonBody, validateWithSchema } from "../src/lib/api/validated-json";
+import { readJsonBody, validateWithSchema } from "../src/lib/api/validated-json.ts";
 
 describe("validated-json helpers", () => {
   it("readJsonBody rejects non-JSON content type", async () => {

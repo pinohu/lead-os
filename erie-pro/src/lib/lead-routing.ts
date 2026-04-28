@@ -2,7 +2,7 @@
 // Controlled exclusivity lead distribution with SLA timers and failover.
 // Persistent via Prisma/Postgres — all functions are async.
 
-import { prisma } from "@/lib/db";
+import { isDatabaseReadSkipped, prisma } from "@/lib/db";
 import type {
   Lead as PrismaLead,
   LeadOutcome as PrismaLeadOutcome,
@@ -495,6 +495,7 @@ export async function evaluateProviderSla(
  * Get all registered providers (admin utility).
  */
 export async function getAllProviders(): Promise<Provider[]> {
+  if (isDatabaseReadSkipped()) return [];
   const providers = await prisma.provider.findMany();
   return providers.map(providerToRouting);
 }
@@ -503,6 +504,7 @@ export async function getAllProviders(): Promise<Provider[]> {
  * Get a specific lead route result by ID.
  */
 export async function getLeadResult(leadId: string): Promise<LeadRouteResult | undefined> {
+  if (isDatabaseReadSkipped()) return undefined;
   const lead = await prisma.lead.findUnique({
     where: { id: leadId },
     include: { routedTo: true },
@@ -515,6 +517,7 @@ export async function getLeadResult(leadId: string): Promise<LeadRouteResult | u
  * Count banked (unmatched) leads for a given niche.
  */
 export async function getBankedLeadsByNiche(niche: string): Promise<number> {
+  if (isDatabaseReadSkipped()) return 0;
   return prisma.lead.count({
     where: { niche, routeType: "unmatched" },
   });
@@ -524,6 +527,7 @@ export async function getBankedLeadsByNiche(niche: string): Promise<number> {
  * Get banked lead counts for ALL niches.
  */
 export async function getAllBankedLeadCounts(): Promise<Record<string, number>> {
+  if (isDatabaseReadSkipped()) return {};
   const results = await prisma.lead.groupBy({
     by: ["niche"],
     where: { routeType: "unmatched" },
@@ -541,6 +545,7 @@ export async function getAllBankedLeadCounts(): Promise<Record<string, number>> 
  * Get unmatched lead records for a niche (for pay-per-lead flow).
  */
 export async function getUnmatchedLeadsForNiche(niche: string): Promise<LeadRouteResult[]> {
+  if (isDatabaseReadSkipped()) return [];
   const leads = await prisma.lead.findMany({
     where: { niche, routeType: "unmatched" },
     include: { routedTo: true },
@@ -556,17 +561,25 @@ export async function assignLeadToBuyer(
   leadId: string,
   buyerEmail: string
 ): Promise<LeadRouteResult | null> {
-  const lead = await prisma.lead.findUnique({
-    where: { id: leadId },
-    include: { routedTo: true },
-  });
-  if (!lead || lead.routeType !== "unmatched") return null;
+  void buyerEmail;
 
-  const updated = await prisma.lead.update({
+  const claimed = await prisma.lead.updateMany({
+    where: { id: leadId, routeType: "unmatched" },
+    data: {
+      routeType: "overflow",
+      routedToId: null,
+      slaDeadline: null,
+      deliverAt: null,
+    },
+  });
+
+  if (claimed.count === 0) return null;
+
+  const updated = await prisma.lead.findUnique({
     where: { id: leadId },
-    data: { routeType: "overflow" },
     include: { routedTo: true },
   });
+  if (!updated) return null;
 
   return leadToRouteResult(updated);
 }

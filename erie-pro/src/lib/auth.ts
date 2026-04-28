@@ -1,53 +1,90 @@
-// ── NextAuth v5 Configuration ─────────────────────────────────────────
-// Credentials provider (email/password) for provider dashboard access.
-// Magic link (email) provider can be added once Emailit is integrated (Phase 3).
+// NextAuth v5 configuration for provider dashboard access.
 
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
-// ── Login Rate Limiter ──────────────────────────────────────────────
-// In-memory rate limiter: max 5 failed attempts per email per 15 minutes.
-// Provides brute-force protection within a single serverless instance.
 const LOGIN_MAX_ATTEMPTS = 5;
-const LOGIN_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 
-interface LoginAttempt {
-  count: number;
-  firstAttemptAt: number;
+type LoginAttemptRow = {
+  attempt_count: number;
+  first_attempt_at: Date | string;
+};
+
+function hashRateLimitValue(value: string) {
+  return crypto.createHash("sha256").update(value).digest("hex");
 }
 
-const loginAttempts = new Map<string, LoginAttempt>();
+function getRequestIp(request?: Request) {
+  const forwardedFor = request?.headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0]?.trim() || "unknown";
+  }
+  return request?.headers.get("x-real-ip")?.trim() || "unknown";
+}
 
-function isLoginRateLimited(email: string): boolean {
-  const now = Date.now();
-  const attempt = loginAttempts.get(email);
+function loginAttemptKey(email: string, request?: Request) {
+  const ip = getRequestIp(request);
+  return {
+    keyHash: hashRateLimitValue(`${email}:${ip}`),
+    emailHash: hashRateLimitValue(email),
+    ipHash: hashRateLimitValue(ip),
+  };
+}
+
+async function isLoginRateLimited(email: string, request?: Request): Promise<boolean> {
+  const { keyHash } = loginAttemptKey(email, request);
+  const attempts = await prisma.$queryRaw<LoginAttemptRow[]>`
+    SELECT attempt_count, first_attempt_at
+    FROM login_attempts
+    WHERE key_hash = ${keyHash}
+    LIMIT 1
+  `;
+  const attempt = attempts[0];
   if (!attempt) return false;
 
-  // Window expired — clear and allow
-  if (now - attempt.firstAttemptAt > LOGIN_WINDOW_MS) {
-    loginAttempts.delete(email);
+  if (Date.now() - new Date(attempt.first_attempt_at).getTime() > LOGIN_WINDOW_MS) {
+    await prisma.$executeRaw`DELETE FROM login_attempts WHERE key_hash = ${keyHash}`;
     return false;
   }
 
-  return attempt.count >= LOGIN_MAX_ATTEMPTS;
+  return Number(attempt.attempt_count) >= LOGIN_MAX_ATTEMPTS;
 }
 
-function recordFailedLogin(email: string): void {
-  const now = Date.now();
-  const attempt = loginAttempts.get(email);
+async function recordFailedLogin(email: string, request?: Request): Promise<void> {
+  const { keyHash, emailHash, ipHash } = loginAttemptKey(email, request);
+  const windowStart = new Date(Date.now() - LOGIN_WINDOW_MS);
 
-  if (!attempt || now - attempt.firstAttemptAt > LOGIN_WINDOW_MS) {
-    loginAttempts.set(email, { count: 1, firstAttemptAt: now });
-  } else {
-    attempt.count += 1;
-  }
+  await prisma.$executeRaw`
+    INSERT INTO login_attempts (
+      key_hash,
+      email_hash,
+      ip_hash,
+      attempt_count,
+      first_attempt_at,
+      last_attempt_at
+    )
+    VALUES (${keyHash}, ${emailHash}, ${ipHash}, 1, NOW(), NOW())
+    ON CONFLICT (key_hash) DO UPDATE SET
+      attempt_count = CASE
+        WHEN login_attempts.first_attempt_at < ${windowStart} THEN 1
+        ELSE login_attempts.attempt_count + 1
+      END,
+      first_attempt_at = CASE
+        WHEN login_attempts.first_attempt_at < ${windowStart} THEN NOW()
+        ELSE login_attempts.first_attempt_at
+      END,
+      last_attempt_at = NOW()
+  `;
 }
 
-function clearLoginAttempts(email: string): void {
-  loginAttempts.delete(email);
+async function clearLoginAttempts(email: string, request?: Request): Promise<void> {
+  const { keyHash } = loginAttemptKey(email, request);
+  await prisma.$executeRaw`DELETE FROM login_attempts WHERE key_hash = ${keyHash}`;
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -64,51 +101,45 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (!credentials?.email || !credentials?.password) return null;
 
         const email = (credentials.email as string).toLowerCase().trim();
         const password = credentials.password as string;
 
-        // Rate limit check — block after too many failed attempts
-        if (isLoginRateLimited(email)) {
+        if (await isLoginRateLimited(email, request)) {
           return null;
         }
 
-        // Look up user by email
         const user = await prisma.user.findUnique({
           where: { email },
         });
 
         if (!user) {
-          recordFailedLogin(email);
+          await recordFailedLogin(email, request);
           return null;
         }
 
-        // Admin users: check password hash stored directly on the linked provider
-        // Provider users: check via their provider profile
         if (user.providerId) {
           const provider = await prisma.provider.findUnique({
             where: { id: user.providerId },
           });
           if (!provider?.passwordHash) {
-            recordFailedLogin(email);
+            await recordFailedLogin(email, request);
             return null;
           }
 
           const valid = await bcrypt.compare(password, provider.passwordHash);
           if (!valid) {
-            recordFailedLogin(email);
+            await recordFailedLogin(email, request);
             return null;
           }
         } else {
-          // No linked provider — reject login (no password to verify)
-          recordFailedLogin(email);
+          await recordFailedLogin(email, request);
           return null;
         }
 
-        // Successful login — clear any failed attempt counter
-        clearLoginAttempts(email);
+        await clearLoginAttempts(email, request);
 
         return {
           id: user.id,
@@ -137,17 +168,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async authorized({ auth: session, request }) {
       const { pathname } = request.nextUrl;
 
-      // Admin routes require admin role
       if (pathname.startsWith("/admin")) {
         return session?.user && (session.user as { role?: string }).role === "admin";
       }
 
-      // Dashboard routes require any authenticated user
       if (pathname.startsWith("/dashboard")) {
         return !!session?.user;
       }
 
-      // Everything else is public
       return true;
     },
   },

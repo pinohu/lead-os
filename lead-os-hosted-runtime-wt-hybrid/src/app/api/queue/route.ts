@@ -1,10 +1,10 @@
 // src/app/api/queue/route.ts
 import { timingSafeEqual } from "crypto";
-import { NextResponse } from "next/server";
-import { requireAlignedTenant } from "@/lib/api-mutation-guard";
-import { requireOperatorApiSession } from "@/lib/operator-auth";
-import { getPricingQueueStats } from "@/lib/pricing/queue-client";
-import { countDeadLetterJobs } from "@/lib/pricing/repository";
+import { NextResponse } from "next/server.js";
+import { requireAlignedTenant } from "../../../lib/api-mutation-guard.ts";
+import { getSignedOperatorSessionFromHeaders } from "../../../lib/operator-session-headers.ts";
+import { getPricingQueueStats } from "../../../lib/pricing/queue-client.ts";
+import { countDeadLetterJobs } from "../../../lib/pricing/repository.ts";
 
 export const dynamic = "force-dynamic";
 
@@ -15,8 +15,8 @@ function timingSafeEqualStr(a: string, b: string): boolean {
   return timingSafeEqual(ab, bb);
 }
 
-function authorizeCronOrAuthSecret(request: Request): boolean {
-  const secret = process.env.CRON_SECRET ?? process.env.LEAD_OS_AUTH_SECRET;
+function authorizeCronSecret(request: Request): boolean {
+  const secret = process.env.CRON_SECRET;
   if (!secret) return false;
   const bearer = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim();
   const header = request.headers.get("x-cron-secret");
@@ -28,9 +28,16 @@ function authorizeCronOrAuthSecret(request: Request): boolean {
 }
 
 export async function GET(request: Request) {
-  const cronOk = authorizeCronOrAuthSecret(request);
+  const cronOk = authorizeCronSecret(request);
   if (!cronOk) {
-    const { session, response } = await requireOperatorApiSession(request);
+    let session: { email: string } | null = getSignedOperatorSessionFromHeaders(request.headers);
+    let response: NextResponse | null = null;
+    if (!session && request.headers.get("cookie")?.includes("leados_operator_session=")) {
+      const auth = await import("../../../lib/operator-auth.ts");
+      const result = await auth.requireOperatorApiSession(request);
+      session = result.session;
+      response = result.response;
+    }
     if (!session) {
       return response ?? NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
     }

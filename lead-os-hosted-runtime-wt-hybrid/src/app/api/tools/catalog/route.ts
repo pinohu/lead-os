@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+import { buildCorsHeaders } from "@/lib/cors";
 import {
   getToolCatalog,
   getToolsByCategory,
@@ -10,12 +11,6 @@ import {
   type LeadOsEngine,
   type ToolPriority,
 } from "@/lib/tool-catalog";
-
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
 
 const querySchema = z.object({
   category: z
@@ -54,12 +49,13 @@ const querySchema = z.object({
     .optional(),
 });
 
-export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+export function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, { status: 204, headers: buildCorsHeaders(request.headers.get("origin")) });
 }
 
 export async function GET(request: NextRequest) {
   const requestId = crypto.randomUUID();
+  const corsHeaders = buildCorsHeaders(request.headers.get("origin"));
 
   const rawParams = Object.fromEntries(request.nextUrl.searchParams.entries());
   const parsed = querySchema.safeParse(rawParams);
@@ -78,7 +74,7 @@ export async function GET(request: NextRequest) {
         },
         meta: { requestId },
       },
-      { status: 400, headers: CORS_HEADERS }
+      { status: 400, headers: corsHeaders }
     );
   }
 
@@ -114,6 +110,6 @@ export async function GET(request: NextRequest) {
         filters: { category: category ?? null, priority: priority ?? null, mapping: mapping ?? null },
       },
     },
-    { status: 200, headers: CORS_HEADERS }
+    { status: 200, headers: corsHeaders }
   );
 }

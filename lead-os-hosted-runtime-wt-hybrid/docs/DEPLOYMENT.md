@@ -5,7 +5,7 @@
 - **Node.js 20+**
 - **PostgreSQL** with migrations from `db/migrations/` applied in order (through **`011_gtm_use_case_statuses.sql`** for operator GTM status + **`010_erie_directory_seed.sql`** for Erie.pro directory demo + **`009_stripe_webhook_idempotency_billing_cols.sql`** for Stripe webhook idempotency + `billing_subscriptions` Stripe linkage; **`007_billing_entitlements_audit.sql`** for billing gates + operator audit log).
 - **LEAD_OS_AUTH_SECRET** (required for API middleware signature and operator JWTs).
-- **CRON_SECRET** (or **LEAD_OS_AUTH_SECRET** as fallback for cron Bearer / `x-cron-secret`) if you call cron routes; cron POST/GET handlers validate this in-route as well as in middleware.
+- **CRON_SECRET** if you call cron routes; cron POST/GET handlers validate this in-route as well as in proxy middleware.
 - **STRIPE_WEBHOOK_SECRET** / **STRIPE_SECRET_KEY** for `/api/billing/webhook` and **`/api/billing/stripe/webhook`** (public; configure both URLs in Stripe if you use the new path).
 - **Optional:** `REDIS_URL` for BullMQ pricing queues and distributed scheduling.
 

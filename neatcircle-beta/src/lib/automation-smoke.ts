@@ -1,4 +1,6 @@
 import { automationCatalog } from "./automation-catalog.ts";
+import { embeddedSecrets } from "./embedded-secrets.ts";
+import { hasConfiguredSecret, normalizeSecret } from "./admin-auth.ts";
 
 type SmokeFixture = {
   route: string;
@@ -215,16 +217,24 @@ export const automationSmokeFixtures: SmokeFixture[] = [
   },
 ];
 
-export async function runAutomationSmoke(baseUrl: string) {
+export async function runAutomationSmoke(
+  baseUrl: string,
+  automationSecret = process.env.AUTOMATION_API_SECRET ?? embeddedSecrets.automation.apiSecret,
+) {
+  const configuredAutomationSecret = normalizeSecret(automationSecret);
+  if (!hasConfiguredSecret(configuredAutomationSecret)) {
+    throw new Error("AUTOMATION_API_SECRET must be configured to run automation smoke tests.");
+  }
+
   const results = [];
 
   for (const fixture of automationSmokeFixtures) {
     const response = await fetch(`${baseUrl}${fixture.route}`, {
       method: fixture.method,
       headers: {
+        Authorization: `Bearer ${configuredAutomationSecret}`,
         "Content-Type": "application/json",
         "x-lead-os-dry-run": "1",
-        "x-lead-os-internal-smoke": "1",
       },
       body: fixture.method === "POST" ? JSON.stringify(fixture.body ?? {}) : undefined,
     });

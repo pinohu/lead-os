@@ -2,7 +2,7 @@ import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { exportUserData, requestDeletion, processDeletion } from "@/lib/gdpr";
-import { createHash } from "crypto";
+import { createSelfServiceToken, verifySelfServiceToken } from "@/lib/self-service-tokens";
 
 const MAX_EMAIL_LENGTH = 254;
 
@@ -11,22 +11,11 @@ const MAX_EMAIL_LENGTH = 254;
  * Uses the same approach as unsubscribe but with a stronger hash.
  */
 function generateToken(email: string, tenantId: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "gdpr-self-service";
-  return createHash("sha256")
-    .update(`${email.toLowerCase().trim()}::${tenantId}::${secret}`)
-    .digest("hex")
-    .slice(0, 32);
+  return createSelfServiceToken("gdpr", email, tenantId, 32) ?? "";
 }
 
 function validateToken(email: string, tenantId: string, token: string): boolean {
-  const expected = generateToken(email, tenantId);
-  if (expected.length !== token.length) return false;
-
-  let mismatch = 0;
-  for (let i = 0; i < expected.length; i++) {
-    mismatch |= expected.charCodeAt(i) ^ token.charCodeAt(i);
-  }
-  return mismatch === 0;
+  return verifySelfServiceToken("gdpr", email, tenantId, token, 32);
 }
 
 /**
@@ -58,6 +47,12 @@ export async function GET(request: Request) {
     return NextResponse.json(
       { data: null, error: { code: "VALIDATION_ERROR", message: "Invalid email" }, meta: null },
       { status: 400, headers },
+    );
+  }
+  if (!process.env.LEAD_OS_AUTH_SECRET?.trim()) {
+    return NextResponse.json(
+      { data: null, error: { code: "SERVICE_UNAVAILABLE", message: "Self-service links are not configured" }, meta: null },
+      { status: 503, headers },
     );
   }
 

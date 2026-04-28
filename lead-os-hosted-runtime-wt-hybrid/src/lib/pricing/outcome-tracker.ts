@@ -1,7 +1,7 @@
 // src/lib/pricing/outcome-tracker.ts
 // Delayed outcome measurement: compares pre-change demand proxy to post-window demand.
 
-import { queryPostgres } from "@/lib/db.ts";
+import { queryPostgres } from "../db.ts";
 import {
   applyLearningAfterOutcome,
   finalizeOutcomeMeasured,

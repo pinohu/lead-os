@@ -1,7 +1,7 @@
 // tests/operator-actions-schema.test.ts
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { OperatorActionSchema } from "../src/lib/operator-actions";
+import { OperatorActionSchema } from "../src/lib/operator-actions.ts";
 
 describe("OperatorActionSchema", () => {
   it("accepts dlq_replay with numeric id", () => {

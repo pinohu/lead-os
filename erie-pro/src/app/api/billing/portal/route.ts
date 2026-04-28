@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { isFeatureEnabled } from "@/lib/feature-flags";
 import { logger } from "@/lib/logger";
+import { getEnvValue } from "@/lib/env-aliases";
 
 export async function POST(req: NextRequest) {
   if (!isFeatureEnabled("stripe_billing_portal")) {
@@ -47,7 +48,14 @@ export async function POST(req: NextRequest) {
 
     // Dynamic import to avoid loading Stripe when not needed
     const stripe = (await import("stripe")).default;
-    const stripeClient = new stripe(process.env.STRIPE_SECRET_KEY!);
+    const stripeSecretKey = getEnvValue("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
+      return NextResponse.json(
+        { success: false, error: "Stripe is not configured" },
+        { status: 503 }
+      );
+    }
+    const stripeClient = new stripe(stripeSecretKey);
 
     const portalSession = await stripeClient.billingPortal.sessions.create({
       customer: provider.stripeCustomerId,

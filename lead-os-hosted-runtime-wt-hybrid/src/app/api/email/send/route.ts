@@ -1,29 +1,20 @@
-import { createHash, createHmac } from "crypto";
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { getDefaultTemplates } from "@/lib/email-templates";
 import { sendEmail, type SendEmailInput } from "@/lib/email-sender";
-import { resolveTenantConfig } from "@/lib/tenant";
+import { createSelfServiceToken } from "@/lib/self-service-tokens";
+import { resolveTenantConfig, tenantConfig } from "@/lib/tenant";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_TO_LENGTH = 254;
 
 function generateUnsubscribeToken(email: string, tenant: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "";
-  if (!secret) return "";
-  return createHmac("sha256", secret)
-    .update(`${email.toLowerCase().trim()}::${tenant}`)
-    .digest("hex")
-    .slice(0, 24);
+  return createSelfServiceToken("unsubscribe", email, tenant, 24) ?? "";
 }
 
 function generatePreferencesToken(email: string, tenantId: string): string {
-  const secret = process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? "preferences-service";
-  return createHash("sha256")
-    .update(`${email.toLowerCase().trim()}::${tenantId}::${secret}`)
-    .digest("hex")
-    .slice(0, 32);
+  return createSelfServiceToken("preferences", email, tenantId, 32) ?? "";
 }
 
 export async function POST(request: Request) {
@@ -41,6 +32,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+    const authenticatedTenantId = auth.session?.tenantId ?? tenantConfig.tenantId;
 
     if (!body.to || typeof body.to !== "string" || !EMAIL_PATTERN.test(body.to) || body.to.length > MAX_TO_LENGTH) {
       return NextResponse.json(
@@ -60,6 +52,13 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId is required" }, meta: null },
         { status: 400, headers },
+      );
+    }
+
+    if (body.tenantId !== authenticatedTenantId) {
+      return NextResponse.json(
+        { data: null, error: { code: "FORBIDDEN", message: "tenantId does not match authenticated tenant" }, meta: null },
+        { status: 403, headers },
       );
     }
 
@@ -85,10 +84,22 @@ export async function POST(request: Request) {
 
       if (!context.unsubscribeUrl) {
         const unsubToken = generateUnsubscribeToken(recipientEmail, tenantId);
+        if (!unsubToken) {
+          return NextResponse.json(
+            { data: null, error: { code: "SERVICE_UNAVAILABLE", message: "Self-service links are not configured" }, meta: null },
+            { status: 503, headers },
+          );
+        }
         context.unsubscribeUrl = `${tenant.siteUrl}/api/unsubscribe?email=${encodeURIComponent(recipientEmail)}&tenant=${encodeURIComponent(tenantId)}&token=${unsubToken}`;
       }
       if (!context.preferencesUrl) {
         const prefToken = generatePreferencesToken(recipientEmail, tenantId);
+        if (!prefToken) {
+          return NextResponse.json(
+            { data: null, error: { code: "SERVICE_UNAVAILABLE", message: "Self-service links are not configured" }, meta: null },
+            { status: 503, headers },
+          );
+        }
         context.preferencesUrl = `${tenant.siteUrl}/preferences?email=${encodeURIComponent(recipientEmail)}&tenant=${encodeURIComponent(tenantId)}&token=${prefToken}`;
       }
     }

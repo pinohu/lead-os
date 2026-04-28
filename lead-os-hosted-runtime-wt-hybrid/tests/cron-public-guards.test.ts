@@ -1,7 +1,7 @@
 // tests/cron-public-guards.test.ts
 import assert from "node:assert/strict";
 import { describe, it, after } from "node:test";
-import { requireCronAuthOrFail, requireDeployTenantIdOrFail } from "../src/lib/api/cron-public-guards";
+import { requireCronAuthOrFail, requireDeployTenantIdOrFail } from "../src/lib/api/cron-public-guards.ts";
 
 describe("cron-public-guards", () => {
   const prevCron = process.env.CRON_SECRET;
@@ -16,8 +16,20 @@ describe("cron-public-guards", () => {
 
   it("requireCronAuthOrFail rejects missing secret", () => {
     delete process.env.CRON_SECRET;
-    delete process.env.LEAD_OS_AUTH_SECRET;
+    process.env.LEAD_OS_AUTH_SECRET = "auth-secret-must-not-authorize-cron";
     const res = requireCronAuthOrFail(new Request("https://x/api/cron/test"));
+    assert.ok(res);
+    assert.equal(res.status, 503);
+  });
+
+  it("requireCronAuthOrFail does not accept LEAD_OS_AUTH_SECRET as cron fallback", () => {
+    delete process.env.CRON_SECRET;
+    process.env.LEAD_OS_AUTH_SECRET = "auth-secret-must-not-authorize-cron";
+    const res = requireCronAuthOrFail(
+      new Request("https://x/api/cron/test", {
+        headers: { authorization: "Bearer auth-secret-must-not-authorize-cron" },
+      }),
+    );
     assert.ok(res);
     assert.equal(res.status, 503);
   });
