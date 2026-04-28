@@ -30,13 +30,23 @@ export async function POST(request: Request) {
 
   // ── Parse form body ─────────────────────────────────────────────────────
   let samlResponse: string;
+  let relayState: string;
   try {
     const formData = await request.formData();
     samlResponse = (formData.get("SAMLResponse") as string) ?? "";
+    relayState = (formData.get("RelayState") as string) ?? "";
   } catch {
     return NextResponse.json(
       { success: false, error: "Invalid form body — expected SAMLResponse" },
       { status: 400 },
+    );
+  }
+
+  const storedRelayState = parseCookie(request.headers.get("cookie") ?? "", "leados_saml_relay");
+  if (!relayState || !storedRelayState || relayState !== storedRelayState) {
+    return NextResponse.json(
+      { success: false, error: "RelayState mismatch - possible CSRF" },
+      { status: 403 },
     );
   }
 
@@ -101,4 +111,12 @@ export async function POST(request: Request) {
   response.cookies.set({ name: "leados_saml_relay", value: "", maxAge: 0, path: "/" });
 
   return response;
+}
+
+function parseCookie(header: string, name: string): string | null {
+  const match = header
+    .split(";")
+    .map((s) => s.trim())
+    .find((s) => s.startsWith(`${name}=`));
+  return match ? match.slice(name.length + 1) : null;
 }

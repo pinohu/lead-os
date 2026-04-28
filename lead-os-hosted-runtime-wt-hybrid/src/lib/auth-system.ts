@@ -95,9 +95,19 @@ const sessionStore = new Map<string, SessionRecord>();
 const inviteStore = new Map<string, TeamInvite>();
 
 let schemaReady: Promise<void> | null = null;
+let authSystemPoolOverride: QueryablePool | null | undefined;
+
+type QueryablePool = {
+  query: (text: string, values?: unknown[]) => Promise<{ rows: any[] }>;
+};
+
+function getAuthPool(): QueryablePool | null {
+  if (authSystemPoolOverride !== undefined) return authSystemPoolOverride;
+  return getPool();
+}
 
 async function ensureSchema(): Promise<void> {
-  const pool = getPool();
+  const pool = getAuthPool();
   if (!pool) return;
   if (schemaReady) return schemaReady;
 
@@ -135,11 +145,17 @@ async function ensureSchema(): Promise<void> {
           user_id TEXT NOT NULL REFERENCES lead_os_users(id) ON DELETE CASCADE,
           tenant_id TEXT NOT NULL,
           role TEXT NOT NULL,
+          token_hash TEXT,
           expires_at TIMESTAMPTZ NOT NULL,
           created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
+        ALTER TABLE lead_os_sessions ADD COLUMN IF NOT EXISTS token_hash TEXT;
         CREATE INDEX IF NOT EXISTS idx_lead_os_sessions_user
           ON lead_os_sessions (user_id);
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_lead_os_sessions_token_hash
+          ON lead_os_sessions (token_hash) WHERE token_hash IS NOT NULL;
+        CREATE INDEX IF NOT EXISTS idx_lead_os_sessions_expires
+          ON lead_os_sessions (expires_at);
 
         CREATE TABLE IF NOT EXISTS lead_os_invites (
           id TEXT PRIMARY KEY,
@@ -199,6 +215,49 @@ function userToRecord(row: { id: string; email: string; tenant_id: string; creat
   };
 }
 
+function toIso(value: unknown): string {
+  if (value instanceof Date) return value.toISOString();
+  return String(value);
+}
+
+function apiKeyToRecord(row: {
+  id: string;
+  prefix: string;
+  key_hash: string;
+  created_at: Date | string;
+  payload: Record<string, unknown>;
+}): ApiKeyRecord {
+  const payload = row.payload;
+  return {
+    id: row.id,
+    name: (payload.name as string) ?? "",
+    keyHash: row.key_hash,
+    prefix: row.prefix,
+    permissions: (payload.permissions as string[]) ?? [],
+    lastUsedAt: payload.lastUsedAt as string | undefined,
+    expiresAt: payload.expiresAt as string | undefined,
+    createdAt: toIso(row.created_at),
+  };
+}
+
+function sessionToRecord(row: {
+  id: string;
+  user_id: string;
+  tenant_id: string;
+  role: string;
+  expires_at: Date | string;
+  created_at: Date | string;
+}): SessionRecord {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    tenantId: row.tenant_id,
+    role: row.role as UserRole,
+    expiresAt: toIso(row.expires_at),
+    createdAt: toIso(row.created_at),
+  };
+}
+
 export interface CreateUserInput {
   email: string;
   name: string;
@@ -230,7 +289,7 @@ export async function createUser(input: CreateUserInput): Promise<UserAccount> {
     updatedAt: now,
   };
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (pool) {
     const payload = {
       name: user.name,
@@ -260,7 +319,7 @@ export async function getUserByEmail(email: string, tenantId: string): Promise<U
   const memId = emailIndex.get(emailKey(normalizedEmail, tenantId));
   if (memId) return userStore.get(memId) ?? null;
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (!pool) return null;
 
   const result = await pool.query(
@@ -283,7 +342,7 @@ export async function getUserById(id: string): Promise<UserAccount | null> {
   const memUser = userStore.get(id);
   if (memUser) return memUser;
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (!pool) return null;
 
   const result = await pool.query(
@@ -303,7 +362,7 @@ export async function getUserById(id: string): Promise<UserAccount | null> {
 export async function listUsers(tenantId: string): Promise<UserAccount[]> {
   await ensureSchema();
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (pool) {
     const result = await pool.query(
       `SELECT id, email, tenant_id, created_at, updated_at, payload
@@ -334,7 +393,7 @@ export async function updateUser(id: string, patch: Partial<Pick<UserAccount, "n
     updatedAt: now,
   };
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (pool) {
     const payload = {
       name: updated.name,
@@ -389,7 +448,7 @@ export async function createApiKey(
     createdAt: now,
   };
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (pool) {
     const payload = { name, permissions, expiresAt };
     await pool.query(
@@ -406,6 +465,31 @@ export async function createApiKey(
   return { record, rawKey };
 }
 
+export async function listApiKeys(userId: string): Promise<ApiKeyRecord[]> {
+  await ensureSchema();
+
+  const pool = getAuthPool();
+  if (pool) {
+    const result = await pool.query(
+      `SELECT id, prefix, key_hash, created_at, payload
+       FROM lead_os_api_keys
+       WHERE user_id = $1
+       ORDER BY created_at DESC`,
+      [userId],
+    );
+    const records = result.rows.map((row) => apiKeyToRecord(row as Parameters<typeof apiKeyToRecord>[0]));
+    for (const record of records) {
+      apiKeyStore.set(record.id, { ...record, userId });
+    }
+    return records;
+  }
+
+  return Array.from(apiKeyStore.values())
+    .filter((entry) => entry.userId === userId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map(({ userId: _userId, ...record }) => record);
+}
+
 export async function validateApiKey(rawKey: string): Promise<{ user: UserAccount; permissions: string[] } | null> {
   await ensureSchema();
 
@@ -414,7 +498,7 @@ export async function validateApiKey(rawKey: string): Promise<{ user: UserAccoun
   const prefix = rawKey.slice(0, 8);
   const keyHashValue = hashKey(rawKey);
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (pool) {
     const result = await pool.query(
       `SELECT k.id, k.user_id, k.prefix, k.key_hash, k.created_at, k.payload,
@@ -449,6 +533,7 @@ export async function validateApiKey(rawKey: string): Promise<{ user: UserAccoun
         updated_at: row.u_updated_at,
         payload: row.u_payload,
       });
+      if (user.status !== "active") return null;
       return { user, permissions };
     }
   }
@@ -468,35 +553,43 @@ export async function validateApiKey(rawKey: string): Promise<{ user: UserAccoun
   return null;
 }
 
-export async function revokeApiKey(keyId: string): Promise<boolean> {
+function removeApiKeyFromMemory(userId: string, keyId: string): void {
+  apiKeyStore.delete(keyId);
+  const user = userStore.get(userId);
+  if (user) {
+    user.apiKeys = user.apiKeys.filter((k) => k.id !== keyId);
+    userStore.set(userId, { ...user, updatedAt: nowISO() });
+  }
+}
+
+export async function revokeApiKey(keyId: string, userId?: string): Promise<boolean> {
   await ensureSchema();
 
   const entry = apiKeyStore.get(keyId);
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (pool) {
-    const result = await pool.query(`DELETE FROM lead_os_api_keys WHERE id = $1 RETURNING user_id`, [keyId]);
-    if (result.rows.length > 0) {
-      const userId = result.rows[0].user_id as string;
-      const user = await getUserById(userId);
-      if (user) {
-        user.apiKeys = user.apiKeys.filter((k) => k.id !== keyId);
-        userStore.set(userId, { ...user, updatedAt: nowISO() });
-      }
-    }
-  }
+    const result = userId
+      ? await pool.query(
+        `DELETE FROM lead_os_api_keys WHERE id = $1 AND user_id = $2 RETURNING user_id`,
+        [keyId, userId],
+      )
+      : await pool.query(`DELETE FROM lead_os_api_keys WHERE id = $1 RETURNING user_id`, [keyId]);
 
-  if (entry) {
-    apiKeyStore.delete(keyId);
-    const user = userStore.get(entry.userId);
-    if (user) {
-      user.apiKeys = user.apiKeys.filter((k) => k.id !== keyId);
-      userStore.set(entry.userId, { ...user, updatedAt: nowISO() });
-    }
+    if (result.rows.length === 0) return false;
+
+    const deletedUserId = result.rows[0].user_id as string;
+    removeApiKeyFromMemory(deletedUserId, keyId);
     return true;
   }
 
-  return pool ? true : false;
+  if (entry) {
+    if (userId && entry.userId !== userId) return false;
+    removeApiKeyFromMemory(entry.userId, keyId);
+    return true;
+  }
+
+  return false;
 }
 
 export async function createSession(userId: string): Promise<{ session: SessionRecord; token: string } | null> {
@@ -509,6 +602,7 @@ export async function createSession(userId: string): Promise<{ session: SessionR
   const token = `sess_${Array.from(crypto.getRandomValues(new Uint8Array(32)))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("")}`;
+  const tokenHash = hashKey(token);
   const now = nowISO();
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
@@ -521,12 +615,12 @@ export async function createSession(userId: string): Promise<{ session: SessionR
     createdAt: now,
   };
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (pool) {
     await pool.query(
-      `INSERT INTO lead_os_sessions (id, user_id, tenant_id, role, expires_at, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
-      [sessionId, userId, user.tenantId, user.role, expiresAt, now],
+      `INSERT INTO lead_os_sessions (id, user_id, tenant_id, role, token_hash, expires_at, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [sessionId, userId, user.tenantId, user.role, tokenHash, expiresAt, now],
     );
   }
 
@@ -541,6 +635,29 @@ export async function validateSession(token: string): Promise<SessionRecord | nu
   await ensureSchema();
 
   if (!token.startsWith("sess_")) return null;
+
+  const pool = getAuthPool();
+  if (pool) {
+    const tokenHash = hashKey(token);
+    const result = await pool.query(
+      `SELECT id, user_id, tenant_id, role, expires_at, created_at
+       FROM lead_os_sessions
+       WHERE token_hash = $1
+       LIMIT 1`,
+      [tokenHash],
+    );
+    if (result.rows.length === 0) return null;
+
+    const session = sessionToRecord(result.rows[0] as Parameters<typeof sessionToRecord>[0]);
+    if (new Date(session.expiresAt) < new Date()) {
+      await pool.query(`DELETE FROM lead_os_sessions WHERE token_hash = $1`, [tokenHash]);
+      sessionStore.delete(token);
+      return null;
+    }
+
+    sessionStore.set(token, session);
+    return session;
+  }
 
   const memSession = sessionStore.get(token);
   if (memSession) {
@@ -557,15 +674,12 @@ export async function validateSession(token: string): Promise<SessionRecord | nu
 export async function destroySession(token: string): Promise<void> {
   await ensureSchema();
 
-  const session = sessionStore.get(token);
-
-  if (session) {
-    const pool = getPool();
-    if (pool) {
-      await pool.query(`DELETE FROM lead_os_sessions WHERE id = $1`, [session.id]);
-    }
-    sessionStore.delete(token);
+  const pool = getAuthPool();
+  if (pool) {
+    await pool.query(`DELETE FROM lead_os_sessions WHERE token_hash = $1`, [hashKey(token)]);
   }
+
+  sessionStore.delete(token);
 }
 
 export async function createTeamInvite(
@@ -592,7 +706,7 @@ export async function createTeamInvite(
     createdAt: now,
   };
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (pool) {
     await pool.query(
       `INSERT INTO lead_os_invites (id, email, tenant_id, role, invited_by, expires_at, status, created_at)
@@ -610,7 +724,7 @@ export async function acceptInvite(inviteId: string, name: string): Promise<User
 
   const invite = inviteStore.get(inviteId);
   if (!invite) {
-    const pool = getPool();
+    const pool = getAuthPool();
     if (pool) {
       const result = await pool.query(
         `SELECT * FROM lead_os_invites WHERE id = $1 AND status = 'pending' LIMIT 1`,
@@ -661,7 +775,7 @@ async function acceptInviteInternal(invite: TeamInvite, name: string): Promise<U
   invite.status = "accepted";
   inviteStore.set(invite.id, invite);
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (pool) {
     await pool.query(`UPDATE lead_os_invites SET status = 'accepted' WHERE id = $1`, [invite.id]);
   }
@@ -672,7 +786,7 @@ async function acceptInviteInternal(invite: TeamInvite, name: string): Promise<U
 export async function listInvites(tenantId: string): Promise<TeamInvite[]> {
   await ensureSchema();
 
-  const pool = getPool();
+  const pool = getAuthPool();
   if (pool) {
     const result = await pool.query(
       `SELECT * FROM lead_os_invites WHERE tenant_id = $1 ORDER BY created_at DESC`,
@@ -706,5 +820,10 @@ export function resetAuthStore(): void {
   apiKeyStore.clear();
   sessionStore.clear();
   inviteStore.clear();
+  schemaReady = null;
+}
+
+export function __setAuthSystemPoolForTests(pool: QueryablePool | null | undefined): void {
+  authSystemPoolOverride = pool;
   schemaReady = null;
 }

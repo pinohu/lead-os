@@ -9,7 +9,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
-import { sendTestWebhook } from "@/lib/webhook-delivery";
+import { sendTestWebhook, validateWebhookUrl } from "@/lib/webhook-delivery";
 import { encryptWebhookSecret } from "@/lib/webhook-secret";
 import crypto from "crypto";
 import { z } from "zod";
@@ -87,6 +87,14 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { success: false, error: parsed.error.issues.map((e) => e.message).join("; ") },
+        { status: 400 }
+      );
+    }
+
+    const urlValidation = await validateWebhookUrl(parsed.data.url);
+    if (!urlValidation.valid) {
+      return NextResponse.json(
+        { success: false, error: urlValidation.error ?? "Webhook URL is not allowed" },
         { status: 400 }
       );
     }

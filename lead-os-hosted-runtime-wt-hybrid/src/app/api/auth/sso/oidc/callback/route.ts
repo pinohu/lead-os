@@ -53,10 +53,18 @@ export async function GET(request: Request) {
   // ── Validate state ──────────────────────────────────────────────────────
   const cookieHeader = request.headers.get("cookie") ?? "";
   const storedState = parseCookie(cookieHeader, "leados_oidc_state");
+  const storedNonce = parseCookie(cookieHeader, "leados_oidc_nonce");
 
   if (!storedState || storedState !== state) {
     return NextResponse.json(
       { success: false, error: "State mismatch — possible CSRF" },
+      { status: 403 },
+    );
+  }
+
+  if (!storedNonce) {
+    return NextResponse.json(
+      { success: false, error: "Missing OIDC nonce cookie" },
       { status: 403 },
     );
   }
@@ -84,7 +92,7 @@ export async function GET(request: Request) {
   // ── Parse user info ─────────────────────────────────────────────────────
   let user;
   try {
-    user = await parseIdToken(idToken);
+    user = await parseIdToken(idToken, { config, expectedNonce: storedNonce });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "ID token parsing failed";
     return NextResponse.json(

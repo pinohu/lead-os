@@ -11,6 +11,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   NODE_VERSION: "22"
 
@@ -115,6 +118,7 @@ jobs:
       NEXTAUTH_SECRET: "ci-dummy-secret-not-used-at-runtime"
       NEXTAUTH_URL: "http://localhost:3000"
       SKIP_ENV_VALIDATION: "true"
+      SKIP_DATABASE_READS_DURING_BUILD: "true"
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020

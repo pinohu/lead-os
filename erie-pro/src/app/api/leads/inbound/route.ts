@@ -10,6 +10,7 @@ import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { audit } from "@/lib/audit-log";
 import { deliverWebhookEvent } from "@/lib/webhook-delivery";
+import { decryptWebhookSecret } from "@/lib/webhook-secret";
 import crypto from "crypto";
 
 // ── CORS Preflight ─────────────────────────────────────────────────
@@ -46,16 +47,26 @@ const InboundLeadSchema = z.object({
 function verifyHmacSignature(
   payload: string,
   signature: string,
-  secret: string
+  storedSecret: string
 ): boolean {
+  const normalizedSignature = signature.startsWith("sha256=")
+    ? signature.slice("sha256=".length)
+    : signature;
+  if (!/^[a-f0-9]{64}$/i.test(normalizedSignature)) {
+    return false;
+  }
+
+  const secret = decryptWebhookSecret(storedSecret);
   const expected = crypto
     .createHmac("sha256", secret)
     .update(payload)
     .digest("hex");
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expected)
-  );
+  const signatureBuffer = Buffer.from(normalizedSignature, "hex");
+  const expectedBuffer = Buffer.from(expected, "hex");
+  if (signatureBuffer.length !== expectedBuffer.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(signatureBuffer, expectedBuffer);
 }
 
 export async function POST(req: NextRequest) {

@@ -266,6 +266,103 @@ export async function POST(req: NextRequest) {
   }
 }
 
+type PurchasedLead = {
+  id: string;
+  niche: string;
+  city: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string;
+  phone: string | null;
+  message: string | null;
+  source: string;
+  temperature: string;
+  createdAt: Date;
+};
+
+type PurchaseDetails = {
+  buyerEmail: string;
+  price: number | null;
+  temperature: string | null;
+  stripeSessionId: string;
+  checkoutSessionId: string;
+  purchasedAt: Date;
+};
+
+function escapeHtml(value: string | number | Date | null | undefined): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function leadName(lead: PurchasedLead): string {
+  return [lead.firstName, lead.lastName].filter(Boolean).join(" ").trim() || "Lead";
+}
+
+function formattedPrice(price: number | null): string {
+  if (typeof price !== "number") return "paid";
+  return `$${price.toFixed(2)}`;
+}
+
+function leadDetailsTable(lead: PurchasedLead, details: PurchaseDetails): string {
+  const messageRow = lead.message
+    ? `<tr><td style="padding:8px 0;color:#6b7280;vertical-align:top">Message:</td><td style="padding:8px 0;color:#111827">${escapeHtml(lead.message)}</td></tr>`
+    : "";
+  const phoneRow = lead.phone
+    ? `<tr><td style="padding:8px 0;color:#6b7280">Phone:</td><td style="padding:8px 0;color:#111827"><a href="tel:${escapeHtml(lead.phone)}" style="color:#2563eb">${escapeHtml(lead.phone)}</a></td></tr>`
+    : "";
+
+  return `
+    <table style="width:100%;border-collapse:collapse;margin:0 0 24px">
+      <tr><td style="padding:8px 0;color:#6b7280;width:120px">Name:</td><td style="padding:8px 0;color:#111827;font-weight:600">${escapeHtml(leadName(lead))}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280">Email:</td><td style="padding:8px 0;color:#111827"><a href="mailto:${escapeHtml(lead.email)}" style="color:#2563eb">${escapeHtml(lead.email)}</a></td></tr>
+      ${phoneRow}
+      <tr><td style="padding:8px 0;color:#6b7280">Niche:</td><td style="padding:8px 0;color:#111827">${escapeHtml(lead.niche)}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280">City:</td><td style="padding:8px 0;color:#111827">${escapeHtml(lead.city)}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280">Temperature:</td><td style="padding:8px 0;color:#111827">${escapeHtml(details.temperature ?? lead.temperature)}</td></tr>
+      ${messageRow}
+    </table>
+  `;
+}
+
+function sendLeadPurchaseEmail(
+  lead: PurchasedLead,
+  details: PurchaseDetails
+): Promise<boolean> {
+  return sendEmail({
+    to: details.buyerEmail,
+    subject: `Your ${lead.niche} lead details`,
+    html: `
+      <p>Payment received. Here are the purchased lead details:</p>
+      ${leadDetailsTable(lead, details)}
+      <p>Amount paid: <strong>${escapeHtml(formattedPrice(details.price))}</strong></p>
+      <p>Reach out promptly while the request is fresh.</p>
+      <p style="font-size:12px;color:#6b7280">Stripe session: <code>${escapeHtml(details.stripeSessionId)}</code></p>
+    `,
+  });
+}
+
+function sendLeadPurchaseAdminEmail(
+  adminEmail: string,
+  lead: PurchasedLead,
+  details: PurchaseDetails
+): Promise<boolean> {
+  return sendEmail({
+    to: adminEmail,
+    subject: `[${cityConfig.slug}] Lead purchased - ${lead.niche}`,
+    html: `
+      <p><strong>${escapeHtml(details.buyerEmail)}</strong> purchased a ${escapeHtml(lead.niche)} lead for ${escapeHtml(formattedPrice(details.price))}.</p>
+      ${leadDetailsTable(lead, details)}
+      <p>Checkout session: <code>${escapeHtml(details.checkoutSessionId)}</code></p>
+      <p>Stripe session: <code>${escapeHtml(details.stripeSessionId)}</code></p>
+      <p>Purchased at: ${escapeHtml(details.purchasedAt.toISOString())}</p>
+    `,
+  });
+}
+
 /**
  * Handle a completed checkout session:
  * 1. Find the checkout session in our DB
@@ -473,6 +570,131 @@ async function handleCheckoutCompleted(
     logger.info("webhook/stripe", `Territory claimed: ${checkoutSession.niche}/${checkoutSession.city}`, {
       providerId: provider.id,
       deliveredLeads: actualDelivered,
+    });
+  } else if (checkoutSession.sessionType === "lead_purchase") {
+    const fulfillment = await prisma.$transaction(async (tx) => {
+      const session = await tx.checkoutSession.findUnique({
+        where: { id: checkoutSession.id },
+      });
+
+      if (!session || session.status !== "pending") {
+        return { status: "duplicate" as const };
+      }
+
+      if (!session.leadId) {
+        return { status: "missing_lead_id" as const };
+      }
+
+      const lead = await tx.lead.findUnique({
+        where: { id: session.leadId },
+        select: {
+          id: true,
+          niche: true,
+          city: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phone: true,
+          message: true,
+          source: true,
+          temperature: true,
+          createdAt: true,
+        },
+      });
+
+      if (!lead) {
+        return { status: "missing_lead" as const, session };
+      }
+
+      const claimed = await tx.lead.updateMany({
+        where: { id: lead.id, routeType: "unmatched" },
+        data: {
+          routeType: "overflow",
+          routedToId: null,
+          slaDeadline: null,
+          deliverAt: null,
+        },
+      });
+
+      if (claimed.count === 0) {
+        return { status: "lead_unavailable" as const, session, lead };
+      }
+
+      await tx.checkoutSession.update({
+        where: { id: session.id },
+        data: { status: "completed", completedAt: new Date() },
+      });
+
+      return { status: "fulfilled" as const, session, lead };
+    });
+
+    if (fulfillment.status === "duplicate") {
+      logger.info("webhook/stripe", `Duplicate lead purchase fulfillment skipped: ${stripeSessionId}`);
+      return;
+    }
+
+    if (fulfillment.status !== "fulfilled") {
+      logger.warn("webhook/stripe", `Lead purchase fulfillment skipped: ${fulfillment.status}`, {
+        stripeSessionId,
+        checkoutSessionId: checkoutSession.id,
+        leadId: "session" in fulfillment ? fulfillment.session?.leadId : checkoutSession.leadId,
+      });
+      return;
+    }
+
+    const purchasedAt = new Date();
+    const purchaseDetails = {
+      buyerEmail: fulfillment.session.providerEmail,
+      price: fulfillment.session.price,
+      temperature: fulfillment.session.temperature ?? fulfillment.lead.temperature,
+      stripeSessionId,
+      checkoutSessionId: fulfillment.session.id,
+      purchasedAt,
+    };
+
+    const emailTasks: Promise<boolean>[] = [
+      sendLeadPurchaseEmail(fulfillment.lead, purchaseDetails),
+    ];
+    const adminEmail = process.env.ADMIN_EMAIL;
+    if (adminEmail) {
+      emailTasks.push(sendLeadPurchaseAdminEmail(adminEmail, fulfillment.lead, purchaseDetails));
+    }
+
+    const emailResults = await Promise.allSettled(emailTasks);
+    for (const result of emailResults) {
+      if (result.status === "rejected") {
+        logger.error("stripe-webhook", "Lead purchase email failed", result.reason);
+      }
+    }
+
+    await audit({
+      action: "lead.purchased",
+      entityType: "lead",
+      entityId: fulfillment.lead.id,
+      metadata: {
+        stripeEventId,
+        stripeSessionId,
+        checkoutSessionId: fulfillment.session.id,
+        buyerEmail: fulfillment.session.providerEmail,
+        price: fulfillment.session.price,
+        niche: fulfillment.lead.niche,
+        city: fulfillment.lead.city,
+        temperature: purchaseDetails.temperature,
+        lead: {
+          firstName: fulfillment.lead.firstName,
+          lastName: fulfillment.lead.lastName,
+          email: fulfillment.lead.email,
+          phone: fulfillment.lead.phone,
+          message: fulfillment.lead.message,
+          source: fulfillment.lead.source,
+          createdAt: fulfillment.lead.createdAt.toISOString(),
+        },
+      },
+    });
+
+    logger.info("webhook/stripe", `Lead purchased: ${fulfillment.lead.id}`, {
+      buyerEmail: fulfillment.session.providerEmail,
+      stripeSessionId,
     });
   } else if (checkoutSession.sessionType === "concierge_job") {
     // ── Concierge job: $29 one-time ──────────────────────────────

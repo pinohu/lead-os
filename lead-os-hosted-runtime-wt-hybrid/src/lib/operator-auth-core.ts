@@ -4,6 +4,7 @@ export type OperatorTokenPayload = {
   type: "magic" | "session";
   email: string;
   exp: number;
+  tenantId?: string;
   next?: string;
 };
 

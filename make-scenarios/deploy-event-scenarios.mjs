@@ -22,30 +22,40 @@ import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
 
+function requiredEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable ${name}. Set it in your shell or CI secret store; do not commit it.`);
+  }
+  return value;
+}
+
+
+
 // ── Config ──
 
 const API_BASE = 'https://integrator.boost.space/api/v2';
-const API_TOKEN = process.env.MAKE_API_TOKEN || '24595d5e-9b7f-48f9-ab61-9644c46ed7f9';
+const API_TOKEN = requiredEnv('MAKE_API_TOKEN');
 
 const DISCORD = {
-  newLeads: 'https://discord.com/api/webhooks/1480429578047717449/7bF_noLBXwykgIVye6hxYQ_e61-eDKS_OEyER_OpL8L0yxObOMDkCmqifgHPuEI3LoTp',
-  highValue: 'https://discord.com/api/webhooks/1480429897263480962/e-vvArec6HCRc_HpzxmWOpz3GbJ7ncekeLBD7hSnKHm4v-zXTwt8fm6DjrY7TUBeo6Ct',
+  newLeads: requiredEnv('DISCORD_NEW_LEADS_WEBHOOK_URL'),
+  highValue: requiredEnv('DISCORD_HIGH_VALUE_WEBHOOK_URL'),
 };
 
 const TELEGRAM = {
-  botToken: '8739229269:AAGYs6jIIjDa87y4TAVwn4QtTWBqliohDQI',
+  botToken: requiredEnv('TELEGRAM_BOT_TOKEN'),
   newLeads: '-1003809646667',
   highValue: '-1003862266875',
 };
 
 const AITABLE = {
-  apiToken: 'usk8wYBrRgsc6RHxkZP9VAN',
+  apiToken: requiredEnv('AITABLE_API_TOKEN'),
   datasheetId: 'dstBicDQKC6gpLAMYj',
   apiBase: 'https://aitable.ai/fusion/v1',
 };
 
 const WBIZTOOL = {
-  apiKey: '54140a11389a13031a2eb19070ce35c5ce769a30',
+  apiKey: requiredEnv('WBIZTOOL_API_KEY'),
   instanceId: '12316',
   apiBase: 'https://app.wbiztool.com/api',
 };

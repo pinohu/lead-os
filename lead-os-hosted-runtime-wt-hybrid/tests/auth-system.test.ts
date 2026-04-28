@@ -8,6 +8,7 @@ import {
   updateUser,
   suspendUser,
   createApiKey,
+  listApiKeys,
   validateApiKey,
   revokeApiKey,
   createSession,
@@ -18,10 +19,118 @@ import {
   listInvites,
   hasPermission,
   resetAuthStore,
+  __setAuthSystemPoolForTests,
   type UserRole,
 } from "../src/lib/auth-system.ts";
 
 const TEST_TENANT = "test-tenant-auth";
+
+class FakeAuthPool {
+  users = new Map<string, any>();
+  apiKeys = new Map<string, any>();
+  sessions = new Map<string, any>();
+  sessionDeletesByTokenHash = 0;
+
+  async query(text: string, values: unknown[] = []): Promise<{ rows: any[] }> {
+    const sql = text.replace(/\s+/g, " ").trim();
+
+    if (sql.includes("CREATE TABLE IF NOT EXISTS") || sql.startsWith("ALTER TABLE") || sql.startsWith("CREATE INDEX")) {
+      return { rows: [] };
+    }
+
+    if (sql.startsWith("INSERT INTO lead_os_users")) {
+      const row = {
+        id: values[0],
+        email: values[1],
+        tenant_id: values[2],
+        created_at: new Date(values[3] as string),
+        updated_at: new Date(values[4] as string),
+        payload: JSON.parse(values[5] as string),
+      };
+      this.users.set(row.id as string, row);
+      return { rows: [] };
+    }
+
+    if (sql.startsWith("UPDATE lead_os_users")) {
+      const row = this.users.get(values[2] as string);
+      if (row) {
+        row.updated_at = new Date(values[0] as string);
+        row.payload = JSON.parse(values[1] as string);
+      }
+      return { rows: [] };
+    }
+
+    if (sql.includes("FROM lead_os_users WHERE id = $1")) {
+      const row = this.users.get(values[0] as string);
+      return { rows: row ? [row] : [] };
+    }
+
+    if (sql.includes("FROM lead_os_users WHERE email = $1 AND tenant_id = $2")) {
+      const row = Array.from(this.users.values()).find(
+        (user) => user.email === values[0] && user.tenant_id === values[1],
+      );
+      return { rows: row ? [row] : [] };
+    }
+
+    if (sql.startsWith("INSERT INTO lead_os_api_keys")) {
+      const row = {
+        id: values[0],
+        user_id: values[1],
+        prefix: values[2],
+        key_hash: values[3],
+        created_at: new Date(values[4] as string),
+        payload: JSON.parse(values[5] as string),
+      };
+      this.apiKeys.set(row.id as string, row);
+      return { rows: [] };
+    }
+
+    if (sql.includes("FROM lead_os_api_keys") && sql.includes("WHERE user_id = $1")) {
+      const rows = Array.from(this.apiKeys.values())
+        .filter((key) => key.user_id === values[0])
+        .sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
+      return { rows };
+    }
+
+    if (sql.startsWith("DELETE FROM lead_os_api_keys")) {
+      const keyId = values[0] as string;
+      const userId = values[1] as string | undefined;
+      const row = this.apiKeys.get(keyId);
+      if (!row || (userId && row.user_id !== userId)) {
+        return { rows: [] };
+      }
+      this.apiKeys.delete(keyId);
+      return { rows: [{ user_id: row.user_id }] };
+    }
+
+    if (sql.startsWith("INSERT INTO lead_os_sessions")) {
+      const row = {
+        id: values[0],
+        user_id: values[1],
+        tenant_id: values[2],
+        role: values[3],
+        token_hash: values[4],
+        expires_at: new Date(values[5] as string),
+        created_at: new Date(values[6] as string),
+      };
+      this.sessions.set(row.token_hash as string, row);
+      return { rows: [] };
+    }
+
+    if (sql.startsWith("DELETE FROM lead_os_sessions WHERE token_hash = $1")) {
+      this.sessionDeletesByTokenHash += 1;
+      this.sessions.delete(values[0] as string);
+      return { rows: [] };
+    }
+
+    if (sql.includes("FROM lead_os_sessions") && sql.includes("WHERE token_hash = $1")) {
+      const row = this.sessions.get(values[0] as string);
+      return { rows: row ? [row] : [] };
+    }
+
+    return { rows: [] };
+  }
+}
 
 test("createUser generates ID and timestamps", async () => {
   resetAuthStore();
@@ -211,6 +320,70 @@ test("revokeApiKey removes the key", async () => {
   assert.equal(refreshedUser.apiKeys.length, 0);
 });
 
+test("listApiKeys reads keys from Postgres after memory reset", async () => {
+  resetAuthStore();
+  const pool = new FakeAuthPool();
+  __setAuthSystemPoolForTests(pool);
+
+  try {
+    const user = await createUser({
+      email: "db-list@example.com",
+      name: "DB List",
+      tenantId: TEST_TENANT,
+      role: "admin",
+    });
+    const key = await createApiKey(user.id, "DB Key", ["read:leads"]);
+    assert.ok(key);
+
+    resetAuthStore();
+    __setAuthSystemPoolForTests(pool);
+
+    const keys = await listApiKeys(user.id);
+    assert.equal(keys.length, 1);
+    assert.equal(keys[0].id, key.record.id);
+    assert.equal(keys[0].name, "DB Key");
+    assert.deepEqual(keys[0].permissions, ["read:leads"]);
+  } finally {
+    __setAuthSystemPoolForTests(undefined);
+    resetAuthStore();
+  }
+});
+
+test("revokeApiKey deletes only the owning user's Postgres key", async () => {
+  resetAuthStore();
+  const pool = new FakeAuthPool();
+  __setAuthSystemPoolForTests(pool);
+
+  try {
+    const owner = await createUser({
+      email: "db-revoke-owner@example.com",
+      name: "DB Revoke Owner",
+      tenantId: TEST_TENANT,
+      role: "admin",
+    });
+    const other = await createUser({
+      email: "db-revoke-other@example.com",
+      name: "DB Revoke Other",
+      tenantId: TEST_TENANT,
+      role: "admin",
+    });
+    const key = await createApiKey(owner.id, "Owned DB Key", ["read:leads"]);
+    assert.ok(key);
+
+    resetAuthStore();
+    __setAuthSystemPoolForTests(pool);
+
+    assert.equal(await revokeApiKey(key.record.id, other.id), false);
+    assert.equal((await listApiKeys(owner.id)).length, 1);
+
+    assert.equal(await revokeApiKey(key.record.id, owner.id), true);
+    assert.deepEqual(await listApiKeys(owner.id), []);
+  } finally {
+    __setAuthSystemPoolForTests(undefined);
+    resetAuthStore();
+  }
+});
+
 test("createSession returns token with sess_ prefix", async () => {
   resetAuthStore();
 
@@ -270,6 +443,38 @@ test("destroySession invalidates the session", async () => {
 
   const session = await validateSession(result.token);
   assert.equal(session, null);
+});
+
+test("validateSession reads Postgres by token hash and destroySession deletes by token hash", async () => {
+  resetAuthStore();
+  const pool = new FakeAuthPool();
+  __setAuthSystemPoolForTests(pool);
+
+  try {
+    const user = await createUser({
+      email: "db-session@example.com",
+      name: "DB Session",
+      tenantId: TEST_TENANT,
+      role: "admin",
+    });
+    const result = await createSession(user.id);
+    assert.ok(result);
+
+    resetAuthStore();
+    __setAuthSystemPoolForTests(pool);
+
+    const session = await validateSession(result.token);
+    assert.ok(session);
+    assert.equal(session.userId, user.id);
+    assert.equal(session.tenantId, TEST_TENANT);
+
+    await destroySession(result.token);
+    assert.equal(pool.sessionDeletesByTokenHash, 1);
+    assert.equal(await validateSession(result.token), null);
+  } finally {
+    __setAuthSystemPoolForTests(undefined);
+    resetAuthStore();
+  }
 });
 
 test("createSession returns null for suspended user", async () => {

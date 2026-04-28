@@ -2,7 +2,7 @@
 // Persistent store for service provider profiles using Prisma/Postgres.
 // All functions are async — callers must await.
 
-import { prisma } from "@/lib/db";
+import { isDatabaseReadSkipped, prisma } from "@/lib/db";
 import type {
   Provider as PrismaProvider,
   ProviderTier,
@@ -96,11 +96,13 @@ function slugify(name: string, city: string): string {
 // ── CRUD Operations ────────────────────────────────────────────────
 
 export async function getProvider(id: string): Promise<ProviderProfile | undefined> {
+  if (isDatabaseReadSkipped()) return undefined;
   const p = await prisma.provider.findUnique({ where: { id } });
   return p ? toProfile(p) : undefined;
 }
 
 export async function getProviderBySlug(slug: string): Promise<ProviderProfile | undefined> {
+  if (isDatabaseReadSkipped()) return undefined;
   const p = await prisma.provider.findUnique({ where: { slug } });
   return p ? toProfile(p) : undefined;
 }
@@ -109,6 +111,7 @@ export async function getProviderByNicheAndCity(
   niche: string,
   city: string
 ): Promise<ProviderProfile | undefined> {
+  if (isDatabaseReadSkipped()) return undefined;
   const p = await prisma.provider.findFirst({
     where: {
       niche,
@@ -121,16 +124,19 @@ export async function getProviderByNicheAndCity(
 }
 
 export async function getProvidersByNiche(niche: string): Promise<ProviderProfile[]> {
+  if (isDatabaseReadSkipped()) return [];
   const providers = await prisma.provider.findMany({ where: { niche } });
   return providers.map(toProfile);
 }
 
 export async function getAllProviders(): Promise<ProviderProfile[]> {
+  if (isDatabaseReadSkipped()) return [];
   const providers = await prisma.provider.findMany();
   return providers.map(toProfile);
 }
 
 export async function getActiveProviders(): Promise<ProviderProfile[]> {
+  if (isDatabaseReadSkipped()) return [];
   const providers = await prisma.provider.findMany({
     where: { subscriptionStatus: "active" },
   });
@@ -245,6 +251,10 @@ export async function getProviderStats(): Promise<{
   totalConverted: number;
   avgRating: number;
 }> {
+  if (isDatabaseReadSkipped()) {
+    return { total: 0, active: 0, totalLeads: 0, totalConverted: 0, avgRating: 0 };
+  }
+
   const [total, active, agg] = await Promise.all([
     prisma.provider.count(),
     prisma.provider.count({ where: { subscriptionStatus: "active" } }),
@@ -264,6 +274,7 @@ export async function getProviderStats(): Promise<{
 }
 
 export async function getClaimedNiches(city: string): Promise<string[]> {
+  if (isDatabaseReadSkipped()) return [];
   const providers = await prisma.provider.findMany({
     where: {
       city: { equals: city, mode: "insensitive" },

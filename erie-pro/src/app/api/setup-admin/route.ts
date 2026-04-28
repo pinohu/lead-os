@@ -3,11 +3,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 
 const ADMIN_SETUP_LOCK_ID = 730017001;
+const ADMIN_SETUP_TOKEN_HEADER = "x-admin-setup-token";
 
 const SetupSchema = z.object({
   email: z
@@ -22,6 +24,10 @@ const SetupSchema = z.object({
   name: z
     .string()
     .max(200, "Name too long")
+    .optional(),
+  token: z
+    .string()
+    .max(512, "Setup token too long")
     .optional(),
 });
 
@@ -38,11 +44,23 @@ function checkSetupRateLimit(ip: string): boolean {
   return entry.count <= 5;
 }
 
+function digestToken(value: string): Buffer {
+  return crypto.createHash("sha256").update(value).digest();
+}
+
+function isValidAdminSetupToken(token: string | null | undefined): boolean {
+  const expected = process.env.ADMIN_SETUP_TOKEN?.trim();
+  const candidate = token?.trim();
+  if (!expected || !candidate) return false;
+
+  return crypto.timingSafeEqual(digestToken(candidate), digestToken(expected));
+}
+
 export async function POST(request: Request) {
   try {
-    if (process.env.ALLOW_ADMIN_SETUP !== "true") {
+    if (process.env.ALLOW_ADMIN_SETUP !== "true" || !process.env.ADMIN_SETUP_TOKEN?.trim()) {
       return NextResponse.json(
-        { error: "Admin setup is disabled. Set ALLOW_ADMIN_SETUP=true to enable." },
+        { error: "Admin setup is disabled." },
         { status: 403 },
       );
     }
@@ -57,7 +75,21 @@ export async function POST(request: Request) {
       );
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    const setupToken =
+      request.headers.get(ADMIN_SETUP_TOKEN_HEADER) ??
+      ("token" in body && typeof body.token === "string" ? body.token : null);
+    if (!isValidAdminSetupToken(setupToken)) {
+      return NextResponse.json(
+        { error: "Invalid setup token." },
+        { status: 403 },
+      );
+    }
+
     const parsed = SetupSchema.safeParse(body);
 
     if (!parsed.success) {

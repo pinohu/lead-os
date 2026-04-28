@@ -1,4 +1,9 @@
 import { NextResponse } from "next/server";
+import {
+  DASHBOARD_AUTH_COOKIE,
+  hasConfiguredSecret,
+  hasSharedSecretAuth,
+} from "@/lib/admin-auth";
 import { embeddedSecrets } from "@/lib/embedded-secrets";
 import { parseStructuredDetail } from "@/lib/trace";
 
@@ -12,30 +17,6 @@ interface AITableRecord {
   recordId: string;
   createdAt?: string;
   fields?: Record<string, string>;
-}
-
-function getHostname(value: string | null) {
-  if (!value) return "";
-  try {
-    return new URL(value).hostname.toLowerCase();
-  } catch {
-    return "";
-  }
-}
-
-function isTrustedDashboardRequest(request: Request) {
-  const requestUrl = new URL(request.url);
-  const requestHost = requestUrl.hostname.toLowerCase();
-  const originHost = getHostname(request.headers.get("origin"));
-  const refererHost = getHostname(request.headers.get("referer"));
-  const fetchSite = request.headers.get("sec-fetch-site");
-
-  return (
-    originHost === requestHost ||
-    refererHost === requestHost ||
-    fetchSite === "same-origin" ||
-    fetchSite === "same-site"
-  );
 }
 
 async function fetchAllRecords(): Promise<AITableRecord[]> {
@@ -61,13 +42,13 @@ async function fetchAllRecords(): Promise<AITableRecord[]> {
 }
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
   const dashboardSecret = process.env.DASHBOARD_SECRET ?? embeddedSecrets.dashboard.secret;
-  if (
-    dashboardSecret &&
-    authHeader !== `Bearer ${dashboardSecret}` &&
-    !isTrustedDashboardRequest(request)
-  ) {
+
+  if (!hasConfiguredSecret(dashboardSecret)) {
+    return NextResponse.json({ error: "DASHBOARD_SECRET must be configured." }, { status: 503 });
+  }
+
+  if (!hasSharedSecretAuth(request.headers, dashboardSecret, { cookieNames: [DASHBOARD_AUTH_COOKIE] })) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

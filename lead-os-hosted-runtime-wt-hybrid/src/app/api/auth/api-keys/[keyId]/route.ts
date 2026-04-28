@@ -19,15 +19,13 @@ export async function DELETE(
     );
   }
 
-  const ownsKey = user.apiKeys.some((k) => k.id === keyId);
-  if (!ownsKey) {
+  const revoked = await revokeApiKey(keyId, context.userId);
+  if (!revoked) {
     return NextResponse.json(
       { data: null, error: { code: "NOT_FOUND", message: "API key not found" }, meta: null },
       { status: 404 },
     );
   }
-
-  await revokeApiKey(keyId);
 
   return NextResponse.json({
     data: { message: "API key revoked" },

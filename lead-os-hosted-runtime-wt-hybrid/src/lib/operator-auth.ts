@@ -74,6 +74,7 @@ export async function createSessionToken(email: string) {
     {
       type: "session",
       email: normalizeEmail(email),
+      tenantId: tenantConfig.tenantId,
       exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
     },
     getOperatorAuthSecret(),

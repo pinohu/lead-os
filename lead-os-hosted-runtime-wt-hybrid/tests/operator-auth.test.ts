@@ -42,6 +42,16 @@ test("operator API session accepts signed middleware identity headers", async ()
   assert.equal(session?.email, "operator@example.com");
 });
 
+test("operator API session rejects signed identity when x-request-id is not forwarded", async () => {
+  process.env.LEAD_OS_AUTH_SECRET = "test-middleware-secret";
+  const headers = new Headers(signedOperatorHeaders(process.env.LEAD_OS_AUTH_SECRET));
+  headers.delete("x-request-id");
+
+  const session = getSignedOperatorSessionFromHeaders(headers);
+
+  assert.equal(session, null);
+});
+
 test("operator auth secret resolution fails closed when auth secret is missing", () => {
   const previousSecret = process.env.LEAD_OS_AUTH_SECRET;
   delete process.env.LEAD_OS_AUTH_SECRET;

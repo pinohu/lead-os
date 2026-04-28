@@ -46,6 +46,9 @@ Selector labels
 {{- define "lead-os.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "lead-os.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- with .Values.slot }}
+slot: {{ . | quote }}
+{{- end }}
 {{- end }}
 
 {{/*

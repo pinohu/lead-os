@@ -40,6 +40,27 @@ function getWebhookSecret(): string | null {
   return process.env.STRIPE_WEBHOOK_SECRET ?? null;
 }
 
+export interface StripeWebhookConfigStatus {
+  configured: boolean;
+  missing: string[];
+  productionMissing: boolean;
+}
+
+export function getStripeWebhookConfigStatus(): StripeWebhookConfigStatus {
+  const missing: string[] = [];
+  if (!process.env.STRIPE_SECRET_KEY) missing.push("STRIPE_SECRET_KEY");
+  if (!process.env.STRIPE_WEBHOOK_SECRET) missing.push("STRIPE_WEBHOOK_SECRET");
+
+  const isProduction =
+    process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+
+  return {
+    configured: missing.length === 0,
+    missing,
+    productionMissing: isProduction && missing.length > 0,
+  };
+}
+
 export interface CheckoutSessionResult {
   url: string | null;
   sessionId: string;

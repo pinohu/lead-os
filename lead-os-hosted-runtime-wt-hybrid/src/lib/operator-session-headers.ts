@@ -2,6 +2,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 
 export type OperatorHeaderSession = {
   email: string;
+  tenantId?: string;
   type: "session";
   exp: number;
 };
@@ -42,5 +43,5 @@ export function getSignedOperatorSessionFromHeaders(headers: Headers): OperatorH
     return null;
   }
 
-  return { email: userId, type: "session", exp: 0 };
+  return { email: userId, tenantId: tenantId || undefined, type: "session", exp: 0 };
 }

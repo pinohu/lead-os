@@ -4,7 +4,7 @@ import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { getDefaultTemplates } from "@/lib/email-templates";
 import { sendEmail, type SendEmailInput } from "@/lib/email-sender";
 import { createSelfServiceToken } from "@/lib/self-service-tokens";
-import { resolveTenantConfig } from "@/lib/tenant";
+import { resolveTenantConfig, tenantConfig } from "@/lib/tenant";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_TO_LENGTH = 254;
@@ -32,6 +32,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+    const authenticatedTenantId = auth.session?.tenantId ?? tenantConfig.tenantId;
 
     if (!body.to || typeof body.to !== "string" || !EMAIL_PATTERN.test(body.to) || body.to.length > MAX_TO_LENGTH) {
       return NextResponse.json(
@@ -51,6 +52,13 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId is required" }, meta: null },
         { status: 400, headers },
+      );
+    }
+
+    if (body.tenantId !== authenticatedTenantId) {
+      return NextResponse.json(
+        { data: null, error: { code: "FORBIDDEN", message: "tenantId does not match authenticated tenant" }, meta: null },
+        { status: 403, headers },
       );
     }
 

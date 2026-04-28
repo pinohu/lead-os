@@ -10,6 +10,10 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+export function isDatabaseReadSkipped(): boolean {
+  return process.env.SKIP_DATABASE_READS_DURING_BUILD === "true";
+}
+
 function createPrismaClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {

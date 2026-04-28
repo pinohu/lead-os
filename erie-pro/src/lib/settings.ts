@@ -7,12 +7,14 @@
 // doesn't warrant a dedicated table (founding-seat claimed count,
 // launch-kit notes, etc.).
 
-import { prisma } from "@/lib/db";
+import { isDatabaseReadSkipped, prisma } from "@/lib/db";
 
 export async function getSetting<T = unknown>(
   key: string,
   fallback: T,
 ): Promise<T> {
+  if (isDatabaseReadSkipped()) return fallback;
+
   try {
     const row = await prisma.setting.findUnique({ where: { key } });
     if (!row) return fallback;

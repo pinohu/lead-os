@@ -45,6 +45,13 @@ if (isProductionDeployment && !STRIPE_SECRET_KEY) {
   );
 }
 
+if (isProductionDeployment && STRIPE_SECRET_KEY && !STRIPE_WEBHOOK_SECRET) {
+  throw new Error(
+    "[stripe-integration] STRIPE_WEBHOOK_SECRET is required when live Stripe is enabled in production. " +
+    "Set STRIPE_WEBHOOK_SECRET to your Stripe endpoint signing secret."
+  );
+}
+
 const isDryRun = isProductionDeployment ? false : !STRIPE_SECRET_KEY;
 
 // Initialize Stripe SDK (only when key is set)
@@ -328,20 +335,10 @@ export async function handleStripeWebhook(
 
   switch (eventType) {
     case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-
-      // Mark checkout session as completed in DB
-      if (session.id) {
-        await prisma.checkoutSession.updateMany({
-          where: { stripeSessionId: session.id },
-          data: { status: "completed", completedAt: new Date() },
-        });
-      }
-
       return {
         handled: true,
         eventType,
-        message: "Checkout session completed, provider activation pending",
+        message: "Checkout session completed, fulfillment delegated to route handler",
       };
     }
 

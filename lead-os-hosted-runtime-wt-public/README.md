@@ -36,11 +36,13 @@ Hosted runtime
 ## Environment variables
 
 - `NEXT_PUBLIC_BRAND_NAME`
-- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_SITE_URL` - canonical public runtime URL used for operator magic links and audience checks
 - `NEXT_PUBLIC_SUPPORT_EMAIL`
-- `LEAD_OS_WIDGET_ORIGINS`
+- `LEAD_OS_WIDGET_ORIGINS` - comma-separated exact browser origins allowed to call widget/intake CORS endpoints
 - `LEAD_OS_DEFAULT_SERVICE`
 - `LEAD_OS_DEFAULT_NICHE`
+- `LEAD_OS_AUTH_SECRET`
+- `LEAD_OS_OPERATOR_EMAILS` - required in production; operator access does not fall back to public/support email values
 
 ## Deploy target
 

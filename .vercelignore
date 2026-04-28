@@ -7,6 +7,9 @@
 .vercel
 node_modules
 **/node_modules
+_n8n_sources
+Funnel Blueprints
+make-scenarios
 .next
 **/.next
 .open-next

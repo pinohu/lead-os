@@ -59,6 +59,38 @@ const patterns = [
     regex: /xox[baprs]-[A-Za-z0-9-]{20,}/g,
   },
   {
+    name: "Discord webhook URL",
+    regex: /https:\/\/(?:canary\.)?discord(?:app)?\.com\/api\/webhooks\/\d+\/[A-Za-z0-9._-]+/g,
+  },
+  {
+    name: "Make webhook URL",
+    regex: /https:\/\/hook\.us\d+\.make\.com\/[A-Za-z0-9_-]+/g,
+  },
+  {
+    name: "hardcoded provider env fallback",
+    regex: /\b(?:MAKE|DISCORD|EMAILIT|AITABLE|WBIZTOOL|TELEGRAM|OPENAI|STRIPE|SLACK|GITHUB|SUPABASE|SENDGRID|RESEND|MAILGUN|TWILIO)[A-Z0-9_]*(?:TOKEN|SECRET|API_KEY|WEBHOOK)[A-Z0-9_]*\b\s*(?:\|\||=)\s*["'][^"'\s]{20,}["']/g,
+  },
+  {
+    name: "Emailit API key",
+    regex: /secret_[A-Za-z0-9]{20,}/g,
+  },
+  {
+    name: "AITable API token",
+    regex: /\busk[A-Za-z0-9]{20,}\b/g,
+  },
+  {
+    name: "Telegram bot token",
+    regex: /\b\d{8,10}:AA[A-Za-z0-9_-]{20,}\b/g,
+  },
+  {
+    name: "hardcoded provider token",
+    regex: /\b(?:apiKey|apiToken|accessToken|authToken|botToken)\b\s*[:=]\s*["'][^"'\s]{20,}["']/gi,
+  },
+  {
+    name: "hardcoded UUID token assignment",
+    regex: /\b(?:API_TOKEN|MAKE_API_TOKEN|apiToken|authToken|accessToken|token)\b\s*[:=]\s*["'][0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}["']/gi,
+  },
+  {
     name: "Postgres URL with password",
     regex: /postgres(?:ql)?:\/\/[^\s:'"]+:[^\s@'"]+@[^\s'"]+/g,
   },
@@ -76,6 +108,7 @@ function shouldIgnoreFile(path) {
 function isKnownPlaceholder(line) {
   return (
     /dummy|example|sample|placeholder|changeme|not-used-at-runtime|for_build_only/i.test(line) ||
+    /replace[_-]?me|your[_-]|__set_|<[^>]+>/i.test(line) ||
     /localhost|127\.0\.0\.1|postgres:postgres|user:pass|user:password|username:password|password@/i.test(line) ||
     /POSTGRES_PASSWORD|lead_os_dev_password/i.test(line)
   );

@@ -108,6 +108,7 @@ function forwardWithIdentity(
   cspNonce: string,
 ): NextResponse {
   const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-request-id", requestId);
   requestHeaders.set("x-csp-nonce", cspNonce);
   requestHeaders.set("x-authenticated-user-id", identity["x-authenticated-user-id"]);
   requestHeaders.set("x-authenticated-role", identity["x-authenticated-role"]);
@@ -269,6 +270,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   if (!pathname.startsWith("/api/")) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-leados-pathname", pathname);
+    requestHeaders.set("x-request-id", requestId);
     requestHeaders.set("x-csp-nonce", cspNonce);
     const response = NextResponse.next({
       request: { headers: requestHeaders },
@@ -344,6 +346,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   function nextWithNonce(): NextResponse {
     const h = new Headers(request.headers);
+    h.set("x-request-id", requestId);
     h.set("x-csp-nonce", cspNonce);
     return NextResponse.next({ request: { headers: h } });
   }
