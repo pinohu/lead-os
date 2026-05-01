@@ -26,7 +26,7 @@ This file maps **public URLs** in `lead-os-hosted-runtime-wt-hybrid` to **intent
 | `/solutions`, `/solutions/[slug]` | Canonical persona-specific landing pages for every microscopic sellable offer: packages, deliverables, vertical wrappers, funnel blueprints, GTM plays, and plans. |
 | `/lp/[slug]` | Generated landing pages from `listLandingPages()` (published only). |
 | `/marketplace` | Lead marketplace UI; may show **demo** leads if API/DB unavailable (see on-page banner). |
-| `/directory`, `/directory/[vertical]` | Directory marketing. |
+| `/directory`, `/directory/[vertical]` | Directory marketing and coverage pages. `[vertical]` can be a niche (`home-services`), a national niche (`national-home-services`), a region (`region-great-lakes`), a state (`state-pa`), or a city (`city-erie-pa`). |
 | `/directory/lead-router` | Directory lead-router operating surface for previewing routed directory demand, buyer matching, and monetization workflows. |
 | `/funnel/[family]` | Funnel family explorer; `family` must exist in default funnel graphs. |
 | `/embed/[niche]` | Embed surface. |

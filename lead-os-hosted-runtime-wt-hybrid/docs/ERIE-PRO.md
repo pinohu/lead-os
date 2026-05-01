@@ -10,6 +10,35 @@
 4. **Control plane** — Operator actions unchanged; use `/dashboard/control-plane` with operator cookie/JWT.
 5. **GTM tracking** — Use **`/dashboard/gtm`** (or `npm run gtm:print -- --slug=erie-plumbing`) to record Erie-first rollout status against the canonical GTM config; see [GO-TO-MARKET-USE-CASES.md](./GO-TO-MARKET-USE-CASES.md#operator-tooling-execution). Public route map: [PRODUCT-SURFACES.md](./PRODUCT-SURFACES.md); deployed docs hub: **`/docs`**.
 
+## Completeness audit
+
+Erie is now treated as the first complete city directory entry in the reusable directory coverage system.
+
+Public and operator surfaces:
+
+- **City directory page:** `/directory/city-erie-pa`
+- **Router surface:** `/directory/lead-router`
+- **Runbook:** `/docs/erie-pro`
+- **Expansion plan:** `/docs/directory-expansion-plan`
+- **Source reference:** `/docs/source/src/lib/erie/directory-lead-flow.ts`
+
+Verified implementation pieces:
+
+- tenant seed: `erie`
+- active buyer nodes: `plumber_erie_test_1`, `hvac_erie_test_1`
+- active categories: `plumbing`, `hvac`
+- billing gate support through `LEAD_OS_BILLING_ENFORCE=true`
+- route audit table: `lead_os_directory_routes`
+- delivery handoff through `sendLead()`
+- website-visible lead-router explanation
+- website-visible city directory page
+
+Operational work still required before live paid traffic:
+
+- connect real buyer delivery destinations
+- keep unsold category slots inactive or paused
+- add real proof only after live traffic creates verified outcomes
+
 ## Database seed
 
 Migration **`010_erie_directory_seed.sql`** inserts:

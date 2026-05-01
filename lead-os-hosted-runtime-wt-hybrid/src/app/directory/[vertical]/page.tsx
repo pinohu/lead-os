@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExperienceScaffold } from "@/components/ExperienceScaffold";
 import { getNiche, nicheCatalog } from "@/lib/catalog";
@@ -11,6 +12,7 @@ import { INDUSTRY_TEMPLATES, type IndustryCategory } from "@/lib/niche-templates
 import { buildOgImageUrl } from "@/lib/og-url";
 import { CALCULATOR_PRESETS } from "@/lib/calculator-presets";
 import { getCustomerIntelligenceOrDefault } from "@/lib/customer-intelligence";
+import { buildDirectoryCoveragePage, listDirectoryCoveragePages, type DirectoryCoveragePage } from "@/lib/directory-coverage";
 
 type Props = {
   params: Promise<{ vertical: string }>;
@@ -38,11 +40,27 @@ function resolveTemplateCategory(slug: string): IndustryCategory {
 }
 
 export function generateStaticParams() {
-  return Object.keys(nicheCatalog).map((vertical) => ({ vertical }));
+  return [
+    ...Object.keys(nicheCatalog).map((vertical) => ({ vertical })),
+    ...listDirectoryCoveragePages().map((page) => ({ vertical: page.slug })),
+  ];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { vertical } = await params;
+  const coveragePage = buildDirectoryCoveragePage(vertical);
+  if (coveragePage) {
+    return {
+      title: `${coveragePage.label} | Lead OS`,
+      description: coveragePage.summary,
+      openGraph: {
+        title: coveragePage.title,
+        description: coveragePage.summary,
+        images: [{ url: buildOgImageUrl(coveragePage.label, coveragePage.summary, vertical), width: 1200, height: 630 }],
+      },
+    };
+  }
+
   const niche = getNiche(vertical);
   return {
     title: `${niche.label} Package Directory | Lead OS`,
@@ -58,6 +76,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function VerticalDirectoryPage({ params, searchParams }: Props) {
   const { vertical } = await params;
   const query = await searchParams;
+  const coveragePage = buildDirectoryCoveragePage(vertical);
+  if (coveragePage) {
+    return <CoverageDirectoryPage page={coveragePage} query={query} />;
+  }
+
   const niche = getNiche(vertical);
   if (!niche || niche.slug === "general" && vertical !== "general") notFound();
 
@@ -247,5 +270,171 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
       />
     </ExperienceScaffold>
     </div>
+  );
+}
+
+async function CoverageDirectoryPage({
+  page,
+  query,
+}: {
+  page: DirectoryCoveragePage;
+  query: Record<string, string | string[] | undefined>;
+}) {
+  const headerStore = await headers();
+  const profile = resolveExperienceProfile({
+    family: "lead-magnet",
+    niche: nicheCatalog.general,
+    supportEmail: tenantConfig.supportEmail,
+    source: asString(query.source) ?? "directory-coverage",
+    intent: page.kind === "city" ? "solve-now" : "discover",
+    returning: asBoolean(query.returning),
+    preferredMode: "form-first",
+    score: Number(asString(query.score) ?? (page.kind === "city" ? 55 : 35)),
+    userAgent: headerStore.get("user-agent") ?? undefined,
+    referrer: headerStore.get("referer") ?? undefined,
+  });
+
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl).replace(/\/$/, "");
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: page.label,
+    description: page.summary,
+    url: `${baseUrl}/directory/${page.slug}`,
+    about: page.niche?.label ?? page.kind,
+    isPartOf: `${baseUrl}/directory`,
+  };
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <div>
+        <ExperienceScaffold
+          eyebrow={`${page.kind.replace(/-/g, " ")} directory`}
+          title={page.title}
+          summary={page.summary}
+          profile={profile}
+          niche="general"
+          metrics={[
+            { label: "Template", value: page.routePattern, detail: "One reusable page model prevents city, state, and national page duplication." },
+            { label: "Niches included", value: String(page.niches.length), detail: page.niches.slice(0, 4).map((niche) => niche.label).join(", ") },
+            { label: "Markets linked", value: String(page.markets.length), detail: page.markets.slice(0, 4).map((market) => market.label).join(", ") || "Built as a national entry point" },
+          ]}
+        >
+          <section className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
+            <article className="rounded-lg border border-border bg-card p-6">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Who this is for</p>
+              <h2 className="text-foreground">Directory operators, lead buyers, and local market owners</h2>
+              <p className="text-sm leading-relaxed text-muted-foreground">{page.audience}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {[
+                  page.kind === "city" ? "City access" : null,
+                  page.kind === "state" ? "State access" : null,
+                  page.kind === "region" ? "Regional all-niche hub" : null,
+                  page.kind === "national-niche" ? "National niche directory" : null,
+                  page.primaryMarket?.seedTenantId ? `Seeded tenant: ${page.primaryMarket.seedTenantId}` : null,
+                ].filter(Boolean).map((item) => (
+                  <Badge key={item} variant="outline">{item}</Badge>
+                ))}
+              </div>
+            </article>
+
+            <article className="rounded-lg border border-border bg-card p-6">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Efficient expansion model</p>
+              <h2 className="text-foreground">Do not clone pages. Add entries to the coverage catalog.</h2>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                This page is generated from directory coverage data. National niche pages sell category-level access,
+                regional pages group all niches together, state pages connect statewide demand, and city pages carry
+                the local intake and buyer-routing promise.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Button asChild>
+                  <Link href="/packages/directory-monetization-system">Provision directory monetization</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/directory/lead-router">Open router</Link>
+                </Button>
+              </div>
+            </article>
+          </section>
+
+          <section>
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Niche coverage</p>
+            <h2 className="text-foreground">Categories that can route through this directory layer</h2>
+            <div className="grid gap-3 md:grid-cols-3">
+              {page.niches.slice(0, 12).map((niche) => (
+                <article key={niche.slug} className="rounded-lg border border-border bg-card p-4">
+                  <p className="font-semibold text-foreground">{niche.label}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{niche.summary}</p>
+                  <Link href={`/directory/national-${niche.slug}`} className="mt-2 inline-block text-sm font-semibold text-primary">
+                    National niche page
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Market access</p>
+            <h2 className="text-foreground">Cities, states, and grouped regions connected to this page</h2>
+            <div className="grid gap-3 md:grid-cols-2">
+              {page.canonicalLinks.slice(0, 16).map((link) => (
+                <article key={`${link.href}-${link.label}`} className="rounded-lg border border-border bg-card p-4">
+                  <p className="font-semibold text-foreground">{link.label}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{link.description}</p>
+                  <Link href={link.href} className="mt-2 inline-block text-sm font-semibold text-primary">
+                    Open directory
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {page.markets.length ? (
+            <section>
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Major city access</p>
+              <div className="overflow-hidden rounded-lg border border-border">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+                    <tr>
+                      <th className="px-4 py-3">Market</th>
+                      <th className="px-4 py-3">State</th>
+                      <th className="px-4 py-3">Tier</th>
+                      <th className="px-4 py-3">Seeded</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {page.markets.slice(0, 18).map((market) => (
+                      <tr key={market.slug} className="border-t border-border">
+                        <td className="px-4 py-3 font-medium text-foreground">
+                          <Link href={`/directory/${market.slug}`}>{market.label}</Link>
+                        </td>
+                        <td className="px-4 py-3 text-muted-foreground">{market.state ?? "National"}</td>
+                        <td className="px-4 py-3 text-muted-foreground">{market.populationTier}</td>
+                        <td className="px-4 py-3 text-muted-foreground">
+                          {market.seedTenantId ? `${market.seedTenantId}: ${(market.seededCategories ?? []).join(", ")}` : "Ready to seed"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          ) : null}
+
+          <section className="rounded-lg border border-border bg-card p-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Operational blueprint</p>
+            <h2 className="text-foreground">What has to be true before selling this as an owned territory</h2>
+            <div className="grid gap-3 md:grid-cols-3">
+              {page.operationalNotes.map((note) => (
+                <div key={note} className="rounded-md border border-border bg-background p-4 text-sm leading-relaxed text-muted-foreground">
+                  {note}
+                </div>
+              ))}
+            </div>
+          </section>
+        </ExperienceScaffold>
+      </div>
+    </>
   );
 }

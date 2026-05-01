@@ -124,6 +124,14 @@ export const docsCatalog: DocCatalogEntry[] = [
     category: "Go-to-market",
   },
   {
+    slug: "directory-expansion-plan",
+    title: "Directory expansion plan",
+    description: "National, regional, state, and major-city directory architecture without redundant page templates.",
+    file: "DIRECTORY-EXPANSION-PLAN.md",
+    category: "Go-to-market",
+    featured: true,
+  },
+  {
     slug: "gmb-landing-page-pipeline",
     title: "GMB landing page pipeline",
     description: "Google Business Profile landing-page and local search pipeline notes.",
