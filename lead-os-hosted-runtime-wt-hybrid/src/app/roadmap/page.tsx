@@ -4,7 +4,7 @@ import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
   title: "Roadmap",
-  description: "See what is planned, in progress, and completed for CX React.",
+  description: "See what is planned, in progress, and completed for Lead OS solution launch.",
 };
 
 interface RoadmapItem {
@@ -61,13 +61,13 @@ export default function RoadmapPage() {
     "@type": "WebPage",
     "@id": `${baseUrl}/roadmap#webpage`,
     url: `${baseUrl}/roadmap`,
-    name: "CX React Product Roadmap",
-    description: "See what is planned, in progress, and completed for CX React.",
+    name: "Lead OS Product Roadmap",
+  description: "See what is planned, in progress, and completed for Lead OS solution launch.",
     isPartOf: { "@id": `${baseUrl}/#website` },
     about: {
       "@type": "SoftwareApplication",
       "@id": `${baseUrl}/#app`,
-      name: "CX React",
+      name: "Lead OS",
     },
   }
 
@@ -78,7 +78,7 @@ export default function RoadmapPage() {
       <div className="text-center mb-12">
         <h1 className="text-foreground text-2xl font-extrabold mb-2">Product Roadmap</h1>
         <p className="text-foreground max-w-lg mx-auto">
-          See what we are building next across the platform. Have a feature request?{" "}
+          See what we are building next for solution launch, integrations, fulfillment automation, and operator control. Have a feature request?{" "}
           <Link href="/contact" className="text-primary underline">
             Let us know
           </Link>.

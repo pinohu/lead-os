@@ -25,7 +25,7 @@ export async function POST(
     const testPayload = {
       test: true,
       timestamp: new Date().toISOString(),
-      message: "This is a test webhook delivery from CX React",
+      message: "This is a test webhook delivery from Lead OS",
       webhookId: id,
     };
 

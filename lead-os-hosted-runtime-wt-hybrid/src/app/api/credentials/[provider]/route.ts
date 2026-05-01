@@ -1,22 +1,19 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { getCredentialPublic, deleteCredential } from "@/lib/credentials-vault";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
+import { tenantConfig } from "@/lib/tenant";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ provider: string }> },
 ) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
-  const { provider } = await params;
-  const { searchParams } = new URL(request.url);
-  const tenantId = searchParams.get("tenantId");
+  const auth = await requireOperatorApiSession(request);
+  if (auth.response) return auth.response;
 
-  if (!tenantId) {
-    return NextResponse.json(
-      { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId query parameter is required" }, meta: null },
-      { status: 400, headers },
-    );
-  }
+  const { provider } = await params;
+  const tenantId = tenantConfig.tenantId || "default";
 
   const credential = getCredentialPublic(tenantId, provider);
   if (!credential) {
@@ -37,16 +34,11 @@ export async function DELETE(
   { params }: { params: Promise<{ provider: string }> },
 ) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
-  const { provider } = await params;
-  const { searchParams } = new URL(request.url);
-  const tenantId = searchParams.get("tenantId");
+  const auth = await requireOperatorApiSession(request);
+  if (auth.response) return auth.response;
 
-  if (!tenantId) {
-    return NextResponse.json(
-      { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId query parameter is required" }, meta: null },
-      { status: 400, headers },
-    );
-  }
+  const { provider } = await params;
+  const tenantId = tenantConfig.tenantId || "default";
 
   const deleted = deleteCredential(tenantId, provider);
   if (!deleted) {

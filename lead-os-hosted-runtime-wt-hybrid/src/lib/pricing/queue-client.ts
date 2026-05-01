@@ -3,6 +3,7 @@
 
 import type { PricingDlqJobData, PricingMeasureJobData, PricingTickJobData } from "./types.ts";
 import { getDefaultTenantId, getPricingTickIntervalMs, isRedisUrlConfigured } from "./env.ts";
+import { isProductionLikeRuntime } from "../production-config.ts";
 
 export const PRICING_QUEUE_MAIN = "leados-pricing-main";
 export const PRICING_QUEUE_MEASURE = "leados-pricing-measure";
@@ -19,6 +20,14 @@ const defaultJobOpts = {
   removeOnComplete: { count: 1000 },
   removeOnFail: { count: 500 },
 };
+
+function assertQueueBackendAvailable(operation: string): boolean {
+  if (isRedisUrlConfigured()) return true;
+  if (isProductionLikeRuntime()) {
+    throw new Error(`REDIS_URL is required for ${operation} in production`);
+  }
+  return false;
+}
 
 export async function getSharedIoRedis(): Promise<import("ioredis").default> {
   if (!isRedisUrlConfigured()) throw new Error("REDIS_URL is not configured");
@@ -56,7 +65,7 @@ export async function enqueuePricingTickRequest(
   tenantId?: string,
   source = "http",
 ): Promise<string | undefined> {
-  if (!isRedisUrlConfigured()) return undefined;
+  if (!assertQueueBackendAvailable("pricing tick enqueue")) return undefined;
   const q = await getMainQueue();
   const job = await q.add(
     "tick",
@@ -70,7 +79,7 @@ export async function enqueueMeasureJob(
   data: PricingMeasureJobData,
   opts: { delayMs: number; jobId: string },
 ): Promise<void> {
-  if (!isRedisUrlConfigured()) return;
+  if (!assertQueueBackendAvailable("measure job enqueue")) return;
   const q = await getMeasureQueue();
   await q.add("measure", data, { delay: opts.delayMs, jobId: opts.jobId });
 }
@@ -92,7 +101,7 @@ export async function pushToDlq(payload: PricingDlqJobData): Promise<void> {
     errorMessage: payload.errorMessage,
     attempts: payload.attemptsMade ?? 5,
   });
-  if (!isRedisUrlConfigured()) return;
+  if (!assertQueueBackendAvailable("DLQ enqueue")) return;
   const q = await getDlqQueue();
   await q.add("dead", payload, {});
 }
@@ -131,10 +140,10 @@ export async function getPricingQueueStats(): Promise<{
 }
 
 export async function tryDistributedSchedulerEnqueue(): Promise<boolean> {
-  if (!isRedisUrlConfigured()) return false;
+  if (!assertQueueBackendAvailable("distributed scheduler enqueue")) return false;
   const { default: IORedis } = await import("ioredis");
   const tickMs = getPricingTickIntervalMs();
-  const lockTtl = Math.max(30, Math.floor(tickMs * 0.75));
+  const lockTtl = Math.max(30, Math.ceil((tickMs * 0.75) / 1000));
   const r = new IORedis(process.env.REDIS_URL!, { maxRetriesPerRequest: 1 });
   try {
     const locked = await r.set("leados:pricing:sched-lock", "1", "EX", lockTtl, "NX");
@@ -171,6 +180,11 @@ export async function replayDeadLetterJobById(deadLetterId: string): Promise<voi
     await q.add("measure", payload as unknown as PricingMeasureJobData, {
       jobId: `replay-dlq-${deadLetterId}-${Date.now()}`,
     });
+    return;
+  }
+  if (row.jobName === "sendLead" && payload.kind === "lead-delivery") {
+    const { sendLead } = await import("../integrations/lead-delivery-hub.ts");
+    await sendLead(payload.payload as Parameters<typeof sendLead>[0]);
     return;
   }
 

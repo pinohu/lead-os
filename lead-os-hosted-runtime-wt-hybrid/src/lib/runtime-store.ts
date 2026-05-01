@@ -2,6 +2,7 @@ import type { QueryResultRow } from "pg";
 import { getPool as getDbPool } from "./db.ts";
 import { embeddedSecrets } from "./embedded-secrets.ts";
 import type { CustomerMilestoneId, LeadMilestoneId, LeadStage } from "./runtime-schema.ts";
+import { tenantConfig } from "./tenant.ts";
 import type { CanonicalEvent, TraceContext } from "./trace.ts";
 
 export interface LeadMilestoneState {
@@ -178,13 +179,26 @@ async function ensureSchema() {
       await activePool.query(`
         CREATE TABLE IF NOT EXISTS lead_os_leads (
           lead_key TEXT PRIMARY KEY,
+          tenant_id TEXT NOT NULL DEFAULT 'default-tenant',
           created_at TIMESTAMPTZ NOT NULL,
           updated_at TIMESTAMPTZ NOT NULL,
+          status TEXT NOT NULL DEFAULT 'new',
+          score INT NOT NULL DEFAULT 0,
+          niche TEXT NOT NULL DEFAULT 'unknown',
+          source TEXT NOT NULL DEFAULT 'unknown',
           payload JSONB NOT NULL
         );
 
+        ALTER TABLE lead_os_leads ADD COLUMN IF NOT EXISTS tenant_id TEXT DEFAULT 'default-tenant';
+        ALTER TABLE lead_os_leads ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'new';
+        ALTER TABLE lead_os_leads ADD COLUMN IF NOT EXISTS score INT DEFAULT 0;
+        ALTER TABLE lead_os_leads ADD COLUMN IF NOT EXISTS niche TEXT DEFAULT 'unknown';
+        ALTER TABLE lead_os_leads ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'unknown';
+        ALTER TABLE lead_os_events ADD COLUMN IF NOT EXISTS tenant_id TEXT DEFAULT 'default-tenant';
+
         CREATE TABLE IF NOT EXISTS lead_os_events (
           id TEXT PRIMARY KEY,
+          tenant_id TEXT NOT NULL DEFAULT 'default-tenant',
           lead_key TEXT,
           event_type TEXT NOT NULL,
           timestamp TIMESTAMPTZ NOT NULL,
@@ -240,9 +254,15 @@ async function ensureSchema() {
         CREATE INDEX IF NOT EXISTS lead_os_events_lead_idx
           ON lead_os_events (lead_key, timestamp DESC);
         CREATE INDEX IF NOT EXISTS idx_lead_os_leads_tenant
-          ON lead_os_leads ((payload->>'tenantId'));
+          ON lead_os_leads (tenant_id);
+        CREATE INDEX IF NOT EXISTS idx_lead_os_leads_tenant_status
+          ON lead_os_leads (tenant_id, status);
+        CREATE INDEX IF NOT EXISTS idx_lead_os_leads_tenant_score
+          ON lead_os_leads (tenant_id, score DESC);
         CREATE INDEX IF NOT EXISTS idx_lead_os_events_lead_key
           ON lead_os_events (lead_key);
+        CREATE INDEX IF NOT EXISTS idx_lead_os_events_tenant
+          ON lead_os_events (tenant_id, timestamp DESC);
         CREATE INDEX IF NOT EXISTS idx_lead_os_events_type
           ON lead_os_events (event_type);
         CREATE INDEX IF NOT EXISTS idx_lead_os_events_timestamp
@@ -453,15 +473,30 @@ export async function upsertLeadRecord(record: StoredLeadRecord) {
   await ensureSchema();
   await queryPostgres(
     `
-      INSERT INTO lead_os_leads (lead_key, created_at, updated_at, payload)
-      VALUES ($1, $2::timestamptz, $3::timestamptz, $4::jsonb)
+      INSERT INTO lead_os_leads (lead_key, tenant_id, created_at, updated_at, status, score, niche, source, payload)
+      VALUES ($1, $2, $3::timestamptz, $4::timestamptz, $5, $6::int, $7, $8, $9::jsonb)
       ON CONFLICT (lead_key)
       DO UPDATE SET
         created_at = EXCLUDED.created_at,
         updated_at = EXCLUDED.updated_at,
+        tenant_id = EXCLUDED.tenant_id,
+        status = EXCLUDED.status,
+        score = EXCLUDED.score,
+        niche = EXCLUDED.niche,
+        source = EXCLUDED.source,
         payload = EXCLUDED.payload
     `,
-    [record.leadKey, record.createdAt, record.updatedAt, JSON.stringify(record)],
+    [
+      record.leadKey,
+      record.trace.tenant,
+      record.createdAt,
+      record.updatedAt,
+      record.status,
+      record.score,
+      record.niche,
+      record.source,
+      JSON.stringify(record),
+    ],
   );
 
   return record;
@@ -513,8 +548,8 @@ export async function getLeadRecords(limit: number = 1000) {
 
   await ensureSchema();
   const result = await queryPostgres<{ payload: StoredLeadRecord }>(
-    "SELECT payload FROM lead_os_leads ORDER BY updated_at DESC LIMIT $1",
-    [limit],
+    "SELECT payload FROM lead_os_leads WHERE tenant_id = $1 ORDER BY updated_at DESC LIMIT $2",
+    [tenantConfig.tenantId, limit],
   );
   const records = result.rows.map((row) => row.payload);
   leadStore.clear();
@@ -542,12 +577,12 @@ export async function appendEvents(events: CanonicalEvent[]) {
     const values: unknown[] = [];
     const placeholders: string[] = [];
     events.forEach((event, i) => {
-      const offset = i * 5;
-      placeholders.push(`($${offset+1}, $${offset+2}, $${offset+3}, $${offset+4}::timestamptz, $${offset+5}::jsonb)`);
-      values.push(event.id, event.leadKey, event.eventType, event.timestamp, JSON.stringify(event));
+      const offset = i * 6;
+      placeholders.push(`($${offset+1}, $${offset+2}, $${offset+3}, $${offset+4}, $${offset+5}::timestamptz, $${offset+6}::jsonb)`);
+      values.push(event.tenant, event.id, event.leadKey, event.eventType, event.timestamp, JSON.stringify(event));
     });
     await queryPostgres(
-      `INSERT INTO lead_os_events (id, lead_key, event_type, timestamp, payload) VALUES ${placeholders.join(", ")} ON CONFLICT (id) DO NOTHING`,
+      `INSERT INTO lead_os_events (tenant_id, id, lead_key, event_type, timestamp, payload) VALUES ${placeholders.join(", ")} ON CONFLICT (id) DO NOTHING`,
       values,
     );
   }
@@ -573,8 +608,8 @@ export async function getCanonicalEvents(limit: number = 1000) {
 
   await ensureSchema();
   const result = await queryPostgres<{ payload: CanonicalEvent }>(
-    "SELECT payload FROM lead_os_events ORDER BY timestamp DESC LIMIT $1",
-    [limit],
+    "SELECT payload FROM lead_os_events WHERE tenant_id = $1 ORDER BY timestamp DESC LIMIT $2",
+    [tenantConfig.tenantId, limit],
   );
   const events = result.rows.map((row) => row.payload);
   eventStore.length = 0;

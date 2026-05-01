@@ -11,7 +11,7 @@ const REPO_ROOT_DOCS_BASE = "https://github.com/pinohu/lead-os/blob/HEAD/docs";
 
 export const metadata: Metadata = {
   title: "Documentation hub",
-  description: "API reference, SLA, and operator documentation links for Lead OS / CX React.",
+  description: "API reference, SLA, solution launch, and operations documentation links for Lead OS.",
 };
 
 export default function DocsHubPage() {
@@ -21,16 +21,16 @@ export default function DocsHubPage() {
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Documentation</p>
         <h1 className="text-3xl font-bold tracking-tight mt-1">Product &amp; operator docs</h1>
         <p className="text-muted-foreground mt-2 max-w-2xl">
-          In-app entry points for APIs and commitments. Deep runbooks and deployment guides live in the repository
-          under <code className="text-xs">docs/</code> — linked below for each topic.
+          In-app entry points for APIs, solution launch, and operations commitments. Deep runbooks and deployment guides
+          live in the repository under <code className="text-xs">docs/</code>.
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Card className="border-primary/30 bg-primary/[0.04] sm:col-span-2">
           <CardHeader>
-            <CardTitle className="text-lg">New here — read this first</CardTitle>
-            <CardDescription>One page: clone, run the kernel, Postgres + migrations, operator login, production checks.</CardDescription>
+            <CardTitle className="text-lg">New here - read this first</CardTitle>
+            <CardDescription>One page: clone, run the kernel, Postgres + migrations, operator login, solution launch, production checks.</CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild>
@@ -55,8 +55,20 @@ export default function DocsHubPage() {
 
         <Card>
           <CardHeader>
+            <CardTitle className="text-lg">Production readiness</CardTitle>
+            <CardDescription>Public page for solution actions that are ready and external integrations that need account access.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="secondary">
+              <Link href="/production">Open production status</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle className="text-lg">Service level (SLA)</CardTitle>
-            <CardDescription>Template Markdown — customize placeholders, monitoring, and legal review before customer contracts.</CardDescription>
+            <CardDescription>Template Markdown - customize placeholders, monitoring, and legal review before customer contracts.</CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild variant="secondary">

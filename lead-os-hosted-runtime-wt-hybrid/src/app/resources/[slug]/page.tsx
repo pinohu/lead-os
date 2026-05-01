@@ -57,8 +57,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const niche = getNiche(slug);
   if (!niche) return {};
   return {
-    title: `The Complete Guide to ${niche.label} | CX React Resources`,
-    description: `Everything ${niche.label.toLowerCase()} businesses need to know about lead capture, scoring, automation, and growth. Actionable insights backed by real data.`,
+    title: `The Complete Guide to ${niche.label} | Lead OS Resources`,
+    description: `Everything ${niche.label.toLowerCase()} buyers need to understand the lead system package path, capture, scoring, routing, and follow-up.`,
     openGraph: {
       title: `The Complete Guide to ${niche.label}`,
       description: niche.summary,
@@ -113,7 +113,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
       <ExperienceScaffold
         eyebrow="Resource guide"
         title={`The Complete Guide to ${niche.label}`}
-        summary={`A practical playbook covering the biggest challenges ${niche.label.toLowerCase()} businesses face and the systems top performers use to solve them.`}
+        summary={`A practical playbook covering the biggest challenges ${niche.label.toLowerCase()} businesses face and the package systems top performers use to solve them.`}
         profile={profile}
         niche={niche.slug}
         metrics={[
@@ -150,7 +150,7 @@ export default async function ResourcePage({ params, searchParams }: Props) {
         <section>
           <h2 className="text-foreground">From problem to solution</h2>
           <p className="text-lg text-muted-foreground">
-            Every pain point above maps to a concrete system you can deploy.
+            Every pain point above maps to a concrete package path you can launch.
             Here is what top-performing {niche.label.toLowerCase()} organizations
             put in place.
           </p>
@@ -184,18 +184,18 @@ export default async function ResourcePage({ params, searchParams }: Props) {
         {/* ---------- CTA: Assessment ---------- */}
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Take the next step</p>
-          <h2 className="text-foreground">Score your {niche.label} growth readiness in two minutes</h2>
+          <h2 className="text-foreground">Score your {niche.label} package readiness in two minutes</h2>
           <p>
             Our diagnostic assessment benchmarks your current funnel against
             hundreds of {niche.label.toLowerCase()} businesses and returns a
-            prioritized action plan you can execute this week.
+            prioritized package path you can launch.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild><Link href={`/assess/${niche.slug}`}>
               Start the Assessment
             </Link></Button>
             <Button asChild variant="outline"><Link href={`/industries/${niche.slug}`}>
-              Explore {niche.label} Solutions
+              Explore {niche.label} packages
             </Link></Button>
           </div>
         </section>
@@ -206,9 +206,9 @@ export default async function ResourcePage({ params, searchParams }: Props) {
           <h2 className="text-foreground">More {niche.label} resources</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <article className="rounded-xl border border-border bg-card p-6">
-              <h3 className="text-foreground">Industry Solutions</h3>
+              <h3 className="text-foreground">Industry package path</h3>
               <p>
-                See how CX React is configured specifically for{" "}
+                See how Lead OS can launch a package for{" "}
                 {niche.label.toLowerCase()} businesses.
               </p>
               <div className="flex flex-wrap gap-3">

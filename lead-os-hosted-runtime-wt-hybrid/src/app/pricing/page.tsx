@@ -1,98 +1,38 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { tenantConfig } from "@/lib/tenant";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { AlertCircle, Check, CreditCard, PackageCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { notLiveUntilConfigured, publicPlans } from "@/lib/public-offer";
+import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
-  title: "Pricing — CX React",
+  title: "Pricing | Lead OS",
   description:
-    "Enterprise lead generation pricing. Replace 15-20 SaaS tools with one platform. Plans from $299/mo.",
+    "Choose how many client solutions, leads, delivery seats, funnels, and integrations you want to run.",
 };
 
-const plans = [
+const faq = [
   {
-    name: "Starter",
-    price: "$299",
-    period: "/mo",
-    description: "For solo operators launching their first lead engine.",
-    features: [
-      "Up to 250 qualified leads per month",
-      "10 custom lead capture funnels",
-      "5 tool integrations (CRM, email, etc.)",
-      "Automated email nurture sequences",
-      "AI-powered lead qualification",
-      "Client management dashboard",
-      "Risk-free testing sandbox",
-      "Email support",
-    ],
-    cta: "Start Free Trial",
-    href: "/onboard?plan=starter",
-    highlighted: false,
+    q: "What am I paying for?",
+    a: "You are paying for operating capacity: client solution hubs, leads, funnels, delivery seats, experiments, integrations, and reporting surfaces.",
   },
   {
-    name: "Growth",
-    price: "$599",
-    period: "/mo",
-    description: "For growing agencies managing multiple niches and channels.",
-    features: [
-      "Up to 1,500 qualified leads per month",
-      "25 custom lead capture funnels",
-      "25 tool integrations",
-      "Multi-channel nurturing (email, SMS, chat)",
-      "AI-powered scoring and content creation",
-      "Built-in A/B testing with auto-winner",
-      "Automated prospect discovery",
-      "Competitor benchmarking reports",
-      "Priority support",
-    ],
-    cta: "Start Free Trial",
-    href: "/onboard?plan=growth",
-    highlighted: true,
+    q: "What does the client get after they pay me?",
+    a: "After the intake form is submitted, Lead OS provisions the selected solution: customer-facing page, embed, routing, dashboard, reports, and solution-specific finished outputs.",
   },
   {
-    name: "Professional",
-    price: "$1,299",
-    period: "/mo",
-    description: "For established agencies and white-label SaaS operators.",
-    features: [
-      "Up to 10,000 qualified leads per month",
-      "Unlimited lead capture funnels",
-      "All 137+ tool integrations",
-      "Manage multiple clients from one account",
-      "Sell qualified leads through the marketplace",
-      "AI agents that work overnight for you",
-      "Your branding, your domain, your clients",
-      "Developer-friendly API access",
-      "Automated morning briefings and reports",
-      "Dedicated support",
-    ],
-    cta: "Start Free Trial",
-    href: "/onboard?plan=professional",
-    highlighted: false,
+    q: "Do I need every account connection before launch?",
+    a: "No. Required intake fields launch the solution. Optional CRM, Stripe, email, SMS, calendar, analytics, and webhook access activate those external services when added.",
   },
   {
-    name: "Enterprise",
-    price: "$2,999",
-    period: "/mo",
-    description: "For large-scale operations with custom infrastructure needs.",
-    features: [
-      "Unlimited leads across all clients",
-      "Custom implementation and onboarding",
-      "Dedicated infrastructure for your agency",
-      "99.9% uptime SLA guarantee",
-      "Single sign-on for your entire team",
-      "Advanced security (IP restrictions, 2FA)",
-      "Compliance reporting for enterprise clients",
-      "Custom integrations built to your needs",
-      "Dedicated account manager",
-      "Phone + Slack support",
-    ],
-    cta: "Contact Sales",
-    href: "/contact?inquiry=enterprise",
-    highlighted: false,
+    q: "Who is the end customer?",
+    a: "Usually your client: a business that wants more qualified leads. You operate the system; their leads submit the intake or embedded form.",
+  },
+  {
+    q: "What should I do first?",
+    a: "View Solutions, choose the outcome the client bought, then create an account or launch that solution from its detail page.",
   },
 ];
 
@@ -102,189 +42,180 @@ export default function PricingPage() {
   const pricingFaqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      { "@type": "Question", name: "Can I try CX React before committing?", acceptedAnswer: { "@type": "Answer", text: "Yes. Every plan starts with a 14-day free trial. You can test everything in sandbox mode before going live." } },
-      { "@type": "Question", name: "Can I change plans later?", acceptedAnswer: { "@type": "Answer", text: "Absolutely. Upgrade or downgrade at any time from your dashboard. Changes take effect at the start of your next billing cycle." } },
-      { "@type": "Question", name: "What happens if I exceed my lead limit?", acceptedAnswer: { "@type": "Answer", text: "We will notify you when you reach 80% of your limit. If you go over, new leads are queued (not lost) until you upgrade or the next billing cycle starts." } },
-      { "@type": "Question", name: "Do you offer annual billing?", acceptedAnswer: { "@type": "Answer", text: "Yes. Annual plans save 20%. Contact us or select annual billing during checkout." } },
-      { "@type": "Question", name: "Is my data secure?", acceptedAnswer: { "@type": "Answer", text: "All data is encrypted at rest and in transit using bank-level security standards. We are GDPR and CCPA compliant. You own your data." } },
-    ],
-  }
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
+  };
 
   const softwareAppJsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "@id": `${baseUrl}/#app`,
-    name: "CX React",
+    name: "Lead OS",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
-    description: "Enterprise lead generation platform. Replace 15-20 SaaS tools with one platform.",
+    description:
+      "Complete solution launch with capture, scoring, routing, dashboards, reports, and managed handoffs.",
     url: baseUrl,
-    offers: plans.map((plan) => ({
+    offers: publicPlans.map((plan) => ({
       "@type": "Offer",
       name: plan.name,
-      price: plan.price.replace("$", ""),
+      price: plan.price.replace("$", "").replace("/mo", ""),
       priceCurrency: "USD",
       description: plan.description,
-      url: `${baseUrl}${plan.href}`,
+      url: `${baseUrl}/onboard?plan=${plan.shortId}`,
       availability: "https://schema.org/InStock",
     })),
-  }
+  };
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingFaqJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppJsonLd) }} />
-      <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="text-center mb-12">
-        <Badge variant="secondary" className="mb-4">Pricing</Badge>
-        <h1 className="text-foreground text-4xl font-extrabold tracking-tight mb-3">
-          Replace 15-20 Tools With One Platform
-        </h1>
-        <p className="text-foreground max-w-2xl mx-auto text-lg">
-          Every plan includes a 14-day free trial. Test everything risk-free before going live.
-          Upgrade, downgrade, or cancel anytime.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-        {plans.map((plan) => (
-          <Card
-            key={plan.name}
-            className={
-              plan.highlighted
-                ? "border-2 border-primary relative shadow-lg"
-                : "relative"
-            }
-          >
-            {plan.highlighted && (
-              <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
-                Most Popular
+      <main className="w-full max-w-none overflow-x-hidden p-0">
+        <section className="border-b border-border bg-background">
+          <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[1fr_0.72fr] lg:items-start">
+            <div>
+              <Badge variant="secondary" className="mb-4">
+                Pricing
               </Badge>
-            )}
-            <CardHeader>
-              <CardTitle className="text-xl">{plan.name}</CardTitle>
-              <CardDescription>{plan.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1">
-              <p className="text-4xl font-extrabold mb-6">
-                {plan.price}
-                <span className="text-base font-normal text-muted-foreground">
-                  {plan.period}
-                </span>
+              <h1 className="max-w-4xl text-3xl font-extrabold leading-tight text-foreground sm:text-5xl">
+                Choose the capacity for the client solutions you will operate.
+              </h1>
+              <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                Pricing is not a mystery platform fee. Each plan controls how many solutions, leads, funnels, operators,
+                experiments, and integrations your account can run.
               </p>
-              <ul className="space-y-2">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                    <span>{feature}</span>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button asChild>
+                  <Link href="/packages">Choose a solution first</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/production">Check production readiness</Link>
+                </Button>
+              </div>
+            </div>
+
+            <aside className="rounded-lg border border-border bg-muted/35 p-4" aria-label="Pricing explanation">
+              <div className="mb-3 flex items-center gap-2">
+                <CreditCard className="h-5 w-5 text-primary" />
+                <h2 className="text-base font-bold text-foreground">How billing maps to delivery</h2>
+              </div>
+              <ol className="grid gap-3 pl-0">
+                {[
+                  "The delivery team chooses a plan.",
+                  "The client solution launch stores the selected plan and delivery limits.",
+                  "Billing gates protected capacity while intake forms and readiness surfaces stay explicit.",
+                ].map((item, index) => (
+                  <li key={item} className="flex gap-3 text-sm leading-relaxed text-muted-foreground">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
+                      {index + 1}
+                    </span>
+                    <span>{item}</span>
                   </li>
                 ))}
-              </ul>
-            </CardContent>
-            <CardFooter>
-              <Button
-                asChild
-                variant={plan.highlighted ? "default" : "outline"}
-                className="w-full"
-                size="lg"
-              >
-                <Link href={plan.href}>{plan.cta}</Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+              </ol>
+            </aside>
+          </div>
+        </section>
 
-      <section className="text-center mb-16" aria-labelledby="why-choose-heading">
-        <h2 id="why-choose-heading" className="text-foreground text-2xl font-bold mb-8">Why Teams Choose CX React</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
-          {[
-            {
-              metric: "8+",
-              title: "SaaS tools replaced",
-              desc: "One platform for funnels, scoring, nurturing, CRM, analytics, and more.",
-            },
-            {
-              metric: "20+",
-              title: "Hours saved per week",
-              desc: "Automate reporting, lead routing, and nurture sequences across every client.",
-            },
-            {
-              metric: "14 days",
-              title: "Free trial, no credit card",
-              desc: "Full access to every feature. Test your setup risk-free before going live.",
-            },
-          ].map((item) => (
-            <Card key={item.title} className="text-center">
-              <CardContent className="pt-6">
-                <div className="text-3xl font-extrabold text-primary mb-2">{item.metric}</div>
-                <p className="text-sm font-semibold mb-1">{item.title}</p>
-                <p className="text-xs text-foreground">{item.desc}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <section className="mx-auto max-w-6xl px-4 py-10">
+          <div className="grid gap-5 md:grid-cols-3">
+            {publicPlans.map((plan) => (
+              <Card key={plan.id} className={plan.recommended ? "border-2 border-primary shadow-sm" : undefined}>
+                <CardHeader>
+                  {plan.recommended ? <Badge className="mb-2 w-fit">Recommended</Badge> : null}
+                  <CardTitle className="text-xl">{plan.name}</CardTitle>
+                  <CardDescription>{plan.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="mb-2 text-4xl font-extrabold">
+                    {plan.price.replace("/mo", "")}
+                    <span className="text-base font-normal text-muted-foreground">/mo</span>
+                  </p>
+                  <p className="mb-5 text-sm text-muted-foreground">{plan.limits}</p>
+                  <ul className="space-y-2 pl-0">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2 text-sm">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full" variant={plan.recommended ? "default" : "outline"} size="lg">
+                    <Link href={`/onboard?plan=${plan.shortId}`}>Start {plan.name} setup</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </section>
 
-        <div className="flex justify-center gap-8 flex-wrap">
-          {[
-            { metric: "137+", label: "Integrations available" },
-            { metric: "16", label: "Industries pre-built" },
-            { metric: "99.9%", label: "Uptime SLA" },
-            { metric: "0", label: "Contracts required" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="text-2xl font-extrabold text-primary">{stat.metric}</div>
-              <div className="text-xs text-muted-foreground">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="text-center mb-16" aria-labelledby="faq-heading">
-        <h2 id="faq-heading" className="text-foreground text-2xl font-bold mb-8">Frequently Asked Questions</h2>
-        <div className="max-w-2xl mx-auto text-left space-y-0">
-          {[
-            { q: "Can I try CX React before committing?", a: "Yes. Every plan starts with a 14-day free trial. You can test everything in sandbox mode before going live." },
-            { q: "Can I change plans later?", a: "Absolutely. Upgrade or downgrade at any time from your dashboard. Changes take effect at the start of your next billing cycle." },
-            { q: "What happens if I exceed my lead limit?", a: "We will notify you when you reach 80% of your limit. If you go over, new leads are queued (not lost) until you upgrade or the next billing cycle starts." },
-            { q: "Do you offer annual billing?", a: "Yes. Annual plans save 20%. Contact us or select annual billing during checkout." },
-            { q: "Is my data secure?", a: "All data is encrypted at rest and in transit using bank-level security standards. We are GDPR and CCPA compliant. You own your data." },
-          ].map((faq) => (
-            <details key={faq.q} className="border-b border-border py-4 group">
-              <summary className="text-[0.9375rem] font-semibold cursor-pointer list-none flex items-center justify-between">
-                {faq.q}
-                <span className="text-muted-foreground group-open:rotate-180 transition-transform">&#9662;</span>
-              </summary>
-              <p className="text-sm text-foreground leading-relaxed mt-2">
-                {faq.a}
+        <section className="border-y border-border bg-muted/20">
+          <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 lg:grid-cols-[0.8fr_1.2fr]">
+            <div>
+              <Badge variant="outline" className="mb-3">
+                What the price unlocks
+              </Badge>
+              <h2 className="text-2xl font-bold text-foreground sm:text-3xl">A paid plan should lead directly to a provisioned solution.</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                The plan controls capacity. The solution intake form controls what gets built for the client.
               </p>
-            </details>
-          ))}
-        </div>
-      </section>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                "Client intake forms",
+                "Solution delivery hubs",
+                "Lead intake and embeds",
+                "Routing and scoring rules",
+                "Operations dashboards",
+                "Reports and revenue surfaces",
+              ].map((item) => (
+                <div key={item} className="flex gap-2 rounded-lg border border-border bg-card p-4 text-sm">
+                  <PackageCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-      <section className="text-center" aria-labelledby="all-plans-heading">
-        <h2 id="all-plans-heading" className="text-foreground text-2xl font-bold mb-6">All Plans Include</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-left">
-          {[
-            "Risk-free testing sandbox",
-            "Drag-and-drop funnel builder",
-            "AI-powered lead qualification",
-            "Embeddable capture widgets",
-            "GDPR and privacy compliance",
-            "Client management dashboard",
-            "Real-time event notifications",
-            "One-click industry setup",
-          ].map((feature) => (
-            <p key={feature} className="text-sm flex gap-2 items-baseline">
-              <Check className="h-3.5 w-3.5 text-primary shrink-0" />
-              {feature}
-            </p>
-          ))}
-        </div>
-      </section>
-    </div>
+        <section className="mx-auto max-w-6xl px-4 py-10">
+          <div className="mb-8 rounded-lg border border-amber-300/50 bg-amber-50 p-5 text-amber-950">
+            <div className="flex gap-3">
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+              <div>
+                <h2 className="text-base font-semibold">Account access your client may need to approve</h2>
+                <p className="mt-1 text-sm leading-relaxed">
+                  Lead OS creates the base solution outputs first. These outside services turn on only when required
+                  client-owned accounts are connected.
+                </p>
+                <ul className="mt-4 grid gap-2 pl-0 text-sm md:grid-cols-2">
+                  {notLiveUntilConfigured.map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <section className="grid gap-3 md:grid-cols-2" aria-label="Pricing questions">
+            {faq.map((item) => (
+              <details key={item.q} className="rounded-lg border border-border p-5">
+                <summary className="cursor-pointer font-semibold">{item.q}</summary>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
+              </details>
+            ))}
+          </section>
+        </section>
+      </main>
     </>
   );
 }

@@ -51,10 +51,10 @@ const STEPS: ChecklistStep[] = [
   },
   {
     id: "emailConnected",
-    title: "Connect email provider",
-    description: "Add credentials for your email provider so LeadOS can send automated nurture sequences and notifications.",
+    title: "Approve email access",
+    description: "Approve email account access when you are ready to replace managed handoffs with client-owned live nurture and notifications.",
     href: "/dashboard/credentials",
-    linkLabel: "Add credentials",
+    linkLabel: "Add account access",
   },
   {
     id: "widgetConfigured",

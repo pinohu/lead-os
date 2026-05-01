@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Manage Your Data | CX React",
+  title: "Manage Your Data | Lead OS",
   description: "Export or delete your personal data. GDPR-compliant self-service data management.",
 };
 

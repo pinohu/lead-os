@@ -17,51 +17,131 @@ const faqData: FaqCategory[] = [
   {
     title: "Getting Started",
     items: [
-      { question: "What is CX React?", answer: "CX React is a configurable lead operating system for agencies, SaaS teams, lead-gen shops, consultants, and franchise operators. It captures leads through embeddable widgets and API intake, scores and routes them, and nurtures across email, SMS, and chat when providers are connected — with one operator dashboard and APIs you control." },
-      { question: "How do I get started?", answer: "Head to the onboarding page to start the setup wizard. Choose your industry, pick a plan, add your branding, and connect your tools. The system automatically configures lead scoring, assessment questions, and nurture sequences for your industry." },
-      { question: "How do I capture my first lead?", answer: "After onboarding, add the provided widget to your site or your customer’s site (agencies often embed per client). Visitors see your configured form, quiz, calculator, or chat widget. On submit, the lead is scored, routed, and entered into the nurture sequence you enabled." },
-      { question: "What does the dashboard show?", answer: "The dashboard summarizes lead operations: KPIs, pipeline status, experiments, billing signals, and workspace-level performance. Whether you run one product, many territories, or many client accounts, it is the same control plane." },
-      { question: "Can I add a new niche without coding?", answer: "Yes. CX React treats niches as configuration, not code. Enter your industry name and the system auto-generates scoring weights, assessment questions, lead magnets, nurture content, and funnel configurations." },
+      {
+        question: "What is Lead OS?",
+        answer:
+          "Lead OS is a complete-solution launch system for agencies, SaaS teams, lead-gen shops, consultants, and franchise operators. Choose the outcome the customer bought, collect the intake details, and receive customer-facing pages, embed code, routing, dashboards, reporting, finished outputs, and managed handoffs.",
+      },
+      {
+        question: "How do I get started?",
+        answer:
+          "Start account setup, choose the plan capacity you need, then open Solutions. Pick what the customer bought and submit the intake form to launch the customer-ready outputs.",
+      },
+      {
+        question: "How do I capture my first lead?",
+        answer:
+          "After a solution launches, share the capture URL or add the provided embed code to your site or your customer's site. Visitors see the prepared form, quiz, calculator, or chat widget. On submit, the lead is scored, routed, and shown in the delivery hub.",
+      },
+      {
+        question: "What does the dashboard show?",
+        answer:
+          "The dashboard summarizes lead operations: KPIs, pipeline status, experiments, billing signals, solution activity, and delivery performance.",
+      },
+      {
+        question: "Can I add a new niche without coding?",
+        answer:
+          "Yes. Lead OS treats niches as configuration, not code. Industry templates shape scoring weights, assessment questions, lead magnets, nurture content, and funnel configurations.",
+      },
     ],
   },
   {
     title: "Lead Management",
     items: [
-      { question: "How does lead scoring work?", answer: "CX React scores every lead across four dimensions: how likely they are to buy (intent), how well they match your ideal customer (fit), how actively they are engaging (engagement), and how urgently they need your service (urgency). These combine into a single score that tells your team exactly who to call first." },
-      { question: "What do the temperature labels mean?", answer: "Cold (0-34): Early-stage, needs nurturing. Warm (35-59): Showing interest, engage actively. Hot (60-79): High intent, prioritize outreach. Burning (80+): Ready to buy, route to sales immediately." },
-      { question: "How does lead routing work?", answer: "You define rules for each stage of your funnel: who qualifies, where they go next, and what happens automatically. The system assigns leads to the right team members, updates your CRM, and starts the right nurture sequence -- all without manual work." },
-      { question: "What happens with duplicate leads?", answer: "CX React automatically detects duplicate submissions and merges them instead of creating new records. The system keeps the best data from each submission so your lead counts stay accurate and your team never calls the same person twice." },
-      { question: "Can I export my leads?", answer: "Yes. Export leads directly from the dashboard with one click, or set up real-time sync to your CRM. You always own your data and can export it anytime." },
+      {
+        question: "How does lead scoring work?",
+        answer:
+          "Lead OS scores every lead across intent, fit, engagement, and urgency. These combine into a single score that tells your team exactly who to call first.",
+      },
+      {
+        question: "What do the temperature labels mean?",
+        answer:
+          "Cold means early-stage and needs nurturing. Warm means showing interest. Hot means high intent. Burning means ready to buy and should be routed immediately.",
+      },
+      {
+        question: "How does lead routing work?",
+        answer:
+          "You define rules for who qualifies, where they go next, and what happens automatically. The system assigns leads, updates approved connected accounts, and starts the right follow-up sequence when live access is available.",
+      },
+      {
+        question: "What happens with duplicate leads?",
+        answer:
+          "Lead OS detects duplicate submissions and merges them instead of creating new records, so your team does not call the same person twice.",
+      },
+      {
+        question: "Can I export my leads?",
+        answer:
+          "Yes. Export leads from the dashboard or set up real-time sync to your CRM after account access is approved. You own your data and can export it anytime.",
+      },
     ],
   },
   {
-    title: "Integrations",
+    title: "Solutions and Integrations",
     items: [
-      { question: "How do I connect my CRM?", answer: "Go to Dashboard > Credentials and add the CRM or ops tool connectors you use. Sync behavior depends on which adapters are enabled for your deployment. All integrations stay in sandbox or stub mode until real API keys are present." },
-      { question: "How do I set up email nurturing?", answer: "Connect your email provider in Dashboard > Credentials. CX React includes pre-built 7-stage nurture sequences that automatically adapt messaging based on how engaged each lead is and what industry they are in." },
-      { question: "How do I configure SMS?", answer: "Connect your SMS provider in Dashboard > Credentials. SMS is part of the multi-channel nurture sequence and can be turned on or off for each stage of your funnel." },
-      { question: "Can I get real-time notifications when something happens?", answer: "Yes. CX React sends real-time notifications when key events occur -- like a new lead coming in, a lead changing stages, or a conversion. Configure these alerts in Dashboard > Settings." },
-      { question: "What if I have not connected my tools yet?", answer: "No problem. All integrations run in sandbox mode until you connect your accounts. You can explore and test the full platform with realistic sample data before going live." },
+      {
+        question: "What does a customer receive after the intake form is submitted?",
+        answer:
+          "They receive solution-specific delivery links, a capture page, embed code, operations and reporting surfaces, routing logic, finished outputs, provisioning runs, and acceptance checks.",
+      },
+      {
+        question: "How do I connect my CRM?",
+        answer:
+          "Go to Dashboard > Account Access and add the CRM or operations account connection you use. Sync behavior depends on which adapters are enabled for your deployment. Integrations stay in managed-handoff mode until live access is present.",
+      },
+      {
+        question: "How do I set up email nurturing?",
+        answer:
+          "Approve your email account in Dashboard > Account Access. Lead OS includes nurture sequences that adapt messaging based on lead engagement and industry.",
+      },
+      {
+        question: "What if I have not connected my accounts yet?",
+        answer:
+          "The solution still launches its built-in surfaces and finished outputs. External actions such as CRM sync, live sends, billing, and webhooks activate when you approve the required accounts.",
+      },
     ],
   },
   {
     title: "Billing",
     items: [
-      { question: "What plans are available?", answer: "Starter ($299/mo), Growth ($599/mo), Professional ($1,299/mo), and Enterprise ($2,999/mo). All plans include a 14-day free trial. See the /pricing page for full feature comparison." },
-      { question: "How do I upgrade my plan?", answer: "Go to Dashboard > Billing and click 'Change Plan'. Upgrades take effect immediately. Downgrades take effect at the next billing cycle." },
-      { question: "How do I cancel?", answer: "Go to Dashboard > Billing and click 'Manage Subscription'. You can cancel anytime. Your access continues until the end of the current billing period. You can export your data before cancellation." },
-      { question: "What counts toward usage limits?", answer: "Each plan has limits on leads/month, emails/month, SMS/month, active funnels, and enabled integrations. Usage resets at the start of each billing cycle." },
-      { question: "How do I view my invoices?", answer: "Go to Dashboard > Billing to view all invoices. Invoices are generated by Stripe and include PDF download links." },
+      {
+        question: "What plans are available?",
+        answer:
+          "Starter, Growth, Professional, and Enterprise plans control lead volume, operators, funnels, experiments, integrations, and solution capacity. See /pricing for the current catalog.",
+      },
+      {
+        question: "How do I upgrade my plan?",
+        answer:
+          "Go to Dashboard > Billing and click Change Plan. Upgrades take effect immediately when billing is connected. Downgrades take effect at the next billing cycle.",
+      },
+      {
+        question: "How do I view invoices?",
+        answer:
+          "Go to Dashboard > Billing to view invoices. Live invoice generation requires approved payment account access.",
+      },
     ],
   },
   {
     title: "Setup and Security",
     items: [
-      { question: "Do you have developer documentation?", answer: "Yes. Start at the in-app documentation hub at /docs (OpenAPI JSON at /api/docs/openapi.json). For runbooks and deployment detail, see the docs folder in the repository linked from /docs." },
-      { question: "How do I add the widget to a website?", answer: "After onboarding you get embed snippets per workspace or niche. They work on any normal web stack as a popup, inline form, chat bubble, or full-page assessment." },
-      { question: "Can I use my own domain?", answer: "Yes. Set up your custom domain in Dashboard > Settings. Your clients will see your brand and your URL -- not ours." },
-      { question: "How is my data protected?", answer: "Traffic uses TLS in production configurations; operator areas use magic-link sessions; data access is parameterized in the app layer. Tenant isolation depends on your Postgres/RLS and deployment model — review docs/SOC2-CONTROLS.md and your own threat model before promising compliance downstream." },
-      { question: "Is CX React GDPR compliant?", answer: "Yes. CX React includes built-in tools for data export, data deletion, and consent management. See our Privacy Policy for full details." },
+      {
+        question: "Do you have developer documentation?",
+        answer:
+          "Yes. Start at /docs for API references and operator documents. The repository docs include runbooks, deployment detail, environment specs, and architecture notes.",
+      },
+      {
+        question: "Can I use my own domain?",
+        answer:
+          "Yes. Configure your domain in Dashboard > Settings or through your deployment provider. Customers should see your brand and the solution URL you choose.",
+      },
+      {
+        question: "How is my data protected?",
+        answer:
+          "Traffic uses TLS in production configurations, operator areas use authenticated sessions, and data access is parameterized in the app layer. Review your database, RLS, processor agreements, and threat model before promising compliance downstream.",
+      },
+      {
+        question: "Is Lead OS GDPR compliant?",
+        answer:
+          "Lead OS includes capabilities for data export, data deletion, and consent management. Your compliance depends on your deployment, subprocessors, policies, and legal review.",
+      },
     ],
   },
 ];
@@ -74,9 +154,9 @@ const helpFaqJsonLd = {
       "@type": "Question",
       name: item.question,
       acceptedAnswer: { "@type": "Answer", text: item.answer },
-    }))
+    })),
   ),
-}
+};
 
 export default function HelpCenterPage() {
   const [search, setSearch] = useState("");
@@ -107,76 +187,62 @@ export default function HelpCenterPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(helpFaqJsonLd) }} />
-      <div className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-foreground text-2xl font-extrabold mb-2">Help Center</h1>
-      <p className="text-foreground mb-8">
-        Find answers to common questions about CX React.
-      </p>
-
-      <div className="mb-8">
-        <label htmlFor="faq-search" className="sr-only">
-          Search help articles
-        </label>
-        <input
-          id="faq-search"
-          type="search"
-          placeholder="Search questions..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          aria-label="Search help articles"
-          className="w-full px-4 py-3 border border-border rounded-lg text-base"
-        />
-      </div>
-
-      {filtered.map((category) => (
-        <section key={category.title} className="mb-8">
-          <h2 className="text-foreground text-xl font-bold mb-3">
-            {category.title}
-          </h2>
-          {category.items.map((item) => {
-            const key = `${category.title}-${item.question}`;
-            const isOpen = openItems.has(key);
-            return (
-              <div
-                key={key}
-                className="border border-border rounded-md mb-2 overflow-hidden"
-              >
-                <button
-                  onClick={() => toggleItem(key)}
-                  aria-expanded={isOpen}
-                  className="w-full px-4 py-3 bg-muted border-none text-left cursor-pointer font-semibold text-sm flex justify-between items-center"
-                >
-                  {item.question}
-                  <span aria-hidden="true" className={`text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}>
-                    &#9660;
-                  </span>
-                </button>
-                {isOpen && (
-                  <div className="px-4 py-3 text-sm text-foreground leading-relaxed">
-                    {item.answer}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </section>
-      ))}
-
-      <section className="mt-12 p-8 bg-muted rounded-xl text-center">
-        <h2 className="text-foreground text-xl font-bold mb-2">
-          Still need help?
-        </h2>
-        <p className="text-foreground mb-4">
-          Contact our support team and we will get back to you within 24 hours.
+      <div className="mx-auto max-w-3xl px-4 py-12">
+        <h1 className="mb-2 text-2xl font-extrabold text-foreground">Help Center</h1>
+        <p className="mb-8 text-foreground">
+          Find answers to common questions about launching complete customer solutions with Lead OS.
         </p>
-        <Link
-          href="/contact"
-          className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-md no-underline font-semibold"
-        >
-          Contact Support
-        </Link>
-      </section>
-    </div>
+
+        <div className="mb-8">
+          <label htmlFor="faq-search" className="sr-only">
+            Search help articles
+          </label>
+          <input
+            id="faq-search"
+            type="search"
+            placeholder="Search questions..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search help articles"
+            className="w-full rounded-lg border border-border px-4 py-3 text-base"
+          />
+        </div>
+
+        {filtered.map((category) => (
+          <section key={category.title} className="mb-8">
+            <h2 className="mb-3 text-xl font-bold text-foreground">{category.title}</h2>
+            {category.items.map((item) => {
+              const key = `${category.title}-${item.question}`;
+              const isOpen = openItems.has(key);
+              return (
+                <div key={key} className="mb-2 overflow-hidden rounded-md border border-border">
+                  <button
+                    onClick={() => toggleItem(key)}
+                    aria-expanded={isOpen}
+                    className="flex w-full cursor-pointer items-center justify-between border-none bg-muted px-4 py-3 text-left text-sm font-semibold"
+                  >
+                    {item.question}
+                    <span aria-hidden="true" className={`text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}>
+                      &#9660;
+                    </span>
+                  </button>
+                  {isOpen ? <div className="px-4 py-3 text-sm leading-relaxed text-foreground">{item.answer}</div> : null}
+                </div>
+              );
+            })}
+          </section>
+        ))}
+
+        <section className="mt-12 rounded-xl bg-muted p-8 text-center">
+          <h2 className="mb-2 text-xl font-bold text-foreground">Still need help?</h2>
+          <p className="mb-4 text-foreground">
+            Contact support if you need help choosing a solution, approving account access, or understanding what will launch.
+          </p>
+          <Link href="/contact" className="inline-block rounded-md bg-primary px-6 py-2 font-semibold text-primary-foreground no-underline">
+            Contact Support
+          </Link>
+        </section>
+      </div>
     </>
   );
 }

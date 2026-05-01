@@ -2,9 +2,9 @@
 // Defense-in-depth for cron and public allowlist routes (tenant + auth).
 
 import { timingSafeEqual } from "crypto";
-import { NextResponse } from "next/server";
-import { tenantConfig } from "@/lib/tenant";
-import { pricingLog } from "@/lib/pricing/logger";
+import { NextResponse } from "next/server.js";
+import { tenantConfig } from "../tenant.ts";
+import { pricingLog } from "../pricing/logger.ts";
 
 function timingSafeEqualStr(a: string, b: string): boolean {
   const ab = Buffer.from(a);

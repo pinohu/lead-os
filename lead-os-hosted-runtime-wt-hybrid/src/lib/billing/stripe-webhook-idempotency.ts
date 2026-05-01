@@ -1,7 +1,7 @@
 // src/lib/billing/stripe-webhook-idempotency.ts
 // Idempotent Stripe webhook processing (Postgres).
 
-import { getPool, queryPostgres } from "@/lib/db";
+import { getPool, queryPostgres } from "../db.ts";
 
 export async function tryClaimStripeWebhookEvent(eventId: string): Promise<boolean> {
   const pool = getPool();

@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { getDatabaseUrl } from "@/lib/db";
 import { getBillingGateState } from "@/lib/billing/entitlements";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
 import { tenantConfig } from "@/lib/tenant";
 import {
   isLivePricingEnabled,
@@ -13,7 +14,18 @@ import { getSupabaseAnonKey, isSupabaseConfigured } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+function publicHealthResponse() {
+  return NextResponse.json({
+    ok: true,
+    service: "lead-os",
+    timestamp: new Date().toISOString(),
+  });
+}
+
+export async function GET(request: Request) {
+  const auth = await requireOperatorApiSession(request);
+  if (auth.response) return publicHealthResponse();
+
   const billing = await getBillingGateState(tenantConfig.tenantId).catch(() => null);
   return NextResponse.json({
     ok: true,

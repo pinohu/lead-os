@@ -193,7 +193,7 @@ export async function getEmbedCode(
       return {
         format: "wordpress",
         code: `[leados_widget id="${widgetId}"]`,
-        instructions: "Install the CX React WordPress plugin, then add this shortcode to any page or post.",
+        instructions: "Install the Lead OS WordPress plugin, then add this shortcode to any page or post.",
       };
   }
 }
@@ -235,10 +235,10 @@ export async function generateWordPressPlugin(
 
   const phpCode = `<?php
 /**
- * Plugin Name: CX React Widgets
- * Description: Embed CX React widgets on your WordPress site
+ * Plugin Name: Lead OS Widgets
+ * Description: Embed Lead OS widgets on your WordPress site
  * Version: 1.0.0
- * Author: CX React
+ * Author: Lead OS
  */
 
 defined('ABSPATH') || exit;
@@ -264,6 +264,6 @@ add_action('wp_enqueue_scripts', 'leados_enqueue_scripts');
     downloadUrl: `${baseUrl}/plugins/${tenantId}/leados-widgets.zip`,
     version: "1.0.0",
     phpCode,
-    readme: `# CX React Widgets for WordPress\n\nEmbed CX React widgets on your WordPress site.\n\n## Installation\n1. Upload the plugin to wp-content/plugins/\n2. Activate the plugin\n3. Use [leados_widget id="WIDGET_ID"] shortcode\n\n## Widgets\nThis plugin includes ${widgetIds.length} configured widget(s).`,
+    readme: `# Lead OS Widgets for WordPress\n\nEmbed Lead OS widgets on your WordPress site.\n\n## Installation\n1. Upload the plugin to wp-content/plugins/\n2. Activate the plugin\n3. Use [leados_widget id="WIDGET_ID"] shortcode\n\n## Widgets\nThis plugin includes ${widgetIds.length} configured widget(s).`,
   };
 }

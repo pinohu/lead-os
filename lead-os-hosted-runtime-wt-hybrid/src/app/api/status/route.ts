@@ -28,7 +28,7 @@ export async function GET() {
       { name: "database", status: "unknown", uptime30d: 100, uptime90d: 100 },
     ],
     page: {
-      name: "CX React Status",
+      name: "Lead OS Status",
       url: (process.env.NEXT_PUBLIC_SITE_URL ?? tenantConfig.siteUrl).replace(/\/$/, ""),
     },
   });

@@ -115,7 +115,7 @@ export function generateRLSPolicy(tableName: string, tenantIdColumn: string): st
 
 export function generateRLSSetupSQL(): string {
   const header = [
-    "-- CX React: Row-Level Security Setup",
+    "-- Lead OS: Row-Level Security Setup",
     "-- Run this SQL against your PostgreSQL database to enable tenant isolation.",
     "-- Before each query, set the tenant context:",
     "--   SET LOCAL app.current_tenant_id = 'tenant-uuid-here';",

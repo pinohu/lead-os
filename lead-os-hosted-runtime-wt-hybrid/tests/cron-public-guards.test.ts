@@ -1,7 +1,7 @@
 // tests/cron-public-guards.test.ts
 import assert from "node:assert/strict";
 import { describe, it, after } from "node:test";
-import { requireCronAuthOrFail, requireDeployTenantIdOrFail } from "../src/lib/api/cron-public-guards";
+import { requireCronAuthOrFail, requireDeployTenantIdOrFail } from "../src/lib/api/cron-public-guards.ts";
 
 describe("cron-public-guards", () => {
   const prevCron = process.env.CRON_SECRET;

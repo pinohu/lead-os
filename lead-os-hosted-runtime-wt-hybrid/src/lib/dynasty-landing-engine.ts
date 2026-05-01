@@ -407,8 +407,8 @@ const SHARED_HOW_IT_WORKS: HowItWorksSection = {
 
 const SHARED_FOOTER: FooterSection = {
   badges: ["SSL Secured", "SOC 2 Compliant", "GDPR Ready"],
-  copyright: `© ${new Date().getFullYear()} CX React. All rights reserved.`,
-  brandName: "CX React",
+  copyright: `© ${new Date().getFullYear()} Lead OS. All rights reserved.`,
+  brandName: "Lead OS",
 };
 
 function ts(): string {
@@ -435,13 +435,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#0ea5e9", accentHover: "#38bdf8" },
       meta: {
-        title: "CX React for Agencies",
+        title: "Lead OS for Agencies",
         description: "Fill your agency pipeline without cold outreach. Score inbound leads instantly.",
       },
       hero: {
         eyebrow: "For Agency Owners",
         headline: "Fill your pipeline without cold outreach",
-        subheadline: "CX React scores inbound leads the moment they arrive so you call the right prospects first.",
+        subheadline: "Lead OS scores inbound leads the moment they arrive so you call the right prospects first.",
         primaryCta: { text: "Book a 15-min demo", url: "/demo", subtext: "No credit card needed" },
         secondaryCta: { text: "See how it works", url: "#how" },
         trustBar: [
@@ -461,7 +461,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Qualify leads before you pick up the phone",
-        description: "CX React enriches every inbound lead with firmographic data and a fit score before your first conversation.",
+        description: "Lead OS enriches every inbound lead with firmographic data and a fit score before your first conversation.",
         transformation: "From spray-and-pray to precision outreach",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -472,21 +472,21 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Revenue attribution", benefit: "See which channels drive pipeline", icon: "📊" },
       ],
       socialProof: {
-        headline: "Agency owners trust CX React",
+        headline: "Agency owners trust Lead OS",
         testimonials: [
           { quote: "Our close rate jumped from 18% to 51% because we only pitch the right clients.", name: "James O'Brien", title: "Founder, Volt Creative", rating: 5 },
-          { quote: "CX React paid for itself in the first week. The fit score is eerily accurate.", name: "Marta Kowalski", title: "Owner, Apex Digital", rating: 5 },
+          { quote: "Lead OS paid for itself in the first week. The fit score is eerily accurate.", name: "Marta Kowalski", title: "Owner, Apex Digital", rating: 5 },
           { quote: "Setup took 20 minutes and we had our first scored leads the same day.", name: "Devon Price", title: "MD, Signal Growth", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "51%", label: "avg. proposal close rate" },
-          { type: "number", value: "1,200+", label: "agencies on CX React" },
+          { type: "number", value: "1,200+", label: "agencies on Lead OS" },
         ],
       },
       objections: {
         headline: "Questions agency owners ask",
         faq: [
-          { question: "Can I white-label CX React for my clients?", answer: "Yes — Agency plan includes white-label dashboards for up to 50 client sub-accounts." },
+          { question: "Can I white-label Lead OS for my clients?", answer: "Yes — Agency plan includes white-label dashboards for up to 50 client sub-accounts." },
           { question: "How does the fit score work?", answer: "We combine your historical win/loss data with real-time intent signals to score each lead 0–100." },
           { question: "Is there a free trial?", answer: "Yes — 14 days free, no credit card required." },
         ],
@@ -511,13 +511,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#6366f1", accentHover: "#818cf8" },
       meta: {
-        title: "CX React for SaaS Founders",
+        title: "Lead OS for SaaS Founders",
         description: "Turn trial sign-ups into paying customers. AI scoring built for SaaS metrics.",
       },
       hero: {
         eyebrow: "For SaaS Founders",
         headline: "Turn trial sign-ups into paying customers",
-        subheadline: "CX React scores every free user by conversion probability so your team chases the right ones.",
+        subheadline: "Lead OS scores every free user by conversion probability so your team chases the right ones.",
         primaryCta: { text: "Start free trial", url: "/onboard", subtext: "No credit card required" },
         secondaryCta: { text: "See a live demo", url: "/demo" },
         trustBar: [
@@ -537,7 +537,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Predictive scoring built for SaaS metrics",
-        description: "CX React connects to your product analytics and CRM to score every user on trial-to-paid probability in real time.",
+        description: "Lead OS connects to your product analytics and CRM to score every user on trial-to-paid probability in real time.",
         transformation: "From guessing to knowing, in one dashboard",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -548,15 +548,15 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Automated playbooks", benefit: "Trigger the right message at the right stage automatically", icon: "🤖" },
       ],
       socialProof: {
-        headline: "SaaS teams trust CX React",
+        headline: "SaaS teams trust Lead OS",
         testimonials: [
           { quote: "We went from 8% trial conversion to 24% in 90 days. Paid for itself in the first week.", name: "Maria Chen", title: "CEO, Trackify", rating: 5 },
-          { quote: "CX React is the single biggest lever we pulled on our path to $1M ARR.", name: "Pete Ramirez", title: "Founder, FlowKit", rating: 5 },
+          { quote: "Lead OS is the single biggest lever we pulled on our path to $1M ARR.", name: "Pete Ramirez", title: "Founder, FlowKit", rating: 5 },
           { quote: "Finally a tool that understands SaaS metrics, not just B2B lead gen.", name: "Aisha Okonkwo", title: "Head of Growth, DataHive", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "3.2x", label: "avg. trial conversion lift" },
-          { type: "number", value: "600+", label: "SaaS teams on CX React" },
+          { type: "number", value: "600+", label: "SaaS teams on Lead OS" },
         ],
       },
       objections: {
@@ -564,7 +564,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         faq: [
           { question: "How long does integration take?", answer: "Most teams are fully connected in under 30 minutes with our guided setup wizard." },
           { question: "Does it work with our current CRM?", answer: "Yes — we integrate with Salesforce, HubSpot, Pipedrive, and 40+ others." },
-          { question: "Can it predict expansion revenue too?", answer: "Yes — CX React includes an expansion likelihood score for every existing account." },
+          { question: "Can it predict expansion revenue too?", answer: "Yes — Lead OS includes an expansion likelihood score for every existing account." },
         ],
       },
       finalCta: {
@@ -587,13 +587,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#10b981", accentHover: "#34d399" },
       meta: {
-        title: "CX React for Lead-Gen Companies",
+        title: "Lead OS for Lead-Gen Companies",
         description: "Deliver higher quality leads to clients. AI scoring that proves your value.",
       },
       hero: {
         eyebrow: "For Lead-Gen Companies",
         headline: "Deliver leads your clients actually close",
-        subheadline: "CX React scores every lead you generate so your clients see the quality — and keep paying.",
+        subheadline: "Lead OS scores every lead you generate so your clients see the quality — and keep paying.",
         primaryCta: { text: "See a live demo", url: "/demo", subtext: "15 minutes, no obligation" },
         secondaryCta: { text: "Start free trial", url: "/onboard" },
         trustBar: [
@@ -613,7 +613,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Attach a quality score to every lead you deliver",
-        description: "CX React scores every lead before delivery — giving your clients a data-backed quality signal they can act on immediately.",
+        description: "Lead OS scores every lead before delivery — giving your clients a data-backed quality signal they can act on immediately.",
         transformation: "From commodity lead seller to quality partner",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -624,15 +624,15 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "API delivery", benefit: "Push scored leads to any CRM or destination via API", icon: "🔌" },
       ],
       socialProof: {
-        headline: "Lead-gen companies trust CX React",
+        headline: "Lead-gen companies trust Lead OS",
         testimonials: [
           { quote: "Client churn dropped 60% the quarter we started delivering scored leads.", name: "Tanya Marsh", title: "COO, LeadVault", rating: 5 },
           { quote: "We upsold 40% of our clients to a quality tier once we had scoring to back it up.", name: "Ben Cortez", title: "CEO, ScaleLeads", rating: 5 },
-          { quote: "CX React ended the 'your leads are junk' conversation permanently.", name: "Lisa Park", title: "VP Operations, FunnelFirst", rating: 5 },
+          { quote: "Lead OS ended the 'your leads are junk' conversation permanently.", name: "Lisa Park", title: "VP Operations, FunnelFirst", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "60%", label: "less client churn" },
-          { type: "number", value: "300+", label: "lead-gen companies on CX React" },
+          { type: "number", value: "300+", label: "lead-gen companies on Lead OS" },
         ],
       },
       objections: {
@@ -663,13 +663,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#f59e0b", accentHover: "#fbbf24" },
       meta: {
-        title: "CX React for Consultants",
+        title: "Lead OS for Consultants",
         description: "Land more engagements without cold outreach. AI scoring for consultants.",
       },
       hero: {
         eyebrow: "For Independent Consultants",
         headline: "Land more engagements without cold outreach",
-        subheadline: "CX React tells you which inbound inquiries are worth your time — before you spend an hour on discovery.",
+        subheadline: "Lead OS tells you which inbound inquiries are worth your time — before you spend an hour on discovery.",
         primaryCta: { text: "Start free trial", url: "/onboard", subtext: "14 days, no card required" },
         secondaryCta: { text: "Watch a 3-min demo", url: "/demo" },
         trustBar: [
@@ -689,7 +689,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Filter your pipeline before the first call",
-        description: "CX React scores every inquiry on budget readiness, urgency, and fit — so you only get on calls with prospects who are serious.",
+        description: "Lead OS scores every inquiry on budget readiness, urgency, and fit — so you only get on calls with prospects who are serious.",
         transformation: "From open to everyone to selective and profitable",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -700,15 +700,15 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Pipeline tracking", benefit: "See your entire opportunity pipeline in one view", icon: "📊" },
       ],
       socialProof: {
-        headline: "Consultants trust CX React",
+        headline: "Consultants trust Lead OS",
         testimonials: [
-          { quote: "I cut discovery calls in half and doubled my close rate. CX React filters out the tire-kickers.", name: "Raj Mehta", title: "Independent Consultant, Strategy & Ops", rating: 5 },
+          { quote: "I cut discovery calls in half and doubled my close rate. Lead OS filters out the tire-kickers.", name: "Raj Mehta", title: "Independent Consultant, Strategy & Ops", rating: 5 },
           { quote: "My calendar is now only filled with people who can afford my rates.", name: "Christine Waller", title: "Fractional CMO", rating: 5 },
           { quote: "Setup took 10 minutes and I saved 6 wasted discovery hours in my first week.", name: "Omar Hassan", title: "Supply Chain Consultant", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "3.4x", label: "higher close rate" },
-          { type: "number", value: "2,000+", label: "consultants on CX React" },
+          { type: "number", value: "2,000+", label: "consultants on Lead OS" },
         ],
       },
       objections: {
@@ -723,7 +723,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         headline: "Protect your calendar from tire-kickers",
         subheadline: "Only meet with prospects who are ready to invest.",
         primaryCta: { text: "Start your free trial", url: "/onboard" },
-        urgency: "Join 2,000+ consultants closing more with CX React",
+        urgency: "Join 2,000+ consultants closing more with Lead OS",
         guarantee: "14-day free trial. No credit card required.",
       },
       footer: SHARED_FOOTER,
@@ -739,13 +739,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#ec4899", accentHover: "#f472b6" },
       meta: {
-        title: "CX React for Franchise Networks",
+        title: "Lead OS for Franchise Networks",
         description: "Standardize lead scoring across all franchise locations. More closings, less chaos.",
       },
       hero: {
         eyebrow: "For Franchise Networks",
         headline: "Standardize lead quality across every location",
-        subheadline: "CX React gives every franchisee the same AI scoring model so your best practices scale automatically.",
+        subheadline: "Lead OS gives every franchisee the same AI scoring model so your best practices scale automatically.",
         primaryCta: { text: "Book a network demo", url: "/demo", subtext: "Enterprise pricing available" },
         secondaryCta: { text: "Download case study", url: "/resources" },
         trustBar: [
@@ -765,7 +765,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Give every location your best rep's instincts",
-        description: "CX React trains on your top performers' win patterns and deploys that model to every location instantly — so the newest franchisee scores like your most experienced one.",
+        description: "Lead OS trains on your top performers' win patterns and deploys that model to every location instantly — so the newest franchisee scores like your most experienced one.",
         transformation: "From inconsistent performance to franchise-wide excellence",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -776,15 +776,15 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Corporate reporting", benefit: "Network-level pipeline and quality visibility in real time", icon: "🔭" },
       ],
       socialProof: {
-        headline: "Franchise networks trust CX React",
+        headline: "Franchise networks trust Lead OS",
         testimonials: [
-          { quote: "Our worst-performing locations improved by 80% after we rolled out CX React network-wide.", name: "Sandra Tate", title: "VP Franchise Operations, HomeServe Group", rating: 5 },
+          { quote: "Our worst-performing locations improved by 80% after we rolled out Lead OS network-wide.", name: "Sandra Tate", title: "VP Franchise Operations, HomeServe Group", rating: 5 },
           { quote: "We can finally see which leads every location is working and how they're scoring them.", name: "Marc DuBois", title: "CRO, FitNation Franchise", rating: 5 },
-          { quote: "New franchisees ramp 3x faster because CX React shows them who to call first.", name: "Keiko Yamamoto", title: "Director of Performance, CleanBrite", rating: 5 },
+          { quote: "New franchisees ramp 3x faster because Lead OS shows them who to call first.", name: "Keiko Yamamoto", title: "Director of Performance, CleanBrite", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "2.9x", label: "more consistent close rates" },
-          { type: "number", value: "150+", label: "franchise networks on CX React" },
+          { type: "number", value: "150+", label: "franchise networks on Lead OS" },
         ],
       },
       objections: {
@@ -819,7 +819,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#8b5cf6", accentHover: "#a78bfa" },
       meta: {
-        title: "CX React Managed Service",
+        title: "Lead OS Managed Service",
         description: "Done-for-you lead scoring and pipeline management. We run it, you close deals.",
       },
       hero: {
@@ -845,7 +845,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Let us run your entire scoring operation",
-        description: "CX React Managed Service gives you a dedicated team that handles setup, model tuning, data quality, and reporting — so you get results without headcount.",
+        description: "Lead OS Managed Service gives you a dedicated team that handles setup, model tuning, data quality, and reporting — so you get results without headcount.",
         transformation: "From DIY burden to hands-off revenue engine",
       },
       howItWorks: {
@@ -902,13 +902,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#06b6d4", accentHover: "#22d3ee" },
       meta: {
-        title: "CX React White-Label Platform",
+        title: "Lead OS White-Label Platform",
         description: "Resell AI lead scoring under your brand. Launch your own scoring product in days.",
       },
       hero: {
         eyebrow: "White-Label Platform",
         headline: "Launch your own AI scoring product under your brand",
-        subheadline: "CX React white-label gives you the full scoring engine — rebrand it, price it, and sell it as your own.",
+        subheadline: "Lead OS white-label gives you the full scoring engine — rebrand it, price it, and sell it as your own.",
         primaryCta: { text: "Start a reseller conversation", url: "/partners", subtext: "Revenue share available" },
         secondaryCta: { text: "See white-label demo", url: "/demo" },
         trustBar: [
@@ -928,19 +928,19 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Your brand. Our engine. Launched in a week.",
-        description: "CX React white-label gives you the full scoring infrastructure under your brand — with your colors, your pricing, and your customer relationship.",
+        description: "Lead OS white-label gives you the full scoring infrastructure under your brand — with your colors, your pricing, and your customer relationship.",
         transformation: "From tool reseller to platform company",
       },
       howItWorks: {
         headline: "White-label launch in three steps",
         steps: [
           { number: 1, title: "Brand configuration", description: "Upload your logo, set your colors, and configure your pricing in the admin portal.", icon: "🎨" },
-          { number: 2, title: "Integration", description: "Connect CX React to your existing platform via API or use our hosted portal.", icon: "🔌" },
+          { number: 2, title: "Integration", description: "Connect Lead OS to your existing platform via API or use our hosted portal.", icon: "🔌" },
           { number: 3, title: "Launch and sell", description: "Start selling your branded scoring product to your existing client base.", icon: "🚀" },
         ],
       },
       features: [
-        { title: "Full rebrand", benefit: "Your logo, colors, and domain — no CX React branding visible", icon: "🎨" },
+        { title: "Full rebrand", benefit: "Your logo, colors, and domain — no Lead OS branding visible", icon: "🎨" },
         { title: "Custom pricing control", benefit: "Set your own pricing tiers and margins independently", icon: "💰" },
         { title: "API-first", benefit: "Embed scoring anywhere in your product via REST API", icon: "🔌" },
         { title: "Sub-account management", benefit: "Manage unlimited client accounts from one admin view", icon: "👥" },
@@ -949,7 +949,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         headline: "White-label partners are generating real revenue",
         testimonials: [
           { quote: "We launched our own scoring product in 8 days and immediately upsold 30% of our client base.", name: "Femi Adeyemi", title: "CEO, Oluwa Digital", rating: 5 },
-          { quote: "CX React white-label added $15k/month in recurring revenue with zero engineering work.", name: "Cara Novak", title: "COO, Prism Marketing Tech", rating: 5 },
+          { quote: "Lead OS white-label added $15k/month in recurring revenue with zero engineering work.", name: "Cara Novak", title: "COO, Prism Marketing Tech", rating: 5 },
           { quote: "Our clients think we built the scoring engine ourselves. That's exactly what we wanted.", name: "Victor Bains", title: "Founder, Amplify Platforms", rating: 5 },
         ],
         stats: [
@@ -960,7 +960,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       objections: {
         headline: "White-label FAQs",
         faq: [
-          { question: "Can our clients know who powers the scoring engine?", answer: "That's entirely up to you. The default is full white-label with no CX React branding anywhere." },
+          { question: "Can our clients know who powers the scoring engine?", answer: "That's entirely up to you. The default is full white-label with no Lead OS branding anywhere." },
           { question: "What's the revenue share model?", answer: "Partners keep 60–80% of client revenue depending on volume tier. No minimum commitments." },
           { question: "Do we need engineers to integrate?", answer: "No — a no-code portal option is available. API integration typically takes one developer 1–2 days." },
         ],
@@ -985,8 +985,8 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#64748b", accentHover: "#94a3b8" },
       meta: {
-        title: "CX React Implementation Service",
-        description: "Expert implementation of CX React for enterprise teams. Live in 5 days.",
+        title: "Lead OS Implementation Service",
+        description: "Expert implementation of Lead OS for enterprise teams. Live in 5 days.",
       },
       hero: {
         eyebrow: "Implementation Service",
@@ -1011,7 +1011,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Certified experts who have done this 200 times",
-        description: "CX React implementation engineers handle every technical step — CRM connection, model training, workflow setup, and user onboarding — in a structured 5-day engagement.",
+        description: "Lead OS implementation engineers handle every technical step — CRM connection, model training, workflow setup, and user onboarding — in a structured 5-day engagement.",
         transformation: "From stalled self-service to live in one week",
       },
       howItWorks: {
@@ -1033,7 +1033,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         testimonials: [
           { quote: "We were live in 4 days. I've never seen an implementation move that fast.", name: "Andrew Walsh", title: "Director of RevOps, SyncPath", rating: 5 },
           { quote: "The implementation team knew our CRM better than our own ops team by day 2.", name: "Rebecca Storm", title: "VP Marketing, NorthStar Tech", rating: 5 },
-          { quote: "We had been stuck for 2 months. CX React implementation had us running in a week.", name: "Carlos Rivera", title: "Head of Sales, Elevate B2B", rating: 5 },
+          { quote: "We had been stuck for 2 months. Lead OS implementation had us running in a week.", name: "Carlos Rivera", title: "Head of Sales, Elevate B2B", rating: 5 },
         ],
         stats: [
           { type: "text", value: "5 days", label: "median time to live" },
@@ -1068,13 +1068,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#f97316", accentHover: "#fb923c" },
       meta: {
-        title: "CX React Marketplace",
+        title: "Lead OS Marketplace",
         description: "Buy scored, verified leads in your industry. Only pay for leads that score high.",
       },
       hero: {
         eyebrow: "Lead Marketplace",
         headline: "Buy leads that already score high before you pay",
-        subheadline: "Every lead in the CX React Marketplace is scored, verified, and ready to contact — so you only spend budget on prospects most likely to close.",
+        subheadline: "Every lead in the Lead OS Marketplace is scored, verified, and ready to contact — so you only spend budget on prospects most likely to close.",
         primaryCta: { text: "Shop scored leads now", url: "/marketplace" },
         secondaryCta: { text: "See how scoring works", url: "#how" },
         trustBar: [
@@ -1112,7 +1112,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "CRM delivery", benefit: "Instant push to your CRM or email upon purchase", icon: "🔌" },
       ],
       socialProof: {
-        headline: "Buyers trust CX React Marketplace",
+        headline: "Buyers trust Lead OS Marketplace",
         testimonials: [
           { quote: "Our contact rate went from 12% to 51% the day we switched to scored marketplace leads.", name: "Danny Lau", title: "Sales Manager, Vertex Insurance", rating: 5 },
           { quote: "The transparency is incredible. I can see the score, source, and age before I pay.", name: "Priya Shah", title: "Lead Buyer, SolarPro Network", rating: 5 },
@@ -1155,13 +1155,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#6366f1", accentHover: "#818cf8" },
       meta: {
-        title: "CX React for Service Businesses",
+        title: "Lead OS for Service Businesses",
         description: "Score service business leads by job value and urgency. Book more jobs.",
       },
       hero: {
         eyebrow: "For Service Businesses",
         headline: "Book more jobs from the same lead flow",
-        subheadline: "CX React scores every inquiry by job value and urgency — so your team calls the highest-revenue opportunities first.",
+        subheadline: "Lead OS scores every inquiry by job value and urgency — so your team calls the highest-revenue opportunities first.",
         primaryCta: { text: "Start free trial", url: "/onboard" },
         secondaryCta: { text: "See a demo", url: "/demo" },
         trustBar: [
@@ -1181,7 +1181,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Score every inquiry by job value before your team calls back",
-        description: "CX React analyzes inquiry signals — service type, urgency keywords, location, and historical data — to rank every lead by expected job value.",
+        description: "Lead OS analyzes inquiry signals — service type, urgency keywords, location, and historical data — to rank every lead by expected job value.",
         transformation: "From first-in-first-out dispatch to value-ranked calling",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -1192,15 +1192,15 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Team routing", benefit: "Automatically assign high-value leads to your best closers", icon: "🎯" },
       ],
       socialProof: {
-        headline: "Service companies trust CX React",
+        headline: "Service companies trust Lead OS",
         testimonials: [
           { quote: "Average job size went up 40% because we started calling the right leads first.", name: "Tom Bell", title: "Owner, Bell HVAC Services", rating: 5 },
-          { quote: "Our close rate on high-value jobs jumped to 68% after we started prioritizing with CX React.", name: "Angela Brooks", title: "GM, Premier Plumbing", rating: 5 },
+          { quote: "Our close rate on high-value jobs jumped to 68% after we started prioritizing with Lead OS.", name: "Angela Brooks", title: "GM, Premier Plumbing", rating: 5 },
           { quote: "I wish I had this 5 years ago. We were leaving thousands on the table every week.", name: "Mike Donovan", title: "Founder, Donovan Electric", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "3.1x", label: "more revenue per lead" },
-          { type: "number", value: "3,000+", label: "service companies on CX React" },
+          { type: "number", value: "3,000+", label: "service companies on Lead OS" },
         ],
       },
       objections: {
@@ -1231,13 +1231,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#64748b", accentHover: "#94a3b8" },
       meta: {
-        title: "CX React for Law Firms",
+        title: "Lead OS for Law Firms",
         description: "Convert more consultations into retained clients. Smart intake prioritization.",
       },
       hero: {
         eyebrow: "For Law Firms",
         headline: "Convert more consults into retained clients",
-        subheadline: "CX React scores every inquiry by case potential so your intake team calls the right prospects first.",
+        subheadline: "Lead OS scores every inquiry by case potential so your intake team calls the right prospects first.",
         primaryCta: { text: "Get a free intake audit", url: "/assess" },
         secondaryCta: { text: "Book a demo", url: "/demo" },
         trustBar: [
@@ -1257,7 +1257,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Smart intake prioritization for law firms",
-        description: "CX React enriches every inquiry with case type, urgency signals, and potential value estimates — so intake prioritizes calls most likely to become retained clients.",
+        description: "Lead OS enriches every inquiry with case type, urgency signals, and potential value estimates — so intake prioritizes calls most likely to become retained clients.",
         transformation: "From first-in-first-out to value-based intake",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -1268,21 +1268,21 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Intake analytics", benefit: "Track conversion rates by case type and source", icon: "📊" },
       ],
       socialProof: {
-        headline: "Law firms trust CX React",
+        headline: "Law firms trust Lead OS",
         testimonials: [
           { quote: "Our retained client rate went from 22% to 59% of consultations. We finally know who to prioritize.", name: "Rachel Kim, Esq.", title: "Managing Partner, Kim & Associates", rating: 5 },
           { quote: "We stopped taking every consult and started closing the ones that matter. Revenue per partner doubled.", name: "Mark Sullivan", title: "Senior Partner, Sullivan Law Group", rating: 5 },
-          { quote: "CX React flagged a major case we almost missed because it came in through our web form late on a Friday.", name: "Nina Torres", title: "Intake Director, Apex Legal", rating: 5 },
+          { quote: "Lead OS flagged a major case we almost missed because it came in through our web form late on a Friday.", name: "Nina Torres", title: "Intake Director, Apex Legal", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "2.7x", label: "more retained clients" },
-          { type: "number", value: "180+", label: "law firms on CX React" },
+          { type: "number", value: "180+", label: "law firms on Lead OS" },
         ],
       },
       objections: {
         headline: "Law firm FAQs",
         faq: [
-          { question: "Does CX React comply with attorney advertising rules?", answer: "Yes — our system only scores and prioritizes inquiries. It does not generate client communications." },
+          { question: "Does Lead OS comply with attorney advertising rules?", answer: "Yes — our system only scores and prioritizes inquiries. It does not generate client communications." },
           { question: "What practice areas does it support?", answer: "Personal injury, family law, immigration, criminal defense, employment, and business litigation." },
           { question: "Is client data kept confidential?", answer: "Yes — we sign BAAs, use encrypted storage, and never train models on your client data." },
         ],
@@ -1307,13 +1307,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#14b8a6", accentHover: "#2dd4bf" },
       meta: {
-        title: "CX React for Healthcare Practices",
+        title: "Lead OS for Healthcare Practices",
         description: "Fill your patient pipeline. Reduce no-shows with AI intent scoring.",
       },
       hero: {
         eyebrow: "For Healthcare Practices",
         headline: "More booked appointments. Fewer no-shows.",
-        subheadline: "CX React scores prospective patients by booking intent so your front desk reaches out at exactly the right moment.",
+        subheadline: "Lead OS scores prospective patients by booking intent so your front desk reaches out at exactly the right moment.",
         primaryCta: { text: "Schedule a demo", url: "/demo", subtext: "HIPAA-compliant platform" },
         secondaryCta: { text: "Start free trial", url: "/onboard" },
         trustBar: [
@@ -1333,7 +1333,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Intent-based patient prioritization",
-        description: "CX React scores web inquiries, insurance eligibility requests, and referral leads by booking intent — giving your front desk a prioritized call list every morning.",
+        description: "Lead OS scores web inquiries, insurance eligibility requests, and referral leads by booking intent — giving your front desk a prioritized call list every morning.",
         transformation: "From reactive to proactive patient acquisition",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -1344,23 +1344,23 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "No-show prediction", benefit: "Flag high-risk appointments for confirmation calls", icon: "⚠️" },
       ],
       socialProof: {
-        headline: "Healthcare practices trust CX React",
+        headline: "Healthcare practices trust Lead OS",
         testimonials: [
           { quote: "Our new patient volume increased 40% without adding a single marketing dollar.", name: "Dr. Keisha Monroe", title: "Practice Owner, Renew Wellness", rating: 5 },
-          { quote: "No-shows dropped 52% the quarter we started using CX React to predict high-risk appointments.", name: "Patricia Osei", title: "Practice Administrator, SunVale Dental", rating: 5 },
-          { quote: "CX React gave our front desk a morning call list. They stopped asking what to do first.", name: "Dr. Alan Marsh", title: "Medical Director, ClearView Health", rating: 5 },
+          { quote: "No-shows dropped 52% the quarter we started using Lead OS to predict high-risk appointments.", name: "Patricia Osei", title: "Practice Administrator, SunVale Dental", rating: 5 },
+          { quote: "Lead OS gave our front desk a morning call list. They stopped asking what to do first.", name: "Dr. Alan Marsh", title: "Medical Director, ClearView Health", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "38%", label: "more booked appointments" },
-          { type: "number", value: "300+", label: "practices on CX React" },
+          { type: "number", value: "300+", label: "practices on Lead OS" },
         ],
       },
       objections: {
         headline: "Healthcare practice FAQs",
         faq: [
-          { question: "Is CX React HIPAA compliant?", answer: "Yes — we sign BAAs and our platform meets all HIPAA technical safeguard requirements." },
+          { question: "Is Lead OS HIPAA compliant?", answer: "Yes — we sign BAAs and our platform meets all HIPAA technical safeguard requirements." },
           { question: "Does it integrate with our EHR?", answer: "We integrate with Epic, Athenahealth, Kareo, and other leading EHR/PM systems." },
-          { question: "Can it handle multiple locations?", answer: "Yes — CX React supports multi-location practices with separate dashboards per site." },
+          { question: "Can it handle multiple locations?", answer: "Yes — Lead OS supports multi-location practices with separate dashboards per site." },
         ],
       },
       finalCta: {
@@ -1383,13 +1383,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#6366f1", accentHover: "#818cf8" },
       meta: {
-        title: "CX React for Tech Companies",
+        title: "Lead OS for Tech Companies",
         description: "AI lead scoring built for B2B tech. Score trials, demos, and enterprise pipeline.",
       },
       hero: {
         eyebrow: "For B2B Tech Companies",
         headline: "Score every trial, demo, and enterprise lead in real time",
-        subheadline: "CX React integrates with your product, CRM, and marketing stack to give every rep a ranked pipeline — updated live.",
+        subheadline: "Lead OS integrates with your product, CRM, and marketing stack to give every rep a ranked pipeline — updated live.",
         primaryCta: { text: "Start free trial", url: "/onboard" },
         secondaryCta: { text: "See a demo", url: "/demo" },
         trustBar: [
@@ -1409,7 +1409,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Live AI scoring across your entire funnel",
-        description: "CX React scores every free trial, demo request, and enterprise prospect using product usage, firmographic, and intent data — updated in real time inside your CRM.",
+        description: "Lead OS scores every free trial, demo request, and enterprise prospect using product usage, firmographic, and intent data — updated in real time inside your CRM.",
         transformation: "From static lead lists to a live priority queue",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -1420,15 +1420,15 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Forecast accuracy", benefit: "Predict quarterly attainment 8 weeks out with 90%+ accuracy", icon: "🎯" },
       ],
       socialProof: {
-        headline: "B2B tech teams trust CX React",
+        headline: "B2B tech teams trust Lead OS",
         testimonials: [
-          { quote: "Our SDRs doubled their meeting rate in 30 days. They stopped guessing and started calling the accounts CX React flagged.", name: "Alicia Torres", title: "CRO, Pinnacle Software", rating: 5 },
-          { quote: "We hit 118% of quota last quarter. CX React is the only thing that changed.", name: "David Park", title: "VP Sales, Nextera SaaS", rating: 5 },
-          { quote: "CX React predicted our quarter's closed-won deals with 91% accuracy. My board presentation was the easiest it's ever been.", name: "Sarah Winters", title: "CEO, Vantage Analytics", rating: 5 },
+          { quote: "Our SDRs doubled their meeting rate in 30 days. They stopped guessing and started calling the accounts Lead OS flagged.", name: "Alicia Torres", title: "CRO, Pinnacle Software", rating: 5 },
+          { quote: "We hit 118% of quota last quarter. Lead OS is the only thing that changed.", name: "David Park", title: "VP Sales, Nextera SaaS", rating: 5 },
+          { quote: "Lead OS predicted our quarter's closed-won deals with 91% accuracy. My board presentation was the easiest it's ever been.", name: "Sarah Winters", title: "CEO, Vantage Analytics", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "34%", label: "higher quota attainment" },
-          { type: "number", value: "700+", label: "B2B tech teams on CX React" },
+          { type: "number", value: "700+", label: "B2B tech teams on Lead OS" },
         ],
       },
       objections: {
@@ -1443,7 +1443,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         headline: "Give your team a live priority queue",
         subheadline: "Stop working from gut feel. Start working from data.",
         primaryCta: { text: "Start free trial", url: "/onboard" },
-        urgency: "Join 700+ B2B tech teams closing more with CX React",
+        urgency: "Join 700+ B2B tech teams closing more with Lead OS",
         guarantee: "30-day money-back guarantee.",
       },
       footer: SHARED_FOOTER,
@@ -1459,13 +1459,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#f59e0b", accentHover: "#fbbf24" },
       meta: {
-        title: "CX React for Construction Companies",
+        title: "Lead OS for Construction Companies",
         description: "Win more bids by scoring leads before you invest in estimates.",
       },
       hero: {
         eyebrow: "For Construction Companies",
         headline: "Win more bids without wasting time on low-probability jobs",
-        subheadline: "CX React scores every project inquiry by bid-win probability so you invest estimate time in the jobs you're most likely to close.",
+        subheadline: "Lead OS scores every project inquiry by bid-win probability so you invest estimate time in the jobs you're most likely to close.",
         primaryCta: { text: "Start free trial", url: "/onboard" },
         secondaryCta: { text: "See how it works", url: "#how" },
         trustBar: [
@@ -1485,7 +1485,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Score bids before you invest in estimates",
-        description: "CX React analyzes project type, client history, budget signals, and relationship strength to score each inquiry by bid-win probability — before you schedule the site visit.",
+        description: "Lead OS analyzes project type, client history, budget signals, and relationship strength to score each inquiry by bid-win probability — before you schedule the site visit.",
         transformation: "From estimating everything to winning everything you estimate",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -1496,15 +1496,15 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Pipeline visibility", benefit: "See your full bid pipeline and win probability in one view", icon: "📊" },
       ],
       socialProof: {
-        headline: "Construction companies trust CX React",
+        headline: "Construction companies trust Lead OS",
         testimonials: [
           { quote: "Our bid-to-win rate went from 22% to 58% in one quarter. We just stopped estimating bad leads.", name: "Carlos Mendez", title: "Founder, Mendez General Contracting", rating: 5 },
-          { quote: "CX React tells me which jobs to prioritize every Monday morning. My estimating team is finally working on the right projects.", name: "Patricia Holt", title: "VP Sales, Summit Construction", rating: 5 },
+          { quote: "Lead OS tells me which jobs to prioritize every Monday morning. My estimating team is finally working on the right projects.", name: "Patricia Holt", title: "VP Sales, Summit Construction", rating: 5 },
           { quote: "We reduced estimate volume by 30% and increased closed contracts by 40%. That's the power of scoring.", name: "Jason Reed", title: "Owner, Reed Commercial Builders", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "2.4x", label: "higher bid win rate" },
-          { type: "number", value: "800+", label: "construction companies on CX React" },
+          { type: "number", value: "800+", label: "construction companies on Lead OS" },
         ],
       },
       objections: {
@@ -1512,7 +1512,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         faq: [
           { question: "Does it work for both residential and commercial?", answer: "Yes — we have separate scoring models optimized for residential, commercial, and industrial construction." },
           { question: "Can it integrate with our estimating software?", answer: "We integrate with Buildertrend, ProCore, CoConstruct, and Estimate Rocket." },
-          { question: "What if we have a small team?", answer: "CX React works for teams of 2 to 200. The scoring is fully automated regardless of team size." },
+          { question: "What if we have a small team?", answer: "Lead OS works for teams of 2 to 200. The scoring is fully automated regardless of team size." },
         ],
       },
       finalCta: {
@@ -1535,13 +1535,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#0ea5e9", accentHover: "#38bdf8" },
       meta: {
-        title: "CX React for Real Estate Agents",
+        title: "Lead OS for Real Estate Agents",
         description: "Know which buyers and sellers are ready to close. AI scoring for real estate.",
       },
       hero: {
         eyebrow: "For Real Estate Professionals",
         headline: "Stop chasing cold leads. Start closing warm ones.",
-        subheadline: "CX React scores every contact by purchase intent so you call the right buyers and sellers first.",
+        subheadline: "Lead OS scores every contact by purchase intent so you call the right buyers and sellers first.",
         primaryCta: { text: "Start free trial", url: "/onboard", subtext: "Free 14-day trial" },
         secondaryCta: { text: "See how it works", url: "#how" },
         trustBar: [
@@ -1561,7 +1561,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Behavioral scoring built for real estate",
-        description: "CX React tracks listing views, mortgage calculator usage, and neighborhood searches to score every lead on true buying or selling intent.",
+        description: "Lead OS tracks listing views, mortgage calculator usage, and neighborhood searches to score every lead on true buying or selling intent.",
         transformation: "From cold calling to warm conversations",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -1572,21 +1572,21 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Follow-up triggers", benefit: "Get notified when a cold lead's score spikes", icon: "🔔" },
       ],
       socialProof: {
-        headline: "Real estate agents trust CX React",
+        headline: "Real estate agents trust Lead OS",
         testimonials: [
           { quote: "I closed 4 extra deals last month just by calling my highest-scored leads first.", name: "Sarah Williams", title: "Top Producer, Keller Williams", rating: 5 },
-          { quote: "CX React paid for a year's subscription with the first deal I closed using it.", name: "Robert Chen", title: "Team Lead, Compass", rating: 5 },
+          { quote: "Lead OS paid for a year's subscription with the first deal I closed using it.", name: "Robert Chen", title: "Team Lead, Compass", rating: 5 },
           { quote: "I stopped burning time on portal leads that were just browsing. My hours are finally focused.", name: "Denise Murray", title: "Independent Agent, RE/MAX", rating: 5 },
         ],
         stats: [
           { type: "number", value: "4.1x", label: "more closings on average" },
-          { type: "number", value: "2,500+", label: "agents on CX React" },
+          { type: "number", value: "2,500+", label: "agents on Lead OS" },
         ],
       },
       objections: {
         headline: "Real estate agent FAQs",
         faq: [
-          { question: "Does CX React work with my MLS or portal leads?", answer: "Yes — we integrate with Zillow, Realtor.com, and most CRM platforms used by agents." },
+          { question: "Does Lead OS work with my MLS or portal leads?", answer: "Yes — we integrate with Zillow, Realtor.com, and most CRM platforms used by agents." },
           { question: "How quickly will I see results?", answer: "Most agents report better conversations within their first week of use." },
           { question: "Can I use it for both buyer and seller leads?", answer: "Yes — we have separate scoring models for buyer intent and seller readiness." },
         ],
@@ -1611,13 +1611,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#10b981", accentHover: "#34d399" },
       meta: {
-        title: "CX React for Education & EdTech",
+        title: "Lead OS for Education & EdTech",
         description: "Convert more enrollment inquiries. AI scoring for education providers.",
       },
       hero: {
         eyebrow: "For Education & EdTech",
         headline: "Turn course inquiries into enrolled students",
-        subheadline: "CX React scores every prospective student by enrollment intent so your admissions team reaches out at exactly the right moment.",
+        subheadline: "Lead OS scores every prospective student by enrollment intent so your admissions team reaches out at exactly the right moment.",
         primaryCta: { text: "See enrollment lift in action", url: "/demo" },
         secondaryCta: { text: "Start free trial", url: "/onboard" },
         trustBar: [
@@ -1637,7 +1637,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Enrollment intelligence for every inquiry",
-        description: "CX React analyzes content engagement, program page visits, and form behavior to score each prospect on enrollment readiness — giving admissions a prioritized outreach list every morning.",
+        description: "Lead OS analyzes content engagement, program page visits, and form behavior to score each prospect on enrollment readiness — giving admissions a prioritized outreach list every morning.",
         transformation: "From generic drip to personalized enrollment journeys",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -1648,21 +1648,21 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Scholarship matching", benefit: "Flag financial aid-eligible prospects for targeted outreach", icon: "💰" },
       ],
       socialProof: {
-        headline: "Education providers trust CX React",
+        headline: "Education providers trust Lead OS",
         testimonials: [
           { quote: "We increased enrolled students by 34% without increasing our marketing budget.", name: "Brenda Walsh", title: "VP Enrollment, AcademyPro", rating: 5 },
           { quote: "Our admissions team used to call everyone. Now they call the top 20 each morning and close 3x more.", name: "James Liu", title: "Director of Admissions, TechPath Institute", rating: 5 },
-          { quote: "CX React showed us which program pages were driving real enrollment intent. We doubled our paid ads to those pages.", name: "Sophie Green", title: "CMO, LearnNow", rating: 5 },
+          { quote: "Lead OS showed us which program pages were driving real enrollment intent. We doubled our paid ads to those pages.", name: "Sophie Green", title: "CMO, LearnNow", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "3.4x", label: "higher enrollment rate" },
-          { type: "number", value: "350+", label: "education providers on CX React" },
+          { type: "number", value: "350+", label: "education providers on Lead OS" },
         ],
       },
       objections: {
         headline: "Education provider FAQs",
         faq: [
-          { question: "Is CX React FERPA compliant?", answer: "Yes — we are designed for FERPA compliance with student data handled under strict access controls." },
+          { question: "Is Lead OS FERPA compliant?", answer: "Yes — we are designed for FERPA compliance with student data handled under strict access controls." },
           { question: "Does it work for both B2C and B2B EdTech?", answer: "Yes — we support both consumer enrollment journeys and corporate training procurement flows." },
           { question: "Can it integrate with our student information system?", answer: "We integrate with Ellucian, Slate, Salesforce Education Cloud, and most SIS platforms." },
         ],
@@ -1687,13 +1687,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#f97316", accentHover: "#fb923c" },
       meta: {
-        title: "CX React for Financial Services",
+        title: "Lead OS for Financial Services",
         description: "Reach financial prospects in their buying window. AI intent scoring for finance.",
       },
       hero: {
         eyebrow: "For Financial Services",
         headline: "Stop cold-calling. Start having warm conversations.",
-        subheadline: "CX React identifies which prospects are actively looking for your financial product so you reach out at exactly the right moment.",
+        subheadline: "Lead OS identifies which prospects are actively looking for your financial product so you reach out at exactly the right moment.",
         primaryCta: { text: "Get a free intent report", url: "/assess", subtext: "No commitment required" },
         secondaryCta: { text: "Book a demo", url: "/demo" },
         trustBar: [
@@ -1713,7 +1713,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Intent signals built for financial services",
-        description: "CX React tracks content consumption, comparison behavior, and application signals to score each prospect on timing and fit so you always reach out when it matters most.",
+        description: "Lead OS tracks content consumption, comparison behavior, and application signals to score each prospect on timing and fit so you always reach out when it matters most.",
         transformation: "From random outreach to perfect timing",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -1727,19 +1727,19 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         headline: "Financial teams see fast ROI",
         testimonials: [
           { quote: "Our mortgage team's funded loan rate doubled in one quarter.", name: "Tom Reeves", title: "Branch Manager, Summit Mortgage", rating: 5 },
-          { quote: "We stopped buying leads from aggregators and started using CX React to identify who in our database was in-market. Revenue per rep went up 3x.", name: "Dana Foster", title: "VP Sales, ClearWealth Advisors", rating: 5 },
+          { quote: "We stopped buying leads from aggregators and started using Lead OS to identify who in our database was in-market. Revenue per rep went up 3x.", name: "Dana Foster", title: "VP Sales, ClearWealth Advisors", rating: 5 },
           { quote: "The compliance features alone saved us from two potential regulatory issues last year.", name: "Michael Chang", title: "CCO, Apex Financial", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "3.6x", label: "higher application rate" },
-          { type: "number", value: "250+", label: "financial firms on CX React" },
+          { type: "number", value: "250+", label: "financial firms on Lead OS" },
         ],
       },
       objections: {
         headline: "Financial services FAQs",
         faq: [
-          { question: "Is CX React compliant with financial regulations?", answer: "Our platform is designed around FINRA, RESPA, and TCPA compliance requirements. We don't store regulated data on our servers." },
-          { question: "Can I use CX React for both acquisition and retention?", answer: "Yes — CX React scores new prospects for acquisition and existing clients for cross-sell and retention risk." },
+          { question: "Is Lead OS compliant with financial regulations?", answer: "Our platform is designed around FINRA, RESPA, and TCPA compliance requirements. We don't store regulated data on our servers." },
+          { question: "Can I use Lead OS for both acquisition and retention?", answer: "Yes — Lead OS scores new prospects for acquisition and existing clients for cross-sell and retention risk." },
           { question: "What lines of business are supported?", answer: "Mortgage, financial planning, insurance, banking, and investment management all have dedicated scoring models." },
         ],
       },
@@ -1763,13 +1763,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#ec4899", accentHover: "#f472b6" },
       meta: {
-        title: "CX React for Franchise Development",
+        title: "Lead OS for Franchise Development",
         description: "Score franchisee candidates before the discovery day. Award more units faster.",
       },
       hero: {
         eyebrow: "For Franchise Development",
         headline: "Award more franchise units to the right candidates",
-        subheadline: "CX React scores every franchisee inquiry by financial qualification, operator fit, and purchase intent — so your FDC focuses on candidates who will close.",
+        subheadline: "Lead OS scores every franchisee inquiry by financial qualification, operator fit, and purchase intent — so your FDC focuses on candidates who will close.",
         primaryCta: { text: "Schedule a development demo", url: "/demo" },
         secondaryCta: { text: "Download the case study", url: "/resources" },
         trustBar: [
@@ -1789,7 +1789,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Score franchisee candidates before discovery day",
-        description: "CX React analyzes capital signals, operator background, and engagement patterns to score every FDD inquiry by qualification and close probability — before your first call.",
+        description: "Lead OS analyzes capital signals, operator background, and engagement patterns to score every FDD inquiry by qualification and close probability — before your first call.",
         transformation: "From development pipeline chaos to a ranked candidate queue",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -1800,23 +1800,23 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "FDD workflow integration", benefit: "Works with your existing FDD and CRM process", icon: "🔌" },
       ],
       socialProof: {
-        headline: "Franchise development teams trust CX React",
+        headline: "Franchise development teams trust Lead OS",
         testimonials: [
           { quote: "Our FDC now closes 3x more units per quarter working the same number of leads.", name: "Mark Patterson", title: "VP Franchise Development, GreenThumb Networks", rating: 5 },
-          { quote: "We stopped wasting discovery days on candidates who couldn't qualify. CX React identified that in the first scoring step.", name: "Christine Yuen", title: "Director, FastFit Franchise", rating: 5 },
-          { quote: "CX React paid for itself with the first unit we awarded to a candidate it flagged as high-intent.", name: "Raymond Beck", title: "Franchise Development Manager, SunShine Services", rating: 5 },
+          { quote: "We stopped wasting discovery days on candidates who couldn't qualify. Lead OS identified that in the first scoring step.", name: "Christine Yuen", title: "Director, FastFit Franchise", rating: 5 },
+          { quote: "Lead OS paid for itself with the first unit we awarded to a candidate it flagged as high-intent.", name: "Raymond Beck", title: "Franchise Development Manager, SunShine Services", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "3.3x", label: "more units per FDC" },
-          { type: "number", value: "120+", label: "franchise brands on CX React" },
+          { type: "number", value: "120+", label: "franchise brands on Lead OS" },
         ],
       },
       objections: {
         headline: "Franchise development FAQs",
         faq: [
-          { question: "Does CX React work with our existing FDD and CRM?", answer: "Yes — we integrate with FranConnect, Salesforce, and all major franchise CRM platforms." },
+          { question: "Does Lead OS work with our existing FDD and CRM?", answer: "Yes — we integrate with FranConnect, Salesforce, and all major franchise CRM platforms." },
           { question: "How does it assess financial qualification?", answer: "We use proxy signals — form behavior, territory interest, and engagement depth — to estimate qualification. We don't access financial accounts." },
-          { question: "Can it handle multi-brand development teams?", answer: "Yes — CX React supports multi-brand organizations with separate scoring models per brand." },
+          { question: "Can it handle multi-brand development teams?", answer: "Yes — Lead OS supports multi-brand organizations with separate scoring models per brand." },
         ],
       },
       finalCta: {
@@ -1839,13 +1839,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#06b6d4", accentHover: "#22d3ee" },
       meta: {
-        title: "CX React for Staffing Agencies",
+        title: "Lead OS for Staffing Agencies",
         description: "Score candidates and client leads simultaneously. Fill positions faster.",
       },
       hero: {
         eyebrow: "For Staffing Agencies",
         headline: "Fill positions faster by scoring both sides of the market",
-        subheadline: "CX React scores client leads by hiring urgency and candidates by placement readiness — so your team works both sides of the market with precision.",
+        subheadline: "Lead OS scores client leads by hiring urgency and candidates by placement readiness — so your team works both sides of the market with precision.",
         primaryCta: { text: "Start free trial", url: "/onboard" },
         secondaryCta: { text: "See a demo", url: "/demo" },
         trustBar: [
@@ -1865,7 +1865,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Score clients and candidates simultaneously",
-        description: "CX React scores client job orders by urgency and fee potential, and candidate records by placement readiness — giving your team a dual-ranked priority list every morning.",
+        description: "Lead OS scores client job orders by urgency and fee potential, and candidate records by placement readiness — giving your team a dual-ranked priority list every morning.",
         transformation: "From reactive to proactive — on both sides of the market",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -1876,21 +1876,21 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "ATS integration", benefit: "Works with Bullhorn, JobDiva, Crelate, and most major ATS platforms", icon: "🔌" },
       ],
       socialProof: {
-        headline: "Staffing agencies trust CX React",
+        headline: "Staffing agencies trust Lead OS",
         testimonials: [
-          { quote: "Placements per recruiter went up 58% in 60 days. CX React tells them who to call on both sides.", name: "Karen Webb", title: "President, Catalyst Staffing", rating: 5 },
+          { quote: "Placements per recruiter went up 58% in 60 days. Lead OS tells them who to call on both sides.", name: "Karen Webb", title: "President, Catalyst Staffing", rating: 5 },
           { quote: "We stopped working low-priority orders and started hitting the urgent ones first. Our client satisfaction score jumped 20 points.", name: "Paul Nguyen", title: "VP Operations, ProStaff Solutions", rating: 5 },
-          { quote: "Our database has 80,000 candidates. CX React helped us find the 200 who were ready to work right now.", name: "Trisha Okafor", title: "Director of Recruiting, TalentBridge", rating: 5 },
+          { quote: "Our database has 80,000 candidates. Lead OS helped us find the 200 who were ready to work right now.", name: "Trisha Okafor", title: "Director of Recruiting, TalentBridge", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "2.8x", label: "faster time-to-fill" },
-          { type: "number", value: "400+", label: "staffing agencies on CX React" },
+          { type: "number", value: "400+", label: "staffing agencies on Lead OS" },
         ],
       },
       objections: {
         headline: "Staffing agency FAQs",
         faq: [
-          { question: "Does CX React work with our ATS?", answer: "We integrate with Bullhorn, JobDiva, Crelate, Avionte, and most major ATS platforms." },
+          { question: "Does Lead OS work with our ATS?", answer: "We integrate with Bullhorn, JobDiva, Crelate, Avionte, and most major ATS platforms." },
           { question: "Can it score both temp and perm placements?", answer: "Yes — we have separate scoring models for temporary, contract, direct hire, and executive search." },
           { question: "Is candidate data handled compliantly?", answer: "Yes — we adhere to GDPR Article 6 and EEOC guidelines for candidate data processing." },
         ],
@@ -1915,13 +1915,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#8b5cf6", accentHover: "#a78bfa" },
       meta: {
-        title: "CX React for Faith Organizations",
+        title: "Lead OS for Faith Organizations",
         description: "Identify and engage your most connected visitors. Grow your congregation.",
       },
       hero: {
         eyebrow: "For Faith Organizations",
         headline: "Connect with your most engaged visitors before they drift away",
-        subheadline: "CX React scores every first-time visitor and online inquiry by engagement potential so your team reaches out at the most meaningful moment.",
+        subheadline: "Lead OS scores every first-time visitor and online inquiry by engagement potential so your team reaches out at the most meaningful moment.",
         primaryCta: { text: "See a ministry demo", url: "/demo" },
         secondaryCta: { text: "Start free trial", url: "/onboard" },
         trustBar: [
@@ -1941,13 +1941,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Prioritize the visitors most likely to connect deeply",
-        description: "CX React scores first-time visitors, online inquiries, and event attendees by engagement potential — so your team makes the most impactful follow-up calls first.",
+        description: "Lead OS scores first-time visitors, online inquiries, and event attendees by engagement potential — so your team makes the most impactful follow-up calls first.",
         transformation: "From scattered follow-up to intentional connection",
       },
       howItWorks: {
         headline: "Three steps to deeper community connection",
         steps: [
-          { number: 1, title: "Capture engagement signals", description: "Sync connection cards, online forms, and event attendance into CX React.", icon: "📋" },
+          { number: 1, title: "Capture engagement signals", description: "Sync connection cards, online forms, and event attendance into Lead OS.", icon: "📋" },
           { number: 2, title: "Score for connection potential", description: "AI ranks visitors by likelihood to become long-term members.", icon: "❤️" },
           { number: 3, title: "Follow up with purpose", description: "Your team contacts the highest-priority visitors first with a personalized message.", icon: "📞" },
         ],
@@ -1959,21 +1959,21 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Volunteer-friendly dashboard", benefit: "Simple prioritized call list any volunteer can use", icon: "🙏" },
       ],
       socialProof: {
-        headline: "Faith communities trust CX React",
+        headline: "Faith communities trust Lead OS",
         testimonials: [
           { quote: "First-time visitor retention went from 18% to 47% in one season. We finally know who to call first.", name: "Pastor David Kim", title: "Senior Pastor, Grace Fellowship", rating: 5 },
           { quote: "Our connection team used to call everyone the same way. Now they prioritize and the conversations are so much more meaningful.", name: "Amy Rodriguez", title: "Guest Experience Director, City Church", rating: 5 },
-          { quote: "CX React helped us identify the online visitors who were ready for a personal conversation. We had no idea how many there were.", name: "Brother James Osei", title: "Community Pastor, New Life Ministries", rating: 5 },
+          { quote: "Lead OS helped us identify the online visitors who were ready for a personal conversation. We had no idea how many there were.", name: "Brother James Osei", title: "Community Pastor, New Life Ministries", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "2.6x", label: "higher visitor retention" },
-          { type: "number", value: "500+", label: "faith communities on CX React" },
+          { type: "number", value: "500+", label: "faith communities on Lead OS" },
         ],
       },
       objections: {
         headline: "Faith organization FAQs",
         faq: [
-          { question: "Is this appropriate for a church or ministry context?", answer: "Yes — CX React for faith communities is specifically designed to support pastoral care, not sales. The language and workflows reflect that difference." },
+          { question: "Is this appropriate for a church or ministry context?", answer: "Yes — Lead OS for faith communities is specifically designed to support pastoral care, not sales. The language and workflows reflect that difference." },
           { question: "Can small congregations afford it?", answer: "Yes — faith community pricing starts at $29/month with discounts for congregations under 200 members." },
           { question: "Does it work with our church management software?", answer: "We integrate with Planning Center, Breeze, Church Community Builder, and most major ChMS platforms." },
         ],
@@ -1998,13 +1998,13 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#ec4899", accentHover: "#f472b6" },
       meta: {
-        title: "CX React for Creative Professionals",
+        title: "Lead OS for Creative Professionals",
         description: "Stop pitching the wrong clients. AI scoring for designers and creatives.",
       },
       hero: {
         eyebrow: "For Creative Professionals",
         headline: "Stop pitching clients who will undervalue your work",
-        subheadline: "CX React scores every inquiry by budget fit and project alignment so you only spend time on clients who value what you do.",
+        subheadline: "Lead OS scores every inquiry by budget fit and project alignment so you only spend time on clients who value what you do.",
         primaryCta: { text: "Start free trial", url: "/onboard", subtext: "14 days free" },
         secondaryCta: { text: "See how it works", url: "#how" },
         trustBar: [
@@ -2024,7 +2024,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "Filter for clients who match your value",
-        description: "CX React scores every inquiry on budget signals, project scope, and creative alignment — so you instantly know whether a new client is worth pursuing.",
+        description: "Lead OS scores every inquiry on budget signals, project scope, and creative alignment — so you instantly know whether a new client is worth pursuing.",
         transformation: "From taking whatever comes in to choosing only ideal clients",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -2035,21 +2035,21 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Portfolio fit matching", benefit: "Flag inquiries that align with the work you want to showcase", icon: "🖼️" },
       ],
       socialProof: {
-        headline: "Creative professionals trust CX React",
+        headline: "Creative professionals trust Lead OS",
         testimonials: [
           { quote: "Average project value went from $4k to $11k in 6 months. I just stopped saying yes to everything.", name: "Chloe Martin", title: "Brand Designer, Studio Chloe", rating: 5 },
-          { quote: "CX React helped me identify which inquiry types always turn into nightmare clients. I avoid them now.", name: "Jordan Yates", title: "Freelance Art Director", rating: 5 },
-          { quote: "I doubled my rates and got better clients. CX React showed me which leads would value the work.", name: "Priya Anand", title: "UX Designer & Founder, Pixel North", rating: 5 },
+          { quote: "Lead OS helped me identify which inquiry types always turn into nightmare clients. I avoid them now.", name: "Jordan Yates", title: "Freelance Art Director", rating: 5 },
+          { quote: "I doubled my rates and got better clients. Lead OS showed me which leads would value the work.", name: "Priya Anand", title: "UX Designer & Founder, Pixel North", rating: 5 },
         ],
         stats: [
           { type: "percentage", value: "2.9x", label: "higher avg. project value" },
-          { type: "number", value: "5,000+", label: "creative professionals on CX React" },
+          { type: "number", value: "5,000+", label: "creative professionals on Lead OS" },
         ],
       },
       objections: {
         headline: "Creative professional FAQs",
         faq: [
-          { question: "Will this work for a solo freelancer?", answer: "Yes — CX React is designed for individual creatives. Setup takes 10 minutes and there are no complex integrations required." },
+          { question: "Will this work for a solo freelancer?", answer: "Yes — Lead OS is designed for individual creatives. Setup takes 10 minutes and there are no complex integrations required." },
           { question: "Does it integrate with my website inquiry form?", answer: "Yes — we connect to Typeform, Gravity Forms, and most contact form tools via Zapier or direct integration." },
           { question: "Can it help me spot clients who will be difficult to work with?", answer: "Yes — our bad-fit scoring model flags inquiry patterns that historically lead to scope creep and late payment." },
         ],
@@ -2074,17 +2074,17 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       updatedAt: ts(),
       theme: { variant: "dark", accent: "#6366f1", accentHover: "#818cf8" },
       meta: {
-        title: "CX React | AI Lead Scoring for Any Business",
+        title: "Lead OS | AI Lead Scoring for Any Business",
         description: "AI lead scoring that works for any industry. Know which leads to call first.",
       },
       hero: {
         eyebrow: "For Any Business",
         headline: "Know which leads to call first — in any industry",
-        subheadline: "CX React uses AI to score every lead by conversion probability so your team always works the highest-value opportunities first.",
+        subheadline: "Lead OS uses AI to score every lead by conversion probability so your team always works the highest-value opportunities first.",
         primaryCta: { text: "Start free trial", url: "/onboard", subtext: "No credit card required" },
         secondaryCta: { text: "See how it works", url: "#how" },
         trustBar: [
-          { type: "stat", value: "10,000+", label: "businesses on CX React" },
+          { type: "stat", value: "10,000+", label: "businesses on Lead OS" },
           { type: "stat", value: "3.2x", label: "avg. conversion rate lift" },
           { type: "badge", value: "SOC 2", label: "Compliant" },
         ],
@@ -2100,7 +2100,7 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
       },
       solution: {
         headline: "AI that tells you who to call right now",
-        description: "CX React learns your ideal customer profile from your historical data and scores every new lead in real time — so your team always has a ranked priority list to work from.",
+        description: "Lead OS learns your ideal customer profile from your historical data and scores every new lead in real time — so your team always has a ranked priority list to work from.",
         transformation: "From equal treatment to intelligent prioritization",
       },
       howItWorks: SHARED_HOW_IT_WORKS,
@@ -2111,23 +2111,23 @@ export function seedAllPresetConfigs(): DynastyLandingConfig[] {
         { title: "Real-time updates", benefit: "Scores refresh as new signals come in throughout the day", icon: "⚡" },
       ],
       socialProof: {
-        headline: "Businesses across every industry trust CX React",
+        headline: "Businesses across every industry trust Lead OS",
         testimonials: [
-          { quote: "We tried three lead scoring tools. CX React is the only one that actually improved our close rate.", name: "Marcus Bell", title: "Owner, Bell Home Services", rating: 5 },
+          { quote: "We tried three lead scoring tools. Lead OS is the only one that actually improved our close rate.", name: "Marcus Bell", title: "Owner, Bell Home Services", rating: 5 },
           { quote: "Our sales team went from working every lead to working the right leads. Revenue per rep went up 2.4x.", name: "Sandra Kim", title: "VP Sales, Centrix B2B", rating: 5 },
           { quote: "Setup was 20 minutes. Results showed up in week one. I've never seen a tool pay for itself that fast.", name: "Derek Walsh", title: "Founder, Walsh Consulting Group", rating: 5 },
         ],
         stats: [
-          { type: "number", value: "10,000+", label: "businesses on CX React" },
+          { type: "number", value: "10,000+", label: "businesses on Lead OS" },
           { type: "percentage", value: "3.2x", label: "avg. conversion rate lift" },
         ],
       },
       objections: {
         headline: "General FAQs",
         faq: [
-          { question: "Does CX React work for my industry?", answer: "Yes — CX React has been deployed in 50+ industries. If you close deals, CX React can score your leads." },
+          { question: "Does Lead OS work for my industry?", answer: "Yes — Lead OS has been deployed in 50+ industries. If you close deals, Lead OS can score your leads." },
           { question: "How long until we see results?", answer: "Most teams see a measurable lift in close rate within the first two weeks of use." },
-          { question: "Do we need to change our sales process?", answer: "No — CX React adds a scoring layer to your existing process. No workflow changes required." },
+          { question: "Do we need to change our sales process?", answer: "No — Lead OS adds a scoring layer to your existing process. No workflow changes required." },
         ],
       },
       finalCta: {

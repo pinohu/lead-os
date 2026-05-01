@@ -9,11 +9,11 @@ import { CALCULATOR_PRESETS } from "@/lib/calculator-presets";
 import { buildOgImageUrl } from "@/lib/og-url";
 
 export const metadata: Metadata = {
-  title: "ROI Calculator | CX React",
-  description: "Estimate the upside of automating your lead capture, scoring, and nurture. Industry-specific calculators for 16 verticals.",
+  title: "ROI Calculator | Lead OS",
+  description: "Estimate the upside a launched lead system package can create for a specific industry.",
   openGraph: {
-    title: "ROI Calculator | CX React",
-    description: "Estimate the upside of automating your lead capture, scoring, and nurture.",
+    title: "ROI Calculator | Lead OS",
+    description: "Estimate the upside of launching capture, scoring, routing, and follow-up as a package.",
     images: [{ url: buildOgImageUrl("ROI Calculator", "Estimate the upside of automating your lead pipeline", "general"), width: 1200, height: 630 }],
   },
 };
@@ -53,9 +53,9 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
     <div>
     <ExperienceScaffold
       niche={niche.slug}
-      eyebrow="Hosted calculator path"
+      eyebrow="Package calculator path"
       title={`${niche.label} upside estimator`}
-      summary={`This path uses quantified value to earn the next ask. For visitors who need proof before commitment, the calculator should create clarity, not just curiosity.`}
+      summary={`This path shows the business case before the customer launches. For visitors who need proof before commitment, the calculator should make the package outcome concrete.`}
       profile={profile}
       metrics={[
         { label: "Bias", value: niche.calculatorBias, detail: "The main framing angle for this niche." },
@@ -70,14 +70,14 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
           <ul className="space-y-2">
             <li>Visitors should understand what they are estimating in under ten seconds.</li>
             <li>The calculation should frame the cost of inaction without manipulative fear.</li>
-            <li>The CTA should feel like the logical next step, not a bait-and-switch.</li>
+            <li>The CTA should feel like the logical next step: choose the package and launch it from setup details.</li>
           </ul>
         </article>
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Adaptive behavior</p>
-          <h2 className="text-foreground">Calculator-first can still branch into chat or qualification</h2>
+          <h2 className="text-foreground">Calculator-first can still branch into solution launch</h2>
           <ul className="space-y-2">
-            <li>If the visitor wants speed, we can shorten into a consult path.</li>
+          <li>If the visitor wants speed, we can shorten into a solution intake path.</li>
             <li>If the visitor wants reassurance, we can route into authority or webinar proof.</li>
             <li>If the visitor wants low friction, we can reopen the conversation in chat.</li>
           </ul>

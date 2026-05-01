@@ -1,167 +1,157 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight, CheckCircle2, ExternalLink } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { provisionablePackages } from "@/lib/package-catalog";
+import { liveDeliverables } from "@/lib/live-deliverables";
 import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
-  title: "See CX React in Action | Demo",
-  description: "See how CX React helps agencies capture, score, and nurture leads from one dashboard. No signup required.",
+  title: "Live Examples | Lead OS",
+  description:
+    "View full Lead OS package and deliverable examples that match what the backend can provision in production.",
 };
 
-const demos = [
-  {
-    title: "Lead Capture",
-    description: "See how your clients' websites turn visitors into qualified leads through forms, quizzes, calculators, and live chat.",
-    details: [
-      "Capture leads from forms, assessments, chat, and calculators",
-      "Works on any website -- drop in a widget and go live",
-      "Automatic duplicate detection keeps your data clean",
-      "Track visitor behavior to understand buyer intent",
-    ],
-  },
-  {
-    title: "Lead Scoring",
-    description: "Watch leads get scored automatically so your team always knows who to call first.",
-    details: [
-      "Intent: How likely is this person to buy?",
-      "Fit: Do they match your client's ideal customer?",
-      "Engagement: Are they actively researching?",
-      "Urgency: Do they need help right now?",
-      "Temperature labels (Cold, Warm, Hot, Burning) make prioritization instant",
-    ],
-  },
-  {
-    title: "AI Content Engine",
-    description: "Generate social posts, ad copy, and email sequences in minutes -- all tailored to your client's industry.",
-    details: [
-      "10+ content angles per topic, matched to your niche",
-      "Ready-to-post content for every major social platform",
-      "Ad scripts for video, carousel, and long-form content",
-      "Automated DM sequences that move leads toward a call",
-    ],
-  },
-  {
-    title: "Agency Dashboard",
-    description: "One dashboard to manage all your clients. See KPIs, pipeline health, and revenue at a glance.",
-    details: [
-      "Real-time lead activity across all clients",
-      "Attribution reports that prove your value to clients",
-      "A/B testing with automatic winner detection",
-      "AI-generated insights and recommended actions",
-      "Revenue tracking and forecasting per client",
-    ],
-  },
-  {
-    title: "Lead Marketplace",
-    description: "Turn surplus leads into revenue. List, price, and sell qualified leads to verified buyers.",
-    details: [
-      "Dynamic pricing based on lead quality and readiness",
-      "Higher quality leads automatically command higher prices",
-      "Track buyer outcomes to build marketplace reputation",
-      "Revenue analytics by industry, quality tier, and time period",
-    ],
-  },
-  {
-    title: "Multi-Channel Nurturing",
-    description: "Automated follow-up across email, SMS, and chat that adapts to each lead's engagement level.",
-    details: [
-      "Pre-built 30-day nurture sequences for every industry",
-      "Messaging adapts automatically based on lead engagement",
-      "Cold leads get re-engaged before they are lost",
-      "The system learns which channels work best for each audience",
-    ],
-  },
-];
+const featuredPackages = provisionablePackages.slice(0, 6);
+const featuredDeliverables = liveDeliverables.slice(0, 6);
 
 export default function DemoPage() {
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl).replace(/\/$/, "");
 
-  const demoJsonLd = {
+  const exampleJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "@id": `${baseUrl}/demo#demos`,
-    name: "CX React Feature Demos",
-    description: "Interactive demos of lead capture, scoring, AI content generation, and the operator dashboard.",
-    numberOfItems: demos.length,
-    itemListElement: demos.map((demo, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: demo.title,
-      description: demo.description,
-      url: `${baseUrl}/demo#${demo.title.toLowerCase().replace(/\s+/g, "-")}`,
-    })),
+    "@id": `${baseUrl}/demo#examples`,
+    name: "Lead OS Live Examples",
+    description: "Package and deliverable examples matching production-provisioned Lead OS outputs.",
+    numberOfItems: featuredPackages.length + featuredDeliverables.length,
+    itemListElement: [
+      ...featuredPackages.map((pkg, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: pkg.title,
+        description: pkg.customerOutcome,
+        url: `${baseUrl}/packages/${pkg.slug}`,
+      })),
+      ...featuredDeliverables.map((deliverable, i) => ({
+        "@type": "ListItem",
+        position: featuredPackages.length + i + 1,
+        name: deliverable.title,
+        description: deliverable.buyerOutcome,
+        url: `${baseUrl}${deliverable.livePath}`,
+      })),
+    ],
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(demoJsonLd) }} />
-    <div className="max-w-5xl mx-auto px-4 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-foreground text-2xl font-extrabold mb-3">
-          See What Your Agency Could Look Like
-        </h1>
-        <p className="text-foreground max-w-xl mx-auto mb-6">
-          Explore every feature of the platform your agency will run on. No signup required -- everything works in preview mode so you can try before you buy.
-        </p>
-        <div className="flex gap-4 justify-center flex-wrap">
-          <Link
-            href="/onboard"
-            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-md no-underline font-semibold"
-          >
-            Start Free Trial
-          </Link>
-          <Link
-            href="/dashboard"
-            className="px-6 py-2.5 bg-muted text-foreground rounded-md no-underline font-semibold"
-          >
-            Explore Dashboard
-          </Link>
-        </div>
-      </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(exampleJsonLd) }} />
+      <main className="w-full max-w-none overflow-x-hidden p-0">
+        <section className="border-b border-border bg-background">
+          <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[1fr_0.78fr] lg:items-start">
+            <div>
+              <Badge variant="secondary" className="mb-4">
+                Live examples
+              </Badge>
+              <h1 className="max-w-4xl text-3xl font-extrabold leading-tight text-foreground sm:text-5xl">
+                See the same outputs Lead OS can provision for a paying client.
+              </h1>
+              <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                These are not strategy PDFs. Use this page to inspect the package detail pages and the live deliverable
+                surfaces that match the backend catalog.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button asChild>
+                  <Link href="/packages">
+                    Launch a complete package <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/deliverables">Inspect building blocks</Link>
+                </Button>
+              </div>
+            </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {demos.map((demo) => (
-          <article
-            key={demo.title}
-            className="border border-border rounded-xl p-6 flex flex-col"
-          >
-            <h2 className="text-foreground text-lg font-bold mb-2">
-              {demo.title}
+            <aside className="rounded-lg border border-border bg-muted/35 p-4" aria-label="How to use examples">
+              <h2 className="text-base font-bold text-foreground">How to read this page</h2>
+              <ul className="mt-3 grid gap-3 pl-0 text-sm leading-relaxed text-muted-foreground">
+                {[
+                  "Package examples show what a customer can buy.",
+                  "Deliverable examples show the individual surfaces inside those packages.",
+    "A real launch starts on the solution page and uses the intake form.",
+                  "Provider-backed actions activate when the required credentials are present.",
+                ].map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-4 py-10">
+          <div className="mb-6">
+            <Badge variant="outline" className="mb-3">
+              Complete packages
+            </Badge>
+            <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+              These are the full outcomes an operator sells.
             </h2>
-            <p className="text-foreground text-sm mb-4 leading-relaxed">
-              {demo.description}
-            </p>
-            <ul className="pl-5 text-xs text-muted-foreground leading-7 flex-1">
-              {demo.details.map((detail) => (
-                <li key={detail}>{detail}</li>
-              ))}
-            </ul>
-          </article>
-        ))}
-      </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {featuredPackages.map((pkg) => (
+              <Card key={pkg.slug} className="flex flex-col">
+                <CardHeader>
+                  <CardTitle className="text-lg">{pkg.title}</CardTitle>
+                  <CardDescription>{pkg.customerOutcome}</CardDescription>
+                </CardHeader>
+                <CardContent className="mt-auto">
+                  <p className="mb-4 text-sm text-muted-foreground">{pkg.launchPromise}</p>
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/packages/${pkg.slug}`}>
+                      View package <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
 
-      <section className="mt-16 text-center p-8 bg-muted rounded-xl">
-        <h2 className="text-foreground text-xl font-bold mb-3">
-          Ready to run your agency on one platform?
-        </h2>
-        <p className="text-foreground mb-6 max-w-lg mx-auto">
-          Set up your first client in 15 minutes. White-label everything with your brand. Start your 14-day free trial -- no credit card required.
-        </p>
-        <div className="flex gap-4 justify-center flex-wrap">
-          <Link
-            href="/onboard"
-            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-md no-underline font-semibold"
-          >
-            Start Your Free Trial
-          </Link>
-          <Link
-            href="/pricing"
-            className="px-6 py-2.5 bg-muted text-foreground rounded-md no-underline font-semibold border border-border"
-          >
-            View Pricing
-          </Link>
-        </div>
-      </section>
-    </div>
+        <section className="border-t border-border bg-muted/20">
+          <div className="mx-auto max-w-6xl px-4 py-10">
+            <div className="mb-6">
+              <Badge variant="outline" className="mb-3">
+                Built surfaces
+              </Badge>
+              <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+                These are examples of the pieces inside the packages.
+              </h2>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {featuredDeliverables.map((deliverable) => (
+                <Card key={deliverable.slug} className="flex flex-col">
+                  <CardHeader>
+                    <CardTitle className="text-lg">{deliverable.title}</CardTitle>
+                    <CardDescription>{deliverable.buyerOutcome}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="mt-auto">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={deliverable.livePath}>
+                        Open surface <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
     </>
   );
 }

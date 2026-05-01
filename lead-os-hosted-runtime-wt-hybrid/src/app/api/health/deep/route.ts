@@ -5,6 +5,7 @@ import { countDeadLetterJobs } from "@/lib/pricing/repository";
 import { getPricingRuntimeSnapshot } from "@/lib/pricing/runtime-state";
 import { isSupabaseConfigured } from "@/lib/supabase/admin";
 import { pricingLog } from "@/lib/pricing/logger";
+import { getProductionReadinessStatus } from "@/lib/production-config";
 
 async function checkDatabase(): Promise<{ status: "healthy" | "down"; latencyMs: number; detail: string }> {
   const start = Date.now();
@@ -55,6 +56,7 @@ function checkMemory(): { status: "healthy" | "degraded"; heapUsedMb: number; he
 
 export async function GET() {
   const [db, redis] = await Promise.all([checkDatabase(), checkRedis()]);
+  const readiness = getProductionReadinessStatus();
   const memory = checkMemory();
   const pricingRuntime = getPricingRuntimeSnapshot();
   let pricingQueues: Awaited<ReturnType<typeof getPricingQueueStats>> | null = null;
@@ -98,6 +100,7 @@ export async function GET() {
     database: db,
     redis,
     memory,
+    production_readiness: readiness,
     pricing: {
       runtime: pricingRuntime,
       queues: pricingQueues,
@@ -107,10 +110,15 @@ export async function GET() {
     alerts,
     buildId,
   };
-  const overall = db.status === "down" ? "degraded" : "healthy";
+  const redisBlocksProduction = readiness.missingRequired.some((dependency) => dependency.key === "redis");
+  const overall = db.status === "down" || redisBlocksProduction || !readiness.ready ? "degraded" : "healthy";
 
   recordCheck("database", db.status === "down" ? "down" : "healthy", db.latencyMs);
-  recordCheck("redis", redis.status === "down" ? "down" : redis.status === "not_configured" ? "healthy" : "healthy", redis.latencyMs);
+  recordCheck(
+    "redis",
+    redis.status === "down" || redisBlocksProduction ? "down" : "healthy",
+    redis.latencyMs,
+  );
   recordCheck("memory", memory.status, 0);
 
   return NextResponse.json({

@@ -59,10 +59,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const niche = getNiche(slug);
   if (!niche) return {};
   return {
-    title: `${niche.label} Growth System | CX React`,
-    description: `${niche.summary} Discover purpose-built funnels, scoring, and automation for ${niche.label.toLowerCase()} businesses.`,
+    title: `${niche.label} Lead System Package | Lead OS`,
+    description: `${niche.summary} Choose the package, capture the setup details, and launch scoring, routing, follow-up, and reporting for ${niche.label.toLowerCase()} businesses.`,
     openGraph: {
-      title: `${niche.label} | CX React`,
+      title: `${niche.label} | Lead OS`,
       description: niche.summary,
       images: [{ url: buildOgImageUrl(niche.label, niche.summary, niche.slug), width: 1200, height: 630 }],
     },
@@ -127,7 +127,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
           {
             label: "Automation depth",
             value: `${template.offers.length} playbooks`,
-            detail: "Pre-built automations ready to deploy on day one.",
+            detail: "Pre-built package logic ready to launch from setup details.",
           },
         ]}
       >
@@ -145,7 +145,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
 
         {/* ---------- Offers ---------- */}
         <section>
-          <h2 className="text-foreground">What we build for {niche.label} teams</h2>
+          <h2 className="text-foreground">What the launched package gives {niche.label} teams</h2>
           <ul className="space-y-2">
             {offers.map((offer, i) => (
               <li key={i}>{offer}</li>
@@ -160,7 +160,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
           <p>
             Our two-minute assessment scores your current funnel against
             benchmarks from hundreds of {niche.label.toLowerCase()} businesses
-            and returns a prioritized action plan.
+            and points you to the package path most likely to solve the problem.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild><Link href={`/assess/${niche.slug}`}>
@@ -203,10 +203,9 @@ export default async function IndustryPage({ params, searchParams }: Props) {
 
             <article className="rounded-xl border border-border bg-card p-6">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">For your role</p>
-              <h3 className="text-foreground">Built for agencies &amp; operators</h3>
+              <h3 className="text-foreground">Built for agencies and operators</h3>
               <p>
-                See how CX React fits your workflow — whether you run an
-                agency, a franchise, or an in-house growth team.
+                See how Lead OS fits your workflow whether you run an agency, a franchise, or an in-house growth team.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button asChild variant="outline"><Link href="/for/agencies">
@@ -263,7 +262,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
               </section>
 
               <section>
-                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Common objections — and how we address them</p>
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Common objections and how we address them</p>
                 <div className="flex flex-col gap-3">
                   {intel.objections.map((obj) => (
                     <details key={obj.objection} className="rounded-xl border border-border bg-card p-6 cursor-pointer">
@@ -315,7 +314,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Service",
-            name: `${niche.label} Growth System`,
+            name: `${niche.label} Lead System Package`,
             description: niche.summary,
             provider: {
               "@type": "Organization",

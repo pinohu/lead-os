@@ -27,10 +27,12 @@ function splitCsv(value?: string) {
 }
 
 const parsedFunnels = splitCsv(process.env.LEAD_OS_ENABLED_FUNNELS);
+const configuredBrandName = process.env.NEXT_PUBLIC_BRAND_NAME?.trim();
+const publicBrandName = !configuredBrandName || configuredBrandName === "CX React" ? "Lead OS" : configuredBrandName;
 
 export const tenantConfig: TenantConfig = {
   tenantId: process.env.LEAD_OS_TENANT_ID ?? "default-tenant",
-  brandName: process.env.NEXT_PUBLIC_BRAND_NAME ?? "CX React",
+  brandName: publicBrandName,
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxreact.com",
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@example.com",
   defaultService: process.env.LEAD_OS_DEFAULT_SERVICE ?? "lead-capture",

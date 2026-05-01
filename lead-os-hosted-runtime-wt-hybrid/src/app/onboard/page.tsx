@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { publicPlans } from "@/lib/public-offer";
 
 type WizardStep = "email" | "niche" | "plan" | "branding" | "integrations" | "review" | "complete";
 
@@ -53,33 +54,15 @@ const INDUSTRIES = [
 ] as const;
 
 const PLANS: PlanOption[] = [
-  {
-    id: "whitelabel-starter",
-    name: "Starter",
-    price: "$299/mo",
-    priceValue: 29900,
-    features: ["Lead capture", "4D scoring", "Email nurture", "3 niches", "10 integrations"],
-    limits: "250 leads/mo, 2,500 emails",
-    recommended: false,
-  },
-  {
-    id: "whitelabel-growth",
-    name: "Growth",
-    price: "$599/mo",
-    priceValue: 59900,
-    features: ["Everything in Starter", "A/B testing", "AI content", "Prospect scout", "25 integrations"],
-    limits: "1,500 leads/mo, 15,000 emails",
-    recommended: true,
-  },
-  {
-    id: "whitelabel-enterprise",
-    name: "Enterprise",
-    price: "$1,299/mo",
-    priceValue: 129900,
-    features: ["Everything in Growth", "Unlimited funnels", "Marketplace", "All 137+ integrations", "Joy Layer"],
-    limits: "10,000 leads/mo, 100,000 emails",
-    recommended: false,
-  },
+  ...publicPlans.map((plan) => ({
+    id: plan.id,
+    name: plan.name,
+    price: plan.price,
+    priceValue: plan.priceValue,
+    features: plan.features,
+    limits: plan.limits,
+    recommended: plan.recommended,
+  })),
 ];
 
 const INTEGRATIONS: IntegrationOption[] = [
@@ -89,16 +72,16 @@ const INTEGRATIONS: IntegrationOption[] = [
   { key: "chat", label: "Chat Bot", description: "Live chat widget on your site", defaultOn: false },
   { key: "voice", label: "Voice AI", description: "AI-powered voice calls and qualification", defaultOn: false },
   { key: "booking", label: "Booking System", description: "Calendar scheduling and appointment booking", defaultOn: false },
-  { key: "crm", label: "CRM", description: "Sync leads with your CRM platform", defaultOn: false },
+  { key: "crm", label: "CRM", description: "Sync leads with your CRM after credentials are added", defaultOn: false },
   { key: "documents", label: "Document Generation", description: "Auto-generate proposals and contracts", defaultOn: false },
 ];
 
 const STEP_LABELS: Record<WizardStep, string> = {
   email: "Start",
-  niche: "Niche",
+  niche: "Client market",
   plan: "Plan",
-  branding: "Branding",
-  integrations: "Integrations",
+  branding: "Workspace",
+  integrations: "Credentials",
   review: "Review",
   complete: "Complete",
 };
@@ -208,7 +191,7 @@ export default function OnboardPage() {
         return;
       }
 
-      if (json.data.free) {
+      if (json.data.free || json.data.dryRun) {
         setStep("complete");
         setPaymentPending(false);
         return;
@@ -311,8 +294,10 @@ export default function OnboardPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-[960px] px-6 py-12">
         <header className="mb-12 text-center">
-          <h1 className="mb-2 text-[2rem] font-bold text-slate-50">Launch Your Lead System</h1>
-          <p className="text-base text-muted-foreground">Set up your white-label lead generation platform in minutes</p>
+          <h1 className="mb-2 text-[2rem] font-bold text-slate-50">Create your operator account</h1>
+          <p className="text-base text-muted-foreground">
+            Use this account to sell and launch lead system packages for your clients.
+          </p>
         </header>
 
         {step !== "email" && step !== "complete" && (
@@ -345,9 +330,10 @@ export default function OnboardPage() {
         {step === "email" && (
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
-                Get Started
-              </h2>
+              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">Start with your email</h2>
+              <p className="mb-5 text-[0.9rem] text-muted-foreground">
+                This creates your delivery setup session. After that, go to Solutions and launch the outcome your client bought.
+              </p>
               <div className="mb-5">
                 <label htmlFor="email-input" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Email Address</label>
                 <input
@@ -372,7 +358,7 @@ export default function OnboardPage() {
                   aria-busy={loading}
                   style={{ opacity: loading ? 0.6 : 1 }}
                 >
-                  {loading ? "Starting..." : "Start Setup"}
+                  {loading ? "Starting..." : "Start operator setup"}
                 </button>
               </div>
             </div>
@@ -383,16 +369,16 @@ export default function OnboardPage() {
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
               <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
-                Define Your Niche
+                Define the client market
               </h2>
               <div className="mb-5">
-                <label htmlFor="niche-name" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Niche Name</label>
+                <label htmlFor="niche-name" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Client market name</label>
                 <input
                   id="niche-name"
                   type="text"
                   value={niche.name}
                   onChange={(e) => setNiche((prev) => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g., Plumbing Services, Personal Injury Law"
+                  placeholder="e.g., Erie roof repairs, B2B SaaS trials, med spa consultations"
                   className="w-full rounded-lg border border-slate-400/20 bg-muted px-3.5 py-2.5 text-[0.9rem] text-foreground outline-none"
                   aria-required="true"
                   maxLength={100}
@@ -447,7 +433,7 @@ export default function OnboardPage() {
                 )}
               </div>
               <div className="mt-3 rounded-lg border border-teal-500/20 bg-teal-500/[0.08] px-3.5 py-2.5 text-[0.85rem] text-teal-300" role="status">
-                We will auto-generate your lead capture system based on your niche.
+                This tells Lead OS what kind of leads the workspace should capture, score, and route.
               </div>
               <div className="mt-8 flex justify-between gap-3">
                 <button type="button" onClick={handleBack} className="min-h-[44px] min-w-[120px] rounded-lg border border-slate-400/30 bg-transparent px-7 py-3 text-[0.9rem] font-semibold text-muted-foreground transition-opacity duration-200" aria-label="Go back to previous step">Back</button>
@@ -473,9 +459,10 @@ export default function OnboardPage() {
         {step === "plan" && (
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
-                Choose Your Plan
-              </h2>
+              <h2 className="mb-2 text-[1.25rem] font-bold text-slate-50">Choose solution capacity</h2>
+              <p className="mb-5 text-[0.9rem] text-muted-foreground">
+                These plan names, prices, and limits match the backend billing catalog and control how much customer solution volume you can run.
+              </p>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4" role="radiogroup" aria-label="Plan selection">
                 {PLANS.map((plan) => (
                   <div
@@ -526,7 +513,7 @@ export default function OnboardPage() {
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
               <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
-                Brand Your Platform
+                Name the operator workspace
               </h2>
               <div className="mb-5">
                 <label htmlFor="brand-name" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Brand Name</label>
@@ -622,7 +609,7 @@ export default function OnboardPage() {
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
               <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
-                Enable Integrations
+                Choose credential-backed integrations
               </h2>
               <div role="group" aria-label="Available integrations">
                 {INTEGRATIONS.map((integration) => (
@@ -667,10 +654,10 @@ export default function OnboardPage() {
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
               <h2 className="mb-6 text-[1.25rem] font-bold text-slate-50">
-                Review and Launch
+                Review account setup
               </h2>
               <div className="flex justify-between border-b border-slate-400/[0.08] py-2.5">
-                <span className="text-[0.85rem] text-muted-foreground">Niche</span>
+                <span className="text-[0.85rem] text-muted-foreground">Client market</span>
                 <span className="text-[0.85rem] font-semibold text-foreground">{niche.name}{niche.industry ? ` (${niche.industry})` : ""}</span>
               </div>
               <div className="flex justify-between border-b border-slate-400/[0.08] py-2.5">
@@ -703,7 +690,7 @@ export default function OnboardPage() {
                 const isPaidPlan = currentPlan && currentPlan.priceValue > 0;
                 return isPaidPlan ? (
                   <div className="mt-3 rounded-lg border border-teal-500/20 bg-teal-500/[0.08] px-3.5 py-2.5 text-[0.85rem] text-teal-300" role="status">
-                    You will be redirected to Stripe to complete payment for the {currentPlan.name} plan ({currentPlan.price}).
+                If Stripe is configured, you will go to checkout for {currentPlan.name} ({currentPlan.price}). If Stripe is not configured, the account setup completes and solution launches can still show which account access can connect later.
                   </div>
                 ) : null;
               })()}
@@ -719,7 +706,7 @@ export default function OnboardPage() {
                 >
                   {loading ? "Launching..." : paymentPending ? "Redirecting to payment..." : (() => {
                     const currentPlan = PLANS.find((p) => p.id === selectedPlan);
-                    return currentPlan && currentPlan.priceValue > 0 ? "Continue to Payment" : "Launch My Lead System";
+                    return currentPlan && currentPlan.priceValue > 0 ? "Continue to Payment" : "Finish operator setup";
                   })()}
                 </button>
               </div>
@@ -744,12 +731,12 @@ export default function OnboardPage() {
           <main>
             <div className="mb-6 rounded-xl border border-teal-500/30 bg-teal-500/[0.08] p-8 text-center">
               <h2 className="mb-2 text-[1.5rem] font-bold text-teal-500">
-                Your Lead System is Live
+                Your Account Is Ready. Launch a Customer Solution Next.
               </h2>
               <p className="text-muted-foreground">
                 {stripeSessionId
-                  ? "Payment confirmed. Your platform has been provisioned and is ready to capture leads."
-                  : "Your platform has been provisioned and is ready to capture leads."}
+                  ? "Checkout returned successfully. Go to Solutions, choose what your client bought, and submit their intake details."
+                  : "Go to Solutions, choose what your client bought, and submit their intake details."}
               </p>
             </div>
 
@@ -758,7 +745,7 @@ export default function OnboardPage() {
                 Embed Script
               </h3>
               <p className="mb-3 text-[0.85rem] text-muted-foreground">
-                Add this script to your website to activate lead capture:
+                Add this script to a page where you want the account-level lead capture widget to appear:
               </p>
               <code className="mb-4 block overflow-x-auto whitespace-pre-wrap break-all rounded-lg border border-slate-400/15 bg-black/40 p-4 font-mono text-[0.82rem] text-teal-300">
                 {session.provisioningResult.embedScript}
@@ -770,7 +757,7 @@ export default function OnboardPage() {
                 Dashboard
               </h3>
               <p className="mb-3 text-[0.85rem] text-muted-foreground">
-                Access your operator dashboard to manage leads and settings:
+                Open the dashboard to review leads, settings, solution activity, and launch readiness:
               </p>
               <a
                 href={session.provisioningResult.dashboardUrl}
@@ -780,12 +767,27 @@ export default function OnboardPage() {
               </a>
             </div>
 
+            <div className="mb-6 rounded-xl border border-slate-400/10 bg-muted p-8">
+              <h3 className="mb-3 text-base font-bold text-slate-50">
+                Complete Solution Launch
+              </h3>
+              <p className="mb-3 text-[0.85rem] text-muted-foreground">
+                Choose the solution the customer paid for, collect the intake details it needs, and provision the full delivery hub.
+              </p>
+              <a
+                href="/packages"
+                className="inline-flex min-h-[44px] items-center rounded-lg border border-teal-500/30 bg-teal-500/10 px-5 py-2.5 text-[0.9rem] font-semibold text-teal-500 no-underline"
+              >
+                Launch Solutions
+              </a>
+            </div>
+
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
               <h3 className="mb-2 text-base font-bold text-slate-50">
                 Check Your Email
               </h3>
               <p className="text-[0.85rem] text-muted-foreground">
-                We sent a login link to <strong className="text-foreground">{session.email}</strong>. Use it to access your dashboard.
+                We use <strong className="text-foreground">{session.email}</strong> as the delivery contact for this account.
               </p>
             </div>
           </main>

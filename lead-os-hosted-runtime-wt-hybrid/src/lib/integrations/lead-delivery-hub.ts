@@ -2,8 +2,8 @@
 // Normalized outbound hooks: sendLead(), notifyClient(), triggerWorkflow().
 // Never log secrets; integrations optional with safe fallbacks.
 
-import { logger } from "@/lib/logger";
-import { createContact, type SuiteDashContactPayload } from "@/lib/suitedash";
+import { logger } from "../logger.ts";
+import { createContact, type SuiteDashContactPayload } from "../suitedash.ts";
 
 export interface DirectoryLeadPayload {
   tenantId: string;
@@ -22,6 +22,37 @@ export interface IntegrationSendResult {
   ok: boolean;
   mode: "live" | "simulated" | "skipped";
   detail?: string;
+}
+
+async function persistLeadDeliveryFailure(
+  payload: DirectoryLeadPayload,
+  results: IntegrationSendResult[],
+): Promise<void> {
+  const failures = results.filter((result) => result.mode === "live" && !result.ok);
+  if (failures.length === 0) return;
+
+  try {
+    const { insertDeadLetterJob } = await import("../pricing/repository.ts");
+    await insertDeadLetterJob({
+      sourceQueue: "lead-delivery",
+      jobName: "sendLead",
+      jobId: payload.leadKey,
+      payload: {
+        kind: "lead-delivery",
+        payload,
+        failures,
+      },
+      errorMessage: failures.map((failure) => `${failure.channel}:${failure.detail ?? "failed"}`).join(", "),
+      attempts: 1,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    logger.warn("integration.lead_delivery.dlq_persist_failed", {
+      leadKey: payload.leadKey,
+      tenantId: payload.tenantId,
+      error: message.slice(0, 200),
+    });
+  }
 }
 
 function activepiecesUrl(): string | undefined {
@@ -163,6 +194,7 @@ export async function sendLead(payload: DirectoryLeadPayload): Promise<Integrati
   if (results.every((r) => (r.mode === "skipped" || r.mode === "simulated") && r.ok)) {
     results.push({ channel: "log", ok: true, mode: "simulated", detail: "no_external_channels_ready" });
   }
+  await persistLeadDeliveryFailure(payload, results);
   return results;
 }
 

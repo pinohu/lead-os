@@ -23,6 +23,9 @@
     "enumerate:api-routes": "node scripts/enumerate-api-routes.mjs",
     "enumerate:mutation-routes": "node scripts/enumerate-mutation-routes.mjs",
     "verify:backup-archive": "node scripts/verify-backup-archive.mjs",
+    "assess:local": "node scripts/assess-production.mjs",
+    "assess:production": "node scripts/assess-production.mjs --production",
+    "assess:production:json": "node scripts/assess-production.mjs --production --json",
     "detect:env": "node scripts/detect-env-presence.mjs",
     "gtm:print": "node --experimental-strip-types scripts/gtm-print.ts --"
   },
@@ -68,7 +71,7 @@
     "next": "^16.2.1",
     "next-themes": "^0.4.6",
     "pg": "^8.20.0",
-    "postcss": "^8.5.8",
+    "postcss": "^8.5.10",
     "react": "^19.1.0",
     "react-day-picker": "^9.14.0",
     "react-dom": "^19.1.0",
@@ -90,6 +93,9 @@
     "@types/react-dom": "^19.1.5",
     "cross-env": "^7.0.3",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "postcss": "^8.5.10"
   },
   "engines": {
     "node": ">=22.0.0"

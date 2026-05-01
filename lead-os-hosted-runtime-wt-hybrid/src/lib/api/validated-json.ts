@@ -1,7 +1,7 @@
 // src/lib/api/validated-json.ts
 // Standard parse → validate for API mutation bodies.
 
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server.js";
 import type { ZodType } from "zod";
 
 export async function readJsonBody(request: Request): Promise<

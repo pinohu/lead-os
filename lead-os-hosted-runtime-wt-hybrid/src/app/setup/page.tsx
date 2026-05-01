@@ -5,8 +5,8 @@ import { tenantConfig } from "@/lib/tenant";
 import { nicheCatalog } from "@/lib/catalog";
 
 export const metadata: Metadata = {
-  title: "Setup — CX React",
-  description: "First-run setup wizard for your CX React instance. Configure brand, environment, and integrations.",
+  title: "Setup | Lead OS",
+  description: "First-run setup wizard for your Lead OS instance. Configure brand, environment, solution launch, and integrations.",
 };
 
 // ---------------------------------------------------------------------------
@@ -42,7 +42,7 @@ const ENV_CHECK_DESCRIPTORS: EnvCheckDescriptor[] = [
     key: "ai",
     label: "AI provider",
     description:
-      "Powers lead scoring, AI copywriting, and chat agents. Set OPENAI_API_KEY or ANTHROPIC_API_KEY. Without this, AI features run in dry-run mode.",
+      "Powers lead scoring, AI copywriting, and chat agents. Set OPENAI_API_KEY or ANTHROPIC_API_KEY. Without this, AI features wait for credentials.",
     envVar: "OPENAI_API_KEY",
     optional: true,
   },
@@ -141,7 +141,8 @@ async function buildSetupStatus(): Promise<SetupStatus> {
   const brand =
     Boolean(brandName) &&
     brandName !== "My Brand" &&
-    brandName !== "CX React";
+    brandName !== "Lead OS" &&
+    brandName !== "Lead OS";
 
   return {
     database,

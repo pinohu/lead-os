@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | CX React",
+  title: "Privacy Policy | Lead OS",
   description:
-    "Learn how CX React collects, uses, and protects your personal data. Understand your GDPR and CCPA rights and how to exercise them.",
+    "Learn how Lead OS collects, uses, and protects your personal data. Understand your GDPR and CCPA rights and how to exercise them.",
 };
 
 export default function PrivacyPolicyPage() {
@@ -16,8 +16,8 @@ export default function PrivacyPolicyPage() {
     "@type": "WebPage",
     "@id": `${baseUrl}/privacy#webpage`,
     url: `${baseUrl}/privacy`,
-    name: "Privacy Policy | CX React",
-    description: "Learn how CX React collects, uses, and protects your personal data. Understand your GDPR and CCPA rights.",
+    name: "Privacy Policy | Lead OS",
+    description: "Learn how Lead OS collects, uses, and protects your personal data. Understand your GDPR and CCPA rights.",
     isPartOf: { "@id": `${baseUrl}/#website` },
     about: { "@type": "Organization", "@id": `${baseUrl}/#organization` },
     dateModified: "2026-01-15",
@@ -32,7 +32,7 @@ export default function PrivacyPolicyPage() {
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Legal</p>
           <h1 className="text-foreground">Privacy Policy</h1>
           <p className="text-lg text-muted-foreground">
-            Last updated: January 15, 2026. This policy explains how CX React collects, uses, shares,
+            Last updated: January 15, 2026. This policy explains how Lead OS collects, uses, shares,
             and protects your personal information, and the rights you have over that data.
           </p>
         </div>
@@ -44,12 +44,12 @@ export default function PrivacyPolicyPage() {
         <section aria-labelledby="controller-heading" className="mb-10">
           <h2 className="text-foreground" id="controller-heading">1. Data Controller</h2>
           <p>
-            CX React (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is the data
+            Lead OS (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is the data
             controller responsible for personal data processed through this platform. You may contact
             us regarding privacy matters at:
           </p>
           <address className="not-italic mt-3">
-            <strong>CX React Privacy Team</strong>
+            <strong>Lead OS Privacy Team</strong>
             <br />
             Email:{" "}
             <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a>
@@ -182,7 +182,7 @@ export default function PrivacyPolicyPage() {
             <li>
               <strong>Legal requirements:</strong> We may disclose data when required by law,
               court order, or governmental authority, or to protect the rights, property, or safety
-              of CX React, its users, or the public.
+              of Lead OS, its users, or the public.
             </li>
             <li>
               <strong>Business transfers:</strong> In the event of a merger, acquisition, or sale of
@@ -247,7 +247,7 @@ export default function PrivacyPolicyPage() {
         <section aria-labelledby="transfers-heading" className="mb-10">
           <h2 className="text-foreground" id="transfers-heading">8. International Data Transfers</h2>
           <p>
-            CX React operates infrastructure in the United States. If you are located in the EEA, UK,
+            Lead OS operates infrastructure in the United States. If you are located in the EEA, UK,
             or Switzerland, your personal data may be transferred to and processed in the United
             States. We implement appropriate safeguards for these transfers, including:
           </p>
@@ -365,7 +365,7 @@ export default function PrivacyPolicyPage() {
         <section aria-labelledby="children-heading" className="mb-10">
           <h2 className="text-foreground" id="children-heading">11. Children&apos;s Privacy</h2>
           <p>
-            CX React is not directed to individuals under the age of 16. We do not knowingly collect
+            Lead OS is not directed to individuals under the age of 16. We do not knowingly collect
             personal data from children. If you believe a child has provided personal data to us,
             contact us at{" "}
             <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a> and we will delete
@@ -407,7 +407,7 @@ export default function PrivacyPolicyPage() {
             To exercise your rights, make a complaint, or ask questions about this policy:
           </p>
           <address className="not-italic mt-3">
-            <strong>CX React Privacy Team</strong>
+            <strong>Lead OS Privacy Team</strong>
             <br />
             Email:{" "}
             <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a>

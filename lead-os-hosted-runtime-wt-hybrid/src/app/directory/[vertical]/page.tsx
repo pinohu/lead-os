@@ -46,12 +46,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { vertical } = await params;
   const niche = getNiche(vertical);
   return {
-    title: `${niche.label} Directory | CX React`,
-    description: `Complete directory of ${niche.label.toLowerCase()} growth resources: industry overview, assessments, authority guides, ROI calculators, testimonials, and funnel blueprints.`,
+    title: `${niche.label} Package Directory | Lead OS`,
+    description: `Directory of ${niche.label.toLowerCase()} package inputs: industry overview, assessment, guide, ROI calculator, proof, and funnel paths.`,
     openGraph: {
-      title: `${niche.label} Directory`,
-      description: `Complete directory of ${niche.label.toLowerCase()} growth resources.`,
-      images: [{ url: buildOgImageUrl(`${niche.label} Directory`, `Complete directory of ${niche.label.toLowerCase()} growth resources.`, vertical), width: 1200, height: 630 }],
+      title: `${niche.label} Package Directory`,
+      description: `Directory of ${niche.label.toLowerCase()} package inputs.`,
+      images: [{ url: buildOgImageUrl(`${niche.label} Package Directory`, `Directory of ${niche.label.toLowerCase()} package inputs.`, vertical), width: 1200, height: 630 }],
     },
   };
 }
@@ -91,8 +91,8 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
     <div>
     <ExperienceScaffold
       eyebrow={`${niche.label} directory`}
-      title={coldHeadline ? coldHeadline.headline.replace(/\{\{niche\}\}/g, niche.label) : `${niche.label} Growth Directory`}
-      summary={`Everything you need to evaluate, plan, and launch a ${niche.label.toLowerCase()} growth system — assessments, guides, calculators, and proof.`}
+      title={coldHeadline ? coldHeadline.headline.replace(/\{\{niche\}\}/g, niche.label) : `${niche.label} Package Directory`}
+      summary={`Everything you need to match a ${niche.label.toLowerCase()} buyer to the right package: assessment, guide, calculator, proof, and funnel path.`}
       profile={profile}
       niche={niche.slug}
       metrics={[
@@ -129,7 +129,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
       {/* ── Solutions ── */}
       {offers.length > 0 && (
         <section>
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Available {niche.label.toLowerCase()} solutions</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Available {niche.label.toLowerCase()} package paths</p>
           <div className="grid md:grid-cols-2 gap-6">
             {offers.map((offer) => (
               <article key={offer} className="rounded-xl border border-border bg-card p-6">
@@ -188,10 +188,10 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
                 {funnel.replace(/-/g, " ")} funnel
               </h3>
               <p className="text-muted-foreground text-sm">
-                Pre-built blueprint optimized for {niche.label.toLowerCase()} businesses.
+                Blueprint that can become the capture and routing path inside a launched package.
               </p>
               <Link href={`/funnel/${funnel}?niche=${niche.slug}`} className="text-sm text-primary">
-                View blueprint →
+                View blueprint
               </Link>
             </article>
           ))}
@@ -214,7 +214,7 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
                 </ul>
               </article>
               <article className="rounded-xl border border-border bg-card p-6">
-                <h3 className="text-foreground m-0 mb-2 text-sm">What makes CX React different</h3>
+                <h3 className="text-foreground m-0 mb-2 text-sm">What makes Lead OS different</h3>
                 <ul className="m-0 pl-5 text-sm leading-loose">
                   {intel.competitors.differentiators.map((diff) => (
                     <li key={diff}>{diff}</li>
@@ -236,8 +236,8 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "CollectionPage",
-            name: `${niche.label} Business Directory`,
-            description: `Complete directory of ${niche.label.toLowerCase()} growth resources.`,
+            name: `${niche.label} Package Directory`,
+            description: `Directory of ${niche.label.toLowerCase()} package inputs.`,
             url: `${tenantConfig.siteUrl}/directory/${niche.slug}`,
             mainEntity: {
               "@type": "ItemList",

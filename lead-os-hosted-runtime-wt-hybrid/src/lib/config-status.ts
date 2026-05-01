@@ -40,7 +40,7 @@ const PROVIDER_CONFIGS: ProviderConfigDescriptor[] = [
   { key: "straico", label: "Straico", envKeys: ["STRAICO_API_KEY"], embedded: Boolean(embeddedSecrets.straico.apiKey) },
   { key: "partnero", label: "Partnero", envKeys: ["PARTNERO_API_KEY", "PARTNERO_PROGRAM_ID", "PARTNERO_ASSETS_HOST"], embedded: Boolean(embeddedSecrets.partnero.programId) },
   { key: "electroneek", label: "ElectroNeek", envKeys: ["ELECTRONEEK_API_KEY", "ELECTRONEEK_WEBHOOK_URL"], embedded: Boolean(embeddedSecrets.electroneek.apiKey) },
-  { key: "auth", label: "Operator auth", envKeys: ["LEAD_OS_AUTH_SECRET", "LEAD_OS_OPERATOR_EMAILS"], embedded: Boolean(embeddedSecrets.cron.secret), notes: "The operator auth secret still falls back to an embedded value if env is absent." },
+  { key: "auth", label: "Operator auth", envKeys: ["LEAD_OS_AUTH_SECRET", "LEAD_OS_OPERATOR_EMAILS"], embedded: false, notes: "LEAD_OS_AUTH_SECRET is mandatory for operator token signing; cron secrets are intentionally not accepted." },
 ];
 
 function getPresentEnvKeys(keys: string[]) {

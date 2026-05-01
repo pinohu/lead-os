@@ -16,7 +16,7 @@ describe("billing entitlements", () => {
   });
 
   it("assertPricingExecutionAllowed passes when enforcement is off", async () => {
-    const { assertPricingExecutionAllowed } = await import("../src/lib/billing/entitlements");
+    const { assertPricingExecutionAllowed } = await import("../src/lib/billing/entitlements.ts");
     const r = await assertPricingExecutionAllowed("any-tenant-id");
     assert.equal(r.allowed, true);
     assert.equal(r.state.enforcement, false);

@@ -11,6 +11,9 @@ export async function register(): Promise<void> {
     console.error("[instrumentation] env vault aliases failed:", err);
   }
 
+  const { assertProductionReady } = await import("@/lib/production-config.ts");
+  assertProductionReady();
+
   try {
     const { startPricingRuntimeWeb } = await import("@/lib/pricing/bootstrap.ts");
     await startPricingRuntimeWeb();

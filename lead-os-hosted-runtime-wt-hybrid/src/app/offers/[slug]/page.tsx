@@ -33,10 +33,10 @@ export async function generateMetadata({ params }: OfferPageProps): Promise<Meta
   const { slug } = await params;
   const niche = getNiche(slug);
   return {
-    title: `${niche.label} Offer | CX React`,
-    description: `${niche.summary} High-intent offer path with built-in recovery and proof.`,
+    title: `${niche.label} Offer Path | Lead OS`,
+    description: `${niche.summary} Offer path that can become the capture page, qualification questions, routing, and follow-up for a launched package.`,
     openGraph: {
-      title: `${niche.label} Offer | CX React`,
+      title: `${niche.label} Offer | Lead OS`,
       description: niche.summary,
       images: [{ url: buildOgImageUrl(`${niche.label} Offer`, niche.summary, niche.slug), width: 1200, height: 630 }],
     },
@@ -66,44 +66,44 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
     <div>
     <ExperienceScaffold
       eyebrow="Offer path"
-      title={`${niche.label} offer path built for high-intent visitors`}
-      summary={`${niche.summary} This page reduces anxiety around the offer by keeping the proof close, the path short, and the recovery ladder ready if someone hesitates.`}
+      title={`${niche.label} offer path for a launched package`}
+      summary={`${niche.summary} This page defines the customer-facing promise that powers the capture page, qualification questions, routing rules, and follow-up in the package.`}
       profile={profile}
       niche={niche.slug}
       metrics={[
         {
-          label: "Checkout integrations",
-          value: "Stripe-ready",
-          detail: "Wire your billing provider (e.g. Stripe) and cart webhooks; third-party carts require your keys.",
+          label: "Billing integrations",
+          value: "Credential-ready",
+          detail: "Stripe and cart webhooks activate when the package owner provides the required keys.",
         },
         {
           label: "Recovery ladder",
           value: "Configurable",
-          detail: "Design abandonment sequences in nurture workflows — timing depends on your automation setup.",
+          detail: "Design abandonment sequences in nurture workflows. Timing depends on your connected automation setup.",
         },
         {
           label: "Post-purchase",
-          value: "Handoff-ready",
-          detail: "Route won deals into CRM + onboarding playbooks when SuiteDash / webhooks are configured.",
+          value: "Package-ready",
+          detail: "Route won deals into CRM and onboarding playbooks when the required CRM or webhook credentials are configured.",
         },
       ]}
     >
       <section className="grid md:grid-cols-2 gap-6">
         <article className="rounded-xl border border-border bg-card p-6">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Why this offer page feels lighter</p>
-          <h2 className="text-foreground">One ask, one fallback, one reassurance</h2>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Why this offer path is clear</p>
+          <h2 className="text-foreground">One promise, one action, one next step</h2>
           <ul className="space-y-2">
-            <li>Primary CTA stays singular so purchase intent does not fragment.</li>
-            <li>Support CTA stays human and non-threatening for slower deciders.</li>
-            <li>Proof and risk-reduction sit next to the ask instead of below the fold.</li>
+            <li>Primary CTA stays singular so the buyer knows exactly what to do.</li>
+            <li>Fallback follow-up keeps slower deciders from disappearing.</li>
+            <li>Proof and risk-reduction sit next to the action instead of below the fold.</li>
           </ul>
         </article>
         <article className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What happens after the decision</p>
           <h2 className="text-foreground">No dead ends after purchase or hesitation</h2>
           <ul className="space-y-2">
-            <li>Checkout success triggers onboarding, portal invite, and activation logic.</li>
-            <li>Hesitation triggers recovery, coupon rescue, and second-touch re-entry.</li>
+            <li>Checkout success can trigger package onboarding and customer workspace creation.</li>
+            <li>Hesitation can trigger recovery, offer clarification, and second-touch re-entry.</li>
             <li>Returning visitors get a lighter path instead of repeating the same pitch.</li>
           </ul>
         </article>
@@ -203,8 +203,8 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Our guarantee</p>
               <p className="m-0 text-sm font-semibold">
                 {intel.conversionPsychology.guaranteePreference === "money-back" ? "Full money-back guarantee if you don't see results." :
-                 intel.conversionPsychology.guaranteePreference === "results-based" ? "Results guaranteed — or you don't pay." :
-                 intel.conversionPsychology.guaranteePreference === "trial-period" ? "Free trial period — no commitment, cancel anytime." :
+                 intel.conversionPsychology.guaranteePreference === "results-based" ? "Results guaranteed, or you don't pay." :
+                 intel.conversionPsychology.guaranteePreference === "trial-period" ? "Free trial period, no commitment, cancel anytime." :
                  "100% satisfaction guaranteed."}
               </p>
             </div>

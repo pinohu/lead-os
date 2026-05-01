@@ -15,7 +15,7 @@ function publicSupportEmail() {
 }
 
 function publicBrandName() {
-  return process.env.NEXT_PUBLIC_BRAND_NAME ?? "CX React";
+  return process.env.NEXT_PUBLIC_BRAND_NAME ?? "Lead OS";
 }
 
 export default function ContactPage() {
@@ -29,7 +29,7 @@ export default function ContactPage() {
       "@id": `${baseUrl}/contact#webpage`,
       url: `${baseUrl}/contact`,
       name: `Contact ${brandName}`,
-      description: `Questions about ${brandName}? Reach out to our sales, support, or partnership team.`,
+      description: `Questions about ${brandName}? Reach out for solution selection, account access, support, or partnerships.`,
       isPartOf: { "@id": `${baseUrl}/#website` },
       mainEntity: {
         "@type": "Organization",
@@ -86,9 +86,10 @@ export default function ContactPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }} />
     <div className="max-w-lg mx-auto px-4 py-12">
-      <h1 className="text-foreground text-2xl font-extrabold mb-2">Talk to Our Team</h1>
+      <h1 className="text-foreground text-2xl font-extrabold mb-2">Get help launching the right solution</h1>
       <p className="text-foreground mb-8">
-        Get personalized onboarding for your agency, ask about enterprise plans, or connect with our support team.
+        Ask which solution fits the customer outcome, what account access is needed, or how to activate a production
+        integration after launch.
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">

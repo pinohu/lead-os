@@ -2,7 +2,7 @@
 // Cross-request idempotency for operator mutations (Postgres-backed).
 
 import { createHash } from "crypto";
-import { queryPostgres } from "@/lib/db";
+import { queryPostgres } from "./db.ts";
 
 export type IdempotencyLookupResult =
   | { kind: "miss" }

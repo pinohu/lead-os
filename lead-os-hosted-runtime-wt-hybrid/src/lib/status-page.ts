@@ -144,7 +144,7 @@ export async function buildStatusPayload(): Promise<StatusPayload> {
     components,
     incidents: await extractIncidents(),
     page: {
-      name: "CX React Status",
+      name: "Lead OS Status",
       url: (process.env.NEXT_PUBLIC_SITE_URL ?? tenantConfig.siteUrl).replace(/\/$/, ""),
     },
   };

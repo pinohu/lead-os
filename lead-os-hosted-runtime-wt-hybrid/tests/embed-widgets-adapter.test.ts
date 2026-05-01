@@ -171,5 +171,5 @@ test("generateWordPressPlugin returns a plugin package", async () => {
   assert.ok(plugin.downloadUrl.length > 0);
   assert.equal(plugin.version, "1.0.0");
   assert.ok(plugin.phpCode.includes("leados_widget_shortcode"));
-  assert.ok(plugin.readme.includes("CX React"));
+  assert.ok(plugin.readme.includes("Lead OS"));
 });

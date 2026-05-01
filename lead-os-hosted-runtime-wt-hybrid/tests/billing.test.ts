@@ -27,6 +27,19 @@ import {
   getSubscriptionStatus,
 } from "../src/lib/billing.ts";
 
+const ORIGINAL_NODE_ENV = process.env.NODE_ENV;
+const ORIGINAL_VERCEL_ENV = process.env.VERCEL_ENV;
+const ORIGINAL_STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+
+function restoreBillingEnv() {
+  if (ORIGINAL_NODE_ENV === undefined) delete process.env.NODE_ENV;
+  else process.env.NODE_ENV = ORIGINAL_NODE_ENV;
+  if (ORIGINAL_VERCEL_ENV === undefined) delete process.env.VERCEL_ENV;
+  else process.env.VERCEL_ENV = ORIGINAL_VERCEL_ENV;
+  if (ORIGINAL_STRIPE_SECRET_KEY === undefined) delete process.env.STRIPE_SECRET_KEY;
+  else process.env.STRIPE_SECRET_KEY = ORIGINAL_STRIPE_SECRET_KEY;
+}
+
 // ---------------------------------------------------------------------------
 // Plan Catalog
 // ---------------------------------------------------------------------------
@@ -332,10 +345,26 @@ test("getPlanForTenant returns null for cancelled subscription", async () => {
 // ---------------------------------------------------------------------------
 
 test("createCheckoutSession returns dry-run when Stripe not configured", async () => {
+  restoreBillingEnv();
+  delete process.env.VERCEL_ENV;
+  process.env.NODE_ENV = "test";
+  delete process.env.STRIPE_SECRET_KEY;
   const result = await createCheckoutSession("dry-tenant", "managed-starter", "/success", "/cancel");
   assert.equal(result.dryRun, true);
   assert.equal(result.url, "/success");
   assert.ok(result.sessionId.startsWith("dry_cs_"));
+  restoreBillingEnv();
+});
+
+test("createCheckoutSession rejects dry-run billing in production", async () => {
+  restoreBillingEnv();
+  process.env.VERCEL_ENV = "production";
+  delete process.env.STRIPE_SECRET_KEY;
+  await assert.rejects(
+    () => createCheckoutSession("dry-tenant", "managed-starter", "/success", "/cancel"),
+    { message: "Stripe is not configured; checkout cannot run in production" },
+  );
+  restoreBillingEnv();
 });
 
 test("createCheckoutSession throws for unknown plan", async () => {

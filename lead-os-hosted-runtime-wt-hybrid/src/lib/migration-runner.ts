@@ -42,8 +42,8 @@ async function runMigrationFile(pool: Pool, filePath: string, filename: string):
 
     // Strip any existing BEGIN/COMMIT from migration files so we own the transaction.
     const stripped = sql
-      .replace(/^\s*BEGIN\s*;?\s*/im, "")
-      .replace(/\s*COMMIT\s*;?\s*$/im, "");
+      .replace(/^\s*BEGIN\s*;?\s*/i, "")
+      .replace(/\s*COMMIT\s*;?\s*$/i, "");
 
     await client.query(stripped);
     await client.query(

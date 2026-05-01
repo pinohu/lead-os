@@ -1,37 +1,44 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { nicheCatalog } from "@/lib/catalog";
 import { tenantConfig } from "@/lib/tenant";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Offer paths by vertical",
-  description: "High-intent offer flows for each configured industry — CX React / Lead OS.",
+  title: "Offer paths by industry | Lead OS",
+  description: "Choose the customer-facing promise that powers a package's capture page, routing, and follow-up.",
 };
 
 export default function OffersIndexPage() {
   const niches = Object.values(nicheCatalog).filter((n) => n.slug !== "general");
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 space-y-8">
-      <div>
-        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Offers</p>
-        <h1 className="text-3xl font-bold tracking-tight mt-1">Offer paths by industry</h1>
-        <p className="text-muted-foreground mt-2 max-w-2xl">
-          Each path is a tuned landing experience plus capture. Pair with{" "}
+    <main className="mx-auto max-w-5xl space-y-8 px-4 py-10">
+      <section>
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Offer paths</p>
+        <h1 className="mt-1 text-3xl font-bold tracking-tight">Choose the promise the customer wants buyers to act on.</h1>
+        <p className="mt-2 max-w-2xl text-muted-foreground">
+          Each path can become the front door of a launched package: the capture page, qualification questions, routing
+          rules, and follow-up all start with this promise. Use these paths to decide the customer-facing offer, then
+          continue to{" "}
           <Link className="text-primary underline-offset-4 hover:underline" href="/industries">
-            Industries
+            industry templates
           </Link>{" "}
-          for positioning, or start onboarding for your own tenant at{" "}
+          or create your workspace in{" "}
           <Link className="text-primary underline-offset-4 hover:underline" href="/onboard">
-            Get started
+            setup
+          </Link>
+          .
+          External sending and monetization activate when the required credentials are connected on the{" "}
+          <Link className="text-primary underline-offset-4 hover:underline" href="/production">
+            production status page
           </Link>
           .
         </p>
-      </div>
+      </section>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <section className="grid gap-4 sm:grid-cols-2">
         {niches.map((niche) => (
           <Card key={niche.slug} className="flex flex-col">
             <CardHeader>
@@ -46,12 +53,12 @@ export default function OffersIndexPage() {
                 <Link href={`/industries/${niche.slug}`}>Industry page</Link>
               </Button>
               <Button asChild variant="outline" size="sm">
-                <Link href={`/assess/${niche.slug}`}>Assessment</Link>
+                <Link href={`/assess/${niche.slug}`}>Check fit</Link>
               </Button>
             </CardContent>
           </Card>
         ))}
-      </div>
+      </section>
 
       <Card>
         <CardHeader>
@@ -69,11 +76,11 @@ export default function OffersIndexPage() {
       </Card>
 
       <p className="text-sm text-muted-foreground">
-        Brand: {tenantConfig.brandName} · Questions:{" "}
+        Brand: {tenantConfig.brandName} &middot; Questions:{" "}
         <a className="text-primary underline-offset-4 hover:underline" href={`mailto:${tenantConfig.supportEmail}`}>
           {tenantConfig.supportEmail}
         </a>
       </p>
-    </div>
+    </main>
   );
 }

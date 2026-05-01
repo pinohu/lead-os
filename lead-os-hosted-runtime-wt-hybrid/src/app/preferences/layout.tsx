@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Preferences | CX React",
+  title: "Preferences | Lead OS",
   description: "Manage your email preferences and communication settings.",
 };
 

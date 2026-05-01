@@ -69,7 +69,7 @@ const TOOLS: ToolEntry[] = [
     name: "SuiteDash",
     category: "crm",
     description:
-      "All-in-one CRM platform with client portal, project management, and invoicing. Serves as the primary client relationship layer in CX React.",
+      "All-in-one CRM platform with client portal, project management, and invoicing. Serves as the primary client relationship layer in Lead OS.",
     integrationMethod: "api",
     requiredCredentials: ["apiKey", "baseUrl"],
     leadOsMapping: "distribution",
@@ -127,7 +127,7 @@ const TOOLS: ToolEntry[] = [
     name: "Emailit",
     category: "communication",
     description:
-      "Transactional and marketing email delivery service with SMTP relay and template management. Handles all outbound email from CX React.",
+      "Transactional and marketing email delivery service with SMTP relay and template management. Handles all outbound email from Lead OS.",
     integrationMethod: "api",
     requiredCredentials: ["apiKey", "fromEmail", "fromName"],
     leadOsMapping: "fulfillment",
@@ -615,7 +615,7 @@ const TOOLS: ToolEntry[] = [
     name: "Activepieces",
     category: "automation",
     description:
-      "Open-source workflow automation platform with 100+ connectors, serving as the primary orchestration layer for CX React inter-tool workflows.",
+      "Open-source workflow automation platform with 100+ connectors, serving as the primary orchestration layer for Lead OS inter-tool workflows.",
     integrationMethod: "api",
     requiredCredentials: ["apiKey", "baseUrl"],
     leadOsMapping: "automation",

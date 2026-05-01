@@ -1,8 +1,8 @@
 // src/lib/pricing/repository.ts
 // PostgreSQL persistence (primary) with optional Supabase mirror.
 
-import { queryPostgres } from "@/lib/db.ts";
-import { getSupabaseAdmin } from "@/lib/supabase/admin.ts";
+import { queryPostgres } from "../db.ts";
+import { getSupabaseAdmin } from "../supabase/admin.ts";
 import type { PricingNodeRow, PricingSkuRow } from "./types.ts";
 
 interface SkuRowDb {

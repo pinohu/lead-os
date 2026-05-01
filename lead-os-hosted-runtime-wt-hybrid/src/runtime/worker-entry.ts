@@ -1,6 +1,8 @@
 // src/runtime/worker-entry.ts
 // Dedicated background worker (BullMQ + scheduler). Run: npm run worker
 
+export {};
+
 if (!process.env.REDIS_URL) {
   console.error("[lead-os-worker] REDIS_URL is required for the pricing worker in production.");
   if (process.env.NODE_ENV === "production") {

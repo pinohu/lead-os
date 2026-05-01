@@ -580,7 +580,7 @@ async function createRepo(repoName: string): Promise<{ url: string; fullName: st
     method: "POST",
     body: JSON.stringify({
       name: repoName,
-      description: `Auto-deployed by CX React`,
+      description: `Auto-deployed by Lead OS`,
       auto_init: true,
       private: false,
     }),

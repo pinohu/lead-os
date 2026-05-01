@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact Us | CX React",
-  description: "Get in touch with the CX React team for sales, support, or partnership inquiries.",
+  title: "Contact Us | Lead OS",
+  description: "Get help choosing a package, adding credentials, activating integrations, or discussing partnerships.",
 };
 
 export default function ContactLayout({ children }: { children: React.ReactNode }) {

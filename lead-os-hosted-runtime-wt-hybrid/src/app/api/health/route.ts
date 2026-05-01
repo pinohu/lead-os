@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { recordCheck } from "@/lib/uptime-tracker";
 import { getPricingRuntimeSnapshot } from "@/lib/pricing/runtime-state.ts";
+import { getProductionReadinessStatus } from "@/lib/production-config";
 
 export async function GET() {
   let dbStatus = "unknown";
@@ -21,15 +22,21 @@ export async function GET() {
     dbStatus = "down";
   }
 
-  recordCheck("database", dbStatus === "healthy" ? "healthy" : dbStatus === "down" ? "down" : "healthy", dbLatency);
+  const readiness = getProductionReadinessStatus();
+  const databaseHealthy = dbStatus === "healthy";
+
+  recordCheck("database", databaseHealthy ? "healthy" : "down", dbLatency);
   recordCheck("api", "healthy", 0);
 
   const pricing = getPricingRuntimeSnapshot();
   const pricingStatus =
     pricing.lastTickError ? "degraded" : "healthy";
 
+  const missingRequired = readiness.missingRequired.map((dependency) => dependency.key);
+  const status = databaseHealthy && readiness.ready ? "ok" : "degraded";
+
   return NextResponse.json({
-    status: dbStatus === "down" ? "degraded" : "ok",
+    status,
     service: "lead-os",
     version: process.env.npm_package_version ?? "0.1.0",
     apiVersion: "2026-03-30",
@@ -43,6 +50,12 @@ export async function GET() {
         : pricing.memorySchedulerStarted
           ? "memory_scheduler"
           : "idle",
+      production_readiness: readiness.ready ? "ready" : "blocked",
     },
-  });
+    readiness: {
+      productionLike: readiness.productionLike,
+      strict: readiness.strict,
+      missingRequired,
+    },
+  }, { status: status === "ok" ? 200 : 503 });
 }

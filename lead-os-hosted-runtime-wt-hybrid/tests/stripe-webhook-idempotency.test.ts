@@ -1,7 +1,7 @@
 // tests/stripe-webhook-idempotency.test.ts
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { tryClaimStripeWebhookEvent, releaseStripeWebhookEventClaim } from "../src/lib/billing/stripe-webhook-idempotency";
+import { tryClaimStripeWebhookEvent, releaseStripeWebhookEventClaim } from "../src/lib/billing/stripe-webhook-idempotency.ts";
 
 describe("stripe webhook idempotency (Postgres)", () => {
   it("tryClaim then duplicate claim returns false when DB and migration 009 exist", async (t) => {
@@ -11,7 +11,7 @@ describe("stripe webhook idempotency (Postgres)", () => {
       return;
     }
 
-    const { initializeDatabase } = await import("../src/lib/db");
+const { initializeDatabase } = await import("../src/lib/db.ts");
     await initializeDatabase();
 
     const id = `evt_test_idempotency_${process.pid}`;

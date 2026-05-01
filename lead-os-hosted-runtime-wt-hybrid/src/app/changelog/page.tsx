@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Changelog",
-  description: "What is new in CX React. Release notes, new features, and improvements.",
+  description: "What is new in Lead OS. Release notes, solution launch improvements, and production updates.",
 };
 
 interface Release {
@@ -101,7 +101,7 @@ export default function ChangelogPage() {
     <div className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-foreground text-2xl font-extrabold mb-2">What&apos;s New</h1>
       <p className="text-foreground mb-12">
-        Platform updates, new capabilities, and improvements that help your agency grow.
+          Platform updates, solution launch improvements, and fulfillment automation changes.
       </p>
 
       {releases.map((release) => (

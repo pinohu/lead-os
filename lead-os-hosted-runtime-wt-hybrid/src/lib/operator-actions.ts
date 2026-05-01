@@ -1,19 +1,19 @@
 // src/lib/operator-actions.ts
 // Server-side operator mutations (control plane). All paths validate tenant + audit log.
 
-import { assertPricingExecutionAllowed } from "@/lib/billing/entitlements";
-import { logOperatorAudit } from "@/lib/operator-audit";
-import { requireAlignedTenant } from "@/lib/api-mutation-guard";
-import { tenantConfig } from "@/lib/tenant";
+import { assertPricingExecutionAllowed } from "./billing/entitlements.ts";
+import { logOperatorAudit } from "./operator-audit.ts";
+import { requireAlignedTenant } from "./api-mutation-guard.ts";
+import { tenantConfig } from "./tenant.ts";
 import {
   deleteDeadLetterJobById,
   updateNodeStatusByNodeKey,
   updateRecommendationStatus,
-} from "@/lib/pricing/repository";
-import { replayDeadLetterJobById } from "@/lib/pricing/queue-client";
-import { runPricingTickJob } from "@/lib/pricing/job-processor";
-import { operatorForceApplyRecommendation } from "@/lib/pricing/operator-recommendation-apply";
-import { initializeDatabase } from "@/lib/db";
+} from "./pricing/repository.ts";
+import { replayDeadLetterJobById } from "./pricing/queue-client.ts";
+import { runPricingTickJob } from "./pricing/job-processor.ts";
+import { operatorForceApplyRecommendation } from "./pricing/operator-recommendation-apply.ts";
+import { initializeDatabase } from "./db.ts";
 import { z } from "zod";
 
 export const OperatorActionSchema = z.discriminatedUnion("type", [

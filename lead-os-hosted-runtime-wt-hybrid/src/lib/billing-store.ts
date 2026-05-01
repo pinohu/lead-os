@@ -60,6 +60,14 @@ async function ensureBillingSchema(): Promise<void> {
           updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
         );
 
+        ALTER TABLE lead_os_subscriptions ADD COLUMN IF NOT EXISTS plan_id TEXT DEFAULT 'managed-growth';
+        ALTER TABLE lead_os_subscriptions ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT DEFAULT '';
+        ALTER TABLE lead_os_subscriptions ADD COLUMN IF NOT EXISTS stripe_subscription_id TEXT DEFAULT '';
+        ALTER TABLE lead_os_subscriptions ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
+        ALTER TABLE lead_os_subscriptions ADD COLUMN IF NOT EXISTS current_period_start TIMESTAMPTZ DEFAULT now();
+        ALTER TABLE lead_os_subscriptions ADD COLUMN IF NOT EXISTS current_period_end TIMESTAMPTZ DEFAULT now();
+        ALTER TABLE lead_os_subscriptions ADD COLUMN IF NOT EXISTS cancel_at_period_end BOOLEAN DEFAULT false;
+
         CREATE TABLE IF NOT EXISTS lead_os_usage (
           tenant_id TEXT NOT NULL,
           period TEXT NOT NULL,
@@ -70,6 +78,11 @@ async function ensureBillingSchema(): Promise<void> {
           updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
           PRIMARY KEY (tenant_id, period)
         );
+
+        ALTER TABLE lead_os_usage ADD COLUMN IF NOT EXISTS leads INT DEFAULT 0;
+        ALTER TABLE lead_os_usage ADD COLUMN IF NOT EXISTS emails INT DEFAULT 0;
+        ALTER TABLE lead_os_usage ADD COLUMN IF NOT EXISTS sms INT DEFAULT 0;
+        ALTER TABLE lead_os_usage ADD COLUMN IF NOT EXISTS whatsapp INT DEFAULT 0;
 
         CREATE INDEX IF NOT EXISTS idx_lead_os_usage_period
           ON lead_os_usage (period);

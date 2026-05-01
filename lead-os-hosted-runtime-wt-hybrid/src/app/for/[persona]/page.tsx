@@ -28,7 +28,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
   agencies: {
     label: "Digital Marketing Agencies",
     tagline:
-      "Stop managing 8 tools. Run all your clients from one dashboard.",
+    "Launch client lead systems from one intake form instead of fulfilling every delivery hub by hand.",
     painPoints: [
       "Client onboarding takes days instead of minutes",
       "Reporting across platforms eats your team alive every month",
@@ -42,7 +42,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
       "managed-services",
     ],
     recommendedNiche: "general",
-    ctaText: "Book a Strategy Session",
+    ctaText: "Launch agency package",
     approachSteps: [
       "Consolidate client accounts into a single command center",
       "Automate reporting, lead routing, and follow-up sequences",
@@ -53,7 +53,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
   "saas-founders": {
     label: "SaaS Founders",
     tagline:
-      "Convert free trials into paying customers without adding sales reps.",
+      "Launch trial intake, scoring, routing, and conversion tracking for your SaaS growth motion.",
     painPoints: [
       "Trial-to-paid conversion hovers below industry benchmarks",
       "Onboarding drop-off kills activation before users see value",
@@ -67,7 +67,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
       "product-led-growth",
     ],
     recommendedNiche: "tech",
-    ctaText: "See Your Growth Roadmap",
+    ctaText: "Launch SaaS package",
     approachSteps: [
       "Map trial activation milestones to automated nudge sequences",
       "Score users by engagement depth and trigger human outreach at the right moment",
@@ -78,7 +78,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
   "lead-gen": {
     label: "Lead Generation Professionals",
     tagline:
-      "Deliver higher-quality leads to your clients and prove the ROI in real time.",
+      "Turn lead inventory into a packaged capture, scoring, routing, buyer, and reporting system.",
     painPoints: [
       "Clients question lead quality because there is no closed-loop reporting",
       "Manual qualification wastes hours every week on dead-end prospects",
@@ -92,7 +92,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
       "performance-dashboards",
     ],
     recommendedNiche: "general",
-    ctaText: "Get Your Lead Gen Audit",
+    ctaText: "Launch lead package",
     approachSteps: [
       "Deploy AI-scored intake forms that route only qualified leads",
       "Unify capture across web, social, phone, and chat into one pipeline",
@@ -103,7 +103,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
   consultants: {
     label: "Independent Consultants",
     tagline:
-      "Fill your calendar with qualified prospects without cold outreach.",
+      "Launch an inbound qualification system that tells prospects exactly what to do next.",
     painPoints: [
       "Feast-or-famine pipeline makes revenue unpredictable",
       "Spending more time marketing than delivering billable work",
@@ -117,7 +117,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
       "nurture-sequences",
     ],
     recommendedNiche: "coaching",
-    ctaText: "Build Your Pipeline",
+    ctaText: "Launch consultant package",
     approachSteps: [
       "Publish authority content that attracts inbound inquiries on autopilot",
       "Qualify prospects before they hit your calendar so every call counts",
@@ -128,11 +128,11 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
   franchises: {
     label: "Franchise Operators",
     tagline:
-      "Give every location the same growth engine without the same overhead.",
+      "Launch territory-aware lead routing so every location gets the right opportunities.",
     painPoints: [
       "Inconsistent lead handling across locations damages the brand",
       "Corporate marketing spend is impossible to attribute at the unit level",
-      "Franchisees resist new tools because onboarding is painful",
+      "Franchisees resist new software because onboarding is painful",
       "Compliance and brand guidelines are enforced manually if at all",
       "Top-performing locations hoard best practices instead of sharing them",
     ],
@@ -142,7 +142,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
       "franchisee-dashboards",
     ],
     recommendedNiche: "franchise",
-    ctaText: "Schedule a Demo",
+    ctaText: "Launch franchise solution",
     approachSteps: [
       "Roll out a unified lead routing system that respects territory rules",
       "Enforce brand-compliant funnels while letting locations personalize within guardrails",
@@ -179,10 +179,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const bp = PERSONA_BLUEPRINTS[persona];
   if (!bp) return {};
   return {
-    title: `CX React for ${bp.label} | CX React`,
-    description: `${bp.tagline} Discover growth systems designed specifically for ${bp.label.toLowerCase()}.`,
+    title: `Lead OS for ${bp.label} | Lead OS`,
+    description: `${bp.tagline} Choose a solution, collect intake details, and provision the customer-ready outputs.`,
     openGraph: {
-      title: `CX React for ${bp.label}`,
+      title: `Lead OS for ${bp.label}`,
       description: bp.tagline,
       images: [{ url: buildOgImageUrl(bp.label, bp.tagline, bp.recommendedNiche), width: 1200, height: 630 }],
     },
@@ -223,7 +223,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
         niche={bp.recommendedNiche}
         eyebrow={`Built for ${bp.label}`}
         title={bp.tagline}
-        summary={`CX React gives ${bp.label.toLowerCase()} a turnkey growth system that replaces patchwork tools with one platform tuned to the way you sell.`}
+        summary={`Lead OS gives ${bp.label.toLowerCase()} a clear path: choose the package the customer bought, collect the setup details once, and receive the capture page, embed code, routing, dashboard, and reporting surfaces automatically.`}
         profile={profile}
         metrics={[
           {
@@ -269,18 +269,18 @@ export default async function PersonaPage({ params, searchParams }: Props) {
         {/* ---------- Recommended Approach ---------- */}
         <section className="rounded-xl border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Your growth path</p>
-          <h2 className="text-foreground">How {bp.label} succeed with CX React</h2>
+          <h2 className="text-foreground">How {bp.label} use this without fulfillment stress</h2>
           <ol className="space-y-3 mt-4 list-decimal list-inside">
             {bp.approachSteps.map((step, i) => (
               <li key={i}>{step}</li>
             ))}
           </ol>
           <div className="flex flex-wrap gap-3">
-            <Button asChild><Link href={`/assess/${niche.slug}`}>
+            <Button asChild><Link href="/packages">
               {bp.ctaText}
             </Link></Button>
             <Button asChild variant="outline"><Link href={`/industries/${niche.slug}`}>
-              Explore {niche.label} Solutions
+              Explore {niche.label} packages
             </Link></Button>
           </div>
         </section>
@@ -305,9 +305,9 @@ export default async function PersonaPage({ params, searchParams }: Props) {
               </div>
             </article>
             <article className="rounded-xl border border-border bg-card p-6">
-              <h3 className="text-foreground">Growth Assessment</h3>
+              <h3 className="text-foreground">Package fit assessment</h3>
               <p>
-                Score your readiness in two minutes and get an action plan.
+                Score readiness for this niche before you launch the customer package.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button asChild variant="outline"><Link
@@ -320,8 +320,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
             <article className="rounded-xl border border-border bg-card p-6">
               <h3 className="text-foreground">Resource Guide</h3>
               <p>
-                Read the complete {niche.label.toLowerCase()} playbook
-                with pain points, solutions, and FAQs.
+                Read the {niche.label.toLowerCase()} playbook with positioning, pain points, and FAQs.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button asChild variant="outline"><Link
@@ -353,7 +352,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Service",
-            name: `CX React for ${bp.label}`,
+            name: `Lead OS for ${bp.label}`,
             description: bp.tagline,
             provider: {
               "@type": "Organization",

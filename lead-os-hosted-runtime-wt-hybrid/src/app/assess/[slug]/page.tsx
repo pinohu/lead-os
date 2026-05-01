@@ -30,8 +30,8 @@ export async function generateMetadata({ params }: AssessmentPageProps): Promise
   const { slug } = await params;
   const niche = getNiche(slug);
   return {
-    title: `${niche.assessmentTitle} | CX React`,
-    description: `${niche.summary} Take a 2-minute diagnostic and get a tailored action plan.`,
+    title: `${niche.assessmentTitle} | Lead OS`,
+    description: `${niche.summary} Take a 2-minute diagnostic and identify the right package path.`,
     openGraph: {
       title: niche.assessmentTitle,
       description: niche.summary,
@@ -78,15 +78,15 @@ export default async function AssessmentPage({ params, searchParams }: Assessmen
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(assessJsonLd) }} />
     <div>
     <ExperienceScaffold
-      eyebrow="Hosted assessment"
+      eyebrow="Package fit assessment"
       title={niche.assessmentTitle}
-      summary={`${niche.summary} This assessment path is now designed to feel like guided diagnosis instead of a long form. Each answer should earn the next question and move the visitor closer to a credible next step.`}
+      summary={`${niche.summary} This assessment helps the buyer understand the package path, the outcome they want, and the next step without wading through platform jargon.`}
       profile={profile}
       niche={niche.slug}
       metrics={[
         { label: "Assessment style", value: "Progressive", detail: "Only the next useful question should appear." },
         { label: "Return logic", value: "Milestone-aware", detail: "Visit two and three get lighter, smarter asks." },
-        { label: "Output", value: "Tailored next action", detail: "Booking, nurture, or authority path based on fit." },
+    { label: "Output", value: "Solution next step", detail: "Booking, nurture, authority, or solution launch path based on fit." },
       ]}
     >
       <section className="grid md:grid-cols-2 gap-6">

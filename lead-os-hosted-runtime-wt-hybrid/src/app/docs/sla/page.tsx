@@ -32,7 +32,7 @@ export default function DocsSlaPage() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground leading-relaxed">
           <ul className="list-disc pl-5 space-y-2">
-            <li>Targets for core API and dashboard uptime apply only when you operate the monitoring described in the SLA and measure production traffic.</li>
+            <li>Targets for core API and dashboard uptime apply only when you operate the monitoring described in the SLA and measure live package traffic.</li>
             <li>Webhook and background-job targets are lower than core API — see the table in the source file.</li>
             <li>Maintenance windows, exclusions, credits, and backup/RPO language are all in the Markdown — nothing here is binding until your legal process says so.</li>
           </ul>

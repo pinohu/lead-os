@@ -1,10 +1,10 @@
 // src/app/api/queue/route.ts
 import { timingSafeEqual } from "crypto";
-import { NextResponse } from "next/server";
-import { requireAlignedTenant } from "@/lib/api-mutation-guard";
-import { requireOperatorApiSession } from "@/lib/operator-auth";
-import { getPricingQueueStats } from "@/lib/pricing/queue-client";
-import { countDeadLetterJobs } from "@/lib/pricing/repository";
+import { NextResponse } from "next/server.js";
+import { requireAlignedTenant } from "../../../lib/api-mutation-guard.ts";
+import { requireOperatorApiSession } from "../../../lib/operator-auth.ts";
+import { getPricingQueueStats } from "../../../lib/pricing/queue-client.ts";
+import { countDeadLetterJobs } from "../../../lib/pricing/repository.ts";
 
 export const dynamic = "force-dynamic";
 

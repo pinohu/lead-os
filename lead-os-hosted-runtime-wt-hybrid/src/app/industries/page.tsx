@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
-  title: "Industries | CX React",
+  title: "Industry templates | Lead OS",
   description:
-    "Pre-built lead generation systems for 16+ industries. Launch a new client in minutes, not weeks.",
+  "Choose an industry template to shape the solution intake questions, scoring, routing, and follow-up for a customer's lead system.",
 };
 
 export default function IndustriesPage() {
@@ -20,8 +20,8 @@ export default function IndustriesPage() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "@id": `${baseUrl}/industries#industries`,
-    name: "Industries | CX React",
-    description: "Pre-built lead generation systems for 16+ industries. Launch a new client in minutes, not weeks.",
+    name: "Industry templates | Lead OS",
+  description: "Industry templates for solution intake, capture, scoring, routing, and follow-up.",
     numberOfItems: niches.length,
     itemListElement: niches.map((niche, i) => ({
       "@type": "ListItem",
@@ -37,14 +37,13 @@ export default function IndustriesPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(industriesJsonLd) }} />
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="text-center mb-12">
-        <Badge variant="secondary" className="mb-4">Industries we serve</Badge>
+        <Badge variant="secondary" className="mb-4">Industry templates</Badge>
         <h1 className="text-foreground text-4xl font-extrabold tracking-tight mb-4">
-          Launch any client in minutes, not weeks
+          Start with the customer's industry, then launch the right package.
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Every industry has different lead sources, sales cycles, and buyer behavior.
-          CX React ships with pre-built funnels, scoring rules, and nurture sequences
-          tuned to each vertical -- so you can onboard a new client and go live the same day.
+          Industry templates shape the questions, scoring, routing, and follow-up so the customer receives a lead
+          system that matches how they sell.
         </p>
       </div>
 
@@ -62,7 +61,7 @@ export default function IndustriesPage() {
                 <Link href={`/industries/${niche.slug}`}>Explore {niche.label}</Link>
               </Button>
               <Button asChild variant="outline" size="sm">
-                <Link href={`/assess/${niche.slug}`}>Take Assessment</Link>
+                <Link href={`/assess/${niche.slug}`}>Check Fit</Link>
               </Button>
             </CardContent>
           </Card>

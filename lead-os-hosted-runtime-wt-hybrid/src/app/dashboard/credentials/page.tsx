@@ -237,10 +237,10 @@ export default function CredentialsPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="max-w-[1100px] mx-auto px-6 py-8">
-        <h1 className="text-2xl font-bold text-foreground mb-1">Credentials Vault</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-1">Account Access Vault</h1>
         <p className="text-muted-foreground text-sm mb-6 max-w-[640px] leading-relaxed">
-          Connect your tools to unlock capabilities. Each provider enables specific
-          features across the platform. Credentials are encrypted at rest with AES-256-GCM.
+          Connect approved provider accounts to unlock live capabilities. Each provider enables specific
+          features across the platform. Sensitive access values are encrypted at rest with AES-256-GCM.
         </p>
 
         <nav className="flex gap-3 mb-6 flex-wrap" aria-label="Credentials navigation">
@@ -348,7 +348,7 @@ export default function CredentialsPage() {
                               onClick={() => handleVerify(provider.provider)}
                               disabled={isBusy}
                               aria-busy={isBusy}
-                              aria-label={`Verify ${provider.provider.replace(/_/g, " ")} credential`}
+                              aria-label={`Verify ${provider.provider.replace(/_/g, " ")} account access`}
                             >
                               {isBusy ? "Verifying..." : "Verify"}
                             </button>
@@ -382,7 +382,7 @@ export default function CredentialsPage() {
                           id={`form-${providerId}`}
                           className="mt-3 p-4 bg-muted/30 border border-border/50 rounded-lg"
                           role="form"
-                          aria-label={`${provider.provider.replace(/_/g, " ")} credentials form`}
+                          aria-label={`${provider.provider.replace(/_/g, " ")} account access form`}
                         >
                           {provider.fields.map((field) => {
                             const fieldId = `${providerId}-${field}`;
@@ -411,7 +411,7 @@ export default function CredentialsPage() {
                             onClick={() => handleSave(provider)}
                             disabled={isBusy}
                             aria-busy={isBusy}
-                            aria-label={`Save ${provider.provider.replace(/_/g, " ")} credentials`}
+                            aria-label={`Save ${provider.provider.replace(/_/g, " ")} account access`}
                           >
                             {isBusy ? "Saving..." : "Save"}
                           </button>

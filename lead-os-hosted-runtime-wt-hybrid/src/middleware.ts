@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
-import { startTrace } from "@/lib/request-tracer";
+import { endTrace, enrichTrace, startTrace } from "@/lib/request-tracer";
 
 export const runtime = "nodejs";
 
@@ -53,6 +53,9 @@ const PUBLIC_EXACT: Set<string> = new Set([
   "/api/unsubscribe",
   "/api/setup/status",
   "/api/contact",
+  "/api/production-readiness",
+  "/api/live-deliverables",
+  "/api/package-provisioning",
 ]);
 
 const PUBLIC_PREFIXES: string[] = [
@@ -72,6 +75,8 @@ function isPublicRoute(pathname: string, method: string): boolean {
 
   // GET-only public route
   if (pathname === "/api/marketplace/leads" && method === "GET") return true;
+  if (pathname === "/api/onboarding" && method === "POST") return true;
+  if (pathname.startsWith("/api/onboarding/") && (method === "GET" || method === "POST")) return true;
 
   for (const prefix of PUBLIC_PREFIXES) {
     if (pathname.startsWith(prefix)) return true;
@@ -109,6 +114,7 @@ function forwardWithIdentity(
   identity: IdentityHeaders,
   cspNonce: string,
 ): NextResponse {
+  enrichTrace(requestId, identity["x-authenticated-tenant-id"], identity["x-authenticated-user-id"]);
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-csp-nonce", cspNonce);
   requestHeaders.set("x-authenticated-user-id", identity["x-authenticated-user-id"]);
@@ -169,7 +175,10 @@ async function forwardWithIdentityAndPolicies(
     }
   }
 
-  if (process.env.LEAD_OS_BILLING_ENFORCE === "true") {
+  const billingEnforced = process.env.LEAD_OS_BILLING_ENFORCE === "true" ||
+    (process.env.VERCEL_ENV === "production" && process.env.LEAD_OS_BILLING_ENFORCE !== "false");
+
+  if (billingEnforced) {
     const { getRequiredApiAccessTier } = await import("@/lib/billing/api-route-tier");
     const { getBillingGateStateCached } = await import("@/lib/billing/billing-gate-cache");
     const { assertApiAccessTierAllows } = await import("@/lib/billing/entitlements");
@@ -237,6 +246,7 @@ async function forwardWithIdentityAndPolicies(
 // ---------------------------------------------------------------------------
 
 function applySecurityHeaders(response: NextResponse, requestId: string, cspNonce: string): NextResponse {
+  endTrace(requestId, response.status);
   response.headers.set("x-request-id", requestId);
   response.headers.set("x-api-version", "2026-03-30");
   const buildId = process.env.LEAD_OS_BUILD_ID ?? process.env.VERCEL_GIT_COMMIT_SHA ?? "";

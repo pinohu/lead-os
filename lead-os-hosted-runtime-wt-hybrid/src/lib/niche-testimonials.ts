@@ -10,7 +10,7 @@ export const NICHE_TESTIMONIALS: Record<string, NicheTestimonial[]> = {
   general: [
     {
       quote:
-        "We replaced four separate tools with CX React and cut our lead response time from hours to under two minutes. The pipeline finally runs itself.",
+        "We replaced four separate tools with Lead OS and cut our lead response time from hours to under two minutes. The pipeline finally runs itself.",
       author: "Marcus Tran",
       role: "Director of Operations",
       company: "Vantage Growth Partners",
@@ -37,7 +37,7 @@ export const NICHE_TESTIMONIALS: Record<string, NicheTestimonial[]> = {
   legal: [
     {
       quote:
-        "Our intake team was overwhelmed with unqualified consultations. CX React scores every inquiry and routes only viable cases to attorneys, saving us hours daily.",
+        "Our intake team was overwhelmed with unqualified consultations. Lead OS scores every inquiry and routes only viable cases to attorneys, saving us hours daily.",
       author: "Patricia Nguyen",
       role: "Managing Partner",
       company: "Nguyen & Calloway LLP",
@@ -53,7 +53,7 @@ export const NICHE_TESTIMONIALS: Record<string, NicheTestimonial[]> = {
     },
     {
       quote:
-        "Compliance was our biggest concern when automating client communication. CX React handled it seamlessly while keeping follow-up speed under five minutes.",
+        "Compliance was our biggest concern when automating client communication. Lead OS handled it seamlessly while keeping follow-up speed under five minutes.",
       author: "Anika Patel",
       role: "Chief Operating Officer",
       company: "Sterling & Associates",
@@ -72,7 +72,7 @@ export const NICHE_TESTIMONIALS: Record<string, NicheTestimonial[]> = {
     },
     {
       quote:
-        "We needed a HIPAA-conscious system that still moved fast. CX React gave us automated follow-up without putting patient data at risk.",
+        "We needed a HIPAA-conscious system that still moved fast. Lead OS gave us automated follow-up without putting patient data at risk.",
       author: "Samantha Torres",
       role: "Operations Manager",
       company: "Summit Health Collective",
@@ -107,7 +107,7 @@ export const NICHE_TESTIMONIALS: Record<string, NicheTestimonial[]> = {
     },
     {
       quote:
-        "Attribution across six channels was a nightmare. CX React unified everything into one dashboard so we doubled down on what actually drove MRR.",
+        "Attribution across six channels was a nightmare. Lead OS unified everything into one dashboard so we doubled down on what actually drove MRR.",
       author: "Emily Zhao",
       role: "Marketing Director",
       company: "Relay Platform Inc.",
@@ -126,7 +126,7 @@ export const NICHE_TESTIMONIALS: Record<string, NicheTestimonial[]> = {
     },
     {
       quote:
-        "We were losing jobs to competitors who simply responded faster. CX React cut our response time to minutes and the pipeline doubled in six months.",
+        "We were losing jobs to competitors who simply responded faster. Lead OS cut our response time to minutes and the pipeline doubled in six months.",
       author: "Karen Ostrowski",
       role: "Business Development Manager",
       company: "Ironside Builders",
@@ -188,7 +188,7 @@ export const NICHE_TESTIMONIALS: Record<string, NicheTestimonial[]> = {
     },
     {
       quote:
-        "Running campaigns for six different programs used to require six different workflows. CX React lets us templatize and launch in a fraction of the time.",
+        "Running campaigns for six different programs used to require six different workflows. Lead OS lets us templatize and launch in a fraction of the time.",
       author: "Sandra Bellingham",
       role: "VP of Marketing",
       company: "Crestwood College",
@@ -226,7 +226,7 @@ export const NICHE_TESTIMONIALS: Record<string, NicheTestimonial[]> = {
   franchise: [
     {
       quote:
-        "With 40 locations, inconsistent lead handling was damaging our brand. CX React gave every franchisee the same playbook and performance visibility.",
+        "With 40 locations, inconsistent lead handling was damaging our brand. Lead OS gave every franchisee the same playbook and performance visibility.",
       author: "Diane Morales",
       role: "VP of Franchise Development",
       company: "FreshStart Brands Inc.",
@@ -261,7 +261,7 @@ export const NICHE_TESTIMONIALS: Record<string, NicheTestimonial[]> = {
     },
     {
       quote:
-        "Speed-to-submit determines whether we win the req or lose it. CX React cut our candidate presentation time and clients noticed immediately.",
+        "Speed-to-submit determines whether we win the req or lose it. Lead OS cut our candidate presentation time and clients noticed immediately.",
       author: "Alicia Drummond",
       role: "Director of Recruiting",
       company: "Pinnacle Workforce Solutions",
@@ -307,7 +307,7 @@ export const NICHE_TESTIMONIALS: Record<string, NicheTestimonial[]> = {
   creative: [
     {
       quote:
-        "Our project intake was a mess of emails and forms. CX React gave us a single pipeline from inquiry to signed proposal and our close rate improved fast.",
+        "Our project intake was a mess of emails and forms. Lead OS gave us a single pipeline from inquiry to signed proposal and our close rate improved fast.",
       author: "Mia Tanaka",
       role: "Creative Director",
       company: "Prism Studio Collective",
@@ -361,7 +361,7 @@ export const NICHE_TESTIMONIALS: Record<string, NicheTestimonial[]> = {
   coaching: [
     {
       quote:
-        "My calendar was either overflowing or empty. CX React built a steady pipeline of pre-qualified prospects so every discovery call is worth my time.",
+        "My calendar was either overflowing or empty. Lead OS built a steady pipeline of pre-qualified prospects so every discovery call is worth my time.",
       author: "Tanya Richards",
       role: "Executive Coach",
       company: "Richards Performance Group",

@@ -177,10 +177,10 @@ function temperatureBg(temp: string): string {
 
 function temperatureExplanation(temp: string): string {
   switch (temp) {
-    case "burning": return "Extremely high intent — responded to outreach and ready to buy now.";
-    case "hot": return "Strong interest shown — multiple engagement signals detected.";
-    case "warm": return "Has indicated interest — early-stage buying signals present.";
-    case "cold": return "Profile match only — no direct engagement signals yet.";
+    case "burning": return "Extremely high intent - responded to outreach and ready to buy now.";
+    case "hot": return "Strong interest shown - multiple engagement signals detected.";
+    case "warm": return "Has indicated interest - early-stage buying signals present.";
+    case "cold": return "Profile match only - no direct engagement signals yet.";
     default: return "Temperature not assessed.";
   }
 }
@@ -345,7 +345,7 @@ function LeadPreviewModal({ lead, onClose, onClaimStart }: LeadPreviewModalProps
                 className="text-[1.1rem] font-extrabold text-[var(--accent,#225f54)]"
               >
                 {lead.niche}
-                {lead.city && lead.state ? ` — ${lead.city}, ${lead.state}` : ""}
+                {lead.city && lead.state ? ` - ${lead.city}, ${lead.state}` : ""}
               </h2>
             </div>
             <button
@@ -481,7 +481,7 @@ function LeadCard({
 
         <p className="mb-1 text-[0.78rem] font-semibold text-[rgba(34,95,84,0.6)]">
           {lead.niche}
-          {lead.city && lead.state ? ` — ${lead.city}, ${lead.state}` : ""}
+          {lead.city && lead.state ? ` - ${lead.city}, ${lead.state}` : ""}
         </p>
 
         <p className="mb-3 text-[0.88rem] leading-snug text-[#1a1a1a]">
@@ -606,7 +606,7 @@ function ClaimedLeadsSection({ claimedLeads, onOutcome, submittingOutcome }: Cla
             <div className="mb-1.5 flex items-start justify-between">
               <p className="text-[0.82rem] font-bold">
                 {lead.niche}
-                {lead.city && lead.state ? ` — ${lead.city}, ${lead.state}` : ""}
+                {lead.city && lead.state ? ` - ${lead.city}, ${lead.state}` : ""}
               </p>
               <span className="text-[0.75rem] text-[rgba(34,95,84,0.5)]">
                 Claimed {formatRelativeTime(lead.claimedAt)}
@@ -614,7 +614,7 @@ function ClaimedLeadsSection({ claimedLeads, onOutcome, submittingOutcome }: Cla
             </div>
 
             <p className="mb-3 text-[0.82rem] leading-snug text-[rgba(0,0,0,0.6)]">
-              {lead.summary.length > 100 ? `${lead.summary.slice(0, 100)}…` : lead.summary}
+              {lead.summary.length > 100 ? `${lead.summary.slice(0, 100)}...` : lead.summary}
             </p>
 
             {lead.outcome ? (
@@ -862,11 +862,11 @@ export default function PublicMarketplacePage() {
     <main className="mx-auto max-w-[1180px] px-6 py-10">
       <section className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         <div className="max-w-2xl">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead marketplace</p>
-          <h1 className="text-foreground">Browse available leads</h1>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead buyer workspace</p>
+          <h1 className="text-foreground">Claim leads when the marketplace package is connected</h1>
           <p className="text-lg text-muted-foreground">
-            Find and claim high-quality, pre-scored leads across multiple industries and niches.
-            All leads are anonymized until purchase.
+            This page shows the buyer side of a lead-selling package: scored inventory, price, claim flow, and outcome
+            reporting. Real lead sales use the same flow after production inventory and billing credentials are connected.
           </p>
         </div>
       </section>
@@ -876,10 +876,8 @@ export default function PublicMarketplacePage() {
           role="alert"
           className="mt-4 rounded-lg border-2 border-amber-500/50 bg-amber-500/15 px-4 py-4 text-sm font-medium text-amber-950"
         >
-          <strong>Sample data mode.</strong> The live marketplace API did not return listings (timeout, error, or
-          empty catalog). The cards below are <strong>illustrative only</strong> — not real purchasable leads. Fix
-          database connectivity and <code className="text-xs">/api/marketplace/leads</code> to show production
-          inventory.
+          <strong>Sample inventory is showing.</strong> Production lead inventory is not connected in this deployment.
+          Use these cards to understand the buyer workflow; connect database and billing credentials to sell real leads.
         </div>
       ) : null}
 
@@ -898,7 +896,7 @@ export default function PublicMarketplacePage() {
               type="search"
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-              placeholder="Search by summary, niche, or location…"
+              placeholder="Search by summary, niche, or location..."
               aria-label="Search leads by summary, niche, or location"
               className="min-h-[38px] w-full max-w-[440px] rounded-md border border-[rgba(34,95,84,0.2)] bg-white/80 px-3 py-2 text-[0.85rem]"
             />
@@ -992,7 +990,7 @@ export default function PublicMarketplacePage() {
       {/* Lead grid */}
       {loading ? (
         <section className="rounded-xl border border-border bg-card p-6 mt-6">
-          <p className="text-muted-foreground">Loading available leads…</p>
+          <p className="text-muted-foreground">Loading available leads...</p>
         </section>
       ) : error ? (
         <section className="rounded-xl border border-border bg-card p-6 mt-6">
@@ -1047,7 +1045,7 @@ export default function PublicMarketplacePage() {
                 className="min-h-[44px] rounded-lg border border-[rgba(34,95,84,0.25)] bg-transparent px-8 py-3 text-[0.9rem] font-bold text-[var(--accent,#225f54)]"
                 style={{ cursor: loadingMore ? "wait" : "pointer", opacity: loadingMore ? 0.6 : 1 }}
               >
-                {loadingMore ? "Loading…" : "Load more leads"}
+                {loadingMore ? "Loading..." : "Load more leads"}
               </button>
               <span className="text-[0.78rem] text-[rgba(34,95,84,0.5)]">
                 {displayedLeads.length} of {processedLeads.length} shown

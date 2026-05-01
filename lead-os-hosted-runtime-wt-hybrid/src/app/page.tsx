@@ -1,470 +1,298 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { tenantConfig } from "@/lib/tenant";
-import { buildOgImageUrl } from "@/lib/og-url";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import {
+  ArrowRight,
+  BadgeCheck,
+  CheckCircle2,
+  ClipboardList,
+  FileCheck2,
+  PlugZap,
+  Route,
+  ShieldCheck,
+  SquareStack,
+  WalletCards,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Check, ArrowRight, Zap, Shield, BarChart3, Users, Bot, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { provisionablePackages } from "@/lib/package-catalog";
+import { buildOgImageUrl } from "@/lib/og-url";
+import { notLiveUntilConfigured, publicPlans } from "@/lib/public-offer";
+import { tenantConfig } from "@/lib/tenant";
 
-const brandName = tenantConfig.brandName || "CX React";
+const brandName = tenantConfig.brandName || "Lead OS";
 
 export const metadata: Metadata = {
-  title: `${brandName} | Lead capture, scoring & nurture for teams that sell expertise`,
+  title: `${brandName} | Launch the complete solution your client bought`,
   description:
-    "One runtime for agencies, SaaS teams, lead-gen shops, consultants, and franchise operators: capture, score, route, and nurture demand across industries — with an operator dashboard and APIs you control.",
+    "Lead OS helps teams sell outcome-based AI solutions, collect client intake details, and launch the customer-ready pages, routing, assets, dashboards, and reports the client paid for.",
   openGraph: {
-    title: `${brandName} — Lead OS for multi-industry operators`,
-    description:
-      "Replace scattered tools with one configurable platform: intake, scoring, funnels, marketplace, billing hooks, and 130+ integration adapters (keys required).",
-    images: [{ url: buildOgImageUrl(brandName, "Lead capture & nurture for every operator model"), width: 1200, height: 630 }],
+    title: `${brandName} - Launch the complete solution your client bought`,
+    description: "Sell the outcome. Collect one intake form. Launch the client-ready solution.",
+    images: [{ url: buildOgImageUrl(brandName, "Client lead system launcher"), width: 1200, height: 630 }],
   },
 };
 
-const replacedTools = [
-  "CRM", "Email Marketing", "SMS", "Landing Pages", "A/B Testing", "Analytics",
-  "Workflow Automation", "Content AI", "Lead Scoring", "Booking", "Chat", "Billing",
-];
-
-const steps = [
+const launchSteps = [
   {
-    n: "01",
-    title: "Define your workspace",
-    desc: "Set tenant, brand, and industry templates. Agencies add clients; SaaS and lead-gen teams map products or territories — the same engine powers every model.",
+    title: "Pick a solution",
+    body: "Choose the outcome the client bought, such as missed-call recovery, lead reactivation, content repurposing, or a full AI-first business OS.",
   },
   {
-    n: "02",
-    title: "Turn on capture",
-    desc: "Widgets, assessments, calculators, and API intake (`/api/intake`) feed one pipeline with duplicate detection and configurable funnels.",
+    title: "Collect intake details",
+    body: "The client gives the business name, domain, outcome, market, delivery contact, success metric, constraints, and optional account access.",
   },
   {
-    n: "03",
-    title: "Score & route automatically",
-    desc: "Intent, fit, engagement, and urgency roll into a composite score plus temperature bands so humans and automations agree on what to do next.",
+    title: "Launch the delivery hub",
+    body: "Lead OS creates the customer-facing pages, finished assets, routing logic, reports, acceptance checks, and solution-specific outputs.",
   },
   {
-    n: "04",
-    title: "Prove outcomes",
-    desc: "Dashboards, attribution views, marketplace listing (when enabled), and webhooks give you receipts for clients, investors, or franchise partners.",
+    title: "Operate and report",
+    body: "The delivery team tracks outcomes, lead quality, managed handoffs, revenue events, and customer-ready reports.",
   },
 ];
 
-const stats = [
-  { stat: "16", label: "Industries ready to launch" },
-  { stat: "137+", label: "Tool integrations" },
-  { stat: "15+", label: "Hours saved per week" },
-  { stat: "61%", label: "Avg. SaaS cost reduction" },
+const launchedOutputs = [
+  { icon: FileCheck2, title: "Public intake page", body: "A shareable lead capture page for the customer's offer." },
+  { icon: PlugZap, title: "Website embed", body: "Copy-ready embed code for the customer's site." },
+  { icon: Route, title: "Routing rules", body: "Solution-specific scoring and handoff logic." },
+  { icon: SquareStack, title: "Delivery hub", body: "Dashboard, launch status, and next actions." },
+  { icon: WalletCards, title: "Revenue surfaces", body: "Pricing, invoice, subscription, and ROI views where the solution supports them." },
+  { icon: ClipboardList, title: "Reports", body: "Lead, source, qualified, booking, and pipeline value reporting." },
 ];
 
-const enterpriseFeatures = [
-  {
-    icon: Shield,
-    title: "Security-first defaults",
-    desc: "Hardened headers, CSP hooks, parameterized data access, and operator audit patterns suitable for regulated workflows when you configure Postgres + secrets.",
-  },
-  {
-    icon: Users,
-    title: "Operator access controls",
-    desc: "Magic-link operator sessions gate `/dashboard/*` mutations. Map your own IdP story separately if you need SSO — the runtime is API-first today.",
-  },
-  {
-    icon: BarChart3,
-    title: "Published SLA targets",
-    desc: "Enterprise uptime commitments are documented in our SLA. Review `/docs/sla` before you promise SLAs downstream.",
-  },
-  {
-    icon: Zap,
-    title: "Automation & webhooks",
-    desc: "Queue-friendly pricing ticks, cron surfaces, marketplace APIs, and outbound delivery hubs — all optional behind env keys and billing gates.",
-  },
-  {
-    icon: Bot,
-    title: "AI-assisted workflows",
-    desc: "When LLM keys are present, scoring explanations, content drafts, and agent playbooks augment humans — never a black box without your prompts.",
-  },
-  {
-    icon: Clock,
-    title: "Operational visibility",
-    desc: "Control plane snapshots, health/deep probes, and GTM execution boards help operators prove rollout status without inventing vanity metrics.",
-  },
-];
-
-const joyOvernight = [
-  "Churn prevention \u2014 disengaged leads re-engaged per workspace playbook",
-  "Warm leads going cold \u2014 next nurture step queued from the active funnel graph",
-  "Pipeline gaps \u2014 prospecting or partner routes fire when thresholds trip",
-  "Roll-up report generated for each workspace you track (brand, territory, or account)",
-];
-
-const joyMorning = [
-  "\u201cNew demand landed overnight across your workspaces — scored and queued\u201d",
-  "\u201cHours reclaimed from manual follow-ups — tied to the automations you enabled\u201d",
-  "\u201cA short list of workspaces that need a human nudge today\u201d",
-  "One prioritized action per workspace so the day starts with clarity",
-];
-
-const audiencePaths = [
-  {
-    label: "Digital marketing agencies",
-    desc: "White-label every client, collapse redundant SaaS spend, and ship morning-ready reporting.",
-    href: "/for/agencies",
-  },
-  {
-    label: "SaaS founders",
-    desc: "Instrument trial → paid journeys, automate nudges, and attribute revenue to campaigns.",
-    href: "/for/saas-founders",
-  },
-  {
-    label: "Lead generation teams",
-    desc: "Score omnichannel demand, prove ROI, and clone winning funnels into new verticals fast.",
-    href: "/for/lead-gen",
-  },
-  {
-    label: "Consultants & experts",
-    desc: "Authority funnels, booking automation, and nurture without hiring an ops army.",
-    href: "/for/consultants",
-  },
-  {
-    label: "Franchise operators",
-    desc: "Territory-aware routing, brand guardrails, and repeatable dashboards per location.",
-    href: "/for/franchises",
-  },
+const audienceRows = [
+  ["Agency", "Sell repeatable lead systems to clients without rebuilding fulfillment every time."],
+  ["Lead seller", "Package, price, route, and report on lead inventory and buyer outcomes."],
+  ["Consultant", "Launch authority funnels that qualify prospects before a call or proposal."],
+  ["Directory owner", "Turn category traffic into routed and monetized lead demand."],
+  ["Franchise or SaaS team", "Route leads by territory, trial stage, partner, or customer segment."],
 ];
 
 export default function HomePage() {
   const baseUrl = tenantConfig.siteUrl.replace(/\/$/, "");
+  const deliverableCount = provisionablePackages.reduce((total, pkg) => total + pkg.deliverables.length, 0);
 
   const homeJsonLd = {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${baseUrl}/#organization`,
-        name: brandName,
-        url: baseUrl,
-        description:
-          "Lead capture, scoring, routing, and nurture runtime for agencies, SaaS teams, consultants, lead-gen operators, and franchise programs.",
-        contactPoint: {
-          "@type": "ContactPoint",
-          email: tenantConfig.supportEmail,
-          contactType: "customer support",
-        },
-      },
-      {
-        "@type": "WebSite",
-        "@id": `${baseUrl}/#website`,
-        url: baseUrl,
-        name: `${brandName} | Lead OS for multi-industry operators`,
-        publisher: { "@id": `${baseUrl}/#organization` },
-      },
-      {
-        "@type": "SoftwareApplication",
-        "@id": `${baseUrl}/#app`,
-        name: brandName,
-        applicationCategory: "BusinessApplication",
-        operatingSystem: "Web",
-        description:
-          "Multi-tenant lead generation infrastructure with APIs, dashboards, marketplace hooks, and 130+ integration adapters (credentials required).",
-        url: baseUrl,
-        publisher: { "@id": `${baseUrl}/#organization` },
-        offers: {
-          "@type": "AggregateOffer",
-          lowPrice: "299",
-          highPrice: "1299",
-          priceCurrency: "USD",
-          description: "Self-serve plans from Starter through Enterprise — see /pricing",
-          availability: "https://schema.org/InStock",
-        },
-      },
-    ],
+    "@type": "SoftwareApplication",
+    "@id": `${baseUrl}/#app`,
+    name: brandName,
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    description:
+      "Complete AI solution launcher for agencies, consultants, lead sellers, SaaS teams, franchises, and local-service operators.",
+    url: baseUrl,
+    offers: publicPlans.map((plan) => ({
+      "@type": "Offer",
+      name: plan.name,
+      price: plan.price.replace("$", "").replace("/mo", ""),
+      priceCurrency: "USD",
+      description: plan.description,
+      url: `${baseUrl}/onboard?plan=${plan.shortId}`,
+      availability: "https://schema.org/InStock",
+    })),
   };
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
-    <div>
-      {/* ── Hero ──────────────────────────────────────────── */}
-      <section className="relative overflow-hidden" aria-labelledby="hero-heading">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
-        <div className="relative max-w-4xl mx-auto text-center px-4 pt-12 pb-10">
-          <Badge variant="secondary" className="mb-6 text-sm px-4 py-1.5">
-            Agencies · SaaS · Lead gen · Consultants · Franchises
-          </Badge>
-          <h1 id="hero-heading" className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.1] mb-5">
-            One lead operating system<br className="hidden sm:block" /> for every growth model.
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
-            Capture demand, score it consistently, route it to the right playbook, and prove outcomes — whether you
-            run fifty client accounts, a vertical SaaS, or a territory pilot like Erie. Same runtime, same APIs, your
-            configuration.
-          </p>
-          <div className="flex gap-3 justify-center flex-wrap">
-            <Button asChild size="lg" className="text-base px-8 h-12 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
-              <Link href="/onboard">Start free setup</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="text-base px-8 h-12 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
-              <Link href="/demo">Watch the demo tour</Link>
+      <main className="w-full max-w-none overflow-x-hidden p-0">
+        <section className="border-b border-border bg-background">
+          <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 md:py-10 lg:grid-cols-[1fr_0.88fr] lg:items-start">
+            <div className="min-w-0">
+              <Badge variant="secondary" className="mb-4">
+                For teams who sell outcome-based AI solutions
+              </Badge>
+              <h1 className="max-w-3xl break-words text-3xl font-extrabold leading-tight text-foreground sm:text-5xl">
+                Lead OS turns a client purchase into a launched solution.
+              </h1>
+              <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                Sell a specific outcome. Send one intake form. Lead OS provisions the customer-facing pages, website embed,
+                routing, delivery hub, reports, finished outputs, and managed handoffs that match what the client paid for.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button asChild size="lg">
+                  <Link href="/packages">
+                    Choose a solution to launch <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg">
+                  <Link href="/onboard">Create operator account</Link>
+                </Button>
+              </div>
+              <div className="mt-6 grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
+                <div className="rounded-lg border border-border bg-card p-3">
+                  <strong className="block text-foreground">{provisionablePackages.length} sellable solutions</strong>
+                  Local services, agencies, directories, SaaS, affiliates, franchises, and more.
+                </div>
+                <div className="rounded-lg border border-border bg-card p-3">
+                  <strong className="block text-foreground">{deliverableCount} finished outputs</strong>
+                  Intake, embeds, routing, dashboards, reports, billing, and delivery surfaces.
+                </div>
+                <div className="rounded-lg border border-border bg-card p-3">
+                  <strong className="block text-foreground">One client intake form</strong>
+                  Required details launch now. Client-owned account access can replace managed handoffs later.
+                </div>
+              </div>
+            </div>
+
+            <aside className="min-w-0 rounded-lg border border-border bg-muted/40 p-4" aria-label="Launch path">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Launch path</p>
+                  <p className="text-xs text-muted-foreground">This is what happens after a client pays.</p>
+                </div>
+                <Badge variant="outline">Production flow</Badge>
+              </div>
+              <ol className="grid gap-3 pl-0">
+                {launchSteps.map((step, index) => (
+                  <li key={step.title} className="grid grid-cols-[2.25rem_1fr] gap-3 rounded-lg bg-background p-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
+                      {index + 1}
+                    </span>
+                    <span>
+                      <strong className="block text-sm text-foreground">{step.title}</strong>
+                      <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">{step.body}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </aside>
+          </div>
+        </section>
+
+        <section className="border-b border-border bg-muted/20" aria-labelledby="outputs-heading">
+          <div className="mx-auto max-w-6xl px-4 py-10">
+            <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-end">
+              <div>
+                <Badge variant="outline" className="mb-3">
+                  What gets delivered
+                </Badge>
+                <h2 id="outputs-heading" className="text-2xl font-bold text-foreground sm:text-3xl">
+                  The customer receives working system surfaces, not only a brief.
+                </h2>
+              </div>
+              <Button asChild variant="outline">
+                <Link href="/deliverables">View building blocks</Link>
+              </Button>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {launchedOutputs.map((output) => (
+                <Card key={output.title}>
+                  <CardHeader className="pb-3">
+                    <output.icon className="mb-2 h-5 w-5 text-primary" aria-hidden="true" />
+                    <CardTitle className="text-base">{output.title}</CardTitle>
+                    <CardDescription>{output.body}</CardDescription>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <Badge variant="outline" className="mb-3">
+              Who uses it
+            </Badge>
+            <h2 className="text-2xl font-bold text-foreground sm:text-3xl">If you sell the outcome, Lead OS fulfills the system.</h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              The visitor should never wonder what Lead OS is. It is the fulfillment engine between the outcome you sell
+              and the client-ready solution your customer receives.
+            </p>
+          </div>
+          <div className="grid gap-3">
+            {audienceRows.map(([title, body]) => (
+              <div key={title} className="grid gap-1 rounded-lg border border-border bg-card p-4 sm:grid-cols-[10rem_1fr]">
+                <strong className="text-sm text-foreground">{title}</strong>
+                <span className="text-sm leading-relaxed text-muted-foreground">{body}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="border-y border-border bg-background">
+          <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <BadgeCheck className="mb-2 h-5 w-5 text-primary" />
+                <CardTitle>The honest promise</CardTitle>
+                <CardDescription>What Lead OS does after a customer buys and submits setup details.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {[
+                  "Creates the delivery hub and customer-facing capture surfaces.",
+                  "Generates embed code, routing rules, dashboards, reports, and finished outputs.",
+                  "Tracks what is delivered now and what can be upgraded with client-owned account access.",
+                  "Keeps the delivery team focused on selling and improving outcomes, not manually rebuilding fulfillment.",
+                ].map((item) => (
+                  <div key={item} className="flex gap-3 text-sm">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="border-amber-300/50 bg-amber-50 text-amber-950">
+              <CardHeader>
+                <ShieldCheck className="mb-2 h-5 w-5" />
+                <CardTitle>What can connect later</CardTitle>
+                <CardDescription className="text-amber-900/80">
+                  Lead OS launches the solution first. These outside services connect when client-owned account access is approved.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {notLiveUntilConfigured.map((item) => (
+                  <div key={item} className="flex gap-3 text-sm leading-relaxed">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-4 py-10">
+          <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-end">
+            <div>
+              <Badge variant="outline" className="mb-3">
+                Plans
+              </Badge>
+              <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+                Pay for the solution capacity you operate.
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                Plans control lead volume, funnels, operators, experiments, integrations, and the number of client
+                solutions you can run.
+              </p>
+            </div>
+            <Button asChild variant="outline">
+              <Link href="/pricing">Compare pricing</Link>
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-4 tracking-wide">
-            No credit card &middot; Guided onboarding &middot; Docs at /docs
-          </p>
-        </div>
-      </section>
-
-      {/* ── Choose your operating model ───────────────────── */}
-      <section className="max-w-5xl mx-auto px-4 py-10" aria-labelledby="audience-paths-heading">
-        <div className="text-center mb-8">
-          <Badge variant="outline" className="mb-4">Choose your path</Badge>
-          <h2 id="audience-paths-heading" className="text-3xl font-bold tracking-tight text-foreground mb-3">
-            Same platform. Different go-to-market motions.
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Each blueprint explains pains, recommended industries, and the first automations to enable. Jump in, then
-            continue to pricing or onboarding when you are ready.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {audiencePaths.map(({ label, desc, href }) => (
-            <Button key={href} asChild variant="outline" className="h-auto min-h-[110px] flex-col items-start p-5 text-left">
-              <Link href={href} className="w-full">
-                <span className="font-semibold text-base">{label}</span>
-                <span className="text-xs text-muted-foreground font-normal leading-snug mt-2 block">{desc}</span>
-                <span className="text-xs text-primary font-medium mt-3 inline-flex items-center gap-1">
-                  Explore playbook <ArrowRight className="h-3 w-3" />
-                </span>
-              </Link>
-            </Button>
-          ))}
-        </div>
-        <div className="flex flex-wrap justify-center gap-3 mt-8">
-          <Button asChild variant="secondary">
-            <Link href="/industries">Browse 16+ industry templates</Link>
-          </Button>
-          <Button asChild variant="secondary">
-            <Link href="/offers">See offer paths</Link>
-          </Button>
-          <Button asChild variant="ghost">
-            <Link href="/pricing">Compare plans</Link>
-          </Button>
-        </div>
-      </section>
-
-      {/* ── Stack sprawl (universal) ──────────────────────── */}
-      <section className="max-w-3xl mx-auto px-4 py-8" aria-labelledby="stack-sprawl-heading">
-        <div className="text-center mb-8">
-          <Badge variant="outline" className="mb-4">Why teams consolidate here</Badge>
-          <h2 id="stack-sprawl-heading" className="text-3xl font-bold tracking-tight text-foreground mb-3">
-            Most organizations stack 8–15 overlapping SaaS products
-          </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Agencies see it per client. SaaS teams see it across growth, success, and marketing ops. Consultants feel it
-            in billing hours. The result is duplicated data, fragile Zapier chains, and reporting nobody trusts.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2 justify-center mb-6">
-          {replacedTools.map((tool) => (
-            <span key={tool} className="px-3 py-1.5 rounded-full text-sm font-medium text-muted-foreground line-through decoration-destructive/40 bg-destructive/5 border border-destructive/10">
-              {tool}
-            </span>
-          ))}
-        </div>
-        <Card className="border-primary/20 bg-primary/[0.04]">
-          <CardContent className="pt-6 text-center text-sm text-muted-foreground leading-relaxed">
-            CX React replaces those point tools with <strong className="text-foreground">one intake + scoring + routing core</strong>,
-            optional marketplace liquidity, Stripe-ready billing surfaces, and an operator dashboard so humans stay in
-            control. Actual savings depend on which legacy contracts you retire.
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* ── How It Works ──────────────────────────────────── */}
-      <section id="how-it-works" className="max-w-5xl mx-auto px-4 py-8" aria-labelledby="how-it-works-heading">
-        <div className="text-center mb-10">
-          <Badge variant="outline" className="mb-4">How it works</Badge>
-          <h2 id="how-it-works-heading" className="text-3xl font-bold tracking-tight text-foreground">Four steps from zero to automated demand</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {steps.map(({ n, title, desc }) => (
-            <Card key={n} className="bg-muted/30">
-              <CardHeader className="pb-3">
-                <div className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold mb-2">
-                  {n}
-                </div>
-                <CardTitle className="text-lg">{title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Stats Bar ─────────────────────────────────────── */}
-      <section className="border-y border-border py-10" aria-label="Platform statistics">
-        <div className="max-w-4xl mx-auto px-4 flex flex-wrap justify-center gap-12">
-          {stats.map(({ stat, label }) => (
-            <div key={label} className="text-center">
-              <div className="text-3xl font-extrabold text-primary tracking-tight">{stat}</div>
-              <div className="text-xs text-muted-foreground mt-1">{label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Enterprise Grade ──────────────────────────────── */}
-      <section className="max-w-5xl mx-auto px-4 py-8" aria-labelledby="enterprise-heading">
-        <div className="text-center mb-10">
-          <Badge variant="outline" className="mb-4">Enterprise-ready posture</Badge>
-          <h2 id="enterprise-heading" className="text-3xl font-bold tracking-tight text-foreground">
-            Controls, observability, and contracts you can stand behind
-          </h2>
-          <p className="text-sm text-muted-foreground max-w-2xl mx-auto mt-3">
-            Review the{" "}
-            <Link className="text-primary underline-offset-4 hover:underline" href="/docs/sla">
-              SLA summary
-            </Link>{" "}
-            and full GitHub document before you resell uptime guarantees.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {enterpriseFeatures.map(({ icon: Icon, title, desc }) => (
-            <Card key={title}>
-              <CardHeader className="pb-2">
-                <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-2">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <CardTitle className="text-base">{title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Outcomes teams target ─────────────────────────── */}
-      <section className="max-w-5xl mx-auto px-4 py-8" aria-labelledby="outcomes-heading">
-        <div className="text-center mb-10">
-          <Badge variant="outline" className="mb-4">Outcomes operators target</Badge>
-          <h2 id="outcomes-heading" className="text-3xl font-bold tracking-tight text-foreground">
-            Representative goals — not paid testimonials
-          </h2>
-          <p className="text-sm text-muted-foreground max-w-2xl mx-auto mt-3">
-            Replace fabricated quotes with your own customer stories once you have permission. Until then, these are
-            the measurable motions the product is architected to support.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              title: "Tool consolidation",
-              body: "Retire overlapping CRM, nurture, and analytics subscriptions per brand, territory, or client workspace when APIs are connected.",
-            },
-            {
-              title: "Faster activation",
-              body: "Spin up assessments, calculators, and intake flows from industry templates instead of bespoke builds.",
-            },
-            {
-              title: "Operational receipts",
-              body: "Dashboards, audits, and webhooks document what happened to every lead for downstream stakeholders.",
-            },
-          ].map(({ title, body }) => (
-            <Card key={title} className="flex flex-col">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">{title}</CardTitle>
-              </CardHeader>
-              <CardContent className="mt-auto pt-0">
-                <p className="text-sm text-muted-foreground leading-relaxed">{body}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Joy Layer ─────────────────────────────────────── */}
-      <section className="max-w-4xl mx-auto px-4 py-8" aria-label="The Joy Layer">
-        <Card className="border-l-4 border-l-primary bg-primary/[0.03]">
-          <CardHeader>
-            <Badge variant="outline" className="w-fit mb-2">The Joy Layer</Badge>
-            <CardTitle className="text-2xl">Your morning briefing surfaces which accounts need attention</CardTitle>
-            <CardDescription className="text-base">
-              Wake up to a dashboard that shows which workspaces are healthy and which need a nudge — agencies see
-              per-client rollups; SaaS and franchise teams see products or locations instead.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-sm font-semibold text-foreground mb-3">What happens overnight</h3>
-                <ul className="space-y-2">
-                  {joyOvernight.map((item) => (
-                    <li key={item} className="flex gap-2 text-sm text-muted-foreground">
-                      <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-foreground mb-3">What you see in the morning</h3>
-                <ul className="space-y-2">
-                  {joyMorning.map((item) => (
-                    <li key={item} className="flex gap-2 text-sm text-muted-foreground">
-                      <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* ── Email Capture ─────────────────────────────────── */}
-      <section className="max-w-2xl mx-auto px-4 py-8 text-center" aria-labelledby="email-capture-heading">
-        <Badge variant="outline" className="mb-4">Get early access</Badge>
-        <h2 id="email-capture-heading" className="text-3xl font-bold tracking-tight text-foreground mb-3">See it with your data model</h2>
-        <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-          Drop your work email — we&apos;ll route you through onboarding or a tailored demo workspace for your niche.
-        </p>
-        <form action="/api/capture" method="POST" className="flex gap-3 justify-center flex-wrap max-w-md mx-auto">
-          <input type="hidden" name="source" value="homepage" />
-          <input
-            type="email"
-            name="email"
-            required
-            placeholder="you@company.com"
-            aria-label="Email address"
-            className="flex-1 min-w-[240px] h-12 px-4 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          />
-          <Button type="submit" size="lg" className="h-12 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">Start free</Button>
-        </form>
-      </section>
-
-      {/* ── Final CTA ─────────────────────────────────────── */}
-      <section className="max-w-2xl mx-auto px-4 py-8 text-center" aria-labelledby="final-cta-heading">
-        <h2 id="final-cta-heading" className="text-3xl font-bold tracking-tight text-foreground mb-3">Ship your first workspace today</h2>
-        <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
-          Onboarding walks through email, niche selection, plan, branding, and integrations. Need proof first? Tour the
-          demo, read the docs hub, or talk to us via contact.
-        </p>
-        <div className="flex gap-3 justify-center flex-wrap">
-          <Button asChild size="lg" className="px-8 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
-            <Link href="/onboard">Start free setup</Link>
-          </Button>
-          <Button asChild variant="outline" size="lg" className="px-8 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
-            <Link href="/pricing">View pricing</Link>
-          </Button>
-          <Button asChild variant="outline" size="lg" className="px-8 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
-            <Link href="/docs">Read documentation</Link>
-          </Button>
-        </div>
-      </section>
-    </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {publicPlans.map((plan) => (
+              <Card key={plan.id} className={plan.recommended ? "border-primary" : undefined}>
+                <CardHeader>
+                  {plan.recommended ? <Badge className="mb-2 w-fit">Recommended</Badge> : null}
+                  <CardTitle>{plan.name}</CardTitle>
+                  <CardDescription>{plan.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="mb-2 text-3xl font-extrabold">{plan.price}</p>
+                  <p className="mb-5 text-sm text-muted-foreground">{plan.limits}</p>
+                  <Button asChild className="w-full" variant={plan.recommended ? "default" : "outline"}>
+                    <Link href={`/onboard?plan=${plan.shortId}`}>Start {plan.name} setup</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      </main>
     </>
   );
 }

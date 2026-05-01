@@ -1,8 +1,9 @@
 // src/lib/billing/entitlements.ts
 // Plan limits and pricing execution gates (Postgres-backed when migration 007 applied).
 
-import { queryPostgres } from "@/lib/db";
-import { pricingLog } from "@/lib/pricing/logger";
+import { queryPostgres } from "../db.ts";
+import { pricingLog } from "../pricing/logger.ts";
+import type { ApiAccessTierRequirement } from "./api-route-tier.ts";
 
 export interface BillingGateState {
   enforcement: boolean;
@@ -128,8 +129,9 @@ export async function assertPricingExecutionAllowed(tenantId: string): Promise<{
 
 export function assertApiAccessTierAllows(
   state: BillingGateState,
-  requiredTier: "standard" | "full",
+  requiredTier: ApiAccessTierRequirement,
 ): boolean {
+  if (requiredTier === "none") return true;
   if (!state.enforcement) return true;
   const tier = state.apiAccessTier ?? "none";
   if (requiredTier === "standard") return tier === "standard" || tier === "full";

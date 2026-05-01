@@ -96,7 +96,7 @@ function classifyAsWhiteLabel(business: ScoredBusiness): ClassifiedOpportunity |
   }
 
   if (qualitySignals.weaknesses.includes("no-live-chat")) {
-    reasoning.push("Missing live chat — CX React widget adds immediate value");
+    reasoning.push("Missing live chat — Lead OS widget adds immediate value");
     confidence += 15;
   }
 

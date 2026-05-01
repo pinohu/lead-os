@@ -1,7 +1,7 @@
 // tests/erie-directory-flow.test.ts
 import assert from "node:assert/strict";
 import { describe, it, after } from "node:test";
-import { shouldRunDirectoryLeadFlow } from "../src/lib/erie/directory-lead-flow";
+import { shouldRunDirectoryLeadFlow } from "../src/lib/erie/directory-lead-flow.ts";
 
 describe("Erie directory lead flow", () => {
   const prev = process.env.LEAD_OS_DIRECTORY_TENANTS;

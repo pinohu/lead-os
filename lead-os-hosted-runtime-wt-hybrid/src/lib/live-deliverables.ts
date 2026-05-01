@@ -1,0 +1,209 @@
+import { publicPlans, type PublicPlanId } from "./public-offer.ts";
+
+export type DeliverableSlug =
+  | "lead-capture-workspace"
+  | "lead-scoring-routing"
+  | "email-nurture-workflow"
+  | "embed-capture-script"
+  | "operator-dashboard"
+  | "ab-testing-surface"
+  | "attribution-view"
+  | "channel-readiness"
+  | "marketplace-surface"
+  | "support-lane"
+  | "funnel-library"
+  | "production-launch-checklist";
+
+export interface LiveDeliverable {
+  slug: DeliverableSlug;
+  title: string;
+  planIds: PublicPlanId[];
+  buyerOutcome: string;
+  deliveredArtifact: string;
+  backendReality: string;
+  livePath: string;
+  acceptanceCriteria: string[];
+}
+
+export const liveDeliverables: LiveDeliverable[] = [
+  {
+    slug: "lead-capture-workspace",
+    title: "Hosted lead capture workspace",
+    planIds: ["whitelabel-starter", "whitelabel-growth", "whitelabel-enterprise"],
+    buyerOutcome: "A public intake page that captures a lead and returns a traceable lead record.",
+    deliveredArtifact: "A hosted workspace page, intake form, score, stage, routing decision, and lead key.",
+    backendReality: "Powered by the same intake runtime used by /api/intake, running in dry-run/provider-safe mode until production services are connected.",
+    livePath: "/deliverables/lead-capture-workspace",
+    acceptanceCriteria: [
+      "Lead form accepts name, email, phone, and service intent.",
+      "Submission returns a lead key, score, stage, and routing family.",
+      "No manual handoff is required to produce the artifact.",
+    ],
+  },
+  {
+    slug: "lead-scoring-routing",
+    title: "Basic lead scoring and routing",
+    planIds: ["whitelabel-starter", "whitelabel-growth", "whitelabel-enterprise"],
+    buyerOutcome: "A lead is scored and assigned the next best action.",
+    deliveredArtifact: "Intent, fit, engagement, urgency, composite score, temperature, and route recommendation.",
+    backendReality: "Uses the scoring engine and routing orchestrator directly from server code.",
+    livePath: "/deliverables/lead-scoring-routing",
+    acceptanceCriteria: [
+      "Input signals produce a score without operator intervention.",
+      "Temperature is shown in plain language.",
+      "The route tells the operator what should happen next.",
+    ],
+  },
+  {
+    slug: "email-nurture-workflow",
+    title: "Email nurture workflow",
+    planIds: ["whitelabel-starter", "whitelabel-growth", "whitelabel-enterprise"],
+    buyerOutcome: "A new lead receives a prepared follow-up sequence.",
+    deliveredArtifact: "A five-step nurture sequence with timing, subject, message purpose, and send mode.",
+    backendReality: "The sequence is generated immediately; live sending remains disabled until outbound provider credentials are attached.",
+    livePath: "/deliverables/email-nurture-workflow",
+    acceptanceCriteria: [
+      "Sequence exists immediately after setup.",
+      "Each step has timing and purpose.",
+      "Dry-run/live mode is visible instead of hidden.",
+    ],
+  },
+  {
+    slug: "embed-capture-script",
+    title: "Embeddable capture script",
+    planIds: ["whitelabel-starter", "whitelabel-growth", "whitelabel-enterprise"],
+    buyerOutcome: "A customer can paste a script into a site to mount lead capture.",
+    deliveredArtifact: "A tenant-aware script tag and live embedded capture preview.",
+    backendReality: "Onboarding already returns this script; the example shows the final artifact with a working intake preview.",
+    livePath: "/deliverables/embed-capture-script",
+    acceptanceCriteria: [
+      "Script includes a tenant identifier.",
+      "Widget preview captures a lead.",
+      "The artifact is available immediately after signup.",
+    ],
+  },
+  {
+    slug: "operator-dashboard",
+    title: "Operator dashboard access",
+    planIds: ["whitelabel-starter", "whitelabel-growth", "whitelabel-enterprise"],
+    buyerOutcome: "An operator can see workspace health, lead flow, and production readiness from one place.",
+    deliveredArtifact: "Dashboard route plus a public example operator snapshot.",
+    backendReality: "Dashboard routes are deployed; sensitive mutations remain authenticated.",
+    livePath: "/deliverables/operator-dashboard",
+    acceptanceCriteria: [
+      "Dashboard URL is present after onboarding.",
+      "Health, leads, routing, and activation status are visible.",
+      "Protected actions remain behind operator auth.",
+    ],
+  },
+  {
+    slug: "ab-testing-surface",
+    title: "A/B testing surface",
+    planIds: ["whitelabel-growth", "whitelabel-enterprise"],
+    buyerOutcome: "A workspace can compare two offer variants and identify the active winner candidate.",
+    deliveredArtifact: "Offer A, Offer B, assignment, conversion counts, and current winner.",
+    backendReality: "The example is generated from deterministic sample events so the artifact is complete without manual setup.",
+    livePath: "/deliverables/ab-testing-surface",
+    acceptanceCriteria: [
+      "Two variants are shown.",
+      "Traffic assignment is visible.",
+      "Winner logic is explained with conversion math.",
+    ],
+  },
+  {
+    slug: "attribution-view",
+    title: "Attribution view",
+    planIds: ["whitelabel-growth", "whitelabel-enterprise"],
+    buyerOutcome: "A customer can see where leads came from and which source deserves credit.",
+    deliveredArtifact: "UTM source, channel, lead count, qualified count, pipeline value, and ROI summary.",
+    backendReality: "The example mirrors the attribution fields collected by intake and analytics routes.",
+    livePath: "/deliverables/attribution-view",
+    acceptanceCriteria: [
+      "Sources are grouped in one table.",
+      "Qualified leads are separated from raw leads.",
+      "Revenue attribution math is visible.",
+    ],
+  },
+  {
+    slug: "channel-readiness",
+    title: "WhatsApp-ready channel toggle",
+    planIds: ["whitelabel-growth", "whitelabel-enterprise"],
+    buyerOutcome: "An operator can select intended channels and see what is ready versus waiting on credentials.",
+    deliveredArtifact: "Email, SMS, WhatsApp, chat, booking, CRM, and document readiness matrix.",
+    backendReality: "Provider toggles are stored during onboarding; live sends require verified credentials.",
+    livePath: "/deliverables/channel-readiness",
+    acceptanceCriteria: [
+      "Each channel has a readiness state.",
+      "Missing credential requirements are explicit.",
+      "No channel is represented as live unless configured.",
+    ],
+  },
+  {
+    slug: "marketplace-surface",
+    title: "Marketplace access surface",
+    planIds: ["whitelabel-enterprise"],
+    buyerOutcome: "A lead seller can show scored inventory and buyer claim flow.",
+    deliveredArtifact: "Lead cards, quality score, temperature, price, claim action, and outcome reporting.",
+    backendReality: "Marketplace routes are deployed; the example uses safe sample inventory when no production database is attached.",
+    livePath: "/deliverables/marketplace-surface",
+    acceptanceCriteria: [
+      "Inventory is visible as lead cards.",
+      "Claim and outcome concepts are represented.",
+      "Sample mode is clearly labeled when database inventory is unavailable.",
+    ],
+  },
+  {
+    slug: "support-lane",
+    title: "Priority support lane",
+    planIds: ["whitelabel-enterprise"],
+    buyerOutcome: "A customer can open a priority support request and receive a ticket reference.",
+    deliveredArtifact: "Priority ticket form, generated ticket ID, severity, response target, and next step.",
+    backendReality: "This public example creates a deterministic support artifact; production helpdesk delivery requires provider credentials.",
+    livePath: "/deliverables/support-lane",
+    acceptanceCriteria: [
+      "Ticket ID is generated immediately.",
+      "Severity and response target are visible.",
+      "Next step is explicit.",
+    ],
+  },
+  {
+    slug: "funnel-library",
+    title: "Unlimited funnel definitions",
+    planIds: ["whitelabel-enterprise"],
+    buyerOutcome: "A customer can see the exact funnel blueprint created for a workspace.",
+    deliveredArtifact: "Named funnel, stages, trigger events, routing rules, and conversion goal.",
+    backendReality: "The blueprint is a runtime-ready definition; production persistence requires database configuration.",
+    livePath: "/deliverables/funnel-library",
+    acceptanceCriteria: [
+      "Funnel stages are listed in order.",
+      "Triggers and routing rules are concrete.",
+      "The conversion goal is measurable.",
+    ],
+  },
+  {
+    slug: "production-launch-checklist",
+    title: "Production launch checklist",
+    planIds: ["whitelabel-enterprise"],
+    buyerOutcome: "A customer can see exactly what must be connected before launch.",
+    deliveredArtifact: "Database, queues, billing, live sends, domain, auth, and monitoring checklist.",
+    backendReality: "Reads the same production readiness facts surfaced by /api/production-readiness.",
+    livePath: "/deliverables/production-launch-checklist",
+    acceptanceCriteria: [
+      "Every launch dependency is visible.",
+      "Current configured/not-configured state is not hidden.",
+      "The customer knows the next action.",
+    ],
+  },
+];
+
+export function getLiveDeliverable(slug: string): LiveDeliverable | undefined {
+  return liveDeliverables.find((item) => item.slug === slug);
+}
+
+export function getPlanDeliverables(planId: PublicPlanId): LiveDeliverable[] {
+  return liveDeliverables.filter((item) => item.planIds.includes(planId));
+}
+
+export function getPublicPlanName(planId: PublicPlanId): string {
+  return publicPlans.find((plan) => plan.id === planId)?.name ?? planId;
+}

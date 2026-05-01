@@ -147,9 +147,9 @@ function WelcomeStep({ setupStatus, brandName, onNext }: WelcomeStepProps) {
         Welcome to {brandName}
       </h1>
       <p className="text-base leading-relaxed text-muted-foreground">
-        This wizard walks you through the five steps needed to go from a fresh
-        deployment to a live lead-capture system. It takes about three minutes.
-        You can always come back and change any of these settings.
+        This wizard prepares the instance for solution launch: brand, environment,
+        customer delivery hubs, and integrations. It takes about three minutes, and
+        you can always come back to change these settings.
       </p>
 
       <div className="mt-6 rounded-2xl border border-border bg-muted p-7">
@@ -217,9 +217,10 @@ function EnvironmentStep({ envChecks, onNext, onBack }: EnvironmentStepProps) {
         Environment check
       </h2>
       <p className="text-base leading-relaxed text-muted-foreground">
-        CX React reads configuration from environment variables. Required
+        Lead OS reads configuration from environment variables. Required
         variables must be set before the platform functions. Optional services
-        run in dry-run mode when missing — no errors, no real side effects.
+        wait for account access when missing, so solution surfaces can launch without
+        pretending external actions are active.
       </p>
 
       {required.length > 0 && (
@@ -313,7 +314,7 @@ function EnvCheckCard({ check }: { check: EnvCheck }) {
             : "bg-muted text-muted-foreground"
         }`}
       >
-        {check.present ? "Configured" : check.optional ? "Optional — dry-run mode" : "Missing"}
+        {check.present ? "Configured" : check.optional ? "Optional - needs account access" : "Missing"}
       </span>
     </li>
   );
@@ -406,8 +407,8 @@ function QuickConfigStep({
       </h2>
       <p className="text-base leading-relaxed text-muted-foreground">
         Set your brand identity and default niche. These values control how the
-        platform presents itself to leads and which funnel templates it
-        prioritises.
+          platform presents solution surfaces to leads and which funnel templates it
+        prioritizes.
         {!databaseConnected && (
           <span className="mt-2.5 block rounded-lg border border-yellow-400/20 bg-yellow-400/10 px-3.5 py-2.5 text-[0.85rem] text-yellow-400">
             No database connection — changes will be applied to the running
@@ -579,11 +580,11 @@ interface ActionCard {
 function TestDriveStep({ siteUrl, onNext, onBack }: TestDriveStepProps) {
   const cards: ActionCard[] = [
     {
-      title: "Capture a test lead",
+      title: "Launch a solution",
       description:
-        "Open the home page lead capture form and submit a test entry to confirm the full ingest pipeline is working.",
-      href: "/",
-      cta: "Open lead form →",
+        "Open the solution launch center, choose the customer outcome, and submit the intake details.",
+      href: "/packages",
+      cta: "Open packages",
       icon: "✦",
     },
     {
@@ -595,11 +596,11 @@ function TestDriveStep({ siteUrl, onNext, onBack }: TestDriveStepProps) {
       icon: "◈",
     },
     {
-      title: "Set up your first client",
+      title: "Start account setup",
       description:
-        "Run the onboarding wizard to provision a new client tenant with their own niche, branding, and integrations.",
+        "Create the account and plan capacity before launching the customer solution.",
       href: "/onboard",
-      cta: "Start onboarding →",
+      cta: "Start account setup",
       icon: "⬡",
     },
   ];
@@ -611,8 +612,8 @@ function TestDriveStep({ siteUrl, onNext, onBack }: TestDriveStepProps) {
         Take it for a spin
       </h2>
       <p className="text-base leading-relaxed text-muted-foreground">
-        Your instance is configured. Try these three actions to verify
-        everything is wired up correctly before going live.
+        Your instance is configured. Try these actions to verify solution launch,
+        lead capture, and delivery visibility.
       </p>
 
       <ul
@@ -713,8 +714,9 @@ function AllDoneStep({ siteUrl, tenantId, brandName, onBack }: AllDoneStepProps)
         You&rsquo;re all set
       </h2>
       <p className="text-base leading-relaxed text-muted-foreground">
-        {brandName} is live and ready to capture leads. Paste the embed snippet
-        below onto any website to activate the capture widget on external pages.
+        {brandName} is ready to launch solutions and capture leads. Use the solution
+        launch center for customer-specific outputs, or paste the embed snippet
+        below onto a website for account-level lead capture.
       </p>
 
       <div className="mt-6 rounded-2xl border border-border bg-muted p-7">
@@ -754,8 +756,8 @@ function AllDoneStep({ siteUrl, tenantId, brandName, onBack }: AllDoneStepProps)
           className="grid list-none gap-3 p-0"
         >
           {[
-            { label: "Operator dashboard", href: "/dashboard", desc: "Monitor leads, automation, and pipeline health." },
-            { label: "Add integrations", href: "/dashboard/credentials", desc: "Connect email, CRM, billing, and AI providers." },
+            { label: "Operations dashboard", href: "/dashboard", desc: "Monitor leads, automation, and pipeline health." },
+            { label: "Add account access", href: "/dashboard/credentials", desc: "Connect email, CRM, billing, and AI providers when live actions are approved." },
             { label: "Configure funnels", href: "/dashboard/settings", desc: "Map your services to funnel templates." },
             { label: "Help center", href: "/help", desc: "Guides, API reference, and deployment notes." },
           ].map((item) => (

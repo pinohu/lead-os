@@ -84,7 +84,7 @@ export default async function RuntimeSettingsPage() {
             <ul className="space-y-2">
               <li>Tenant name: {trafftTenant.tenantName ?? "Unknown"}</li>
               <li>Tenant id: {trafftTenant.tenantId ?? "Unknown"}</li>
-              <li>Note: service IDs still need to be mapped before CX React can auto-resolve public slot lookups consistently.</li>
+              <li>Note: service IDs still need to be mapped before Lead OS can auto-resolve public slot lookups consistently.</li>
             </ul>
           ) : (
             <p className="text-muted-foreground">Trafft tenant data could not be read from the runtime right now.</p>

@@ -20,24 +20,24 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl || "https://cxreact.com"),
   title: {
-    default: `${tenantConfig.brandName} — Lead capture, scoring & nurture for every growth model`,
+    default: `${tenantConfig.brandName} | Complete AI solution fulfillment`,
     template: `%s | ${tenantConfig.brandName}`,
   },
   description:
-    "One runtime for agencies, SaaS teams, lead-gen operators, consultants, and franchises: capture, score, route, and nurture demand with configurable funnels, operator dashboards, APIs, and 130+ integration adapters (credentials required).",
+    "Lead OS helps teams sell outcome-based AI solutions, collect client intake details, and provision the customer-ready pages, routing, assets, dashboards, reports, and managed handoffs the client paid for.",
   openGraph: {
-    title: `${tenantConfig.brandName} — Lead OS for multi-industry operators`,
+    title: `${tenantConfig.brandName} | Complete AI solution fulfillment`,
     description:
-      "Same engine for many industries and motions: intake, scoring, routing, marketplace hooks, and billing surfaces you configure.",
+      "Sell an outcome-based AI solution, collect one intake form, and provision the client-ready pages, routing, dashboard, and reports.",
     type: "website",
     siteName: tenantConfig.brandName,
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: `${tenantConfig.brandName} platform` }],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: `${tenantConfig.brandName} complete AI solution fulfillment` }],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${tenantConfig.brandName} — Lead OS for multi-industry operators`,
+    title: `${tenantConfig.brandName} | Complete AI solution fulfillment`,
     description:
-      "Same engine for many industries and motions: intake, scoring, routing, marketplace hooks, and billing surfaces you configure.",
+      "Sell an outcome-based AI solution, collect one intake form, and provision the client-ready pages, routing, dashboard, and reports.",
   },
   icons: { icon: "/icon.svg" },
 };
@@ -48,7 +48,7 @@ const footerPlatform = [
   { label: "Pricing", href: "/pricing" },
   { label: "Directory", href: "/directory" },
   { label: "Marketplace", href: "/marketplace" },
-  { label: "Demo", href: "/demo" },
+  { label: "Live examples", href: "/demo" },
   { label: "ROI Calculator", href: "/calculator" },
 ];
 
@@ -101,14 +101,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     height: 630,
                   },
                   description:
-                    "Lead capture, scoring, routing, and nurture for agencies, SaaS teams, lead-gen operators, consultants, and franchises — configurable funnels, operator dashboard, and APIs (integrations require credentials).",
+                    "Complete AI solution fulfillment for agencies, SaaS teams, lead-gen operators, consultants, and franchises. Lead OS provisions customer-ready pages, embeds, routing, dashboards, reports, and managed handoffs.",
                   sameAs: [],
                 },
                 {
                   "@type": "WebSite",
                   "@id": `${siteBase}/#website`,
                   url: siteBase,
-                  name: `${tenantConfig.brandName} — Lead OS for multi-industry operators`,
+                  name: `${tenantConfig.brandName} | Complete AI solution fulfillment`,
                   publisher: { "@id": `${siteBase}/#organization` },
                   potentialAction: {
                     "@type": "SearchAction",
@@ -122,7 +122,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 {
                   "@type": "SoftwareApplication",
                   "@id": `${siteBase}/#app`,
-                  name: `${tenantConfig.brandName} Platform`,
+                  name: `${tenantConfig.brandName} solution fulfillment system`,
                   applicationCategory: "BusinessApplication",
                   operatingSystem: "Web",
                   offers: {
@@ -160,7 +160,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           />
         ) : null}
 
-        <main id="main-content" tabIndex={-1} className="outline-none min-w-0">
+        <main id="main-content" tabIndex={-1} className="min-w-0 w-full max-w-none overflow-x-hidden p-0 outline-none">
           {children}
         </main>
 
@@ -172,14 +172,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <div className="col-span-2 md:col-span-1">
                 <p className="font-semibold text-foreground">{brandName}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Lead capture, scoring, and nurture for operators across industries — configure, do not fork.
+                  Sell outcome-based AI solutions and provision the client-ready intake, routing, dashboard, and reports.
                 </p>
               </div>
 
-              {/* Column 2: Platform */}
+              {/* Column 2: Product */}
               <div>
-                <p className="text-sm font-semibold text-foreground mb-3">Platform</p>
-                <nav aria-label="Platform links" className="flex flex-col gap-2">
+                <p className="text-sm font-semibold text-foreground mb-3">Product</p>
+                <nav aria-label="Product links" className="flex flex-col gap-2">
                   {footerPlatform.map(({ label, href }) => (
                     <Link key={label} href={href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                       {label}

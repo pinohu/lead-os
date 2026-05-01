@@ -507,7 +507,7 @@ export async function syncLeadToLeadOS(
     ok: true,
     provider: "Salespanel",
     mode: isSalespanelDryRun() ? "dry-run" : "live",
-    detail: `Lead ${leadId} synced to CX React for tenant ${effectiveTenant ?? "default"}`,
+    detail: `Lead ${leadId} synced to Lead OS for tenant ${effectiveTenant ?? "default"}`,
     payload: {
       leadId: lead.id,
       email: lead.email ?? null,

@@ -732,7 +732,7 @@ export default async function LandingPage({ params }: LPPageProps) {
 
       <footer className="text-center p-6 text-muted-foreground text-[0.82rem] border-t border-slate-200">
         <p className="m-0">
-          Business information sourced from Google. &copy; {year} {page.businessName}. Powered by CX React.
+          Business information sourced from Google. &copy; {year} {page.businessName}. Powered by Lead OS.
         </p>
       </footer>
 

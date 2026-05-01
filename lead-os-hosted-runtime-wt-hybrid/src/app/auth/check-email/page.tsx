@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Check Your Email | CX React",
+  title: "Check Your Email | Lead OS",
   description: "A secure sign-in link has been sent to your email. Check your inbox to continue.",
 };
 

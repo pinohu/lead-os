@@ -46,7 +46,33 @@ export async function queryPostgres<T extends QueryResultRow>(
 ): Promise<import("pg").QueryResult<T>> {
   const activePool = getPool();
   if (!activePool) throw new Error("Postgres pool is not available");
+  const tenantId = deriveTenantIdForRls(text, values);
+  if (tenantId) {
+    const client = await activePool.connect();
+    try {
+      await client.query("BEGIN");
+      await client.query("SELECT set_config('app.current_tenant_id', $1, true)", [tenantId]);
+      await client.query("SELECT set_config('app.tenant_id', $1, true)", [tenantId]);
+      const result = await client.query<T>(text, values);
+      await client.query("COMMIT");
+      return result;
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
   return activePool.query<T>(text, values);
+}
+
+export function deriveTenantIdForRls(text: string, values: unknown[]): string | undefined {
+  const firstValue = values[0];
+  if (typeof firstValue !== "string" || firstValue.trim().length === 0) return undefined;
+  const normalized = text.replace(/\s+/g, " ").toLowerCase();
+  if (normalized.includes("tenant_id = $1") || normalized.includes("tenant_id=$1")) return firstValue;
+  if (normalized.includes("tenant_id,") && normalized.includes("values ($1")) return firstValue;
+  return undefined;
 }
 
 export async function withTransaction<T>(

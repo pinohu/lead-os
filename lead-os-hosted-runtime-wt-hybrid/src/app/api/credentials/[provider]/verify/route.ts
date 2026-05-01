@@ -1,31 +1,19 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { verifyCredential } from "@/lib/credentials-vault";
+import { requireOperatorApiSession } from "@/lib/operator-auth";
+import { tenantConfig } from "@/lib/tenant";
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ provider: string }> },
 ) {
   const headers = buildCorsHeaders(request.headers.get("origin"));
+  const auth = await requireOperatorApiSession(request);
+  if (auth.response) return auth.response;
+
   const { provider } = await params;
-  const { searchParams } = new URL(request.url);
-
-  let tenantId = searchParams.get("tenantId");
-  if (!tenantId) {
-    try {
-      const body = await request.json();
-      tenantId = body.tenantId;
-    } catch {
-      // no body
-    }
-  }
-
-  if (!tenantId) {
-    return NextResponse.json(
-      { data: null, error: { code: "VALIDATION_ERROR", message: "tenantId is required (query param or body)" }, meta: null },
-      { status: 400, headers },
-    );
-  }
+  const tenantId = tenantConfig.tenantId || "default";
 
   try {
     const result = await verifyCredential(tenantId, provider);

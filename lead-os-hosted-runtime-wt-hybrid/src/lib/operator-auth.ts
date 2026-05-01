@@ -1,7 +1,5 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
-import { embeddedSecrets } from "./embedded-secrets.ts";
+import { createHmac, timingSafeEqual } from "crypto";
+import type { NextResponse } from "next/server";
 import {
   createMagicLinkUrl,
   decodeOperatorToken,
@@ -19,7 +17,11 @@ export const OPERATOR_SESSION_COOKIE = "leados_operator_session";
 export { sanitizeNextPath } from "./operator-auth-core.ts";
 
 function getAuthSecret() {
-  return process.env.LEAD_OS_AUTH_SECRET ?? process.env.CRON_SECRET ?? embeddedSecrets.cron.secret;
+  const secret = process.env.LEAD_OS_AUTH_SECRET;
+  if (!secret) {
+    throw new Error("LEAD_OS_AUTH_SECRET is required for operator authentication");
+  }
+  return secret;
 }
 
 export function getAllowedOperatorEmails() {
@@ -63,7 +65,7 @@ export async function sendOperatorMagicLink(email: string, origin: string, nextP
     html: `
       <div style="font-family:Segoe UI,sans-serif;line-height:1.6;color:#0f172a">
         <h1 style="font-size:24px;margin-bottom:12px">${tenantConfig.brandName} operator access</h1>
-        <p>Use the secure link below to sign in to the CX React operator dashboard.</p>
+        <p>Use the secure link below to sign in to the Lead OS operator dashboard.</p>
         <p><a href="${magicLink}" style="display:inline-block;background:#14b8a6;color:#07142b;padding:12px 18px;border-radius:12px;font-weight:700;text-decoration:none">Open operator dashboard</a></p>
         <p>This link expires in 15 minutes and only works for approved operator email addresses.</p>
       </div>
@@ -103,6 +105,7 @@ export async function getOperatorSessionFromCookieHeader(cookieHeader?: string |
 }
 
 export async function getOperatorSession() {
+  const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
   const token = cookieStore.get(OPERATOR_SESSION_COOKIE)?.value;
   if (!token) return null;
@@ -133,13 +136,30 @@ export function clearOperatorSession(response: NextResponse) {
   });
 }
 
-export async function requireOperatorApiSession(request: Request) {
-  // Fast path: trust identity headers set by the Next.js middleware.
-  // When middleware already validated the operator cookie it attaches the
-  // identity as request headers, so we can skip re-parsing the JWT.
-  const userId = request.headers.get("x-authenticated-user-id");
+function verifyMiddlewareOperatorSignature(request: Request, userId: string): boolean {
   const method = request.headers.get("x-authenticated-method");
-  if (userId && method) {
+  if (method !== "operator-cookie") return false;
+
+  const secret = process.env.LEAD_OS_AUTH_SECRET ?? "";
+  const signature = request.headers.get("x-middleware-signature");
+  const requestId = request.headers.get("x-request-id");
+  const tenantId = request.headers.get("x-authenticated-tenant-id") ?? "";
+
+  if (!secret || !signature || !requestId) return false;
+
+  const expected = createHmac("sha256", secret)
+    .update(`${userId}:${tenantId}:${requestId}`)
+    .digest("hex");
+
+  const expectedBytes = Buffer.from(expected);
+  const actualBytes = Buffer.from(signature);
+  return expectedBytes.length === actualBytes.length && timingSafeEqual(expectedBytes, actualBytes);
+}
+
+export async function requireOperatorApiSession(request: Request) {
+  // Fast path: accept only operator-cookie identities that were signed by middleware.
+  const userId = request.headers.get("x-authenticated-user-id");
+  if (userId && verifyMiddlewareOperatorSignature(request, userId)) {
     return {
       session: { email: userId, type: "session" as const, exp: 0 },
       response: null,
@@ -151,7 +171,7 @@ export async function requireOperatorApiSession(request: Request) {
   if (!session) {
     return {
       session: null,
-      response: NextResponse.json(
+      response: Response.json(
         {
           success: false,
           error: "Unauthorized",
@@ -168,6 +188,7 @@ export async function requireOperatorApiSession(request: Request) {
 export async function requireOperatorPageSession(nextPath: string) {
   const session = await getOperatorSession();
   if (!session) {
+    const { redirect } = await import("next/navigation");
     redirect(`/auth/sign-in?next=${encodeURIComponent(sanitizeNextPath(nextPath))}`);
   }
   return session;

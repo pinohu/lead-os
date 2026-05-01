@@ -2,21 +2,22 @@ import Stripe from "stripe";
 import { getPlanById, type PlanDefinition } from "./plan-catalog.ts";
 
 /** Stripe v22+ — avoid `Stripe.Checkout.SessionCreateParams` (not exported on `Checkout` in ESM builds). */
-type StripeCheckoutSessionCreateParams = Parameters<Stripe["checkout"]["sessions"]["create"]>[0];
+type StripeCheckoutSessionCreateParams = NonNullable<Parameters<Stripe["checkout"]["sessions"]["create"]>[0]>;
 type StripeCheckoutLineItem = NonNullable<StripeCheckoutSessionCreateParams["line_items"]>[number];
 import {
   getSubscription,
   upsertSubscription,
   type SubscriptionRecord,
 } from "./billing-store.ts";
-import { pricingLog } from "./pricing/logger";
-import { releaseStripeWebhookEventClaim, tryClaimStripeWebhookEvent } from "./billing/stripe-webhook-idempotency";
+import { pricingLog } from "./pricing/logger.ts";
+import { releaseStripeWebhookEventClaim, tryClaimStripeWebhookEvent } from "./billing/stripe-webhook-idempotency.ts";
 import {
   catalogPlanIdToBillingPlanKey,
   mapStripeStatusToBillingSubscriptionStatus,
   resolvePlanKeyFromStripeSubscription,
   upsertBillingSubscriptionFromStripe,
-} from "./billing/stripe-billing-subscription-sync";
+} from "./billing/stripe-billing-subscription-sync.ts";
+import { isProductionLikeRuntime } from "./production-config.ts";
 
 function getStripeClient(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -57,6 +58,9 @@ export async function createCheckoutSession(
 
   const stripe = getStripeClient();
   if (!stripe) {
+    if (isProductionLikeRuntime()) {
+      throw new Error("Stripe is not configured; checkout cannot run in production");
+    }
     return {
       url: successUrl ?? "/billing/success",
       sessionId: `dry_cs_${Date.now()}`,
@@ -113,6 +117,9 @@ export async function createBillingPortalSession(
 
   const stripe = getStripeClient();
   if (!stripe || !subscription) {
+    if (isProductionLikeRuntime() && !stripe) {
+      throw new Error("Stripe is not configured; billing portal cannot run in production");
+    }
     return {
       url: returnUrl ?? "/dashboard",
       dryRun: true,
@@ -368,6 +375,9 @@ export async function handleStripeWebhook(
   const webhookSecret = getWebhookSecret();
 
   if (!stripe || !webhookSecret) {
+    if (isProductionLikeRuntime()) {
+      throw new Error("Stripe webhook handling is not configured for production");
+    }
     return { eventType: "unknown", handled: false };
   }
 

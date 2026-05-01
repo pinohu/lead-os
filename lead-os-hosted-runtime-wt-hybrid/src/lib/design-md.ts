@@ -73,7 +73,7 @@ function buildDefaultDesign(tenant: TenantRecord): DesignMarkdown {
 
   return {
     brandName: tenant.brandName,
-    brandDescription: `${tenant.brandName} — lead generation and conversion platform powered by CX React.`,
+    brandDescription: `${tenant.brandName} — lead generation and conversion platform powered by Lead OS.`,
 
     colors: {
       primary: accent,

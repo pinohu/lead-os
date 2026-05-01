@@ -143,7 +143,7 @@ function formatObject(obj: Record<string, unknown>, indent: number = 0): void {
 }
 
 function printUsage(): void {
-  process.stdout.write(`CX React CLI - Command-line interface for CX React
+  process.stdout.write(`Lead OS CLI - Command-line interface for Lead OS
 
 Usage: lead-os <command> [options]
 
@@ -305,7 +305,7 @@ Options:
 
     health: `Usage: lead-os health
 
-Performs a basic health check of CX React runtime components.`,
+Performs a basic health check of Lead OS runtime components.`,
 
     experiments: `Usage: lead-os experiments list
 

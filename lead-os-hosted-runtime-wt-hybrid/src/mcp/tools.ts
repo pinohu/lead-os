@@ -60,7 +60,7 @@ export const tools: McpTool[] = [
   {
     name: "lead_os_provision_tenant",
     description:
-      "Provision a new CX React tenant with full niche configuration, funnels, and embed script generation.",
+      "Provision a new Lead OS tenant with full niche configuration, funnels, and embed script generation.",
     inputSchema: {
       type: "object",
       properties: {
@@ -102,7 +102,7 @@ export const tools: McpTool[] = [
 
   {
     name: "lead_os_list_tenants",
-    description: "List all CX React tenants with optional status and revenue model filters.",
+    description: "List all Lead OS tenants with optional status and revenue model filters.",
     inputSchema: {
       type: "object",
       properties: {
@@ -509,7 +509,7 @@ export const tools: McpTool[] = [
   // --- Marketplace ---
   {
     name: "lead_os_publish_lead",
-    description: "Publish a lead to the CX React marketplace for resale to buyers.",
+    description: "Publish a lead to the Lead OS marketplace for resale to buyers.",
     inputSchema: {
       type: "object",
       properties: {
@@ -1522,22 +1522,22 @@ function getDefaultFeatures(videoType: string): string[] {
     case "data-report":
       return ["Conversion Rate Trends", "Lead Quality Metrics", "Channel Performance", "ROI Analysis"];
     case "launch-video":
-      return ["Next-Gen CX React", "MCP Integration", "Marketplace Launch", "Enterprise Features"];
+      return ["Next-Gen Lead OS", "MCP Integration", "Marketplace Launch", "Enterprise Features"];
     default:
-      return ["CX React Platform", "Intelligent Automation", "Measurable Results"];
+      return ["Lead OS Platform", "Intelligent Automation", "Measurable Results"];
   }
 }
 
 function getDefaultTitle(videoType: string): string {
   switch (videoType) {
     case "product-demo":
-      return "CX React - The AI-Powered Lead Generation Platform";
+      return "Lead OS - The AI-Powered Lead Generation Platform";
     case "data-report":
-      return "CX React Performance Report";
+      return "Lead OS Performance Report";
     case "launch-video":
-      return "Introducing CX React";
+      return "Introducing Lead OS";
     default:
-      return "CX React";
+      return "Lead OS";
   }
 }
 
@@ -1586,7 +1586,7 @@ function generateVideoScenes(
       endFrame: start + framesPerFeature,
       content: {
         heading: feature,
-        description: `${feature} - powered by CX React`,
+        description: `${feature} - powered by Lead OS`,
         icon: getFeatureIcon(i),
         accentColor: brandColor,
         animation: i % 2 === 0 ? "slide-in-left" : "slide-in-right",
@@ -1600,7 +1600,7 @@ function generateVideoScenes(
     startFrame: totalFrames - outroFrames,
     endFrame: totalFrames,
     content: {
-      headline: "Get Started with CX React",
+      headline: "Get Started with Lead OS",
       ctaText: "Try it Free",
       url: "https://leadgenos.com",
       backgroundColor: brandColor,

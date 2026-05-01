@@ -62,15 +62,15 @@ export function SiteHeader({ brandName }: SiteHeaderProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full min-w-0 overflow-x-hidden border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav
-        className="max-w-7xl mx-auto flex items-center justify-between h-16 px-4"
+        className="mx-auto flex h-16 w-full max-w-7xl min-w-0 items-center justify-between gap-3 px-4"
         aria-label="Primary navigation"
       >
         {/* Brand */}
         <Link
           href="/"
-          className="text-lg font-bold tracking-tight text-foreground hover:text-primary transition-colors"
+          className="min-w-0 truncate text-lg font-bold tracking-tight text-foreground transition-colors hover:text-primary"
           aria-label={`${brandName} home`}
         >
           {brandName}
@@ -189,7 +189,7 @@ export function SiteHeader({ brandName }: SiteHeaderProps) {
         </div>
 
         {/* Right side: theme toggle, auth, mobile menu */}
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <ThemeToggle />
           <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
             <Link href="/auth/sign-in">Sign in</Link>

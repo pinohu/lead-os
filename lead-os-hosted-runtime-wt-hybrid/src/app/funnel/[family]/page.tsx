@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: FunnelFamilyPageProps): Promi
   const { family } = await params;
   const label = family.charAt(0).toUpperCase() + family.slice(1).replace(/-/g, " ");
   return {
-    title: `${label} Funnel | CX React`,
-    description: `Explore the ${label} funnel family — adaptive lead capture, scoring, and nurture automation.`,
+    title: `${label} Funnel | Lead OS`,
+    description: `Explore the ${label} funnel family for package capture, scoring, routing, and follow-up.`,
   };
 }
 
@@ -71,8 +71,8 @@ export default async function FunnelFamilyPage({ params, searchParams }: FunnelF
     "@type": "WebPage",
     "@id": `${baseUrl}/funnel/${family}#webpage`,
     url: `${baseUrl}/funnel/${family}`,
-    name: `${graph.name} for ${niche.label} | CX React`,
-    description: `Explore the ${graph.name} funnel family — adaptive lead capture, scoring, and nurture automation for ${niche.label}.`,
+    name: `${graph.name} for ${niche.label} | Lead OS`,
+    description: `Explore the ${graph.name} funnel family for package capture, scoring, routing, and follow-up for ${niche.label}.`,
     isPartOf: { "@id": `${baseUrl}/#website` },
   };
 
@@ -80,9 +80,9 @@ export default async function FunnelFamilyPage({ params, searchParams }: FunnelF
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(funnelJsonLd) }} />
     <ExperienceScaffold
-      eyebrow="Canonical funnel family"
+      eyebrow="Package funnel family"
       title={`${graph.name} for ${niche.label}`}
-      summary={`${recipe.summary} This surface now adapts the ask, proof order, and fallback path around returning status, device, and intent instead of showing one generic page.`}
+      summary={`${recipe.summary} This surface explains the capture, routing, and follow-up logic a package can use for this funnel family.`}
       profile={profile}
       metrics={[
         { label: "Goal", value: graph.goal, detail: "Primary outcome this family optimizes for." },

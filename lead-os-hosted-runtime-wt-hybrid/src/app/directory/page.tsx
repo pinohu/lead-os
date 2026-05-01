@@ -5,9 +5,9 @@ import { nicheCatalog } from "@/lib/catalog";
 import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
-  title: "Business Directory | CX React",
+  title: "Solution Directory | Lead OS",
   description:
-    "Browse our industry directory. Find automation solutions, expert resources, and growth tools for your specific business vertical.",
+    "Match a customer's industry to the right assessment, calculator, solution, and lead capture path.",
 };
 
 export default function DirectoryIndexPage() {
@@ -18,8 +18,8 @@ export default function DirectoryIndexPage() {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "@id": `${baseUrl}/directory#directory`,
-    name: "Business Directory | CX React",
-    description: "Browse by vertical to discover assessment tools, authority guides, lead capture systems, and proven funnel blueprints designed for your specific business.",
+    name: "Solution Directory | Lead OS",
+    description: "Browse by vertical to match a customer to the right assessment, calculator, solution, and lead capture path.",
     numberOfItems: niches.length,
     itemListElement: niches.map((niche, i) => ({
       "@type": "ListItem",
@@ -37,12 +37,11 @@ export default function DirectoryIndexPage() {
     <main className="min-h-screen">
       <section className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         <div className="max-w-2xl">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Business directory</p>
-          <h1 className="text-foreground">Find the right growth system for your industry</h1>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Solution directory</p>
+          <h1 className="text-foreground">Find the right customer solution by industry</h1>
           <p className="text-lg text-muted-foreground">
-            Browse by vertical to discover assessment tools, authority guides,
-            lead capture systems, and proven funnel blueprints designed for your
-            specific business.
+            Use this directory to match a buyer's business to the right assessment, calculator, solution, and lead
+            capture path before launching the system they paid for.
           </p>
         </div>
       </section>
@@ -92,14 +91,14 @@ export default function DirectoryIndexPage() {
 
       <section className="rounded-xl border border-border bg-card p-6 text-center mt-10">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Not sure where to start?</p>
-        <h2 className="text-foreground">Let us match you to the right vertical</h2>
+        <h2 className="text-foreground">Start with a complete solution</h2>
         <p className="text-muted-foreground">
-          Take our general assessment and we will recommend the best niche
-          configuration, funnel blueprint, and growth path for your business.
+          If you already know the outcome the customer bought, go straight to the solution launch center and collect the
+          intake details needed to provision it.
         </p>
         <div className="flex flex-wrap gap-3 justify-center">
-          <Button asChild><Link href="/assess/general">Take the general assessment</Link></Button>
-          <Button asChild variant="outline"><Link href="/contact">Talk to a human</Link></Button>
+          <Button asChild><Link href="/packages">Launch a solution</Link></Button>
+          <Button asChild variant="outline"><Link href="/assess/general">Take the general assessment</Link></Button>
         </div>
       </section>
     </main>

@@ -112,7 +112,7 @@ const NAV_GROUPS: NavGroup[] = [
     icon: <Settings size={ICON_SIZE} />,
     items: [
       { href: "/dashboard/providers", label: "Providers", icon: <Building2 size={ICON_SIZE} /> },
-      { href: "/dashboard/credentials", label: "Credentials", icon: <KeyRound size={ICON_SIZE} /> },
+      { href: "/dashboard/credentials", label: "Account Access", icon: <KeyRound size={ICON_SIZE} /> },
       { href: "/dashboard/settings", label: "Settings", icon: <Settings size={ICON_SIZE} /> },
     ],
   },
