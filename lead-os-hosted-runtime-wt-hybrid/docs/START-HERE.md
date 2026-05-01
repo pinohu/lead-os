@@ -10,7 +10,7 @@ This file is the **single entry point** for humans and for checking that marketi
 | `erie-pro/` | **Territory / local SEO app** (Erie-style deployments) | `npm install` then `npm run dev` (port from its README) |
 | `neatcircle-beta/` | **Edge / marketing** (Cloudflare Workers path) | `npm install` then see that README |
 | `lead-os-hosted-runtime-wt-public/` | **Alternate lighter runtime** — not feature-parity with the kernel | Read its README before using |
-| `docs/` (this folder) | **Repo Markdown** — not all pages are rendered as HTML unless linked from the kernel | Read in GitHub or your editor |
+| `docs/` (this folder) | **Website-rendered knowledge base** — core repo documents are exposed under `/docs/[slug]` | Read on the website docs hub |
 | `_n8n_sources/` | **Vendored upstream n8n/MCP trees** — reference only | Read `_n8n_sources/README.md` |
 
 **In the browser (kernel deployment):** open **`/docs`** for API + SLA summary + links into this repo.
@@ -20,7 +20,7 @@ This file is the **single entry point** for humans and for checking that marketi
 Run these **exactly** from your machine shell (adjust only the clone directory name if you used one):
 
 ```bash
-git clone https://github.com/pinohu/lead-os.git
+git clone <lead-os-repo-url>
 cd lead-os
 cd lead-os-hosted-runtime-wt-hybrid
 npm install
