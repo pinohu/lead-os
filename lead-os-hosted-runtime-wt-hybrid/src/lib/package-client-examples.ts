@@ -41,6 +41,14 @@ export interface PackageDeliverableClientExample {
   headline: string;
   plainResult: string;
   visualLabel: string;
+  automatedProcessFlow: Array<{
+    title: string;
+    description: string;
+  }>;
+  solutionDeliveryFlow: Array<{
+    title: string;
+    description: string;
+  }>;
   tutorial: Array<{
     title: string;
     body: string;
@@ -451,6 +459,181 @@ function processForDeliverable(
   ];
 }
 
+function automatedProcessFlowForDeliverable(
+  deliverable: PackageDeliverable,
+  example: PackageClientExampleSeed,
+): PackageDeliverableClientExample["automatedProcessFlow"] {
+  switch (deliverable.launchSurface) {
+    case "capture":
+      return [
+        {
+          title: "Person needs help",
+          description: `${example.endUser} has a question, request, or booking need.`,
+        },
+        {
+          title: "They find the page",
+          description: "They land on a simple page instead of guessing who to call or email.",
+        },
+        {
+          title: "They share details",
+          description: "They give the needed facts once, in plain language.",
+        },
+        {
+          title: "Request is sorted",
+          description: "The system sends the request to the right next step.",
+        },
+        {
+          title: "Next action is clear",
+          description: `The person moves toward ${example.heroAction.toLowerCase()} without waiting for manual sorting.`,
+        },
+      ];
+    case "operator":
+      return [
+        {
+          title: "Work comes in",
+          description: "A lead, customer, task, or internal request reaches the team.",
+        },
+        {
+          title: "Team checks status",
+          description: "The team needs to know what happened and what is still open.",
+        },
+        {
+          title: "Owner is assigned",
+          description: "The right person or team is chosen for the next action.",
+        },
+        {
+          title: "Handoff happens",
+          description: "The work moves to the next person, page, or workflow.",
+        },
+        {
+          title: "Nothing gets lost",
+          description: "The team can see the owner, status, and next move in one place.",
+        },
+      ];
+    case "automation":
+      return [
+        {
+          title: "Trigger happens",
+          description: "A form, call, reply, payment, visit, or data change starts the process.",
+        },
+        {
+          title: "Rules check it",
+          description: "The system reads the details and checks the rules for this business.",
+        },
+        {
+          title: "Action is taken",
+          description: `The system uses ${deliverable.title} to run the correct step.`,
+        },
+        {
+          title: "Team is updated",
+          description: "The right person gets a note, task, route, or record.",
+        },
+        {
+          title: "Follow-up continues",
+          description: "The next step runs the same way every time until the result is clear.",
+        },
+      ];
+    case "billing":
+      return [
+        {
+          title: "Money event starts",
+          description: "A buyer, lead, claim, payout, plan, or invoice needs a clear money path.",
+        },
+        {
+          title: "Price is checked",
+          description: "The system checks the price, plan, claim rule, or commission rule.",
+        },
+        {
+          title: "Buyer takes action",
+          description: "The buyer can pay, claim, approve, or move to the next payment step.",
+        },
+        {
+          title: "Status is saved",
+          description: "The system records what happened so no one argues later.",
+        },
+        {
+          title: "Revenue is visible",
+          description: "The client can see what money moved and what is still pending.",
+        },
+      ];
+    case "reporting":
+      return [
+        {
+          title: "Work creates data",
+          description: "Calls, leads, clicks, bookings, tasks, or revenue events are created.",
+        },
+        {
+          title: "Data is grouped",
+          description: "The system groups the facts by source, status, result, and owner.",
+        },
+        {
+          title: "Report is made",
+          description: `${deliverable.title} turns the facts into a simple report.`,
+        },
+        {
+          title: "Client reads proof",
+          description: "The client sees what worked, what is blocked, and what changed.",
+        },
+        {
+          title: "Next fix is chosen",
+          description: "The report points to the next improvement instead of leaving the team guessing.",
+        },
+      ];
+    case "workspace":
+    default:
+      return [
+        {
+          title: "Work is scattered",
+          description: "The team has pages, files, reports, and next steps in different places.",
+        },
+        {
+          title: "Workspace opens",
+          description: "The client opens one place that shows the work for this solution.",
+        },
+        {
+          title: "Items are organized",
+          description: "Pages, guides, workflows, reports, and handoffs are grouped together.",
+        },
+        {
+          title: "Team follows steps",
+          description: "The team uses the workspace to know what to do first, second, and next.",
+        },
+        {
+          title: "Result is tracked",
+          description: "The workspace keeps proof close to the work so the client can judge value.",
+        },
+      ];
+  }
+}
+
+function solutionDeliveryFlowForDeliverable(
+  deliverable: PackageDeliverable,
+  example: PackageClientExampleSeed,
+): PackageDeliverableClientExample["solutionDeliveryFlow"] {
+  return [
+    {
+      title: "Read intake",
+      description: `Use the client's answers about ${example.market}, the audience, and the success goal.`,
+    },
+    {
+      title: "Create output",
+      description: `Build this finished output: ${deliverable.createdArtifact}`,
+    },
+    {
+      title: "Publish page",
+      description: `Place ${deliverable.title} on the client website with simple directions.`,
+    },
+    {
+      title: "Run handoff",
+      description: plainUseForDeliverable(deliverable),
+    },
+    {
+      title: "Prove outcome",
+      description: resultForDeliverable(deliverable, example),
+    },
+  ];
+}
+
 function visualLabelForSurface(surface: PackageDeliverable["launchSurface"]): string {
   switch (surface) {
     case "capture":
@@ -559,6 +742,8 @@ export function getPackageDeliverableClientExample(
     headline: `${deliverable.title} for ${packageExample.clientName}`,
     plainResult: resultForDeliverable(deliverable, packageExample),
     visualLabel: visualLabelForSurface(deliverable.launchSurface),
+    automatedProcessFlow: automatedProcessFlowForDeliverable(deliverable, packageExample),
+    solutionDeliveryFlow: solutionDeliveryFlowForDeliverable(deliverable, packageExample),
     tutorial: tutorialForDeliverable(deliverable, packageExample),
     processMap: processForDeliverable(deliverable, packageExample),
     acceptanceChecks: [

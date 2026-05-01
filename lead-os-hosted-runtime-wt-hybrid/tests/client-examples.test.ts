@@ -56,6 +56,24 @@ describe("package client example websites", () => {
         assert.ok(example, `${pkg.slug}/${deliverable.id} is missing a client-facing deliverable page`);
         assert.ok(example.headline.includes(deliverable.title), `${pkg.slug}/${deliverable.id} headline should name the deliverable`);
         assert.ok(example.plainResult.length > 50, `${pkg.slug}/${deliverable.id} needs a plain result`);
+        assert.equal(
+          example.automatedProcessFlow.length,
+          5,
+          `${pkg.slug}/${deliverable.id} needs a five-step automated process flowchart`,
+        );
+        assert.equal(
+          example.solutionDeliveryFlow.length,
+          5,
+          `${pkg.slug}/${deliverable.id} needs a five-step solution delivery flowchart`,
+        );
+        assert.ok(
+          example.automatedProcessFlow.every((step) => step.title.length > 3 && step.description.length > 35),
+          `${pkg.slug}/${deliverable.id} needs clear automated process flow steps`,
+        );
+        assert.ok(
+          example.solutionDeliveryFlow.every((step) => step.title.length > 3 && step.description.length > 35),
+          `${pkg.slug}/${deliverable.id} needs clear solution delivery flow steps`,
+        );
         assert.equal(example.processMap.length, 5, `${pkg.slug}/${deliverable.id} needs a five-step process map`);
         assert.ok(example.tutorial.length >= 5, `${pkg.slug}/${deliverable.id} needs a tutorial`);
         assert.ok(example.acceptanceChecks.length >= 5, `${pkg.slug}/${deliverable.id} needs acceptance checks`);

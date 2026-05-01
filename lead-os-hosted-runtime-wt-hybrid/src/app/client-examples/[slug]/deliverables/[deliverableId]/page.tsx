@@ -117,18 +117,21 @@ export default async function ClientDeliverableExamplePage({ params }: Props) {
       <section className="mx-auto max-w-6xl px-4 py-12">
         <div className="mb-6 flex items-center gap-2">
           <Map className="h-5 w-5" />
-          <h2 className="text-2xl font-extrabold">Mini process map</h2>
+          <h2 className="text-2xl font-extrabold">Process flowcharts</h2>
         </div>
-        <div className="grid gap-3 md:grid-cols-5">
-          {example.processMap.map((step, index) => (
-            <div key={step.title} className="relative rounded-lg border border-slate-200 bg-white p-4">
-              <h3 className="font-bold">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.description}</p>
-              {index < example.processMap.length - 1 ? (
-                <ArrowRight className="absolute -right-3 top-1/2 z-10 hidden h-6 w-6 -translate-y-1/2 rounded-full bg-white text-slate-500 md:block" />
-              ) : null}
-            </div>
-          ))}
+        <div className="grid gap-6">
+          <FlowChart
+            eyebrow="Process being automated"
+            title={`What ${example.deliverable.title} handles`}
+            description="This shows the real work path the client no longer has to manage by hand."
+            steps={example.automatedProcessFlow}
+          />
+          <FlowChart
+            eyebrow="Solution delivery flow"
+            title="How this deliverable creates the outcome"
+            description="This shows how the solution uses the intake, creates the output, launches it, and proves the result."
+            steps={example.solutionDeliveryFlow}
+          />
         </div>
       </section>
 
@@ -185,5 +188,39 @@ function Info({ label, value }: { label: string; value: string }) {
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
       <p className="mt-2 text-sm font-semibold leading-relaxed text-slate-900">{value}</p>
     </div>
+  );
+}
+
+function FlowChart({
+  eyebrow,
+  title,
+  description,
+  steps,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  steps: Array<{ title: string; description: string }>;
+}) {
+  return (
+    <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{eyebrow}</p>
+      <h3 className="mt-2 text-xl font-extrabold">{title}</h3>
+      <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">{description}</p>
+      <div className="mt-5 grid gap-3 md:grid-cols-5">
+        {steps.map((step, index) => (
+          <div key={`${eyebrow}-${step.title}`} className="relative rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <span className="mb-3 inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-950 text-xs font-bold text-white">
+              {index + 1}
+            </span>
+            <h4 className="text-sm font-bold">{step.title}</h4>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.description}</p>
+            {index < steps.length - 1 ? (
+              <ArrowRight className="absolute -right-3 top-1/2 z-10 hidden h-6 w-6 -translate-y-1/2 rounded-full bg-white text-slate-500 md:block" />
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </article>
   );
 }
