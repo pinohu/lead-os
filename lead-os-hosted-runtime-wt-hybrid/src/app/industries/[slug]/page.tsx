@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AdaptiveLeadCaptureForm } from "@/components/AdaptiveLeadCaptureForm";
 import { ExperienceScaffold } from "@/components/ExperienceScaffold";
@@ -11,6 +12,8 @@ import { tenantConfig } from "@/lib/tenant";
 import { INDUSTRY_TEMPLATES, type IndustryCategory } from "@/lib/niche-templates";
 import { buildOgImageUrl } from "@/lib/og-url";
 import { getCustomerIntelligenceOrDefault } from "@/lib/customer-intelligence";
+import { getIndustryPositioning } from "@/lib/industry-positioning";
+import type { FunnelFamily } from "@/lib/runtime-schema";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -26,7 +29,6 @@ function asBoolean(value: string | string[] | undefined) {
   return normalized === "1" || normalized === "true" || normalized === "yes";
 }
 
-/** Map niche slugs to the closest INDUSTRY_TEMPLATES key. */
 function resolveTemplateCategory(slug: string): IndustryCategory {
   const directMap: Record<string, IndustryCategory> = {
     general: "general",
@@ -49,6 +51,23 @@ function resolveTemplateCategory(slug: string): IndustryCategory {
   return directMap[slug] ?? "general";
 }
 
+const validFamilies = new Set<string>([
+  "lead-magnet",
+  "qualification",
+  "chat",
+  "webinar",
+  "authority",
+  "checkout",
+  "retention",
+  "rescue",
+  "referral",
+  "continuity",
+]);
+
+function resolvePrimaryFamily(value?: string): FunnelFamily {
+  return validFamilies.has(value ?? "") ? value as FunnelFamily : "lead-magnet";
+}
+
 export function generateStaticParams() {
   return Object.keys(nicheCatalog).map((slug) => ({ slug }));
 }
@@ -57,13 +76,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const niche = getNiche(slug);
   if (!niche) return {};
+
+  const positioning = getIndustryPositioning(niche.slug);
   return {
-    title: `${niche.label} Lead System Solution | Lead OS`,
-    description: `${niche.summary} Choose the solution, capture the setup details, and launch scoring, routing, follow-up, and reporting for ${niche.label.toLowerCase()} businesses.`,
+    title: `${niche.label} Growth System | Lead OS`,
+    description: positioning.summary,
     openGraph: {
-      title: `${niche.label} | Lead OS`,
-      description: niche.summary,
-      images: [{ url: buildOgImageUrl(niche.label, niche.summary, niche.slug), width: 1200, height: 630 }],
+      title: positioning.title,
+      description: positioning.summary,
+      images: [{ url: buildOgImageUrl(positioning.title, positioning.summary, niche.slug), width: 1200, height: 630 }],
     },
   };
 }
@@ -77,10 +98,13 @@ export default async function IndustryPage({ params, searchParams }: Props) {
 
   const category = resolveTemplateCategory(slug);
   const template = INDUSTRY_TEMPLATES[category];
+  const intel = getCustomerIntelligenceOrDefault(category);
+  const positioning = getIndustryPositioning(niche.slug);
+  const primaryFamily = resolvePrimaryFamily(niche.recommendedFunnels[0]);
 
   const headerStore = await headers();
   const profile = resolveExperienceProfile({
-    family: "lead-magnet",
+    family: primaryFamily,
     niche,
     supportEmail: tenantConfig.supportEmail,
     source: asString(query.source) ?? "industry-page",
@@ -93,202 +117,231 @@ export default async function IndustryPage({ params, searchParams }: Props) {
     referrer: headerStore.get("referer") ?? undefined,
   });
 
-  const coldHeadline = template.headlineTemplates.cold;
-  const headline = coldHeadline.headline.replace(/\{\{niche\}\}/g, niche.label);
-  const subheadline = coldHeadline.subheadline.replace(/\{\{niche\}\}/g, niche.label);
-
-  const painPoints = template.painPoints
-    .slice(0, 6)
-    .map((p) => p.replace(/\{\{niche\}\}/g, niche.label));
-  const offers = template.offers.map((o) =>
-    o.replace(/\{\{niche\}\}/g, niche.label),
-  );
+  const primaryCta = template.headlineTemplates.cold.ctaText.replace(/\{\{niche\}\}/g, niche.label);
 
   return (
     <div>
       <ExperienceScaffold
-        eyebrow={niche.label}
-        title={headline}
-        summary={subheadline}
+        eyebrow={positioning.eyebrow}
+        title={positioning.title}
+        summary={positioning.summary}
         profile={profile}
         niche={niche.slug}
         metrics={[
           {
-            label: "Funnel style",
-            value: niche.recommendedFunnels[0] ?? "lead-magnet",
-            detail: `Primary conversion path recommended for ${niche.label} businesses.`,
+            label: "Primary buyer",
+            value: intel.icp.title,
+            detail: intel.icp.companySize,
           },
           {
-            label: "Scoring bias",
-            value: niche.calculatorBias,
-            detail: `Leads are scored with a ${niche.calculatorBias}-first weighting model.`,
+            label: "Proof metric",
+            value: positioning.proofMetric.split(",")[0],
+            detail: positioning.proofMetric,
           },
           {
-            label: "Automation depth",
-            value: `${template.offers.length} playbooks`,
-            detail: "Pre-built solution logic ready to launch from setup details.",
+            label: "Buying timeline",
+            value: intel.icp.decisionTimeline,
+            detail: `${intel.decisionJourney.touchpointsNeeded} touchpoints before trust is usually earned.`,
           },
         ]}
       >
-        {/* ---------- Pain Points ---------- */}
+        <section className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+          <article className="rounded-lg border border-border bg-card p-6">
+            <Badge variant="secondary" className="mb-3">Who this is for</Badge>
+            <h2 className="text-foreground">{intel.icp.title}</h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">{positioning.audience}</p>
+            <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
+              <div>
+                <dt className="font-semibold text-foreground">Business size</dt>
+                <dd className="text-muted-foreground">{intel.icp.companySize}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-foreground">Buying style</dt>
+                <dd className="text-muted-foreground">{intel.icp.buyingAuthority.replace(/-/g, " ")}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-foreground">Budget rhythm</dt>
+                <dd className="text-muted-foreground">{intel.icp.budgetCycle}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-foreground">Current tools</dt>
+                <dd className="text-muted-foreground">{intel.icp.techStack.slice(0, 3).join(", ")}</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article className="rounded-lg border border-border bg-card p-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Market truth</p>
+            <h2 className="text-foreground">{positioning.marketTruth}</h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">{positioning.primaryPain}</p>
+            <div className="mt-5 rounded-md border border-border bg-background p-4">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Promised result</p>
+              <p className="mt-2 text-sm font-semibold leading-relaxed text-foreground">{positioning.promisedResult}</p>
+            </div>
+          </article>
+        </section>
+
         <section>
-          <h2 className="text-foreground">Challenges {niche.label} businesses face every day</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {painPoints.map((point, i) => (
-              <article key={i} className="rounded-xl border border-border bg-card p-6">
-                <p>{point}</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Pain this page must name</p>
+          <h2 className="text-foreground">The expensive friction {niche.label.toLowerCase()} teams already recognize</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {positioning.painPoints.map((point) => (
+              <article key={point} className="rounded-lg border border-border bg-card p-5">
+                <p className="m-0 text-sm leading-relaxed text-muted-foreground">{point}</p>
               </article>
             ))}
           </div>
         </section>
 
-        {/* ---------- Offers ---------- */}
         <section>
-          <h2 className="text-foreground">What the launched solution gives {niche.label} teams</h2>
-          <ul className="space-y-2">
-            {offers.map((offer, i) => (
-              <li key={i}>{offer}</li>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Expected outcomes</p>
+          <h2 className="text-foreground">What the buyer should receive after onboarding</h2>
+          <div className="grid gap-5 md:grid-cols-3">
+            {positioning.outcomes.map((outcome) => (
+              <article key={outcome.label} className="rounded-lg border border-border bg-card p-5">
+                <h3 className="m-0 text-base font-bold text-foreground">{outcome.label}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{outcome.result}</p>
+                <p className="mt-4 text-xs font-medium uppercase tracking-wider text-muted-foreground">Delivered as</p>
+                <p className="mt-1 text-sm leading-relaxed text-foreground">{outcome.deliveredAs}</p>
+              </article>
             ))}
-          </ul>
-        </section>
-
-        {/* ---------- Assessment Teaser ---------- */}
-        <section className="rounded-xl border border-border bg-card p-6">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Free diagnostic</p>
-          <h2 className="text-foreground">Find out where your {niche.label} pipeline leaks revenue</h2>
-          <p>
-            Our two-minute assessment scores your current funnel against
-            benchmarks from hundreds of {niche.label.toLowerCase()} businesses
-            and points you to the solution path most likely to solve the problem.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild><Link href={`/assess/${niche.slug}`}>
-              {coldHeadline.ctaText.replace(/\{\{niche\}\}/g, niche.label)}
-            </Link></Button>
           </div>
         </section>
 
-        {/* ---------- Cross-Links ---------- */}
+        <section className="rounded-lg border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What gets installed</p>
+          <h2 className="text-foreground">A finished operating workflow, not a tool to figure out</h2>
+          <div className="grid gap-3 md:grid-cols-2">
+            {positioning.deliverables.map((deliverable) => (
+              <div key={deliverable} className="rounded-md border border-border bg-background p-4 text-sm leading-relaxed text-muted-foreground">
+                {deliverable}
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button asChild><Link href={`/assess/${niche.slug}`}>{primaryCta}</Link></Button>
+            <Button asChild variant="outline"><Link href={`/packages?industry=${niche.slug}`}>See matching packages</Link></Button>
+          </div>
+        </section>
+
+        <section>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Service blueprint</p>
+          <h2 className="text-foreground">How the {niche.label.toLowerCase()} journey should feel</h2>
+          <div className="grid gap-4 md:grid-cols-4">
+            {positioning.journey.map((step, index) => (
+              <article key={step.label} className="rounded-lg border border-border bg-card p-5">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
+                  {index + 1}
+                </span>
+                <h3 className="mt-4 text-base font-bold text-foreground">{step.label}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.customerReality}</p>
+                <p className="mt-3 text-sm leading-relaxed text-foreground">{step.systemResponse}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Buying triggers</p>
+          <h2 className="text-foreground">Moments when {niche.label.toLowerCase()} buyers stop browsing and act</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {intel.buyingTriggers.slice(0, 4).map((trigger) => (
+              <article key={trigger.event} className="rounded-lg border border-border bg-card p-5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={trigger.urgency === "immediate" ? "destructive" : "outline"}>{trigger.urgency.replace(/-/g, " ")}</Badge>
+                  <h3 className="m-0 text-base font-bold text-foreground">{trigger.event}</h3>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{trigger.searchBehavior}</p>
+                <p className="mt-2 text-sm italic leading-relaxed text-muted-foreground">{trigger.emotionalState}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+          <article className="rounded-lg border border-border bg-card p-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Objections to answer directly</p>
+            <h2 className="text-foreground">What the buyer is really worried about</h2>
+            <div className="mt-4 space-y-3">
+              {intel.objections.slice(0, 4).map((obj) => (
+                <details key={obj.objection} className="rounded-md border border-border bg-background p-4">
+                  <summary className="cursor-pointer text-sm font-semibold text-foreground">&ldquo;{obj.objection}&rdquo;</summary>
+                  <div className="mt-3 border-l-2 border-primary pl-4">
+                    <p className="text-sm leading-relaxed text-muted-foreground"><strong className="text-foreground">Real concern:</strong> {obj.underlyingFear}</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground"><strong className="text-foreground">Response:</strong> {obj.evidenceBasedResponse}</p>
+                  </div>
+                </details>
+              ))}
+            </div>
+          </article>
+
+          <article className="rounded-lg border border-border bg-card p-6">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Proof required</p>
+            <h2 className="text-foreground">Claims have to earn trust here.</h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              A {niche.label.toLowerCase()} buyer should never see vague promises. The page, package, and report should prove the baseline,
+              show the installed workflow, and track the outcome metric the offer promised.
+            </p>
+            <div className="mt-4 grid gap-3">
+              {intel.trustSignals.primary.slice(0, 4).map((signal) => (
+                <div key={signal} className="rounded-md border border-border bg-background p-3 text-sm text-muted-foreground">
+                  {signal}
+                </div>
+              ))}
+            </div>
+          </article>
+        </section>
+
+        <section className="rounded-lg border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Decision journey</p>
+          <h2 className="text-foreground">{niche.label} buyers need {intel.decisionJourney.touchpointsNeeded} trust-building touchpoints over about {intel.decisionJourney.totalDays} days.</h2>
+          <div className="grid gap-4 md:grid-cols-4">
+            {intel.decisionJourney.stages.map((stage, index) => (
+              <article key={stage.name} className="rounded-md border border-border bg-background p-4">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Step {index + 1}</p>
+                <h3 className="mt-2 text-base font-bold text-foreground">{stage.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{stage.primaryAction}</p>
+                <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Risk: {stage.dropOffRisk}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section>
           <h2 className="text-foreground">Explore more for {niche.label}</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            <article className="rounded-xl border border-border bg-card p-6">
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Assessment</p>
-              <h3 className="text-foreground">Score your {niche.label} funnel</h3>
-              <p>
-                Take a two-minute diagnostic and get a prioritized action plan
-                built for {niche.label.toLowerCase()} businesses.
+          <div className="grid gap-5 md:grid-cols-3">
+            <article className="rounded-lg border border-border bg-card p-5">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Diagnostic</p>
+              <h3 className="text-foreground">Score the current leak</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Use the assessment to identify the first workflow that should be installed for this industry.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild><Link href={`/assess/${niche.slug}`}>
-                  Take the assessment
-                </Link></Button>
-              </div>
+              <Button asChild><Link href={`/assess/${niche.slug}`}>Take the assessment</Link></Button>
             </article>
 
-            <article className="rounded-xl border border-border bg-card p-6">
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Resources</p>
-              <h3 className="text-foreground">The complete {niche.label} guide</h3>
-              <p>
-                Strategies, benchmarks, and playbooks written specifically for
-                the {niche.label.toLowerCase()} industry.
+            <article className="rounded-lg border border-border bg-card p-5">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Resource</p>
+              <h3 className="text-foreground">Read the complete guide</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Review benchmarks, buying triggers, and workflow ideas for {niche.label.toLowerCase()} operators.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild variant="outline"><Link href={`/resources/${niche.slug}`}>
-                  Read the complete guide
-                </Link></Button>
-              </div>
+              <Button asChild variant="outline"><Link href={`/resources/${niche.slug}`}>Read the guide</Link></Button>
             </article>
 
-            <article className="rounded-xl border border-border bg-card p-6">
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">For your role</p>
-              <h3 className="text-foreground">Built for agencies and operators</h3>
-              <p>
-                See how Lead OS fits your workflow whether you run an agency, a franchise, or an in-house growth team.
+            <article className="rounded-lg border border-border bg-card p-5">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Directory</p>
+              <h3 className="text-foreground">See market coverage</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Open the directory path when this industry is sold as a local, regional, or national demand channel.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild variant="outline"><Link href="/for/agencies">
-                  Built for your role
-                </Link></Button>
-              </div>
+              <Button asChild variant="outline"><Link href={`/directory/${niche.slug}`}>Open directory</Link></Button>
             </article>
           </div>
         </section>
 
-        <section>
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Proof required before publishing claims</p>
-          <h2 className="text-foreground">What makes a {niche.label.toLowerCase()} result believable</h2>
-          <div className="grid gap-4 md:grid-cols-4">
-            {[
-              ["Baseline", "Document the current leak: response time, no-shows, missed calls, weak conversion, manual hours, or wasted spend."],
-              ["Launch proof", "Show the delivery hub, intake path, routing rules, scripts, reporting view, and acceptance checks created from setup."],
-              ["Measured outcome", "Track the metric this page promises after real usage or client-owned data is connected."],
-              ["Approved story", "Publish quotes, screenshots, or case notes only after the client confirms the result is accurate."],
-            ].map(([title, detail]) => (
-              <article key={title} className="rounded-lg border border-border bg-card p-5">
-                <p className="font-semibold text-foreground">{title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{detail}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* ---------- Customer Intelligence: Buying Triggers ---------- */}
-        {(() => {
-          const intel = getCustomerIntelligenceOrDefault(category);
-          return (
-            <>
-              <section>
-                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What triggers {niche.label.toLowerCase()} buyers to act</p>
-                <div className="grid md:grid-cols-2 gap-6">
-                  {intel.buyingTriggers.slice(0, 4).map((trigger) => (
-                    <article key={trigger.event} className="rounded-xl border border-border bg-card p-6" style={{ borderLeft: `4px solid ${trigger.urgency === "immediate" ? "var(--danger)" : "var(--accent)"}` }}>
-                      <h3 className="text-foreground m-0 mb-1.5 text-sm">{trigger.event}</h3>
-                      <p className="text-muted-foreground text-xs m-0 mb-1">{trigger.searchBehavior}</p>
-                      <span className="text-xs italic text-muted-foreground">{trigger.emotionalState}</span>
-                    </article>
-                  ))}
-                </div>
-              </section>
-
-              <section>
-                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Common objections and how we address them</p>
-                <div className="flex flex-col gap-3">
-                  {intel.objections.map((obj) => (
-                    <details key={obj.objection} className="rounded-xl border border-border bg-card p-6 cursor-pointer">
-                      <summary className="font-bold text-sm">&ldquo;{obj.objection}&rdquo;</summary>
-                      <div className="mt-3 pl-4 border-l-[3px] border-accent/20">
-                        <p className="m-0 mb-1.5 text-sm"><strong>The real concern:</strong> {obj.underlyingFear}</p>
-                        <p className="m-0 text-sm"><strong>Our response:</strong> {obj.evidenceBasedResponse}</p>
-                      </div>
-                    </details>
-                  ))}
-                </div>
-              </section>
-
-              <section className="rounded-xl border border-border bg-card p-6 bg-secondary/5">
-                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Decision journey for {niche.label.toLowerCase()} buyers</p>
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
-                  {intel.decisionJourney.stages.map((stage, i) => (
-                    <div key={stage.name} className="text-center">
-                      <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-accent text-white font-extrabold text-sm mb-2">{i + 1}</span>
-                      <h4 className="text-foreground m-0 mb-1 text-sm">{stage.name}</h4>
-                      <p className="text-muted-foreground text-xs m-0">{stage.primaryAction}</p>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-center mt-4 text-sm">
-                  <strong>Average timeline:</strong> {intel.decisionJourney.totalDays} days &middot; <strong>Touchpoints:</strong> {intel.decisionJourney.touchpointsNeeded} &middot; <strong>Decision-makers:</strong> {intel.decisionJourney.stakeholders}
-                </p>
-              </section>
-            </>
-          );
-        })()}
-
-        {/* ---------- Lead Capture ---------- */}
         <AdaptiveLeadCaptureForm
           source="contact_form"
-          family="lead-magnet"
+          family={primaryFamily}
           niche={niche.slug}
           service={tenantConfig.defaultService}
           pagePath={`/industries/${niche.slug}`}
@@ -297,22 +350,21 @@ export default async function IndustryPage({ params, searchParams }: Props) {
         />
       </ExperienceScaffold>
 
-      {/* ---------- Schema.org JSON-LD ---------- */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Service",
-            name: `${niche.label} Lead System Solution`,
-            description: niche.summary,
+            name: `${niche.label} Growth System`,
+            description: positioning.summary,
             provider: {
               "@type": "Organization",
               name: tenantConfig.brandName,
               url: tenantConfig.siteUrl,
             },
             areaServed: "US",
-            serviceType: "Marketing Automation",
+            serviceType: "Outcome-based automation and lead operations",
           }),
         }}
       />
