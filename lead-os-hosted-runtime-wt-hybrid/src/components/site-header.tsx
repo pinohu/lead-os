@@ -62,9 +62,9 @@ export function SiteHeader({ brandName }: SiteHeaderProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full min-w-0 overflow-x-hidden border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-[1000] w-full min-w-0 overflow-visible border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav
-        className="mx-auto flex h-16 w-full max-w-7xl min-w-0 items-center justify-between gap-3 px-4"
+        className="mx-auto flex h-16 w-full max-w-7xl min-w-0 items-center justify-between gap-3 overflow-visible px-4"
         aria-label="Primary navigation"
       >
         {/* Brand */}
@@ -77,7 +77,7 @@ export function SiteHeader({ brandName }: SiteHeaderProps) {
         </Link>
 
         {/* Desktop navigation */}
-        <div className="hidden md:flex items-center">
+        <div className="hidden items-center overflow-visible md:flex">
           <NavigationMenu>
             <NavigationMenuList>
               {/* Industries dropdown */}
