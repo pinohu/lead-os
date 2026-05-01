@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
-import { PackageProvisionForm } from "@/components/PackageProvisionForm";
+import { PackageBundleProvisionForm } from "@/components/PackageBundleProvisionForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import {
   getPackageAutomationContract,
   getPackagePlanNames,
   getProvisionablePackage,
+  getUniversalPackageCredentialFields,
   provisionablePackages,
 } from "@/lib/package-catalog";
 import { getPackagePersonaBlueprint } from "@/lib/package-persona-blueprints";
@@ -262,7 +263,17 @@ export default async function PackagePage({ params }: Props) {
         </Card>
       </section>
 
-      <PackageProvisionForm packageSlug={pkg.slug} fields={pkg.credentialFields} />
+      <PackageBundleProvisionForm
+        packages={provisionablePackages.map((item) => ({
+          slug: item.slug,
+          title: item.title,
+          customerOutcome: item.customerOutcome,
+        }))}
+        fields={getUniversalPackageCredentialFields()}
+        defaultSelectedSlugs={[pkg.slug]}
+        title={`Launch ${pkg.title} alone or merge it with other solutions`}
+        description="This standalone offer uses the same universal intake as every bundle. Keep only this solution selected, or add any other packages before launch; the backend provisions the selected combination from this one submitted form."
+      />
     </main>
   );
 }

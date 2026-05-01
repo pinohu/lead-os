@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import type { PackageSlug } from "@/lib/package-catalog";
+import type { PackageCredentialField, PackageSlug } from "@/lib/package-catalog";
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -23,11 +23,42 @@ interface ProvisionedBundleResult {
   acceptanceTests: Array<{ test: string; status: string; evidence: string }>;
 }
 
-export function PackageBundleProvisionForm({ packages }: { packages: BundlePackageOption[] }) {
+interface PackageBundleProvisionFormProps {
+  packages: BundlePackageOption[];
+  fields: PackageCredentialField[];
+  defaultSelectedSlugs?: PackageSlug[];
+  title?: string;
+  description?: string;
+}
+
+const topLevelKeys = new Set(["brandName", "operatorEmail", "primaryDomain", "targetMarket", "primaryOffer"]);
+const coreCredentialKeys = new Set([
+  "idealCustomerProfile",
+  "successMetric",
+  "currentProcess",
+  "fulfillmentConstraints",
+  "brandVoice",
+  "avatarVoiceConsent",
+]);
+
+export function PackageBundleProvisionForm({
+  packages,
+  fields,
+  defaultSelectedSlugs,
+  title = "Launch one, a few, or all solutions",
+  description = "One universal onboarding form collects the outcome, customer, current problem, success measure, constraints, access details, and voice needed to provision any selected package combination. Optional account connections use managed handoffs, so delivery is not blocked by missing CRM, calendar, phone, social, billing, or webhook access.",
+}: PackageBundleProvisionFormProps) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ProvisionedBundleResult | null>(null);
-  const defaultSelected = useMemo(() => new Set(packages.slice(0, 3).map((pkg) => pkg.slug)), [packages]);
+  const defaultSelected = useMemo(
+    () => new Set(defaultSelectedSlugs?.length ? defaultSelectedSlugs : packages.slice(0, 3).map((pkg) => pkg.slug)),
+    [defaultSelectedSlugs, packages],
+  );
+  const supplementalFields = useMemo(
+    () => fields.filter((field) => !topLevelKeys.has(field.key) && !coreCredentialKeys.has(field.key)),
+    [fields],
+  );
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,6 +74,13 @@ export function PackageBundleProvisionForm({ packages }: { packages: BundlePacka
       return;
     }
 
+    const credentials: Record<string, string> = {};
+    for (const field of fields) {
+      if (!topLevelKeys.has(field.key)) {
+        credentials[field.key] = String(form.get(field.key) ?? "");
+      }
+    }
+
     const response = await fetch("/api/package-provisioning", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -53,15 +91,7 @@ export function PackageBundleProvisionForm({ packages }: { packages: BundlePacka
         primaryDomain: String(form.get("primaryDomain") ?? ""),
         targetMarket: String(form.get("targetMarket") ?? ""),
         primaryOffer: String(form.get("primaryOffer") ?? ""),
-        credentials: {
-          idealCustomerProfile: String(form.get("idealCustomerProfile") ?? ""),
-          successMetric: String(form.get("successMetric") ?? ""),
-          currentProcess: String(form.get("currentProcess") ?? ""),
-          fulfillmentConstraints: String(form.get("fulfillmentConstraints") ?? ""),
-          brandVoice: String(form.get("brandVoice") ?? ""),
-          avatarVoiceConsent: String(form.get("avatarVoiceConsent") ?? "not-applicable"),
-          complianceRules: String(form.get("complianceRules") ?? ""),
-        },
+        credentials,
       }),
     }).catch(() => null);
 
@@ -86,11 +116,9 @@ export function PackageBundleProvisionForm({ packages }: { packages: BundlePacka
   return (
     <section className="rounded-lg border border-border bg-card p-5">
       <div className="mb-5">
-        <h2 className="text-2xl font-bold text-foreground">Launch one, a few, or all solutions</h2>
+        <h2 className="text-2xl font-bold text-foreground">{title}</h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          One simple onboarding form collects the outcome, customer, current problem, success measure, constraints, and
-          voice needed to provision a complete solution. Optional account connections use managed handoffs, so delivery
-          is not blocked by missing CRM, calendar, phone, social, billing, or webhook access.
+          {description}
         </p>
       </div>
 
@@ -151,6 +179,22 @@ export function PackageBundleProvisionForm({ packages }: { packages: BundlePacka
               </select>
             </label>
           </div>
+          {supplementalFields.length ? (
+            <div className="rounded-md border border-border bg-muted/25 p-4">
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold text-foreground">Universal launch context</h3>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  Add any account details, source assets, approval rules, or handoff destinations once. Selected
+                  packages consume only the fields they need; unneeded fields are ignored.
+                </p>
+              </div>
+              <div className="grid gap-3">
+                {supplementalFields.map((field) => (
+                  <FieldControl key={field.key} field={field} />
+                ))}
+              </div>
+            </div>
+          ) : null}
           <button className="min-h-11 rounded-md bg-primary px-5 font-semibold text-primary-foreground" disabled={status === "loading"}>
             {status === "loading" ? "Launching solutions..." : "Launch selected solutions"}
           </button>
@@ -173,6 +217,81 @@ export function PackageBundleProvisionForm({ packages }: { packages: BundlePacka
         </div>
       </form>
     </section>
+  );
+}
+
+function getDefaultValue(name: string): string {
+  switch (name) {
+    case "bookingUrl":
+      return "https://cal.com/acme/qualified-call";
+    case "webhookUrl":
+      return "https://example.com/webhooks/lead-os";
+    case "brandAssetsUrl":
+      return "https://example.com/brand-assets";
+    case "sourceAssetUrl":
+      return "https://example.com/source-material";
+    case "crmExportUrl":
+      return "https://example.com/crm-export.csv";
+    case "complianceRules":
+      return "Use human approval for regulated claims. Avoid unsupported guarantees and unverified testimonials.";
+    default:
+      return "";
+  }
+}
+
+function FieldControl({ field }: { field: PackageCredentialField }) {
+  const label = (
+    <span className="font-medium">
+      {field.label}
+      {field.required ? <span className="text-destructive"> *</span> : null}
+      {field.sensitive ? <span className="text-muted-foreground"> secure reference</span> : null}
+    </span>
+  );
+  const commonClass = "min-h-11 rounded-md border border-input bg-background px-3";
+
+  if (field.type === "textarea" || field.type === "password") {
+    return (
+      <label className="grid gap-1.5 text-sm">
+        {label}
+        <textarea
+          name={field.key}
+          required={field.required}
+          className="min-h-20 rounded-md border border-input bg-background px-3 py-2"
+          defaultValue={getDefaultValue(field.key)}
+        />
+        <span className="text-xs leading-relaxed text-muted-foreground">{field.helper}</span>
+      </label>
+    );
+  }
+
+  if (field.type === "select") {
+    return (
+      <label className="grid gap-1.5 text-sm">
+        {label}
+        <select name={field.key} required={field.required} className={commonClass} defaultValue={field.options?.[0] ?? ""}>
+          {field.options?.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        <span className="text-xs leading-relaxed text-muted-foreground">{field.helper}</span>
+      </label>
+    );
+  }
+
+  return (
+    <label className="grid gap-1.5 text-sm">
+      {label}
+      <input
+        name={field.key}
+        type={field.type}
+        required={field.required}
+        className={commonClass}
+        defaultValue={getDefaultValue(field.key)}
+      />
+      <span className="text-xs leading-relaxed text-muted-foreground">{field.helper}</span>
+    </label>
   );
 }
 

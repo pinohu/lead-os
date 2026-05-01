@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { aiAgencyPackageSlugs, getPackageAutomationContract, provisionablePackages, simpleOnboardingFieldKeys } from "../src/lib/package-catalog.ts";
+import {
+  aiAgencyPackageSlugs,
+  getPackageAutomationContract,
+  getUniversalPackageCredentialFields,
+  provisionablePackages,
+  simpleOnboardingFieldKeys,
+  type PackageSlug,
+} from "../src/lib/package-catalog.ts";
 import { packagePersonaBlueprints } from "../src/lib/package-persona-blueprints.ts";
 import { provisionPackage, provisionPackageBundle } from "../src/lib/package-provisioner.ts";
 import {
@@ -15,6 +22,23 @@ const outcomeContext = {
   currentProcess: "The customer currently handles the work manually with inconsistent follow-up and reporting.",
   fulfillmentConstraints: "Use human approval for regulated claims and avoid unsupported guarantees.",
   brandVoice: "clear, professional, helpful, and outcome-focused",
+};
+
+const universalCredentialContext = {
+  ...outcomeContext,
+  crmApiKey: "stored reference: crm access",
+  stripeSecretKey: "stored reference: billing access",
+  webhookUrl: "https://example.com/webhooks/lead-os",
+  bookingUrl: "https://cal.com/acme/qualified-call",
+  crmExportUrl: "https://example.com/crm-export.csv",
+  adAccountAccess: "stored reference: ad account context",
+  sourceAssetUrl: "https://example.com/source-material",
+  brandAssetsUrl: "https://example.com/brand-assets",
+  avatarVoiceConsent: "approved",
+  complianceRules: "Use human approval for regulated claims.",
+  socialAccountAccess: "stored reference: social publishing approval",
+  emailCalendarAccess: "stored reference: inbox, calendar, and task rules",
+  phoneProviderAccess: "stored reference: phone, SMS, and routing rules",
 };
 
 describe("package provisioning", () => {
@@ -35,6 +59,23 @@ describe("package provisioning", () => {
         assert.ok(deliverable.createdArtifact.length > 20);
       }
     }
+  });
+
+  it("keeps the universal intake broad enough to launch any standalone package or package bundle", () => {
+    const universalKeys = new Set(simpleOnboardingFieldKeys);
+    const universalFields = getUniversalPackageCredentialFields();
+
+    for (const pkg of provisionablePackages) {
+      for (const field of pkg.credentialFields) {
+        assert.ok(universalKeys.has(field.key as never), `${pkg.slug} field ${field.key} should be collected in the one-time intake`);
+      }
+    }
+
+    assert.equal(universalFields.length, simpleOnboardingFieldKeys.length);
+    assert.deepEqual(
+      universalFields.map((field) => field.key),
+      [...simpleOnboardingFieldKeys],
+    );
   });
 
   it("gives every standalone package a persona, message, pain points, journey, service blueprint, and delivery shape", () => {
@@ -174,11 +215,7 @@ describe("package provisioning", () => {
       primaryDomain: "https://example.com",
       targetMarket: "med spas, home services, ecommerce, B2B experts, and SMB operators",
       primaryOffer: "Launch a modular AI agency operating system with outcome-based offers",
-      credentials: {
-        ...outcomeContext,
-        avatarVoiceConsent: "approved",
-        complianceRules: "Use human approval for regulated claims.",
-      },
+      credentials: universalCredentialContext,
       appUrl: "https://lead-os.example.com",
     });
 
@@ -194,6 +231,39 @@ describe("package provisioning", () => {
       bundle.automationRuns.every((run) => !/\bpackage workspace|package selected|package count\b/i.test(`${run.step} ${run.detail}`)),
       true,
     );
+  });
+
+  it("provisions one, two, three, four, or all packages from the same universal intake without extra configuration", () => {
+    const packageSets: PackageSlug[][] = [
+      ["ai-opportunity-audit"],
+      ["ai-opportunity-audit", "lead-reactivation-engine"],
+      ["ai-opportunity-audit", "lead-reactivation-engine", "content-repurposing-engine"],
+      ["ai-opportunity-audit", "lead-reactivation-engine", "content-repurposing-engine", "ai-ugc-video-ad-studio"],
+      provisionablePackages.map((pkg) => pkg.slug),
+    ];
+
+    for (const packageSlugs of packageSets) {
+      const bundle = provisionPackageBundle({
+        packageSlugs,
+        brandName: "Composable Client",
+        operatorEmail: "ops@example.com",
+        primaryDomain: "https://example.com",
+        targetMarket: "SMB operators, local services, ecommerce, creators, and agencies",
+        primaryOffer: "Launch selected outcome packages from one universal intake",
+        credentials: universalCredentialContext,
+        appUrl: "https://lead-os.example.com",
+      });
+
+      assert.equal(bundle.status, "launched");
+      assert.equal(bundle.packages.length, new Set(packageSlugs).size);
+      assert.equal(bundle.packages.every((pkg) => pkg.credentials.missingRequired.length === 0), true);
+      assert.equal(bundle.packages.every((pkg) => pkg.automationContract.requiresAdditionalConfiguration === false), true);
+      assert.equal(bundle.acceptanceTests.every((test) => test.status === "passed"), true);
+      assert.equal(
+        bundle.acceptanceTests.some((test) => test.test === "No additional configuration required for delivery"),
+        true,
+      );
+    }
   });
 
   it("fails clearly when a client tries to launch without choosing a solution", () => {

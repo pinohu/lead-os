@@ -5,7 +5,12 @@ import { PackageBundleProvisionForm } from "@/components/PackageBundleProvisionF
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getPackageAudienceContract, getPackagePlanNames, provisionablePackages } from "@/lib/package-catalog";
+import {
+  getPackageAudienceContract,
+  getPackagePlanNames,
+  getUniversalPackageCredentialFields,
+  provisionablePackages,
+} from "@/lib/package-catalog";
 
 export const metadata: Metadata = {
   title: "Complete AI Agency Solutions | Lead OS",
@@ -92,6 +97,7 @@ export default function PackagesPage() {
             title: pkg.title,
             customerOutcome: pkg.customerOutcome,
           }))}
+          fields={getUniversalPackageCredentialFields()}
         />
       </section>
 

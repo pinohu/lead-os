@@ -82,7 +82,19 @@ export const simpleOnboardingFieldKeys = [
   "currentProcess",
   "fulfillmentConstraints",
   "brandVoice",
+  "crmApiKey",
+  "stripeSecretKey",
+  "webhookUrl",
+  "bookingUrl",
+  "crmExportUrl",
+  "adAccountAccess",
+  "sourceAssetUrl",
+  "brandAssetsUrl",
   "avatarVoiceConsent",
+  "complianceRules",
+  "socialAccountAccess",
+  "emailCalendarAccess",
+  "phoneProviderAccess",
 ] as const;
 
 const defaultNicheExamples = [
@@ -853,6 +865,22 @@ export const provisionablePackages: ProvisionablePackage[] = [
 
 export function getProvisionablePackage(slug: string): ProvisionablePackage | undefined {
   return provisionablePackages.find((pkg) => pkg.slug === slug);
+}
+
+export function getUniversalPackageCredentialFields(): PackageCredentialField[] {
+  const fields = new Map<string, PackageCredentialField>();
+
+  for (const pkg of provisionablePackages) {
+    for (const field of pkg.credentialFields) {
+      fields.set(field.key, field);
+    }
+  }
+
+  return [...fields.values()].sort(
+    (first, second) =>
+      simpleOnboardingFieldKeys.indexOf(first.key as typeof simpleOnboardingFieldKeys[number]) -
+      simpleOnboardingFieldKeys.indexOf(second.key as typeof simpleOnboardingFieldKeys[number]),
+  );
 }
 
 export function getPackagePlanNames(pkg: ProvisionablePackage): string {
