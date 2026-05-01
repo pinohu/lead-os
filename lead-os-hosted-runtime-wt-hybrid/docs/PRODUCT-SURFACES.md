@@ -23,6 +23,7 @@ This file maps **public URLs** in `lead-os-hosted-runtime-wt-hybrid` to **intent
 | `/industries`, `/industries/[slug]` | Vertical pages; `[slug]` must exist in `nicheCatalog`. |
 | `/for/[persona]` | Role-based landings; keys in `PERSONA_BLUEPRINTS` (`agencies`, `saas-founders`, `lead-gen`, `consultants`, `franchises`). |
 | `/offers`, `/offers/[slug]` | Offer paths; `[slug]` from `nicheCatalog`. |
+| `/solutions`, `/solutions/[slug]` | Canonical persona-specific landing pages for every microscopic sellable offer: packages, deliverables, vertical wrappers, funnel blueprints, GTM plays, and plans. |
 | `/lp/[slug]` | Generated landing pages from `listLandingPages()` (published only). |
 | `/marketplace` | Lead marketplace UI; may show **demo** leads if API/DB unavailable (see on-page banner). |
 | `/directory`, `/directory/[vertical]` | Directory marketing. |

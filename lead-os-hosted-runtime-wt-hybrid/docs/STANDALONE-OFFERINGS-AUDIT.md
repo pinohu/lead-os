@@ -38,6 +38,7 @@ Not every item below has the same production readiness. This audit separates pri
 
 | Category | Count | What it means |
 |---|---:|---|
+| Canonical microscopic landing pages | 74 | Every package, deliverable, vertical wrapper, funnel blueprint, GTM play, and plan now has a unique `/solutions/[slug]` landing page. |
 | Primary provisionable packages | 23 | Main standalone products under `/packages/[slug]`. |
 | Persona/service blueprints | 23 | Specific buyer, resident/end-user, messaging, pain, journey, delivery-shape, and service-blueprint contracts for every primary package. |
 | Live deliverable modules | 12 | Individual plan deliverables under `/deliverables/[slug]`. |
@@ -99,6 +100,27 @@ Each primary package page now shows:
 - verification posture
 
 The package provisioning test suite now requires every package to include these persona fields before the build can be considered healthy.
+
+## Canonical Microscopic Landing Pages
+
+The website now exposes a canonical landing layer:
+
+- `/solutions`
+- `/solutions/[slug]`
+
+Every microscopic offer landing page uses the same clarity contract:
+
+- who the offer is for
+- decision maker
+- resident, end user, downstream customer, or internal operator
+- direct market-facing message
+- specific pain points
+- expected outcome
+- delivered shape and form
+- proof of source or readiness
+- internal CTA to the source or launch surface
+
+The `tests/microscopic-offer-landings.test.ts` test verifies that all 74 current microscopic offers have this contract.
 
 ## Live Deliverable Modules
 

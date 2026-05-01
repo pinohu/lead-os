@@ -43,6 +43,7 @@ const resources = [
 
 const mobileLinks = [
   { label: "Industries", href: "/industries" },
+  { label: "Solutions", href: "/solutions" },
   { label: "Offers", href: "/offers" },
   { label: "Pricing", href: "/pricing" },
   { label: "Directory", href: "/directory" },
@@ -119,6 +120,14 @@ export function SiteHeader({ brandName }: SiteHeaderProps) {
               </NavigationMenuItem>
 
               {/* Simple links */}
+              <NavigationMenuItem>
+                <Link href="/solutions" legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Solutions
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+
               <NavigationMenuItem>
                 <Link href="/pricing" legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
