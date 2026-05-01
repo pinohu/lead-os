@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getProvisionablePackage } from "@/lib/package-catalog";
+import { buildDeliverableGuide, buildPackageCustomerGuide } from "@/lib/package-guidance";
 
 type Props = {
   params: Promise<{ slug: string; workspaceSlug: string; surface?: string[] }>;
@@ -33,9 +34,15 @@ export default async function PackageWorkspacePage({ params, searchParams }: Pro
   const market = value(query.market) || "the selected customer market";
   const offer = value(query.offer) || pkg.customerOutcome;
   const success = value(query.success) || "the client-defined success metric";
+  const guideBrief = {
+    desiredOutcome: offer,
+    intendedBeneficiary: market,
+    successMetric: success,
+  };
   const visibleOutputs = activeSurface === "workspace"
     ? pkg.deliverables
     : pkg.deliverables.filter((deliverable) => deliverable.launchSurface === activeSurface || (activeSurface === "operator" && deliverable.launchSurface === "automation"));
+  const packageGuide = buildPackageCustomerGuide(pkg, guideBrief);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -93,29 +100,85 @@ export default async function PackageWorkspacePage({ params, searchParams }: Pro
       {activeSurface === "reporting" ? <ReportingSurface success={success} /> : null}
       {activeSurface === "billing" ? <BillingSurface /> : null}
 
+      <section className="mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>{packageGuide.title}</CardTitle>
+            <CardDescription>{packageGuide.executiveOverview}</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 lg:grid-cols-2">
+            <GuideList title="Start here" items={packageGuide.startHere} />
+            <GuideList title="Operating workflow" items={packageGuide.operatingWorkflow} />
+            <div className="rounded-md border border-border p-4 lg:col-span-2">
+              <h2 className="mb-3 font-semibold">Implementation roadmap</h2>
+              <div className="grid gap-3 md:grid-cols-3">
+                {packageGuide.implementationRoadmap.map((phase) => (
+                  <div key={phase.phase} className="rounded-md border border-border bg-muted/25 p-3">
+                    <p className="text-sm font-semibold">{phase.phase}</p>
+                    <p className="mt-1 text-xs uppercase tracking-wide text-primary">{phase.timing}</p>
+                    <ul className="mt-2 grid gap-1 text-sm text-muted-foreground">
+                      {phase.actions.map((action) => (
+                        <li key={action}>{action}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <GuideList title="Measurement plan" items={packageGuide.measurementPlan} />
+            <GuideList title="No ambiguity rules" items={packageGuide.ambiguityKillers} />
+          </CardContent>
+        </Card>
+      </section>
+
       <section className="mt-8">
         <Card>
           <CardHeader>
             <CardTitle>{activeSurface === "workspace" ? "Delivered outputs" : `${surfaceLabel(activeSurface)} outputs`}</CardTitle>
-            <CardDescription>Each item below is part of the completed solution the customer receives.</CardDescription>
+            <CardDescription>Each item below includes directions, workflow, handoff instructions, acceptance checks, and failure handling.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 md:grid-cols-2">
-              {visibleOutputs.map((output) => (
-                <div key={output.id} id={output.id} className="rounded-md border border-border p-4">
-                  <div className="mb-2 flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                    <h2 className="font-semibold">{output.title}</h2>
+              {visibleOutputs.map((output) => {
+                const guide = buildDeliverableGuide(pkg, output, guideBrief);
+                return (
+                  <div key={output.id} id={output.id} className="rounded-md border border-border p-4">
+                    <div className="mb-2 flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary" />
+                      <h2 className="font-semibold">{output.title}</h2>
+                    </div>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{output.createdArtifact}</p>
+                    <p className="mt-3 text-xs uppercase tracking-wide text-primary">{output.launchSurface}</p>
+                    <div className="mt-4 grid gap-3">
+                      <p className="rounded-md border border-primary/20 bg-primary/5 p-3 text-sm leading-relaxed text-muted-foreground">
+                        {guide.summary}
+                      </p>
+                      <GuideList title="How to use it" items={guide.implementationSteps} compact />
+                      <GuideList title="Workflow" items={guide.operatingWorkflow} compact />
+                      <GuideList title="Acceptance checks" items={guide.acceptanceChecklist} compact />
+                      <GuideList title="If something is unclear or blocked" items={guide.failureStates} compact />
+                    </div>
                   </div>
-                  <p className="text-sm leading-relaxed text-muted-foreground">{output.createdArtifact}</p>
-                  <p className="mt-3 text-xs uppercase tracking-wide text-primary">{output.launchSurface}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
       </section>
     </main>
+  );
+}
+
+function GuideList({ title, items, compact = false }: { title: string; items: string[]; compact?: boolean }) {
+  return (
+    <div className="rounded-md border border-border p-3">
+      <h2 className="mb-2 text-sm font-semibold">{title}</h2>
+      <ul className={`grid gap-1 text-sm leading-relaxed text-muted-foreground ${compact ? "" : "md:grid-cols-1"}`}>
+        {items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

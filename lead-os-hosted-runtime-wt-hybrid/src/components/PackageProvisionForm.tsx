@@ -13,6 +13,12 @@ interface ProvisionedArtifact {
   surface: string;
   url: string;
   createdArtifact: string;
+  guide?: {
+    summary: string;
+    implementationSteps: string[];
+    acceptanceChecklist: string[];
+    nextMilestones: string[];
+  };
 }
 
 interface ProvisionedPackageResult {
@@ -33,6 +39,13 @@ interface ProvisionedPackageResult {
   automationContract: {
     nicheExamples: string[];
     requiresAdditionalConfiguration: boolean;
+  };
+  customerGuide?: {
+    title: string;
+    executiveOverview: string;
+    startHere: string[];
+    implementationRoadmap: Array<{ phase: string; timing: string; actions: string[] }>;
+    ambiguityKillers: string[];
   };
 }
 
@@ -195,6 +208,7 @@ function PackageProvisionResult({
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           The launch output includes customer-ready solution links, lead capture, delivery and reporting surfaces, embed code,
           finished outputs, completed provisioning runs, and acceptance checks.
+          Every output also receives a usage guide, implementation steps, workflow directions, failure handling, and next milestones.
         </p>
       </section>
     );
@@ -242,6 +256,17 @@ function PackageProvisionResult({
           ))}
         </div>
       </div>
+
+      {result.customerGuide ? (
+        <div className="rounded-md border border-border bg-background p-3 text-sm">
+          <h3 className="font-semibold">{result.customerGuide.title}</h3>
+          <p className="mt-1 text-muted-foreground">{result.customerGuide.executiveOverview}</p>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <SummaryList title="Start here" items={result.customerGuide.startHere} />
+            <SummaryList title="No ambiguity rules" items={result.customerGuide.ambiguityKillers} />
+          </div>
+        </div>
+      ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <SummaryList title="Provisioning completed" items={result.automationRuns.map((run) => `${run.step}: ${run.detail}`)} />

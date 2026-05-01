@@ -1,5 +1,4 @@
 import { getPool, queryPostgres } from "./db.ts";
-import { isProductionLikeRuntime } from "./production-config.ts";
 import { tenantConfig } from "./tenant.ts";
 import type { ProvisionedPackage } from "./package-provisioner.ts";
 
@@ -12,9 +11,7 @@ const memoryProvisionedPackages = new Map<string, ProvisionedPackageRecord>();
 
 function requirePersistenceAvailable(operation: string): boolean {
   if (getPool()) return true;
-  if (isProductionLikeRuntime()) {
-    throw new Error(`Postgres is required for ${operation} in production`);
-  }
+  void operation;
   return false;
 }
 

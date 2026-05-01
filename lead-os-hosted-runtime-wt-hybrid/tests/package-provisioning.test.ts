@@ -150,11 +150,23 @@ describe("package provisioning", () => {
     assert.match(result.valueCase.executiveSummary, /complete business outcome/);
     assert.ok(result.valueCase.sixFigureValueDrivers.length >= 4);
     assert.ok(result.valueCase.renewalReasons.length >= 3);
+    assert.ok(result.customerGuide.startHere.length >= 5);
+    assert.ok(result.customerGuide.implementationRoadmap.length >= 3);
+    assert.ok(result.customerGuide.ambiguityKillers.some((item) => /outcome/i.test(item)));
     assert.equal(result.artifacts.length, 9);
+    assert.equal(result.artifacts.every((artifact) => artifact.guide.implementationSteps.length >= 5), true);
+    assert.equal(result.artifacts.every((artifact) => artifact.guide.operatingWorkflow.length >= 4), true);
+    assert.equal(result.artifacts.every((artifact) => artifact.guide.acceptanceChecklist.length >= 5), true);
+    assert.equal(result.artifacts.every((artifact) => artifact.guide.failureStates.length >= 4), true);
+    assert.equal(result.artifacts.every((artifact) => artifact.guide.nextMilestones.length >= 3), true);
     assert.ok(result.automationRuns.length >= 5);
     assert.ok(result.acceptanceTests.every((test) => test.status === "passed"));
     assert.equal(
       result.acceptanceTests.some((test) => test.test === "Six-figure value case documented"),
+      true,
+    );
+    assert.equal(
+      result.acceptanceTests.some((test) => test.test === "Every deliverable has usage guidance"),
       true,
     );
   });
@@ -237,6 +249,11 @@ describe("package provisioning", () => {
     assert.ok(bundle.totalArtifacts >= aiAgencyPackageSlugs.length * 8);
     assert.ok(bundle.valueCase.sixFigureValueDrivers.length >= 4);
     assert.ok(bundle.valueCase.renewalReasons.length >= 3);
+    assert.ok(bundle.customerGuide.startHere.length >= 4);
+    assert.ok(bundle.customerGuide.implementationRoadmap.length >= 3);
+    assert.ok(bundle.customerGuide.ambiguityKillers.some((item) => /one intake/i.test(item)));
+    assert.equal(bundle.packages.every((pkg) => pkg.customerGuide.startHere.length >= 5), true);
+    assert.equal(bundle.packages.every((pkg) => pkg.artifacts.every((artifact) => artifact.guide.handoffInstructions.length >= 4)), true);
     assert.equal(bundle.acceptanceTests.every((test) => test.status === "passed"), true);
     assert.equal(
       bundle.acceptanceTests.some((test) => test.test === "Bundle value case documented"),
@@ -275,6 +292,8 @@ describe("package provisioning", () => {
       assert.equal(bundle.packages.every((pkg) => pkg.automationContract.requiresAdditionalConfiguration === false), true);
       assert.ok(bundle.valueCase.executiveSummary.includes("launched solution hubs"));
       assert.ok(bundle.valueCase.renewalReasons.length >= 3);
+      assert.ok(bundle.customerGuide.operatingWorkflow.length >= 4);
+      assert.equal(bundle.packages.every((pkg) => pkg.customerGuide.measurementPlan.length >= 4), true);
       assert.equal(bundle.acceptanceTests.every((test) => test.status === "passed"), true);
       assert.equal(
         bundle.acceptanceTests.some((test) => test.test === "No additional configuration required for delivery"),

@@ -246,7 +246,9 @@ export default async function PackagePage({ params }: Props) {
         <Card>
           <CardHeader>
             <CardTitle>What your client receives</CardTitle>
-            <CardDescription>These business-ready assets, handoffs, reports, and any customer-facing pieces are created when the form is submitted.</CardDescription>
+            <CardDescription>
+              These business-ready assets, handoffs, reports, customer-facing pieces, and implementation guides are created when the form is submitted.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ul className="grid gap-2 text-sm md:grid-cols-2">

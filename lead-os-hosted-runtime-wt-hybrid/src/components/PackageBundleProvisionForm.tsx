@@ -28,6 +28,13 @@ interface ProvisionedBundleResult {
     expansionPaths: string[];
     delightChecks: string[];
   };
+  customerGuide?: {
+    title: string;
+    executiveOverview: string;
+    startHere: string[];
+    operatingWorkflow: string[];
+    ambiguityKillers: string[];
+  };
 }
 
 interface PackageBundleProvisionFormProps {
@@ -344,6 +351,16 @@ function BundleResult({ status, result }: { status: Status; result: ProvisionedB
           <div className="mt-3 grid gap-2 text-xs md:grid-cols-2">
             <ValueList title="Why it can be worth six figures" items={result.valueCase.sixFigureValueDrivers} />
             <ValueList title="Why they renew" items={result.valueCase.renewalReasons} />
+          </div>
+        </div>
+      ) : null}
+      {result.customerGuide ? (
+        <div className="mt-3 rounded-md border border-primary/20 bg-background p-3">
+          <p className="font-semibold text-foreground">{result.customerGuide.title}</p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{result.customerGuide.executiveOverview}</p>
+          <div className="mt-3 grid gap-2 text-xs md:grid-cols-2">
+            <ValueList title="Start here" items={result.customerGuide.startHere} />
+            <ValueList title="How to operate it" items={result.customerGuide.operatingWorkflow} />
           </div>
         </div>
       ) : null}

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { LiveDeliverableAction } from "@/components/LiveDeliverableAction";
 import {
   getLiveDeliverable,
+  getLiveDeliverableGuide,
   getPublicPlanName,
   liveDeliverables,
   type DeliverableSlug,
@@ -38,6 +39,7 @@ export default async function DeliverablePage({ params }: Props) {
   if (!deliverable) notFound();
 
   const production = getPublicProductionStatus();
+  const guide = getLiveDeliverableGuide(deliverable);
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
@@ -106,8 +108,37 @@ export default async function DeliverablePage({ params }: Props) {
         </Card>
       </section>
 
+      <section className="mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Implementation guide</CardTitle>
+            <CardDescription>{guide.summary}</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            <GuideList title="Start here" items={guide.startHere} />
+            <GuideList title="Implementation steps" items={guide.implementationSteps} />
+            <GuideList title="Operating workflow" items={guide.operatingWorkflow} />
+            <GuideList title="If unclear or blocked" items={guide.failureStates} />
+            <GuideList title="Next milestones" items={guide.nextMilestones} />
+          </CardContent>
+        </Card>
+      </section>
+
       <DeliverableExample slug={deliverable.slug} production={production} />
     </main>
+  );
+}
+
+function GuideList({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="rounded-md border border-border p-3">
+      <h2 className="mb-2 text-sm font-semibold">{title}</h2>
+      <ul className="grid gap-1 text-sm leading-relaxed text-muted-foreground">
+        {items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

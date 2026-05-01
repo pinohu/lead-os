@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  getLiveDeliverableGuide,
   getPlanDeliverables,
   liveDeliverables,
   type DeliverableSlug,
@@ -24,6 +25,13 @@ describe("live deliverables catalog", () => {
       assert.ok(deliverable.deliveredArtifact.length > 20);
       assert.ok(deliverable.backendReality.length > 20);
       assert.ok(deliverable.acceptanceCriteria.length >= 3);
+      const guide = getLiveDeliverableGuide(deliverable);
+      assert.ok(guide.startHere.length >= 4);
+      assert.ok(guide.implementationSteps.length >= 5);
+      assert.ok(guide.operatingWorkflow.length >= 5);
+      assert.ok(guide.acceptanceChecklist.length >= deliverable.acceptanceCriteria.length + 3);
+      assert.ok(guide.failureStates.length >= 4);
+      assert.ok(guide.nextMilestones.length >= 3);
     }
   });
 

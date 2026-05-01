@@ -27,6 +27,16 @@ export interface LiveDeliverable {
   acceptanceCriteria: string[];
 }
 
+export interface LiveDeliverableGuide {
+  summary: string;
+  startHere: string[];
+  implementationSteps: string[];
+  operatingWorkflow: string[];
+  acceptanceChecklist: string[];
+  failureStates: string[];
+  nextMilestones: string[];
+}
+
 export const liveDeliverables: LiveDeliverable[] = [
   {
     slug: "lead-capture-workspace",
@@ -232,4 +242,47 @@ export function getPlanDeliverables(planId: PublicPlanId): LiveDeliverable[] {
 
 export function getPublicPlanName(planId: PublicPlanId): string {
   return publicPlans.find((plan) => plan.id === planId)?.name ?? planId;
+}
+
+export function getLiveDeliverableGuide(deliverable: LiveDeliverable): LiveDeliverableGuide {
+  return {
+    summary: `${deliverable.title} is a working building block inside a complete Lead OS solution. It exists so the business buyer can understand exactly what was created, how it is used, and how completion is verified.`,
+    startHere: [
+      "Read the buyer outcome first.",
+      "Confirm whether the block is B2B internal or B2B2C customer-facing.",
+      "Review the delivered artifact and backend reality before using the example.",
+      "Run or inspect the live example on this page.",
+    ],
+    implementationSteps: [
+      "Use the block inside a package workspace, not as a disconnected asset.",
+      "Match the block to the client success metric before presenting it as value.",
+      "If the block touches downstream customers, verify the copy, consent, routing, and escalation expectations.",
+      "If the block depends on live account access, use safe sample or managed-handoff mode until approved access exists.",
+      "Document the next operator action in the client delivery hub.",
+    ],
+    operatingWorkflow: [
+      "Capture or inspect the input.",
+      "Produce the visible artifact.",
+      "Route the result to the correct business or customer-facing next step.",
+      "Measure the result against the acceptance criteria.",
+      "Improve the package workflow if the artifact does not advance the promised outcome.",
+    ],
+    acceptanceChecklist: [
+      ...deliverable.acceptanceCriteria,
+      "The customer can explain what this block does in one sentence.",
+      "The next action is visible without reading source code or asking support.",
+      "Dry-run, sample, managed-handoff, or live status is not hidden.",
+    ],
+    failureStates: [
+      "If the artifact looks like a sample, treat it as a demo until connected package data is present.",
+      "If the next action requires a client-owned account, do not represent it as live until approved access exists.",
+      "If the block does not map to the selected package outcome, return to the package delivery hub.",
+      "If the customer cannot tell what to do next, use the implementation steps and acceptance checklist before handoff.",
+    ],
+    nextMilestones: [
+      "Today: confirm the block exists and the acceptance criteria are visible.",
+      "This week: connect it to a package workspace or run a sample scenario.",
+      "This month: use reporting evidence to decide whether the surrounding package should be optimized, expanded, or bundled.",
+    ],
+  };
 }

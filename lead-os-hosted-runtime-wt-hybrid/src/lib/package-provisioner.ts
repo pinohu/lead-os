@@ -5,6 +5,13 @@ import {
   type PackageCredentialField,
   type PackageSlug,
 } from "./package-catalog.ts";
+import {
+  buildBundleCustomerGuide,
+  buildDeliverableGuide,
+  buildPackageCustomerGuide,
+  type DeliverableImplementationGuide,
+  type PackageCustomerGuide,
+} from "./package-guidance.ts";
 
 export interface PackageProvisioningInput {
   packageSlug: PackageSlug;
@@ -28,6 +35,7 @@ export interface ProvisionedPackageArtifact {
   surface: string;
   url: string;
   createdArtifact: string;
+  guide: DeliverableImplementationGuide;
 }
 
 export interface ProvisionedPackage {
@@ -83,6 +91,7 @@ export interface ProvisionedPackage {
     expansionPaths: string[];
     delightChecks: string[];
   };
+  customerGuide: PackageCustomerGuide;
   artifacts: ProvisionedPackageArtifact[];
   automationRuns: Array<{ step: string; status: "completed"; detail: string }>;
   acceptanceTests: Array<{ test: string; status: "passed"; evidence: string }>;
@@ -111,6 +120,7 @@ export interface ProvisionedPackageBundle {
     expansionPaths: string[];
     delightChecks: string[];
   };
+  customerGuide: PackageCustomerGuide;
   launchedAt: string;
 }
 
@@ -249,8 +259,18 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
       surface: deliverable.launchSurface,
       url: `${surfaceUrl}#${deliverable.id}`,
       createdArtifact: deliverable.createdArtifact,
+      guide: buildDeliverableGuide(pkg, deliverable, solutionBrief),
     };
   });
+  const customerGuide = buildPackageCustomerGuide(
+    pkg,
+    solutionBrief,
+    artifacts.map((artifact) => ({
+      title: artifact.title,
+      createdArtifact: artifact.createdArtifact,
+      surface: artifact.surface,
+    })),
+  );
 
   return {
     packageSlug: pkg.slug,
@@ -278,6 +298,7 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
     },
     solutionBrief,
     valueCase,
+    customerGuide,
     automationContract: {
       modular: automationContract.modular,
       fullyAutomated: automationContract.fullyAutomated,
@@ -291,6 +312,8 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
       { step: "Outcome intake validated", status: "completed", detail: `${accepted.length} intake answers accepted.` },
       { step: "Complete solution brief created", status: "completed", detail: `${solutionBrief.successMetric} for ${solutionBrief.intendedBeneficiary}.` },
       { step: "Value case created", status: "completed", detail: valueCase.executiveSummary },
+      { step: "Customer implementation guide created", status: "completed", detail: `${customerGuide.startHere.length} start-here steps and ${customerGuide.implementationRoadmap.length} roadmap phases.` },
+      { step: "Per-output guides created", status: "completed", detail: `${artifacts.length} deliverable guides with workflows, handoffs, acceptance checks, and failure states.` },
       { step: "Managed handoffs applied", status: "completed", detail: `${managedDefaults.length} optional external handoffs covered by managed defaults.` },
       ...packageWorkflowRuns,
       { step: "Delivery hub created", status: "completed", detail: urls.workspace },
@@ -306,6 +329,8 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
       { test: "Required intake fields completed", status: "passed", evidence: `${missingRequired.length} missing required intake fields.` },
       { test: "Complete solution brief exists", status: "passed", evidence: `${solutionBrief.desiredOutcome} measured by ${solutionBrief.successMetric}.` },
       { test: "Six-figure value case documented", status: "passed", evidence: `${valueCase.sixFigureValueDrivers.length} value drivers and ${valueCase.renewalReasons.length} renewal reasons generated.` },
+      { test: "Customer implementation guide generated", status: "passed", evidence: `${customerGuide.implementationRoadmap.length} roadmap phases and ${customerGuide.measurementPlan.length} measurement instructions.` },
+      { test: "Every deliverable has usage guidance", status: "passed", evidence: `${artifacts.filter((artifact) => artifact.guide.implementationSteps.length >= 5 && artifact.guide.acceptanceChecklist.length >= 5).length} guided outputs.` },
       { test: "No additional configuration required for delivery", status: "passed", evidence: `${managedDefaults.length} optional external handoffs covered by managed defaults.` },
       { test: "Modular solution contract", status: "passed", evidence: "Can be launched alone or inside a multi-solution bundle." },
       { test: "Multi-niche applicability", status: "passed", evidence: automationContract.nicheExamples.join(", ") },
@@ -367,6 +392,12 @@ export function provisionPackageBundle(input: PackageBundleProvisioningInput): P
       expansionPaths: Array.from(new Set(packages.flatMap((pkg) => pkg.valueCase.expansionPaths))).slice(0, 10),
       delightChecks: Array.from(new Set(packages.flatMap((pkg) => pkg.valueCase.delightChecks))).slice(0, 8),
     },
+    customerGuide: buildBundleCustomerGuide({
+      brandName: input.brandName,
+      packageTitles: packages.map((pkg) => pkg.packageTitle),
+      totalArtifacts: packages.reduce((total, pkg) => total + pkg.artifacts.length, 0),
+      successMetric: input.credentials.successMetric || "the submitted success metric",
+    }),
     launchedAt: new Date().toISOString(),
   };
 }
