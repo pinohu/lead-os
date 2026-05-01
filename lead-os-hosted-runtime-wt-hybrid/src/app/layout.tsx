@@ -71,7 +71,10 @@ const footerLegal = [
 ];
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const nonce = (await headers()).get("x-csp-nonce") ?? "";
+  const requestHeaders = await headers();
+  const nonce = requestHeaders.get("x-csp-nonce") ?? "";
+  const pathname = requestHeaders.get("x-leados-pathname") ?? "";
+  const isOperatorPortal = pathname.startsWith("/portal/");
   const partneroProgramId = process.env.PARTNERO_PROGRAM_ID ?? embeddedSecrets.partnero.programId;
   const partneroAssetsHost = process.env.PARTNERO_ASSETS_HOST ?? embeddedSecrets.partnero.assetsHost;
   const brandName = tenantConfig.brandName;
@@ -82,6 +85,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content={tenantConfig.accent} />
+        {isOperatorPortal ? null : (
         <script
           type="application/ld+json"
           nonce={nonce}
@@ -136,6 +140,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             }),
           }}
         />
+        )}
       </head>
       <body className={`${inter.className} bg-background text-foreground antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
@@ -147,7 +152,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
 
         {/* ── Header ──────────────────────────────────────── */}
-        <SiteHeader brandName={brandName} />
+        {isOperatorPortal ? null : <SiteHeader brandName={brandName} />}
 
         {partneroProgramId ? (
           <Script
@@ -165,6 +170,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </main>
 
         {/* ── Footer ──────────────────────────────────────── */}
+        {isOperatorPortal ? null : (
         <footer className="border-t border-border mt-8" role="contentinfo">
           <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -220,6 +226,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </div>
           </div>
         </footer>
+        )}
 
         <Toaster />
 

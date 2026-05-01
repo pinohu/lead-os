@@ -42,6 +42,11 @@ export interface PackageCustomerGuide {
   ambiguityKillers: string[];
 }
 
+export interface PackageGuidanceOptions {
+  engineRoleName?: string;
+  managedHandoffLabel?: string;
+}
+
 const defaultBrief: SolutionBriefForGuidance = {
   problem: "The buyer wants a complete business outcome without assembling or operating separate systems.",
   intendedBeneficiary: "The selected audience from the intake form.",
@@ -176,8 +181,11 @@ export function buildPackageCustomerGuide(
     createdArtifact: deliverable.createdArtifact,
     surface: deliverable.launchSurface,
   })),
+  options: PackageGuidanceOptions = {},
 ): PackageCustomerGuide {
   const context = { ...defaultBrief, ...brief };
+  const engineRoleName = options.engineRoleName ?? "Lead OS system";
+  const managedHandoffLabel = options.managedHandoffLabel ?? "managed handoff";
 
   return {
     title: `${pkg.title} customer implementation guide`,
@@ -187,7 +195,7 @@ export function buildPackageCustomerGuide(
       "Confirm the business name, target market, primary outcome, and success metric.",
       "Review the customer-ready outputs in the order they appear in the hub.",
       "Use each output guide before sending links to customers, staff, buyers, partners, or operators.",
-      "Use managed handoffs for any optional account access that was not supplied during intake.",
+      `Use ${managedHandoffLabel}s for any optional account access that was not supplied during intake.`,
     ],
     whatWasProvisioned: createdOutputs.map((output) => `${output.title} (${output.surface}): ${output.createdArtifact}`),
     operatingWorkflow: [
@@ -233,7 +241,7 @@ export function buildPackageCustomerGuide(
       { role: "Client decision maker", responsibility: "Confirms the business outcome, approval rules, and success metric." },
       { role: "Delivery operator", responsibility: "Uses the delivery hub, reviews output guides, and handles exceptions." },
       { role: "Customer-facing team", responsibility: "Uses capture, booking, nurture, or support outputs exactly as described in the guide." },
-      { role: "Lead OS system", responsibility: "Provisions the selected outputs, managed handoffs, guidance, acceptance checks, and reporting surfaces from the submitted intake." },
+      { role: engineRoleName, responsibility: `Provisions the selected outputs, ${managedHandoffLabel}s, guidance, acceptance checks, and reporting surfaces from the submitted intake.` },
     ],
     measurementPlan: [
       `Primary metric: ${context.successMetric}.`,
@@ -251,7 +259,7 @@ export function buildPackageCustomerGuide(
       "The client bought an outcome, not software to configure.",
       "The delivery hub is the first place to open.",
       "Each output has its own guide, next action, and acceptance checklist.",
-      "A missing optional integration is not a failed launch; it is handled through managed handoff until approved access is added.",
+      `A missing optional integration is not a failed launch; it is handled through ${managedHandoffLabel} until approved access is added.`,
       "Success is measured by the intake success metric and the package reporting surface.",
     ],
   };
@@ -262,8 +270,10 @@ export function buildBundleCustomerGuide(input: {
   packageTitles: string[];
   totalArtifacts: number;
   successMetric: string;
+  guidanceOptions?: PackageGuidanceOptions;
 }): PackageCustomerGuide {
   const packageList = input.packageTitles.join(", ");
+  const engineRoleName = input.guidanceOptions?.engineRoleName ?? "Lead OS system";
 
   return {
     title: `${input.brandName} bundle implementation guide`,
@@ -315,7 +325,7 @@ export function buildBundleCustomerGuide(input: {
       { role: "Client decision maker", responsibility: "Approves the combined outcome priority and success metric." },
       { role: "Package owner", responsibility: "Owns the guide, outputs, and acceptance checks for one selected package." },
       { role: "Delivery operator", responsibility: "Coordinates package handoffs without asking the client for repeat intake." },
-      { role: "Lead OS system", responsibility: "Launches every selected package from the one submitted form." },
+      { role: engineRoleName, responsibility: "Launches every selected package from the one submitted form." },
     ],
     measurementPlan: [
       `Shared success metric: ${input.successMetric}.`,

@@ -11,6 +11,7 @@ import {
   buildPackageCustomerGuide,
   type DeliverableImplementationGuide,
   type PackageCustomerGuide,
+  type PackageGuidanceOptions,
 } from "./package-guidance.ts";
 
 export interface PackageProvisioningInput {
@@ -22,6 +23,8 @@ export interface PackageProvisioningInput {
   primaryOffer: string;
   credentials: Record<string, string>;
   appUrl: string;
+  deliveryBrandName?: string;
+  guidanceOptions?: PackageGuidanceOptions;
 }
 
 export interface PackageBundleProvisioningInput extends Omit<PackageProvisioningInput, "packageSlug"> {
@@ -162,6 +165,7 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
   const launchId = buildLaunchId(input);
   const workspaceSlug = `${slugify(input.brandName)}-${launchId.slice(0, 6)}`;
   const appUrl = input.appUrl.replace(/\/$/, "");
+  const deliveryBrandName = input.deliveryBrandName ?? "Lead OS";
   const query = new URLSearchParams({
     brand: input.brandName,
     market: input.targetMarket,
@@ -210,7 +214,7 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
   const managedDefaults = missingOptional.map((field) => ({
     key: field.key,
     label: field.label,
-    detail: "Provisioned with Lead OS managed handoffs so delivery is not blocked by external account access.",
+    detail: `Provisioned with ${deliveryBrandName} managed handoffs so delivery is not blocked by external account access.`,
   }));
 
   const automationContract = getPackageAutomationContract(pkg);
@@ -270,6 +274,7 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
       createdArtifact: artifact.createdArtifact,
       surface: artifact.surface,
     })),
+    input.guidanceOptions,
   );
 
   return {
@@ -397,6 +402,7 @@ export function provisionPackageBundle(input: PackageBundleProvisioningInput): P
       packageTitles: packages.map((pkg) => pkg.packageTitle),
       totalArtifacts: packages.reduce((total, pkg) => total + pkg.artifacts.length, 0),
       successMetric: input.credentials.successMetric || "the submitted success metric",
+      guidanceOptions: input.guidanceOptions,
     }),
     launchedAt: new Date().toISOString(),
   };

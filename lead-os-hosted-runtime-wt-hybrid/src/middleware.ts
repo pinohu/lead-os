@@ -59,6 +59,7 @@ const PUBLIC_EXACT: Set<string> = new Set([
 ]);
 
 const PUBLIC_PREFIXES: string[] = [
+  "/api/operator-portals/",
   "/api/tracking/",
   "/api/embed/",
   "/api/widgets/boot",
