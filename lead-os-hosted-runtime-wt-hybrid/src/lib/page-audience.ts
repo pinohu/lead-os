@@ -331,6 +331,20 @@ export const PAGE_AUDIENCE_RULES: PageAudienceRule[] = [
     },
   },
   {
+    id: "client-examples",
+    routeLabel: "/client-examples/*",
+    test: (pathname) => firstSegment(pathname) === "client-examples",
+    profile: {
+      kind: "White-label",
+      servedAudience: "Operators, buyers, and client stakeholders who need to see each package as a real client website.",
+      primaryPersona: "Agency seller, implementation owner, or client buyer reviewing the finished shape of a package.",
+      pagePurpose: "Show a standalone client-style launch with photos, deliverables, process maps, tutorials, and proof language.",
+      expectedOutcome: "The visitor can picture exactly what a client receives after intake and how to use it without reading platform docs.",
+      notFor: "Not the central product pitch and not a place to expose hidden platform operations.",
+      showBanner: false,
+    },
+  },
+  {
     id: "resources",
     routeLabel: "/resources/*, /help, /changelog, /roadmap, /setup, /production, /demo",
     test: (pathname) => ["resources", "help", "changelog", "roadmap", "setup", "production", "demo"].includes(firstSegment(pathname)),

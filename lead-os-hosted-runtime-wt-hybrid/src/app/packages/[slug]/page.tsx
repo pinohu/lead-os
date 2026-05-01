@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ExternalLink, PlayCircle } from "lucide-react";
 import { PackageBundleProvisionForm } from "@/components/PackageBundleProvisionForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import {
   provisionablePackages,
 } from "@/lib/package-catalog";
 import { getPackagePersonaBlueprint } from "@/lib/package-persona-blueprints";
+import { getPackageClientExample } from "@/lib/package-client-examples";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -41,6 +42,7 @@ export default async function PackagePage({ params }: Props) {
   const automationContract = getPackageAutomationContract(pkg);
   const audience = getPackageAudienceContract(pkg);
   const personaBlueprint = getPackagePersonaBlueprint(pkg.slug);
+  const clientExample = getPackageClientExample(pkg.slug);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -61,6 +63,20 @@ export default async function PackagePage({ params }: Props) {
           What happens after your client buys: they complete the intake form below, and Lead OS creates the business-ready
           solution plus any downstream customer-facing surfaces this offer requires. Included in: {getPackagePlanNames(pkg)}
         </p>
+        {clientExample ? (
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button asChild>
+              <Link href={`/client-examples/${pkg.slug}`}>
+                View example client website <ExternalLink className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/client-examples/${pkg.slug}#tutorial`}>
+                Step-by-step tutorial <PlayCircle className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        ) : null}
         {pkg.pricingModel ? (
           <p className="mt-3 rounded-md border border-primary/20 bg-primary/5 p-3 text-sm text-foreground">
             <span className="font-semibold">Suggested agency pricing:</span> {pkg.pricingModel}
@@ -264,6 +280,53 @@ export default async function PackagePage({ params }: Props) {
           </CardContent>
         </Card>
       </section>
+
+      {clientExample ? (
+        <section className="mb-8 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          <Card>
+            <CardHeader>
+              <CardTitle>Example client website</CardTitle>
+              <CardDescription>
+                A standalone example for {clientExample.clientName}. It shows this package as if it belongs to the
+                client, not to Lead OS.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <img
+                src={clientExample.photoUrl}
+                alt={clientExample.photoAlt}
+                className="mb-4 h-44 w-full rounded-lg object-cover"
+              />
+              <p className="text-sm leading-relaxed text-muted-foreground">{clientExample.plainPromise}</p>
+              <Button asChild className="mt-4" size="sm">
+                <Link href={`/client-examples/${pkg.slug}`}>
+                  Open the client site <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Simple steps the client follows</CardTitle>
+              <CardDescription>
+                These are written in plain language so the buyer knows what to do with the finished system.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ol className="grid gap-2 text-sm">
+                {clientExample.simpleSteps.map((step, index) => (
+                  <li key={step} className="rounded-md border border-border p-3">
+                    <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                      {index + 1}
+                    </span>
+                    {step}
+                  </li>
+                ))}
+              </ol>
+            </CardContent>
+          </Card>
+        </section>
+      ) : null}
 
       <PackageBundleProvisionForm
         packages={provisionablePackages.map((item) => ({

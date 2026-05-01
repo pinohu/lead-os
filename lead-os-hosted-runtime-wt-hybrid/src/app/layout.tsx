@@ -50,6 +50,7 @@ const footerPlatform = [
   { label: "Directory", href: "/directory" },
   { label: "Marketplace", href: "/marketplace" },
   { label: "Live examples", href: "/demo" },
+  { label: "Client examples", href: "/client-examples" },
   { label: "ROI Calculator", href: "/calculator" },
 ];
 
@@ -77,6 +78,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const nonce = requestHeaders.get("x-csp-nonce") ?? "";
   const pathname = requestHeaders.get("x-leados-pathname") ?? "";
   const isOperatorPortal = pathname.startsWith("/portal/");
+  const isClientExampleSite = pathname.startsWith("/client-examples/");
+  const hidePlatformChrome = isOperatorPortal || isClientExampleSite;
   const partneroProgramId = process.env.PARTNERO_PROGRAM_ID ?? embeddedSecrets.partnero.programId;
   const partneroAssetsHost = process.env.PARTNERO_ASSETS_HOST ?? embeddedSecrets.partnero.assetsHost;
   const brandName = tenantConfig.brandName;
@@ -87,7 +90,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content={tenantConfig.accent} />
-        {isOperatorPortal ? null : (
+        {hidePlatformChrome ? null : (
         <script
           type="application/ld+json"
           nonce={nonce}
@@ -154,8 +157,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
 
         {/* ── Header ──────────────────────────────────────── */}
-        {isOperatorPortal ? null : <SiteHeader brandName={brandName} />}
-        {isOperatorPortal ? null : <PageAudienceBanner pathname={pathname} />}
+        {hidePlatformChrome ? null : <SiteHeader brandName={brandName} />}
+        {hidePlatformChrome ? null : <PageAudienceBanner pathname={pathname} />}
 
         {partneroProgramId ? (
           <Script
@@ -173,7 +176,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </main>
 
         {/* ── Footer ──────────────────────────────────────── */}
-        {isOperatorPortal ? null : (
+        {hidePlatformChrome ? null : (
         <footer className="border-t border-border mt-8" role="contentinfo">
           <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
