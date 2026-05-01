@@ -125,7 +125,7 @@ const faqData: FaqCategory[] = [
       {
         question: "Do you have developer documentation?",
         answer:
-          "Yes. Start at /docs for API references and operator documents. The repository docs include runbooks, deployment detail, environment specs, and architecture notes.",
+          "Yes. Start at /docs for API references, operator documents, runbooks, deployment detail, environment specs, architecture notes, and website-rendered repo docs.",
       },
       {
         question: "Can I use my own domain?",

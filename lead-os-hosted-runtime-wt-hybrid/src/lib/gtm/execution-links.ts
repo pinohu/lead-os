@@ -1,8 +1,5 @@
 // src/lib/gtm/execution-links.ts
-// Derive actionable links from technicalAnchors + known repo paths (no invented metrics).
-
-const REPO_BLOB_BASE =
-  "https://github.com/pinohu/lead-os/blob/HEAD/lead-os-hosted-runtime-wt-hybrid";
+// Derive actionable in-site links from technicalAnchors + known repo paths (no invented metrics).
 
 export interface ExecutionSurfaceLink {
   label: string;
@@ -15,6 +12,21 @@ function trimMethod(prefix: string, anchor: string): string {
   const m = anchor.match(new RegExp(`^${prefix}\\s+`, "i"));
   return m ? anchor.slice(m[0].length).trim() : anchor;
 }
+
+function docHref(pathLike: string): string {
+  const filename = pathLike.replace(/^\.\//, "").split("/").pop() ?? "";
+  const slug = filename
+    .replace(/\.md$/i, "")
+    .toLowerCase()
+    .replace(/_/g, "-");
+  return slug ? `/docs/${slug}` : "/docs";
+}
+
+const exposedSourceReferences = new Set([
+  "src/lib/erie/directory-lead-flow.ts",
+  "src/lib/integrations/lead-delivery-hub.ts",
+  "db/migrations/010_erie_directory_seed.sql",
+]);
 
 /** Map a technical anchor string to zero or more concrete links. */
 export function executionSurfacesForAnchor(anchor: string): ExecutionSurfaceLink[] {
@@ -31,10 +43,16 @@ export function executionSurfacesForAnchor(anchor: string): ExecutionSurfaceLink
   }
   if (pathLike.startsWith("docs/") || pathLike.startsWith("./docs/")) {
     const rel = pathLike.replace(/^\.\//, "");
-    return [{ label: t, href: `${REPO_BLOB_BASE}/${rel}`, kind: "doc" }];
+    return [{ label: t, href: docHref(rel), kind: "doc" }];
   }
   if (pathLike.startsWith("src/") || pathLike.startsWith("db/")) {
-    return [{ label: t, href: `${REPO_BLOB_BASE}/${pathLike}`, kind: "source" }];
+    return [
+      {
+        label: t,
+        href: exposedSourceReferences.has(pathLike) ? `/docs/source/${pathLike}` : undefined,
+        kind: "source",
+      },
+    ];
   }
   return [{ label: t, kind: "other" }];
 }

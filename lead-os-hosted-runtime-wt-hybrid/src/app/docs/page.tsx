@@ -3,11 +3,7 @@ import Link from "next/link";
 import { tenantConfig } from "@/lib/tenant";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-/** GitHub `HEAD` tracks the repository default branch. Paths are from monorepo root. */
-const REPO_DOCS_BASE =
-  "https://github.com/pinohu/lead-os/blob/HEAD/lead-os-hosted-runtime-wt-hybrid/docs";
-const REPO_ROOT_DOCS_BASE = "https://github.com/pinohu/lead-os/blob/HEAD/docs";
+import { docsCatalog } from "@/lib/docs-catalog";
 
 export const metadata: Metadata = {
   title: "Documentation hub",
@@ -15,14 +11,20 @@ export const metadata: Metadata = {
 };
 
 export default function DocsHubPage() {
+  const featuredDocs = docsCatalog.filter((doc) => doc.featured);
+  const groupedDocs = docsCatalog.reduce<Record<string, typeof docsCatalog>>((groups, doc) => {
+    groups[doc.category] = [...(groups[doc.category] ?? []), doc];
+    return groups;
+  }, {});
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10 space-y-8">
+    <div className="mx-auto max-w-5xl px-4 py-10 space-y-8">
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Documentation</p>
         <h1 className="text-3xl font-bold tracking-tight mt-1">Product &amp; operator docs</h1>
         <p className="text-muted-foreground mt-2 max-w-2xl">
-          In-app entry points for APIs, solution launch, and operations commitments. Deep runbooks and deployment guides
-          live in the repository under <code className="text-xs">docs/</code>.
+          In-app entry points for APIs, solution launch, operations commitments, runbooks, deployment guides, and trust
+          documents. Visitors should not have to leave the website to read the core repo documentation.
         </p>
       </div>
 
@@ -34,9 +36,7 @@ export default function DocsHubPage() {
           </CardHeader>
           <CardContent>
             <Button asChild>
-              <a href={`${REPO_ROOT_DOCS_BASE}/START-HERE.md`} target="_blank" rel="noreferrer">
-                START-HERE.md (novice path)
-              </a>
+              <Link href="/docs/start-here">Open start-here guide</Link>
             </Button>
           </CardContent>
         </Card>
@@ -77,48 +77,53 @@ export default function DocsHubPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Operator runbook</CardTitle>
-            <CardDescription>Control plane, queues, cron auth, GTM execution.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline">
-              <a href={`${REPO_DOCS_BASE}/OPERATOR_RUNBOOK.md`} target="_blank" rel="noreferrer">
-                OPERATOR_RUNBOOK.md
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Deployment</CardTitle>
-            <CardDescription>Migrations, workers, Vercel/Railway notes.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline">
-              <a href={`${REPO_DOCS_BASE}/DEPLOYMENT.md`} target="_blank" rel="noreferrer">
-                DEPLOYMENT.md
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="sm:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-lg">Public surface map</CardTitle>
-            <CardDescription>Which URLs are marketing vs operator vs API-only.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild variant="outline">
-              <a href={`${REPO_DOCS_BASE}/PRODUCT-SURFACES.md`} target="_blank" rel="noreferrer">
-                PRODUCT-SURFACES.md
-              </a>
-            </Button>
-          </CardContent>
-        </Card>
+        {featuredDocs
+          .filter((doc) => doc.slug !== "start-here")
+          .map((doc) => (
+            <Card key={doc.slug}>
+              <CardHeader>
+                <CardTitle className="text-lg">{doc.title}</CardTitle>
+                <CardDescription>{doc.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button asChild variant="outline">
+                  <Link href={`/docs/${doc.slug}`}>Open on website</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
       </div>
+
+      <section className="space-y-4" aria-labelledby="all-docs-heading">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">All exposed repo docs</p>
+          <h2 id="all-docs-heading" className="text-2xl font-bold tracking-tight">
+            Website pages for the repo knowledge base
+          </h2>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {Object.entries(groupedDocs).map(([category, docs]) => (
+            <Card key={category}>
+              <CardHeader>
+                <CardTitle className="text-lg">{category}</CardTitle>
+                <CardDescription>{docs.length} website-readable docs</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 pl-0 text-sm">
+                  {docs.map((doc) => (
+                    <li key={doc.slug}>
+                      <Link className="text-primary underline-offset-4 hover:underline" href={`/docs/${doc.slug}`}>
+                        {doc.title}
+                      </Link>
+                      <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{doc.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
 
       <p className="text-sm text-muted-foreground">
         Support:{" "}

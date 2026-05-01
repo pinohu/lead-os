@@ -3,9 +3,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-const SLA_SOURCE =
-  "https://github.com/pinohu/lead-os/blob/HEAD/lead-os-hosted-runtime-wt-hybrid/docs/SLA.md";
-
 export const metadata: Metadata = {
   title: "Service Level Agreement",
   description:
@@ -37,9 +34,7 @@ export default function DocsSlaPage() {
             <li>Maintenance windows, exclusions, credits, and backup/RPO language are all in the Markdown — nothing here is binding until your legal process says so.</li>
           </ul>
           <Button asChild className="mt-4">
-            <a href={SLA_SOURCE} target="_blank" rel="noreferrer">
-              Read full SLA on GitHub
-            </a>
+            <Link href="/docs/sla-source">Read full SLA on website</Link>
           </Button>
         </CardContent>
       </Card>

@@ -38,9 +38,11 @@ This file maps **public URLs** in `lead-os-hosted-runtime-wt-hybrid` to **intent
 
 | Path | Intent |
 |------|--------|
-| `/docs` | Index: API spec, SLA source, operator links. |
+| `/docs` | Index: API spec, SLA source, operator links, and website-rendered repo docs. |
 | `/docs/api` | Machine-readable API: OpenAPI JSON + human links. |
-| `/docs/sla` | Summary + link to full `docs/SLA.md` in the repository. |
+| `/docs/sla` | Summary + link to full website-rendered `docs/SLA.md`. |
+| `/docs/[slug]` | Website-rendered Markdown for exposed docs such as START-HERE, deployment, runbook, product surfaces, claims verification, and security docs. |
+| `/docs/source/[...path]` | Read-only in-site source reference for whitelisted public-repo files under `src/`, `db/`, and `docs/`. |
 
 ## Operator-only (not public offers)
 
@@ -49,9 +51,9 @@ This file maps **public URLs** in `lead-os-hosted-runtime-wt-hybrid` to **intent
 | `/dashboard/*` | Authenticated operator console. |
 | `/api/*` (except health/docs where public) | Programmatic contracts; many require auth or secrets. |
 
-## Repository-only docs (not automatically served as HTML)
+## Website-exposed repo docs
 
-All files under `docs/*.md` (DEPLOYMENT, OPERATOR_RUNBOOK, GTM, ERIE-PRO, etc.) are **source** documentation. The in-app `/docs/sla` page links to the canonical Markdown on GitHub for the full SLA text.
+Core files under `docs/*.md` are exposed as website pages through `/docs/[slug]` so customer-facing buttons do not need to send visitors to GitHub. The Markdown files remain the source of truth, but the public reading experience lives on the website.
 
 ## Cohesion rules
 
