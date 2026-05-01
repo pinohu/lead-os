@@ -25,7 +25,7 @@ const brandName = tenantConfig.brandName || "Lead OS";
 export const metadata: Metadata = {
   title: `${brandName} | Launch the complete solution your client bought`,
   description:
-    "Lead OS helps teams sell outcome-based AI solutions, collect client intake details, and launch the customer-ready pages, routing, assets, dashboards, and reports the client paid for.",
+    "Lead OS helps B2B operators sell outcome-based AI solutions, collect client intake details, and launch the business-ready delivery hubs, downstream pages, routing, assets, dashboards, and reports the client paid for.",
   openGraph: {
     title: `${brandName} - Launch the complete solution your client bought`,
     description: "Sell the outcome. Collect one intake form. Launch the client-ready solution.",
@@ -44,17 +44,17 @@ const launchSteps = [
   },
   {
     title: "Launch the delivery hub",
-    body: "Lead OS creates the customer-facing pages, finished assets, routing logic, reports, acceptance checks, and solution-specific outputs.",
+    body: "Lead OS creates the client delivery hub, any downstream customer-facing pages, finished assets, routing logic, reports, acceptance checks, and solution-specific outputs.",
   },
   {
     title: "Operate and report",
-    body: "The delivery team tracks outcomes, lead quality, managed handoffs, revenue events, and customer-ready reports.",
+    body: "The delivery team tracks outcomes, lead quality, managed handoffs, revenue events, and client-ready reports.",
   },
 ];
 
 const launchedOutputs = [
-  { icon: FileCheck2, title: "Public intake page", body: "A shareable lead capture page for the customer's offer." },
-  { icon: PlugZap, title: "Website embed", body: "Copy-ready embed code for the customer's site." },
+  { icon: FileCheck2, title: "Public intake page", body: "A shareable lead capture page for the client business's offer." },
+  { icon: PlugZap, title: "Website embed", body: "Copy-ready embed code for the client business's site." },
   { icon: Route, title: "Routing rules", body: "Solution-specific scoring and handoff logic." },
   { icon: SquareStack, title: "Delivery hub", body: "Dashboard, launch status, and next actions." },
   { icon: WalletCards, title: "Revenue surfaces", body: "Pricing, invoice, subscription, and ROI views where the solution supports them." },
@@ -62,11 +62,11 @@ const launchedOutputs = [
 ];
 
 const audienceRows = [
-  ["Agency", "Sell repeatable lead systems to clients without rebuilding fulfillment every time."],
-  ["Lead seller", "Package, price, route, and report on lead inventory and buyer outcomes."],
-  ["Consultant", "Launch authority funnels that qualify prospects before a call or proposal."],
-  ["Directory owner", "Turn category traffic into routed and monetized lead demand."],
-  ["Franchise or SaaS team", "Route leads by territory, trial stage, partner, or customer segment."],
+  ["Primary buyer", "B2B operators: agencies, consultants, founders, SaaS teams, franchises, lead sellers, and service providers."],
+  ["Client business", "The business receiving the complete solution, delivery hub, reports, and operating handoffs."],
+  ["Downstream audience", "In B2B2C offers, the client's leads, customers, patients, shoppers, applicants, or prospects interact with the launched surfaces."],
+  ["Not standalone B2C", "Lead OS is not positioned as a consumer app. Consumer interaction only happens on behalf of a client business."],
+  ["Delivery team", "The team operating Lead OS gets capacity, visibility, and repeatable fulfillment without rebuilding every offer by hand."],
 ];
 
 export default function HomePage() {
@@ -108,8 +108,13 @@ export default function HomePage() {
                 Lead OS turns a client purchase into a launched solution.
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Sell a specific outcome. Send one intake form. Lead OS provisions the customer-facing pages, website embed,
-                routing, delivery hub, reports, finished outputs, and managed handoffs that match what the client paid for.
+                Sell a specific outcome. Send one intake form. Lead OS provisions the client delivery hub, downstream
+                customer-facing pages where needed, website embed, routing, reports, finished outputs, and managed
+                handoffs that match what the client paid for.
+              </p>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                Audience model: B2B by default. Some solutions become B2B2C when the client's own audience uses the
+                capture, booking, nurture, course, marketplace, or content surfaces.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button asChild size="lg">
@@ -170,7 +175,7 @@ export default function HomePage() {
                   What gets delivered
                 </Badge>
                 <h2 id="outputs-heading" className="text-2xl font-bold text-foreground sm:text-3xl">
-                  The customer receives working system surfaces, not only a brief.
+                  The client receives working system surfaces, not only a brief.
                 </h2>
               </div>
               <Button asChild variant="outline">
@@ -198,8 +203,9 @@ export default function HomePage() {
             </Badge>
             <h2 className="text-2xl font-bold text-foreground sm:text-3xl">If you sell the outcome, Lead OS fulfills the system.</h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              The visitor should never wonder what Lead OS is. It is the fulfillment engine between the outcome you sell
-              and the client-ready solution your customer receives.
+              The visitor should never wonder who this is for. Lead OS is the B2B fulfillment engine between the outcome
+              you sell, the client business that receives it, and the downstream audience that experiences it when the
+              offer is customer-facing.
             </p>
           </div>
           <div className="grid gap-3">
@@ -218,7 +224,7 @@ export default function HomePage() {
               <CardHeader>
                 <BadgeCheck className="mb-2 h-5 w-5 text-primary" />
                 <CardTitle>The honest promise</CardTitle>
-                <CardDescription>What Lead OS does after a customer buys and submits setup details.</CardDescription>
+                <CardDescription>What Lead OS does after a business client buys and submits setup details.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {[

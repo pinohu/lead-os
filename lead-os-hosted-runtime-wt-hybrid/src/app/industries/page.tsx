@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 export const metadata: Metadata = {
   title: "Industry templates | Lead OS",
   description:
-  "Choose an industry template to shape the solution intake questions, scoring, routing, and follow-up for a customer's lead system.",
+  "Choose an industry template to shape the solution intake questions, scoring, routing, and follow-up for a client business.",
 };
 
 export default function IndustriesPage() {
@@ -21,7 +21,7 @@ export default function IndustriesPage() {
     "@type": "ItemList",
     "@id": `${baseUrl}/industries#industries`,
     name: "Industry templates | Lead OS",
-  description: "Industry templates for solution intake, capture, scoring, routing, and follow-up.",
+  description: "Industry templates for client-business solution intake, capture, scoring, routing, and follow-up.",
     numberOfItems: niches.length,
     itemListElement: niches.map((niche, i) => ({
       "@type": "ListItem",
@@ -39,11 +39,11 @@ export default function IndustriesPage() {
       <div className="text-center mb-12">
         <Badge variant="secondary" className="mb-4">Industry templates</Badge>
         <h1 className="text-foreground text-4xl font-extrabold tracking-tight mb-4">
-          Start with the customer's industry, then launch the right package.
+          Start with the client business's industry, then launch the right solution.
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Industry templates shape the questions, scoring, routing, and follow-up so the customer receives a lead
-          system that matches how they sell.
+          Industry templates shape the questions, scoring, routing, and follow-up so the client business receives a
+          solution that matches how it sells and who it serves.
         </p>
       </div>
 

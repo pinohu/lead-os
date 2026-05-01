@@ -59,8 +59,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const niche = getNiche(slug);
   if (!niche) return {};
   return {
-    title: `${niche.label} Lead System Package | Lead OS`,
-    description: `${niche.summary} Choose the package, capture the setup details, and launch scoring, routing, follow-up, and reporting for ${niche.label.toLowerCase()} businesses.`,
+    title: `${niche.label} Lead System Solution | Lead OS`,
+    description: `${niche.summary} Choose the solution, capture the setup details, and launch scoring, routing, follow-up, and reporting for ${niche.label.toLowerCase()} businesses.`,
     openGraph: {
       title: `${niche.label} | Lead OS`,
       description: niche.summary,
@@ -127,7 +127,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
           {
             label: "Automation depth",
             value: `${template.offers.length} playbooks`,
-            detail: "Pre-built package logic ready to launch from setup details.",
+            detail: "Pre-built solution logic ready to launch from setup details.",
           },
         ]}
       >
@@ -145,7 +145,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
 
         {/* ---------- Offers ---------- */}
         <section>
-          <h2 className="text-foreground">What the launched package gives {niche.label} teams</h2>
+          <h2 className="text-foreground">What the launched solution gives {niche.label} teams</h2>
           <ul className="space-y-2">
             {offers.map((offer, i) => (
               <li key={i}>{offer}</li>
@@ -160,7 +160,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
           <p>
             Our two-minute assessment scores your current funnel against
             benchmarks from hundreds of {niche.label.toLowerCase()} businesses
-            and points you to the package path most likely to solve the problem.
+            and points you to the solution path most likely to solve the problem.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild><Link href={`/assess/${niche.slug}`}>
@@ -314,7 +314,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Service",
-            name: `${niche.label} Lead System Package`,
+            name: `${niche.label} Lead System Solution`,
             description: niche.summary,
             provider: {
               "@type": "Organization",

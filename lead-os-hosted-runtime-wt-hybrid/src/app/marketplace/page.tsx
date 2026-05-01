@@ -862,11 +862,11 @@ export default function PublicMarketplacePage() {
     <main className="mx-auto max-w-[1180px] px-6 py-10">
       <section className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         <div className="max-w-2xl">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lead buyer workspace</p>
-          <h1 className="text-foreground">Claim leads when the marketplace package is connected</h1>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">B2B lead buyer surface</p>
+          <h1 className="text-foreground">Claim leads when the marketplace solution is connected</h1>
           <p className="text-lg text-muted-foreground">
-            This page shows the buyer side of a lead-selling package: scored inventory, price, claim flow, and outcome
-            reporting. Real lead sales use the same flow after production inventory and billing credentials are connected.
+            This page shows the buyer side of a lead-selling solution: scored inventory, price, claim flow, and outcome
+            reporting. Real lead sales use the same flow after production inventory and billing account access is connected.
           </p>
         </div>
       </section>
@@ -877,7 +877,7 @@ export default function PublicMarketplacePage() {
           className="mt-4 rounded-lg border-2 border-amber-500/50 bg-amber-500/15 px-4 py-4 text-sm font-medium text-amber-950"
         >
           <strong>Sample inventory is showing.</strong> Production lead inventory is not connected in this deployment.
-          Use these cards to understand the buyer workflow; connect database and billing credentials to sell real leads.
+          Use these cards to understand the buyer workflow; connect database and billing account access to sell real leads.
         </div>
       ) : null}
 

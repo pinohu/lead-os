@@ -50,7 +50,7 @@ export default function ProductionStatusPage() {
             <p className="mt-3 max-w-3xl text-muted-foreground">
               Use this page to see the Vercel production runtime clearly. Lead OS can create solution outputs; external
               actions such as durable storage, queues, billing, and live sends activate when the required account access
-              are connected.
+              is connected.
             </p>
           </div>
           <Card>

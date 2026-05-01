@@ -5,19 +5,19 @@ import { PackageBundleProvisionForm } from "@/components/PackageBundleProvisionF
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getPackagePlanNames, provisionablePackages } from "@/lib/package-catalog";
+import { getPackageAudienceContract, getPackagePlanNames, provisionablePackages } from "@/lib/package-catalog";
 
 export const metadata: Metadata = {
   title: "Complete AI Agency Solutions | Lead OS",
   description:
-    "Choose the customer outcome your client bought, collect the required intake details, and launch the complete solution.",
+    "Choose the business outcome your client bought, collect the required intake details, and launch the complete B2B or B2B2C solution.",
 };
 
 const packageRules = [
-  "Each product is sold as a complete solution to a business problem, not as software the customer has to operate.",
+  "Each product is sold to a business buyer as a complete solution to a business problem, not as software the buyer has to operate.",
   "One intake form can launch one solution, a selected bundle, or the full catalog.",
-  "Provisioning creates the customer-facing pages, finished assets, routing logic, reports, acceptance checks, and managed handoffs.",
-  "Optional CRM, billing, calendar, phone, email, SMS, social, or publishing access improves live integrations but never blocks delivery.",
+  "Provisioning creates the business delivery hub plus any downstream pages, assets, routing logic, reports, acceptance checks, and managed handoffs.",
+  "Optional CRM, billing, calendar, phone, email, SMS, social, or publishing access improves live integrations but never blocks the base delivery.",
 ];
 
 export default function PackagesPage() {
@@ -35,8 +35,9 @@ export default function PackagesPage() {
               Sell complete outcomes, not tools.
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              This is the fulfillment entry point for productized AI agencies. Pick the business result a customer
-              bought, collect the outcome context once, and Lead OS provisions the complete customer-ready solution.
+              This is the fulfillment entry point for productized AI agencies, consultants, founders, and operators.
+              Pick the business result the client bought, collect the outcome context once, and Lead OS provisions the
+              complete solution the business can use or show to its own audience.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild>
@@ -70,16 +71,16 @@ export default function PackagesPage() {
       <section className="border-b border-border bg-muted/20">
         <div className="mx-auto grid max-w-6xl gap-4 px-4 py-6 sm:grid-cols-3">
           <div className="rounded-lg border border-border bg-card p-4">
-            <p className="text-2xl font-extrabold text-foreground">{provisionablePackages.length}</p>
-            <p className="text-sm text-muted-foreground">Complete agency solutions available to sell and provision.</p>
+            <p className="text-2xl font-extrabold text-foreground">B2B</p>
+            <p className="text-sm text-muted-foreground">The paying buyer is a business operator: agency, consultant, SaaS team, franchise, founder, or service provider.</p>
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <p className="text-2xl font-extrabold text-foreground">B2B2C</p>
+            <p className="text-sm text-muted-foreground">Some solutions include lead, patient, shopper, applicant, student, or prospect-facing surfaces for the client's audience.</p>
           </div>
           <div className="rounded-lg border border-border bg-card p-4">
             <p className="text-2xl font-extrabold text-foreground">{deliverableCount}</p>
-            <p className="text-sm text-muted-foreground">Customer-ready pieces across intake, content, voice, ads, routing, reporting, billing, and delivery surfaces.</p>
-          </div>
-          <div className="rounded-lg border border-border bg-card p-4">
-            <p className="text-2xl font-extrabold text-foreground">1 form</p>
-            <p className="text-sm text-muted-foreground">The client intake form drives one, several, or all solutions with managed handoffs and no extra configuration.</p>
+            <p className="text-sm text-muted-foreground">Finished outputs across intake, content, voice, ads, routing, reporting, billing, and delivery surfaces.</p>
           </div>
         </div>
       </section>
@@ -99,7 +100,11 @@ export default function PackagesPage() {
           <Badge variant="outline" className="mb-3">
             Sellable customer outcomes
           </Badge>
-          <h2 className="text-2xl font-bold text-foreground sm:text-3xl">Choose the result the customer wants, then launch the complete solution.</h2>
+          <h2 className="text-2xl font-bold text-foreground sm:text-3xl">Choose the result the client business wants, then launch the complete solution.</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+            Audience labels below separate the buyer from the end-user experience: B2B solutions stay inside the client
+            business, while B2B2C solutions also create surfaces for the client's downstream audience.
+          </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -115,12 +120,22 @@ export default function PackagesPage() {
               </CardHeader>
               <CardContent className="mt-auto">
                 <div className="mb-4 grid gap-2 text-sm">
+                  {(() => {
+                    const audience = getPackageAudienceContract(pkg);
+                    return (
+                      <p>
+                        <span className="font-semibold text-foreground">Audience model:</span>{" "}
+                        <Badge variant={audience.model === "B2B2C" ? "default" : "outline"}>{audience.model}</Badge>{" "}
+                        <span className="text-muted-foreground">{audience.summary}</span>
+                      </p>
+                    );
+                  })()}
                   <p>
-                    <span className="font-semibold text-foreground">Best for:</span>{" "}
+                    <span className="font-semibold text-foreground">Business buyer:</span>{" "}
                     <span className="text-muted-foreground">{pkg.buyerPersona}</span>
                   </p>
                   <p>
-                    <span className="font-semibold text-foreground">Client receives:</span>{" "}
+                    <span className="font-semibold text-foreground">Client business receives:</span>{" "}
                     <span className="text-muted-foreground">{pkg.launchPromise}</span>
                   </p>
                   {pkg.pricingModel ? (

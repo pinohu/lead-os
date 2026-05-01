@@ -28,7 +28,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
   agencies: {
     label: "Digital Marketing Agencies",
     tagline:
-    "Launch client lead systems from one intake form instead of fulfilling every delivery hub by hand.",
+    "Launch client outcome solutions from one intake form instead of fulfilling every delivery hub by hand.",
     painPoints: [
       "Client onboarding takes days instead of minutes",
       "Reporting across platforms eats your team alive every month",
@@ -42,7 +42,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
       "managed-services",
     ],
     recommendedNiche: "general",
-    ctaText: "Launch agency package",
+    ctaText: "Launch agency solution",
     approachSteps: [
       "Consolidate client accounts into a single command center",
       "Automate reporting, lead routing, and follow-up sequences",
@@ -67,7 +67,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
       "product-led-growth",
     ],
     recommendedNiche: "tech",
-    ctaText: "Launch SaaS package",
+    ctaText: "Launch SaaS solution",
     approachSteps: [
       "Map trial activation milestones to automated nudge sequences",
       "Score users by engagement depth and trigger human outreach at the right moment",
@@ -92,7 +92,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
       "performance-dashboards",
     ],
     recommendedNiche: "general",
-    ctaText: "Launch lead package",
+    ctaText: "Launch lead solution",
     approachSteps: [
       "Deploy AI-scored intake forms that route only qualified leads",
       "Unify capture across web, social, phone, and chat into one pipeline",
@@ -117,7 +117,7 @@ const PERSONA_BLUEPRINTS: Record<string, PersonaBlueprint> = {
       "nurture-sequences",
     ],
     recommendedNiche: "coaching",
-    ctaText: "Launch consultant package",
+    ctaText: "Launch consultant solution",
     approachSteps: [
       "Publish authority content that attracts inbound inquiries on autopilot",
       "Qualify prospects before they hit your calendar so every call counts",
@@ -180,7 +180,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!bp) return {};
   return {
     title: `Lead OS for ${bp.label} | Lead OS`,
-    description: `${bp.tagline} Choose a solution, collect intake details, and provision the customer-ready outputs.`,
+    description: `${bp.tagline} Choose a solution, collect intake details, and provision the business-ready outputs.`,
     openGraph: {
       title: `Lead OS for ${bp.label}`,
       description: bp.tagline,
@@ -223,7 +223,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
         niche={bp.recommendedNiche}
         eyebrow={`Built for ${bp.label}`}
         title={bp.tagline}
-        summary={`Lead OS gives ${bp.label.toLowerCase()} a clear path: choose the package the customer bought, collect the setup details once, and receive the capture page, embed code, routing, dashboard, and reporting surfaces automatically.`}
+        summary={`Lead OS gives ${bp.label.toLowerCase()} a clear path: choose the solution the client business bought, collect the setup details once, and receive the delivery hub, capture page, embed code, routing, dashboard, and reporting surfaces automatically.`}
         profile={profile}
         metrics={[
           {
@@ -280,7 +280,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
               {bp.ctaText}
             </Link></Button>
             <Button asChild variant="outline"><Link href={`/industries/${niche.slug}`}>
-              Explore {niche.label} packages
+              Explore {niche.label} solutions
             </Link></Button>
           </div>
         </section>
@@ -307,7 +307,7 @@ export default async function PersonaPage({ params, searchParams }: Props) {
             <article className="rounded-xl border border-border bg-card p-6">
               <h3 className="text-foreground">Package fit assessment</h3>
               <p>
-                Score readiness for this niche before you launch the customer package.
+                Score readiness for this niche before you launch the client solution.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button asChild variant="outline"><Link

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: `%s | ${tenantConfig.brandName}`,
   },
   description:
-    "Lead OS helps teams sell outcome-based AI solutions, collect client intake details, and provision the customer-ready pages, routing, assets, dashboards, reports, and managed handoffs the client paid for.",
+    "Lead OS helps B2B operators sell outcome-based AI solutions, collect client intake details, and provision the business-ready delivery hubs, downstream pages, routing, assets, dashboards, reports, and managed handoffs the client paid for.",
   openGraph: {
     title: `${tenantConfig.brandName} | Complete AI solution fulfillment`,
     description:
@@ -101,7 +101,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     height: 630,
                   },
                   description:
-                    "Complete AI solution fulfillment for agencies, SaaS teams, lead-gen operators, consultants, and franchises. Lead OS provisions customer-ready pages, embeds, routing, dashboards, reports, and managed handoffs.",
+                    "Complete AI solution fulfillment for B2B operators including agencies, SaaS teams, lead-gen operators, consultants, and franchises. Lead OS provisions client delivery hubs, downstream pages, embeds, routing, dashboards, reports, and managed handoffs.",
                   sameAs: [],
                 },
                 {

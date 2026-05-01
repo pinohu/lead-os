@@ -129,6 +129,16 @@ export interface PackageAutomationContract {
   deliveryMode: "complete-solution";
 }
 
+export type PackageAudienceModel = "B2B" | "B2B2C";
+
+export interface PackageAudienceContract {
+  model: PackageAudienceModel;
+  buyer: string;
+  recipient: string;
+  downstreamExperience: string;
+  summary: string;
+}
+
 const baseFields: PackageCredentialField[] = [
   {
     key: "brandName",
@@ -865,5 +875,34 @@ export function getPackageAutomationContract(pkg: ProvisionablePackage): Package
     simpleOnboardingFields: simpleOnboardingFieldKeys,
     nicheExamples: getPackageNicheExamples(pkg.slug),
     deliveryMode: "complete-solution",
+  };
+}
+
+const b2bOnlyPackageSlugs: readonly PackageSlug[] = [
+  "ai-opportunity-audit",
+  "founder-ai-chief-of-staff",
+  "ai-first-business-os",
+  "agency-client-workspace",
+  "operator-control-plane-system",
+  "revenue-attribution-suite",
+];
+
+export function getPackageAudienceContract(pkg: ProvisionablePackage): PackageAudienceContract {
+  const model: PackageAudienceModel = b2bOnlyPackageSlugs.includes(pkg.slug) ? "B2B" : "B2B2C";
+  const recipient = "The client business receives the launched solution, delivery hub, reports, and operating handoffs.";
+  const downstreamExperience =
+    model === "B2B2C"
+      ? "The client's leads, customers, patients, shoppers, applicants, partners, or prospects may interact with the capture, booking, nurture, course, marketplace, or ad surfaces."
+      : "The primary experience stays inside the buyer's team: operators, founders, consultants, executives, marketers, or delivery staff use the outputs to make decisions and run workflows.";
+
+  return {
+    model,
+    buyer: pkg.buyerPersona,
+    recipient,
+    downstreamExperience,
+    summary:
+      model === "B2B2C"
+        ? "Sold to a business buyer and delivered through customer-facing surfaces for that business's audience."
+        : "Sold to a business buyer for internal operations, strategy, reporting, enablement, or workflow execution.",
   };
 }

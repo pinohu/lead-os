@@ -20,17 +20,17 @@ const faqData: FaqCategory[] = [
       {
         question: "What is Lead OS?",
         answer:
-          "Lead OS is a complete-solution launch system for agencies, SaaS teams, lead-gen shops, consultants, and franchise operators. Choose the outcome the customer bought, collect the intake details, and receive customer-facing pages, embed code, routing, dashboards, reporting, finished outputs, and managed handoffs.",
+          "Lead OS is a complete-solution launch system for B2B operators such as agencies, SaaS teams, lead-gen shops, consultants, founders, and franchise operators. Choose the outcome the client business bought, collect the intake details, and receive business-ready delivery hubs, downstream pages, embed code, routing, dashboards, reporting, finished outputs, and managed handoffs.",
       },
       {
         question: "How do I get started?",
         answer:
-          "Start account setup, choose the plan capacity you need, then open Solutions. Pick what the customer bought and submit the intake form to launch the customer-ready outputs.",
+          "Start account setup, choose the plan capacity you need, then open Solutions. Pick what the client business bought and submit the intake form to launch the client-ready outputs.",
       },
       {
         question: "How do I capture my first lead?",
         answer:
-          "After a solution launches, share the capture URL or add the provided embed code to your site or your customer's site. Visitors see the prepared form, quiz, calculator, or chat widget. On submit, the lead is scored, routed, and shown in the delivery hub.",
+          "After a B2B2C solution launches, share the capture URL or add the provided embed code to your site or your client's site. Visitors see the prepared form, quiz, calculator, or chat widget. On submit, the lead is scored, routed, and shown in the delivery hub.",
       },
       {
         question: "What does the dashboard show?",
@@ -78,9 +78,9 @@ const faqData: FaqCategory[] = [
     title: "Solutions and Integrations",
     items: [
       {
-        question: "What does a customer receive after the intake form is submitted?",
+        question: "What does a client business receive after the intake form is submitted?",
         answer:
-          "They receive solution-specific delivery links, a capture page, embed code, operations and reporting surfaces, routing logic, finished outputs, provisioning runs, and acceptance checks.",
+          "They receive solution-specific delivery links, the delivery hub, operations and reporting surfaces, routing logic, finished outputs, provisioning runs, and acceptance checks. B2B2C solutions also include capture pages, embeds, booking, nurture, marketplace, or content surfaces for the client's downstream audience.",
       },
       {
         question: "How do I connect my CRM?",
@@ -130,7 +130,7 @@ const faqData: FaqCategory[] = [
       {
         question: "Can I use my own domain?",
         answer:
-          "Yes. Configure your domain in Dashboard > Settings or through your deployment provider. Customers should see your brand and the solution URL you choose.",
+          "Yes. Configure your domain in Dashboard > Settings or through your deployment provider. Client businesses and their downstream audiences should see your brand and the solution URL you choose.",
       },
       {
         question: "How is my data protected?",
@@ -190,7 +190,7 @@ export default function HelpCenterPage() {
       <div className="mx-auto max-w-3xl px-4 py-12">
         <h1 className="mb-2 text-2xl font-extrabold text-foreground">Help Center</h1>
         <p className="mb-8 text-foreground">
-          Find answers to common questions about launching complete customer solutions with Lead OS.
+          Find answers to common questions about launching complete B2B and B2B2C client solutions with Lead OS.
         </p>
 
         <div className="mb-8">

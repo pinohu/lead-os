@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 const faq = [
   {
     q: "What am I paying for?",
-    a: "You are paying for operating capacity: client solution hubs, leads, funnels, delivery seats, experiments, integrations, and reporting surfaces.",
+    a: "You are paying for B2B operating capacity: client solution hubs, lead volume, funnels, delivery seats, experiments, integrations, and reporting surfaces.",
   },
   {
     q: "What does the client get after they pay me?",
@@ -27,8 +27,12 @@ const faq = [
     a: "No. Required intake fields launch the solution. Optional CRM, Stripe, email, SMS, calendar, analytics, and webhook access activate those external services when added.",
   },
   {
-    q: "Who is the end customer?",
-    a: "Usually your client: a business that wants more qualified leads. You operate the system; their leads submit the intake or embedded form.",
+    q: "Who pays, who receives the solution, and who interacts with it?",
+    a: "The paying buyer is a business operator such as an agency, consultant, founder, SaaS team, franchise, lead seller, or service provider. The client business receives the solution. In B2B2C offers, that client's leads or customers may interact with capture, booking, nurture, marketplace, course, or ad surfaces.",
+  },
+  {
+    q: "Is Lead OS a B2C product?",
+    a: "No. Lead OS is primarily B2B. B2C interaction appears only downstream when a client business launches a customer-facing surface for its own audience.",
   },
   {
     q: "What should I do first?",
@@ -85,8 +89,8 @@ export default function PricingPage() {
                 Choose the capacity for the client solutions you will operate.
               </h1>
               <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Pricing is not a mystery platform fee. Each plan controls how many solutions, leads, funnels, operators,
-                experiments, and integrations your account can run.
+                Pricing is for B2B operators who sell or run client outcomes. Each plan controls how many solutions,
+                leads, funnels, operators, experiments, and integrations your account can run for client businesses.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button asChild>
@@ -106,7 +110,7 @@ export default function PricingPage() {
               <ol className="grid gap-3 pl-0">
                 {[
                   "The delivery team chooses a plan.",
-                  "The client solution launch stores the selected plan and delivery limits.",
+                  "The client solution launch stores the selected plan and delivery limits for the business buyer.",
                   "Billing gates protected capacity while intake forms and readiness surfaces stay explicit.",
                 ].map((item, index) => (
                   <li key={item} className="flex gap-3 text-sm leading-relaxed text-muted-foreground">
@@ -163,7 +167,8 @@ export default function PricingPage() {
               </Badge>
               <h2 className="text-2xl font-bold text-foreground sm:text-3xl">A paid plan should lead directly to a provisioned solution.</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                The plan controls capacity. The solution intake form controls what gets built for the client.
+                The plan controls operator capacity. The solution intake form controls what gets built for the client
+                business and, where relevant, what the client's own audience will experience.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">

@@ -4,14 +4,14 @@ import { ArrowRight, CheckCircle2, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { provisionablePackages } from "@/lib/package-catalog";
+import { getPackageAudienceContract, provisionablePackages } from "@/lib/package-catalog";
 import { liveDeliverables } from "@/lib/live-deliverables";
 import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
   title: "Live Examples | Lead OS",
   description:
-    "View full Lead OS package and deliverable examples that match what the backend can provision in production.",
+    "View full Lead OS solution and deliverable examples that match what the backend can provision in production.",
 };
 
 const featuredPackages = provisionablePackages.slice(0, 6);
@@ -25,7 +25,7 @@ export default function DemoPage() {
     "@type": "ItemList",
     "@id": `${baseUrl}/demo#examples`,
     name: "Lead OS Live Examples",
-    description: "Package and deliverable examples matching production-provisioned Lead OS outputs.",
+    description: "Solution and deliverable examples matching production-provisioned Lead OS outputs.",
     numberOfItems: featuredPackages.length + featuredDeliverables.length,
     itemListElement: [
       ...featuredPackages.map((pkg, i) => ({
@@ -56,16 +56,16 @@ export default function DemoPage() {
                 Live examples
               </Badge>
               <h1 className="max-w-4xl text-3xl font-extrabold leading-tight text-foreground sm:text-5xl">
-                See the same outputs Lead OS can provision for a paying client.
+                See the same outputs Lead OS can provision for a paying business client.
               </h1>
               <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                These are not strategy PDFs. Use this page to inspect the package detail pages and the live deliverable
+                These are not strategy PDFs. Use this page to inspect the solution detail pages and the live deliverable
                 surfaces that match the backend catalog.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button asChild>
                   <Link href="/packages">
-                    Launch a complete package <ArrowRight className="ml-2 h-4 w-4" />
+                    Launch a complete solution <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline">
@@ -78,9 +78,9 @@ export default function DemoPage() {
               <h2 className="text-base font-bold text-foreground">How to read this page</h2>
               <ul className="mt-3 grid gap-3 pl-0 text-sm leading-relaxed text-muted-foreground">
                 {[
-                  "Package examples show what a customer can buy.",
-                  "Deliverable examples show the individual surfaces inside those packages.",
-    "A real launch starts on the solution page and uses the intake form.",
+                  "Solution examples show what a business buyer can buy.",
+                  "Deliverable examples show the individual B2B and B2B2C surfaces inside those solutions.",
+                  "A real launch starts on the solution page and uses the client intake form.",
                   "Provider-backed actions activate when the required credentials are present.",
                 ].map((item) => (
                   <li key={item} className="flex gap-2">
@@ -96,7 +96,7 @@ export default function DemoPage() {
         <section className="mx-auto max-w-6xl px-4 py-10">
           <div className="mb-6">
             <Badge variant="outline" className="mb-3">
-              Complete packages
+              Complete solutions
             </Badge>
             <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
               These are the full outcomes an operator sells.
@@ -110,10 +110,18 @@ export default function DemoPage() {
                   <CardDescription>{pkg.customerOutcome}</CardDescription>
                 </CardHeader>
                 <CardContent className="mt-auto">
+                  {(() => {
+                    const audience = getPackageAudienceContract(pkg);
+                    return (
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        {audience.model} - {audience.summary}
+                      </p>
+                    );
+                  })()}
                   <p className="mb-4 text-sm text-muted-foreground">{pkg.launchPromise}</p>
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/packages/${pkg.slug}`}>
-                      View package <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                      View solution <ExternalLink className="ml-2 h-3.5 w-3.5" />
                     </Link>
                   </Button>
                 </CardContent>
@@ -129,7 +137,7 @@ export default function DemoPage() {
                 Built surfaces
               </Badge>
               <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
-                These are examples of the pieces inside the packages.
+                These are examples of the pieces inside the solutions.
               </h2>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

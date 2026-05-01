@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: AssessmentPageProps): Promise
   const niche = getNiche(slug);
   return {
     title: `${niche.assessmentTitle} | Lead OS`,
-    description: `${niche.summary} Take a 2-minute diagnostic and identify the right package path.`,
+    description: `${niche.summary} Take a 2-minute diagnostic and identify the right solution path.`,
     openGraph: {
       title: niche.assessmentTitle,
       description: niche.summary,
@@ -78,9 +78,9 @@ export default async function AssessmentPage({ params, searchParams }: Assessmen
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(assessJsonLd) }} />
     <div>
     <ExperienceScaffold
-      eyebrow="Package fit assessment"
+      eyebrow="Solution fit assessment"
       title={niche.assessmentTitle}
-      summary={`${niche.summary} This assessment helps the buyer understand the package path, the outcome they want, and the next step without wading through platform jargon.`}
+      summary={`${niche.summary} This assessment helps the business buyer understand the solution path, the outcome they want, and the next step without wading through platform jargon.`}
       profile={profile}
       niche={niche.slug}
       metrics={[

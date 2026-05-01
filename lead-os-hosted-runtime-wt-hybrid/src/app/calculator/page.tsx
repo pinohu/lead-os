@@ -10,10 +10,10 @@ import { buildOgImageUrl } from "@/lib/og-url";
 
 export const metadata: Metadata = {
   title: "ROI Calculator | Lead OS",
-  description: "Estimate the upside a launched lead system package can create for a specific industry.",
+  description: "Estimate the upside a launched client solution can create for a specific industry.",
   openGraph: {
     title: "ROI Calculator | Lead OS",
-    description: "Estimate the upside of launching capture, scoring, routing, and follow-up as a package.",
+    description: "Estimate the upside of launching capture, scoring, routing, and follow-up as a client solution.",
     images: [{ url: buildOgImageUrl("ROI Calculator", "Estimate the upside of automating your lead pipeline", "general"), width: 1200, height: 630 }],
   },
 };
@@ -53,9 +53,9 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
     <div>
     <ExperienceScaffold
       niche={niche.slug}
-      eyebrow="Package calculator path"
+      eyebrow="Solution calculator path"
       title={`${niche.label} upside estimator`}
-      summary={`This path shows the business case before the customer launches. For visitors who need proof before commitment, the calculator should make the package outcome concrete.`}
+      summary={`This path shows the business case before a client business launches. For visitors who need proof before commitment, the calculator should make the solution outcome concrete.`}
       profile={profile}
       metrics={[
         { label: "Bias", value: niche.calculatorBias, detail: "The main framing angle for this niche." },
@@ -70,7 +70,7 @@ export default async function CalculatorPage({ searchParams }: CalculatorPagePro
           <ul className="space-y-2">
             <li>Visitors should understand what they are estimating in under ten seconds.</li>
             <li>The calculation should frame the cost of inaction without manipulative fear.</li>
-            <li>The CTA should feel like the logical next step: choose the package and launch it from setup details.</li>
+            <li>The CTA should feel like the logical next step: choose the solution and launch it from setup details.</li>
           </ul>
         </article>
         <article className="rounded-xl border border-border bg-card p-6">

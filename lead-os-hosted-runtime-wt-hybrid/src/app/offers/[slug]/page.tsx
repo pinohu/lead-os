@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: OfferPageProps): Promise<Meta
   const niche = getNiche(slug);
   return {
     title: `${niche.label} Offer Path | Lead OS`,
-    description: `${niche.summary} Offer path that can become the capture page, qualification questions, routing, and follow-up for a launched package.`,
+    description: `${niche.summary} Offer path that can become the capture page, qualification questions, routing, and follow-up for a launched client solution.`,
     openGraph: {
       title: `${niche.label} Offer | Lead OS`,
       description: niche.summary,
@@ -66,15 +66,15 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
     <div>
     <ExperienceScaffold
       eyebrow="Offer path"
-      title={`${niche.label} offer path for a launched package`}
-      summary={`${niche.summary} This page defines the customer-facing promise that powers the capture page, qualification questions, routing rules, and follow-up in the package.`}
+      title={`${niche.label} offer path for a launched client solution`}
+      summary={`${niche.summary} This page defines the promise a client business can make to its own audience, then maps that promise into capture questions, routing rules, and follow-up.`}
       profile={profile}
       niche={niche.slug}
       metrics={[
         {
           label: "Billing integrations",
           value: "Credential-ready",
-          detail: "Stripe and cart webhooks activate when the package owner provides the required keys.",
+          detail: "Stripe and cart webhooks activate when the business owner provides the required account access.",
         },
         {
           label: "Recovery ladder",
@@ -83,17 +83,17 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
         },
         {
           label: "Post-purchase",
-          value: "Package-ready",
-          detail: "Route won deals into CRM and onboarding playbooks when the required CRM or webhook credentials are configured.",
+          value: "Solution-ready",
+          detail: "Route won deals into CRM and onboarding playbooks when the required CRM or webhook access is configured.",
         },
       ]}
     >
       <section className="grid md:grid-cols-2 gap-6">
         <article className="rounded-xl border border-border bg-card p-6">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Why this offer path is clear</p>
-          <h2 className="text-foreground">One promise, one action, one next step</h2>
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Why this offer path is clear</p>
+            <h2 className="text-foreground">One promise, one action, one next step</h2>
           <ul className="space-y-2">
-            <li>Primary CTA stays singular so the buyer knows exactly what to do.</li>
+            <li>Primary CTA stays singular so the client business's audience knows exactly what to do.</li>
             <li>Fallback follow-up keeps slower deciders from disappearing.</li>
             <li>Proof and risk-reduction sit next to the action instead of below the fold.</li>
           </ul>
@@ -102,7 +102,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What happens after the decision</p>
           <h2 className="text-foreground">No dead ends after purchase or hesitation</h2>
           <ul className="space-y-2">
-            <li>Checkout success can trigger package onboarding and customer workspace creation.</li>
+            <li>Checkout success can trigger solution onboarding and client delivery hub creation.</li>
             <li>Hesitation can trigger recovery, offer clarification, and second-touch re-entry.</li>
             <li>Returning visitors get a lighter path instead of repeating the same pitch.</li>
           </ul>
@@ -200,13 +200,13 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
               ))}
             </div>
             <div className="rounded-xl border border-border bg-card p-6 mt-4 bg-accent/10">
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Our guarantee</p>
-              <p className="m-0 text-sm font-semibold">
-                {intel.conversionPsychology.guaranteePreference === "money-back" ? "Full money-back guarantee if you don't see results." :
-                 intel.conversionPsychology.guaranteePreference === "results-based" ? "Results guaranteed, or you don't pay." :
-                 intel.conversionPsychology.guaranteePreference === "trial-period" ? "Free trial period, no commitment, cancel anytime." :
-                 "100% satisfaction guaranteed."}
-              </p>
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Guarantee angle to review</p>
+                <p className="m-0 text-sm font-semibold">
+                {intel.conversionPsychology.guaranteePreference === "money-back" ? "Consider a money-back or credit policy only if the client can operationally honor it." :
+                 intel.conversionPsychology.guaranteePreference === "results-based" ? "Consider a performance-based promise only for outcomes the client can measure and influence." :
+                 intel.conversionPsychology.guaranteePreference === "trial-period" ? "Consider a trial period when fulfillment cost and account access risk are low." :
+                 "Use a satisfaction or acceptance-check promise only after legal and delivery review."}
+                </p>
             </div>
           </section>
         );

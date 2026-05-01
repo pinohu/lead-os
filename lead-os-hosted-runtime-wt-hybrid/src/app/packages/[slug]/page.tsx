@@ -6,7 +6,13 @@ import { PackageProvisionForm } from "@/components/PackageProvisionForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getPackageAutomationContract, getPackagePlanNames, getProvisionablePackage, provisionablePackages } from "@/lib/package-catalog";
+import {
+  getPackageAudienceContract,
+  getPackageAutomationContract,
+  getPackagePlanNames,
+  getProvisionablePackage,
+  provisionablePackages,
+} from "@/lib/package-catalog";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -31,6 +37,7 @@ export default async function PackagePage({ params }: Props) {
   const pkg = getProvisionablePackage(slug);
   if (!pkg) notFound();
   const automationContract = getPackageAutomationContract(pkg);
+  const audience = getPackageAudienceContract(pkg);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -48,7 +55,8 @@ export default async function PackagePage({ params }: Props) {
         <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight text-foreground">{pkg.title}</h1>
         <p className="mt-4 max-w-3xl text-lg leading-relaxed text-muted-foreground">{pkg.customerOutcome}</p>
         <p className="mt-3 text-sm text-muted-foreground">
-          What happens after your client buys: they complete the intake form below, and Lead OS creates the customer-ready solution. Included in: {getPackagePlanNames(pkg)}
+          What happens after your client buys: they complete the intake form below, and Lead OS creates the business-ready
+          solution plus any downstream customer-facing surfaces this offer requires. Included in: {getPackagePlanNames(pkg)}
         </p>
         {pkg.pricingModel ? (
           <p className="mt-3 rounded-md border border-primary/20 bg-primary/5 p-3 text-sm text-foreground">
@@ -60,25 +68,31 @@ export default async function PackagePage({ params }: Props) {
       <section className="mb-8 grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle>Who buys this</CardTitle>
+            <CardTitle>Business buyer</CardTitle>
             <CardDescription>{pkg.buyerPersona}</CardDescription>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>What they are buying</CardTitle>
+            <CardTitle>Client business receives</CardTitle>
             <CardDescription>{pkg.launchPromise}</CardDescription>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>{pkg.deliverables.length} built pieces</CardTitle>
-            <CardDescription>Created and linked after the client intake form is submitted.</CardDescription>
+            <CardTitle>Audience model: {audience.model}</CardTitle>
+            <CardDescription>{audience.summary}</CardDescription>
           </CardHeader>
         </Card>
       </section>
 
       <section className="mb-8 grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Downstream experience</CardTitle>
+            <CardDescription>{audience.downstreamExperience}</CardDescription>
+          </CardHeader>
+        </Card>
         <Card>
           <CardHeader>
             <CardTitle>Modular launch</CardTitle>
@@ -105,7 +119,7 @@ export default async function PackagePage({ params }: Props) {
             <CardHeader>
               <CardTitle>How the solution is fulfilled</CardTitle>
               <CardDescription>
-                The customer buys the outcome. These provisioning responsibilities turn their intake into the completed result.
+                The business buyer buys the outcome. These provisioning responsibilities turn the client's intake into the completed result.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -128,7 +142,7 @@ export default async function PackagePage({ params }: Props) {
         <Card>
           <CardHeader>
             <CardTitle>What your client receives</CardTitle>
-            <CardDescription>These customer-facing assets, handoffs, reports, and operating pieces are created when the form is submitted.</CardDescription>
+            <CardDescription>These business-ready assets, handoffs, reports, and any customer-facing pieces are created when the form is submitted.</CardDescription>
           </CardHeader>
           <CardContent>
             <ul className="grid gap-2 text-sm md:grid-cols-2">

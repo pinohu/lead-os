@@ -9,7 +9,7 @@ import { publicPlans } from "@/lib/public-offer";
 
 export const metadata: Metadata = {
   title: "Solution Building Blocks | Lead OS",
-  description: "Working examples of the customer-ready pieces included inside Lead OS solutions.",
+  description: "Working examples of the business-ready and downstream customer-facing pieces included inside Lead OS solutions.",
 };
 
 export default function DeliverablesPage() {
@@ -24,8 +24,8 @@ export default function DeliverablesPage() {
           See the usable pieces inside every solution.
         </h1>
         <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-          These pages show the individual pieces customers receive inside larger solutions. For a real customer
-          launch, start from Solutions and submit the intake form for the outcome they bought.
+          These pages show the individual pieces client businesses receive inside larger solutions. For a real client
+          launch, start from Solutions and submit the intake form for the outcome the business bought.
         </p>
         <div className="mt-6 grid gap-3 text-sm md:grid-cols-3">
           <div className="rounded-lg border border-border bg-card p-4">
@@ -34,7 +34,7 @@ export default function DeliverablesPage() {
           </div>
           <div className="rounded-lg border border-border bg-card p-4">
             <strong className="block text-foreground">Customer-facing: B2B2C</strong>
-            Capture, nurture, routing, marketplace, and offer-testing pieces touch the client's end customers or leads.
+            Capture, nurture, routing, marketplace, and offer-testing pieces touch the client's downstream customers or leads.
           </div>
           <div className="rounded-lg border border-border bg-card p-4">
             <strong className="block text-foreground">Not standalone B2C</strong>

@@ -7,7 +7,7 @@ import { tenantConfig } from "@/lib/tenant";
 export const metadata: Metadata = {
   title: "Solution Directory | Lead OS",
   description:
-    "Match a customer's industry to the right assessment, calculator, solution, and lead capture path.",
+    "Match a client business's industry to the right assessment, calculator, solution, and lead capture path.",
 };
 
 export default function DirectoryIndexPage() {
@@ -19,7 +19,7 @@ export default function DirectoryIndexPage() {
     "@type": "ItemList",
     "@id": `${baseUrl}/directory#directory`,
     name: "Solution Directory | Lead OS",
-    description: "Browse by vertical to match a customer to the right assessment, calculator, solution, and lead capture path.",
+    description: "Browse by vertical to match a client business to the right assessment, calculator, solution, and lead capture path.",
     numberOfItems: niches.length,
     itemListElement: niches.map((niche, i) => ({
       "@type": "ListItem",
@@ -38,10 +38,10 @@ export default function DirectoryIndexPage() {
       <section className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         <div className="max-w-2xl">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Solution directory</p>
-          <h1 className="text-foreground">Find the right customer solution by industry</h1>
+          <h1 className="text-foreground">Find the right client solution by industry</h1>
           <p className="text-lg text-muted-foreground">
-            Use this directory to match a buyer's business to the right assessment, calculator, solution, and lead
-            capture path before launching the system they paid for.
+            Use this directory to match a business buyer to the right assessment, calculator, solution, and downstream
+            lead capture path before launching the system they paid for.
           </p>
         </div>
       </section>
@@ -93,7 +93,7 @@ export default function DirectoryIndexPage() {
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Not sure where to start?</p>
         <h2 className="text-foreground">Start with a complete solution</h2>
         <p className="text-muted-foreground">
-          If you already know the outcome the customer bought, go straight to the solution launch center and collect the
+          If you already know the outcome the client business bought, go straight to the solution launch center and collect the
           intake details needed to provision it.
         </p>
         <div className="flex flex-wrap gap-3 justify-center">

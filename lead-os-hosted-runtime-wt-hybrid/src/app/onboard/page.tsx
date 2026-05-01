@@ -72,7 +72,7 @@ const INTEGRATIONS: IntegrationOption[] = [
   { key: "chat", label: "Chat Bot", description: "Live chat widget on your site", defaultOn: false },
   { key: "voice", label: "Voice AI", description: "AI-powered voice calls and qualification", defaultOn: false },
   { key: "booking", label: "Booking System", description: "Calendar scheduling and appointment booking", defaultOn: false },
-  { key: "crm", label: "CRM", description: "Sync leads with your CRM after credentials are added", defaultOn: false },
+  { key: "crm", label: "CRM", description: "Sync leads with your CRM after account access is added", defaultOn: false },
   { key: "documents", label: "Document Generation", description: "Auto-generate proposals and contracts", defaultOn: false },
 ];
 
@@ -80,8 +80,8 @@ const STEP_LABELS: Record<WizardStep, string> = {
   email: "Start",
   niche: "Client market",
   plan: "Plan",
-  branding: "Workspace",
-  integrations: "Credentials",
+  branding: "Business identity",
+  integrations: "Account access",
   review: "Review",
   complete: "Complete",
 };
@@ -296,7 +296,7 @@ export default function OnboardPage() {
         <header className="mb-12 text-center">
           <h1 className="mb-2 text-[2rem] font-bold text-slate-50">Create your operator account</h1>
           <p className="text-base text-muted-foreground">
-            Use this account to sell and launch lead system packages for your clients.
+            Use this account to sell and launch B2B/B2B2C outcome solutions for client businesses.
           </p>
         </header>
 
@@ -332,7 +332,7 @@ export default function OnboardPage() {
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
               <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">Start with your email</h2>
               <p className="mb-5 text-[0.9rem] text-muted-foreground">
-                This creates your delivery setup session. After that, go to Solutions and launch the outcome your client bought.
+                This creates your operator setup session. After that, go to Solutions and launch the outcome your client business bought.
               </p>
               <div className="mb-5">
                 <label htmlFor="email-input" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Email Address</label>
@@ -433,7 +433,7 @@ export default function OnboardPage() {
                 )}
               </div>
               <div className="mt-3 rounded-lg border border-teal-500/20 bg-teal-500/[0.08] px-3.5 py-2.5 text-[0.85rem] text-teal-300" role="status">
-                This tells Lead OS what kind of leads the workspace should capture, score, and route.
+                This tells Lead OS which client market, downstream audience, and lead flow the solution should capture, score, and route.
               </div>
               <div className="mt-8 flex justify-between gap-3">
                 <button type="button" onClick={handleBack} className="min-h-[44px] min-w-[120px] rounded-lg border border-slate-400/30 bg-transparent px-7 py-3 text-[0.9rem] font-semibold text-muted-foreground transition-opacity duration-200" aria-label="Go back to previous step">Back</button>
@@ -461,7 +461,7 @@ export default function OnboardPage() {
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
               <h2 className="mb-2 text-[1.25rem] font-bold text-slate-50">Choose solution capacity</h2>
               <p className="mb-5 text-[0.9rem] text-muted-foreground">
-                These plan names, prices, and limits match the backend billing catalog and control how much customer solution volume you can run.
+                These plan names, prices, and limits match the backend billing catalog and control how much client solution volume you can run.
               </p>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4" role="radiogroup" aria-label="Plan selection">
                 {PLANS.map((plan) => (
@@ -513,7 +513,7 @@ export default function OnboardPage() {
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
               <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
-                Name the operator workspace
+                Name the operator account
               </h2>
               <div className="mb-5">
                 <label htmlFor="brand-name" className="mb-1.5 block text-[0.85rem] font-semibold text-muted-foreground">Brand Name</label>
@@ -609,7 +609,7 @@ export default function OnboardPage() {
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
               <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
-                Choose credential-backed integrations
+                Choose account-access-backed channels
               </h2>
               <div role="group" aria-label="Available integrations">
                 {INTEGRATIONS.map((integration) => (
@@ -731,7 +731,7 @@ export default function OnboardPage() {
           <main>
             <div className="mb-6 rounded-xl border border-teal-500/30 bg-teal-500/[0.08] p-8 text-center">
               <h2 className="mb-2 text-[1.5rem] font-bold text-teal-500">
-                Your Account Is Ready. Launch a Customer Solution Next.
+                Your Account Is Ready. Launch a Client Solution Next.
               </h2>
               <p className="text-muted-foreground">
                 {stripeSessionId
@@ -745,7 +745,7 @@ export default function OnboardPage() {
                 Embed Script
               </h3>
               <p className="mb-3 text-[0.85rem] text-muted-foreground">
-                Add this script to a page where you want the account-level lead capture widget to appear:
+                Add this script to a page where you want an account-level lead capture widget for a client business to appear:
               </p>
               <code className="mb-4 block overflow-x-auto whitespace-pre-wrap break-all rounded-lg border border-slate-400/15 bg-black/40 p-4 font-mono text-[0.82rem] text-teal-300">
                 {session.provisioningResult.embedScript}
@@ -772,7 +772,7 @@ export default function OnboardPage() {
                 Complete Solution Launch
               </h3>
               <p className="mb-3 text-[0.85rem] text-muted-foreground">
-                Choose the solution the customer paid for, collect the intake details it needs, and provision the full delivery hub.
+                Choose the solution the client business paid for, collect the intake details it needs, and provision the full delivery hub.
               </p>
               <a
                 href="/packages"
