@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { nicheCatalog } from "@/lib/catalog";
+import { directoryCategories, directoryFlowSteps, directorySurfaces } from "@/lib/directory-solution";
 import { tenantConfig } from "@/lib/tenant";
 
 export const metadata: Metadata = {
@@ -43,6 +45,14 @@ export default function DirectoryIndexPage() {
             Use this directory to match a business buyer to the right assessment, calculator, solution, and downstream
             lead capture path before launching the system they paid for.
           </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button asChild>
+              <Link href="/directory/lead-router">Open directory lead router</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/packages/directory-monetization-system">Launch directory monetization</Link>
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -61,6 +71,51 @@ export default function DirectoryIndexPage() {
           <h2 className="text-foreground">4 temperatures</h2>
           <p className="text-muted-foreground">Cold, Warm, Hot, Burning</p>
         </article>
+        <article className="rounded-xl border border-border bg-card p-6">
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Router surfaces</p>
+          <h2 className="text-foreground">{directorySurfaces.length}</h2>
+          <p className="text-muted-foreground">Intake, routing, billing, marketplace, docs, source reference</p>
+        </article>
+      </section>
+
+      <section className="rounded-xl border border-border bg-card p-6">
+        <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+          <div>
+            <Badge variant="secondary" className="mb-3">
+              Directory lead router
+            </Badge>
+            <h2 className="text-foreground">A visible frontend for the directory routing engine</h2>
+            <p className="text-muted-foreground">
+              The codebase already routes category-based requests through node resolution, billing checks, delivery
+              handoffs, and route audit events. This directory now exposes that as a customer-facing solution surface,
+              not a hidden implementation detail.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Button asChild>
+                <Link href="/directory/lead-router">View router experience</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/marketplace">View lead inventory</Link>
+              </Button>
+            </div>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {directoryFlowSteps.map((step) => (
+              <div key={step.title} className="rounded-lg border border-border bg-background p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{step.surface}</p>
+                <h3 className="mt-1 text-sm font-bold text-foreground">{step.title}</h3>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{step.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {directoryCategories.map((category) => (
+            <Badge key={category.key} variant="outline">
+              {category.label}: {category.priceBand}
+            </Badge>
+          ))}
+        </div>
       </section>
 
       <section>
