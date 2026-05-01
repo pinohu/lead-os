@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { getAllPackageClientExamples, getPackageClientExample } from "../src/lib/package-client-examples.ts";
+import {
+  getAllPackageClientExamples,
+  getAllPackageDeliverableClientExamples,
+  getPackageClientExample,
+  getPackageDeliverableClientExample,
+} from "../src/lib/package-client-examples.ts";
 import { provisionablePackages } from "../src/lib/package-catalog.ts";
 
 describe("package client example websites", () => {
@@ -30,6 +35,30 @@ describe("package client example websites", () => {
 
       for (const deliverable of example.visibleDeliverables) {
         assert.ok(deliverable.plainUse.length > 35, `${example.pkg.slug}/${deliverable.id} needs a plain use note`);
+        assert.equal(
+          deliverable.clientLandingPath,
+          `/client-examples/${example.pkg.slug}/deliverables/${deliverable.id}`,
+          `${example.pkg.slug}/${deliverable.id} needs a client landing page path`,
+        );
+      }
+    }
+  });
+
+  it("creates a client-facing landing page model for every package deliverable", () => {
+    const expectedCount = provisionablePackages.reduce((total, pkg) => total + pkg.deliverables.length, 0);
+    const deliverableExamples = getAllPackageDeliverableClientExamples();
+
+    assert.equal(deliverableExamples.length, expectedCount);
+
+    for (const pkg of provisionablePackages) {
+      for (const deliverable of pkg.deliverables) {
+        const example = getPackageDeliverableClientExample(pkg.slug, deliverable.id);
+        assert.ok(example, `${pkg.slug}/${deliverable.id} is missing a client-facing deliverable page`);
+        assert.ok(example.headline.includes(deliverable.title), `${pkg.slug}/${deliverable.id} headline should name the deliverable`);
+        assert.ok(example.plainResult.length > 50, `${pkg.slug}/${deliverable.id} needs a plain result`);
+        assert.equal(example.processMap.length, 5, `${pkg.slug}/${deliverable.id} needs a five-step process map`);
+        assert.ok(example.tutorial.length >= 5, `${pkg.slug}/${deliverable.id} needs a tutorial`);
+        assert.ok(example.acceptanceChecks.length >= 5, `${pkg.slug}/${deliverable.id} needs acceptance checks`);
       }
     }
   });

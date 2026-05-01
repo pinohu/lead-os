@@ -168,9 +168,9 @@ export default async function ClientExamplePage({ params }: Props) {
               <p className="mt-3 rounded-md bg-slate-50 p-3 text-sm leading-relaxed text-slate-700">
                 <span className="font-semibold">How to use it:</span> {deliverable.plainUse}
               </p>
-              <a href={`#${deliverable.id}`} className="mt-4 inline-flex items-center text-sm font-semibold text-slate-950">
-                Open this deliverable <ExternalLink className="ml-2 h-3.5 w-3.5" />
-              </a>
+              <Link href={deliverable.clientLandingPath} className="mt-4 inline-flex items-center text-sm font-semibold text-slate-950">
+                Open this deliverable page <ExternalLink className="ml-2 h-3.5 w-3.5" />
+              </Link>
             </article>
           ))}
         </div>

@@ -32,7 +32,24 @@ export interface PackageClientExample extends PackageClientExampleSeed {
     title: string;
     body: string;
   }>;
-  visibleDeliverables: Array<PackageDeliverable & { plainUse: string }>;
+  visibleDeliverables: Array<PackageDeliverable & { plainUse: string; clientLandingPath: string }>;
+}
+
+export interface PackageDeliverableClientExample {
+  packageExample: PackageClientExample;
+  deliverable: PackageDeliverable & { plainUse: string; clientLandingPath: string };
+  headline: string;
+  plainResult: string;
+  visualLabel: string;
+  tutorial: Array<{
+    title: string;
+    body: string;
+  }>;
+  processMap: Array<{
+    title: string;
+    description: string;
+  }>;
+  acceptanceChecks: string[];
 }
 
 const officePhoto = "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=80";
@@ -361,6 +378,96 @@ function plainUseForDeliverable(deliverable: PackageDeliverable): string {
   }
 }
 
+function resultForDeliverable(deliverable: PackageDeliverable, example: PackageClientExampleSeed): string {
+  switch (deliverable.launchSurface) {
+    case "capture":
+      return `A visitor can use this page to ask for help, share details, and move toward ${example.heroAction.toLowerCase()}.`;
+    case "operator":
+      return "The team can see the next action, the owner, and the handoff path without searching through notes.";
+    case "automation":
+      return "The work runs from the same rule every time, so the team does not have to remember the steps.";
+    case "billing":
+      return "The money step is clear: price, buyer action, payment or claim status, and next handoff.";
+    case "reporting":
+      return "The client can see what happened, what worked, what is blocked, and what to improve next.";
+    default:
+      return "The client has one clear place to open the finished output and understand what to do next.";
+  }
+}
+
+function tutorialForDeliverable(
+  deliverable: PackageDeliverable,
+  example: PackageClientExampleSeed,
+): PackageDeliverableClientExample["tutorial"] {
+  return [
+    {
+      title: "Step 1: Open this page.",
+      body: `This page belongs to ${example.clientName}. Read the title first so you know which deliverable you are using.`,
+    },
+    {
+      title: "Step 2: Check who it helps.",
+      body: `This helps ${example.endUser.toLowerCase()} The problem is: ${example.mainPain}`,
+    },
+    {
+      title: "Step 3: Use the main output.",
+      body: `Use this deliverable for this job: ${deliverable.createdArtifact}`,
+    },
+    {
+      title: "Step 4: Follow the small process map.",
+      body: "Move left to right. Start with the input, use the deliverable, then check the next action.",
+    },
+    {
+      title: "Step 5: Check the result.",
+      body: resultForDeliverable(deliverable, example),
+    },
+  ];
+}
+
+function processForDeliverable(
+  deliverable: PackageDeliverable,
+  example: PackageClientExampleSeed,
+): PackageDeliverableClientExample["processMap"] {
+  return [
+    {
+      title: "Input",
+      description: `Use the intake details for ${example.market}.`,
+    },
+    {
+      title: "Open",
+      description: `Open ${deliverable.title} and read the plain instructions.`,
+    },
+    {
+      title: "Use",
+      description: plainUseForDeliverable(deliverable),
+    },
+    {
+      title: "Handoff",
+      description: "Send the next action to the right person, page, report, or workflow.",
+    },
+    {
+      title: "Proof",
+      description: "Check if this moved the customer closer to the result.",
+    },
+  ];
+}
+
+function visualLabelForSurface(surface: PackageDeliverable["launchSurface"]): string {
+  switch (surface) {
+    case "capture":
+      return "Customer-facing page";
+    case "operator":
+      return "Team action screen";
+    case "automation":
+      return "Workflow map";
+    case "billing":
+      return "Money path";
+    case "reporting":
+      return "Proof report";
+    default:
+      return "Delivery hub";
+  }
+}
+
 export function getPackageClientExample(slug: string): PackageClientExample | undefined {
   const pkg = getProvisionablePackage(slug);
   const seed = packageClientExampleSeeds[slug as PackageSlug];
@@ -369,6 +476,7 @@ export function getPackageClientExample(slug: string): PackageClientExample | un
   const visibleDeliverables = pkg.deliverables.map((deliverable) => ({
     ...deliverable,
     plainUse: plainUseForDeliverable(deliverable),
+    clientLandingPath: `/client-examples/${pkg.slug}/deliverables/${deliverable.id}`,
   }));
 
   return {
@@ -434,4 +542,39 @@ export function getAllPackageClientExamples(): PackageClientExample[] {
   return provisionablePackages
     .map((pkg) => getPackageClientExample(pkg.slug))
     .filter((example): example is PackageClientExample => Boolean(example));
+}
+
+export function getPackageDeliverableClientExample(
+  packageSlug: string,
+  deliverableId: string,
+): PackageDeliverableClientExample | undefined {
+  const packageExample = getPackageClientExample(packageSlug);
+  if (!packageExample) return undefined;
+  const deliverable = packageExample.visibleDeliverables.find((item) => item.id === deliverableId);
+  if (!deliverable) return undefined;
+
+  return {
+    packageExample,
+    deliverable,
+    headline: `${deliverable.title} for ${packageExample.clientName}`,
+    plainResult: resultForDeliverable(deliverable, packageExample),
+    visualLabel: visualLabelForSurface(deliverable.launchSurface),
+    tutorial: tutorialForDeliverable(deliverable, packageExample),
+    processMap: processForDeliverable(deliverable, packageExample),
+    acceptanceChecks: [
+      "The client knows who this helps.",
+      "The client knows what this deliverable does.",
+      "The client knows the next step after using it.",
+      "The client can tell if the result happened.",
+      "The client does not need to learn a new tool first.",
+    ],
+  };
+}
+
+export function getAllPackageDeliverableClientExamples(): PackageDeliverableClientExample[] {
+  return getAllPackageClientExamples().flatMap((example) =>
+    example.visibleDeliverables
+      .map((deliverable) => getPackageDeliverableClientExample(example.pkg.slug, deliverable.id))
+      .filter((item): item is PackageDeliverableClientExample => Boolean(item)),
+  );
 }
