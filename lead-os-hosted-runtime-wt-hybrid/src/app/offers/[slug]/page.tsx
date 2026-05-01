@@ -6,7 +6,6 @@ import { getNiche } from "@/lib/catalog";
 import { resolveExperienceProfile } from "@/lib/experience";
 import { tenantConfig } from "@/lib/tenant";
 import { OFFER_TEMPLATES, type Niche as OfferNiche } from "@/lib/offer-engine";
-import { NICHE_TESTIMONIALS } from "@/lib/niche-testimonials";
 import { buildOgImageUrl } from "@/lib/og-url";
 import { getCustomerIntelligenceOrDefault } from "@/lib/customer-intelligence";
 import { nicheCatalog } from "@/lib/catalog";
@@ -89,7 +88,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
       ]}
     >
       <section className="grid md:grid-cols-2 gap-6">
-        <article className="rounded-xl border border-border bg-card p-6">
+        <article className="rounded-lg border border-border bg-card p-6">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Why this offer path is clear</p>
             <h2 className="text-foreground">One promise, one action, one next step</h2>
           <ul className="space-y-2">
@@ -98,7 +97,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
             <li>Proof and risk-reduction sit next to the action instead of below the fold.</li>
           </ul>
         </article>
-        <article className="rounded-xl border border-border bg-card p-6">
+        <article className="rounded-lg border border-border bg-card p-6">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What happens after the decision</p>
           <h2 className="text-foreground">No dead ends after purchase or hesitation</h2>
           <ul className="space-y-2">
@@ -118,7 +117,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Why this offer works for {niche.label}</p>
             <h2 className="text-foreground">Niche-specific offer blueprint</h2>
             <div className="grid md:grid-cols-2 gap-6">
-              <article className="rounded-xl border border-border bg-card p-6">
+              <article className="rounded-lg border border-border bg-card p-6">
                 <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Services included</p>
                 <ul className="space-y-2">
                   {offerTemplate.services.map((svc) => (
@@ -126,7 +125,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
                   ))}
                 </ul>
               </article>
-              <article className="rounded-xl border border-border bg-card p-6">
+              <article className="rounded-lg border border-border bg-card p-6">
                 <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Pain points addressed</p>
                 <ul className="space-y-2">
                   {offerTemplate.language.painPoints.map((pp) => (
@@ -134,7 +133,7 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
                   ))}
                 </ul>
               </article>
-              <article className="rounded-xl border border-border bg-card p-6">
+              <article className="rounded-lg border border-border bg-card p-6">
                 <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Desired outcomes</p>
                 <ul className="space-y-2">
                   {offerTemplate.language.desiredOutcomes.map((outcome) => (
@@ -142,16 +141,15 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
                   ))}
                 </ul>
               </article>
-              <article className="rounded-xl border border-border bg-card p-6">
-                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Guarantee &amp; social proof</p>
+              <article className="rounded-lg border border-border bg-card p-6">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Acceptance promise to review</p>
                 <p className="text-sm leading-relaxed">
                   <strong>{offerTemplate.guaranteeType.replace(/-/g, " ")} guarantee</strong>{" "}
-                  &mdash; {offerTemplate.guaranteeDays} days
+                  for {offerTemplate.guaranteeDays} days after launch.
                 </p>
                 <p className="text-muted-foreground text-sm mt-2">
-                  {offerTemplate.language.socialProofTemplate
-                    .replace("{{count}}", "100+")
-                    .replace("{{rating}}", "4.8")}
+                  Publish only verified proof here: real baseline, delivery evidence, client-approved quote, and the
+                  measured outcome this offer improves.
                 </p>
               </article>
             </div>
@@ -159,32 +157,23 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
         );
       })()}
 
-      {/* ---------- Testimonials ---------- */}
-      {(() => {
-        const testimonials = NICHE_TESTIMONIALS[niche.slug] ?? NICHE_TESTIMONIALS.general ?? [];
-        if (testimonials.length === 0) return null;
-        return (
-          <section>
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What {niche.label.toLowerCase()} leaders are saying</p>
-            <div className="grid md:grid-cols-3 gap-6">
-              {testimonials.map((t) => (
-                <article key={t.author} className="rounded-xl border border-border bg-card p-6 flex flex-col gap-3">
-                  <p className="italic text-sm leading-relaxed flex-1">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <div>
-                    <strong className="block text-sm">{t.author}</strong>
-                    <span className="text-muted-foreground text-xs">{t.role}, {t.company}</span>
-                  </div>
-                  <span className="inline-block px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-bold w-fit">
-                    {t.metric}
-                  </span>
-                </article>
-              ))}
-            </div>
-          </section>
-        );
-      })()}
+      <section>
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Proof required before this goes public</p>
+        <h2 className="text-foreground">Trust assets this offer should collect</h2>
+        <div className="grid gap-4 md:grid-cols-4">
+          {[
+            ["Baseline", "What happens before the system launches: response time, missed demand, manual hours, cost, or conversion rate."],
+            ["Delivery evidence", "The live URLs, forms, scripts, reports, automations, and acceptance checks created from the onboarding form."],
+            ["Measured result", "The outcome the buyer cares about: booked calls, recovered revenue, finished assets, hours saved, or risk reduced."],
+            ["Approved quote", "A client-approved testimonial, case note, or internal operator quote after results are observed."],
+          ].map(([title, detail]) => (
+            <article key={title} className="rounded-lg border border-border bg-card p-5">
+              <p className="font-semibold text-foreground">{title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       {(() => {
         const intel = getCustomerIntelligenceOrDefault(niche.slug);
@@ -193,14 +182,14 @@ export default async function OfferPage({ params, searchParams }: OfferPageProps
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Addressing your concerns</p>
             <div className="flex flex-col gap-3">
               {intel.objections.map((obj) => (
-                <article key={obj.objection} className="rounded-xl border border-border bg-card p-6 border-l-4 border-l-emerald-500">
+                <article key={obj.objection} className="rounded-lg border border-border bg-card p-6">
                   <p className="m-0 mb-1.5 font-bold text-sm">&ldquo;{obj.objection}&rdquo;</p>
                   <p className="m-0 text-sm">{obj.evidenceBasedResponse}</p>
                 </article>
               ))}
             </div>
-            <div className="rounded-xl border border-border bg-card p-6 mt-4 bg-accent/10">
-                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Guarantee angle to review</p>
+            <div className="rounded-lg border border-border bg-card p-6 mt-4 bg-accent/10">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Acceptance angle to review</p>
                 <p className="m-0 text-sm font-semibold">
                 {intel.conversionPsychology.guaranteePreference === "money-back" ? "Consider a money-back or credit policy only if the client can operationally honor it." :
                  intel.conversionPsychology.guaranteePreference === "results-based" ? "Consider a performance-based promise only for outcomes the client can measure and influence." :

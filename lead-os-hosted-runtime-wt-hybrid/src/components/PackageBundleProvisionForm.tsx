@@ -21,6 +21,13 @@ interface ProvisionedBundleResult {
     workspaces: string[];
   };
   acceptanceTests: Array<{ test: string; status: string; evidence: string }>;
+  valueCase?: {
+    executiveSummary: string;
+    sixFigureValueDrivers: string[];
+    renewalReasons: string[];
+    expansionPaths: string[];
+    delightChecks: string[];
+  };
 }
 
 interface PackageBundleProvisionFormProps {
@@ -180,20 +187,21 @@ export function PackageBundleProvisionForm({
             </label>
           </div>
           {supplementalFields.length ? (
-            <div className="rounded-md border border-border bg-muted/25 p-4">
-              <div className="mb-3">
-                <h3 className="text-sm font-semibold text-foreground">Universal launch context</h3>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                  Add any account details, source assets, approval rules, or handoff destinations once. Selected
-                  packages consume only the fields they need; unneeded fields are ignored.
-                </p>
-              </div>
-              <div className="grid gap-3">
+            <details className="rounded-md border border-border bg-muted/25 p-4">
+              <summary className="cursor-pointer text-sm font-semibold text-foreground">
+                Optional universal launch context
+              </summary>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                Add account details, source assets, approval rules, or handoff destinations once. Selected packages
+                consume only the fields they need; unneeded fields are ignored. Leave optional fields blank to use
+                managed handoffs.
+              </p>
+              <div className="mt-3 grid gap-3">
                 {supplementalFields.map((field) => (
                   <FieldControl key={field.key} field={field} />
                 ))}
               </div>
-            </div>
+            </details>
           ) : null}
           <button className="min-h-11 rounded-md bg-primary px-5 font-semibold text-primary-foreground" disabled={status === "loading"}>
             {status === "loading" ? "Launching solutions..." : "Launch selected solutions"}
@@ -244,7 +252,7 @@ function FieldControl({ field }: { field: PackageCredentialField }) {
     <span className="font-medium">
       {field.label}
       {field.required ? <span className="text-destructive"> *</span> : null}
-      {field.sensitive ? <span className="text-muted-foreground"> secure reference</span> : null}
+      {field.sensitive ? <span className="text-muted-foreground"> (secure reference)</span> : null}
     </span>
   );
   const commonClass = "min-h-11 rounded-md border border-input bg-background px-3";
@@ -329,6 +337,16 @@ function BundleResult({ status, result }: { status: Status; result: ProvisionedB
       <p className="mt-1 text-muted-foreground">
         {result.packageTitles.length} offers, {result.totalArtifacts} customer-ready outputs.
       </p>
+      {result.valueCase ? (
+        <div className="mt-3 rounded-md border border-primary/20 bg-background p-3">
+          <p className="font-semibold text-foreground">Value case</p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{result.valueCase.executiveSummary}</p>
+          <div className="mt-3 grid gap-2 text-xs md:grid-cols-2">
+            <ValueList title="Why it can be worth six figures" items={result.valueCase.sixFigureValueDrivers} />
+            <ValueList title="Why they renew" items={result.valueCase.renewalReasons} />
+          </div>
+        </div>
+      ) : null}
       <div className="mt-3 max-h-40 overflow-y-auto rounded border border-border bg-background">
         {result.urls.workspaces.map((url) => (
           <a key={url} href={url} className="block border-b border-border p-2 last:border-b-0">
@@ -339,6 +357,19 @@ function BundleResult({ status, result }: { status: Status; result: ProvisionedB
       <ul className="mt-3 grid gap-1 text-xs text-muted-foreground">
         {result.acceptanceTests.map((test) => (
           <li key={test.test}>{test.test}: {test.status}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ValueList({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div>
+      <p className="font-medium text-foreground">{title}</p>
+      <ul className="mt-1 grid gap-1 text-muted-foreground">
+        {items.slice(0, 3).map((item) => (
+          <li key={item}>{item}</li>
         ))}
       </ul>
     </div>

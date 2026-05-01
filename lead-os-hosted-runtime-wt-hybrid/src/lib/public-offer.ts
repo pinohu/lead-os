@@ -67,18 +67,18 @@ export const publicPlans: PublicPlan[] = [
 ];
 
 export const deliveredNow = [
-  "A public website that explains the product and links to the live status page.",
-  "A setup wizard that collects email, niche, plan, brand settings, and desired integrations.",
-  "A generated tenant workspace with an embed script and dashboard URL in sandbox/runtime mode.",
-  "Public health and production-readiness APIs for verification.",
-  "Operator dashboard routes and authenticated API surfaces.",
+  "A public website that explains the outcome, audience, pricing, and launch path.",
+  "A universal intake that collects the client details needed to launch one package or any package bundle.",
+  "A generated client delivery hub with capture, operator, reporting, billing, embed, and acceptance-check surfaces.",
+  "Customer-ready package outputs that document what was created, where it lives, and what outcome it is meant to improve.",
+  "Operator views for readiness, reporting, managed handoffs, and next expansion opportunities.",
 ];
 
 export const notLiveUntilConfigured = [
-  "Durable production persistence needs DATABASE_URL or LEAD_OS_DATABASE_URL.",
-  "Distributed queues and retries need REDIS_URL.",
-  "Real Stripe checkout and subscription enforcement need STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET.",
-  "Live outbound email/SMS/WhatsApp sending needs verified provider credentials and LEAD_OS_ENABLE_LIVE_SENDS=true.",
+  "Client-owned CRM or customer-list access activates direct record sync; until then, Lead OS provides import-ready handoffs.",
+  "Client-owned billing access activates live checkout, invoices, subscriptions, claims, or commissions; until then, Lead OS provides payment-ready instructions.",
+  "Approved email, SMS, WhatsApp, calendar, phone, or ad-account access activates live external actions; until then, Lead OS creates the scripts, sequences, routing, and approval-ready assets.",
+  "Regulated claims, likeness use, financial promises, legal language, and medical content remain behind human approval checkpoints.",
 ];
 
 export const userJourney = [

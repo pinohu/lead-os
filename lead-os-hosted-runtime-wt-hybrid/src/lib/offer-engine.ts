@@ -45,6 +45,7 @@ export interface SocialProof {
   reviewCount: number;
   rating: number;
   testimonialSnippet: string;
+  verified: boolean;
 }
 
 export interface PriceTier {
@@ -577,14 +578,11 @@ export function generateOffer(niche: Niche, service: string, context: OfferConte
   const scarcityType = context.scarcityType ?? "capacity";
   const scarcityElement = generateScarcityElement(scarcityType);
 
-  const reviewCount = 100 + Math.floor(niche.length * 17);
-  const rating = 4.7 + (niche.length % 3) * 0.1;
   const socialProof: SocialProof = {
-    reviewCount,
-    rating: Math.round(rating * 10) / 10,
-    testimonialSnippet: template.language.socialProofTemplate
-      .replace("{{count}}", String(reviewCount))
-      .replace("{{rating}}", String(Math.round(rating * 10) / 10)),
+    reviewCount: 0,
+    rating: 0,
+    testimonialSnippet: `Verified proof pending for ${niche}. Add a client-approved quote, baseline, and measured outcome before publishing social proof.`,
+    verified: false,
   };
 
   return {

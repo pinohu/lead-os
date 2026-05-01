@@ -9,7 +9,6 @@ import { getNiche, nicheCatalog } from "@/lib/catalog";
 import { resolveExperienceProfile } from "@/lib/experience";
 import { tenantConfig } from "@/lib/tenant";
 import { INDUSTRY_TEMPLATES, type IndustryCategory } from "@/lib/niche-templates";
-import { NICHE_TESTIMONIALS } from "@/lib/niche-testimonials";
 import { buildOgImageUrl } from "@/lib/og-url";
 import { getCustomerIntelligenceOrDefault } from "@/lib/customer-intelligence";
 
@@ -216,32 +215,23 @@ export default async function IndustryPage({ params, searchParams }: Props) {
           </div>
         </section>
 
-        {/* ---------- Testimonials ---------- */}
-        {(() => {
-          const testimonials = NICHE_TESTIMONIALS[category] ?? NICHE_TESTIMONIALS.general ?? [];
-          if (testimonials.length === 0) return null;
-          return (
-            <section>
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What {niche.label.toLowerCase()} leaders are saying</p>
-              <div className="grid md:grid-cols-3 gap-6">
-                {testimonials.map((t) => (
-                  <article key={t.author} className="rounded-xl border border-border bg-card p-6 flex flex-col gap-3">
-                    <p className="italic text-sm leading-relaxed flex-1">
-                      &ldquo;{t.quote}&rdquo;
-                    </p>
-                    <div>
-                      <strong className="block text-sm">{t.author}</strong>
-                      <span className="text-muted-foreground text-xs">{t.role}, {t.company}</span>
-                    </div>
-                    <span className="inline-block px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-bold w-fit">
-                      {t.metric}
-                    </span>
-                  </article>
-                ))}
-              </div>
-            </section>
-          );
-        })()}
+        <section>
+          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Proof required before publishing claims</p>
+          <h2 className="text-foreground">What makes a {niche.label.toLowerCase()} result believable</h2>
+          <div className="grid gap-4 md:grid-cols-4">
+            {[
+              ["Baseline", "Document the current leak: response time, no-shows, missed calls, weak conversion, manual hours, or wasted spend."],
+              ["Launch proof", "Show the delivery hub, intake path, routing rules, scripts, reporting view, and acceptance checks created from setup."],
+              ["Measured outcome", "Track the metric this page promises after real usage or client-owned data is connected."],
+              ["Approved story", "Publish quotes, screenshots, or case notes only after the client confirms the result is accurate."],
+            ].map(([title, detail]) => (
+              <article key={title} className="rounded-lg border border-border bg-card p-5">
+                <p className="font-semibold text-foreground">{title}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{detail}</p>
+              </article>
+            ))}
+          </div>
+        </section>
 
         {/* ---------- Customer Intelligence: Buying Triggers ---------- */}
         {(() => {

@@ -10,6 +10,7 @@ import {
 } from "../src/lib/package-catalog.ts";
 import { packagePersonaBlueprints } from "../src/lib/package-persona-blueprints.ts";
 import { provisionPackage, provisionPackageBundle } from "../src/lib/package-provisioner.ts";
+import { deliveredNow, notLiveUntilConfigured } from "../src/lib/public-offer.ts";
 import {
   _resetPackageProvisioningStoreForTests,
   getProvisionedPackage,
@@ -145,9 +146,17 @@ describe("package provisioning", () => {
     assert.equal(result.automationContract.requiresAdditionalConfiguration, false);
     assert.equal(result.automationContract.deliveryMode, "complete-solution");
     assert.equal(result.solutionBrief.successMetric, outcomeContext.successMetric);
+    assert.match(result.urls.workspace, /success=/);
+    assert.match(result.valueCase.executiveSummary, /complete business outcome/);
+    assert.ok(result.valueCase.sixFigureValueDrivers.length >= 4);
+    assert.ok(result.valueCase.renewalReasons.length >= 3);
     assert.equal(result.artifacts.length, 9);
     assert.ok(result.automationRuns.length >= 5);
     assert.ok(result.acceptanceTests.every((test) => test.status === "passed"));
+    assert.equal(
+      result.acceptanceTests.some((test) => test.test === "Six-figure value case documented"),
+      true,
+    );
   });
 
   it("provisions a new AI agency product with its required consent field", () => {
@@ -226,7 +235,13 @@ describe("package provisioning", () => {
     assert.equal(bundle.packages.every((pkg) => pkg.automationContract.requiresAdditionalConfiguration === false), true);
     assert.equal(bundle.packages.every((pkg) => pkg.solutionBrief.successMetric === outcomeContext.successMetric), true);
     assert.ok(bundle.totalArtifacts >= aiAgencyPackageSlugs.length * 8);
+    assert.ok(bundle.valueCase.sixFigureValueDrivers.length >= 4);
+    assert.ok(bundle.valueCase.renewalReasons.length >= 3);
     assert.equal(bundle.acceptanceTests.every((test) => test.status === "passed"), true);
+    assert.equal(
+      bundle.acceptanceTests.some((test) => test.test === "Bundle value case documented"),
+      true,
+    );
     assert.equal(
       bundle.automationRuns.every((run) => !/\bpackage workspace|package selected|package count\b/i.test(`${run.step} ${run.detail}`)),
       true,
@@ -258,12 +273,25 @@ describe("package provisioning", () => {
       assert.equal(bundle.packages.length, new Set(packageSlugs).size);
       assert.equal(bundle.packages.every((pkg) => pkg.credentials.missingRequired.length === 0), true);
       assert.equal(bundle.packages.every((pkg) => pkg.automationContract.requiresAdditionalConfiguration === false), true);
+      assert.ok(bundle.valueCase.executiveSummary.includes("launched solution hubs"));
+      assert.ok(bundle.valueCase.renewalReasons.length >= 3);
       assert.equal(bundle.acceptanceTests.every((test) => test.status === "passed"), true);
       assert.equal(
         bundle.acceptanceTests.some((test) => test.test === "No additional configuration required for delivery"),
         true,
       );
     }
+  });
+
+  it("keeps public readiness copy outcome-facing instead of infrastructure-facing", () => {
+    const publicCopy = [...deliveredNow, ...notLiveUntilConfigured].join(" ");
+
+    assert.match(publicCopy, /outcome/i);
+    assert.match(publicCopy, /client-owned/i);
+    assert.doesNotMatch(
+      publicCopy,
+      /\b(DATABASE_URL|REDIS_URL|STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|LEAD_OS_ENABLE_LIVE_SENDS|environment variable|API key)\b/i,
+    );
   });
 
   it("fails clearly when a client tries to launch without choosing a solution", () => {

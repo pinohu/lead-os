@@ -76,6 +76,13 @@ export interface ProvisionedPackage {
     constraints: string;
     brandVoice: string;
   };
+  valueCase: {
+    executiveSummary: string;
+    sixFigureValueDrivers: string[];
+    renewalReasons: string[];
+    expansionPaths: string[];
+    delightChecks: string[];
+  };
   artifacts: ProvisionedPackageArtifact[];
   automationRuns: Array<{ step: string; status: "completed"; detail: string }>;
   acceptanceTests: Array<{ test: string; status: "passed"; evidence: string }>;
@@ -97,6 +104,13 @@ export interface ProvisionedPackageBundle {
   };
   automationRuns: Array<{ step: string; status: "completed"; detail: string }>;
   acceptanceTests: Array<{ test: string; status: "passed"; evidence: string }>;
+  valueCase: {
+    executiveSummary: string;
+    sixFigureValueDrivers: string[];
+    renewalReasons: string[];
+    expansionPaths: string[];
+    delightChecks: string[];
+  };
   launchedAt: string;
 }
 
@@ -142,6 +156,7 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
     brand: input.brandName,
     market: input.targetMarket,
     offer: input.primaryOffer,
+    success: input.credentials.successMetric || "customer-ready outcome",
   });
   const baseWorkspace = `${appUrl}/packages/${pkg.slug}/workspace/${workspaceSlug}`;
   const urls = {
@@ -189,6 +204,26 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
   }));
 
   const automationContract = getPackageAutomationContract(pkg);
+  const valueCase = {
+    executiveSummary: `${pkg.title} is positioned as a complete business outcome for ${input.brandName}: ${solutionBrief.desiredOutcome}. It replaces the stated manual process with a launched delivery hub, customer-ready outputs, acceptance checks, and managed handoffs measured by ${solutionBrief.successMetric}.`,
+    sixFigureValueDrivers: [
+      `Revenue capture: the system is tied to ${solutionBrief.successMetric}, so the buyer can connect delivered outputs to money made, revenue recovered, or pipeline protected.`,
+      `Labor leverage: the current process is "${solutionBrief.currentProcess}", and the provisioned outputs reduce repeated manual setup, routing, reporting, and follow-up work.`,
+      `Speed-to-value: the client receives launch URLs, embed code, reports, and acceptance evidence immediately after intake instead of waiting for a custom build cycle.`,
+      `Risk reduction: constraints are preserved as operating rules, so compliance, approval, account-access, and claim boundaries are visible instead of hidden in delivery notes.`,
+    ],
+    renewalReasons: [
+      "Monthly optimization can improve scripts, routing, reporting, content, lead quality, or workflow performance after real usage data arrives.",
+      "Optional client-owned account access can upgrade managed handoffs into live CRM, billing, calendar, phone, SMS, social, or webhook integrations.",
+      "The operator can add adjacent packages from the same intake model without rebuilding the client relationship from scratch.",
+    ],
+    expansionPaths: automationContract.nicheExamples.map((niche) => `Adapt the same ${pkg.title.toLowerCase()} motion for ${niche}.`),
+    delightChecks: [
+      "The buyer can explain who this is for, what was built, where it lives, and how success is measured.",
+      "The client receives visible proof of delivery, not a vague promise that work happened in the background.",
+      "Every output has an acceptance path and a next-step surface, so the experience feels finished instead of abandoned after payment.",
+    ],
+  };
   const packageWorkflowRuns = (pkg.autonomousWorkflow?.length ? pkg.autonomousWorkflow : [
     "Intake Agent validates the customer setup form.",
     "Delivery Hub Agent creates the customer-ready solution surfaces.",
@@ -242,6 +277,7 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
       missingOptional,
     },
     solutionBrief,
+    valueCase,
     automationContract: {
       modular: automationContract.modular,
       fullyAutomated: automationContract.fullyAutomated,
@@ -254,6 +290,7 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
       { step: "Solution selected", status: "completed", detail: pkg.title },
       { step: "Outcome intake validated", status: "completed", detail: `${accepted.length} intake answers accepted.` },
       { step: "Complete solution brief created", status: "completed", detail: `${solutionBrief.successMetric} for ${solutionBrief.intendedBeneficiary}.` },
+      { step: "Value case created", status: "completed", detail: valueCase.executiveSummary },
       { step: "Managed handoffs applied", status: "completed", detail: `${managedDefaults.length} optional external handoffs covered by managed defaults.` },
       ...packageWorkflowRuns,
       { step: "Delivery hub created", status: "completed", detail: urls.workspace },
@@ -268,6 +305,7 @@ export function provisionPackage(input: PackageProvisioningInput): ProvisionedPa
       { test: "Every solution deliverable has a launched output URL", status: "passed", evidence: `${artifacts.length} outputs launched.` },
       { test: "Required intake fields completed", status: "passed", evidence: `${missingRequired.length} missing required intake fields.` },
       { test: "Complete solution brief exists", status: "passed", evidence: `${solutionBrief.desiredOutcome} measured by ${solutionBrief.successMetric}.` },
+      { test: "Six-figure value case documented", status: "passed", evidence: `${valueCase.sixFigureValueDrivers.length} value drivers and ${valueCase.renewalReasons.length} renewal reasons generated.` },
       { test: "No additional configuration required for delivery", status: "passed", evidence: `${managedDefaults.length} optional external handoffs covered by managed defaults.` },
       { test: "Modular solution contract", status: "passed", evidence: "Can be launched alone or inside a multi-solution bundle." },
       { test: "Multi-niche applicability", status: "passed", evidence: automationContract.nicheExamples.join(", ") },
@@ -312,6 +350,7 @@ export function provisionPackageBundle(input: PackageBundleProvisioningInput): P
       { step: "Shared onboarding applied", status: "completed", detail: "One setup form supplied business context for every solution." },
       { step: "All solution hubs launched", status: "completed", detail: `${packages.length} solution hubs created.` },
       { step: "All customer-ready outputs created", status: "completed", detail: `${packages.reduce((total, pkg) => total + pkg.artifacts.length, 0)} outputs launched.` },
+      { step: "Bundle value case created", status: "completed", detail: `${packages.length} selected solutions mapped to a combined renewal and expansion story.` },
     ],
     acceptanceTests: [
       { test: "One-or-many modular provisioning", status: "passed", evidence: `${uniqueSlugs.length} solutions launched from one form.` },
@@ -319,7 +358,15 @@ export function provisionPackageBundle(input: PackageBundleProvisioningInput): P
       { test: "No solution has missing required setup", status: "passed", evidence: String(packages.every((pkg) => pkg.credentials.missingRequired.length === 0)) },
       { test: "Every solution is multi-niche", status: "passed", evidence: String(packages.every((pkg) => pkg.automationContract.nicheExamples.length >= 3)) },
       { test: "No additional configuration required for delivery", status: "passed", evidence: "Optional connectors use managed handoffs until client-owned account access is added." },
+      { test: "Bundle value case documented", status: "passed", evidence: "Combined value drivers, renewal reasons, and expansion paths generated from the selected solutions." },
     ],
+    valueCase: {
+      executiveSummary: `${input.brandName} received ${packages.length} launched solution hubs and ${packages.reduce((total, pkg) => total + pkg.artifacts.length, 0)} customer-ready outputs from one intake. The bundle is designed to make the purchase feel like a complete operating system, not a pile of separate services.`,
+      sixFigureValueDrivers: Array.from(new Set(packages.flatMap((pkg) => pkg.valueCase.sixFigureValueDrivers))).slice(0, 8),
+      renewalReasons: Array.from(new Set(packages.flatMap((pkg) => pkg.valueCase.renewalReasons))).slice(0, 8),
+      expansionPaths: Array.from(new Set(packages.flatMap((pkg) => pkg.valueCase.expansionPaths))).slice(0, 10),
+      delightChecks: Array.from(new Set(packages.flatMap((pkg) => pkg.valueCase.delightChecks))).slice(0, 8),
+    },
     launchedAt: new Date().toISOString(),
   };
 }

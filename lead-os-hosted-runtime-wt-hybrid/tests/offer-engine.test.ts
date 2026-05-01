@@ -33,9 +33,10 @@ test("generateOffer returns a complete offer with all required fields", () => {
   assert.ok(offer.bonuses.length >= 3);
   assert.ok(offer.urgencyTrigger.type === "countdown");
   assert.ok(offer.scarcityElement.type === "capacity");
-  assert.ok(offer.socialProof.reviewCount > 0);
-  assert.ok(offer.socialProof.rating >= 4.0 && offer.socialProof.rating <= 5.0);
-  assert.ok(offer.socialProof.testimonialSnippet.length > 0);
+  assert.equal(offer.socialProof.reviewCount, 0);
+  assert.equal(offer.socialProof.rating, 0);
+  assert.equal(offer.socialProof.verified, false);
+  assert.match(offer.socialProof.testimonialSnippet, /Verified proof pending/);
 });
 
 test("generateOffer respects brandName context", () => {

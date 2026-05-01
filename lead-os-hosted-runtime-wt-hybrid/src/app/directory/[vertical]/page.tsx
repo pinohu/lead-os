@@ -9,7 +9,6 @@ import { resolveExperienceProfile } from "@/lib/experience";
 import { tenantConfig } from "@/lib/tenant";
 import { INDUSTRY_TEMPLATES, type IndustryCategory } from "@/lib/niche-templates";
 import { buildOgImageUrl } from "@/lib/og-url";
-import { NICHE_TESTIMONIALS } from "@/lib/niche-testimonials";
 import { CALCULATOR_PRESETS } from "@/lib/calculator-presets";
 import { getCustomerIntelligenceOrDefault } from "@/lib/customer-intelligence";
 
@@ -64,7 +63,6 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
 
   const category = resolveTemplateCategory(niche.slug);
   const template = INDUSTRY_TEMPLATES[category];
-  const testimonials = NICHE_TESTIMONIALS[category] ?? [];
   const calcPreset = CALCULATOR_PRESETS[niche.slug] ?? CALCULATOR_PRESETS.general;
 
   const headerStore = await headers();
@@ -140,28 +138,23 @@ export default async function VerticalDirectoryPage({ params, searchParams }: Pr
         </section>
       )}
 
-      {/* ── Testimonials ── */}
-      {testimonials.length > 0 && (
-        <section>
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">What {niche.label.toLowerCase()} leaders say</p>
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <article key={t.author} className="rounded-xl border border-border bg-card p-6 flex flex-col gap-3">
-                <p className="italic text-sm leading-relaxed flex-1">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-                <div>
-                  <strong className="text-sm">{t.author}</strong>
-                  <span className="text-muted-foreground block text-xs">{t.role}, {t.company}</span>
-                </div>
-                <span className="inline-block px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-bold w-fit">
-                  {t.metric}
-                </span>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
+      <section>
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Proof package to attach</p>
+        <h2 className="text-foreground">Evidence needed for a trustworthy {niche.label.toLowerCase()} launch</h2>
+        <div className="grid gap-4 md:grid-cols-4">
+          {[
+            ["Baseline", "Current response time, manual hours, conversion rate, missed demand, or cost before launch."],
+            ["Created outputs", "The launched hub, capture path, routing logic, reports, scripts, and acceptance checks."],
+            ["Measured change", "The result tracked after real traffic or client-owned account data is connected."],
+            ["Approved proof", "A verified quote, case note, screenshot, or client approval before publishing any testimonial."],
+          ].map(([title, detail]) => (
+            <article key={title} className="rounded-lg border border-border bg-card p-5">
+              <p className="font-semibold text-foreground">{title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       {/* ── Calculator Preview ── */}
       {calcPreset && (
