@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const offer = getMicroscopicOfferLanding(slug);
   if (!offer) return {};
   return {
-    title: `${offer.title} | Persona Landing`,
+    title: `${offer.title} | Standalone Offer`,
     description: offer.message,
   };
 }
@@ -37,7 +37,7 @@ export default async function SolutionLandingPage({ params }: Props) {
           <Link href="/solutions">All solution landing pages</Link>
         </Button>
         <Button asChild variant="outline" size="sm">
-          <Link href={offer.sourcePath}>Source page</Link>
+          <Link href={offer.sourcePath}>Launch surface</Link>
         </Button>
       </div>
 
@@ -45,6 +45,11 @@ export default async function SolutionLandingPage({ params }: Props) {
         <Badge variant="secondary" className="mb-4">{offer.category}</Badge>
         <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">{offer.title}</h1>
         <p className="mt-4 max-w-3xl text-lg leading-relaxed text-muted-foreground">{offer.message}</p>
+        <p className="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">
+          This page treats {offer.title} as its own named offer with its own audience, promise, outcome,
+          delivery shape, and price. A client who lands here should understand this offer without needing the rest
+          of the catalog.
+        </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button asChild>
             <Link href={offer.primaryCtaHref}>
@@ -75,6 +80,34 @@ export default async function SolutionLandingPage({ params }: Props) {
             <CardTitle>Resident or end user</CardTitle>
             <CardDescription>{offer.endUser}</CardDescription>
           </CardHeader>
+        </Card>
+      </section>
+
+      <section className="mb-8">
+        <Card className="border-primary/25">
+          <CardHeader>
+            <Badge variant="outline" className="mb-2 w-fit">Standalone pricing</Badge>
+            <CardTitle className="text-3xl">{offer.pricing.headline}</CardTitle>
+            <CardDescription>{offer.pricing.bestFor}</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 md:grid-cols-2">
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Setup</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{offer.pricing.setup}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Recurring</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{offer.pricing.recurring}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Performance upside</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{offer.pricing.performance}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Pricing rationale</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{offer.pricing.rationale}</p>
+            </div>
+          </CardContent>
         </Card>
       </section>
 

@@ -38,6 +38,12 @@ describe("microscopic offer landing pages", () => {
       assert.ok(offer.expectedOutcome.length > 40, `${offer.slug} needs an expected result`);
       assert.ok(offer.deliveryShape.length >= 3, `${offer.slug} needs delivered shape and form`);
       assert.ok(offer.proof.length >= 3, `${offer.slug} needs proof of source or readiness`);
+      assert.ok(offer.pricing.headline.length > 3, `${offer.slug} needs a standalone headline price`);
+      assert.ok(offer.pricing.setup.length > 3, `${offer.slug} needs setup pricing`);
+      assert.ok(offer.pricing.recurring.length > 3, `${offer.slug} needs recurring pricing or a no-retainer statement`);
+      assert.ok(offer.pricing.performance.length > 3, `${offer.slug} needs performance pricing guidance`);
+      assert.ok(offer.pricing.bestFor.length > 20, `${offer.slug} needs pricing persona fit`);
+      assert.ok(offer.pricing.rationale.length > 40, `${offer.slug} needs pricing rationale`);
       assert.ok(offer.primaryCtaHref.startsWith("/"), `${offer.slug} primary CTA should be internal`);
       assert.ok(offer.secondaryCtaHref.startsWith("/"), `${offer.slug} secondary CTA should be internal`);
     }

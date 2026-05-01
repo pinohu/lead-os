@@ -7,8 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { microscopicOfferLandings, type MicroscopicOfferCategory } from "@/lib/microscopic-offer-landings";
 
 export const metadata: Metadata = {
-  title: "Every Solution Landing Page | Lead OS",
-  description: "Every standalone offer, module, funnel, vertical wrapper, GTM play, and plan has a persona-specific landing page.",
+  title: "Standalone Offer Websites | Lead OS",
+  description:
+    "Every standalone offer, module, funnel, vertical wrapper, GTM play, and plan has its own persona-specific landing page and price.",
 };
 
 const categoryOrder: MicroscopicOfferCategory[] = [
@@ -26,11 +27,12 @@ export default function SolutionsPage() {
       <section className="mb-10">
         <Badge variant="secondary" className="mb-4">Canonical landing pages</Badge>
         <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
-          Every offer has its own persona-specific landing page.
+          Every offer has its own standalone landing page and price.
         </h1>
         <p className="mt-4 max-w-3xl text-lg leading-relaxed text-muted-foreground">
           This is the complete landing-page inventory for every microscopic sellable unit in the codebase:
           package products, live modules, vertical wrappers, funnel blueprints, GTM plays, and commercial plans.
+          Each page is written as if that offer has its own website under its own name.
         </p>
       </section>
 
@@ -67,6 +69,10 @@ export default function SolutionsPage() {
                   <CardContent className="mt-auto">
                     <p className="mb-4 text-sm text-muted-foreground">
                       <span className="font-semibold text-foreground">For:</span> {offer.persona}
+                    </p>
+                    <p className="mb-4 rounded-md border border-primary/20 bg-primary/5 p-3 text-sm">
+                      <span className="font-semibold text-foreground">Standalone price:</span>{" "}
+                      <span className="text-muted-foreground">{offer.pricing.headline}</span>
                     </p>
                     <Button asChild size="sm">
                       <Link href={`/solutions/${offer.slug}`}>

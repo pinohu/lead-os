@@ -118,9 +118,36 @@ Every microscopic offer landing page uses the same clarity contract:
 - expected outcome
 - delivered shape and form
 - proof of source or readiness
+- standalone headline price
+- setup price
+- recurring price
+- performance upside guidance
+- pricing rationale
 - internal CTA to the source or launch surface
 
-The `tests/microscopic-offer-landings.test.ts` test verifies that all 74 current microscopic offers have this contract.
+The `tests/microscopic-offer-landings.test.ts` test verifies that all 74 current microscopic offers have this contract, including standalone pricing.
+
+## Standalone Pricing Method
+
+Each `/solutions/[slug]` page now treats the offer as if it had its own standalone website and brand. The page does not ask the buyer to price a tool stack. It prices the completed outcome, including setup, delivery, monitoring, and optional performance upside.
+
+The price bands were set from current 2026 market anchors:
+
+- AI receptionist and voice-agent offers are priced against managed receptionist alternatives, AI receptionist monthly plans, and voice usage costs.
+- Local SEO, med spa growth, paid media, and PPC-adjacent offers are priced against agency retainers rather than tool subscriptions.
+- Content repurposing, social media, and distribution offers are priced against monthly management retainers, then adjusted downward when the buyer supplies source content.
+- Lead reactivation, lead generation, and speed-to-lead offers include performance upside because booked appointments and qualified leads are measurable.
+- Landing page, funnel, lead magnet, and deliverable-module offers are priced against one-off agency/freelancer builds with optional monthly optimization.
+- AI audit, chief-of-staff, business OS, and operating-system offers are priced as consulting or implementation engagements because they change internal operations.
+
+Every offer exposes:
+
+- headline standalone price
+- setup price or setup range
+- recurring price or no-retainer statement
+- performance upside guidance
+- best-fit buyer
+- pricing rationale
 
 ## Live Deliverable Modules
 
