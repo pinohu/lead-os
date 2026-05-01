@@ -9,6 +9,7 @@ import { embeddedSecrets } from "@/lib/embedded-secrets";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
+import { PageAudienceBanner } from "@/components/PageAudienceBanner";
 import { Separator } from "@/components/ui/separator";
 
 const inter = Inter({
@@ -53,6 +54,7 @@ const footerPlatform = [
 ];
 
 const footerResources = [
+  { label: "Audience map", href: "/audience-map" },
   { label: "Help Center", href: "/help" },
   { label: "Changelog", href: "/changelog" },
   { label: "Roadmap", href: "/roadmap" },
@@ -153,6 +155,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
         {/* ── Header ──────────────────────────────────────── */}
         {isOperatorPortal ? null : <SiteHeader brandName={brandName} />}
+        {isOperatorPortal ? null : <PageAudienceBanner pathname={pathname} />}
 
         {partneroProgramId ? (
           <Script

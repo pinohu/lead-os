@@ -35,6 +35,7 @@ const industriesNav = Object.values(nicheCatalog)
   }));
 
 const resources = [
+  { title: "Audience Map", href: "/audience-map", description: "Who each page is for" },
   { title: "Help Center", href: "/help", description: "Guides, FAQs, and support" },
   { title: "Changelog", href: "/changelog", description: "Latest platform updates" },
   { title: "Roadmap", href: "/roadmap", description: "Upcoming features and plans" },
@@ -48,6 +49,7 @@ const mobileLinks = [
   { label: "Pricing", href: "/pricing" },
   { label: "Directory", href: "/directory" },
   { label: "Marketplace", href: "/marketplace" },
+  { label: "Audience Map", href: "/audience-map" },
   { label: "Docs", href: "/docs" },
   { label: "Help Center", href: "/help" },
   { label: "Changelog", href: "/changelog" },
