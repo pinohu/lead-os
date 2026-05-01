@@ -398,6 +398,15 @@ function buildFieldOrder(mode: ExperienceMode) {
   return ["firstName", "email", "company", "phone"] as const;
 }
 
+function buildAnxietyReducer(intel: ReturnType<typeof getCustomerIntelligenceOrDefault>) {
+  const firstDealbreaker = intel.trustSignals.dealbreakers[0];
+  const trustRisk = firstDealbreaker
+    ? `Launch checks cover the trust risks buyers reject, starting with: ${firstDealbreaker}.`
+    : "Launch checks cover the trust risks buyers reject.";
+
+  return `${trustRisk} You can pause anytime or speak to a real person instead.`;
+}
+
 export function resolveExperienceProfile(input: ExperienceInput): ExperienceProfile {
   const mode = buildModeByContext(input);
   const family = buildDefaultFamily(input);
@@ -408,7 +417,7 @@ export function resolveExperienceProfile(input: ExperienceInput): ExperienceProf
   const psychology = intel.conversionPsychology;
   const returnOffer = input.returning
     ? "You are not starting over. We will resume with a lighter second-touch ask and skip repeated context."
-    : "If you come back, LeadOS shifts from first-touch clarity into milestone-two trust building automatically.";
+    : "If you come back, the journey resumes with milestone-two trust building instead of repeating the first touch.";
 
   const motivationCopy =
     psychology.primaryMotivation === "fear-of-loss" ? "Stop losing opportunities to competitors who move faster." :
@@ -446,7 +455,7 @@ export function resolveExperienceProfile(input: ExperienceInput): ExperienceProf
       input.returning
         ? "Welcome back. We remember where you left off."
         : `This takes less than 2 minutes. ${psychology.guaranteePreference === "money-back" ? "Money-back guarantee included." : psychology.guaranteePreference === "trial-period" ? "Free trial, no commitment." : "No commitment required."}`,
-    anxietyReducer: `${intel.trustSignals.dealbreakers.length > 0 ? `No ${intel.trustSignals.dealbreakers[0]?.toLowerCase()}.` : "No commitment required."} You can pause anytime or speak to a real person instead.`,
+    anxietyReducer: buildAnxietyReducer(intel),
     proofSignals: buildProofSignals(input.niche, family, mode),
     objectionBlocks: buildObjections(input.niche, mode),
     discoveryPrompt:

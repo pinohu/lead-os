@@ -24,6 +24,8 @@ type ExperienceScaffoldProps = {
   secondaryActionHref?: string;
   secondaryActionLabel?: string;
   niche?: string;
+  journeyTitle?: string;
+  journeySummary?: string;
 };
 
 export function ExperienceScaffold({
@@ -38,6 +40,8 @@ export function ExperienceScaffold({
   secondaryActionHref,
   secondaryActionLabel,
   niche,
+  journeyTitle,
+  journeySummary,
 }: ExperienceScaffoldProps) {
   return (
     <div data-niche={niche ?? undefined}>
@@ -79,8 +83,8 @@ export function ExperienceScaffold({
               <Badge variant="outline">{profile.device}</Badge>
               <Badge variant="outline">{profile.family}</Badge>
             </div>
-            <h2 className="text-xl font-bold text-foreground mb-1">{profile.heroTitle}</h2>
-            <p className="text-sm text-muted-foreground mb-4">{profile.heroSummary}</p>
+            <h2 className="text-xl font-bold text-foreground mb-1">{journeyTitle ?? profile.heroTitle}</h2>
+            <p className="text-sm text-muted-foreground mb-4">{journeySummary ?? profile.heroSummary}</p>
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2">
               {profile.progressLabel}
             </p>

@@ -10,6 +10,15 @@ export interface IndustryJourneyStep {
   systemResponse: string;
 }
 
+export interface IndustryAudienceModel {
+  model: "B2B" | "B2B2C";
+  buyer: string;
+  internalUsers: string;
+  downstreamAudience: string;
+  buyerMessage: string;
+  notFor: string;
+}
+
 export interface IndustryPositioning {
   slug: string;
   eyebrow: string;
@@ -35,7 +44,7 @@ const sharedJourneyFallback: IndustryJourneyStep[] = [
   {
     label: "Qualify",
     customerReality: "The business needs to know what matters now and what can wait.",
-    systemResponse: "Lead OS scores urgency, fit, value, and next-best action before work reaches the team.",
+    systemResponse: "The workflow scores urgency, fit, value, and next-best action before work reaches the team.",
   },
   {
     label: "Route",
@@ -49,13 +58,144 @@ const sharedJourneyFallback: IndustryJourneyStep[] = [
   },
 ];
 
+export const industryAudienceModels: Record<string, IndustryAudienceModel> = {
+  general: {
+    model: "B2B",
+    buyer: "Owner-operators, general managers, and small service-business leaders.",
+    internalUsers: "The owner, admin lead, sales person, dispatcher, or customer-support person who currently remembers the next step manually.",
+    downstreamAudience: "Prospects and customers who need a faster reply, clearer handoff, or completed request.",
+    buyerMessage: "This is for the operator who wants every customer request captured, owned, followed up, and reported without becoming the backup system.",
+    notFor: "Not a consumer app, CRM replacement pitch, or DIY toolkit for customers to configure themselves.",
+  },
+  legal: {
+    model: "B2B2C",
+    buyer: "Managing partners, intake directors, practice owners, and legal operations leaders.",
+    internalUsers: "Attorneys, intake specialists, paralegals, reception, and marketing staff who need cleaner consult qualification.",
+    downstreamAudience: "Prospective clients who are scared, time-sensitive, and comparing firms while they wait for the next step.",
+    buyerMessage: "You get a safer, faster legal intake outcome: structured matter facts, urgency flags, routing, reminders, and signed-matter visibility.",
+    notFor: "Not legal advice, not a substitute for attorney review, and not a generic chatbot that invents case guidance.",
+  },
+  "home-services": {
+    model: "B2B2C",
+    buyer: "Owners, dispatch managers, and growth leads at HVAC, plumbing, roofing, electrical, cleaning, pest, and landscaping companies.",
+    internalUsers: "Dispatch, front desk, estimators, field managers, and owners who need urgent jobs routed correctly.",
+    downstreamAudience: "Homeowners and property managers who need a repair, estimate, appointment, or callback now.",
+    buyerMessage: "You recover revenue from missed calls, late replies, stale estimates, and inconsistent review follow-up.",
+    notFor: "Not field-service software, technician scheduling ERP, or a marketplace that takes over the customer relationship.",
+  },
+  coaching: {
+    model: "B2B",
+    buyer: "Coaches, consultants, creators, expert-led firms, and program operators selling high-trust transformations.",
+    internalUsers: "The founder, sales closer, content operator, community manager, or assistant who screens and prepares prospects.",
+    downstreamAudience: "Prospects deciding whether the transformation, price, timing, and fit are serious enough for a call.",
+    buyerMessage: "You get a qualified-call system that educates, filters, nurtures, and prepares buyers before they reach the calendar.",
+    notFor: "Not a generic booking page, course platform, or social posting tool.",
+  },
+  construction: {
+    model: "B2B2C",
+    buyer: "General contractors, remodelers, specialty trades, construction owners, and operations managers.",
+    internalUsers: "Estimators, project managers, admins, foremen, and owners who chase scope, bids, and client updates.",
+    downstreamAudience: "Property owners, developers, homeowners, and commercial clients waiting on estimates or project communication.",
+    buyerMessage: "You get bid discipline, estimate recovery, and client communication control from first scope request through project follow-up.",
+    notFor: "Not full project-management software, accounting software, or takeoff software.",
+  },
+  "real-estate": {
+    model: "B2B2C",
+    buyer: "Agents, team leads, brokers, investor teams, and real-estate operators buying portal leads or building a database.",
+    internalUsers: "Agents, ISAs, transaction coordinators, admins, and team leaders who need lead speed and nurture visibility.",
+    downstreamAudience: "Buyers, sellers, renters, investors, and valuation leads who expect a timely, relevant response.",
+    buyerMessage: "You get speed-to-lead, motivation-based nurture, and database reactivation so paid leads become actual conversations.",
+    notFor: "Not an MLS, brokerage CRM replacement, or lead reseller.",
+  },
+  tech: {
+    model: "B2B",
+    buyer: "SaaS founders, product-led growth teams, lifecycle marketers, RevOps, and customer-success leaders.",
+    internalUsers: "Growth, sales, support, product, and success teams watching activation, expansion, and churn signals.",
+    downstreamAudience: "Trial users, product-qualified accounts, admins, and champions who need the next useful action.",
+    buyerMessage: "You get activation and retention workflows that detect stuck users before the trial or account goes cold.",
+    notFor: "Not analytics-only BI, a generic onboarding checklist, or a replacement for the product itself.",
+  },
+  education: {
+    model: "B2B2C",
+    buyer: "School operators, enrollment teams, training companies, bootcamps, and education program leaders.",
+    internalUsers: "Admissions, student success, program coordinators, counselors, and marketing teams.",
+    downstreamAudience: "Students, parents, adult learners, and applicants comparing cost, trust, timing, and outcomes.",
+    buyerMessage: "You get enrollment follow-up and student progression workflows that keep interested learners from drifting.",
+    notFor: "Not an LMS, SIS, or admissions staff replacement.",
+  },
+  finance: {
+    model: "B2B2C",
+    buyer: "Accounting firms, financial advisors, tax practices, bookkeeping firms, and finance operations leaders.",
+    internalUsers: "Partners, advisors, preparers, bookkeepers, admins, and client-success staff handling sensitive requests.",
+    downstreamAudience: "Clients and prospects sharing financial facts, deadlines, entity details, and documents.",
+    buyerMessage: "You get controlled onboarding, document completion, advisory routing, and deadline-aware follow-up.",
+    notFor: "Not financial advice, tax advice, portfolio management, or a secure document vault by itself.",
+  },
+  franchise: {
+    model: "B2B2C",
+    buyer: "Franchisors, franchise development leaders, COOs, field operations, and multi-location brand teams.",
+    internalUsers: "Corporate marketing, local franchisees, territory owners, field coaches, and support teams.",
+    downstreamAudience: "Local prospects, applicants, customers, and franchisees receiving brand-approved follow-up.",
+    buyerMessage: "You get territory-safe routing, local follow-up consistency, and performance visibility across locations.",
+    notFor: "Not franchise sales legal counsel, franchise management ERP, or a replacement for local operators.",
+  },
+  staffing: {
+    model: "B2B2C",
+    buyer: "Staffing agency owners, recruiting directors, talent leaders, and high-volume hiring teams.",
+    internalUsers: "Recruiters, sourcers, account managers, coordinators, and client-success staff.",
+    downstreamAudience: "Candidates, placed workers, and hiring clients who need fast matching, updates, and next steps.",
+    buyerMessage: "You get faster screening, talent-pool reactivation, client pipeline clarity, and recruiter time saved.",
+    notFor: "Not an ATS replacement, payroll platform, or employment-law advisor.",
+  },
+  faith: {
+    model: "B2B2C",
+    buyer: "Senior pastors, executive pastors, church administrators, ministry directors, and faith-based nonprofit operators.",
+    internalUsers: "Staff, volunteers, ministry leaders, care teams, and administrators responsible for follow-up.",
+    downstreamAudience: "Guests, members, volunteers, donors, parents, and people submitting care or prayer requests.",
+    buyerMessage: "You get warm follow-up and care visibility so ministry moments do not depend on memory or scattered spreadsheets.",
+    notFor: "Not a church management system replacement, donation processor, or secular growth hack.",
+  },
+  creative: {
+    model: "B2B",
+    buyer: "Agency owners, creative directors, studio principals, designers, video teams, photographers, and brand consultants.",
+    internalUsers: "New-business leads, account managers, producers, project managers, and creative operators.",
+    downstreamAudience: "Prospective clients and active clients who need clearer scope, approvals, and proposal-ready next steps.",
+    buyerMessage: "You get qualified creative inquiry flow, brief discipline, approval control, and portfolio-to-lead conversion.",
+    notFor: "Not a design tool, portfolio builder, or replacement for creative judgment.",
+  },
+  health: {
+    model: "B2B2C",
+    buyer: "Practice owners, office managers, med spa operators, dental leaders, wellness clinics, and veterinary practices.",
+    internalUsers: "Front desk, scheduling, patient coordinators, providers, and practice managers.",
+    downstreamAudience: "Patients, clients, caregivers, and prospective visitors who need scheduling, reminders, or reactivation.",
+    buyerMessage: "You get booked appointments, reminder discipline, patient reactivation, and front-desk workload relief.",
+    notFor: "Not medical advice, diagnosis, EHR replacement, or a substitute for clinical review.",
+  },
+  ecommerce: {
+    model: "B2B2C",
+    buyer: "Ecommerce founders, growth teams, paid media leads, retention marketers, and product operators.",
+    internalUsers: "Growth, creative, lifecycle, support, merchandising, and analytics teams.",
+    downstreamAudience: "Shoppers, buyers, subscribers, and returning customers moving through the store lifecycle.",
+    buyerMessage: "You get cart recovery, repeat-purchase flow, customer-language mining, and creative-testing inputs tied to revenue.",
+    notFor: "Not a storefront platform, ad account manager, or inventory system.",
+  },
+  fitness: {
+    model: "B2B2C",
+    buyer: "Gym owners, studio operators, personal-training businesses, wellness coaches, and membership teams.",
+    internalUsers: "Sales staff, front desk, trainers, coaches, member-success teams, and owners.",
+    downstreamAudience: "Prospects, trial members, active members, and at-risk members whose motivation changes quickly.",
+    buyerMessage: "You get trial conversion, member onboarding, attendance nudges, and retention warnings before cancellation.",
+    notFor: "Not gym management software, payment processing, or a replacement for coaching.",
+  },
+};
+
 export const industryPositioning: Record<string, IndustryPositioning> = {
   general: {
     slug: "general",
     eyebrow: "For overloaded operators",
     audience: "Owners and managers of service businesses that have demand, admin, and follow-up spread across email, forms, spreadsheets, phones, and memory.",
     title: "Turn a scattered service business into a managed operating system.",
-    summary: "Lead OS installs the intake, routing, follow-up, reporting, and delivery checks that stop work from disappearing between people and tools.",
+    summary: "The installed system creates the intake, routing, follow-up, reporting, and delivery checks that stop work from disappearing between people and tools.",
     marketTruth: "The real problem is not that the business lacks software. It is that no one owns the handoff from first request to finished outcome.",
     primaryPain: "Every team member has a different version of the truth, so leads go stale, customers wait, and owners become the backup system.",
     promisedResult: "A single customer journey where every request is captured, scored, routed, followed up, and reported without the owner chasing it.",
@@ -84,7 +224,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For firms losing consults after the first call",
     audience: "Managing partners, intake directors, and practice owners who need faster consult qualification without weakening confidentiality, conflict, or case-fit discipline.",
     title: "Convert urgent legal inquiries before they call the next firm.",
-    summary: "Lead OS gives law firms a disciplined intake and follow-up system that captures matter details, flags urgency, routes qualified consults, and keeps every prospect from falling into a paralegal inbox.",
+    summary: "The installed system gives law firms a disciplined intake and follow-up system that captures matter details, flags urgency, routes qualified consults, and keeps every prospect from falling into a paralegal inbox.",
     marketTruth: "A legal lead is not just a lead. It is a deadline, a conflict risk, a jurisdiction question, and often a scared person comparing firms in real time.",
     primaryPain: "Prospective clients go cold because the firm responds slowly, asks the same questions twice, or fails to explain the next step clearly.",
     promisedResult: "New matters are captured with the right facts, qualified by practice area and urgency, routed to the right person, and followed up until the consult is booked or disqualified.",
@@ -118,7 +258,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For contractors who lose jobs by responding late",
     audience: "Plumbers, HVAC companies, roofers, electricians, cleaners, landscapers, and local service operators that depend on calls, quotes, reviews, and repeat work.",
     title: "Catch the job while the homeowner still needs it fixed.",
-    summary: "Lead OS installs a fast-response booking and quote engine for trades businesses so urgent calls, missed calls, web forms, and old estimates become booked jobs instead of competitor revenue.",
+    summary: "The installed system creates a fast-response booking and quote engine for trades businesses so urgent calls, missed calls, web forms, and old estimates become booked jobs instead of competitor revenue.",
     marketTruth: "In home services, the winner is often the company that responds first with a clear next step, not the company with the prettiest website.",
     primaryPain: "The owner pays for ads, SEO, and referrals, then loses jobs because the phone is busy, the quote is slow, or no one follows up.",
     promisedResult: "Every lead is captured, qualified by job type and urgency, routed to the right crew or salesperson, and followed up until booked, won, or closed.",
@@ -152,7 +292,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For experts selling trust before they sell time",
     audience: "Coaches, consultants, course creators, and expert-led firms that need better-fit calls, stronger authority, and fewer unqualified prospects on the calendar.",
     title: "Fill the calendar with prospects who already understand the transformation.",
-    summary: "Lead OS turns your expertise, content, and offer into a qualification system that educates prospects, filters poor-fit leads, and books serious buyers into the right call.",
+    summary: "The installed system turns your expertise, content, and offer into a qualification system that educates prospects, filters poor-fit leads, and books serious buyers into the right call.",
     marketTruth: "A high-ticket buyer rarely books because they saw one CTA. They book when the problem feels named, the path feels credible, and the next step feels personal.",
     primaryPain: "Discovery calls get filled with curious people, not committed buyers, because the funnel never explains fit, stakes, or expected transformation.",
     promisedResult: "Prospects are educated, scored, segmented, and routed to the right next step before they reach the calendar.",
@@ -186,7 +326,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For contractors whose profit leaks between bid and jobsite",
     audience: "General contractors, remodelers, specialty trades, and construction operators that manage bids, crews, change orders, client updates, and project follow-up across too many disconnected systems.",
     title: "Protect margin from the first bid request to the final follow-up.",
-    summary: "Lead OS gives construction teams a bid and project communication layer that captures qualified opportunities, follows up on estimates, and keeps owners from managing work out of inboxes.",
+    summary: "The installed system gives construction teams a bid and project communication layer that captures qualified opportunities, follows up on estimates, and keeps owners from managing work out of inboxes.",
     marketTruth: "Construction does not lose money only on bad bids. It loses money in slow follow-up, unclear scope, missed change signals, and client communication gaps.",
     primaryPain: "The team is busy doing the work, so bid requests, estimate follow-ups, and customer updates become inconsistent.",
     promisedResult: "Bid requests are qualified, estimates are followed up, project updates are structured, and operators can see which opportunities need attention.",
@@ -215,7 +355,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For agents and teams racing the portal lead clock",
     audience: "Solo agents, team leads, brokers, and real estate operators who need to respond quickly, nurture long-cycle buyers and sellers, and keep database opportunities alive.",
     title: "Respond before the lead forgets which property made them click.",
-    summary: "Lead OS creates a real estate lead response and nurture system that turns portal leads, listing inquiries, valuation requests, and old database contacts into real conversations.",
+    summary: "The installed system creates a real estate lead response and nurture system that turns portal leads, listing inquiries, valuation requests, and old database contacts into real conversations.",
     marketTruth: "Real estate leads are perishable. The longer the response delay, the more the lead becomes someone else's client or no one's client.",
     primaryPain: "Agents pay for leads, then manually chase people who are months from action, already talking to competitors, or never properly segmented.",
     promisedResult: "New and existing contacts are qualified by timeline, motivation, property interest, and next step, then routed into the right follow-up path.",
@@ -244,7 +384,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For SaaS teams with users stuck before activation",
     audience: "SaaS founders, growth leads, product marketers, and customer success teams that need more trial users to reach activation and more accounts to stay engaged.",
     title: "Turn signups into activated users before the trial clock runs out.",
-    summary: "Lead OS installs onboarding, lifecycle, and expansion workflows that detect stalled users, route qualified accounts, and create the right next action before churn becomes obvious.",
+    summary: "The installed system creates onboarding, lifecycle, and expansion workflows that detect stalled users, route qualified accounts, and create the right next action before churn becomes obvious.",
     marketTruth: "SaaS growth breaks when the team celebrates signups while users quietly fail to reach the moment where the product becomes useful.",
     primaryPain: "Trial users drop off because activation signals, education, sales handoff, and lifecycle messaging are not connected.",
     promisedResult: "Every user segment gets the right onboarding path, risk signal, sales handoff, or expansion prompt based on behavior and fit.",
@@ -273,7 +413,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For programs that need more enrolled learners, not more inquiries",
     audience: "Admissions directors, program owners, tutoring businesses, training providers, and education teams that need to turn interest into applications, enrollments, and retained students.",
     title: "Move prospective students from interest to enrollment with fewer dead ends.",
-    summary: "Lead OS creates an enrollment journey that answers fit questions, follows up with families or learners, routes qualified applicants, and keeps admitted students engaged before they disappear.",
+    summary: "The installed system creates an enrollment journey that answers fit questions, follows up with families or learners, routes qualified applicants, and keeps admitted students engaged before they disappear.",
     marketTruth: "Education buyers compare trust, timing, cost, and outcomes. A generic brochure does not carry them through the decision.",
     primaryPain: "Programs collect inquiries but lose momentum during follow-up, application, financial questions, or pre-start communication.",
     promisedResult: "Prospects are guided from inquiry to fit check, application, advisor handoff, and enrollment follow-up with every drop-off visible.",
@@ -302,7 +442,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For advisory firms where trust and compliance shape every handoff",
     audience: "Financial advisors, CPAs, tax firms, bookkeepers, insurance practices, and wealth teams that need structured client intake, document collection, and follow-up without creating compliance chaos.",
     title: "Make client onboarding feel controlled before money or documents change hands.",
-    summary: "Lead OS gives finance and accounting teams a compliant-feeling intake and follow-up layer that collects the right facts, routes clients by service need, and keeps document-heavy work moving.",
+    summary: "The installed system gives finance and accounting teams a compliant-feeling intake and follow-up layer that collects the right facts, routes clients by service need, and keeps document-heavy work moving.",
     marketTruth: "Finance buyers are not only buying speed. They are buying confidence that sensitive work will be handled carefully.",
     primaryPain: "Client onboarding slows down because facts, documents, signatures, and follow-up requests live across inboxes and portals.",
     promisedResult: "New client requests are segmented, document needs are triggered, follow-ups are tracked, and operators can see which accounts are blocked.",
@@ -331,7 +471,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For franchisors trying to see every location clearly",
     audience: "Franchise development teams, COOs, field ops leaders, and multi-location brands that need consistent lead routing, local execution, and performance visibility across territories.",
     title: "Give every location the same growth system without losing territory control.",
-    summary: "Lead OS installs a franchise lead and operations layer that routes demand by territory, standardizes local follow-up, and shows which franchisees are converting or leaking opportunities.",
+    summary: "The installed system creates a franchise lead and operations layer that routes demand by territory, standardizes local follow-up, and shows which franchisees are converting or leaking opportunities.",
     marketTruth: "Franchise growth is a coordination problem: national demand, local owners, brand rules, uneven follow-up, and territory economics all collide.",
     primaryPain: "Corporate cannot prove whether lead quality, franchisee response, or local execution is causing performance gaps.",
     promisedResult: "Every inquiry is routed to the right territory, followed up with approved messaging, and reported by location, franchisee, and outcome.",
@@ -360,7 +500,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For recruiters buried in candidates but short on placements",
     audience: "Staffing agency owners, recruiting directors, and talent teams that need to screen candidates faster, reactivate talent pools, and keep clients informed without recruiter busywork.",
     title: "Move candidates and job orders before the desk gets stale.",
-    summary: "Lead OS creates staffing workflows that screen candidates, route job-fit matches, reactivate old talent, and keep recruiter pipelines visible from first application to placement.",
+    summary: "The installed system creates staffing workflows that screen candidates, route job-fit matches, reactivate old talent, and keep recruiter pipelines visible from first application to placement.",
     marketTruth: "Staffing money is made in speed, fit, and follow-through. A great candidate can become worthless if the agency responds tomorrow.",
     primaryPain: "Recruiters spend too much time sorting, chasing, and updating instead of matching the right candidate to the right job order.",
     promisedResult: "Candidates are screened, tagged, routed, and followed up automatically while recruiters focus on high-fit conversations.",
@@ -389,7 +529,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For ministries where follow-up is pastoral, not transactional",
     audience: "Senior pastors, executive pastors, ministry administrators, and church operations teams that need better guest follow-up, volunteer coordination, giving communication, and member care.",
     title: "Help every guest, volunteer, and member receive the next right touch.",
-    summary: "Lead OS creates a ministry engagement system that turns connect cards, prayer requests, volunteer interest, giving moments, and event signups into thoughtful follow-up.",
+    summary: "The installed system creates a ministry engagement system that turns connect cards, prayer requests, volunteer interest, giving moments, and event signups into thoughtful follow-up.",
     marketTruth: "Church operations fail quietly when care depends on memory, scattered spreadsheets, and busy staff trying to remember every person.",
     primaryPain: "Guests, volunteers, and members fall through cracks because the team lacks one reliable follow-up path.",
     promisedResult: "People are captured with context, routed to the right ministry owner, followed up with appropriate timing, and visible until care is complete.",
@@ -418,7 +558,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For agencies tired of vague briefs and feast-or-famine pipelines",
     audience: "Creative agencies, studios, designers, video teams, photographers, and brand consultants that need better project intake, client qualification, approvals, and portfolio-to-lead conversion.",
     title: "Turn creative interest into scoped work without chasing every prospect manually.",
-    summary: "Lead OS gives creative teams a qualification and delivery pipeline that captures serious buyers, clarifies project scope, manages approvals, and reports which work creates new opportunities.",
+    summary: "The installed system gives creative teams a qualification and delivery pipeline that captures serious buyers, clarifies project scope, manages approvals, and reports which work creates new opportunities.",
     marketTruth: "Creative teams do not just need more leads. They need better briefs, cleaner approvals, and prospects who understand the value before asking for a price.",
     primaryPain: "The team loses time to vague inquiries, poor-fit projects, revision loops, and a pipeline that depends on referrals arriving at the right time.",
     promisedResult: "Prospects are qualified by budget, timing, scope, and creative fit, then moved into a clear proposal or nurture path.",
@@ -447,7 +587,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For practices where missed follow-up becomes lost care",
     audience: "Dental, med spa, chiropractic, therapy, wellness, veterinary, and specialty practices that need more booked appointments, fewer no-shows, and compliant patient communication discipline.",
     title: "Book the appointment while the patient still trusts the practice.",
-    summary: "Lead OS installs patient-friendly intake, scheduling, reminder, and reactivation workflows that help practices convert inquiries without making staff carry every follow-up manually.",
+    summary: "The installed system creates patient-friendly intake, scheduling, reminder, and reactivation workflows that help practices convert inquiries without making staff carry every follow-up manually.",
     marketTruth: "Healthcare and wellness demand is personal. A slow, unclear response feels like the practice may not take the patient seriously.",
     primaryPain: "Front desk teams juggle calls, forms, insurance or service questions, reminders, and no-shows while revenue leaks from unbooked demand.",
     promisedResult: "Patient and client inquiries are captured, qualified, scheduled, reminded, reactivated, and reported with appropriate guardrails.",
@@ -476,7 +616,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For brands that need more buying intent from the traffic they already have",
     audience: "Ecommerce founders, growth teams, beauty and wellness brands, product operators, and paid media teams that need better conversion, creative testing, retention, and customer lifecycle automation.",
     title: "Turn product attention into purchases, repeat orders, and better ad decisions.",
-    summary: "Lead OS creates ecommerce growth systems that capture buying intent, recover abandoned revenue, generate creative angles, and move customers into repeat-purchase paths.",
+    summary: "The installed system creates ecommerce growth systems that capture buying intent, recover abandoned revenue, generate creative angles, and move customers into repeat-purchase paths.",
     marketTruth: "Ecommerce growth is no longer just more traffic. Margins depend on conversion, creative velocity, offer clarity, retention, and knowing which customers deserve attention.",
     primaryPain: "Brands spend on ads and creators while checkout leaks, email flows underperform, and customer insights never make it back into the next campaign.",
     promisedResult: "Traffic, cart activity, customer feedback, and campaign signals become automated recovery, retention, and creative-testing workflows.",
@@ -505,7 +645,7 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
     eyebrow: "For gyms and coaches where motivation fades fast",
     audience: "Gyms, boutique studios, personal trainers, wellness coaches, and fitness operators that need more trial bookings, better member onboarding, and stronger retention.",
     title: "Turn interest into attendance before motivation disappears.",
-    summary: "Lead OS gives fitness businesses a trial, onboarding, and retention journey that follows up fast, removes friction, and keeps members engaged beyond the first burst of motivation.",
+    summary: "The installed system gives fitness businesses a trial, onboarding, and retention journey that follows up fast, removes friction, and keeps members engaged beyond the first burst of motivation.",
     marketTruth: "Fitness buyers act when motivation is high, but that window closes quickly. The follow-up has to turn intent into a scheduled visit or habit.",
     primaryPain: "Leads inquire, download a challenge, or book a trial, then disappear before they ever become active members.",
     promisedResult: "Prospects are routed into trials, new members are onboarded into habits, and at-risk members are flagged before they cancel.",
@@ -533,4 +673,8 @@ export const industryPositioning: Record<string, IndustryPositioning> = {
 
 export function getIndustryPositioning(slug: string): IndustryPositioning {
   return industryPositioning[slug] ?? industryPositioning.general;
+}
+
+export function getIndustryAudienceModel(slug: string): IndustryAudienceModel {
+  return industryAudienceModels[slug] ?? industryAudienceModels.general;
 }

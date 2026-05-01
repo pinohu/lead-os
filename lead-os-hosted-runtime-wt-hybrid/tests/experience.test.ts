@@ -39,3 +39,26 @@ test("mobile discover traffic can bias toward chat-first guidance", () => {
   assert.equal(profile.mode, "chat-first");
   assert.equal(profile.device, "mobile");
 });
+
+test("industry experience copy avoids placeholder and malformed trust language", () => {
+  for (const niche of Object.values(nicheCatalog)) {
+    const profile = resolveExperienceProfile({
+      niche,
+      source: "industry-page",
+      intent: "discover",
+      supportEmail: "support@yourdeputy.com",
+    });
+
+    const visibleCopy = [
+      profile.heroTitle,
+      profile.heroSummary,
+      profile.trustPromise,
+      profile.anxietyReducer,
+      profile.returnOffer,
+      ...profile.proofSignals,
+      ...profile.supportingSignals,
+    ].join("\n");
+
+    assert.doesNotMatch(visibleCopy, /Used by X|No no|LeadOS shifts/i, `${niche.slug} has malformed trust copy`);
+  }
+});

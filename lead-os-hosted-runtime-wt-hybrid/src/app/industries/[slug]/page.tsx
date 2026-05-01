@@ -12,7 +12,7 @@ import { tenantConfig } from "@/lib/tenant";
 import { INDUSTRY_TEMPLATES, type IndustryCategory } from "@/lib/niche-templates";
 import { buildOgImageUrl } from "@/lib/og-url";
 import { getCustomerIntelligenceOrDefault } from "@/lib/customer-intelligence";
-import { getIndustryPositioning } from "@/lib/industry-positioning";
+import { getIndustryAudienceModel, getIndustryPositioning } from "@/lib/industry-positioning";
 import type { FunnelFamily } from "@/lib/runtime-schema";
 
 type Props = {
@@ -100,6 +100,7 @@ export default async function IndustryPage({ params, searchParams }: Props) {
   const template = INDUSTRY_TEMPLATES[category];
   const intel = getCustomerIntelligenceOrDefault(category);
   const positioning = getIndustryPositioning(niche.slug);
+  const audienceModel = getIndustryAudienceModel(niche.slug);
   const primaryFamily = resolvePrimaryFamily(niche.recommendedFunnels[0]);
 
   const headerStore = await headers();
@@ -127,7 +128,14 @@ export default async function IndustryPage({ params, searchParams }: Props) {
         summary={positioning.summary}
         profile={profile}
         niche={niche.slug}
+        journeyTitle={`A ${audienceModel.model} outcome system for ${niche.label.toLowerCase()}`}
+        journeySummary={audienceModel.buyerMessage}
         metrics={[
+          {
+            label: "Audience model",
+            value: audienceModel.model,
+            detail: audienceModel.model === "B2B2C" ? "Sold to the operator; experienced by their customers." : "Sold to and used by business operators.",
+          },
           {
             label: "Primary buyer",
             value: intel.icp.title,
@@ -145,12 +153,30 @@ export default async function IndustryPage({ params, searchParams }: Props) {
           },
         ]}
       >
-        <section className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+        <section className="space-y-5">
           <article className="rounded-lg border border-border bg-card p-6">
-            <Badge variant="secondary" className="mb-3">Who this is for</Badge>
-            <h2 className="text-foreground">{intel.icp.title}</h2>
+            <Badge variant="secondary" className="mb-3">Built for</Badge>
+            <h2 className="text-foreground">A {audienceModel.model} solution for the business operator, not a consumer tool.</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">{positioning.audience}</p>
-            <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
+            <div className="mt-5 grid gap-4 md:grid-cols-3">
+              <div className="rounded-md border border-border bg-background p-4">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Who buys it</p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground">{audienceModel.buyer}</p>
+              </div>
+              <div className="rounded-md border border-border bg-background p-4">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Who uses it internally</p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground">{audienceModel.internalUsers}</p>
+              </div>
+              <div className="rounded-md border border-border bg-background p-4">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Who experiences it</p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground">{audienceModel.downstreamAudience}</p>
+              </div>
+            </div>
+            <div className="mt-5 rounded-md border border-border bg-background p-4">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Boundary</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{audienceModel.notFor}</p>
+            </div>
+            <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
               <div>
                 <dt className="font-semibold text-foreground">Business size</dt>
                 <dd className="text-muted-foreground">{intel.icp.companySize}</dd>
@@ -169,7 +195,9 @@ export default async function IndustryPage({ params, searchParams }: Props) {
               </div>
             </dl>
           </article>
+        </section>
 
+        <section>
           <article className="rounded-lg border border-border bg-card p-6">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Market truth</p>
             <h2 className="text-foreground">{positioning.marketTruth}</h2>

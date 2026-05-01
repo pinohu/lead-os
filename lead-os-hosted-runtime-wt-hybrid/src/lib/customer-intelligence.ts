@@ -210,7 +210,7 @@ export const CUSTOMER_INTELLIGENCE: Record<string, CustomerIntelligenceProfile> 
       { objection: "How is this different from Clio?", underlyingFear: "Already invested in practice management — don't want another tool", evidenceBasedResponse: "Clio manages your cases after intake. We optimize everything before — lead scoring, intake automation, nurture. They integrate, not compete.", proofType: "demo" },
     ],
     trustSignals: {
-      primary: ["Used by X law firms", "Bar-compliant language throughout", "Case study from their practice area", "Security documentation available"],
+      primary: ["Built for law firm intake and consult routing", "Bar-sensitive language throughout", "Practice-area case-fit proof", "Security documentation available"],
       secondary: ["Integration with Clio/PracticePanther", "References from similar-sized firms", "Compliance certifications"],
       dealbreakers: ["No encryption documentation", "No legal industry experience", "Required to share data across tenants", "No phone support"],
       certificationsThatMatter: ["SOC 2", "Bar Association partnerships", "Legal technology certifications"],
@@ -234,7 +234,7 @@ export const CUSTOMER_INTELLIGENCE: Record<string, CustomerIntelligenceProfile> 
       { stage: "Awareness", contentType: "Authority article", topic: "Why 60% of law firm consultations never convert — and how to fix it", conversionGoal: "Email capture or assessment start", expectedCvr: "4-8%" },
       { stage: "Consideration", contentType: "Assessment", topic: "Legal Intake Readiness Assessment (2 min)", conversionGoal: "Complete → email → book demo", expectedCvr: "35-50%" },
       { stage: "Consideration", contentType: "Case study", topic: "How [Firm] cut intake processing from 48 hours to 15 minutes", conversionGoal: "Book demo", expectedCvr: "15-25%" },
-      { stage: "Decision", contentType: "Comparison page", topic: "LeadOS vs Clio Grow vs Lawmatics — for firms that want scoring", conversionGoal: "Book demo", expectedCvr: "10-20%" },
+      { stage: "Decision", contentType: "Comparison page", topic: "Legal intake scoring vs Clio Grow and Lawmatics", conversionGoal: "Book demo", expectedCvr: "10-20%" },
       { stage: "Decision", contentType: "ROI calculator", topic: "Calculate the revenue you're losing to slow intake", conversionGoal: "Book consultation", expectedCvr: "20-35%" },
     ],
   },

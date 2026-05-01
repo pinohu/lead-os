@@ -119,4 +119,19 @@ describe("Customer Intelligence Engine", () => {
       }
     }
   });
+
+  it("does not expose placeholder trust or malformed anxiety copy", () => {
+    const disallowed = /Used by X|No no|LeadOS shifts/i;
+
+    for (const [niche, profile] of Object.entries(CUSTOMER_INTELLIGENCE)) {
+      const visibleTrustCopy = [
+        ...profile.trustSignals.primary,
+        ...profile.trustSignals.secondary,
+        ...profile.trustSignals.dealbreakers,
+        ...profile.contentMap.map((entry) => entry.topic),
+      ].join("\n");
+
+      assert.doesNotMatch(visibleTrustCopy, disallowed, `${niche} exposes placeholder trust copy`);
+    }
+  });
 });
