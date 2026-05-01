@@ -109,6 +109,14 @@ export const docsCatalog: DocCatalogEntry[] = [
     category: "Go-to-market",
   },
   {
+    slug: "standalone-offerings-audit",
+    title: "Standalone offerings audit",
+    description: "Complete inventory of every independently sellable product, module, vertical wrapper, funnel, plan, and GTM play in the codebase.",
+    file: "STANDALONE-OFFERINGS-AUDIT.md",
+    category: "Go-to-market",
+    featured: true,
+  },
+  {
     slug: "erie-pro",
     title: "Erie Pro",
     description: "Territory and local-services notes for Erie-style deployments.",

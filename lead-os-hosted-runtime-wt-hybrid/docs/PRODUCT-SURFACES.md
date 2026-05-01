@@ -26,6 +26,7 @@ This file maps **public URLs** in `lead-os-hosted-runtime-wt-hybrid` to **intent
 | `/lp/[slug]` | Generated landing pages from `listLandingPages()` (published only). |
 | `/marketplace` | Lead marketplace UI; may show **demo** leads if API/DB unavailable (see on-page banner). |
 | `/directory`, `/directory/[vertical]` | Directory marketing. |
+| `/directory/lead-router` | Directory lead-router operating surface for previewing routed directory demand, buyer matching, and monetization workflows. |
 | `/funnel/[family]` | Funnel family explorer; `family` must exist in default funnel graphs. |
 | `/embed/[niche]` | Embed surface. |
 | `/p/[tenantSlug]/[pageSlug]` | Tenant-scoped pages when configured. |

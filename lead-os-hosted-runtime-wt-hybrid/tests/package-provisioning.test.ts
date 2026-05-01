@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { aiAgencyPackageSlugs, getPackageAutomationContract, provisionablePackages, simpleOnboardingFieldKeys } from "../src/lib/package-catalog.ts";
+import { packagePersonaBlueprints } from "../src/lib/package-persona-blueprints.ts";
 import { provisionPackage, provisionPackageBundle } from "../src/lib/package-provisioner.ts";
 import {
   _resetPackageProvisioningStoreForTests,
@@ -33,6 +34,24 @@ describe("package provisioning", () => {
         assert.ok(deliverable.title.length > 3);
         assert.ok(deliverable.createdArtifact.length > 20);
       }
+    }
+  });
+
+  it("gives every standalone package a persona, message, pain points, journey, service blueprint, and delivery shape", () => {
+    for (const pkg of provisionablePackages) {
+      const blueprint = packagePersonaBlueprints[pkg.slug];
+
+      assert.ok(blueprint, `${pkg.slug} should have a persona blueprint`);
+      assert.ok(blueprint.offerFor.length > 40, `${pkg.slug} should state who the offer is for`);
+      assert.ok(blueprint.decisionMaker.length > 20, `${pkg.slug} should identify the decision maker`);
+      assert.ok(blueprint.residentPersona.length > 30, `${pkg.slug} should identify the resident or end user`);
+      assert.ok(blueprint.messaging.length > 40, `${pkg.slug} should include market-facing messaging`);
+      assert.ok(blueprint.residentPainPoints.length >= 4, `${pkg.slug} should include specific pain points`);
+      assert.ok(blueprint.expectedOutcome.length > 40, `${pkg.slug} should define the expected result`);
+      assert.ok(blueprint.deliveryShape.length >= 5, `${pkg.slug} should define the shape of delivery`);
+      assert.ok(blueprint.userJourney.length >= 4, `${pkg.slug} should include a persona journey`);
+      assert.ok(blueprint.serviceBlueprint.length >= 3, `${pkg.slug} should include a service blueprint`);
+      assert.ok(blueprint.verificationPosture.length > 40, `${pkg.slug} should state delivery verification posture`);
     }
   });
 
