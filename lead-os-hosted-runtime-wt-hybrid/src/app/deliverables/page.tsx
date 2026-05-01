@@ -13,6 +13,9 @@ export const metadata: Metadata = {
 };
 
 export default function DeliverablesPage() {
+  const b2bCount = liveDeliverables.filter((deliverable) => deliverable.audienceModel === "B2B").length;
+  const b2b2cCount = liveDeliverables.filter((deliverable) => deliverable.audienceModel === "B2B2C").length;
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <section className="mb-10">
@@ -24,6 +27,20 @@ export default function DeliverablesPage() {
           These pages show the individual pieces customers receive inside larger solutions. For a real customer
           launch, start from Solutions and submit the intake form for the outcome they bought.
         </p>
+        <div className="mt-6 grid gap-3 text-sm md:grid-cols-3">
+          <div className="rounded-lg border border-border bg-card p-4">
+            <strong className="block text-foreground">Primary audience: B2B</strong>
+            Business owners, agencies, consultants, lead sellers, SaaS teams, franchises, and internal operators pay for the solution.
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <strong className="block text-foreground">Customer-facing: B2B2C</strong>
+            Capture, nurture, routing, marketplace, and offer-testing pieces touch the client's end customers or leads.
+          </div>
+          <div className="rounded-lg border border-border bg-card p-4">
+            <strong className="block text-foreground">Not standalone B2C</strong>
+            These are not consumer apps. B2C only appears downstream when a client's consumers interact with the launched system.
+          </div>
+        </div>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button asChild>
             <Link href="/packages">Launch complete solutions</Link>
@@ -32,6 +49,18 @@ export default function DeliverablesPage() {
             <Link href="/production">Check production status</Link>
           </Button>
         </div>
+      </section>
+
+      <section className="mb-12 rounded-lg border border-border bg-muted/30 p-5">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <Badge variant="outline">Audience model</Badge>
+          <Badge variant="secondary">{b2bCount} B2B blocks</Badge>
+          <Badge variant="secondary">{b2b2cCount} B2B2C blocks</Badge>
+        </div>
+        <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
+          The deliverable catalog is a B2B fulfillment system with B2B2C surfaces where the client's customers,
+          patients, shoppers, students, or prospects directly experience the outcome. The buyer is still the business.
+        </p>
       </section>
 
       <section className="mb-12 grid gap-4 md:grid-cols-3">
@@ -68,6 +97,12 @@ export default function DeliverablesPage() {
               <CardDescription>{deliverable.buyerOutcome}</CardDescription>
             </CardHeader>
             <CardContent className="mt-auto">
+              <div className="mb-3 flex flex-wrap gap-2">
+                <Badge variant={deliverable.audienceModel === "B2B2C" ? "default" : "outline"}>
+                  {deliverable.audienceModel}
+                </Badge>
+              </div>
+              <p className="mb-3 text-sm leading-relaxed text-muted-foreground">{deliverable.audienceSummary}</p>
               <p className="mb-3 text-sm text-muted-foreground">
                 Included in: {deliverable.planIds.map(getPublicPlanName).join(", ")}
               </p>

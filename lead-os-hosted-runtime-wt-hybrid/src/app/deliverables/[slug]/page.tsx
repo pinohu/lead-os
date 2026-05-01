@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!deliverable) return {};
   return {
     title: `${deliverable.title} | Solution Building Block`,
-    description: deliverable.buyerOutcome,
+    description: `${deliverable.audienceModel}: ${deliverable.buyerOutcome}`,
   };
 }
 
@@ -52,8 +52,15 @@ export default async function DeliverablePage({ params }: Props) {
 
       <section className="mb-8">
         <Badge variant="secondary" className="mb-4">Solution building block</Badge>
+        <div className="mb-3 flex flex-wrap gap-2">
+          <Badge variant={deliverable.audienceModel === "B2B2C" ? "default" : "outline"}>
+            {deliverable.audienceModel}
+          </Badge>
+          <Badge variant="outline">Business buyer first</Badge>
+        </div>
         <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-foreground">{deliverable.title}</h1>
         <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">{deliverable.buyerOutcome}</p>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">{deliverable.audienceSummary}</p>
         <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
           Included in: {deliverable.planIds.map(getPublicPlanName).join(", ")}
         </p>
