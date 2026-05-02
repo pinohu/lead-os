@@ -151,6 +151,199 @@ export interface PackageAudienceContract {
   summary: string;
 }
 
+export interface PackageServiceReplacementStrategy {
+  servicesBudgetTarget: string;
+  targetServiceIndustries: string[];
+  serviceReplacementIndustryThesis: string;
+  financialAdminServiceMarkets: string[];
+  bankingOperationsUseCases: string[];
+  healthcareLegalServiceMarkets: string[];
+  specializedVerticalMarkets: string[];
+  customerSupportLanguageMarkets: string[];
+  easiestServiceReplacementIndustries: string[];
+  easiestServiceReplacementRationale: string;
+  outsourcedOutcomeBudgetSignal: string;
+  boringSchlepServiceOpportunity: string;
+  fragmentedNonTechnicalReplacementPath: string;
+  legalApplicationLayerReplacement: string;
+  multilingualSupportReplacementAdvantage: string;
+  outsourcedServiceReadiness: string;
+  fragmentedNonTechBudgetOpportunity: string;
+  highAttritionLaborWedge: string;
+  pricingTradeoffSummary: string;
+  perSeatCannibalizationTrap: string;
+  perSeatLimitedWalletShare: string;
+  incumbentPricingCultureResistance: string;
+  workBasedPricingOpportunity: string;
+  servicesBudgetPricingUpside: string;
+  outcomeDrivenLaborAttritionValue: string;
+  superhumanCapabilityPricing: string;
+  workBasedPricingPilotRisk: string;
+  pricingTradeoffMatrix: string[];
+  pricingSurvivalRule: string;
+  perSeatRisk: string;
+  outcomePricing: string;
+  walletShareExpansion: string;
+  alignedIncentives: string;
+  pricingUnits: string[];
+  businessProcessAutomationShift: string;
+  servicePerformingAutomation: string;
+  selfRegulatingAutomationLoop: string;
+  taskPricedAutomation: string;
+  intelligenceOperatingSystem: string;
+  queryableOrganizationModel: string;
+  queryableOperatingSystemView: string;
+  artifactRichLegibilitySources: string[];
+  legibleByDefaultPolicy: string;
+  queryableHumanMiddlewareReplacement: string;
+  queryableAutonomousCoordination: string;
+  queryableHumansAtEdgeRole: string;
+  queryableTokenMaxingRule: string;
+  artifactRichEnvironment: string;
+  transparentCommunicationPolicy: string;
+  contextualParityRule: string;
+  intelligenceLayerCoordination: string;
+  humansAtTheEdgeModel: string;
+  sprintPlanningIntelligenceLoop: string;
+  closedLoopSystem: string;
+  openLoopReplacement: string;
+  legibleOrganization: string;
+  artifactGenerationPolicy: string;
+  comprehensiveContextLayer: string;
+  autonomousSprintPlanning: string;
+  humanMiddlewareRemoval: string;
+  closedLoopVelocityGain: string;
+  moatPowerFrameworkSummary: string;
+  speedAsPrimaryMoat: string;
+  aiSevenPowersFramework: string[];
+  processPowerLastTenPercentMoat: string;
+  counterpositioningWorkBasedPricingMoat: string;
+  switchingCostsDeepIntegrationMoat: string;
+  networkEconomyEvalFlywheel: string;
+  corneredResourceDataEvalMoat: string;
+  scaleEconomiesInfrastructureMoat: string;
+  brandingTrustMoat: string;
+  schlepBlindnessBoringSpaceMoat: string;
+  systemOfRecordDataLockIn: string;
+  processPowerMoat: string;
+  wrapperCloneMisconception: string;
+  accuracyHurdleMoat: string;
+  bigLabDrudgeryDefense: string;
+  deepBackendLogicMoat: string;
+  integrationSurfaceAreaMoat: string;
+  customerMintedWorkflow: string;
+  processAutomationMoat: string;
+  pilotToCoreInfrastructure: string;
+  forwardDeployedPosture: string;
+  tokenMaxingRule: string;
+  tokenMaxingCostShift: string;
+  tokenUsageOrgDesign: string;
+  managementHierarchyReplacement: string;
+  icBuilderOperatorModel: string;
+  prototypeFirstMeetingCulture: string;
+  driOutcomeOwnershipModel: string;
+  onePersonOneOutcomeRule: string;
+  driStrategyOutcomeFocus: string;
+  driSpecificResultContract: string;
+  driNoHierarchyHidingRule: string;
+  driMiddleManagementReplacement: string;
+  driIntelligenceLayerGuidance: string;
+  driEdgeGuidanceRole: string;
+  driTokenMaxingLeverage: string;
+  driInformationVelocityGuardrail: string;
+  aiFounderLeadershipModel: string;
+  aiStrategyOwnershipRule: string;
+  tokenUsageArchetypeOperatingModel: string;
+  humanMiddlewareVelocityGain: string;
+  singlePersonAgentLeverage: string;
+  leanDepartmentOperatingModel: string;
+  organizationalArchetypes: string[];
+  aiSoftwareFactory: string;
+  softwareFactorySpecContract: string;
+  agentIterationLoop: string;
+  lastTenPercentReliability: string;
+  tddSoftwareFactoryLoop: string;
+  scenarioValidationThreshold: string;
+  probabilisticReviewGate: string;
+  validationDrivenReviewReplacement: string;
+  thresholdEvidencePolicy: string;
+  zeroHandwrittenCodePosture: string;
+  specsOnlyRepositoryGoal: string;
+  thousandXEngineerModel: string;
+  softwareFactorySpeedMoat: string;
+  speedMoatThesis: string;
+  speedMoatAgainstLabs: string;
+  humanMiddlewareSpeedGain: string;
+  queryableSprintCompression: string;
+  oneDaySprintCadence: string;
+  incumbentCraftOverhead: string;
+  legacyOperatingConstraint: string;
+  aiNativeFromDayOneAdvantage: string;
+  forwardDeployedSpeedLoop: string;
+  drudgeryDiscoveryThesis: string;
+  forwardDeployedTimeInMotion: string;
+  nittyGrittyWorkflowMap: string;
+  hiddenLogicDiscovery: string;
+  attritionDiscoverySignal: string;
+  boringWorkflowSchlepMap: string;
+  lossyMiddlewareDiscovery: string;
+  fieldResearchTruckStopMethod: string;
+  missionCriticalWorkflowFilter: string;
+  hackathonReliabilityGap: string;
+  existentialPainWorkflowFilter: string;
+  specializedEvalMinting: string;
+  treasureBeforeLabs: string;
+  incumbentCultureReset: string;
+  contextEngineeringShift: string;
+  evalFlywheel: string;
+  domainEdgeCaseDrudgery: string;
+  missionCriticalProcessPower: string;
+  humanWranglingModel: string;
+}
+
+export interface PackageIdeaEvaluationGuardrails {
+  problemRealityCheck: string;
+  superficialPlausibilityCheck: string;
+  technologyFirstTrapWarning: string;
+  tarPitRiskCheck: string;
+  tarPitResearchProtocol: string[];
+  tarPitCategoryWarnings: string[];
+  socialCoordinationTarPitWarning: string;
+  funDiscoveryTarPitWarning: string;
+  abstractSocietalProblemWarning: string;
+  lowHitRateIdeaSpaceWarning: string;
+  tarPitAvoidanceChecklist: string[];
+  hardPartHypothesis: string;
+  founderMarketFitCheck: string;
+  boringHardCompetitiveAdvantage: string;
+  boringSpaceValidationThesis: string;
+  physicalObservationSchlepProtocol: string;
+  invisiblePainDiscoverySignal: string;
+  forwardDeployedWorkflowValidation: string;
+  lastTenPercentEdgeCaseValidation: string;
+  acutePainCheck: string;
+  topThreePriorityTest: string;
+  existentialPainTest: string;
+  fireOrPromotionAcutenessTest: string;
+  fireRiskSignal: string;
+  promotionUpsideSignal: string;
+  topThreeProblemRequirement: string;
+  willingnessToPayAcutenessSignal: string;
+  plainSightOpportunitySignal: string;
+  pricingBinaryValidationSignal: string;
+  pricingBinaryTestDefinition: string;
+  openWalletValueSignal: string;
+  binaryTestCustomerSegmentSignal: string;
+  premiumPriceLearningSignal: string;
+  complainButPayValidationSignal: string;
+  highAttritionValidationSignal: string;
+  alternativeIsNothingTest: string;
+  chargeValidationTest: string;
+  highValueNeedCategories: string[];
+  moatTiming: string;
+  pricingDiscipline: string;
+}
+
 const baseFields: PackageCredentialField[] = [
   {
     key: "brandName",
@@ -903,6 +1096,259 @@ export function getPackageAutomationContract(pkg: ProvisionablePackage): Package
     simpleOnboardingFields: simpleOnboardingFieldKeys,
     nicheExamples: getPackageNicheExamples(pkg.slug),
     deliveryMode: "complete-solution",
+  };
+}
+
+export function getPackageServiceReplacementStrategy(pkg: ProvisionablePackage): PackageServiceReplacementStrategy {
+  const pricingBasis = pkg.pricingModel
+    ? `${pkg.pricingModel} Anchor the offer to work delivered, accepted outputs, recovered revenue, qualified outcomes, or completed tasks instead of per-seat software access.`
+    : "Price the offer around work delivered, accepted outputs, recovered revenue, qualified outcomes, or completed tasks instead of per-seat software access.";
+
+  return {
+    servicesBudgetTarget: `Sell ${pkg.title} against the outsourced service, internal labor, or agency budget behind "${pkg.customerOutcome}", not against the buyer's software-tool budget.`,
+    targetServiceIndustries: ["insurance brokerage", "accounting", "tax audit", "compliance", "healthcare administration"],
+    serviceReplacementIndustryThesis: `Prioritize ${pkg.title} in industries where human labor spend dwarfs software spend and the workflow is already bought as a service, outsourced function, or manual operating team.`,
+    financialAdminServiceMarkets: ["accounting", "tax audit", "payroll", "insurance brokerage", "compliance", "banking operations"],
+    bankingOperationsUseCases: ["KYC", "loan origination", "debt recovery", "fraud monitoring"],
+    healthcareLegalServiceMarkets: ["healthcare administration", "legal services", "junior associate workflows", "outsourced legal operations"],
+    specializedVerticalMarkets: ["logistics", "trucking", "fuel cards", "HVAC", "home services", "construction", "real estate", "debt financing"],
+    customerSupportLanguageMarkets: ["customer support", "multilingual support", "international contractor support", "DoorDasher-style contractor support", "language-learning conversation practice"],
+    easiestServiceReplacementIndustries: [
+      "financial and administrative services",
+      "banking infrastructure",
+      "healthcare administration",
+      "legal application-layer services",
+      "HVAC and fragmented home services",
+      "construction and fragmented field services",
+      "trucking and logistics",
+      "multilingual customer and contractor support",
+    ],
+    easiestServiceReplacementRationale: `The easiest ${pkg.title.toLowerCase()} replacement wedges have services spend that dwarfs software spend, are already outsourced or staffed as human services, and let the buyer pay for the completed outcome instead of managing headcount.`,
+    outsourcedOutcomeBudgetSignal: "Treat outsourced work as the strongest buying signal: the customer already buys an outcome from an agency, BPO, broker, admin team, or specialist, so an AI-native service can replace the vendor path more naturally than it can replace software seats.",
+    boringSchlepServiceOpportunity: "Prioritize boring schlep in payroll, tax, accounting, trucking compliance, insurance operations, and regulated admin work; founders avoid this painstaking drudgery, which leaves room to build process power.",
+    fragmentedNonTechnicalReplacementPath: "Target fragmented, non-technical markets such as HVAC, construction, home services, trucking, and local field operations where software quality is thin and an AI agent can be minted into the customer's core workflow.",
+    legalApplicationLayerReplacement: "Treat legal services as application-layer replacement territory: move beyond research copilots toward workflows that perform specialized legal work, draft artifacts, check facts, route exceptions, and preserve attorney-review boundaries.",
+    multilingualSupportReplacementAdvantage: "Use multilingual support as an easy wedge because agents can be infinitely patient and fluent across hundreds of languages out of the box, including international contractor or DoorDasher-style support that human teams struggle to staff.",
+    outsourcedServiceReadiness: `Prefer ${pkg.title} buyers where the work is already outsourced or staffed as a human service, because replacing the service is easier when the budget already lives outside software.`,
+    fragmentedNonTechBudgetOpportunity: "Target fragmented, non-tech verticals where software has historically captured about 1% of budget but AI-native service replacement can justify 4% to 10% by doing the work.",
+    highAttritionLaborWedge: "Use labor shortages and 50% to 80% support attrition as a wedge: AI agents can take repetitive, torturous, multilingual support and admin work that businesses struggle to staff reliably.",
+    pricingTradeoffSummary: `Make the ${pkg.title} pricing choice explicit: per-seat SaaS monetizes customer headcount and is punished when automation works, while work-based pricing monetizes completed service outcomes and grows as the agent handles more of the workflow.`,
+    perSeatCannibalizationTrap: "Per-seat pricing is the incumbent Achilles heel: if AI reduces the customer's employee count, the vendor loses seats exactly when the product becomes more efficient.",
+    perSeatLimitedWalletShare: "Per-seat SaaS is usually capped by the software budget, often around 1% of the customer's gross transaction value, because it sells a tool for humans instead of the completed service.",
+    incumbentPricingCultureResistance: "Incumbents resist the shift because their product, sales, and engineering culture is built around shipping features for human users, not perfecting agents that perform the work and reduce seat demand.",
+    workBasedPricingOpportunity: `Price ${pkg.title} by work delivered, tasks completed, accepted outputs, qualified outcomes, recovered revenue, or hours saved so revenue follows service throughput instead of logins.`,
+    servicesBudgetPricingUpside: "Work-based pricing taps the services budget and should justify roughly 4% to 10% of replaced spend when the package actually performs the service rather than supporting a human operator.",
+    outcomeDrivenLaborAttritionValue: "Use high-attrition service functions as pricing proof: buyers with 50% to 80% turnover often prefer a reliable outcome over paying for seats tied to a revolving human team.",
+    superhumanCapabilityPricing: "Do not price superhuman agent capacity like one human seat; capabilities such as always-on patience, 200-language fluency, and instant parallel handling should be monetized by outcomes and volume.",
+    workBasedPricingPilotRisk: "The trade-off is reliability proof: work-based pricing can capture more value, but it usually requires longer pilots, acceptance evidence, and last-10-percent engineering before a buyer trusts the outcome.",
+    pricingTradeoffMatrix: [
+      "Primary goal: per-seat SaaS enhances human productivity; work-based AI-native pricing completes the service.",
+      "Revenue driver: per-seat pricing grows with customer headcount; work-based pricing grows with outcomes, tasks, and accepted outputs.",
+      "Budget source: per-seat pricing lives in the software budget; work-based pricing pursues the larger services, outsourced-work, agency, and labor budget.",
+      "Core risk: per-seat pricing cannibalizes itself as automation improves; work-based pricing carries pilot and reliability risk until the agent proves production accuracy.",
+      "Moat: per-seat pricing leans on system-of-record switching costs; work-based pricing builds process power through finely honed workflows, evals, and customer-minted operations.",
+    ],
+    pricingSurvivalRule: "Choose the model that benefits when the AI gets better: if automation success would shrink revenue, the package is still thinking like SaaS instead of an AI-native service company.",
+    perSeatRisk: "Avoid per-seat pricing because successful automation reduces the number of humans needed to operate the workflow, which would otherwise cannibalize revenue as the solution gets better.",
+    outcomePricing: pricingBasis,
+    walletShareExpansion: "Use outcome-based pricing to capture the larger services wallet share: the offer should be able to justify roughly 4% to 10% of the spend it replaces when it performs real service work.",
+    alignedIncentives: "The more work the AI handles reliably, the more valuable the package becomes to the client and the more expansion room the operator earns, without needing more human seats.",
+    pricingUnits: ["work delivered", "tasks completed", "accepted outputs", "qualified outcomes", "recovered revenue", "hours saved"],
+    businessProcessAutomationShift: `Frame ${pkg.title} as business process automation that performs the service itself, not as a co-pilot or productivity layer that merely improves an existing human workflow.`,
+    servicePerformingAutomation: `The automation should own the full service path behind "${pkg.customerOutcome}": monitor the work, take the next action, create proof, and escalate only the exceptions humans should judge.`,
+    selfRegulatingAutomationLoop: `Make the automated process self-regulating: continuously monitor outputs, compare them to ${pkg.title}'s stated goals, and adjust prompts, routing, tests, approvals, or handoffs when performance drifts.`,
+    taskPricedAutomation: "Tie automation value to tasks completed, work delivered, accepted outputs, and service capacity created rather than seats, logins, dashboards, or generic productivity claims.",
+    intelligenceOperatingSystem: `Run ${pkg.title} as an intelligence operating system, not an employee tool: the agent layer should own the repeatable service workflow, produce artifacts, and make every important decision legible to operators.`,
+    queryableOrganizationModel: `Make ${pkg.title} part of a queryable organization: every process, decision, and workflow should be legible to AI so the company operates as a closed loop that improves stability and correctness.`,
+    queryableOperatingSystemView: `Use ${pkg.title} as part of a company operating system that gives AI a continuous, up-to-date view of operations rather than a one-off tool snapshot.`,
+    artifactRichLegibilitySources: [
+      "Communication logs: customer feedback from email, Pylon-style support tools, shared channels, and support queues.",
+      "Technical activity: GitHub commits, pull requests, issues, review notes, deployments, and shipped-work evidence.",
+      "Planning data: strategic plans, specs, and decision memos in Notion, Google Docs, delivery hubs, and package workspaces.",
+      "Recorded interactions: sales calls, customer calls, daily standups, meeting notes, transcripts, and follow-up commitments.",
+      "Outcome evidence: acceptance receipts, QA traces, reporting surfaces, customer outcomes, and exception decisions.",
+    ],
+    legibleByDefaultPolicy: `Make ${pkg.title} legible by default: when communication logs, GitHub activity, planning docs, recordings, and outcome evidence are captured automatically, agents can analyze what actually shipped and whether it solved customer needs.`,
+    queryableHumanMiddlewareReplacement: `Replace coordinator-style human middleware for ${pkg.title}: the intelligence layer should route signals across artifacts, owners, agents, and decision records faster than lossy manager rollups.`,
+    queryableAutonomousCoordination: `Use queryable data for autonomous coordination: agents should inspect tickets, Pylon/email feedback, Notion or Google Docs plans, GitHub commits and issues, sales calls, standup recordings, and delivery evidence before proposing the next plan.`,
+    queryableHumansAtEdgeRole: `Put humans at the edge for ${pkg.title}: IC builder operators and DRI strategists guide the intelligence layer, judge exceptions, and improve workflows instead of manually managing status updates.`,
+    queryableTokenMaxingRule: `Max tokens before headcount for ${pkg.title}: accept high API spend when it replaces HR, admin, engineering, support coordination, and management routing while keeping expert humans focused on leverage and judgment.`,
+    artifactRichEnvironment: "Run an artifact-rich environment: AI meeting notes, email and Pylon-style feedback, decision logs, ticket updates, Slack transcripts, GitHub commits and issues, Notion or Google Docs plans, sales calls, standup recordings, customer outcomes, and departmental dashboards should become analyzable operating memory.",
+    transparentCommunicationPolicy: "Minimize lossy private DMs and inbox-only decisions; move important work into transparent channels and package surfaces where embedded agents can observe, route, summarize, and learn.",
+    contextualParityRule: `Give the ${pkg.title.toLowerCase()} intelligence layer contextual parity with a human employee: revenue, sales, engineering, hiring, operations, customer feedback, emails, Pylon-style support logs, tickets, Slack, GitHub, Notion or Google Docs plans, sales calls, standup recordings, and dashboards should be available before it plans or decides.`,
+    intelligenceLayerCoordination: "Let the intelligence layer route information instead of classic middle-management chains: reduce manual upward and downward status translation and move signals directly to owners, agents, and decision surfaces.",
+    humansAtTheEdgeModel: "Move humans to the edge of the organization as builders, operators, QA owners, approvers, and agent wranglers who guide the intelligence layer instead of sitting in the middle of information flow.",
+    sprintPlanningIntelligenceLoop: "Use Linear-style tickets, Pylon/email feedback, Slack, GitHub commits and issues, Notion or Google Docs plans, standup recordings, sales-call notes, shipped-work evidence, and customer needs to generate predictable sprint plans that cut planning noise, compress sprint cycles, and target nearly 10x more useful work.",
+    closedLoopSystem: `Capture intake, decisions, handoffs, approvals, acceptance checks, exceptions, and outcome reports back into the delivery hub so each run makes the organization more queryable and the next delivery more accurate.`,
+    openLoopReplacement: `Replace open-loop operations for ${pkg.title}: do not merely make a decision and execute it; measure the output, compare it with the stated goal, and adjust routing, prompts, tests, or handoffs until the workflow self-corrects.`,
+    legibleOrganization: `Make the organization legible to AI by keeping ${pkg.title} work in transparent channels, delivery surfaces, and shared records rather than private DMs, inbox fragments, or undocumented side conversations.`,
+    artifactGenerationPolicy: `Every important action should produce a digital artifact: meeting notes, decision logs, ticket updates, approval receipts, exceptions, QA traces, customer outcomes, and follow-up commitments that the central intelligence can learn from.`,
+    comprehensiveContextLayer: `Give models as much context as an employee would receive by connecting revenue, sales, engineering, hiring, customer, email, Pylon-style support, ticket, Slack, GitHub, Notion or Google Docs, call recording, standup recording, and package-performance dashboards into the operating context for ${pkg.title}.`,
+    autonomousSprintPlanning: `Use agents for autonomous sprint planning: inspect tickets, customer needs, shipped work, Slack decisions, Pylon/email feedback, Notion or Google Docs plans, GitHub commits and issues, sales calls, standup recordings, and delivery evidence, then propose predictable next-cycle plans instead of relying on lossy manual status rollups.`,
+    humanMiddlewareRemoval: `Remove human middleware where the intelligence layer can route information directly: fewer status meetings, fewer translation layers, fewer middle-management handoffs, and faster movement from signal to decision.`,
+    closedLoopVelocityGain: `Use closed-loop coordination to target practical speed gains, including cutting sprint time in half and getting nearly 10x more useful work done when agents can see goals, context, shipped work, and customer feedback.`,
+    moatPowerFrameworkSummary: `Define ${pkg.title}'s moat as a portfolio of AI-native powers: speed first, then process power, counterpositioning, switching costs, eval network economy, cornered resources, scale economies, branding, schlep blindness, and system-of-record lock-in.`,
+    speedAsPrimaryMoat: `Use speed as ${pkg.title}'s first defense: one-day sprint cycles, AI software factories, and forward-deployed customer learning let the operator ship before incumbents or broad labs can route work through craft, middle management, and PRD cycles.`,
+    aiSevenPowersFramework: [
+      "Speed foundation: relentless execution, software factories, one-day sprint cycles, and forward-deployed customer learning before other moats mature.",
+      "Process power: the final 5% to 10% of reliability, evals, approvals, edge cases, and workflow rules that turn an 80% demo into 99% mission-critical service.",
+      "Counterpositioning: work-delivered pricing and token-maxing culture let the startup embrace automation that would cannibalize a per-seat incumbent.",
+      "Switching costs: deep onboarding, customer-specific logic, acceptance history, and minted workflows make replacement expensive after the agent is trusted.",
+      "Network economy: every customer run creates pass/fail data, evals, overrides, and workflow lessons that improve the intelligence layer for future runs.",
+      "Cornered resource: proprietary customer workflow data, specialized evals, domain edge cases, and optimized model routes outsiders cannot observe from the demo.",
+      "Scale economies and branding: reusable infrastructure, crawls, model optimizations, trust, and category memory compound when the package becomes the known choice.",
+    ],
+    processPowerLastTenPercentMoat: `Process power for ${pkg.title} lives in the last 10%: finely honed agents, vertical edge cases, QA gates, and 99% accuracy expectations for workflows such as KYC, loan origination, legal review, accounting, healthcare administration, or compliance.`,
+    counterpositioningWorkBasedPricingMoat: `Counterposition ${pkg.title} against SaaS incumbents by pricing work delivered, tasks completed, and accepted outcomes; incumbents tied to seats hesitate because successful automation reduces the customer headcount they monetize.`,
+    switchingCostsDeepIntegrationMoat: `Create switching costs by embedding ${pkg.title} into onboarding, data flows, custom rules, fraud-monitoring-style workflows, debt recovery paths, approvals, and acceptance history until switching would mean relearning the customer's operating logic.`,
+    networkEconomyEvalFlywheel: `Use the eval flywheel as the AI network economy: every pass, failure, override, exception, and customer acceptance receipt should improve prompts, context engineering, scenario validations, and workflow rules for the next customer.`,
+    corneredResourceDataEvalMoat: `Cornered resources come from proprietary workflow data, tailored time-in-motion observations, specialized eval sets, customer-specific edge cases, and optimized model or routing choices that reduce serving cost or increase reliability.`,
+    scaleEconomiesInfrastructureMoat: `Use scale economies where ${pkg.title} can reuse expensive infrastructure across customers: static crawls, model optimizations, evaluation harnesses, integrations, compliance checks, and deployment pipelines become cheaper per outcome as volume grows.`,
+    brandingTrustMoat: `Build brand as trust under risk: buyers should associate ${pkg.title} with reliable service outcomes, clear acceptance evidence, and category leadership the way default AI brands win attention even when model capabilities converge.`,
+    schlepBlindnessBoringSpaceMoat: `Exploit schlep blindness: boring spaces such as payroll, tax accounting, trucking compliance, insurance operations, bank infrastructure, and regulated admin become defensible because competitors avoid the unsexy bank deals, infrastructure details, and workflow drudgery.`,
+    systemOfRecordDataLockIn: `Preserve system-of-record data lock-in: customer history, decisions, approvals, outcomes, exceptions, eval traces, and reporting receipts should live in ${pkg.title}'s delivery surfaces so leaving means losing operating memory, not just a dashboard.`,
+    processPowerMoat: `The moat is the reliable final 5% to 10%: customer-specific workflow rules, QA evidence, human approval gates, reporting receipts, and switching costs around the minted ${pkg.title.toLowerCase()} operating path.`,
+    wrapperCloneMisconception: `Do not treat ${pkg.title} as an easily cloned model wrapper. The demo surface may be easy to imitate, but the defensible product is the accumulated workflow logic, evals, approvals, exceptions, and operating evidence behind it.`,
+    accuracyHurdleMoat: `Make the 99% accuracy hurdle explicit: a weekend hackathon version may reach 80%, but mission-critical workflows such as loan origination, KYC, legal review, accounting, or compliance need 99% reliability and 10x to 100x more edge-case work.`,
+    bigLabDrudgeryDefense: `Use painstaking drudgery as big-lab defense: broad AGI labs are unlikely to spend their best attention perfecting the final 5% of consistency for a niche ${pkg.title.toLowerCase()} workflow when the value lives in unglamorous vertical details.`,
+    deepBackendLogicMoat: `Build process power like Stripe, Gusto, or other deep-backend systems: encode policy rules, state transitions, retries, audit trails, permissions, reconciliations, handoffs, and exception paths that are invisible from the demo but hard to replicate.`,
+    integrationSurfaceAreaMoat: `Expand the surface area competitors would need to copy: client systems, data formats, approval paths, financial-institution-style integration quirks, crawlers, imports, exports, and reporting contracts should compound over time.`,
+    customerMintedWorkflow: `Mint the agent into the customer's operations by capturing custom logic, evals, thresholds, loan-reconciliation-style rules, and acceptance receipts that make switching away costly once the workflow is trusted.`,
+    processAutomationMoat: `Build a process-automation moat by doing the painstaking last-10% work needed for 99% accuracy in mission-critical banking, legal, accounting, compliance, healthcare, or other high-stakes service environments.`,
+    pilotToCoreInfrastructure: `Use pilots to learn the customer's internal operations and then turn custom rules, integrations, reporting, approvals, and acceptance history into core infrastructure the customer depends on.`,
+    forwardDeployedPosture: `A forward-deployed operator should sit with the customer, map the boring manual workflow, install the agent or delivery path inside that workflow, and keep tuning it from real usage data.`,
+    tokenMaxingRule: "Spend AI tokens where they replace repetitive service labor, admin follow-up, research, routing, reporting, or production work; escalate high-stakes exceptions instead of adding headcount by default.",
+    tokenMaxingCostShift: "Treat uncomfortably high API bills as a rational cost shift when token spend replaces inflated HR, admin, engineering, and coordination headcount while keeping the organization leaner and faster than incumbents.",
+    tokenUsageOrgDesign: "Rebuild the organization around token usage before headcount: use agents for repeatable operations and move humans to the edges as builders, operators, QA owners, approvers, and agent wranglers.",
+    managementHierarchyReplacement: `Replace the ${pkg.title.toLowerCase()} management stack with an intelligence layer that routes information, preserves artifacts, and reduces managers whose main job is manually interpreting or relaying status.`,
+    icBuilderOperatorModel: "Define the Individual Contributor as a builder operator: engineers, support, sales, and operations teammates are expected to make, run, improve, and inspect workflows directly with agents.",
+    prototypeFirstMeetingCulture: "Make working prototypes the meeting artifact: ICs should bring live workflows, agent runs, dashboards, scripts, or customer-ready drafts instead of static pitch decks whenever the work can be demonstrated.",
+    driOutcomeOwnershipModel: "Define the Directly Responsible Individual as a strategy-and-customer-outcome owner, not a classic middle manager; the DRI owns one measurable result and the decisions needed to improve it.",
+    onePersonOneOutcomeRule: "Use the one person, one outcome rule: every important package result needs a named DRI with singular accountability, visible evidence, and nowhere to hide behind committee status updates.",
+    driStrategyOutcomeFocus: `For ${pkg.title}, the DRI focuses on strategy and customer outcomes rather than status routing, headcount management, or middleware coordination.`,
+    driSpecificResultContract: `Assign one named DRI to one specific ${pkg.title} result with success evidence, customer proof, and decision rights visible in the package surfaces.`,
+    driNoHierarchyHidingRule: `Do not let ${pkg.title} hide behind a hierarchy: if the outcome misses, the DRI owns the adjustment path instead of diffusing responsibility through committees or manager layers.`,
+    driMiddleManagementReplacement: `Replace classic middle-management coordination for ${pkg.title} with the intelligence layer: agents route artifacts, updates, exceptions, and evidence so the DRI can guide outcomes.`,
+    driIntelligenceLayerGuidance: `The DRI guides the ${pkg.title} intelligence layer toward business objectives by setting goals, constraints, evals, escalation rules, and acceptance evidence rather than manually relaying information.`,
+    driEdgeGuidanceRole: `Place the DRI at the edge of ${pkg.title}: close enough to customers and operators to judge strategy, exceptions, and outcomes while AI systems coordinate the repeatable work.`,
+    driTokenMaxingLeverage: `Use the DRI as a token-maxing lever for ${pkg.title}: one accountable operator with agents should replace what previously required large engineering, admin, or coordination teams.`,
+    driInformationVelocityGuardrail: `The DRI protects ${pkg.title} information velocity: signals should move from artifacts to agents, decisions, and customer-visible changes without being slowed by manual interpretation chains.`,
+    aiFounderLeadershipModel: "Define the AI Founder type as the leader who personally builds, coaches, tests, and demonstrates AI-native workflows so the team can see massive capability gains firsthand.",
+    aiStrategyOwnershipRule: "Do not delegate AI strategy to a distant committee or tooling owner; founders and senior DRIs should stay at the frontier of the tools and model the operating behavior they expect.",
+    tokenUsageArchetypeOperatingModel: "Use the IC, DRI, and AI Founder archetypes to maximize token usage rather than headcount: agents route information and perform repeatable work while humans own building, outcomes, judgment, and coaching.",
+    humanMiddlewareVelocityGain: `Use the ${pkg.title.toLowerCase()} intelligence layer to remove human middleware: fewer middle-manager status relays should create direct velocity gains because information moves from artifacts to agents, owners, and decisions without lossy coordination chains.`,
+    singlePersonAgentLeverage: `Design ${pkg.title} so one capable operator with AI agents can perform work that previously required a larger cross-functional team, while escalating judgment-heavy exceptions to humans at the edge.`,
+    leanDepartmentOperatingModel: "Make lean engineering, HR, admin, support, and operations departments the default: maximize agent throughput and token spend before adding coordination headcount.",
+    organizationalArchetypes: [
+      "Individual Contributor: a builder operator across engineering, support, sales, and operations who brings working prototypes, ships workflows, runs checks, and wrangles agents.",
+      "Directly Responsible Individual: the one-person-one-outcome owner accountable for strategy, customer proof, pricing, escalation rules, and measured results.",
+      "AI Founder: the leader who uses the operating system personally, builds and coaches by example, defines the taste bar, and keeps token spend pointed at service labor replacement.",
+    ],
+    aiSoftwareFactory: `Use an AI software factory for ${pkg.title}: humans define specs, constraints, tests, and acceptance evidence while agents generate code, scripts, content, routing logic, and reports at a speed incumbents with legacy processes cannot match.`,
+    softwareFactorySpecContract: `Make the spec and test harness the primary engineering artifact for ${pkg.title}: humans define what to build, the success scenarios, constraints, and judge criteria; agents own the implementation syntax.`,
+    agentIterationLoop: `Surround the operator with a system of agents that generate, test, inspect failures, and iterate on code, prompts, routing, reports, and workflow logic until the human-defined harness passes.`,
+    lastTenPercentReliability: `Treat the last 10% as the product for ${pkg.title}: the demo can get to 80%, but production delivery should aim for 99% reliability and accept that the final gap may take 10x to 100x more refinement than the first prototype.`,
+    tddSoftwareFactoryLoop: `Run the package like test-driven development for agents: humans write the success spec, constraints, edge-case tests, and acceptance checks; agents iterate on implementation until the tests pass and the delivered service is accepted.`,
+    scenarioValidationThreshold: `Use scenario-based validations and a probabilistic satisfaction threshold for high-variance work, so agents keep refining prompts, routing, data handling, and outputs until the workflow clears the required reliability bar.`,
+    probabilisticReviewGate: `Replace line-by-line code review with a probabilistic review gate: the agent output should not be accepted until scenario performance makes the system statistically likely to be correct for the defined ${pkg.title.toLowerCase()} operating cases.`,
+    validationDrivenReviewReplacement: `Eliminate human middleware by making validations the reviewer: humans define constraints, scenarios, failure states, and acceptance criteria; agents autonomously refine implementation until every validation passes without requiring a manual syntax check.`,
+    thresholdEvidencePolicy: `Store the threshold evidence for each run: scenario coverage, failing cases, retries, confidence signals, human overrides, and acceptance receipts should explain why the output cleared the satisfaction threshold.`,
+    zeroHandwrittenCodePosture: `Bias new workflow code toward spec-first generation: the long-term target is repositories where durable specs, tests, evals, and harnesses matter more than handwritten implementation, with humans reviewing outcomes rather than syntax.`,
+    specsOnlyRepositoryGoal: `Aim new repeatable workflow repositories toward the StrongDM-style end state: specs, scenario validations, evals, and test harnesses guide the agents, while handwritten production code becomes the exception rather than the norm.`,
+    thousandXEngineerModel: `Design ${pkg.title} for the thousandx engineer: one expert surrounded by agents should produce features, service assets, and operating improvements that previously required an engineering team, making speed a practical moat.`,
+    softwareFactorySpeedMoat: `Use the AI software factory as process-power acceleration: specs, tests, agents, and eval loops let the operator build and maintain complex infrastructure at a pace and headcount profile traditional incumbents struggle to match.`,
+    speedMoatThesis: `Treat speed as ${pkg.title}'s first moat: before data, network, or brand defensibility exists, outlearn labs and incumbents by shipping AI-native service improvements faster than their product process can react.`,
+    speedMoatAgainstLabs: `OpenAI, Google, and other labs may have capital and compute, but ${pkg.title} can win the narrow vertical by living inside the workflow, using customer evidence, and closing reliability gaps before broad labs notice the treasure.`,
+    humanMiddlewareSpeedGain: `Every removed human routing layer is a speed gain for ${pkg.title}: artifacts should flow directly from meetings, tickets, Slack, GitHub, and customer outcomes to agents, DRIs, and shipped changes.`,
+    queryableSprintCompression: `Use queryable organization data to compress ${pkg.title} sprint cycles: agents compare shipped work with customer needs so the team can cut sprint time in half and target nearly 10x more useful work.`,
+    oneDaySprintCadence: `Push toward one-day sprint cycles where ${pkg.title} can safely ship: one accountable owner defines the spec, test, or eval in the morning, agents implement, and acceptance evidence decides daily release readiness.`,
+    incumbentCraftOverhead: "Exploit incumbent craft overhead: large companies route features through PM layers, operations reviews, PRDs, spec docs, approvals, and launch gates that slow the final customer-visible change.",
+    legacyOperatingConstraint: "Start AI-native from day one instead of unwinding legacy SOPs, live-product assumptions, core software-development beliefs, and human-first rituals that slow incumbents.",
+    aiNativeFromDayOneAdvantage: "Build the culture around AI-native operations now: prototypes over decks, specs and evals over committee syncs, tokens over coordination headcount, and agents inside every repeatable workflow.",
+    forwardDeployedSpeedLoop: `Use forward-deployed engineering as the speed loop for ${pkg.title}: sit with customers, spot boring manual pain, automate it inside the live workflow, then feed usage and eval data back into the next iteration.`,
+    drudgeryDiscoveryThesis: `Identify ${pkg.title} opportunities by looking past superficially plausible automation and into the painstaking drudgery behind the last 10% of reliable service delivery.`,
+    forwardDeployedTimeInMotion: `Use a forward-deployed time-in-motion study for ${pkg.title}: sit with the customer, watch the tailored workflow minute by minute, and record what a request, exception, or approval actually does before anyone proposes automation.`,
+    nittyGrittyWorkflowMap: `Map the nitty-gritty path for ${pkg.title}: how a request arrives by email, form, call, ticket, or spreadsheet; how it gets enriched; where call centers, manual data entry, or human judgment bridge gaps; and where the workflow stalls.`,
+    hiddenLogicDiscovery: `Look for hidden logic in ${pkg.title}: backend rules, reconciliation habits, informal checks, exception paths, and operator know-how that are invisible from a landing page or high-level industry overview.`,
+    attritionDiscoverySignal: `Use 50% to 80% annual attrition as a discovery signal for ${pkg.title}: repetitive, torturous support or admin roles are often painful enough that buyers welcome AI-native service replacement.`,
+    boringWorkflowSchlepMap: `Search boring workflow spaces for ${pkg.title}: payroll, tax accounting, trucking compliance, insurance operations, regulated admin, and other schlep-heavy work where the day-to-day product is grinding execution rather than fun features.`,
+    lossyMiddlewareDiscovery: `Find lossy information middleware around ${pkg.title}: status rollups, fragmented handoffs, manager interpretation, duplicated updates, and manual coordination that a closed-loop system can make queryable by default.`,
+    fieldResearchTruckStopMethod: `Use the truck-stop method for ${pkg.title}: go where the work physically or operationally happens, talk to frontline operators, and look for fuel-card-style wedges that only show up through the schlep of field research.`,
+    missionCriticalWorkflowFilter: `Prioritize ${pkg.title} workflows that are mission-critical infrastructure, such as KYC, loan origination, legal review, accounting close, compliance checks, or customer operations where a miss can cost millions.`,
+    hackathonReliabilityGap: `Separate the ${pkg.title} hackathon demo from the production workflow: an 80% prototype is not the product; the drudgery is the edge-case work needed for the final 5% to 20% of consistency and 99% reliability.`,
+    existentialPainWorkflowFilter: `Filter ${pkg.title} opportunities for existential pain: the buyer should fear lost revenue, being fired, compliance exposure, missed promotions, or business failure if the workflow remains manual, slow, or unreliable.`,
+    specializedEvalMinting: `Mint custom evals and datasets into each ${pkg.title} customer workflow so speed compounds into process power instead of one-off feature churn.`,
+    treasureBeforeLabs: `Find and defend the ${pkg.title} treasure before labs care: capture the valuable narrow vertical, prove the outcome, and harden edge cases while bigger competitors are still prioritizing broad platform goals.`,
+    incumbentCultureReset: "Expect incumbents to struggle because this model asks teams to stop measuring value by manual coding volume and reset engineering culture around specs, tests, context engineering, prompt engineering, evals, and intelligence loops.",
+    contextEngineeringShift: "Move senior engineering judgment upstream into context engineering: better specs, examples, test harnesses, failure traces, prompts, retrieval context, and acceptance evidence feed the intelligence layer more than hand-written syntax does.",
+    evalFlywheel: `Capture evals on every run: pass/fail outcomes, rejected outputs, human overrides, edge cases, and customer acceptance evidence should feed context engineering, prompt updates, tests, and operating rules for the next run.`,
+    domainEdgeCaseDrudgery: `Budget for painstaking vertical drudgery: specialized domain knowledge is needed to identify KYC, loan-processing, legal, compliance, or customer-specific edge cases that a weekend demo would miss.`,
+    missionCriticalProcessPower: `Convert the final reliability work into mission-critical process power: the unsexy vertical evals, QA gates, tuned context, and customer-specific operating rules become the moat that broad model labs and quick demos are unlikely to replicate.`,
+    humanWranglingModel: `Move humans out of repetitive, torturous execution and into agent wrangling: supervising the fleet, approving complex exceptions, improving prompts and tests, and handling the unusual cases that make the work more interesting.`,
+  };
+}
+
+export function getPackageIdeaEvaluationGuardrails(pkg: ProvisionablePackage): PackageIdeaEvaluationGuardrails {
+  return {
+    problemRealityCheck: `Do not launch ${pkg.title} as a solution in search of a problem or a made-up problem; validate the painful workflow behind "${pkg.customerOutcome}" before treating AI as the answer.`,
+    superficialPlausibilityCheck: `Reject ${pkg.title} if the idea only sounds logical from a pitch deck. Prove the buyer is genuinely bothered in daily operations, already works around the pain, and would care enough to pay or change behavior.`,
+    technologyFirstTrapWarning: `Do not start with "AI can do this" and then hunt for an application. Start with the user's painful service workflow, then use AI only where it helps deliver the outcome reliably.`,
+    tarPitRiskCheck: `Research why similar ${pkg.title.toLowerCase()} attempts, agencies, tools, or internal workflows failed before. Name the structural blockers so a superficially plausible, tantalizing-from-a-distance idea does not become a tar pit.`,
+    tarPitResearchProtocol: [
+      `Google prior ${pkg.title.toLowerCase()} attempts, adjacent SaaS tools, agencies, marketplaces, and internal workflow projects before building.`,
+      "Talk to operators, customers, or founders who tried a similar idea and ask exactly what made adoption, retention, distribution, or workflow change fail.",
+      "Write the hard-part hypothesis before launch: the specific structural barrier this package handles differently from failed attempts.",
+    ],
+    tarPitCategoryWarnings: [
+      `Social coordination tar pit: do not let ${pkg.title} inherit the college weekend-plans trap where universal text-thread pain, event lists, and friend invites hide hard social dynamics and switching barriers.`,
+      `Fun discovery tar pit: restaurant discovery, music discovery, and hobby-discovery apps are picked-over spaces where personal interest rarely proves monetizable, urgent demand.`,
+      `Abstract societal problem trap: climate, poverty, and other huge goals need tractable wedge workflows before they are startup ideas; ${pkg.title} must name a specific pain someone can buy now.`,
+      "Low-hit-rate idea spaces: consumer hardware, social networks, and ad tech require extra skepticism because the category itself has historically lower startup hit rates than boring service workflows.",
+    ],
+    socialCoordinationTarPitWarning: "Treat fun social coordination app logic as the canonical tar pit warning: universal weekend-plan pain feels obvious and superficially plausible, but two decades of event lists, friend invites, and group-planning apps show that ubiquity does not equal willingness to switch.",
+    funDiscoveryTarPitWarning: `Do not package ${pkg.title} like a fun discovery app unless there is acute demand. Restaurant discovery, music discovery, and hobby-finding ideas are often picked over by thousands of founders and hard to monetize because curiosity is not the same as willingness to pay.`,
+    abstractSocietalProblemWarning: `Do not start ${pkg.title} from an abstract societal problem. Big goals such as poverty or climate need a tractable workflow, named buyer, budget, and specific pain point before they become a viable package.`,
+    lowHitRateIdeaSpaceWarning: `Treat consumer hardware, social networks, and ad tech as low-hit-rate idea spaces that need stronger proof than normal: prior-attempt research, distribution insight, acute pain, and a hard-part hypothesis before launch.`,
+    tarPitAvoidanceChecklist: [
+      `Google ${pkg.title.toLowerCase()} and adjacent idea spaces before launch; many tar pits are obvious only after you see the graveyard of prior attempts.`,
+      "Talk to founders, operators, or customers who tried similar ideas and ask what structural hard part blocked adoption, retention, distribution, monetization, or workflow change.",
+      "Run Fire or Promotion before building: if the pain is not tied to firing risk, promotion upside, business survival, revenue, cost, speed, or risk, treat it as nice-to-have.",
+      "Prefer boring service workflows where customers already spend money over fun, universal, picked-over ideas that only feel plausible from personal experience.",
+    ],
+    hardPartHypothesis: `Before launch, state the hard part for ${pkg.title}: the adoption, trust, data access, workflow-change, compliance, distribution, or reliability barrier that previous attempts did not solve.`,
+    founderMarketFitCheck: `Confirm the operator has founder-market fit: domain access, customer empathy, delivery expertise, distribution, or a credible forward-deployed path into ${pkg.buyerPersona}.`,
+    boringHardCompetitiveAdvantage: `Prefer the boring, hard, or competitive version of this package when it exposes service spend, regulatory schlep, messy handoffs, or incumbents that users tolerate but dislike.`,
+    boringSpaceValidationThesis: `Validate ${pkg.title} in boring spaces before chasing fun markets: tax, payroll, trucking compliance, insurance operations, regulated admin, and similar schlep-heavy workflows often have higher hit rates because the pain is real, budgets exist, and fewer founders do the work.`,
+    physicalObservationSchlepProtocol: `Do the schlep for ${pkg.title}: go where the work physically or operationally happens, interview frontline operators, watch the workflow in context, and find truck-stop-style fuel-card wedges that do not appear in desk research.`,
+    invisiblePainDiscoverySignal: `Look for invisible ${pkg.title} pains that programmers rarely see: phone-order, 1-800-number, spreadsheet, fax, inbox, and tribal-knowledge workflows where specialists have tolerated broken processes for years.`,
+    forwardDeployedWorkflowValidation: `Validate ${pkg.title} as a forward-deployed engineer: sit with the customer, map tailored time-in-motion, trace how requests arrive and get enriched, and identify where call centers, manual entry, approvals, or judgment bridge gaps.`,
+    lastTenPercentEdgeCaseValidation: `Do not call ${pkg.title} validated until the last 10% is visible: list the edge cases, specialized knowledge, exception paths, and 99% reliability requirements that separate a demo from a trusted service in mission-critical work.`,
+    acutePainCheck: `Qualify acute pain before delivery: ${pkg.title} should solve existential pain, not a minor inconvenience. The buyer should fear lost revenue, wasted labor, missed customers, compliance risk, churn, promotion risk, or another urgent business consequence if this workflow stays broken.`,
+    topThreePriorityTest: `Treat ${pkg.title} as viable only if the workflow is a top three priority for the buyer this quarter, not a nice-to-have improvement they will revisit after urgent work is done.`,
+    existentialPainTest: `Run the fire-or-promotion test: the buyer should believe unresolved ${pkg.title.toLowerCase()} pain could cost them a promotion, get someone fired, materially slow growth, or put the business at risk.`,
+    fireOrPromotionAcutenessTest: `Use the Fire or Promotion test as the acuteness gate for ${pkg.title}: the pain should be severe enough that the buyer fears being fired, missing a promotion, not wanting to face the work, or losing business momentum if the workflow stays broken.`,
+    fireRiskSignal: `The fire-side signal for ${pkg.title} is explicit professional risk: someone could miss their number, lose credibility, miss promotion, get fired, avoid the work, or see the business suffer if the issue remains unsolved.`,
+    promotionUpsideSignal: `The promotion-side signal for ${pkg.title} is visible upside: solving the workflow could help the buyer advance, unlock next-year growth, take over more of the business, or become the operator who fixed a top-priority problem.`,
+    topThreeProblemRequirement: `Do not treat ${pkg.title} as acute unless it is a top three customer problem right now; if the buyer calls it useful but can delay it, it is still nice-to-have.`,
+    willingnessToPayAcutenessSignal: `Use willingness to pay as the Fire or Promotion proof: buyers with existential pain will budget, complain about price but still pay, or change behavior because the unsolved problem is more expensive.`,
+    plainSightOpportunitySignal: `Look for ${pkg.title} opportunities lying in plain sight: high-stakes, emotionally obvious work that operators endure every day and that can support a very large company when solved with reliable service replacement.`,
+    pricingBinaryValidationSignal: `Use pricing as the binary validation test for ${pkg.title}: if buyers refuse to pay, the pain is not acute enough; if they complain about a high price but still pay, the boring problem is real; if they say yes immediately, the price may be too low.`,
+    pricingBinaryTestDefinition: `Define the Binary Test for ${pkg.title} as charging real money to see whether the buyer will open their wallet. The result should teach quickly: either the customer pays, or the package has not created enough value to overcome the price tag.`,
+    openWalletValueSignal: `Treat open-wallet behavior as value validation for ${pkg.title}. A refusal to pay means the workflow is not yet a top-three problem, the buyer segment is wrong, or the package has not made the outcome valuable enough.`,
+    binaryTestCustomerSegmentSignal: `Use Binary Test results to identify the right ${pkg.title} customer segment: the best segment is the group that pays fastest, complains least about implementation friction, and most clearly connects the outcome to budget.`,
+    premiumPriceLearningSignal: `Do not validate ${pkg.title} by undercutting alone. A startup can learn more by charging a premium when it believes the outcome is meaningfully better, as Stripe did when early developer-friendly setup and documentation justified a higher transaction fee than competitors.`,
+    complainButPayValidationSignal: `The strongest ${pkg.title} pricing signal is not polite interest; it is a buyer who complains about the price but pays anyway because the cost of leaving the problem unsolved is higher.`,
+    highAttritionValidationSignal: `Use high attrition as ${pkg.title} validation: 50% to 80% annual churn in support, admin, field, or compliance roles signals torturous repetitive work that businesses may welcome AI-native service replacement for.`,
+    alternativeIsNothingTest: `Look for a "current alternative is nothing" wedge: if the buyer cannot solve the critical need through banks, agencies, software, staff, or internal process, the pain is more likely acute.`,
+    chargeValidationTest: `Charge money as the binary test. The best signal is a high price that customers complain about but still pay because solving the problem is worth more than the cost.`,
+    highValueNeedCategories: [
+      `Make more money: ${pkg.title} should connect to revenue, pipeline, recovered demand, accepted outputs, or monetizable customer action.`,
+      `Reduce costs: ${pkg.title} should remove meaningful labor, vendor spend, rework, missed handoffs, or operational waste.`,
+      `Move faster: ${pkg.title} should compress launch, response, production, approval, or fulfillment timelines from months to weeks, weeks to days, or days to minutes.`,
+      `Avoid risk: ${pkg.title} should reduce compliance, legal, payment, brand, customer-loss, or operational exposure.`,
+    ],
+    moatTiming: "Do not reject the idea for lacking a five-year moat on day one; early defensibility is speed, customer proximity, learning rate, and reliable execution through the final delivery edge cases.",
+    pricingDiscipline: "Charge early, avoid under-charging, and do not compete only on lower price. Price from the value of the completed service and proof of outcome.",
   };
 }
 

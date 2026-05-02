@@ -9,7 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import {
   getPackageAudienceContract,
   getPackageAutomationContract,
+  getPackageIdeaEvaluationGuardrails,
   getPackagePlanNames,
+  getPackageServiceReplacementStrategy,
   getProvisionablePackage,
   getUniversalPackageCredentialFields,
   provisionablePackages,
@@ -41,8 +43,28 @@ export default async function PackagePage({ params }: Props) {
   if (!pkg) notFound();
   const automationContract = getPackageAutomationContract(pkg);
   const audience = getPackageAudienceContract(pkg);
+  const serviceStrategy = getPackageServiceReplacementStrategy(pkg);
+  const ideaGuardrails = getPackageIdeaEvaluationGuardrails(pkg);
   const personaBlueprint = getPackagePersonaBlueprint(pkg.slug);
   const clientExample = getPackageClientExample(pkg.slug);
+  const launchReadinessCards = [
+    {
+      title: "Demand proof",
+      body: ideaGuardrails.pricingBinaryValidationSignal,
+    },
+    {
+      title: "Outcome pricing",
+      body: serviceStrategy.outcomePricing,
+    },
+    {
+      title: "Process moat",
+      body: serviceStrategy.processPowerLastTenPercentMoat,
+    },
+    {
+      title: "Reliability gate",
+      body: serviceStrategy.lastTenPercentReliability,
+    },
+  ] as const;
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
@@ -82,6 +104,829 @@ export default async function PackagePage({ params }: Props) {
             <span className="font-semibold">Suggested agency pricing:</span> {pkg.pricingModel}
           </p>
         ) : null}
+      </section>
+
+      <section className="mb-8" aria-labelledby="launch-readiness-heading">
+        <Badge variant="outline" className="mb-3">
+          Launch readiness
+        </Badge>
+        <h2 id="launch-readiness-heading" className="text-2xl font-bold text-foreground">
+          Decide from proof first, then inspect the full operating thesis.
+        </h2>
+        <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {launchReadinessCards.map((card) => (
+            <Card key={card.title}>
+              <CardHeader>
+                <CardTitle className="text-base">{card.title}</CardTitle>
+                <CardDescription>{card.body}</CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Service-replacement strategy</CardTitle>
+            <CardDescription>
+              This package is framed as work delivered, not a seat-based SaaS tool or co-pilot the buyer has to operate.
+            </CardDescription>
+          </CardHeader>
+          <CardContent
+            className="grid max-h-[720px] gap-3 overflow-y-auto pr-2 text-sm md:grid-cols-2"
+            tabIndex={0}
+            aria-label="Detailed service-replacement evidence"
+          >
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Services budget</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.servicesBudgetTarget}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Service-heavy markets</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.targetServiceIndustries.join(", ")}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Industry replacement thesis</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.serviceReplacementIndustryThesis}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Financial/admin markets</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.financialAdminServiceMarkets.join(", ")}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Banking operations</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.bankingOperationsUseCases.join(", ")}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Healthcare and legal</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.healthcareLegalServiceMarkets.join(", ")}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Specialized verticals</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.specializedVerticalMarkets.join(", ")}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Support and language</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.customerSupportLanguageMarkets.join(", ")}</p>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">Easy replacement industries</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground sm:grid-cols-2">
+                {serviceStrategy.easiestServiceReplacementIndustries.map((industry) => (
+                  <li key={industry}>{industry}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Why easiest to replace</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.easiestServiceReplacementRationale}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Outsourced outcome budget</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.outsourcedOutcomeBudgetSignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Boring schlep</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.boringSchlepServiceOpportunity}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Fragmented non-technical markets</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.fragmentedNonTechnicalReplacementPath}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Legal application layer</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.legalApplicationLayerReplacement}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Multilingual support advantage</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.multilingualSupportReplacementAdvantage}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Outsourced-service readiness</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.outsourcedServiceReadiness}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Fragmented non-tech wedge</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.fragmentedNonTechBudgetOpportunity}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">High-attrition labor wedge</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.highAttritionLaborWedge}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Pricing trade-off</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.pricingTradeoffSummary}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Per-seat cannibalization trap</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.perSeatCannibalizationTrap}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Per-seat wallet limit</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.perSeatLimitedWalletShare}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Incumbent pricing resistance</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.incumbentPricingCultureResistance}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Work-based pricing opportunity</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.workBasedPricingOpportunity}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Services-budget upside</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.servicesBudgetPricingUpside}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Labor attrition value</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.outcomeDrivenLaborAttritionValue}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Superhuman capability pricing</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.superhumanCapabilityPricing}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Work-based pilot risk</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.workBasedPricingPilotRisk}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Pricing survival rule</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.pricingSurvivalRule}</p>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">Pricing trade-off matrix</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground">
+                {serviceStrategy.pricingTradeoffMatrix.map((tradeoff) => (
+                  <li key={tradeoff}>{tradeoff}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Per-seat risk</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.perSeatRisk}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Outcome pricing</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.outcomePricing}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Business process automation</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.businessProcessAutomationShift}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Service-performing automation</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.servicePerformingAutomation}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Self-regulating loop</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.selfRegulatingAutomationLoop}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Task-priced automation</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.taskPricedAutomation}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Wallet share</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.walletShareExpansion}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Aligned incentives</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.alignedIncentives}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Closed loop</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.closedLoopSystem}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Open-loop replacement</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.openLoopReplacement}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Legible organization</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.legibleOrganization}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Artifact generation</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.artifactGenerationPolicy}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Comprehensive context</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.comprehensiveContextLayer}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Autonomous sprint planning</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.autonomousSprintPlanning}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Human middleware removal</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.humanMiddlewareRemoval}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Closed-loop velocity</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.closedLoopVelocityGain}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Intelligence OS</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.intelligenceOperatingSystem}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Queryable organization</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.queryableOrganizationModel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Operating system view</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.queryableOperatingSystemView}</p>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">Artifact-rich legibility sources</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground">
+                {serviceStrategy.artifactRichLegibilitySources.map((source) => (
+                  <li key={source}>{source}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Legible by default</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.legibleByDefaultPolicy}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Queryable middleware replacement</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.queryableHumanMiddlewareReplacement}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Autonomous coordination</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.queryableAutonomousCoordination}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Queryable humans at the edge</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.queryableHumansAtEdgeRole}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Queryable token maxing</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.queryableTokenMaxingRule}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Artifact-rich environment</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.artifactRichEnvironment}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Transparent channels</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.transparentCommunicationPolicy}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Contextual parity</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.contextualParityRule}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Intelligence-layer coordination</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.intelligenceLayerCoordination}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Humans at the edge</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.humansAtTheEdgeModel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Sprint intelligence loop</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.sprintPlanningIntelligenceLoop}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Token-maxing cost shift</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.tokenMaxingCostShift}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Process power</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.processPowerMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Not a wrapper</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.wrapperCloneMisconception}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">99% accuracy hurdle</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.accuracyHurdleMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Big-lab defense</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.bigLabDrudgeryDefense}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Deep backend logic</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.deepBackendLogicMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Integration surface area</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.integrationSurfaceAreaMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Customer-minted workflow</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.customerMintedWorkflow}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Process automation moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.processAutomationMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Pilot to core infrastructure</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.pilotToCoreInfrastructure}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">AI software factory</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.aiSoftwareFactory}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Software factory speed moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.softwareFactorySpeedMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Speed moat thesis</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.speedMoatThesis}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Speed moat against labs</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.speedMoatAgainstLabs}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Human-middleware speed gain</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.humanMiddlewareSpeedGain}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Queryable sprint compression</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.queryableSprintCompression}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">One-day sprint cadence</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.oneDaySprintCadence}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Incumbent craft overhead</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.incumbentCraftOverhead}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Legacy operating constraint</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.legacyOperatingConstraint}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">AI-native from day one</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.aiNativeFromDayOneAdvantage}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Forward-deployed speed loop</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.forwardDeployedSpeedLoop}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Moat powers framework</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.moatPowerFrameworkSummary}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Speed as primary moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.speedAsPrimaryMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">AI Seven Powers framework</h2>
+              <ul className="mt-2 grid gap-2 pl-0 md:grid-cols-2">
+                {serviceStrategy.aiSevenPowersFramework.map((power) => (
+                  <li key={power} className="rounded-md bg-muted/50 p-2 text-muted-foreground">
+                    {power}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Process-power last 10%</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.processPowerLastTenPercentMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Counterpositioning moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.counterpositioningWorkBasedPricingMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Switching-costs moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.switchingCostsDeepIntegrationMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Eval network economy</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.networkEconomyEvalFlywheel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Cornered resource moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.corneredResourceDataEvalMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Scale economies moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.scaleEconomiesInfrastructureMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Branding trust moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.brandingTrustMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Schlep-blindness moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.schlepBlindnessBoringSpaceMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">System-of-record lock-in</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.systemOfRecordDataLockIn}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Drudgery discovery thesis</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.drudgeryDiscoveryThesis}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Forward-deployed time-in-motion</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.forwardDeployedTimeInMotion}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Nitty-gritty workflow map</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.nittyGrittyWorkflowMap}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Hidden logic discovery</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.hiddenLogicDiscovery}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Attrition discovery signal</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.attritionDiscoverySignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Boring workflow schlep map</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.boringWorkflowSchlepMap}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Lossy middleware discovery</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.lossyMiddlewareDiscovery}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Truck-stop field research</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.fieldResearchTruckStopMethod}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Mission-critical workflow filter</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.missionCriticalWorkflowFilter}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Hackathon reliability gap</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.hackathonReliabilityGap}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Existential pain workflow filter</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.existentialPainWorkflowFilter}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Specialized eval minting</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.specializedEvalMinting}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Treasure before labs</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.treasureBeforeLabs}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Spec and test harness</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.softwareFactorySpecContract}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Agent iteration loop</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.agentIterationLoop}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Last 10% reliability</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.lastTenPercentReliability}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">TDD agent loop</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.tddSoftwareFactoryLoop}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Scenario threshold</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.scenarioValidationThreshold}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Probabilistic review gate</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.probabilisticReviewGate}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Validation as reviewer</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.validationDrivenReviewReplacement}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Threshold evidence</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.thresholdEvidencePolicy}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Zero handwritten code posture</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.zeroHandwrittenCodePosture}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Specs-only repository goal</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.specsOnlyRepositoryGoal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Thousandx engineer</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.thousandXEngineerModel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Incumbent culture reset</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.incumbentCultureReset}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Context engineering shift</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.contextEngineeringShift}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Eval flywheel</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.evalFlywheel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Domain edge cases</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.domainEdgeCaseDrudgery}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Mission-critical moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.missionCriticalProcessPower}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Human wrangling model</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.humanWranglingModel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Token-usage org design</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.tokenUsageOrgDesign}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Management hierarchy replacement</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.managementHierarchyReplacement}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">IC builder operator</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.icBuilderOperatorModel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Prototype-first meetings</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.prototypeFirstMeetingCulture}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">DRI outcome ownership</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.driOutcomeOwnershipModel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">One person, one outcome</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.onePersonOneOutcomeRule}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">DRI strategy outcome focus</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.driStrategyOutcomeFocus}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">DRI specific result contract</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.driSpecificResultContract}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">DRI no hierarchy hiding</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.driNoHierarchyHidingRule}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">DRI middle management replacement</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.driMiddleManagementReplacement}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">DRI intelligence layer guidance</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.driIntelligenceLayerGuidance}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">DRI edge guidance role</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.driEdgeGuidanceRole}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">DRI token-maxing leverage</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.driTokenMaxingLeverage}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">DRI information velocity guardrail</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.driInformationVelocityGuardrail}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">AI founder leadership</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.aiFounderLeadershipModel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">AI strategy ownership</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.aiStrategyOwnershipRule}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Token-usage archetypes</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.tokenUsageArchetypeOperatingModel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Human-middleware velocity</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.humanMiddlewareVelocityGain}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Single-person agent leverage</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.singlePersonAgentLeverage}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Lean departments</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.leanDepartmentOperatingModel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">AI-native org archetypes</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground">
+                {serviceStrategy.organizationalArchetypes.map((archetype) => (
+                  <li key={archetype}>{archetype}</li>
+                ))}
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Startup idea guardrails</CardTitle>
+            <CardDescription>
+              Before selling this package, confirm it is not a solution in search of a problem, superficially plausible tar pit, or low-pain offer.
+            </CardDescription>
+          </CardHeader>
+          <CardContent
+            className="grid max-h-[640px] gap-3 overflow-y-auto pr-2 text-sm md:grid-cols-2"
+            tabIndex={0}
+            aria-label="Detailed startup idea guardrails"
+          >
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Real problem</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.problemRealityCheck}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Superficial plausibility</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.superficialPlausibilityCheck}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Technology-first trap</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.technologyFirstTrapWarning}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Tar pit risk</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.tarPitRiskCheck}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Social-app warning</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.socialCoordinationTarPitWarning}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Fun discovery warning</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.funDiscoveryTarPitWarning}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Abstract-problem warning</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.abstractSocietalProblemWarning}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Low-hit-rate spaces</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.lowHitRateIdeaSpaceWarning}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Hard part</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.hardPartHypothesis}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Founder-market fit</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.founderMarketFitCheck}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Acute pain</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.acutePainCheck}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Top-three priority</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.topThreePriorityTest}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Fire-or-promotion test</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.existentialPainTest}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Fire-or-promotion acuteness gate</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.fireOrPromotionAcutenessTest}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Fire risk signal</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.fireRiskSignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Promotion upside signal</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.promotionUpsideSignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Top-three problem requirement</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.topThreeProblemRequirement}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Willingness-to-pay acuteness</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.willingnessToPayAcutenessSignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Plain-sight opportunity</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.plainSightOpportunitySignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Boring-space validation</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.boringSpaceValidationThesis}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Physical-observation schlep</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.physicalObservationSchlepProtocol}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Invisible pain discovery</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.invisiblePainDiscoverySignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Forward-deployed workflow validation</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.forwardDeployedWorkflowValidation}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Last-10-percent validation</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.lastTenPercentEdgeCaseValidation}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Pricing binary validation</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.pricingBinaryValidationSignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Binary Test definition</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.pricingBinaryTestDefinition}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Open-wallet value signal</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.openWalletValueSignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Customer segment signal</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.binaryTestCustomerSegmentSignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Premium-price learning</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.premiumPriceLearningSignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Complain-but-pay signal</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.complainButPayValidationSignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">High-attrition validation</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.highAttritionValidationSignal}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Alternative is nothing</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.alternativeIsNothingTest}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Charge validation</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.chargeValidationTest}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Moat timing</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.moatTiming}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Pricing discipline</h2>
+              <p className="mt-1 text-muted-foreground">{ideaGuardrails.pricingDiscipline}</p>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">Tar-pit category warnings</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground">
+                {ideaGuardrails.tarPitCategoryWarnings.map((warning) => (
+                  <li key={warning}>{warning}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">Tar-pit research protocol</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground">
+                {ideaGuardrails.tarPitResearchProtocol.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">Tar-pit avoidance checklist</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground">
+                {ideaGuardrails.tarPitAvoidanceChecklist.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">High-value need categories</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground">
+                {ideaGuardrails.highValueNeedCategories.map((category) => (
+                  <li key={category}>{category}</li>
+                ))}
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
       <section className="mb-8 grid gap-4 md:grid-cols-3">
