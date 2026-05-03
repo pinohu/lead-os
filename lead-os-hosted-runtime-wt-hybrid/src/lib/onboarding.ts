@@ -350,6 +350,10 @@ export async function completeOnboarding(id: string): Promise<OnboardingState> {
     throw new Error("Onboarding session not found");
   }
 
+  if (state.currentStep === "complete" && state.provisioningResult) {
+    return state;
+  }
+
   const requiredSteps: OnboardingStep[] = ["niche", "plan", "branding", "integrations", "review"];
   for (const step of requiredSteps) {
     if (!state.completedSteps.includes(step)) {

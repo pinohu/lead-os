@@ -77,8 +77,8 @@ export async function POST(
 
     if (state.currentStep === "complete") {
       return NextResponse.json(
-        { data: null, error: { code: "ALREADY_COMPLETE", message: "Onboarding is already complete" }, meta: null },
-        { status: 400, headers },
+        { data: state, error: null, meta: { alreadyComplete: true } },
+        { status: 200, headers },
       );
     }
 

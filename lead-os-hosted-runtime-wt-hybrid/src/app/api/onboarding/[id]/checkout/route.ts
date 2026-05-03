@@ -6,6 +6,33 @@ import { getPlanById } from "@/lib/plan-catalog";
 
 const MAX_ID_LENGTH = 200;
 const VALID_ID_PATTERN = /^onb_[a-f0-9-]{36}$/;
+const PLACEHOLDER_STRIPE_PRICE_IDS = new Set([
+  "price_managed_starter",
+  "price_managed_growth",
+  "price_managed_enterprise",
+  "price_wl_starter",
+  "price_wl_growth",
+  "price_wl_enterprise",
+  "price_implementation",
+  "price_directory",
+]);
+
+function checkoutUnavailableResponse(headers: Record<string, string>, message: string) {
+  return NextResponse.json(
+    {
+      data: {
+        checkoutUrl: null,
+        sessionId: `checkout_unavailable_${Date.now()}`,
+        dryRun: true,
+        checkoutUnavailable: true,
+        message,
+      },
+      error: null,
+      meta: { checkoutUnavailable: true },
+    },
+    { status: 200, headers },
+  );
+}
 
 export async function POST(
   request: Request,
@@ -55,6 +82,13 @@ export async function POST(
       );
     }
 
+    if (PLACEHOLDER_STRIPE_PRICE_IDS.has(plan.stripePriceId)) {
+      return checkoutUnavailableResponse(
+        headers,
+        "Stripe price IDs are not configured yet, so onboarding can continue without live checkout.",
+      );
+    }
+
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
     const successUrl = `${baseUrl}/onboard?session_id={CHECKOUT_SESSION_ID}&step=complete&onboarding_id=${id}`;
     const cancelUrl = `${baseUrl}/onboard?step=plan&onboarding_id=${id}`;
@@ -72,6 +106,16 @@ export async function POST(
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to create checkout session";
+
+    if (message.includes("Stripe is not configured") || message.includes("No such price")) {
+      return checkoutUnavailableResponse(
+        headers,
+        message.includes("No such price")
+          ? "Stripe price IDs are not configured yet, so onboarding can continue without live checkout."
+          : "Stripe is not configured yet, so onboarding can continue without live checkout.",
+      );
+    }
+
     return NextResponse.json(
       { data: null, error: { code: "CHECKOUT_FAILED", message }, meta: null },
       { status: 500, headers },

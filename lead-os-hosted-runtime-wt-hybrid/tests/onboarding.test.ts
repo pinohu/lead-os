@@ -343,6 +343,16 @@ test("completeOnboarding returns provisioning result", async () => {
   assert.ok(completed.tenantId);
 });
 
+test("completeOnboarding is idempotent after provisioning", async () => {
+  const completed = await fullOnboarding("idempotent-complete@example.com");
+  const repeated = await completeOnboarding(completed.id);
+
+  assert.equal(repeated.id, completed.id);
+  assert.equal(repeated.currentStep, "complete");
+  assert.equal(repeated.tenantId, completed.tenantId);
+  assert.deepEqual(repeated.provisioningResult, completed.provisioningResult);
+});
+
 test("completeOnboarding cannot skip steps", async () => {
   const state = await startOnboarding("skip@example.com");
   assert.equal(state.currentStep, "niche");
