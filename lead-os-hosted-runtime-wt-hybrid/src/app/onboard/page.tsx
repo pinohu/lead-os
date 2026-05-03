@@ -88,6 +88,13 @@ const STEP_LABELS: Record<WizardStep, string> = {
 
 const WIZARD_STEPS: WizardStep[] = ["niche", "plan", "branding", "integrations", "review"];
 
+function isRecoverableCheckoutConfigError(message: string): boolean {
+  const normalized = message.toLowerCase();
+  return normalized.includes("no such price") ||
+    normalized.includes("stripe is not configured") ||
+    normalized.includes("checkout cannot run");
+}
+
 export default function OnboardPage() {
   const [step, setStep] = useState<WizardStep>("email");
   const [session, setSession] = useState<OnboardingSession | null>(null);
@@ -210,7 +217,14 @@ export default function OnboardPage() {
       });
       const json = await res.json();
       if (!res.ok) {
-        setError(json.error?.message ?? "Failed to start checkout");
+        const message = json.error?.message ?? "Failed to start checkout";
+        if (isRecoverableCheckoutConfigError(message)) {
+          setError(null);
+          setStep("complete");
+          setPaymentPending(false);
+          return;
+        }
+        setError(message);
         setPaymentPending(false);
         return;
       }
@@ -319,6 +333,7 @@ export default function OnboardPage() {
 
   const completedStepIndex = WIZARD_STEPS.indexOf(step as typeof WIZARD_STEPS[number]);
   const alreadyCompleteError = error?.toLowerCase().includes("already complete") ?? false;
+  const checkoutConfigError = error ? isRecoverableCheckoutConfigError(error) : false;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -383,7 +398,37 @@ export default function OnboardPage() {
           </div>
         )}
 
-        {error && !alreadyCompleteError && (
+        {checkoutConfigError && (
+          <div role="status" aria-live="polite" className="mb-6 rounded-xl border border-teal-500/30 bg-teal-500/[0.08] p-8">
+            <p className="mb-2 text-[0.95rem] font-bold text-teal-300">Checkout is not connected yet.</p>
+            <p className="mb-5 text-[0.9rem] leading-relaxed text-muted-foreground">
+              Stripe returned a setup issue for this plan, but the operator account can still move forward. Launch the solution now and connect live billing from credentials later.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => { setError(null); setStep("complete"); }}
+                className="inline-flex min-h-[44px] items-center rounded-lg border border-teal-500/30 bg-teal-500 px-5 py-2.5 text-[0.9rem] font-bold text-[#0a0f1a]"
+              >
+                Continue Without Stripe
+              </button>
+              <a
+                href="/packages"
+                className="inline-flex min-h-[44px] items-center rounded-lg border border-teal-500/30 bg-teal-500/10 px-5 py-2.5 text-[0.9rem] font-semibold text-teal-500 no-underline"
+              >
+                Launch Solutions
+              </a>
+              <a
+                href="/dashboard/credentials"
+                className="inline-flex min-h-[44px] items-center rounded-lg border border-slate-400/30 bg-transparent px-5 py-2.5 text-[0.9rem] font-semibold text-muted-foreground no-underline"
+              >
+                Connect Billing
+              </a>
+            </div>
+          </div>
+        )}
+
+        {error && !alreadyCompleteError && !checkoutConfigError && (
           <div role="alert" className="mb-6 rounded-xl border border-red-400/30 bg-red-400/10 p-8">
             <p className="text-[0.9rem] text-red-400">{error}</p>
           </div>
