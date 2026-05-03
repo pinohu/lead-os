@@ -122,7 +122,8 @@ test("generated HTML is mobile responsive", () => {
   assert.ok(html.includes("viewport"));
   assert.ok(html.includes("width=device-width"));
   assert.ok(html.includes("@media"));
-  assert.ok(html.includes("clamp("));
+  assert.ok(html.includes(".hero h1{font-size:34px;}"));
+  assert.ok(!html.includes("font-size:clamp("));
 });
 
 test("generated HTML has inline CSS only (no external deps)", () => {

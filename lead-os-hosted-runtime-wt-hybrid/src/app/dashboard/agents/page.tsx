@@ -321,7 +321,7 @@ export default function AgentsPage() {
           className={`px-5 py-2 rounded-md border-none text-sm font-bold min-h-[44px] ${
             submitting
               ? "bg-muted text-muted-foreground cursor-not-allowed"
-              : "bg-teal-500 text-white cursor-pointer"
+              : "bg-teal-700 text-white cursor-pointer"
           }`}
         >
           {submitting ? "Starting..." : "Run Agent"}
@@ -336,7 +336,7 @@ export default function AgentsPage() {
       {error && (
         <div
           role="alert"
-          className="px-4 py-2.5 mb-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm"
+          className="px-4 py-2.5 mb-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-300 text-sm"
         >
           {error}
         </div>

@@ -71,10 +71,10 @@ const STATUS_DOT: Record<string, string> = {
 };
 
 const ROUTE_CLASSES: Record<string, string> = {
-  "fast-track": "bg-violet-500",
-  conversion: "bg-blue-500",
-  nurture: "bg-amber-500",
-  drip: "bg-gray-500",
+  "fast-track": "bg-violet-700",
+  conversion: "bg-blue-700",
+  nurture: "bg-amber-700",
+  drip: "bg-gray-700",
 };
 
 export default function PipelinePage() {
@@ -240,7 +240,7 @@ export default function PipelinePage() {
             <h2 id="pipeline-result-heading" className="text-foreground text-lg font-bold">Pipeline Result</h2>
 
             <div className="flex gap-3 flex-wrap">
-              <span className={`${ROUTE_CLASSES[pipelineResult.route] ?? "bg-gray-500"} text-white px-3.5 py-1.5 rounded-full text-xs font-bold`}>
+              <span className={`${ROUTE_CLASSES[pipelineResult.route] ?? "bg-gray-700"} text-white px-3.5 py-1.5 rounded-full text-xs font-bold`}>
                 Route: {pipelineResult.route}
               </span>
               <span className="bg-muted px-3.5 py-1.5 rounded-full text-xs">
@@ -416,7 +416,7 @@ export default function PipelinePage() {
                 {Object.entries(testbedReport.routePercentages).map(([route, pct]) => (
                   <div
                     key={route}
-                    className={`${ROUTE_CLASSES[route] ?? "bg-gray-500"} text-white px-4 py-2 rounded-lg text-sm font-bold`}
+                    className={`${ROUTE_CLASSES[route] ?? "bg-gray-700"} text-white px-4 py-2 rounded-lg text-sm font-bold`}
                   >
                     {route}: {pct}% ({testbedReport.routeDistribution[route]})
                   </div>

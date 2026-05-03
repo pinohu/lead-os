@@ -347,7 +347,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
                   href={lead.destination}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-lg border-none bg-blue-500 px-4 py-2 text-[13px] font-semibold text-white no-underline"
+                  className="rounded-lg border-none bg-blue-700 px-4 py-2 text-[13px] font-semibold text-white no-underline"
                 >
                   {lead.ctaLabel || "Open destination"}
                 </a>

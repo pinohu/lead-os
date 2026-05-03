@@ -78,7 +78,7 @@ export default function JoyDashboard() {
       {/* -- Greeting ------------------------------------------------- */}
       <section className="max-w-5xl mx-auto px-4 py-8 md:py-12 text-center">
         <div className="max-w-2xl mx-auto max-w-[700px]">
-          <h1 className="text-foreground text-[clamp(1.6rem,4vw,2.4rem)]">
+          <h1 className="text-3xl font-extrabold leading-tight text-foreground">
             {briefing.greeting}
           </h1>
           <p className="text-lg text-foreground">{briefing.summary}</p>
@@ -88,7 +88,7 @@ export default function JoyDashboard() {
       {/* -- Time Saved -- hero metric -------------------------------- */}
       <section className="rounded-xl border border-border bg-card p-6 text-center border-2 border-[var(--accent)] bg-[var(--accent-soft)]">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Time you got back</p>
-        <h2 className="my-2 text-[clamp(2rem,5vw,3.5rem)] text-[var(--accent)]">
+        <h2 className="my-2 text-5xl font-extrabold leading-tight text-[var(--accent)]">
           {briefing.timeSaved.totalHoursSaved.toFixed(1)} hours
         </h2>
         <p className="text-muted-foreground">{briefing.timeSaved.personalMessage}</p>

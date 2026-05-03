@@ -331,7 +331,7 @@ function ProspectCard({
           disabled={isContacting}
           aria-busy={isContacting}
           aria-label={`Mark ${prospect.businessName} as contacted`}
-          className="min-h-9 cursor-pointer rounded-lg border-none bg-blue-500 px-3.5 py-1.5 font-[inherit] text-xs font-semibold text-white"
+          className="min-h-11 cursor-pointer rounded-lg border-none bg-blue-700 px-3.5 py-2 font-[inherit] text-xs font-semibold text-white"
           style={{ opacity: isContacting ? 0.6 : 1 }}
         >
           {isContacting ? "Marking..." : "Contact"}
@@ -658,7 +658,7 @@ export default function ProspectsPage() {
                 type="submit"
                 disabled={scoutLoading}
                 aria-busy={scoutLoading}
-                className="ml-auto min-h-11 cursor-pointer rounded-lg border-none bg-blue-500 px-5 py-2.5 font-[inherit] text-sm font-semibold text-white"
+                className="ml-auto min-h-11 cursor-pointer rounded-lg border-none bg-blue-700 px-5 py-2.5 font-[inherit] text-sm font-semibold text-white"
                 style={{ opacity: scoutLoading ? 0.6 : 1 }}
               >
                 {scoutLoading ? "Scouting..." : "Scout Now"}

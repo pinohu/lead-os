@@ -330,16 +330,18 @@ No env vars are required for development. For production, see the [Complete Guid
 
 ```bash
 cd lead-os-hosted-runtime-wt-hybrid
+npm run verify:a11y-static
 npm test
 ```
 
-The hybrid kernel ships a large `node:test` tree under `tests/`. Counts change frequently — **run `npm test`** for the authoritative result. Most external integrations use **dry-run** behavior when API keys are absent.
+The hybrid kernel ships a large `node:test` tree under `tests/`. Counts change frequently — **run `npm test`** for the authoritative result. Run `npm run verify:a11y-static` before UI, copy, package, or delivery-surface changes; it blocks known contrast, target-size, disabled-state, and font-scaling regressions. Most external integrations use **dry-run** behavior when API keys are absent.
 
 ## Documentation
 
 | Document | Purpose |
 |----------|---------|
 | [**Start here (novices)**](docs/START-HERE.md) | Single path: clone → run kernel → Postgres/migrations → operator → production checks; reconciles marketing vs shipped behavior |
+| [Accessibility heuristic audit](docs/ACCESSIBILITY-HEURISTIC-AUDIT.md) | Nielsen Norman heuristic map plus Lead OS contrast, target-size, typography, recovery, and verification guardrails |
 | [Claims verification (kernel)](lead-os-hosted-runtime-wt-hybrid/docs/CLAIMS-VERIFICATION.md) | Defines which Markdown claims are binding and what `npm run verify:product-surfaces` checks |
 | [GitHub + Vercel automation](docs/GITHUB_VERCEL_AUTOMATION.md) | CI gates, Vercel Git deploy, optional migration workflow, Dependabot |
 | [Complete Guide](LEAD-OS-COMPLETE-GUIDE.md) | Full platform documentation (architecture, API reference, deployment, economics, AppSumo roadmap) |

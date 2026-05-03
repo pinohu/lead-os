@@ -168,7 +168,7 @@ export default function ExperimentsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as ExperimentStatus | "all")}
-              className="min-h-[36px] px-3 py-1.5 rounded-xl border border-border/60 bg-background text-foreground text-sm"
+              className="min-h-[44px] px-3 py-2 rounded-xl border border-border/60 bg-background text-foreground text-sm"
             >
               <option value="all">All statuses</option>
               <option value="running">Running</option>
@@ -244,14 +244,14 @@ export default function ExperimentsPage() {
                     type="button"
                     onClick={() => setExpandedExperiment(isExpanded ? null : experiment.experimentId)}
                     aria-expanded={isExpanded}
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-h-[36px] px-3.5 py-1.5"
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-h-[44px] px-3.5 py-2"
                   >
                     {isExpanded ? "Hide analysis" : "View analysis"}
                   </button>
                   {bestVariant && experiment.status === "completed" && (
                     <button
                       type="button"
-                      className="primary min-h-[36px] px-3.5 py-1.5 text-sm"
+                      className="primary min-h-[44px] px-3.5 py-2 text-sm"
                       disabled={promoteStatus[experiment.experimentId] === "pending"}
                       onClick={() => handlePromoteWinner(experiment.experimentId, bestVariant.variantId)}
                     >

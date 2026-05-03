@@ -228,8 +228,8 @@ export default function FeedbackPage() {
               type="button"
               onClick={() => handleRunCycle(type)}
               disabled={running}
-              className={`border-none rounded-lg px-4 py-2 text-[13px] font-semibold min-h-[36px] ${
-                running ? "bg-muted text-white cursor-not-allowed" : "bg-teal-500 text-white cursor-pointer"
+              className={`border-none rounded-lg px-4 py-2 text-[13px] font-semibold min-h-[44px] ${
+                running ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-teal-700 text-white cursor-pointer"
               }`}
             >
               Run {type}
@@ -357,7 +357,7 @@ export default function FeedbackPage() {
                     <button
                       type="button"
                       onClick={() => handleApply(cycle.id)}
-                      className="bg-teal-500 text-white border-none rounded-md px-3.5 py-1.5 text-xs font-semibold cursor-pointer min-h-[32px]"
+                      className="bg-teal-700 text-white border-none rounded-md px-3.5 py-1.5 text-xs font-semibold cursor-pointer min-h-[44px]"
                     >
                       Apply {pendingAdjustments.length} pending adjustments
                     </button>

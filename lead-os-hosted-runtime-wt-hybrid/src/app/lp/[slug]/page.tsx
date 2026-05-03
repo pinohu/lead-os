@@ -59,7 +59,7 @@ const MAX_W_CLASSES = "max-w-[1080px] mx-auto";
 const CARD_CLASSES = "bg-slate-50 border border-slate-200 rounded-xl";
 
 /** Shared heading className */
-const HEADING_CLASSES = "mb-8 text-center -tracking-[0.02em]";
+const HEADING_CLASSES = "mb-8 text-center tracking-normal";
 
 // ─── Section: Hero ────────────────────────────────────────────────────────────
 
@@ -103,15 +103,15 @@ function HeroSection({
     >
       <div className={MAX_W_CLASSES}>
         <h1
-          className="mb-5 leading-[1.08] -tracking-[0.02em] text-white"
-          style={{ fontFamily: SERIF, fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
+          className="mb-5 text-5xl leading-tight tracking-normal text-white"
+          style={{ fontFamily: SERIF }}
         >
           {headline}
         </h1>
         {subheadline ? (
           <p
             className="text-white/90 max-w-[62ch] mx-auto mb-6 leading-relaxed"
-            style={{ fontSize: "clamp(1.05rem, 2vw, 1.3rem)" }}
+            style={{ fontSize: "1.125rem" }}
           >
             {subheadline}
           </p>
@@ -215,7 +215,7 @@ function ServicesSection({ content }: { content: Record<string, unknown> }) {
   return (
     <div className={SECTION_CLASSES}>
       <div className={MAX_W_CLASSES}>
-        <h2 className={HEADING_CLASSES} style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>Our Services</h2>
+        <h2 className={`${HEADING_CLASSES} text-4xl`} style={{ fontFamily: SERIF }}>Our Services</h2>
         <ul className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 list-none p-0 m-0">
           {items.map((item, index) => (
             <li
@@ -267,7 +267,7 @@ function SocialProofSection({ content }: { content: Record<string, unknown> }) {
   return (
     <div className={`${SECTION_CLASSES} bg-slate-50`}>
       <div className={MAX_W_CLASSES}>
-        <h2 className={HEADING_CLASSES} style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>What Our Customers Say</h2>
+        <h2 className={`${HEADING_CLASSES} text-4xl`} style={{ fontFamily: SERIF }}>What Our Customers Say</h2>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
           {reviews.map((review, index) => {
             const rating = typeof review.rating === "number" ? review.rating : 5;
@@ -350,8 +350,8 @@ function AboutSection({
     <div className={SECTION_CLASSES}>
       <div className={MAX_W_CLASSES}>
         <h2
-          className="text-foreground mb-5 -tracking-[0.02em]"
-          style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}
+          className="mb-5 text-4xl tracking-normal text-foreground"
+          style={{ fontFamily: SERIF }}
         >
           About {businessName}
         </h2>
@@ -434,7 +434,7 @@ function HoursSection({ content }: { content: Record<string, unknown> }) {
   return (
     <div className={`${SECTION_CLASSES} bg-slate-50`}>
       <div className="max-w-[600px] mx-auto">
-        <h2 className={HEADING_CLASSES} style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>Hours of Operation</h2>
+        <h2 className={`${HEADING_CLASSES} text-4xl`} style={{ fontFamily: SERIF }}>Hours of Operation</h2>
         <div className="p-6 rounded-xl bg-white border border-slate-200">
           <table
             className="w-full border-collapse text-[0.95rem]"
@@ -489,7 +489,7 @@ function AttributesSection({ content }: { content: Record<string, unknown> }) {
   return (
     <div className={SECTION_CLASSES}>
       <div className={MAX_W_CLASSES}>
-        <h2 className={HEADING_CLASSES} style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>Why Choose Us</h2>
+        <h2 className={`${HEADING_CLASSES} text-4xl`} style={{ fontFamily: SERIF }}>Why Choose Us</h2>
         <ul className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3 list-none p-0 m-0">
           {items.map((attr, index) => (
             <li
@@ -533,7 +533,7 @@ function FAQSection({ content }: { content: Record<string, unknown> }) {
   return (
     <div className={`${SECTION_CLASSES} bg-slate-50`}>
       <div className="max-w-[760px] mx-auto">
-        <h2 className={HEADING_CLASSES} style={{ fontFamily: SERIF, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>Frequently Asked Questions</h2>
+        <h2 className={`${HEADING_CLASSES} text-4xl`} style={{ fontFamily: SERIF }}>Frequently Asked Questions</h2>
         <div className="grid gap-2">
           {items.map((item, index) => (
             <details
@@ -582,8 +582,8 @@ function LeadMagnetSection({
     <div id="lead-capture" className={`${SECTION_CLASSES} bg-slate-50`}>
       <div className="max-w-[640px] mx-auto py-10 px-8 rounded-[20px] bg-white border border-slate-200 shadow-[0_18px_60px_rgba(24,33,29,0.08)]">
         <h2
-          className="mb-2.5 -tracking-[0.02em] text-foreground"
-          style={{ fontFamily: SERIF, fontSize: "clamp(1.5rem, 2.5vw, 2rem)" }}
+          className="mb-2.5 text-3xl tracking-normal text-foreground"
+          style={{ fontFamily: SERIF }}
         >
           {headline}
         </h2>
@@ -629,8 +629,8 @@ function CTABannerSection({
     <div className="py-12 px-6 text-center" style={{ background: accent }}>
       <div className={MAX_W_CLASSES}>
         <h2
-          className="mb-5 -tracking-[0.02em] text-white"
-          style={{ fontFamily: SERIF, fontSize: "clamp(1.5rem, 3vw, 2.2rem)" }}
+          className="mb-5 text-3xl tracking-normal text-white"
+          style={{ fontFamily: SERIF }}
         >
           {headline}
         </h2>

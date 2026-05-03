@@ -58,6 +58,7 @@ Package UX should lead with the buyer decision frame, not the entire thesis at o
 - **Operator surfaces** (`/dashboard/*`, control plane, GTM) reflect what you run day-to-day.
 - **Truth table:** See [`docs/PRODUCT-SURFACES.md`](./docs/PRODUCT-SURFACES.md). **Claims contract + CI-style check:** [`docs/CLAIMS-VERIFICATION.md`](./docs/CLAIMS-VERIFICATION.md) — run `npm run verify:product-surfaces` before asserting doc–code parity. In deployed apps, `/docs` links to the documentation hub (API OpenAPI, SLA summary, repo docs).
 - **First clone / novice path (whole monorepo):** [`../docs/START-HERE.md`](../docs/START-HERE.md) — use this before mixing marketing language with deployment steps.
+- **Accessibility + usability contract:** [`../docs/ACCESSIBILITY-HEURISTIC-AUDIT.md`](../docs/ACCESSIBILITY-HEURISTIC-AUDIT.md) — run `npm run verify:a11y-static` before shipping UI or package-surface changes.
 
 ## By the numbers (approximate — verify on your branch)
 
@@ -204,6 +205,9 @@ npm run dev
 
 # Run tests
 npm test
+
+# Run static accessibility and contrast guardrails
+npm run verify:a11y-static
 
 # Type check
 npx tsc --noEmit

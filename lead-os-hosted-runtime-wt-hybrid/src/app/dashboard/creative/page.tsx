@@ -213,7 +213,7 @@ export default function CreativePipelinePage() {
           <Link href="/dashboard" className="px-4 py-2 rounded-lg border border-muted-foreground/30 cursor-pointer text-sm font-semibold bg-transparent text-muted-foreground no-underline inline-flex items-center">
             Back to Dashboard
           </Link>
-          <button type="button" className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-500 text-white" onClick={() => setShowCreateForm(!showCreateForm)}>
+          <button type="button" className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-700 text-white" onClick={() => setShowCreateForm(!showCreateForm)}>
             {showCreateForm ? "Cancel" : "New Job"}
           </button>
         </div>
@@ -260,7 +260,7 @@ export default function CreativePipelinePage() {
           <p className="text-muted-foreground mb-4">
             No creative jobs yet. Create one to start generating assets automatically.
           </p>
-          <button type="button" className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-500 text-white" onClick={() => setShowCreateForm(true)}>
+          <button type="button" className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-700 text-white" onClick={() => setShowCreateForm(true)}>
             Create Your First Job
           </button>
         </div>
@@ -293,7 +293,7 @@ export default function CreativePipelinePage() {
                 <div className="flex gap-1.5">
                   <button
                     type="button"
-                    className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-500 text-white"
+                    className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-700 text-white"
                     disabled={isRunning}
                     onClick={() => handleRunJob(job.id)}
                     aria-label={`Run ${job.type} now`}
@@ -402,7 +402,7 @@ export default function CreativePipelinePage() {
             <div className="flex gap-2 mt-4">
               <button
                 type="button"
-                className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-500 text-white"
+                className="px-4 py-2 rounded-lg border-none cursor-pointer text-sm font-semibold bg-teal-700 text-white"
                 onClick={() => copyArtifactContent(previewArtifact.content)}
               >
                 Copy to Clipboard

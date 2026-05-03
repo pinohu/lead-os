@@ -291,9 +291,11 @@ export function generatePreviewHtml(config: WidgetPreviewConfig): string {
     customCss = "",
   } = config;
 
+  const actionColor = "#0f766e";
+
   const logoHtml = logoUrl
     ? `<img src="${logoUrl}" alt="${brandName} logo" style="height:40px;object-fit:contain;" />`
-    : `<span style="font-size:1.5rem;font-weight:800;color:${accentColor};">${brandName}</span>`;
+    : `<span style="font-size:1.5rem;font-weight:800;color:#0f172a;border-bottom:3px solid ${accentColor};">${brandName}</span>`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -336,10 +338,11 @@ export function generatePreviewHtml(config: WidgetPreviewConfig): string {
       text-align: center;
     }
     .hero h1 {
-      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-size: 3.5rem;
       font-weight: 800;
       margin-bottom: 16px;
       line-height: 1.2;
+      letter-spacing: 0;
     }
     .hero p {
       font-size: 1.2rem;
@@ -349,14 +352,17 @@ export function generatePreviewHtml(config: WidgetPreviewConfig): string {
     }
     .hero-cta {
       display: inline-block;
-      background: ${accentColor};
+      background: ${actionColor};
       color: #fff;
       padding: 14px 32px;
       border-radius: 999px;
       font-weight: 700;
       font-size: 1rem;
       text-decoration: none;
-      box-shadow: 0 12px 28px ${accentColor}44;
+      box-shadow: 0 12px 28px rgba(15, 118, 110, 0.28);
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 2.25rem; }
     }
     /* Widget section */
     .widget-section {

@@ -210,9 +210,9 @@ function HeroSection({ hero, colors, prefersReducedMotion }: HeroSectionProps) {
 
         <h1
           id="hero-headline"
-          className="mb-6 font-extrabold leading-[1.1] -tracking-[0.02em]"
+          className="mb-6 font-extrabold leading-tight tracking-normal"
           style={{
-            fontSize: "clamp(36px, 5.5vw, 64px)",
+            fontSize: "48px",
             color: colors.text,
             fontFamily: FONT_STACK,
           }}
@@ -223,7 +223,7 @@ function HeroSection({ hero, colors, prefersReducedMotion }: HeroSectionProps) {
         <p
           className="mb-10 leading-relaxed max-w-[680px] mx-auto"
           style={{
-            fontSize: "clamp(17px, 2.2vw, 22px)",
+            fontSize: "19px",
             color: colors.textMuted,
             fontFamily: FONT_STACK,
           }}
@@ -308,7 +308,7 @@ function HeroSection({ hero, colors, prefersReducedMotion }: HeroSectionProps) {
                 <span
                   className="font-extrabold leading-none"
                   style={{
-                    fontSize: "clamp(20px, 2.5vw, 28px)",
+                    fontSize: "24px",
                     color: colors.accent,
                     fontFamily: FONT_STACK,
                   }}
@@ -360,9 +360,9 @@ function ProblemSection({
       >
         <h2
           id="problem-heading"
-          className="text-center mb-12 font-extrabold -tracking-[0.02em]"
+          className="text-center mb-12 font-extrabold tracking-normal"
           style={{
-            fontSize: "clamp(28px, 4vw, 44px)",
+            fontSize: "36px",
             color: colors.text,
             fontFamily: FONT_STACK,
           }}
@@ -454,9 +454,9 @@ function SolutionSection({
       >
         <h2
           id="solution-heading"
-          className="mb-6 font-extrabold -tracking-[0.02em]"
+          className="mb-6 font-extrabold tracking-normal"
           style={{
-            fontSize: "clamp(28px, 4vw, 44px)",
+            fontSize: "36px",
             color: colors.text,
             fontFamily: FONT_STACK,
           }}
@@ -467,7 +467,7 @@ function SolutionSection({
         <p
           className="mb-8 leading-[1.7]"
           style={{
-            fontSize: "clamp(16px, 1.8vw, 19px)",
+            fontSize: "17px",
             color: colors.textMuted,
             fontFamily: FONT_STACK,
           }}
@@ -519,9 +519,9 @@ function HowItWorksSection({
       >
         <h2
           id="how-it-works-heading"
-          className="text-center mb-14 font-extrabold -tracking-[0.02em]"
+          className="text-center mb-14 font-extrabold tracking-normal"
           style={{
-            fontSize: "clamp(28px, 4vw, 44px)",
+            fontSize: "36px",
             color: colors.text,
             fontFamily: FONT_STACK,
           }}
@@ -605,9 +605,9 @@ function FeaturesSection({
       >
         <h2
           id="features-heading"
-          className="text-center mb-14 font-extrabold -tracking-[0.02em]"
+          className="text-center mb-14 font-extrabold tracking-normal"
           style={{
-            fontSize: "clamp(28px, 4vw, 44px)",
+            fontSize: "36px",
             color: colors.text,
             fontFamily: FONT_STACK,
           }}
@@ -768,9 +768,9 @@ function SocialProofSection({
       >
         <h2
           id="social-proof-heading"
-          className="text-center mb-12 font-extrabold -tracking-[0.02em]"
+          className="text-center mb-12 font-extrabold tracking-normal"
           style={{
-            fontSize: "clamp(28px, 4vw, 44px)",
+            fontSize: "36px",
             color: colors.text,
             fontFamily: FONT_STACK,
           }}
@@ -793,7 +793,7 @@ function SocialProofSection({
                 <p
                   className="mb-1 font-extrabold leading-none"
                   style={{
-                    fontSize: "clamp(24px, 3vw, 36px)",
+                    fontSize: "30px",
                     color: colors.accent,
                     fontFamily: FONT_STACK,
                   }}
@@ -894,9 +894,9 @@ function ObjectionsSection({
       >
         <h2
           id="faq-heading"
-          className="text-center mb-12 font-extrabold -tracking-[0.02em]"
+          className="text-center mb-12 font-extrabold tracking-normal"
           style={{
-            fontSize: "clamp(28px, 4vw, 44px)",
+            fontSize: "36px",
             color: colors.text,
             fontFamily: FONT_STACK,
           }}
@@ -956,9 +956,9 @@ function FinalCtaSection({
       >
         <h2
           id="final-cta-heading"
-          className="mb-5 font-extrabold -tracking-[0.02em]"
+          className="mb-5 font-extrabold tracking-normal"
           style={{
-            fontSize: "clamp(28px, 4vw, 44px)",
+            fontSize: "36px",
             color: colors.text,
             fontFamily: FONT_STACK,
           }}
@@ -969,7 +969,7 @@ function FinalCtaSection({
         <p
           className="mb-8 leading-[1.65]"
           style={{
-            fontSize: "clamp(16px, 1.8vw, 19px)",
+            fontSize: "17px",
             color: colors.textMuted,
             fontFamily: FONT_STACK,
           }}

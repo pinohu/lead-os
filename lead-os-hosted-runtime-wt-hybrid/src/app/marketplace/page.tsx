@@ -352,7 +352,7 @@ function LeadPreviewModal({ lead, onClose, onClaimStart }: LeadPreviewModalProps
               type="button"
               onClick={onClose}
               aria-label="Close lead preview"
-              className="min-h-[32px] min-w-[32px] border-none bg-transparent p-1 text-[1.4rem] leading-none text-[rgba(34,95,84,0.5)]"
+              className="min-h-[44px] min-w-[44px] border-none bg-transparent p-1 text-[1.4rem] leading-none text-[rgba(34,95,84,0.72)]"
             >
               ×
             </button>
@@ -640,13 +640,13 @@ function ClaimedLeadsSection({ claimedLeads, onOutcome, submittingOutcome }: Cla
                       disabled={submittingOutcome === lead.id}
                       onClick={() => onOutcome(lead.id, opt.value)}
                       aria-label={`Mark lead as ${opt.label}`}
-                      className="min-h-[32px] rounded-md px-[11px] py-[5px] text-[0.75rem] font-bold"
+                      className="min-h-[44px] rounded-md px-[11px] py-2 text-[0.75rem] font-bold"
                       style={{
                         border: `1px solid ${opt.color}44`,
                         background: `${opt.color}12`,
                         color: opt.color,
                         cursor: submittingOutcome === lead.id ? "wait" : "pointer",
-                        opacity: submittingOutcome === lead.id ? 0.5 : 1,
+                        opacity: submittingOutcome === lead.id ? 0.72 : 1,
                       }}
                     >
                       {opt.label}

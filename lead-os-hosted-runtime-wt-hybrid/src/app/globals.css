@@ -19,16 +19,19 @@
     --muted-foreground: 240 4% 35%;
     --accent: 240 5% 96%;
     --accent-foreground: 240 6% 10%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 42%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 6% 90%;
     --input: 240 6% 90%;
     --ring: 243 75% 52%;
     --radius: 0.5rem;
-    --success: 142 71% 45%;
+    --success: 142 72% 29%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 0%;
+    --link: 243 75% 42%;
+    --link-visited: 262 60% 36%;
+    --overlay: 240 10% 4% / 0.82;
 
     /* ── Kernel semantic tokens (direct color values) ─────── */
     --bg: #ffffff;
@@ -52,7 +55,7 @@
     --secondary-hex: #1e293b;
     --secondary-soft: rgba(30, 41, 59, 0.05);
     --focus: hsl(243, 75%, 52%);
-    --danger: #ef4444;
+    --danger: #b91c1c;
     --danger-soft: rgba(239, 68, 68, 0.06);
     --success-hex: #10b981;
     --success-soft: rgba(16, 185, 129, 0.06);
@@ -100,15 +103,18 @@
     --muted-foreground: 240 5% 64.9%;
     --accent: 240 4% 16%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 63% 31%;
+    --destructive: 0 72% 44%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 4% 16%;
     --input: 240 4% 16%;
     --ring: 243 75% 62%;
-    --success: 142 71% 45%;
+    --success: 142 72% 35%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 0%;
+    --link: 226 100% 85%;
+    --link-visited: 280 100% 86%;
+    --overlay: 240 10% 4% / 0.86;
 
     /* ── Kernel semantic tokens (dark) ──────────────────── */
     --bg: #0a0a0f;
@@ -132,7 +138,7 @@
     --secondary-hex: #cbd5e1;
     --secondary-soft: rgba(203, 213, 225, 0.06);
     --focus: hsl(243, 75%, 62%);
-    --danger: #f87171;
+    --danger: #fca5a5;
     --danger-soft: rgba(248, 113, 113, 0.1);
     --success-hex: #34d399;
     --success-soft: rgba(52, 211, 153, 0.1);
@@ -186,11 +192,31 @@ a {
   text-decoration: none;
 }
 
+main a:not([class]),
+.markdown-body a,
+.prose a {
+  color: hsl(var(--link));
+  text-decoration-line: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+main a:not([class]):visited,
+.markdown-body a:visited,
+.prose a:visited {
+  color: hsl(var(--link-visited));
+}
+
 button,
 input,
 select,
 textarea {
   font: inherit;
+}
+
+::placeholder {
+  color: hsl(var(--muted-foreground));
+  opacity: 1;
 }
 
 a:focus-visible,
@@ -200,6 +226,129 @@ select:focus-visible,
 textarea:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
+}
+
+/* Accessibility guardrails: keep common dark surfaces and action colors readable. */
+.bg-black,
+.bg-slate-950,
+.bg-slate-900,
+.bg-zinc-950,
+.bg-zinc-900,
+.bg-neutral-950,
+.bg-neutral-900,
+.bg-gray-950,
+.bg-gray-900 {
+  color: var(--surface-dark-foreground);
+}
+
+.bg-black .text-muted-foreground,
+.bg-slate-950 .text-muted-foreground,
+.bg-slate-900 .text-muted-foreground,
+.bg-zinc-950 .text-muted-foreground,
+.bg-zinc-900 .text-muted-foreground,
+.bg-neutral-950 .text-muted-foreground,
+.bg-neutral-900 .text-muted-foreground,
+.bg-gray-950 .text-muted-foreground,
+.bg-gray-900 .text-muted-foreground {
+  color: var(--surface-dark-muted) !important;
+}
+
+.bg-black .text-black,
+.bg-slate-950 .text-black,
+.bg-slate-900 .text-black,
+.bg-zinc-950 .text-black,
+.bg-zinc-900 .text-black,
+.bg-neutral-950 .text-black,
+.bg-neutral-900 .text-black,
+.bg-gray-950 .text-black,
+.bg-gray-900 .text-black {
+  color: var(--surface-dark-foreground) !important;
+}
+
+.bg-teal-500.text-white,
+.bg-blue-500.text-white,
+.bg-green-500.text-white,
+.bg-red-500.text-white,
+.bg-gray-500.text-white {
+  color: #ffffff !important;
+}
+
+.bg-teal-500.text-white {
+  background-color: #0f766e !important;
+}
+
+.bg-blue-500.text-white {
+  background-color: #1d4ed8 !important;
+}
+
+.bg-green-500.text-white {
+  background-color: #15803d !important;
+}
+
+.bg-red-500.text-white {
+  background-color: #b91c1c !important;
+}
+
+.bg-gray-500.text-white {
+  background-color: #374151 !important;
+}
+
+.text-teal-500 {
+  color: #0f766e !important;
+}
+
+.text-blue-500 {
+  color: #1d4ed8 !important;
+}
+
+.text-green-500 {
+  color: #15803d !important;
+}
+
+.text-red-400,
+.text-red-500 {
+  color: #b91c1c !important;
+}
+
+.text-yellow-400,
+.text-yellow-500 {
+  color: #854d0e !important;
+}
+
+.text-indigo-500 {
+  color: #4338ca !important;
+}
+
+.dark .text-teal-500 {
+  color: #5eead4 !important;
+}
+
+.dark .text-blue-500 {
+  color: #93c5fd !important;
+}
+
+.dark .text-green-500 {
+  color: #86efac !important;
+}
+
+.dark .text-red-400,
+.dark .text-red-500 {
+  color: #fca5a5 !important;
+}
+
+.dark .text-yellow-400,
+.dark .text-yellow-500 {
+  color: #fde68a !important;
+}
+
+.dark .text-indigo-500 {
+  color: #a5b4fc !important;
+}
+
+.text-muted-foreground\/50,
+.text-muted-foreground\/60,
+.text-muted-foreground\/70 {
+  color: hsl(var(--muted-foreground)) !important;
 }
 
 .skip-link {
@@ -906,6 +1055,9 @@ button[disabled] {
   --muted-foreground: 240 4% 35%;
   --border: 240 6% 90%;
   --primary: 243 75% 52%;
+  --link: 243 75% 42%;
+  --link-visited: 262 60% 36%;
+  --overlay: 240 10% 4% / 0.82;
 
   /* Kernel semantic tokens */
   --bg: #ffffff;
@@ -928,7 +1080,7 @@ button[disabled] {
   --secondary-soft: rgba(30, 41, 59, 0.05);
   --success-hex: #10b981;
   --success-soft: rgba(16, 185, 129, 0.06);
-  --danger: #ef4444;
+  --danger: #b91c1c;
   --danger-soft: rgba(239, 68, 68, 0.06);
   --shadow-card: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
   --shadow-elevated: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.08);
@@ -1051,6 +1203,23 @@ button[disabled] {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid CanvasText;
+    outline-offset: 3px;
+  }
+
+  .primary,
+  .secondary,
+  [role="button"] {
+    border: 1px solid ButtonText;
   }
 }
 

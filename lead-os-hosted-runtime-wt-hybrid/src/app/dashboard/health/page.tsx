@@ -207,7 +207,7 @@ export default function HealthDashboardPage() {
           <button
             type="button"
             onClick={handleLookup}
-            className="px-5 py-2 bg-teal-500 text-white border-none rounded-md text-sm font-semibold cursor-pointer min-h-[44px] min-w-[44px]"
+            className="px-5 py-2 bg-teal-700 text-white border-none rounded-md text-sm font-semibold cursor-pointer min-h-[44px] min-w-[44px]"
           >
             Check Health
           </button>

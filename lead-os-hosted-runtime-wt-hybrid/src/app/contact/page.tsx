@@ -179,7 +179,7 @@ export default function ContactPage() {
           type="submit"
           disabled={formState === "submitting"}
           aria-busy={formState === "submitting"}
-          className="px-6 py-2.5 bg-primary text-primary-foreground border-none rounded-md font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="px-6 py-2.5 bg-primary text-primary-foreground border-none rounded-md font-semibold cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           {formState === "submitting" ? "Sending..." : "Send Message"}
         </button>

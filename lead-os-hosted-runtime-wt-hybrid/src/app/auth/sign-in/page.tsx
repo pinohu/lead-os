@@ -39,7 +39,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       {/* Brand header */}
       <section className="max-w-5xl mx-auto px-4 py-8 md:py-12" aria-labelledby="auth-heading">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Operator access</p>
-        <h1 id="auth-heading" className="text-foreground text-[clamp(2rem,4vw,3.6rem)]">
+        <h1 id="auth-heading" className="text-4xl font-extrabold leading-tight text-foreground md:text-5xl">
           {brandName}
         </h1>
         <p className="text-lg text-muted-foreground">

@@ -338,7 +338,7 @@ export default function AttributionPage() {
                     type="button"
                     onClick={() => setExpandedLead(isExpanded ? null : lead.leadKey)}
                     aria-expanded={isExpanded}
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mt-2 min-h-[36px] px-3.5 py-1.5"
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mt-2 min-h-[44px] px-3.5 py-2"
                   >
                     {isExpanded ? "Hide journey" : "View journey"}
                   </button>

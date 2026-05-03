@@ -36,7 +36,7 @@ export default async function CheckEmailPage({ searchParams }: CheckEmailPagePro
         </div>
 
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Check your inbox</p>
-        <h1 id="check-email-heading" className="text-foreground text-[clamp(2rem,4vw,3.6rem)]">
+        <h1 id="check-email-heading" className="text-4xl font-extrabold leading-tight text-foreground md:text-5xl">
           Magic link sent
         </h1>
         <p className="text-lg text-muted-foreground">

@@ -143,7 +143,7 @@ function WelcomeStep({ setupStatus, brandName, onNext }: WelcomeStepProps) {
   return (
     <section aria-labelledby="welcome-heading">
       <p className="mb-3 inline-flex items-center gap-2 text-[0.74rem] font-extrabold uppercase tracking-[0.16em] text-teal-500">First-run setup</p>
-      <h1 id="welcome-heading" className="mb-4 font-serif text-[clamp(2rem,4vw,3rem)] leading-none tracking-tight text-foreground">
+      <h1 id="welcome-heading" className="mb-4 font-serif text-4xl leading-tight tracking-normal text-foreground">
         Welcome to {brandName}
       </h1>
       <p className="text-base leading-relaxed text-muted-foreground">
@@ -187,7 +187,7 @@ function WelcomeStep({ setupStatus, brandName, onNext }: WelcomeStepProps) {
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <button className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-500 px-7 py-3.5 text-[0.95rem] font-bold text-white transition-opacity duration-150" onClick={onNext} type="button">
+        <button className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-700 px-7 py-3.5 text-[0.95rem] font-bold text-white transition-opacity duration-150" onClick={onNext} type="button">
           Let&rsquo;s get started →
         </button>
       </div>
@@ -213,7 +213,7 @@ function EnvironmentStep({ envChecks, onNext, onBack }: EnvironmentStepProps) {
   return (
     <section aria-labelledby="env-heading">
       <p className="mb-3 inline-flex items-center gap-2 text-[0.74rem] font-extrabold uppercase tracking-[0.16em] text-teal-500">Step 2 of {TOTAL_STEPS}</p>
-      <h2 id="env-heading" className="mb-3 font-serif text-[clamp(1.4rem,2.5vw,1.9rem)] leading-none tracking-tight text-foreground">
+      <h2 id="env-heading" className="mb-3 font-serif text-2xl leading-tight tracking-normal text-foreground">
         Environment check
       </h2>
       <p className="text-base leading-relaxed text-muted-foreground">
@@ -269,7 +269,7 @@ function EnvironmentStep({ envChecks, onNext, onBack }: EnvironmentStepProps) {
       )}
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <button className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-500 px-7 py-3.5 text-[0.95rem] font-bold text-white transition-opacity duration-150" onClick={onNext} type="button">
+        <button className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-700 px-7 py-3.5 text-[0.95rem] font-bold text-white transition-opacity duration-150" onClick={onNext} type="button">
           Continue →
         </button>
         <button className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-border bg-muted px-6 py-3.5 text-[0.95rem] font-semibold text-foreground transition-opacity duration-150" onClick={onBack} type="button">
@@ -402,7 +402,7 @@ function QuickConfigStep({
   return (
     <section aria-labelledby="config-heading">
       <p className="mb-3 inline-flex items-center gap-2 text-[0.74rem] font-extrabold uppercase tracking-[0.16em] text-teal-500">Step 3 of {TOTAL_STEPS}</p>
-      <h2 id="config-heading" className="mb-3 font-serif text-[clamp(1.4rem,2.5vw,1.9rem)] leading-none tracking-tight text-foreground">
+      <h2 id="config-heading" className="mb-3 font-serif text-2xl leading-tight tracking-normal text-foreground">
         Quick configuration
       </h2>
       <p className="text-base leading-relaxed text-muted-foreground">
@@ -535,7 +535,7 @@ function QuickConfigStep({
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <button
             type="submit"
-            className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-500 px-7 py-3.5 text-[0.95rem] font-bold text-white transition-opacity duration-150"
+            className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-700 px-7 py-3.5 text-[0.95rem] font-bold text-white transition-opacity duration-150"
             disabled={isSaving}
             aria-busy={isSaving}
             style={{ opacity: isSaving ? 0.7 : 1 }}
@@ -608,7 +608,7 @@ function TestDriveStep({ siteUrl, onNext, onBack }: TestDriveStepProps) {
   return (
     <section aria-labelledby="testdrive-heading">
       <p className="mb-3 inline-flex items-center gap-2 text-[0.74rem] font-extrabold uppercase tracking-[0.16em] text-teal-500">Step 4 of {TOTAL_STEPS}</p>
-      <h2 id="testdrive-heading" className="mb-3 font-serif text-[clamp(1.4rem,2.5vw,1.9rem)] leading-none tracking-tight text-foreground">
+      <h2 id="testdrive-heading" className="mb-3 font-serif text-2xl leading-tight tracking-normal text-foreground">
         Take it for a spin
       </h2>
       <p className="text-base leading-relaxed text-muted-foreground">
@@ -655,7 +655,7 @@ function TestDriveStep({ siteUrl, onNext, onBack }: TestDriveStepProps) {
       </ul>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <button className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-500 px-7 py-3.5 text-[0.95rem] font-bold text-white transition-opacity duration-150" onClick={onNext} type="button">
+        <button className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-700 px-7 py-3.5 text-[0.95rem] font-bold text-white transition-opacity duration-150" onClick={onNext} type="button">
           Continue to finish →
         </button>
         <button className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-border bg-muted px-6 py-3.5 text-[0.95rem] font-semibold text-foreground transition-opacity duration-150" onClick={onBack} type="button">
@@ -710,7 +710,7 @@ function AllDoneStep({ siteUrl, tenantId, brandName, onBack }: AllDoneStepProps)
   return (
     <section aria-labelledby="done-heading">
       <p className="mb-3 inline-flex items-center gap-2 text-[0.74rem] font-extrabold uppercase tracking-[0.16em] text-teal-500">Setup complete</p>
-      <h2 id="done-heading" className="mb-3 font-serif text-[clamp(1.4rem,2.5vw,1.9rem)] leading-none tracking-tight text-foreground">
+      <h2 id="done-heading" className="mb-3 font-serif text-2xl leading-tight tracking-normal text-foreground">
         You&rsquo;re all set
       </h2>
       <p className="text-base leading-relaxed text-muted-foreground">
@@ -728,7 +728,7 @@ function AllDoneStep({ siteUrl, tenantId, brandName, onBack }: AllDoneStepProps)
             onKeyDown={handleKeyDown}
             aria-label={copied ? "Snippet copied to clipboard" : "Copy embed snippet to clipboard"}
             aria-pressed={copied}
-            className="inline-flex min-h-[36px] items-center justify-center rounded-full border border-border bg-muted px-3.5 py-2 text-[0.8rem] font-semibold text-foreground transition-opacity duration-150"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-border bg-muted px-3.5 py-2 text-[0.8rem] font-semibold text-foreground transition-opacity duration-150"
           >
             {copied ? "✓ Copied" : "Copy"}
           </button>
@@ -780,7 +780,7 @@ function AllDoneStep({ siteUrl, tenantId, brandName, onBack }: AllDoneStepProps)
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <a href="/dashboard" className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-500 px-7 py-3.5 text-[0.95rem] font-bold text-white no-underline transition-opacity duration-150">
+        <a href="/dashboard" className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-teal-700 px-7 py-3.5 text-[0.95rem] font-bold text-white no-underline transition-opacity duration-150">
           Go to dashboard →
         </a>
         <button className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-border bg-muted px-6 py-3.5 text-[0.95rem] font-semibold text-foreground transition-opacity duration-150" onClick={onBack} type="button">
