@@ -103,6 +103,30 @@ export default function OnboardPage() {
   const [paymentPending, setPaymentPending] = useState(false);
   const [stripeSessionId, setStripeSessionId] = useState<string | null>(null);
 
+  const recoverCompletedOnboarding = useCallback(async () => {
+    if (!session?.id) {
+      window.location.href = "/packages";
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/onboarding/${encodeURIComponent(session.id)}/step`);
+      const json = await res.json();
+      if (res.ok && json.data) {
+        setSession(json.data);
+        setError(null);
+        setStep("complete");
+        return;
+      }
+      window.location.href = "/packages";
+    } catch {
+      window.location.href = "/packages";
+    } finally {
+      setLoading(false);
+    }
+  }, [session]);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get("session_id");
@@ -221,6 +245,11 @@ export default function OnboardPage() {
       });
       const json = await res.json();
       if (!res.ok) {
+        const message = json.error?.message ?? "Failed to advance step";
+        if (message.toLowerCase().includes("already complete")) {
+          await recoverCompletedOnboarding();
+          return;
+        }
         setError(json.error?.message ?? "Failed to advance step");
         return;
       }
@@ -252,7 +281,7 @@ export default function OnboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [session, selectedPlan, redirectToStripeCheckout]);
+  }, [session, selectedPlan, redirectToStripeCheckout, recoverCompletedOnboarding]);
 
   const handleBack = useCallback(() => {
     setError(null);
@@ -289,6 +318,7 @@ export default function OnboardPage() {
   }, []);
 
   const completedStepIndex = WIZARD_STEPS.indexOf(step as typeof WIZARD_STEPS[number]);
+  const alreadyCompleteError = error?.toLowerCase().includes("already complete") ?? false;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -321,7 +351,39 @@ export default function OnboardPage() {
           </nav>
         )}
 
-        {error && (
+        {alreadyCompleteError && (
+          <div role="status" aria-live="polite" className="mb-6 rounded-xl border border-teal-500/30 bg-teal-500/[0.08] p-8">
+            <p className="mb-2 text-[0.95rem] font-bold text-teal-300">Account setup is complete.</p>
+            <p className="mb-5 text-[0.9rem] leading-relaxed text-muted-foreground">
+              You can keep moving from here. Open the solution launch center, go to the dashboard, or refresh the completed session state.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="/packages"
+                className="inline-flex min-h-[44px] items-center rounded-lg border border-teal-500/30 bg-teal-500 px-5 py-2.5 text-[0.9rem] font-bold text-[#0a0f1a] no-underline"
+              >
+                Launch Solutions
+              </a>
+              <a
+                href="/dashboard"
+                className="inline-flex min-h-[44px] items-center rounded-lg border border-teal-500/30 bg-teal-500/10 px-5 py-2.5 text-[0.9rem] font-semibold text-teal-500 no-underline"
+              >
+                Open Dashboard
+              </a>
+              <button
+                type="button"
+                onClick={() => void recoverCompletedOnboarding()}
+                disabled={loading}
+                className="inline-flex min-h-[44px] items-center rounded-lg border border-slate-400/30 bg-transparent px-5 py-2.5 text-[0.9rem] font-semibold text-muted-foreground"
+                aria-busy={loading}
+              >
+                {loading ? "Refreshing..." : "Refresh Status"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {error && !alreadyCompleteError && (
           <div role="alert" className="mb-6 rounded-xl border border-red-400/30 bg-red-400/10 p-8">
             <p className="text-[0.9rem] text-red-400">{error}</p>
           </div>
