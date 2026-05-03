@@ -548,6 +548,46 @@ export default async function PackagePage({ params }: Props) {
                 ))}
               </ul>
             </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">Borrowed tool patterns</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground md:grid-cols-2">
+                {serviceStrategy.borrowedToolStrengths.map((strength) => (
+                  <li key={strength}>{strength}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Agency resale pattern</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.agencyResalePattern}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">System-of-record trust</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.systemOfRecordTrustPattern}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Connector readiness</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.connectorReadinessPattern}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">GTM data execution</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.gtmDataExecutionPattern}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Brand governance</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.brandGovernancePattern}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Agent operations</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.agentOpsObservabilityPattern}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Ontology depth</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.ontologyForwardDeployedPattern}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Borrowing guardrail</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.competitorRepresentationGuardrail}</p>
+            </div>
             <div className="rounded-md border border-border p-3">
               <h2 className="font-semibold">Vertical eval flywheel</h2>
               <p className="mt-1 text-muted-foreground">{serviceStrategy.verticalEvalFlywheel}</p>

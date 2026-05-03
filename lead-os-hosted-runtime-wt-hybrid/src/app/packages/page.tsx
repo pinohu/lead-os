@@ -113,6 +113,12 @@ const packageRules = [
   "Exploit schlep blindness: payroll, tax accounting, trucking compliance, insurance operations, banking infrastructure, and regulated admin are defensible because competitors avoid the boring details.",
   "Turn delivery into a system of record: customer history, decisions, approvals, outcomes, exceptions, eval traces, and reporting receipts should live in the package so leaving means losing operating memory.",
   "Make the Outcome Graph the moat: every run should record buyer persona, niche, pain point, offer, workflow steps, accepted outputs, failed outputs, human overrides, pricing tested, renewals, churn reasons, hours saved, revenue recovered, and tasks completed.",
+  "Represent the strongest lessons from other tools without cloning them: agency resale, CRM-grade trust, integration readiness, GTM data execution, brand governance, agent operations, and ontology depth must all translate into Lead OS service outcomes.",
+  "Borrow the agency platform lesson through branded client portals, resale packaging, onboarding checklists, rebilling proof, and package collateral that help operators sell the result again.",
+  "Borrow the CRM platform lesson through customer timelines, permissions, audit trails, imports, exports, acceptance receipts, and system-of-record memory.",
+  "Borrow the integration platform lesson by showing what works now, which connectors improve it, and which managed handoff covers the gap until the client grants access.",
+  "Borrow the GTM tooling lesson by making targeting, enrichment, deliverability, outbound proof, campaign status, pipeline movement, and revenue evidence visible in the package.",
+  "Borrow the production automation lesson by exposing agent run logs, approvals, retries, exception queues, human overrides, uptime, and reliability scoring.",
   "Turn every failed output, accepted output, human override, and exception into vertical evals, scenario validations, prompts, routing rules, and reusable package logic.",
   "Create a Certified Outcome standard: delivery is not defensible until launch proof, acceptance receipts, pricing logic, escalation rules, operating guide, and outcome report are attached.",
   "Use the package marketplace as a compounding loop: clone the best working pattern, improve it with Outcome Graph data, specialize it by vertical, and distribute the certified version.",
@@ -164,6 +170,7 @@ const packageRuleHighlights = [
   "Force demand proof with Fire or Promotion and the Binary Test: acute buyers may complain about price, but they still pay.",
   "Make the package a closed loop: every handoff, exception, approval, and acceptance receipt improves the next run.",
   "Make the Outcome Graph the defensibility layer: delivery history, vertical evals, Certified Outcomes, and outcome billing proof compound with every run.",
+  "Represent what Lead OS borrows from other tools as operational requirements: resale motion, record trust, connectors, GTM data, brand rules, agent ops, and ontology depth.",
 ] as const;
 
 const packageRuleThemes = [
@@ -191,6 +198,11 @@ const packageRuleThemes = [
     title: "Outcome Graph",
     summary: "Use delivery evidence as the data moat, eval moat, switching-cost moat, and billing proof.",
     keywords: ["Outcome Graph", "Certified Outcome", "accepted output", "human override", "outcome billing", "marketplace"],
+  },
+  {
+    title: "Tool Patterns",
+    summary: "Borrow proven operating strengths from adjacent tools while keeping Lead OS centered on service outcomes.",
+    keywords: ["agency platform", "CRM platform", "integration platform", "GTM tooling", "production automation", "other tools", "represented"],
   },
 ] as const;
 

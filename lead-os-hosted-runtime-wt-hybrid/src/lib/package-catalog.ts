@@ -155,6 +155,15 @@ export interface PackageOutcomeGraphMoat {
   outcomeGraphMoat: string;
   outcomeGraphEventSchema: string[];
   outcomeGraphDataAssets: string[];
+  borrowedToolStrengths: string[];
+  agencyResalePattern: string;
+  systemOfRecordTrustPattern: string;
+  connectorReadinessPattern: string;
+  gtmDataExecutionPattern: string;
+  brandGovernancePattern: string;
+  agentOpsObservabilityPattern: string;
+  ontologyForwardDeployedPattern: string;
+  competitorRepresentationGuardrail: string;
   verticalEvalFlywheel: string;
   certifiedOutcomeStandard: string;
   switchingCostMemory: string;
@@ -1140,6 +1149,23 @@ export function buildPackageOutcomeGraphMoat(input: PackageOutcomeGraphMoatInput
       "Commercial memory: pricing tests, objections, renewal reasons, churn reasons, expansion paths, work-based billing units, and services-budget proof.",
       "Reliability memory: failed outputs, accepted outputs, vertical edge cases, scenario validations, eval scores, approval latency, and final customer acceptance.",
     ],
+    borrowedToolStrengths: [
+      "HighLevel-style agency resale motion: white-label packaging, client subaccounts, rebilling readiness, and sell-this-tomorrow operator collateral.",
+      "HubSpot and Salesforce-style system-of-record trust: customer timeline, permissions, audit trails, imports, exports, acceptance receipts, and account memory.",
+      "Zapier-style connector breadth: visible integration readiness, what runs now, what improves when connected, and managed handoffs until access is granted.",
+      "Clay, Apollo, and Instantly-style GTM execution: fresh targeting data, enrichment, outbound readiness, deliverability checks, campaign proof, and pipeline evidence.",
+      "Copy.ai and Jasper-style workflow and brand governance: repeatable playbooks, approved voice, claims, examples, compliance boundaries, and reusable content rules.",
+      "UiPath and Retool-style production agent operations: run logs, approvals, retries, exception queues, human overrides, uptime, and reliability scoring.",
+      "Palantir-style ontology and forward-deployed depth: buyer, pain, workflow, output, approval, exception, invoice, renewal, churn, and evals become structured operating memory.",
+    ],
+    agencyResalePattern: `Represent the agency-platform lesson inside ${input.title}: the operator should have branded client portals, resale packaging, onboarding checklists, rebilling proof, and package collateral that make the outcome easy to sell again.`,
+    systemOfRecordTrustPattern: `Represent the CRM trust lesson inside ${input.title}: the Outcome Graph should hold customer history, permissions, audit trails, imports, exports, acceptance receipts, and timeline memory so the buyer trusts the service as operating infrastructure.`,
+    connectorReadinessPattern: `Represent the integration-platform lesson inside ${input.title}: every delivery should show what runs now, which CRM, calendar, billing, email, SMS, data, or publishing connectors improve it, and which managed handoff covers the gap until access is approved.`,
+    gtmDataExecutionPattern: `Represent the GTM tooling lesson inside ${input.title}: targeting, enrichment, deliverability, outbound proof, campaign status, pipeline movement, and revenue evidence should be visible enough that the operator can sell the work delivered.`,
+    brandGovernancePattern: `Represent the AI content-platform lesson inside ${input.title}: brand voice, claims, compliance boundaries, approved examples, rejection reasons, and reusable playbooks should travel with every generated or customer-facing output.`,
+    agentOpsObservabilityPattern: `Represent the automation-platform lesson inside ${input.title}: agent runs need logs, approvals, retries, exception queues, human overrides, reliability scores, and service-level evidence before the work is considered production-grade.`,
+    ontologyForwardDeployedPattern: `Represent the operational-AI lesson inside ${input.title}: forward-deployed observations should become ontology fields in the Outcome Graph, connecting buyer, pain, workflow, output, approval, exception, invoice, renewal, churn, and eval evidence.`,
+    competitorRepresentationGuardrail: `Borrow operating strengths from other tools without cloning their category. ${input.title} should translate agency resale, CRM trust, integrations, GTM data, brand governance, agent ops, and ontology depth into Lead OS's own service-outcome system.`,
     verticalEvalFlywheel: `Turn every accepted output, failed output, human override, exception, and customer acceptance receipt from ${input.title} into vertical evals that improve prompts, context, routing, QA checks, and future package runs.`,
     certifiedOutcomeStandard: `Create a Certified Outcome standard for ${input.title}: a package is not considered defensible until acceptance checks, launch proof, pricing logic, operating guide, escalation rules, and outcome reports are attached to the customer's delivery record.`,
     switchingCostMemory: `Compound switching costs through customer history, approvals, exceptions, performance receipts, operating memory, workflow corrections, and human override traces that would be expensive for a competitor to relearn.`,

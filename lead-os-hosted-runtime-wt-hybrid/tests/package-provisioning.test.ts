@@ -61,6 +61,14 @@ const standaloneMoatAcceptanceTests = [
   "Outcome Graph moat documented",
   "Outcome Graph event schema documented",
   "Outcome Graph data assets documented",
+  "Borrowed tool strengths represented",
+  "Agency resale pattern represented",
+  "System-of-record trust pattern represented",
+  "Connector readiness pattern represented",
+  "GTM data execution pattern represented",
+  "Brand governance pattern represented",
+  "Agent operations observability pattern represented",
+  "Ontology forward-deployed pattern represented",
   "Vertical eval flywheel documented",
   "Certified outcome standard documented",
   "Outcome billing moat documented",
@@ -82,6 +90,14 @@ const bundleMoatAcceptanceTests = [
   "Bundle Outcome Graph moat documented",
   "Bundle Outcome Graph event schema documented",
   "Bundle Outcome Graph data assets documented",
+  "Bundle borrowed tool strengths represented",
+  "Bundle agency resale pattern represented",
+  "Bundle system-of-record trust pattern represented",
+  "Bundle connector readiness pattern represented",
+  "Bundle GTM data execution pattern represented",
+  "Bundle brand governance pattern represented",
+  "Bundle agent operations observability pattern represented",
+  "Bundle ontology forward-deployed pattern represented",
   "Bundle vertical eval flywheel documented",
   "Bundle Certified Outcome standard documented",
   "Bundle outcome billing moat documented",
@@ -162,6 +178,51 @@ function assertMoatPowers(strategy: PackageServiceReplacementStrategy, label: st
     strategy.outcomeGraphDataAssets.join(" "),
     /Delivery hub records|acceptance receipts|pricing tests|Operator memory|human overrides|outcome reports/i,
     `${label} should identify Outcome Graph data assets`,
+  );
+  assert.match(
+    strategy.borrowedToolStrengths.join(" "),
+    /HighLevel-style|HubSpot|Salesforce|Zapier|Clay|Apollo|Instantly|Jasper|UiPath|Retool|Palantir/i,
+    `${label} should represent strengths borrowed from adjacent tools`,
+  );
+  assert.match(
+    strategy.agencyResalePattern,
+    /agency-platform|branded client portals|resale packaging|rebilling proof|package collateral/i,
+    `${label} should borrow agency resale mechanics`,
+  );
+  assert.match(
+    strategy.systemOfRecordTrustPattern,
+    /CRM trust|Outcome Graph|permissions|audit trails|acceptance receipts|timeline memory/i,
+    `${label} should borrow CRM-grade trust mechanics`,
+  );
+  assert.match(
+    strategy.connectorReadinessPattern,
+    /integration-platform|runs now|CRM|calendar|billing|managed handoff/i,
+    `${label} should borrow integration readiness mechanics`,
+  );
+  assert.match(
+    strategy.gtmDataExecutionPattern,
+    /GTM tooling|targeting|enrichment|deliverability|campaign status|revenue evidence/i,
+    `${label} should borrow GTM data execution discipline`,
+  );
+  assert.match(
+    strategy.brandGovernancePattern,
+    /AI content-platform|brand voice|claims|compliance boundaries|approved examples|playbooks/i,
+    `${label} should borrow brand governance discipline`,
+  );
+  assert.match(
+    strategy.agentOpsObservabilityPattern,
+    /automation-platform|agent runs|logs|approvals|retries|exception queues|reliability scores/i,
+    `${label} should borrow production agent operations discipline`,
+  );
+  assert.match(
+    strategy.ontologyForwardDeployedPattern,
+    /operational-AI|forward-deployed|ontology fields|buyer|workflow|invoice|eval evidence/i,
+    `${label} should borrow ontology and forward-deployed depth`,
+  );
+  assert.match(
+    strategy.competitorRepresentationGuardrail,
+    /Borrow operating strengths|without cloning|agency resale|CRM trust|service-outcome system/i,
+    `${label} should borrow from competitors without cloning their categories`,
   );
   assert.match(
     strategy.verticalEvalFlywheel,

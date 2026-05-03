@@ -206,6 +206,7 @@ export function buildPackageCustomerGuide(
       "Record decisions, exceptions, approvals, and outcome evidence in the delivery hub so the workflow gets more legible and reliable after each cycle.",
       "Update the Outcome Graph after each run with buyer persona, niche, pain point, offer, workflow steps, accepted outputs, failed outputs, human overrides, pricing tested, renewals, churn reasons, hours saved, revenue recovered, and tasks completed.",
       "Turn every failed output and human override into a vertical eval, scenario validation, routing rule, or escalation threshold before the next customer run.",
+      "Represent proven patterns from other tools as operating checks: resale readiness, system-of-record trust, connector readiness, GTM data execution, brand governance, agent operations, and ontology depth.",
       "Use billing or monetization outputs only with approved account access or managed payment handoff instructions.",
     ],
     implementationRoadmap: [
@@ -249,6 +250,7 @@ export function buildPackageCustomerGuide(
     measurementPlan: [
       `Primary metric: ${context.successMetric}.`,
       "Measure the Outcome Graph as a moat asset: buyer context, workflow history, accepted outputs, failed outputs, human overrides, pricing tested, renewals, churn reasons, hours saved, revenue recovered, and tasks completed must compound after every run.",
+      "Measure borrowed-tool representation: client resale motion, CRM-grade memory, connector readiness, GTM data proof, brand rules, agent run observability, and ontology fields should be visible in the package record.",
       "Treat Certified Outcome evidence as the delivery standard: launch proof, acceptance receipts, operating guide, escalation rules, pricing logic, and outcome report should be attached before calling the package complete.",
       "Track which Outcome Graph events became vertical evals, prompt updates, routing rules, QA checks, package templates, marketplace improvements, or switching-cost memory.",
       "Tie pricing, renewal, and expansion to work completed, tasks handled, revenue recovered, qualified outcomes, or hours saved instead of active user seats.",
@@ -533,6 +535,7 @@ export function buildBundleCustomerGuide(input: {
       "Keep every decision, handoff, approval, exception, and outcome report in the package surfaces so the customer organization becomes queryable over time.",
       "Keep one bundle Outcome Graph across selected packages so accepted outputs, failed outputs, human overrides, pricing tested, renewal reasons, churn reasons, hours saved, revenue recovered, and tasks completed compound into reusable operating memory.",
       "Convert bundle exceptions into vertical evals and package rules before expanding to the next niche or customer.",
+      "Represent lessons from other tools across the bundle: agency resale motion, CRM-grade trust, connector readiness, GTM data execution, brand governance, production agent operations, and ontology depth.",
       "Use reporting outputs to decide which package should be optimized or expanded first.",
     ],
     implementationRoadmap: [
@@ -574,6 +577,7 @@ export function buildBundleCustomerGuide(input: {
     measurementPlan: [
       `Shared success metric: ${input.successMetric}.`,
       "Measure the bundle Outcome Graph as the defensibility layer: buyer context, package sequence, workflow steps, accepted outputs, failed outputs, human overrides, pricing tested, renewals, churn reasons, hours saved, revenue recovered, and tasks completed should be visible across selected packages.",
+      "Measure borrowed-tool representation across the bundle: resale readiness, account memory, connector coverage, enrichment and deliverability evidence, brand rules, agent run logs, human overrides, and ontology fields should be present.",
       "Require Certified Outcome records for each selected package: launch proof, acceptance receipts, operating guides, pricing logic, escalation rules, and outcome reports before treating the bundle as production-ready.",
       "Track how bundle Outcome Graph events turn into vertical evals, prompt updates, routing rules, QA checks, marketplace templates, switching-cost memory, and outcome billing proof.",
       "Measure bundle value by work delivered, tasks completed, revenue recovered, qualified outcomes, and hours saved.",

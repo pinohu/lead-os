@@ -105,6 +105,15 @@ interface ProvisionedBundleResult {
     outcomeGraphMoat: string;
     outcomeGraphEventSchema: string[];
     outcomeGraphDataAssets: string[];
+    borrowedToolStrengths: string[];
+    agencyResalePattern: string;
+    systemOfRecordTrustPattern: string;
+    connectorReadinessPattern: string;
+    gtmDataExecutionPattern: string;
+    brandGovernancePattern: string;
+    agentOpsObservabilityPattern: string;
+    ontologyForwardDeployedPattern: string;
+    competitorRepresentationGuardrail: string;
     verticalEvalFlywheel: string;
     certifiedOutcomeStandard: string;
     switchingCostMemory: string;
@@ -730,6 +739,20 @@ function BundleResult({ status, result }: { status: Status; result: ProvisionedB
                 result.serviceReplacementStrategy.forwardDeployedLearningLoop,
                 ...result.serviceReplacementStrategy.moatProofChecklist,
                 result.serviceReplacementStrategy.moatOperatingRule,
+              ]}
+            />
+            <ValueList
+              title="Borrowed tool patterns"
+              items={[
+                ...result.serviceReplacementStrategy.borrowedToolStrengths,
+                result.serviceReplacementStrategy.agencyResalePattern,
+                result.serviceReplacementStrategy.systemOfRecordTrustPattern,
+                result.serviceReplacementStrategy.connectorReadinessPattern,
+                result.serviceReplacementStrategy.gtmDataExecutionPattern,
+                result.serviceReplacementStrategy.brandGovernancePattern,
+                result.serviceReplacementStrategy.agentOpsObservabilityPattern,
+                result.serviceReplacementStrategy.ontologyForwardDeployedPattern,
+                result.serviceReplacementStrategy.competitorRepresentationGuardrail,
               ]}
             />
             <ValueList
