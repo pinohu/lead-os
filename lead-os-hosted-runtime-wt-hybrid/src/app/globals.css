@@ -37,6 +37,10 @@
     --surface: #ffffff;
     --surface-strong: #ffffff;
     --surface-dark: rgba(10, 10, 15, 0.96);
+    --surface-dark-foreground: #f8fafc;
+    --surface-dark-muted: #cbd5e1;
+    --surface-dark-accent: #67e8f9;
+    --surface-dark-border: rgba(226, 232, 240, 0.18);
     --surface-border: rgba(0, 0, 0, 0.06);
     --text: #111827;
     --text-soft: #4b5563;
@@ -113,6 +117,10 @@
     --surface: #18181b;
     --surface-strong: #27272a;
     --surface-dark: rgba(10, 10, 15, 0.96);
+    --surface-dark-foreground: #f8fafc;
+    --surface-dark-muted: #cbd5e1;
+    --surface-dark-accent: #67e8f9;
+    --surface-dark-border: rgba(226, 232, 240, 0.18);
     --surface-border: rgba(255, 255, 255, 0.08);
     --text: #f9fafb;
     --text-soft: #9ca3af;
@@ -258,7 +266,6 @@ h4 {
   font-weight: 650;
   line-height: 1.2;
   letter-spacing: 0;
-  color: hsl(var(--foreground)) !important;
 }
 
 h1 {
@@ -500,7 +507,7 @@ button[disabled] {
   padding: 8px 12px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
-  color: var(--text-inverse);
+  color: var(--surface-dark-foreground);
   font-size: 0.9rem;
 }
 
@@ -905,6 +912,11 @@ button[disabled] {
   --bg-subtle: #f8f9fc;
   --surface: #ffffff;
   --surface-strong: #ffffff;
+  --surface-dark: rgba(10, 10, 15, 0.96);
+  --surface-dark-foreground: #f8fafc;
+  --surface-dark-muted: #cbd5e1;
+  --surface-dark-accent: #67e8f9;
+  --surface-dark-border: rgba(226, 232, 240, 0.18);
   --surface-border: rgba(0, 0, 0, 0.06);
   --text: #111827;
   --text-soft: #4b5563;
@@ -961,6 +973,10 @@ button[disabled] {
     --surface: rgba(24, 24, 27, 0.92);
     --surface-strong: #18181b;
     --surface-dark: rgba(0, 0, 0, 0.96);
+    --surface-dark-foreground: #f8fafc;
+    --surface-dark-muted: #cbd5e1;
+    --surface-dark-accent: #67e8f9;
+    --surface-dark-border: rgba(226, 232, 240, 0.18);
     --surface-border: rgba(255, 255, 255, 0.08);
     --text: #fafafa;
     --text-soft: #a1a1aa;
@@ -1064,6 +1080,10 @@ button[disabled] {
   --bg-deep: #060e1a;
   --surface: rgba(14, 26, 46, 0.92);
   --surface-strong: #101d34;
+  --surface-dark-foreground: #f8fafc;
+  --surface-dark-muted: #cbd5e1;
+  --surface-dark-accent: #67e8f9;
+  --surface-dark-border: rgba(226, 232, 240, 0.18);
   --text: #e8e8e8;
   --text-soft: #a0b0c4;
   --text-inverse: #0a1628;

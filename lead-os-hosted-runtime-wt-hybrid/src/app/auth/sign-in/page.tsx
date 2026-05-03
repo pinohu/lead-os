@@ -134,22 +134,22 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           style={{
             background:
               "linear-gradient(160deg, var(--surface-dark) 0%, rgba(10, 22, 18, 0.97) 100%)",
-            color: "var(--text-inverse)",
-            borderColor: "rgba(200, 220, 210, 0.1)",
+            color: "var(--surface-dark-foreground)",
+            borderColor: "var(--surface-dark-border)",
           }}
         >
-          <p className="text-xs font-extrabold tracking-[0.16em] uppercase text-accent mb-4">
+          <p className="mb-4 text-xs font-extrabold uppercase tracking-[0.16em] text-[color:var(--surface-dark-accent)]">
             What you get access to
           </p>
           <ul className="list-none p-0 m-0 grid gap-2.5">
             {FEATURE_LIST.map((feature) => (
               <li
                 key={feature}
-                className="flex items-center gap-3 px-3.5 py-3 rounded-md bg-white/[0.06] text-[0.95rem]"
+                className="flex items-center gap-3 rounded-md bg-white/[0.1] px-3.5 py-3 text-[0.95rem] font-semibold text-[color:var(--surface-dark-foreground)]"
               >
                 <span
                   aria-hidden="true"
-                  className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-accent/10 text-accent text-xs font-extrabold shrink-0"
+                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/[0.14] text-xs font-extrabold text-[color:var(--surface-dark-accent)]"
                 >
                   ✓
                 </span>

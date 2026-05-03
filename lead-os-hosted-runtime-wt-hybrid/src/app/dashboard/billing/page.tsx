@@ -169,7 +169,7 @@ export default function BillingPage() {
       <main className="min-h-screen bg-background text-foreground">
         <div className="max-w-[1100px] mx-auto px-6 py-8">
           <section className="rounded-xl bg-muted border border-border p-6">
-            <p className="text-foreground0 text-sm">Loading billing data...</p>
+            <p className="text-muted-foreground text-sm">Loading billing data...</p>
           </section>
         </div>
       </main>
@@ -253,7 +253,7 @@ export default function BillingPage() {
         <div className="rounded-xl bg-muted border border-border p-6 mb-6">
           <h2 className="text-sm font-bold text-foreground mb-4">Usage History</h2>
           {historyRecords.length === 0 ? (
-            <p className="text-foreground0 text-sm">No usage history available</p>
+            <p className="text-muted-foreground text-sm">No usage history available</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-sm">

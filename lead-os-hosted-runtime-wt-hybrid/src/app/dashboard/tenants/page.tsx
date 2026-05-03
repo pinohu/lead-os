@@ -68,7 +68,7 @@ export default function TenantsPage() {
         <div className="mx-auto max-w-[1100px] px-6 py-8">
           <section className="rounded-xl border border-border bg-card p-6">
             <div className="p-8">
-              <p className="text-sm text-foreground0">Loading tenants...</p>
+              <p className="text-sm text-muted-foreground">Loading tenants...</p>
             </div>
           </section>
         </div>
@@ -143,19 +143,19 @@ export default function TenantsPage() {
                         <td colSpan={7} className="p-0">
                           <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 px-3.5 py-4 text-xs">
                             <div>
-                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-foreground0">Site URL</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Site URL</div>
                               <div className="text-sm text-foreground">{tenant.siteUrl || "Not set"}</div>
                             </div>
                             <div>
-                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-foreground0">Operator Emails</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Operator Emails</div>
                               <div className="text-sm text-foreground">{tenant.operatorEmails.join(", ") || "None"}</div>
                             </div>
                             <div>
-                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-foreground0">Enabled Funnels</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Enabled Funnels</div>
                               <div className="text-sm text-foreground">{tenant.enabledFunnels.join(", ") || "None"}</div>
                             </div>
                             <div>
-                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-foreground0">Active Channels</div>
+                              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Active Channels</div>
                               <div className="text-sm text-foreground">{activeChannels(tenant.channels).join(", ") || "None"}</div>
                             </div>
                           </div>

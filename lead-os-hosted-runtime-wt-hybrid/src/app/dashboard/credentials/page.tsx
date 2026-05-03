@@ -210,7 +210,7 @@ export default function CredentialsPage() {
       <main className="min-h-screen bg-background text-foreground">
         <div className="max-w-[1100px] mx-auto px-6 py-8">
           <div className="rounded-xl bg-muted border border-border p-6">
-            <p className="text-foreground0 text-sm">Loading credentials...</p>
+            <p className="text-muted-foreground text-sm">Loading credentials...</p>
           </div>
         </div>
       </main>
@@ -284,7 +284,7 @@ export default function CredentialsPage() {
 
         {Object.keys(grouped).length === 0 && (
           <div className="rounded-xl bg-muted border border-border p-6">
-            <p className="text-foreground0 text-sm">No providers match your search.</p>
+            <p className="text-muted-foreground text-sm">No providers match your search.</p>
           </div>
         )}
 
@@ -314,7 +314,7 @@ export default function CredentialsPage() {
                         <h3 className="text-[0.95rem] font-bold text-foreground capitalize">
                           {provider.provider.replace(/_/g, " ")}
                         </h3>
-                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${connected ? "bg-emerald-600/15 text-emerald-400" : "bg-slate-700/40 text-foreground0"}`}>
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${connected ? "bg-emerald-600/15 text-emerald-400" : "bg-slate-700/40 text-slate-200"}`}>
                           {connected ? "Connected" : "Not connected"}
                         </span>
                       </div>
@@ -324,7 +324,7 @@ export default function CredentialsPage() {
                       </p>
 
                       {cred?.lastVerified && (
-                        <p className="text-foreground0 text-xs mt-1.5">
+                        <p className="text-muted-foreground text-xs mt-1.5">
                           Last verified: {new Date(cred.lastVerified).toLocaleDateString()}
                         </p>
                       )}
