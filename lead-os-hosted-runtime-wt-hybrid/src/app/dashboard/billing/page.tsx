@@ -287,7 +287,7 @@ export default function BillingPage() {
             type="button"
             onClick={handleManageBilling}
             disabled={portalLoading}
-            className={`px-5 py-2.5 rounded-lg border border-border bg-transparent text-muted-foreground text-sm font-semibold cursor-pointer min-h-[44px] ${portalLoading ? "opacity-60" : ""}`}
+            className={`px-5 py-2.5 rounded-lg border border-border bg-transparent text-muted-foreground text-sm font-semibold cursor-pointer min-h-[44px] ${portalLoading ? "opacity-70" : ""}`}
             aria-busy={portalLoading}
           >
             {portalLoading ? "Opening..." : "Manage Billing"}
@@ -312,7 +312,7 @@ export default function BillingPage() {
                 setError("Failed to start checkout");
               }
             }}
-            className="px-5 py-2.5 rounded-lg border-none bg-teal-500 text-primary-foreground text-sm font-bold cursor-pointer min-h-[44px]"
+            className="px-5 py-2.5 rounded-lg border-none bg-teal-700 text-white text-sm font-bold cursor-pointer min-h-[44px]"
           >
             Upgrade Plan
           </button>

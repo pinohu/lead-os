@@ -657,7 +657,7 @@ export default function OnboardPage() {
                   disabled={loading}
                   className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading}
-                  style={{ opacity: loading ? 0.6 : 1 }}
+                  style={{ opacity: loading ? 0.7 : 1 }}
                 >
                   {loading ? "Starting..." : "Start operator setup"}
                 </button>
@@ -748,7 +748,7 @@ export default function OnboardPage() {
                   disabled={loading || niche.name.trim().length < 2}
                   className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading}
-                  style={{ opacity: loading || niche.name.trim().length < 2 ? 0.6 : 1 }}
+                  style={{ opacity: loading || niche.name.trim().length < 2 ? 0.7 : 1 }}
                 >
                   {loading ? "Saving..." : "Next"}
                 </button>
@@ -801,7 +801,7 @@ export default function OnboardPage() {
                   disabled={loading}
                   className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading}
-                  style={{ opacity: loading ? 0.6 : 1 }}
+                  style={{ opacity: loading ? 0.7 : 1 }}
                 >
                   {loading ? "Saving..." : "Next"}
                 </button>
@@ -897,7 +897,7 @@ export default function OnboardPage() {
                   disabled={loading || !branding.name.trim()}
                   className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading}
-                  style={{ opacity: loading || !branding.name.trim() ? 0.6 : 1 }}
+                  style={{ opacity: loading || !branding.name.trim() ? 0.7 : 1 }}
                 >
                   {loading ? "Saving..." : "Next"}
                 </button>
@@ -942,7 +942,7 @@ export default function OnboardPage() {
                   disabled={loading}
                   className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading}
-                  style={{ opacity: loading ? 0.6 : 1 }}
+                  style={{ opacity: loading ? 0.7 : 1 }}
                 >
                   {loading ? "Saving..." : "Next"}
                 </button>
@@ -1003,7 +1003,7 @@ export default function OnboardPage() {
                   disabled={loading || paymentPending}
                   className="min-h-[44px] rounded-lg border-none bg-teal-500 px-9 py-3.5 text-base font-bold text-[#0a0f1a] transition-opacity duration-200"
                   aria-busy={loading || paymentPending}
-                  style={{ opacity: loading || paymentPending ? 0.6 : 1 }}
+                  style={{ opacity: loading || paymentPending ? 0.7 : 1 }}
                 >
                   {loading ? "Launching..." : paymentPending ? "Redirecting to payment..." : (() => {
                     const currentPlan = PLANS.find((p) => p.id === selectedPlan);
@@ -1109,7 +1109,7 @@ export default function OnboardPage() {
                 disabled={paymentPending}
                 className="min-h-[44px] rounded-lg border-none bg-teal-500 px-9 py-3.5 text-base font-bold text-[#0a0f1a] transition-opacity duration-200"
                 aria-busy={paymentPending}
-                style={{ opacity: paymentPending ? 0.6 : 1 }}
+                style={{ opacity: paymentPending ? 0.7 : 1 }}
               >
                 {paymentPending ? "Redirecting to payment..." : "Complete Payment"}
               </button>

@@ -3,8 +3,9 @@ import { join, relative, extname } from "node:path";
 
 const root = process.cwd();
 const srcDir = join(root, "src");
+const scriptDir = join(root, "scripts");
 
-const sourceExtensions = new Set([".ts", ".tsx", ".css"]);
+const sourceExtensions = new Set([".ts", ".tsx", ".css", ".js", ".mjs"]);
 const sourceFiles = [];
 
 function walk(dir) {
@@ -26,8 +27,12 @@ function lineFor(text, index) {
 
 function findViolations(file, text, rules) {
   const violations = [];
+  const relativePath = relative(root, file);
+  if (/scripts[\\/]+audit-accessibility-surface\.mjs$/u.test(relativePath)) {
+    return violations;
+  }
   for (const rule of rules) {
-    if (rule.ignorePathPattern?.test(relative(root, file))) {
+    if (rule.ignorePathPattern?.test(relativePath)) {
       continue;
     }
     for (const match of text.matchAll(rule.pattern)) {
@@ -46,8 +51,8 @@ function findViolations(file, text, rules) {
 const unsafeSourceRules = [
   {
     name: "unsafe-action-contrast",
-    detail: "Do not pair mid-tone Tailwind 500 backgrounds with white text; use a 700+ action color or semantic primary token.",
-    pattern: /(?:bg-(?:teal|blue|green|red|gray)-500[^\n"`']*text-white|text-white[^\n"`']*bg-(?:teal|blue|green|red|gray)-500)/gu,
+    detail: "Do not pair mid-tone Tailwind 500 backgrounds with light foreground text; use a 700+ action color or semantic primary token.",
+    pattern: /(?:bg-(?:teal|blue|green|red|gray)-500[^\n"`']*(?:text-white|text-primary-foreground)|(?:text-white|text-primary-foreground)[^\n"`']*bg-(?:teal|blue|green|red|gray)-500)/gu,
     ignorePathPattern: /src[\\/]+app[\\/]+globals\.css$/u,
   },
   {
@@ -68,7 +73,7 @@ const unsafeSourceRules = [
   {
     name: "disabled-low-opacity",
     detail: "Disabled states still need readable labels; use opacity 70+ or explicit muted foreground.",
-    pattern: /disabled:opacity-50|has-\[:disabled\]:opacity-50|aria-selected:opacity-30/gu,
+    pattern: /disabled:opacity-50|data-\[disabled(?:=true)?\]:opacity-50|has-\[:disabled\]:opacity-50|aria-selected:opacity-30|text-muted-foreground\/(?:50|60)|style=\{\{[^}\n]*opacity:[^}\n]*0\.6/gu,
   },
 ];
 
@@ -107,6 +112,9 @@ if (!existsSync(srcDir)) {
 }
 
 walk(srcDir);
+if (existsSync(scriptDir)) {
+  walk(scriptDir);
+}
 
 const violations = sourceFiles.flatMap((file) => findViolations(file, readFileSync(file, "utf8"), unsafeSourceRules));
 

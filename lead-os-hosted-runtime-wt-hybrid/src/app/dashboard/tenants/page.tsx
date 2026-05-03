@@ -89,7 +89,7 @@ export default function TenantsPage() {
       <div className="mx-auto max-w-[1100px] px-6 py-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <h1 className="m-0 text-2xl font-bold text-foreground">Tenants</h1>
-          <Link href="/onboard" className="inline-flex min-h-11 items-center rounded-lg bg-teal-500 px-5 py-2.5 text-sm font-bold text-primary-foreground no-underline">
+          <Link href="/onboard" className="inline-flex min-h-11 items-center rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-bold text-white no-underline">
             Provision New Tenant
           </Link>
         </div>

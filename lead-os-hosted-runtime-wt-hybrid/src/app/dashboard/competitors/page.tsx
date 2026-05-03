@@ -363,7 +363,7 @@ export default function CompetitorsPage() {
                 <button
                   type="submit"
                   disabled={formSubmitting}
-                  className={`px-5 py-2.5 rounded-lg border-none bg-teal-500 text-primary-foreground text-sm font-bold cursor-pointer min-h-[44px] whitespace-nowrap ${formSubmitting ? "opacity-60" : ""}`}
+                  className={`px-5 py-2.5 rounded-lg border-none bg-teal-700 text-white text-sm font-bold cursor-pointer min-h-[44px] whitespace-nowrap ${formSubmitting ? "opacity-70" : ""}`}
                   aria-busy={formSubmitting}
                 >
                   {formSubmitting ? "Adding..." : "Add Competitor"}
@@ -484,7 +484,7 @@ export default function CompetitorsPage() {
                       type="button"
                       onClick={() => handleAnalyze(competitor.id)}
                       disabled={analyzingIds.has(competitor.id)}
-                      className={`px-3.5 py-2 rounded-lg border border-border bg-transparent text-muted-foreground text-xs font-semibold cursor-pointer min-h-[44px] ${analyzingIds.has(competitor.id) ? "opacity-60" : ""}`}
+                      className={`px-3.5 py-2 rounded-lg border border-border bg-transparent text-muted-foreground text-xs font-semibold cursor-pointer min-h-[44px] ${analyzingIds.has(competitor.id) ? "opacity-70" : ""}`}
                       aria-busy={analyzingIds.has(competitor.id)}
                       aria-label={`Analyze ${competitor.name}`}
                     >
@@ -494,7 +494,7 @@ export default function CompetitorsPage() {
                       type="button"
                       onClick={() => handleRemove(competitor.id)}
                       disabled={removingIds.has(competitor.id)}
-                      className={`px-3.5 py-2 rounded-lg border border-red-500/30 bg-transparent text-red-400 text-xs font-semibold cursor-pointer min-h-[44px] ${removingIds.has(competitor.id) ? "opacity-60" : ""}`}
+                      className={`px-3.5 py-2 rounded-lg border border-red-500/30 bg-transparent text-red-400 text-xs font-semibold cursor-pointer min-h-[44px] ${removingIds.has(competitor.id) ? "opacity-70" : ""}`}
                       aria-busy={removingIds.has(competitor.id)}
                       aria-label={`Remove ${competitor.name}`}
                     >

@@ -526,7 +526,7 @@ function LeadCard({
               disabled={isClaiming || !buyerEmail.trim()}
               className="min-h-[44px] flex-1 rounded-lg border-none bg-[var(--accent,#225f54)] px-4 py-2.5 text-[0.88rem] font-bold text-white"
               aria-busy={isClaiming}
-              style={{ cursor: isClaiming ? "wait" : "pointer", opacity: isClaiming || !buyerEmail.trim() ? 0.6 : 1 }}
+              style={{ cursor: isClaiming ? "wait" : "pointer", opacity: isClaiming || !buyerEmail.trim() ? 0.7 : 1 }}
             >
               {isClaiming ? "Claiming..." : "Confirm claim"}
             </button>
@@ -546,7 +546,7 @@ function LeadCard({
           disabled={isClaiming}
           className="min-h-[44px] w-full rounded-lg border-none bg-[var(--accent,#225f54)] px-4 py-2.5 text-[0.88rem] font-bold text-white"
           aria-busy={isClaiming}
-          style={{ cursor: isClaiming ? "wait" : "pointer", opacity: isClaiming ? 0.6 : 1 }}
+          style={{ cursor: isClaiming ? "wait" : "pointer", opacity: isClaiming ? 0.7 : 1 }}
         >
           Claim lead
         </button>
@@ -1043,7 +1043,7 @@ export default function PublicMarketplacePage() {
                 disabled={loadingMore}
                 aria-busy={loadingMore}
                 className="min-h-[44px] rounded-lg border border-[rgba(34,95,84,0.25)] bg-transparent px-8 py-3 text-[0.9rem] font-bold text-[var(--accent,#225f54)]"
-                style={{ cursor: loadingMore ? "wait" : "pointer", opacity: loadingMore ? 0.6 : 1 }}
+                style={{ cursor: loadingMore ? "wait" : "pointer", opacity: loadingMore ? 0.7 : 1 }}
               >
                 {loadingMore ? "Loading..." : "Load more leads"}
               </button>

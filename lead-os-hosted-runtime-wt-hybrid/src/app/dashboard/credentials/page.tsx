@@ -344,7 +344,7 @@ export default function CredentialsPage() {
                           <>
                             <button
                               type="button"
-                              className={`px-4 py-2 rounded-lg border border-border bg-transparent text-muted-foreground text-sm font-semibold cursor-pointer min-h-[44px] min-w-[44px] ${isBusy ? "opacity-60" : ""}`}
+                              className={`px-4 py-2 rounded-lg border border-border bg-transparent text-muted-foreground text-sm font-semibold cursor-pointer min-h-[44px] min-w-[44px] ${isBusy ? "opacity-70" : ""}`}
                               onClick={() => handleVerify(provider.provider)}
                               disabled={isBusy}
                               aria-busy={isBusy}
@@ -354,7 +354,7 @@ export default function CredentialsPage() {
                             </button>
                             <button
                               type="button"
-                              className={`px-4 py-2 rounded-lg border border-red-500/30 bg-transparent text-red-400 text-sm font-semibold cursor-pointer min-h-[44px] min-w-[44px] ${isBusy ? "opacity-60" : ""}`}
+                              className={`px-4 py-2 rounded-lg border border-red-500/30 bg-transparent text-red-400 text-sm font-semibold cursor-pointer min-h-[44px] min-w-[44px] ${isBusy ? "opacity-70" : ""}`}
                               onClick={() => handleDisconnect(provider.provider)}
                               disabled={isBusy}
                               aria-busy={isBusy}
@@ -366,7 +366,7 @@ export default function CredentialsPage() {
                         ) : (
                           <button
                             type="button"
-                            className="px-4 py-2 rounded-lg border-none bg-teal-500 text-primary-foreground text-sm font-bold cursor-pointer min-h-[44px] min-w-[44px]"
+                            className="px-4 py-2 rounded-lg border-none bg-teal-700 text-white text-sm font-bold cursor-pointer min-h-[44px] min-w-[44px]"
                             onClick={() => handleConnect(provider)}
                             aria-expanded={isExpanded}
                             aria-controls={`form-${providerId}`}
@@ -407,7 +407,7 @@ export default function CredentialsPage() {
                           })}
                           <button
                             type="button"
-                            className={`px-4 py-2 rounded-lg border-none bg-teal-500 text-primary-foreground text-sm font-bold cursor-pointer min-h-[44px] min-w-[44px] mt-1 ${isBusy ? "opacity-60" : ""}`}
+                            className={`px-4 py-2 rounded-lg border-none bg-teal-700 text-white text-sm font-bold cursor-pointer min-h-[44px] min-w-[44px] mt-1 ${isBusy ? "opacity-70" : ""}`}
                             onClick={() => handleSave(provider)}
                             disabled={isBusy}
                             aria-busy={isBusy}

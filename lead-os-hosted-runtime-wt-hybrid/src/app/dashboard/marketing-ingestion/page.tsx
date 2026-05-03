@@ -16,9 +16,9 @@ const SOURCE_TYPE_OPTIONS = [
 ];
 
 function confidenceColor(score: number): string {
-  if (score >= 70) return "#14b8a6";
-  if (score >= 40) return "#f59e0b";
-  return "#f87171";
+  if (score >= 70) return "#0f766e";
+  if (score >= 40) return "#92400e";
+  return "#b91c1c";
 }
 
 function topSourceType(artifacts: MarketingArtifact[]): string {
@@ -266,7 +266,7 @@ export default function MarketingIngestionPage() {
                 type="submit"
                 disabled={formSubmitting}
                 className="min-h-11 cursor-pointer whitespace-nowrap rounded-lg border-none bg-teal-500 px-5 py-2.5 text-sm font-bold text-[#0a0f1a]"
-                style={{ opacity: formSubmitting ? 0.6 : 1 }}
+                style={{ opacity: formSubmitting ? 0.7 : 1 }}
                 aria-busy={formSubmitting}
               >
                 {formSubmitting ? "Analyzing..." : "Analyze Artifact"}
@@ -379,7 +379,7 @@ export default function MarketingIngestionPage() {
                       onClick={() => handleRemove(artifact.id)}
                       disabled={removingIds.has(artifact.id)}
                       className="min-h-11 cursor-pointer rounded-lg border border-red-500/30 bg-transparent px-3.5 py-2 text-xs font-semibold text-red-400"
-                      style={{ opacity: removingIds.has(artifact.id) ? 0.6 : 1 }}
+                      style={{ opacity: removingIds.has(artifact.id) ? 0.7 : 1 }}
                       aria-busy={removingIds.has(artifact.id)}
                       aria-label={`Remove artifact: ${artifact.headline ?? artifact.id}`}
                     >
@@ -388,7 +388,7 @@ export default function MarketingIngestionPage() {
                     <button
                       type="button"
                       disabled
-                      className="min-h-11 cursor-not-allowed rounded-lg border border-border bg-transparent px-3.5 py-2 text-xs font-semibold text-muted-foreground/50"
+                      className="min-h-11 cursor-not-allowed rounded-lg border border-border bg-transparent px-3.5 py-2 text-xs font-semibold text-muted-foreground"
                       aria-label="Use as Template — coming soon"
                       aria-disabled="true"
                     >

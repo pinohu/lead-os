@@ -119,7 +119,7 @@ function PreferencesContent() {
                   </div>
                 </label>
 
-                <div className="flex items-start gap-3 opacity-60">
+                <div className="flex items-start gap-3 rounded-md bg-muted/40 p-3">
                   <input
                     type="checkbox"
                     checked={true}

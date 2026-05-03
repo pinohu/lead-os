@@ -315,7 +315,7 @@ function ProspectCard({
           disabled={isUpdating}
           aria-busy={isUpdating}
           className="min-h-9 cursor-pointer rounded-lg border border-border bg-muted px-2.5 py-1.5 font-[inherit] text-xs text-foreground outline-none"
-          style={{ opacity: isUpdating ? 0.6 : 1 }}
+          style={{ opacity: isUpdating ? 0.7 : 1 }}
           aria-label={`Update status for ${prospect.businessName}`}
         >
           {STATUS_OPTIONS.map((opt) => (
@@ -332,7 +332,7 @@ function ProspectCard({
           aria-busy={isContacting}
           aria-label={`Mark ${prospect.businessName} as contacted`}
           className="min-h-11 cursor-pointer rounded-lg border-none bg-blue-700 px-3.5 py-2 font-[inherit] text-xs font-semibold text-white"
-          style={{ opacity: isContacting ? 0.6 : 1 }}
+          style={{ opacity: isContacting ? 0.7 : 1 }}
         >
           {isContacting ? "Marking..." : "Contact"}
         </button>
@@ -659,7 +659,7 @@ export default function ProspectsPage() {
                 disabled={scoutLoading}
                 aria-busy={scoutLoading}
                 className="ml-auto min-h-11 cursor-pointer rounded-lg border-none bg-blue-700 px-5 py-2.5 font-[inherit] text-sm font-semibold text-white"
-                style={{ opacity: scoutLoading ? 0.6 : 1 }}
+                style={{ opacity: scoutLoading ? 0.7 : 1 }}
               >
                 {scoutLoading ? "Scouting..." : "Scout Now"}
               </button>

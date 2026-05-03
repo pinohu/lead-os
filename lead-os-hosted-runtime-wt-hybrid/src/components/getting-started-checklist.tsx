@@ -123,7 +123,7 @@ interface StepRowProps {
 function StepRow({ step, complete, index }: StepRowProps) {
   return (
     <li
-      className={`flex items-start gap-3 py-3 border-b border-border ${complete ? "opacity-60" : ""}`}
+      className={`flex items-start gap-3 py-3 border-b border-border ${complete ? "bg-muted/40 px-2" : ""}`}
     >
       {/* Checkbox indicator */}
       <span

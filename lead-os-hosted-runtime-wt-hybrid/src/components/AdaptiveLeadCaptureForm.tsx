@@ -148,7 +148,7 @@ export function AdaptiveLeadCaptureForm(props: AdaptiveLeadCaptureFormProps) {
         </div>
         <ol className="flex gap-4" aria-label="Form progress">
           {[1, 2, 3].map((item) => (
-            <li key={item} className={cn("flex flex-col items-center gap-1 text-sm", item === step ? "text-primary font-bold" : item < step ? "text-muted-foreground" : "text-muted-foreground/50")}>
+            <li key={item} className={cn("flex flex-col items-center gap-1 text-sm", item === step ? "text-primary font-bold" : item < step ? "text-muted-foreground" : "text-muted-foreground")}>
               <span className={cn("inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold", item === step ? "bg-primary text-primary-foreground" : item < step ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground")}>{item}</span>
               <strong>{item === 1 ? "Goal" : item === 2 ? "Contact" : "Confirm"}</strong>
             </li>

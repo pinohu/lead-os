@@ -388,7 +388,7 @@ function generateSceneComponent(scene: VideoScene, brand: VideoSpec["brand"], fp
         width: \`\${wipeProgress}%\`,
         height: "100%",
         background: \`linear-gradient(90deg, ${brand.primaryColor}, ${brand.accentColor})\`,
-        opacity: interpolate(frame, [0, ${Math.floor(frames / 2)}, ${frames}], [0, 0.6, 0], { extrapolateRight: "clamp" }),
+        opacity: interpolate(frame, [0, ${Math.floor(frames / 2)}, ${frames}], [0, 0.72, 0], { extrapolateRight: "clamp" }),
       }} />
     </AbsoluteFill>
   );
