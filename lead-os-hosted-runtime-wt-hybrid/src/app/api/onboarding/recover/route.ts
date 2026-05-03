@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { advanceOnboarding, completeOnboarding, startOnboarding, type OnboardingState } from "@/lib/onboarding";
+import { getRequestBaseUrl } from "@/lib/request-base-url";
 import { z } from "zod";
 
 const TargetSchema = z.enum(["niche", "plan", "branding", "integrations", "review"]);
@@ -93,7 +94,7 @@ export async function POST(request: Request) {
 
     if (shouldCompleteStep(data.completeThrough, "review")) {
       state = await advanceIfNeeded(state, "review", {});
-      state = await completeOnboarding(state.id);
+      state = await completeOnboarding(state.id, { baseUrl: getRequestBaseUrl(request) });
     }
 
     return NextResponse.json(

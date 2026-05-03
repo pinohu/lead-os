@@ -370,6 +370,21 @@ test("completeOnboarding returns provisioning result", async () => {
   assert.ok(completed.tenantId);
 });
 
+test("completeOnboarding uses the request base URL for deliverable links", async () => {
+  const state = await startOnboarding("base-url@example.com");
+  await advanceOnboarding(state.id, { name: "HVAC Leads" });
+  await advanceOnboarding(state.id, { planId: "whitelabel-starter" });
+  await advanceOnboarding(state.id, { name: "HVAC Outcome Co", accent: "#14b8a6" });
+  await advanceOnboarding(state.id, { enabledProviders: ["email", "sms"] });
+  await advanceOnboarding(state.id, {});
+
+  const completed = await completeOnboarding(state.id, { baseUrl: "https://cxreact.com/" });
+
+  assert.equal(completed.currentStep, "complete");
+  assert.ok(completed.provisioningResult?.embedScript.startsWith('<script src="https://cxreact.com/embed.js"'));
+  assert.ok(completed.provisioningResult?.dashboardUrl.startsWith("https://cxreact.com/dashboard?tenantId="));
+});
+
 test("completeOnboarding is idempotent after provisioning", async () => {
   const completed = await fullOnboarding("idempotent-complete@example.com");
   const repeated = await completeOnboarding(completed.id);

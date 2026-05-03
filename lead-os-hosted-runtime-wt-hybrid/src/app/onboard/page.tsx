@@ -183,13 +183,18 @@ export default function OnboardPage() {
       const draft = safeJson<OnboardingDraft>(window.localStorage.getItem(DRAFT_STORAGE_KEY));
       const draftAge = draft ? Date.now() - new Date(draft.updatedAt).getTime() : Number.POSITIVE_INFINITY;
       if (draft && draftAge < DRAFT_MAX_AGE_MS && isWizardStep(draft.step)) {
-        setEmail(draft.email ?? "");
-        setSession(draft.session ?? null);
-        setStep(draft.step);
-        setNiche(draft.niche ?? { name: "", industry: "", keywords: [] });
-        setSelectedPlan(draft.selectedPlan ?? "whitelabel-growth");
-        setBranding(draft.branding ?? { name: "", accent: "#14b8a6", logoUrl: "", siteUrl: "", supportEmail: "" });
-        setEnabledProviders(new Set(draft.enabledProviders?.length ? draft.enabledProviders : ["email"]));
+        const canRestoreDraft = draft.step !== "complete" || Boolean(draft.session?.provisioningResult);
+        if (canRestoreDraft) {
+          setEmail(draft.email ?? "");
+          setSession(draft.session ?? null);
+          setStep(draft.step);
+          setNiche(draft.niche ?? { name: "", industry: "", keywords: [] });
+          setSelectedPlan(draft.selectedPlan ?? "whitelabel-growth");
+          setBranding(draft.branding ?? { name: "", accent: "#14b8a6", logoUrl: "", siteUrl: "", supportEmail: "" });
+          setEnabledProviders(new Set(draft.enabledProviders?.length ? draft.enabledProviders : ["email"]));
+        } else {
+          window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+        }
       }
     }
 
@@ -250,6 +255,29 @@ export default function OnboardPage() {
     window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
   }, [email, session, step, niche, selectedPlan, branding, enabledProviders]);
 
+  const resetOnboardingDraft = useCallback(() => {
+    window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+    setError(null);
+    setSession(null);
+    setStep("email");
+    setEmail("");
+    setNiche({ name: "", industry: "", keywords: [] });
+    setKeywordInput("");
+    setSelectedPlan("whitelabel-growth");
+    setBranding({ name: "", accent: "#14b8a6", logoUrl: "", siteUrl: "", supportEmail: "" });
+    setEnabledProviders(new Set(["email"]));
+    setPaymentPending(false);
+    setStripeSessionId(null);
+  }, []);
+
+  const returnToEmailRecovery = useCallback(() => {
+    setError("Enter your email and Lead OS will recover any active setup, or recreate the server session from your saved choices.");
+    setSession(null);
+    setStep("email");
+    setPaymentPending(false);
+    setStripeSessionId(null);
+  }, []);
+
   const handleStartOnboarding = useCallback(async () => {
     if (!email.trim()) {
       setError("Email is required");
@@ -295,8 +323,7 @@ export default function OnboardPage() {
           return;
         }
         if (isSessionNotFoundError(message)) {
-          setError(null);
-          setStep("complete");
+          setError(message);
           setPaymentPending(false);
           return;
         }
@@ -377,7 +404,7 @@ export default function OnboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [email, niche, selectedPlan, branding, enabledProviders, step, redirectToStripeCheckout]);
+  }, [email, niche, selectedPlan, branding, enabledProviders, step]);
 
   const handleAdvanceStep = useCallback(async (stepData: Record<string, unknown>) => {
     if (!session) {
@@ -413,7 +440,7 @@ export default function OnboardPage() {
         const isPaidPlan = currentPlan && currentPlan.priceValue > 0;
 
         if (isPaidPlan) {
-          await redirectToStripeCheckout(session.id);
+          await redirectToStripeCheckout(json.data.id);
           return;
         }
 
@@ -479,7 +506,7 @@ export default function OnboardPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-[960px] px-6 py-12">
         <header className="mb-12 text-center">
-          <h1 className="mb-2 text-[2rem] font-bold text-slate-50">Create your operator account</h1>
+          <h1 className="mb-2 text-[2rem] font-bold text-foreground">Create your operator account</h1>
           <p className="text-base text-muted-foreground">
             Use this account to sell and launch B2B/B2B2C outcome solutions for client businesses.
           </p>
@@ -494,7 +521,7 @@ export default function OnboardPage() {
                   step === s
                     ? "border-teal-500 bg-teal-500/15 text-teal-500"
                     : i < completedStepIndex
-                    ? "border-teal-500/40 bg-teal-500/5 text-teal-300"
+                    ? "border-teal-500/40 bg-teal-500/5 text-teal-700 dark:text-teal-300"
                     : "border-slate-400/20 bg-white/[0.03] text-muted-foreground"
                 }`}
                 aria-current={step === s ? "step" : undefined}
@@ -508,7 +535,7 @@ export default function OnboardPage() {
 
         {alreadyCompleteError && (
           <div role="status" aria-live="polite" className="mb-6 rounded-xl border border-teal-500/30 bg-teal-500/[0.08] p-8">
-            <p className="mb-2 text-[0.95rem] font-bold text-teal-300">Account setup is complete.</p>
+            <p className="mb-2 text-[0.95rem] font-bold text-teal-700 dark:text-teal-300">Account setup is complete.</p>
             <p className="mb-5 text-[0.9rem] leading-relaxed text-muted-foreground">
               You can keep moving from here. Open the solution launch center, go to the dashboard, or refresh the completed session state.
             </p>
@@ -540,7 +567,7 @@ export default function OnboardPage() {
 
         {checkoutConfigError && (
           <div role="status" aria-live="polite" className="mb-6 rounded-xl border border-teal-500/30 bg-teal-500/[0.08] p-8">
-            <p className="mb-2 text-[0.95rem] font-bold text-teal-300">Checkout is not connected yet.</p>
+            <p className="mb-2 text-[0.95rem] font-bold text-teal-700 dark:text-teal-300">Checkout is not connected yet.</p>
             <p className="mb-5 text-[0.9rem] leading-relaxed text-muted-foreground">
               Stripe returned a setup issue for this plan, but the operator account can still move forward. Launch the solution now and connect live billing from credentials later.
             </p>
@@ -570,7 +597,7 @@ export default function OnboardPage() {
 
         {sessionNotFoundError && (
           <div role="status" aria-live="polite" className="mb-6 rounded-xl border border-teal-500/30 bg-teal-500/[0.08] p-8">
-            <p className="mb-2 text-[0.95rem] font-bold text-teal-300">Setup session needs to be refreshed.</p>
+            <p className="mb-2 text-[0.95rem] font-bold text-teal-700 dark:text-teal-300">Setup session needs to be refreshed.</p>
             <p className="mb-5 text-[0.9rem] leading-relaxed text-muted-foreground">
               Your choices are still on this screen. Refresh the server session and Lead OS will replay the completed steps so you can keep going.
             </p>
@@ -586,7 +613,7 @@ export default function OnboardPage() {
               </button>
               <button
                 type="button"
-                onClick={() => { setStep("email"); setError(null); setSession(null); }}
+                onClick={resetOnboardingDraft}
                 className="inline-flex min-h-[44px] items-center rounded-lg border border-slate-400/30 bg-transparent px-5 py-2.5 text-[0.9rem] font-semibold text-muted-foreground"
               >
                 Start Over
@@ -604,7 +631,7 @@ export default function OnboardPage() {
         {step === "email" && (
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">Start with your email</h2>
+              <h2 className="mb-5 text-[1.25rem] font-bold text-foreground">Start with your email</h2>
               <p className="mb-5 text-[0.9rem] text-muted-foreground">
                 This creates your operator setup session. After that, go to Solutions and launch the outcome your client business bought.
               </p>
@@ -642,7 +669,7 @@ export default function OnboardPage() {
         {step === "niche" && (
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
+              <h2 className="mb-5 text-[1.25rem] font-bold text-foreground">
                 Define the client market
               </h2>
               <div className="mb-5">
@@ -691,12 +718,12 @@ export default function OnboardPage() {
                 {niche.keywords.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {niche.keywords.map((kw) => (
-                      <span key={kw} className="inline-flex items-center gap-1 rounded-full border border-teal-500/30 bg-teal-500/15 px-2.5 py-1 text-[0.78rem] text-teal-300">
+                      <span key={kw} className="inline-flex items-center gap-1 rounded-full border border-teal-500/30 bg-teal-500/15 px-2.5 py-1 text-[0.78rem] text-teal-700 dark:text-teal-300">
                         {kw}
                         <button
                           type="button"
                           onClick={() => removeKeyword(kw)}
-                          className="min-h-[20px] min-w-[20px] border-none bg-transparent p-0 text-base leading-none text-teal-300"
+                          className="min-h-[20px] min-w-[20px] border-none bg-transparent p-0 text-base leading-none text-teal-700 dark:text-teal-300"
                           aria-label={`Remove keyword ${kw}`}
                         >
                           x
@@ -706,7 +733,7 @@ export default function OnboardPage() {
                   </div>
                 )}
               </div>
-              <div className="mt-3 rounded-lg border border-teal-500/20 bg-teal-500/[0.08] px-3.5 py-2.5 text-[0.85rem] text-teal-300" role="status">
+              <div className="mt-3 rounded-lg border border-teal-500/20 bg-teal-500/[0.08] px-3.5 py-2.5 text-[0.85rem] text-teal-700 dark:text-teal-300" role="status">
                 This tells Lead OS which client market, downstream audience, and lead flow the solution should capture, score, and route.
               </div>
               <div className="mt-8 flex justify-between gap-3">
@@ -733,7 +760,7 @@ export default function OnboardPage() {
         {step === "plan" && (
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h2 className="mb-2 text-[1.25rem] font-bold text-slate-50">Choose solution capacity</h2>
+              <h2 className="mb-2 text-[1.25rem] font-bold text-foreground">Choose solution capacity</h2>
               <p className="mb-5 text-[0.9rem] text-muted-foreground">
                 These plan names, prices, and limits match the backend billing catalog and control how much client solution volume you can run.
               </p>
@@ -755,7 +782,7 @@ export default function OnboardPage() {
                     }`}
                   >
                     {plan.recommended && <span className="absolute -top-2.5 right-4 rounded-full bg-teal-500 px-2.5 py-[3px] text-[0.7rem] font-bold uppercase tracking-wide text-[#0a0f1a]">Recommended</span>}
-                    <h3 className="mb-1 text-[1.1rem] font-bold text-slate-50">{plan.name}</h3>
+                    <h3 className="mb-1 text-[1.1rem] font-bold text-foreground">{plan.name}</h3>
                     <p className="mb-4 text-[1.5rem] font-extrabold text-teal-500">{plan.price}</p>
                     <ul className="mb-3 list-none p-0">
                       {plan.features.map((f) => (
@@ -786,7 +813,7 @@ export default function OnboardPage() {
         {step === "branding" && (
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
+              <h2 className="mb-5 text-[1.25rem] font-bold text-foreground">
                 Name the operator account
               </h2>
               <div className="mb-5">
@@ -882,7 +909,7 @@ export default function OnboardPage() {
         {step === "integrations" && (
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h2 className="mb-5 text-[1.25rem] font-bold text-slate-50">
+              <h2 className="mb-5 text-[1.25rem] font-bold text-foreground">
                 Choose account-access-backed channels
               </h2>
               <div role="group" aria-label="Available integrations">
@@ -927,7 +954,7 @@ export default function OnboardPage() {
         {step === "review" && (
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h2 className="mb-6 text-[1.25rem] font-bold text-slate-50">
+              <h2 className="mb-6 text-[1.25rem] font-bold text-foreground">
                 Review account setup
               </h2>
               <div className="flex justify-between border-b border-slate-400/[0.08] py-2.5">
@@ -963,7 +990,7 @@ export default function OnboardPage() {
                 const currentPlan = PLANS.find((p) => p.id === selectedPlan);
                 const isPaidPlan = currentPlan && currentPlan.priceValue > 0;
                 return isPaidPlan ? (
-                  <div className="mt-3 rounded-lg border border-teal-500/20 bg-teal-500/[0.08] px-3.5 py-2.5 text-[0.85rem] text-teal-300" role="status">
+                  <div className="mt-3 rounded-lg border border-teal-500/20 bg-teal-500/[0.08] px-3.5 py-2.5 text-[0.85rem] text-teal-700 dark:text-teal-300" role="status">
                 If Stripe is configured, you will go to checkout for {currentPlan.name} ({currentPlan.price}). If Stripe is not configured, the account setup completes and solution launches can still show which account access can connect later.
                   </div>
                 ) : null;
@@ -1015,19 +1042,19 @@ export default function OnboardPage() {
             </div>
 
             <div className="mb-6 rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h3 className="mb-3 text-base font-bold text-slate-50">
+              <h3 className="mb-3 text-base font-bold text-foreground">
                 Embed Script
               </h3>
               <p className="mb-3 text-[0.85rem] text-muted-foreground">
                 Add this script to a page where you want an account-level lead capture widget for a client business to appear:
               </p>
-              <code className="mb-4 block overflow-x-auto whitespace-pre-wrap break-all rounded-lg border border-slate-400/15 bg-black/40 p-4 font-mono text-[0.82rem] text-teal-300">
+              <code className="mb-4 block overflow-x-auto whitespace-pre-wrap break-all rounded-lg border border-slate-700 bg-slate-950 p-4 font-mono text-[0.82rem] text-teal-100">
                 {session.provisioningResult.embedScript}
               </code>
             </div>
 
             <div className="mb-6 rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h3 className="mb-3 text-base font-bold text-slate-50">
+              <h3 className="mb-3 text-base font-bold text-foreground">
                 Dashboard
               </h3>
               <p className="mb-3 text-[0.85rem] text-muted-foreground">
@@ -1042,7 +1069,7 @@ export default function OnboardPage() {
             </div>
 
             <div className="mb-6 rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h3 className="mb-3 text-base font-bold text-slate-50">
+              <h3 className="mb-3 text-base font-bold text-foreground">
                 Complete Solution Launch
               </h3>
               <p className="mb-3 text-[0.85rem] text-muted-foreground">
@@ -1057,7 +1084,7 @@ export default function OnboardPage() {
             </div>
 
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h3 className="mb-2 text-base font-bold text-slate-50">
+              <h3 className="mb-2 text-base font-bold text-foreground">
                 Check Your Email
               </h3>
               <p className="text-[0.85rem] text-muted-foreground">
@@ -1070,7 +1097,7 @@ export default function OnboardPage() {
         {step === "complete" && !loading && session && !session.provisioningResult && !stripeSessionId && (
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h2 className="mb-4 text-[1.25rem] font-bold text-slate-50">
+              <h2 className="mb-4 text-[1.25rem] font-bold text-foreground">
                 Complete Payment
               </h2>
               <p className="mb-6 text-[0.9rem] text-muted-foreground">
@@ -1093,19 +1120,28 @@ export default function OnboardPage() {
         {step === "complete" && !loading && !session && (
           <main>
             <div className="rounded-xl border border-slate-400/10 bg-muted p-8">
-              <h2 className="mb-4 text-[1.25rem] font-bold text-slate-50">
-                Session Expired
+              <h2 className="mb-4 text-[1.25rem] font-bold text-foreground">
+                Setup Needs Recovery
               </h2>
               <p className="mb-6 text-[0.9rem] text-muted-foreground">
-                Your onboarding session could not be found. This may happen if the session expired. Please start a new onboarding session or contact support if you already completed payment.
+                Your browser kept the setup screen, but the server session is no longer available. Recover from your email and saved choices, or clear the draft and start fresh.
               </p>
-              <button
-                type="button"
-                onClick={() => { setStep("email"); setError(null); }}
-                className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
-              >
-                Start Over
-              </button>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={returnToEmailRecovery}
+                  className="min-h-[44px] min-w-[120px] rounded-lg border-none bg-teal-500 px-7 py-3 text-[0.9rem] font-bold text-[#0a0f1a] transition-opacity duration-200"
+                >
+                  Recover with Email
+                </button>
+                <button
+                  type="button"
+                  onClick={resetOnboardingDraft}
+                  className="min-h-[44px] min-w-[120px] rounded-lg border border-slate-400/30 bg-transparent px-7 py-3 text-[0.9rem] font-semibold text-muted-foreground transition-opacity duration-200"
+                >
+                  Start Fresh
+                </button>
+              </div>
             </div>
           </main>
         )}

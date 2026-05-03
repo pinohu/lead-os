@@ -34,6 +34,10 @@ export interface ListOnboardingFilters {
   offset?: number;
 }
 
+export interface CompleteOnboardingOptions {
+  baseUrl?: string;
+}
+
 const STEP_ORDER: OnboardingStep[] = ["niche", "plan", "branding", "integrations", "review", "complete"];
 
 const onboardingStore = new Map<string, OnboardingState>();
@@ -213,6 +217,10 @@ function tenantSlugCandidates(baseSlug: string, state: OnboardingState): string[
     `${base}-${suffix}-4`,
     `${base}-${suffix}-5`,
   ];
+}
+
+function normalizeBaseUrl(baseUrl?: string): string {
+  return (baseUrl || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/+$/, "");
 }
 
 function isDuplicateTenantSlugError(error: unknown): boolean {
@@ -442,7 +450,7 @@ export async function goBackOnboarding(id: string): Promise<OnboardingState> {
   return state;
 }
 
-export async function completeOnboarding(id: string): Promise<OnboardingState> {
+export async function completeOnboarding(id: string, options?: CompleteOnboardingOptions): Promise<OnboardingState> {
   const state = await getOnboardingState(id);
   if (!state) {
     throw new Error("Onboarding session not found");
@@ -514,7 +522,7 @@ export async function completeOnboarding(id: string): Promise<OnboardingState> {
 
   const tenant = tenantSlug.existingTenant ?? await createTenantForOnboarding(tenantInput, slug, state);
 
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000");
+  const baseUrl = normalizeBaseUrl(options?.baseUrl);
   const embedScript = `<script src="${baseUrl}/embed.js" data-tenant="${tenant.tenantId}" data-accent="${tenant.accent}" async></script>`;
   const dashboardUrl = `${baseUrl}/dashboard?tenantId=${tenant.tenantId}`;
 

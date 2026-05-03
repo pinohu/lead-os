@@ -82,7 +82,7 @@ With `DATABASE_URL` set, the script compares files in `db/migrations/` to rows i
   - `bash scripts/backup-db.sh` — writes `./backups/lead-os-<UTC>.sql.gz` (override directory with `LEAD_OS_BACKUP_DIR`).
 - **Restore (destructive):** set `LEAD_OS_RESTORE_TARGET_URL` to a **dedicated** database (e.g. staging or a disposable instance), then:
   - `bash scripts/restore-db.sh ./backups/lead-os-<timestamp>.sql.gz`
-- **Archive sanity check:** `npm run verify:backup-archive -- ./backups/lead-os-<timestamp>.sql.gz` (gzip magic + minimum size).
+- **Archive sanity check:** `npm run verify:backup-archive -- ./backups/lead-os-<timestamp>.sql.gz` (gzip magic + minimum size). On a clean workspace with no archive supplied, `npm run verify:backup-archive` exits successfully with a SKIP message so readiness scripts do not fail before the first backup exists. You can also set `BACKUP_ARCHIVE=/path/to/backup.sql.gz`.
 - **Integrity after restore:** run `npm run verify:migrations` against the restored URL, then smoke-test critical flows (auth, intake, operator, pricing tick).
 - **Scheduled backups:** run `scripts/backup-db.sh` on a scheduler (cron, Kubernetes CronJob, CI artifact upload). Store artifacts off-instance with retention and encryption.
 - **Temp verification DB:** restore into a fresh database name on the same host or a branch instance; run migrations if needed, then drop the temp DB after checks.

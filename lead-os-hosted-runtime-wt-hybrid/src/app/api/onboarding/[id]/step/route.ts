@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildCorsHeaders } from "@/lib/cors";
 import { advanceOnboarding, completeOnboarding, getOnboardingState, goBackOnboarding } from "@/lib/onboarding";
+import { getRequestBaseUrl } from "@/lib/request-base-url";
 
 const MAX_ID_LENGTH = 200;
 const VALID_ID_PATTERN = /^onb_[a-f0-9-]{36}$/;
@@ -85,7 +86,7 @@ export async function POST(
     let updated;
     if (state.currentStep === "review") {
       updated = await advanceOnboarding(id, body);
-      updated = await completeOnboarding(id);
+      updated = await completeOnboarding(id, { baseUrl: getRequestBaseUrl(request) });
     } else {
       updated = await advanceOnboarding(id, body);
     }

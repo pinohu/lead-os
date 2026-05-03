@@ -30,4 +30,14 @@ describe("backup / restore scripts", () => {
     );
     assert.notEqual(r.status, 0);
   });
+
+  it("verify-backup-archive.mjs skips clean workspaces without a supplied archive", () => {
+    const r = spawnSync(
+      process.execPath,
+      [join(root, "scripts", "verify-backup-archive.mjs")],
+      { encoding: "utf8" },
+    );
+    assert.equal(r.status, 0);
+    assert.match(r.stdout, /SKIP backup archive verification/);
+  });
 });

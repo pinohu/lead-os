@@ -1,12 +1,12 @@
-# CX React
+# Lead OS
 
-Programmable, multi-tenant lead generation infrastructure. One runtime, many niches — configure industries and funnels without shipping a fork for every vertical.
+Programmable, multi-tenant AI service-delivery infrastructure. One runtime, many niches: configure industries, outcome packages, funnels, and fulfillment paths without shipping a fork for every vertical.
 
 **New here?** Read **[`docs/START-HERE.md`](docs/START-HERE.md)** first (clone → run → Postgres → operator → production checks). It is the **novice entry** path and the reconciliation point between marketing, `/docs`, and repo truth.
 
 **Doc–code parity (kernel):** after clone, run `npm run verify:product-surfaces` inside `lead-os-hosted-runtime-wt-hybrid/`. Scope and limits are defined in [`lead-os-hosted-runtime-wt-hybrid/docs/CLAIMS-VERIFICATION.md`](lead-os-hosted-runtime-wt-hybrid/docs/CLAIMS-VERIFICATION.md).
 
-CX React captures visitor intent through embeddable widgets, scores and routes leads through configurable funnel graphs, orchestrates multi-channel follow-up (email, SMS, WhatsApp, chat, voice), generates AI-powered content, and syncs outcomes to your CRM and automation bus. It replaces 15-20 separate SaaS products with a single deployable runtime.
+Lead OS, historically labeled CX React in a few runtime directories, captures visitor intent through embeddable widgets, scores and routes leads through configurable funnel graphs, orchestrates multi-channel follow-up (email, SMS, WhatsApp, chat, voice), generates AI-powered content, provisions outcome packages, and syncs proof back to CRM and automation systems. The strategic direction is AI-native service replacement: sell completed outcomes and delivery evidence, not seats.
 
 ## By the numbers (verify — do not treat as warranties)
 

@@ -3,6 +3,7 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { getOnboardingState } from "@/lib/onboarding";
 import { createCheckoutSession } from "@/lib/billing";
 import { getPlanById } from "@/lib/plan-catalog";
+import { getRequestBaseUrl } from "@/lib/request-base-url";
 
 const MAX_ID_LENGTH = 200;
 const VALID_ID_PATTERN = /^onb_[a-f0-9-]{36}$/;
@@ -89,7 +90,7 @@ export async function POST(
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+    const baseUrl = getRequestBaseUrl(request) ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
     const successUrl = `${baseUrl}/onboard?session_id={CHECKOUT_SESSION_ID}&step=complete&onboarding_id=${id}`;
     const cancelUrl = `${baseUrl}/onboard?step=plan&onboarding_id=${id}`;
 
