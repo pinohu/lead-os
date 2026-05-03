@@ -528,6 +528,59 @@ export default async function PackagePage({ params }: Props) {
               <h2 className="font-semibold">System-of-record lock-in</h2>
               <p className="mt-1 text-muted-foreground">{serviceStrategy.systemOfRecordDataLockIn}</p>
             </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">Outcome Graph moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.outcomeGraphMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">Outcome event schema</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground">
+                {serviceStrategy.outcomeGraphEventSchema.map((event) => (
+                  <li key={event}>{event}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">Outcome data assets</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground">
+                {serviceStrategy.outcomeGraphDataAssets.map((asset) => (
+                  <li key={asset}>{asset}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Vertical eval flywheel</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.verticalEvalFlywheel}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Certified Outcome standard</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.certifiedOutcomeStandard}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Switching-cost memory</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.switchingCostMemory}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Package marketplace loop</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.packageMarketplaceLoop}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Outcome billing moat</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.outcomeBillingMoat}</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <h2 className="font-semibold">Forward-deployed learning</h2>
+              <p className="mt-1 text-muted-foreground">{serviceStrategy.forwardDeployedLearningLoop}</p>
+            </div>
+            <div className="rounded-md border border-border p-3 md:col-span-2">
+              <h2 className="font-semibold">Moat proof checklist</h2>
+              <ul className="mt-2 grid gap-2 text-muted-foreground md:grid-cols-2">
+                {serviceStrategy.moatProofChecklist.map((proof) => (
+                  <li key={proof}>{proof}</li>
+                ))}
+              </ul>
+              <p className="mt-3 text-muted-foreground">{serviceStrategy.moatOperatingRule}</p>
+            </div>
             <div className="rounded-md border border-border p-3">
               <h2 className="font-semibold">Drudgery discovery thesis</h2>
               <p className="mt-1 text-muted-foreground">{serviceStrategy.drudgeryDiscoveryThesis}</p>

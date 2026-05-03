@@ -58,6 +58,12 @@ const standaloneMoatAcceptanceTests = [
   "Branding trust moat documented",
   "Schlep-blindness boring-space moat documented",
   "System-of-record data lock-in documented",
+  "Outcome Graph moat documented",
+  "Outcome Graph event schema documented",
+  "Outcome Graph data assets documented",
+  "Vertical eval flywheel documented",
+  "Certified outcome standard documented",
+  "Outcome billing moat documented",
 ] as const;
 
 const bundleMoatAcceptanceTests = [
@@ -73,6 +79,12 @@ const bundleMoatAcceptanceTests = [
   "Bundle branding trust moat documented",
   "Bundle schlep-blindness boring-space moat documented",
   "Bundle system-of-record data lock-in documented",
+  "Bundle Outcome Graph moat documented",
+  "Bundle Outcome Graph event schema documented",
+  "Bundle Outcome Graph data assets documented",
+  "Bundle vertical eval flywheel documented",
+  "Bundle Certified Outcome standard documented",
+  "Bundle outcome billing moat documented",
 ] as const;
 
 function assertMoatPowers(strategy: PackageServiceReplacementStrategy, label: string) {
@@ -135,6 +147,61 @@ function assertMoatPowers(strategy: PackageServiceReplacementStrategy, label: st
     strategy.systemOfRecordDataLockIn,
     /system-of-record|customer history|operating memory|dashboard/i,
     `${label} should preserve operating memory as system-of-record lock-in`,
+  );
+  assert.match(
+    strategy.outcomeGraphMoat,
+    /Outcome Graph|buyer persona|accepted outputs|human overrides|pricing tested|tasks completed/i,
+    `${label} should make the Outcome Graph the strongest moat`,
+  );
+  assert.match(
+    strategy.outcomeGraphEventSchema.join(" "),
+    /buyer persona|niche|pain point|offer|workflow steps|accepted outputs|failed outputs|human overrides|renewal reason|churn reason/i,
+    `${label} should define the Outcome Graph event schema`,
+  );
+  assert.match(
+    strategy.outcomeGraphDataAssets.join(" "),
+    /Delivery hub records|acceptance receipts|pricing tests|Operator memory|human overrides|outcome reports/i,
+    `${label} should identify Outcome Graph data assets`,
+  );
+  assert.match(
+    strategy.verticalEvalFlywheel,
+    /vertical evals|failed output|human override|accepted output|future package runs/i,
+    `${label} should turn Outcome Graph events into vertical evals`,
+  );
+  assert.match(
+    strategy.certifiedOutcomeStandard,
+    /Certified Outcome|acceptance checks|launch proof|pricing logic|operating guide/i,
+    `${label} should define a Certified Outcome standard`,
+  );
+  assert.match(
+    strategy.switchingCostMemory,
+    /switching costs|customer history|approvals|exceptions|performance receipts|operating memory/i,
+    `${label} should compound switching-cost memory`,
+  );
+  assert.match(
+    strategy.packageMarketplaceLoop,
+    /package marketplace|clone|improve|specialize|distribute/i,
+    `${label} should connect the moat to package marketplace distribution`,
+  );
+  assert.match(
+    strategy.outcomeBillingMoat,
+    /outcome-based billing|qualified leads|booked calls|recovered revenue|hours saved|accepted outputs/i,
+    `${label} should tie billing to outcome proof`,
+  );
+  assert.match(
+    strategy.forwardDeployedLearningLoop,
+    /forward-deployed|custom implementation|boring workflow|reusable package logic/i,
+    `${label} should turn customer implementations into reusable logic`,
+  );
+  assert.match(
+    strategy.moatProofChecklist.join(" "),
+    /accepted outputs|vertical eval|Certified Outcome|switching-cost memory|outcome billing/i,
+    `${label} should expose a moat proof checklist`,
+  );
+  assert.match(
+    strategy.moatOperatingRule,
+    /feature count|Outcome Graph|workflow memory|compounds/i,
+    `${label} should prioritize compounding workflow memory over feature count`,
   );
 }
 

@@ -112,6 +112,11 @@ const packageRules = [
   "Build brand as trust under risk: buyers should remember the package as the known reliable service outcome even when underlying model capabilities converge.",
   "Exploit schlep blindness: payroll, tax accounting, trucking compliance, insurance operations, banking infrastructure, and regulated admin are defensible because competitors avoid the boring details.",
   "Turn delivery into a system of record: customer history, decisions, approvals, outcomes, exceptions, eval traces, and reporting receipts should live in the package so leaving means losing operating memory.",
+  "Make the Outcome Graph the moat: every run should record buyer persona, niche, pain point, offer, workflow steps, accepted outputs, failed outputs, human overrides, pricing tested, renewals, churn reasons, hours saved, revenue recovered, and tasks completed.",
+  "Turn every failed output, accepted output, human override, and exception into vertical evals, scenario validations, prompts, routing rules, and reusable package logic.",
+  "Create a Certified Outcome standard: delivery is not defensible until launch proof, acceptance receipts, pricing logic, escalation rules, operating guide, and outcome report are attached.",
+  "Use the package marketplace as a compounding loop: clone the best working pattern, improve it with Outcome Graph data, specialize it by vertical, and distribute the certified version.",
+  "Tie outcome billing proof to the graph so every invoice can point to accepted outputs, qualified leads, booked calls, recovered revenue, hours saved, or tasks completed.",
   "Identify painstaking drudgery by watching tailored time-in-motion workflows, not by guessing from a landing page or high-level industry map.",
   "Map the nitty-gritty path: how requests arrive by email, forms, calls, tickets, or spreadsheets; how they get enriched; and where manual data entry, call centers, or judgment bridge gaps.",
   "Look for hidden backend logic, informal checks, exception paths, reconciliation habits, and operator know-how that are invisible from superficial demos.",
@@ -158,6 +163,7 @@ const packageRuleHighlights = [
   "Choose wedges where services spend, outsourced labor, high attrition, or regulated drudgery already creates budget urgency.",
   "Force demand proof with Fire or Promotion and the Binary Test: acute buyers may complain about price, but they still pay.",
   "Make the package a closed loop: every handoff, exception, approval, and acceptance receipt improves the next run.",
+  "Make the Outcome Graph the defensibility layer: delivery history, vertical evals, Certified Outcomes, and outcome billing proof compound with every run.",
 ] as const;
 
 const packageRuleThemes = [
@@ -180,6 +186,11 @@ const packageRuleThemes = [
     title: "Reliability Moats",
     summary: "Treat the last 10% of reliability as the actual product.",
     keywords: ["closed loop", "queryable", "artifact", "process power", "last 10%", "99%", "eval", "software factory"],
+  },
+  {
+    title: "Outcome Graph",
+    summary: "Use delivery evidence as the data moat, eval moat, switching-cost moat, and billing proof.",
+    keywords: ["Outcome Graph", "Certified Outcome", "accepted output", "human override", "outcome billing", "marketplace"],
   },
 ] as const;
 

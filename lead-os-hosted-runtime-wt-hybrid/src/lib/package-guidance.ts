@@ -204,6 +204,8 @@ export function buildPackageCustomerGuide(
       "Use workflow outputs to standardize follow-up, scoring, production, reactivation, or handoff.",
       "Use reporting outputs to prove whether the promised outcome is happening.",
       "Record decisions, exceptions, approvals, and outcome evidence in the delivery hub so the workflow gets more legible and reliable after each cycle.",
+      "Update the Outcome Graph after each run with buyer persona, niche, pain point, offer, workflow steps, accepted outputs, failed outputs, human overrides, pricing tested, renewals, churn reasons, hours saved, revenue recovered, and tasks completed.",
+      "Turn every failed output and human override into a vertical eval, scenario validation, routing rule, or escalation threshold before the next customer run.",
       "Use billing or monetization outputs only with approved account access or managed payment handoff instructions.",
     ],
     implementationRoadmap: [
@@ -246,6 +248,9 @@ export function buildPackageCustomerGuide(
     ],
     measurementPlan: [
       `Primary metric: ${context.successMetric}.`,
+      "Measure the Outcome Graph as a moat asset: buyer context, workflow history, accepted outputs, failed outputs, human overrides, pricing tested, renewals, churn reasons, hours saved, revenue recovered, and tasks completed must compound after every run.",
+      "Treat Certified Outcome evidence as the delivery standard: launch proof, acceptance receipts, operating guide, escalation rules, pricing logic, and outcome report should be attached before calling the package complete.",
+      "Track which Outcome Graph events became vertical evals, prompt updates, routing rules, QA checks, package templates, marketplace improvements, or switching-cost memory.",
       "Tie pricing, renewal, and expansion to work completed, tasks handled, revenue recovered, qualified outcomes, or hours saved instead of active user seats.",
       "Avoid pricing by customer headcount; if the system automates the workflow well, the client should need fewer operators, not more paid seats.",
       "Make the strategic trade-off explicit: per-seat SaaS monetizes headcount and gets punished when automation works, while work-based pricing monetizes completed services and grows with reliable throughput.",
@@ -526,6 +531,8 @@ export function buildBundleCustomerGuide(input: {
       "Use shared intake details for target market, offer, success metric, current process, constraints, and brand voice.",
       "Route capture, production, follow-up, monetization, and reporting through the package surfaces that match the client's immediate goal.",
       "Keep every decision, handoff, approval, exception, and outcome report in the package surfaces so the customer organization becomes queryable over time.",
+      "Keep one bundle Outcome Graph across selected packages so accepted outputs, failed outputs, human overrides, pricing tested, renewal reasons, churn reasons, hours saved, revenue recovered, and tasks completed compound into reusable operating memory.",
+      "Convert bundle exceptions into vertical evals and package rules before expanding to the next niche or customer.",
       "Use reporting outputs to decide which package should be optimized or expanded first.",
     ],
     implementationRoadmap: [
@@ -566,6 +573,9 @@ export function buildBundleCustomerGuide(input: {
     ],
     measurementPlan: [
       `Shared success metric: ${input.successMetric}.`,
+      "Measure the bundle Outcome Graph as the defensibility layer: buyer context, package sequence, workflow steps, accepted outputs, failed outputs, human overrides, pricing tested, renewals, churn reasons, hours saved, revenue recovered, and tasks completed should be visible across selected packages.",
+      "Require Certified Outcome records for each selected package: launch proof, acceptance receipts, operating guides, pricing logic, escalation rules, and outcome reports before treating the bundle as production-ready.",
+      "Track how bundle Outcome Graph events turn into vertical evals, prompt updates, routing rules, QA checks, marketplace templates, switching-cost memory, and outcome billing proof.",
       "Measure bundle value by work delivered, tasks completed, revenue recovered, qualified outcomes, and hours saved.",
       "Do not price the bundle by active users; price against the service spend and manual work removed.",
       "Make the bundle pricing trade-off explicit: per-seat SaaS monetizes headcount and gets punished when automation works, while work-based pricing monetizes completed services and grows with reliable throughput.",

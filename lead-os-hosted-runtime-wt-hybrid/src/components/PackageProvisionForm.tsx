@@ -114,6 +114,17 @@ interface ProvisionedPackageResult {
     brandingTrustMoat: string;
     schlepBlindnessBoringSpaceMoat: string;
     systemOfRecordDataLockIn: string;
+    outcomeGraphMoat: string;
+    outcomeGraphEventSchema: string[];
+    outcomeGraphDataAssets: string[];
+    verticalEvalFlywheel: string;
+    certifiedOutcomeStandard: string;
+    switchingCostMemory: string;
+    packageMarketplaceLoop: string;
+    outcomeBillingMoat: string;
+    forwardDeployedLearningLoop: string;
+    moatProofChecklist: string[];
+    moatOperatingRule: string;
     processPowerMoat: string;
     wrapperCloneMisconception: string;
     accuracyHurdleMoat: string;
@@ -617,6 +628,22 @@ function PackageProvisionResult({
                 result.serviceReplacementStrategy.brandingTrustMoat,
                 result.serviceReplacementStrategy.schlepBlindnessBoringSpaceMoat,
                 result.serviceReplacementStrategy.systemOfRecordDataLockIn,
+              ]}
+            />
+            <SummaryList
+              title="Outcome Graph moat"
+              items={[
+                result.serviceReplacementStrategy.outcomeGraphMoat,
+                ...result.serviceReplacementStrategy.outcomeGraphEventSchema,
+                ...result.serviceReplacementStrategy.outcomeGraphDataAssets,
+                result.serviceReplacementStrategy.verticalEvalFlywheel,
+                result.serviceReplacementStrategy.certifiedOutcomeStandard,
+                result.serviceReplacementStrategy.switchingCostMemory,
+                result.serviceReplacementStrategy.packageMarketplaceLoop,
+                result.serviceReplacementStrategy.outcomeBillingMoat,
+                result.serviceReplacementStrategy.forwardDeployedLearningLoop,
+                ...result.serviceReplacementStrategy.moatProofChecklist,
+                result.serviceReplacementStrategy.moatOperatingRule,
               ]}
             />
             <SummaryList

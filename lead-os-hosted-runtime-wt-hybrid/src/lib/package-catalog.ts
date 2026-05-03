@@ -151,7 +151,28 @@ export interface PackageAudienceContract {
   summary: string;
 }
 
-export interface PackageServiceReplacementStrategy {
+export interface PackageOutcomeGraphMoat {
+  outcomeGraphMoat: string;
+  outcomeGraphEventSchema: string[];
+  outcomeGraphDataAssets: string[];
+  verticalEvalFlywheel: string;
+  certifiedOutcomeStandard: string;
+  switchingCostMemory: string;
+  packageMarketplaceLoop: string;
+  outcomeBillingMoat: string;
+  forwardDeployedLearningLoop: string;
+  moatProofChecklist: string[];
+  moatOperatingRule: string;
+}
+
+export interface PackageOutcomeGraphMoatInput {
+  title: string;
+  customerOutcome: string;
+  buyerPersona: string;
+  deliverableTitles: string[];
+}
+
+export interface PackageServiceReplacementStrategy extends PackageOutcomeGraphMoat {
   servicesBudgetTarget: string;
   targetServiceIndustries: string[];
   serviceReplacementIndustryThesis: string;
@@ -1099,12 +1120,57 @@ export function getPackageAutomationContract(pkg: ProvisionablePackage): Package
   };
 }
 
+export function buildPackageOutcomeGraphMoat(input: PackageOutcomeGraphMoatInput): PackageOutcomeGraphMoat {
+  const deliverableSnapshot = input.deliverableTitles.slice(0, 5).join(", ");
+  const deliverableContext = deliverableSnapshot
+    ? ` starting with ${deliverableSnapshot}`
+    : " across the launched delivery artifacts";
+
+  return {
+    outcomeGraphMoat: `The strongest moat for ${input.title} is the Outcome Graph: every delivery records buyer persona, niche, pain point, offer, workflow steps, accepted outputs, failed outputs, human overrides, pricing tested, renewals, churn reasons, hours saved, revenue recovered, and tasks completed so future runs learn from work competitors cannot see.`,
+    outcomeGraphEventSchema: [
+      `Buyer context: buyer persona (${input.buyerPersona}), niche, pain point, customer outcome (${input.customerOutcome}), current alternative, and services budget source.`,
+      "Offer and pricing: solution chosen, promised outcome, outcome-based pricing unit, pricing tested, objection handled, discount reason, renewal reason, and churn reason.",
+      "Workflow execution: intake state, workflow steps, agent actions, human approvals, accepted outputs, failed outputs, human overrides, exception reasons, elapsed time, and owner.",
+      "Result proof: tasks completed, hours saved, revenue recovered, qualified outcomes, accepted deliverables, acceptance receipts, expansion signal, and next best action.",
+    ],
+    outcomeGraphDataAssets: [
+      `Delivery hub records: intake fields, customer guide, artifacts${deliverableContext}, acceptance receipts, QA traces, launch proof, and outcome reports.`,
+      "Operator memory: human overrides, exception decisions, support notes, customer-specific rules, follow-up commitments, and reusable workflow corrections.",
+      "Commercial memory: pricing tests, objections, renewal reasons, churn reasons, expansion paths, work-based billing units, and services-budget proof.",
+      "Reliability memory: failed outputs, accepted outputs, vertical edge cases, scenario validations, eval scores, approval latency, and final customer acceptance.",
+    ],
+    verticalEvalFlywheel: `Turn every accepted output, failed output, human override, exception, and customer acceptance receipt from ${input.title} into vertical evals that improve prompts, context, routing, QA checks, and future package runs.`,
+    certifiedOutcomeStandard: `Create a Certified Outcome standard for ${input.title}: a package is not considered defensible until acceptance checks, launch proof, pricing logic, operating guide, escalation rules, and outcome reports are attached to the customer's delivery record.`,
+    switchingCostMemory: `Compound switching costs through customer history, approvals, exceptions, performance receipts, operating memory, workflow corrections, and human override traces that would be expensive for a competitor to relearn.`,
+    packageMarketplaceLoop: `Use the package marketplace as a moat loop: clone the best ${input.title} pattern, improve it with real Outcome Graph data, specialize it by vertical, and distribute certified versions faster than bespoke agencies or generic SaaS tools can react.`,
+    outcomeBillingMoat: `Tie outcome-based billing to the Outcome Graph: charge for qualified leads, booked calls, accepted outputs, recovered revenue, hours saved, tasks completed, or other proven service outcomes instead of seats, logins, or feature access.`,
+    forwardDeployedLearningLoop: `Keep a forward-deployed learning loop: each custom implementation should expose a boring workflow detail, become reusable package logic, add a vertical eval, and strengthen the next customer deployment.`,
+    moatProofChecklist: [
+      "Every run records buyer persona, niche, pain point, offer, workflow steps, accepted outputs, failed outputs, human overrides, pricing tested, and final result.",
+      "Every failed output or human override becomes a vertical eval, scenario validation, rule, prompt update, or escalation threshold.",
+      "Every delivered package earns a Certified Outcome record with launch proof, acceptance receipts, pricing logic, and operating-guide evidence.",
+      "Every customer-specific rule is stored as switching-cost memory instead of disappearing into private DMs, calls, or one-off implementation notes.",
+      "Every invoice can point to outcome billing proof such as accepted outputs, qualified leads, booked calls, hours saved, revenue recovered, or tasks completed.",
+      "Every reusable improvement is eligible to become a marketplace package, vertical template, or package-specific eval set.",
+    ],
+    moatOperatingRule: `Do not optimize ${input.title} for feature count. Optimize for Outcome Graph workflow memory that compounds across customers, turns delivery evidence into vertical evals, and makes the service harder to replace every time it runs.`,
+  };
+}
+
 export function getPackageServiceReplacementStrategy(pkg: ProvisionablePackage): PackageServiceReplacementStrategy {
   const pricingBasis = pkg.pricingModel
     ? `${pkg.pricingModel} Anchor the offer to work delivered, accepted outputs, recovered revenue, qualified outcomes, or completed tasks instead of per-seat software access.`
     : "Price the offer around work delivered, accepted outputs, recovered revenue, qualified outcomes, or completed tasks instead of per-seat software access.";
+  const outcomeGraphMoat = buildPackageOutcomeGraphMoat({
+    title: pkg.title,
+    customerOutcome: pkg.customerOutcome,
+    buyerPersona: pkg.buyerPersona,
+    deliverableTitles: pkg.deliverables.map((deliverable) => deliverable.title),
+  });
 
   return {
+    ...outcomeGraphMoat,
     servicesBudgetTarget: `Sell ${pkg.title} against the outsourced service, internal labor, or agency budget behind "${pkg.customerOutcome}", not against the buyer's software-tool budget.`,
     targetServiceIndustries: ["insurance brokerage", "accounting", "tax audit", "compliance", "healthcare administration"],
     serviceReplacementIndustryThesis: `Prioritize ${pkg.title} in industries where human labor spend dwarfs software spend and the workflow is already bought as a service, outsourced function, or manual operating team.`,
