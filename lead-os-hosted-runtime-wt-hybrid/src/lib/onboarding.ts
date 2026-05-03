@@ -1,6 +1,6 @@
 import { getPool } from "./db.ts";
 import { getPlanById } from "./plan-catalog.ts";
-import { createTenant, type CreateTenantInput } from "./tenant-store.ts";
+import { createTenant, getTenantBySlug, type CreateTenantInput, type TenantRecord } from "./tenant-store.ts";
 
 export type OnboardingStep = "niche" | "plan" | "branding" | "integrations" | "review" | "complete";
 
@@ -190,6 +190,104 @@ function validateIntegrationsStep(data: Record<string, unknown>): string[] {
   return ["email"];
 }
 
+function canReuseTenantForOnboarding(tenant: TenantRecord, state: OnboardingState): boolean {
+  return tenant.metadata?.onboardingId === state.id || tenant.operatorEmails.includes(state.email);
+}
+
+function tenantSlugBase(slug: string): string {
+  return slug.length > 0 ? slug : "tenant";
+}
+
+function tenantSlugSuffix(state: OnboardingState): string {
+  return state.id.replace(/^onb_/, "").slice(0, 8);
+}
+
+function tenantSlugCandidates(baseSlug: string, state: OnboardingState): string[] {
+  const base = tenantSlugBase(baseSlug);
+  const suffix = tenantSlugSuffix(state);
+  return [
+    base,
+    `${base}-${suffix}`,
+    `${base}-${suffix}-2`,
+    `${base}-${suffix}-3`,
+    `${base}-${suffix}-4`,
+    `${base}-${suffix}-5`,
+  ];
+}
+
+function isDuplicateTenantSlugError(error: unknown): boolean {
+  const maybeError = error as { code?: unknown; message?: unknown; constraint?: unknown };
+  const message = typeof maybeError.message === "string" ? maybeError.message.toLowerCase() : "";
+  const constraint = typeof maybeError.constraint === "string" ? maybeError.constraint : "";
+  return (
+    maybeError.code === "23505" ||
+    constraint === "lead_os_tenants_slug_key" ||
+    message.includes("lead_os_tenants_slug_key") ||
+    message.includes("duplicate key value")
+  );
+}
+
+async function resolveAvailableTenantSlug(baseSlug: string, state: OnboardingState): Promise<{ slug: string; existingTenant?: TenantRecord }> {
+  for (const candidate of tenantSlugCandidates(baseSlug, state)) {
+    const existing = await getTenantBySlug(candidate);
+    if (!existing) {
+      return { slug: candidate };
+    }
+
+    if (canReuseTenantForOnboarding(existing, state)) {
+      return { slug: candidate, existingTenant: existing };
+    }
+  }
+
+  return { slug: `${tenantSlugBase(baseSlug)}-${tenantSlugSuffix(state)}-${crypto.randomUUID().slice(0, 8)}` };
+}
+
+async function createTenantForOnboarding(
+  tenantInput: CreateTenantInput,
+  baseSlug: string,
+  state: OnboardingState,
+): Promise<TenantRecord> {
+  try {
+    return await createTenant(tenantInput);
+  } catch (error) {
+    if (!isDuplicateTenantSlugError(error)) {
+      throw error;
+    }
+  }
+
+  const existing = await getTenantBySlug(tenantInput.slug);
+  if (existing && canReuseTenantForOnboarding(existing, state)) {
+    return existing;
+  }
+
+  for (const candidate of tenantSlugCandidates(baseSlug, state)) {
+    if (candidate === tenantInput.slug) {
+      continue;
+    }
+
+    const candidateExisting = await getTenantBySlug(candidate);
+    if (candidateExisting) {
+      if (canReuseTenantForOnboarding(candidateExisting, state)) {
+        return candidateExisting;
+      }
+      continue;
+    }
+
+    try {
+      return await createTenant({ ...tenantInput, slug: candidate });
+    } catch (error) {
+      if (!isDuplicateTenantSlugError(error)) {
+        throw error;
+      }
+    }
+  }
+
+  return createTenant({
+    ...tenantInput,
+    slug: `${tenantSlugBase(baseSlug)}-${tenantSlugSuffix(state)}-${crypto.randomUUID().slice(0, 8)}`,
+  });
+}
+
 export async function startOnboarding(email: string): Promise<OnboardingState> {
   if (!email || typeof email !== "string" || email.trim().length === 0) {
     throw new Error("email is required");
@@ -363,6 +461,7 @@ export async function completeOnboarding(id: string): Promise<OnboardingState> {
 
   const brandName = state.branding?.name ?? state.nicheInput?.name ?? "My Business";
   const slug = slugify(brandName);
+  const tenantSlug = await resolveAvailableTenantSlug(slug, state);
 
   const channelMap: Record<string, boolean> = {
     email: false,
@@ -385,7 +484,7 @@ export async function completeOnboarding(id: string): Promise<OnboardingState> {
     : "starter";
 
   const tenantInput: CreateTenantInput = {
-    slug,
+    slug: tenantSlug.slug,
     brandName,
     siteUrl: state.branding?.siteUrl ?? "",
     supportEmail: state.branding?.supportEmail ?? state.email,
@@ -413,7 +512,7 @@ export async function completeOnboarding(id: string): Promise<OnboardingState> {
     },
   };
 
-  const tenant = await createTenant(tenantInput);
+  const tenant = tenantSlug.existingTenant ?? await createTenantForOnboarding(tenantInput, slug, state);
 
   const baseUrl = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000");
   const embedScript = `<script src="${baseUrl}/embed.js" data-tenant="${tenant.tenantId}" data-accent="${tenant.accent}" async></script>`;

@@ -11,6 +11,11 @@ import {
   resetOnboardingStore,
   type OnboardingState,
 } from "../src/lib/onboarding.ts";
+import {
+  createTenant,
+  getTenant,
+  type CreateTenantInput,
+} from "../src/lib/tenant-store.ts";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -24,6 +29,28 @@ async function fullOnboarding(email: string): Promise<OnboardingState> {
   await advanceOnboarding(state.id, { enabledProviders: ["email"] });
   await advanceOnboarding(state.id, {});
   return completeOnboarding(state.id);
+}
+
+function tenantInput(overrides?: Partial<CreateTenantInput>): CreateTenantInput {
+  return {
+    slug: "existing-tenant",
+    brandName: "Existing Tenant",
+    siteUrl: "",
+    supportEmail: "support@example.com",
+    defaultService: "lead-capture",
+    defaultNiche: "general",
+    widgetOrigins: [],
+    accent: "#14b8a6",
+    enabledFunnels: ["lead-magnet", "qualification", "chat"],
+    channels: { email: true, whatsapp: false, sms: false, chat: false, voice: false },
+    revenueModel: "white-label",
+    plan: "starter",
+    status: "provisioning",
+    operatorEmails: ["operator@example.com"],
+    providerConfig: {},
+    metadata: {},
+    ...overrides,
+  };
 }
 
 test.beforeEach(() => {
@@ -351,6 +378,79 @@ test("completeOnboarding is idempotent after provisioning", async () => {
   assert.equal(repeated.currentStep, "complete");
   assert.equal(repeated.tenantId, completed.tenantId);
   assert.deepEqual(repeated.provisioningResult, completed.provisioningResult);
+});
+
+test("completeOnboarding reuses an existing tenant for the same operator slug", async () => {
+  const state = await startOnboarding("reuse@example.com");
+  const existing = await createTenant(tenantInput({
+    slug: "duplicate-brand",
+    brandName: "Duplicate Brand",
+    operatorEmails: [state.email],
+    metadata: { onboardingId: state.id },
+  }));
+
+  await advanceOnboarding(state.id, { name: "Duplicate Brand", industry: "service" });
+  await advanceOnboarding(state.id, { planId: "whitelabel-starter" });
+  await advanceOnboarding(state.id, { name: "Duplicate Brand", accent: "#14b8a6" });
+  await advanceOnboarding(state.id, { enabledProviders: ["email"] });
+  await advanceOnboarding(state.id, {});
+
+  const completed = await completeOnboarding(state.id);
+
+  assert.equal(completed.tenantId, existing.tenantId);
+  assert.equal(completed.provisioningResult?.tenantId, existing.tenantId);
+});
+
+test("completeOnboarding suffixes tenant slug when slug belongs to another operator", async () => {
+  const state = await startOnboarding("suffix@example.com");
+  const existing = await createTenant(tenantInput({
+    slug: "duplicate-brand",
+    brandName: "Duplicate Brand",
+    operatorEmails: ["other@example.com"],
+    metadata: { onboardingId: "onb_00000000-0000-0000-0000-000000000000" },
+  }));
+
+  await advanceOnboarding(state.id, { name: "Duplicate Brand", industry: "service" });
+  await advanceOnboarding(state.id, { planId: "whitelabel-starter" });
+  await advanceOnboarding(state.id, { name: "Duplicate Brand", accent: "#14b8a6" });
+  await advanceOnboarding(state.id, { enabledProviders: ["email"] });
+  await advanceOnboarding(state.id, {});
+
+  const completed = await completeOnboarding(state.id);
+  const created = await getTenant(completed.tenantId!);
+
+  assert.notEqual(completed.tenantId, existing.tenantId);
+  assert.ok(created);
+  assert.equal(created.slug, `duplicate-brand-${state.id.replace(/^onb_/, "").slice(0, 8)}`);
+});
+
+test("completeOnboarding keeps walking slug candidates when the first fallback is taken", async () => {
+  const state = await startOnboarding("suffix-walk@example.com");
+  const suffix = state.id.replace(/^onb_/, "").slice(0, 8);
+  await createTenant(tenantInput({
+    slug: "duplicate-brand",
+    brandName: "Duplicate Brand",
+    operatorEmails: ["other@example.com"],
+    metadata: { onboardingId: "onb_00000000-0000-0000-0000-000000000000" },
+  }));
+  await createTenant(tenantInput({
+    slug: `duplicate-brand-${suffix}`,
+    brandName: "Duplicate Brand",
+    operatorEmails: ["another@example.com"],
+    metadata: { onboardingId: "onb_11111111-1111-1111-1111-111111111111" },
+  }));
+
+  await advanceOnboarding(state.id, { name: "Duplicate Brand", industry: "service" });
+  await advanceOnboarding(state.id, { planId: "whitelabel-starter" });
+  await advanceOnboarding(state.id, { name: "Duplicate Brand", accent: "#14b8a6" });
+  await advanceOnboarding(state.id, { enabledProviders: ["email"] });
+  await advanceOnboarding(state.id, {});
+
+  const completed = await completeOnboarding(state.id);
+  const created = await getTenant(completed.tenantId!);
+
+  assert.ok(created);
+  assert.equal(created.slug, `duplicate-brand-${suffix}-2`);
 });
 
 test("completeOnboarding cannot skip steps", async () => {
