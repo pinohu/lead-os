@@ -378,11 +378,11 @@ test("completeOnboarding uses the request base URL for deliverable links", async
   await advanceOnboarding(state.id, { enabledProviders: ["email", "sms"] });
   await advanceOnboarding(state.id, {});
 
-  const completed = await completeOnboarding(state.id, { baseUrl: "https://cxreact.com/" });
+  const completed = await completeOnboarding(state.id, { baseUrl: "https://lead-os.example/" });
 
   assert.equal(completed.currentStep, "complete");
-  assert.ok(completed.provisioningResult?.embedScript.startsWith('<script src="https://cxreact.com/embed.js"'));
-  assert.ok(completed.provisioningResult?.dashboardUrl.startsWith("https://cxreact.com/dashboard?tenantId="));
+  assert.ok(completed.provisioningResult?.embedScript.startsWith('<script src="https://lead-os.example/embed.js"'));
+  assert.ok(completed.provisioningResult?.dashboardUrl.startsWith("https://lead-os.example/dashboard?tenantId="));
 });
 
 test("completeOnboarding is idempotent after provisioning", async () => {

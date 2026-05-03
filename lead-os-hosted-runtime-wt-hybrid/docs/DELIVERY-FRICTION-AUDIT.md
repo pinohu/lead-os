@@ -28,9 +28,10 @@ The kernel is buildable and heavily tested, but delivery friction clusters aroun
 - `npm run verify:migrations`: passed file-only verification for 14 migrations because `DATABASE_URL` was not set.
 - `npm run enumerate:api-routes`: passed, 514 API route files enumerated.
 
-## Remaining Delivery Watchpoints
+## Watchpoints Closed
 
-- Local `npm run detect:env` reported all env keys unset during this audit; dry-run behavior is acceptable for development, but production launch needs a filled environment vault and post-deploy smoke checks.
-- `npm run build` still emits Next.js warnings about the deprecated `middleware` file convention and edge runtime static-generation limits. They are not blockers today, but the middleware-to-proxy migration should be scheduled.
-- The package catalog carries a large amount of strategy text. It is valuable as operating doctrine, but customer-facing package pages should keep first-screen decisions concise and push deep evidence into expandable sections.
-- The monorepo still contains legacy CX React naming. The top-level README now names Lead OS first, but a complete brand cleanup should be handled as a dedicated docs and route-label pass.
+- Environment readiness now has two modes: `npm run detect:env` for local visibility and `npm run verify:env:production` for strict vault validation. Both load local env files when present and print no secret values.
+- Post-deploy delivery now has `npm run smoke:postdeploy -- --url <production-url>` to verify health, production readiness, packages, onboarding, and build-id surfaces.
+- The deprecated Next.js request gate was migrated from `src/middleware.ts` to `src/proxy.ts`, and the OG route no longer forces the edge runtime during static generation.
+- Package catalog doctrine remains in the codebase, but customer-facing package decisions now show concise first-screen copy and move deep evidence into expandable sections.
+- Lead OS naming is now the public default across env templates, metadata fallbacks, OpenAPI, docs, and tests. The runtime keeps only a non-public lowercase compatibility alias for old env values.

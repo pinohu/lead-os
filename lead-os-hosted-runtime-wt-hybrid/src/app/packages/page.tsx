@@ -173,6 +173,8 @@ const packageRuleHighlights = [
   "Represent what Lead OS borrows from other tools as operational requirements: resale motion, record trust, connectors, GTM data, brand rules, agent ops, and ontology depth.",
 ] as const;
 
+const visiblePackageRuleHighlights = packageRuleHighlights.slice(0, 4);
+
 const packageRuleThemes = [
   {
     title: "Outcome Pricing",
@@ -250,34 +252,16 @@ export default function PackagesPage() {
               <h2 className="text-base font-bold text-foreground">Package decision frame</h2>
             </div>
             <ul className="grid gap-3 pl-0">
-              {packageRuleHighlights.map((rule) => (
+              {visiblePackageRuleHighlights.map((rule) => (
                 <li key={rule} className="flex gap-2 text-sm leading-relaxed text-muted-foreground">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <span>{rule}</span>
                 </li>
               ))}
             </ul>
-            <div className="mt-4 grid gap-2">
-              {packageRuleThemes.map((theme) => {
-                const rules = matchingPackageRules(theme.keywords);
-                return (
-                  <details key={theme.title} className="rounded-md border border-border bg-background/70 p-3">
-                    <summary className="cursor-pointer text-sm font-semibold text-foreground">
-                      {theme.title} <span className="font-normal text-muted-foreground">({rules.length} checks)</span>
-                    </summary>
-                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{theme.summary}</p>
-                    <ul className="mt-3 grid gap-2 pl-0">
-                      {rules.map((rule) => (
-                        <li key={rule} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
-                          <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-                          <span>{rule}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                );
-              })}
-            </div>
+            <Button asChild variant="outline" size="sm" className="mt-4">
+              <Link href="#operating-doctrine">Inspect operating doctrine</Link>
+            </Button>
           </aside>
         </div>
       </section>
@@ -364,29 +348,42 @@ export default function PackagesPage() {
                     </p>
                   ) : null}
                   <p>
-                    <span className="font-semibold text-foreground">Service replacement:</span>{" "}
-                    <span className="text-muted-foreground">{getPackageServiceReplacementStrategy(pkg).outcomePricing}</span>
-                  </p>
-                  <p>
-                    <span className="font-semibold text-foreground">Per-seat risk:</span>{" "}
-                    <span className="text-muted-foreground">{getPackageServiceReplacementStrategy(pkg).perSeatRisk}</span>
-                  </p>
-                  <p>
-                    <span className="font-semibold text-foreground">Idea guardrail:</span>{" "}
-                    <span className="text-muted-foreground">{getPackageIdeaEvaluationGuardrails(pkg).superficialPlausibilityCheck}</span>
-                  </p>
-                  <p>
-                    <span className="font-semibold text-foreground">Acute pain:</span>{" "}
-                    <span className="text-muted-foreground">{getPackageIdeaEvaluationGuardrails(pkg).existentialPainTest}</span>
-                  </p>
-                  <p>
-                    <span className="font-semibold text-foreground">Hard part:</span>{" "}
-                    <span className="text-muted-foreground">{getPackageIdeaEvaluationGuardrails(pkg).hardPartHypothesis}</span>
-                  </p>
-                  <p>
                     <span className="font-semibold text-foreground">Available on:</span>{" "}
                     <span className="text-muted-foreground">{getPackagePlanNames(pkg)}</span>
                   </p>
+                  {(() => {
+                    const serviceStrategy = getPackageServiceReplacementStrategy(pkg);
+                    const guardrails = getPackageIdeaEvaluationGuardrails(pkg);
+                    return (
+                      <details className="rounded-md border border-border bg-muted/30 p-3">
+                        <summary className="cursor-pointer text-sm font-semibold text-foreground">
+                          Delivery evidence
+                        </summary>
+                        <div className="mt-3 grid gap-2 text-xs leading-relaxed">
+                          <p>
+                            <span className="font-semibold text-foreground">Service replacement:</span>{" "}
+                            <span className="text-muted-foreground">{serviceStrategy.outcomePricing}</span>
+                          </p>
+                          <p>
+                            <span className="font-semibold text-foreground">Per-seat risk:</span>{" "}
+                            <span className="text-muted-foreground">{serviceStrategy.perSeatRisk}</span>
+                          </p>
+                          <p>
+                            <span className="font-semibold text-foreground">Idea guardrail:</span>{" "}
+                            <span className="text-muted-foreground">{guardrails.superficialPlausibilityCheck}</span>
+                          </p>
+                          <p>
+                            <span className="font-semibold text-foreground">Acute pain:</span>{" "}
+                            <span className="text-muted-foreground">{guardrails.existentialPainTest}</span>
+                          </p>
+                          <p>
+                            <span className="font-semibold text-foreground">Hard part:</span>{" "}
+                            <span className="text-muted-foreground">{guardrails.hardPartHypothesis}</span>
+                          </p>
+                        </div>
+                      </details>
+                    );
+                  })()}
                 </div>
                 <Button asChild size="sm">
                   <Link href={`/packages/${pkg.slug}`}>
@@ -396,6 +393,40 @@ export default function PackagesPage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      </section>
+
+      <section id="operating-doctrine" className="mx-auto max-w-6xl px-4 pb-12">
+        <div className="mb-5">
+          <Badge variant="outline" className="mb-3">
+            Expandable proof
+          </Badge>
+          <h2 className="text-2xl font-bold text-foreground sm:text-3xl">Operating doctrine stays available without slowing the first decision.</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+            These checks keep every package tied to outcome pricing, acute pain, closed-loop delivery, and process power.
+            They are intentionally below the buyer's first decision path.
+          </p>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          {packageRuleThemes.map((theme) => {
+            const rules = matchingPackageRules(theme.keywords);
+            return (
+              <details key={theme.title} className="rounded-lg border border-border bg-card p-4">
+                <summary className="cursor-pointer text-sm font-semibold text-foreground">
+                  {theme.title} <span className="font-normal text-muted-foreground">({rules.length} checks)</span>
+                </summary>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{theme.summary}</p>
+                <ul className="mt-3 grid gap-2 pl-0">
+                  {rules.map((rule) => (
+                    <li key={rule} className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
+                      <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      <span>{rule}</span>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            );
+          })}
         </div>
       </section>
     </main>

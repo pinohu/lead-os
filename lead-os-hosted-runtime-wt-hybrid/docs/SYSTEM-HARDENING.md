@@ -18,5 +18,5 @@ This document maps engineering controls to the numbered “phase” checklist. N
 | 12 Rate limits | **Partial** | Auth endpoints limited in middleware; **all public allowlisted** `/api/*` routes get per-IP per-path limiter (`LEAD_OS_PUBLIC_API_RATE_LIMIT`). |
 | 13 Performance / dead code | **Process** | Requires production metrics; not automated here. |
 | 14 Business rules | **Partial** | `platform-conventions.ts` re-exports tenant + billing; expand over time. |
-| 15 CSP | **Deferred** | Nonce-based CSP with Next.js requires coordinated `next.config` + layout changes; still `unsafe-inline` today — see `middleware.ts` comments. |
+| 15 CSP | **Deferred** | Nonce-based CSP with Next.js requires coordinated `next.config` + layout changes; still `unsafe-inline` today - see `src/proxy.ts` comments. |
 | 16 Backup / restore | **Doc** | `DEPLOYMENT.md` — use managed Postgres PITR / `pg_dump`; verify restores in staging. |

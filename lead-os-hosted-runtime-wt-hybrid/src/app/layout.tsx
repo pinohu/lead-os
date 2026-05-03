@@ -19,7 +19,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl || "https://cxreact.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || tenantConfig.siteUrl || "https://lead-os.example"),
   title: {
     default: `${tenantConfig.brandName} | Complete AI solution fulfillment`,
     template: `%s | ${tenantConfig.brandName}`,

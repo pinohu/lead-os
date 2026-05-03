@@ -9,7 +9,7 @@ export function buildOpenApiSpec(): object {
       license: { name: "MIT", url: "https://opensource.org/licenses/MIT" },
     },
     servers: [
-      { url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxreact.com", description: "Production" },
+      { url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://lead-os.example", description: "Production" },
       { url: "http://localhost:3000", description: "Development" },
     ],
     components: {

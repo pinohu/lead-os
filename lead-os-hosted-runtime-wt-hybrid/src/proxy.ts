@@ -4,10 +4,8 @@ import { buildCorsHeaders } from "@/lib/cors";
 import { createRateLimiter } from "@/lib/rate-limiter";
 import { endTrace, enrichTrace, startTrace } from "@/lib/request-tracer";
 
-export const runtime = "nodejs";
-
 // ---------------------------------------------------------------------------
-// Rate limiter for auth endpoints — 10 requests per minute per IP
+// Rate limiter for auth endpoints - 10 requests per minute per IP
 // ---------------------------------------------------------------------------
 
 const authRateLimiter = createRateLimiter({
@@ -39,7 +37,7 @@ function buildContentSecurityPolicy(nonce: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Public route patterns — no authentication required
+// Public route patterns - no authentication required
 // All /api/* routes require auth by default. Only routes listed here are exempt.
 // ---------------------------------------------------------------------------
 
@@ -97,7 +95,7 @@ interface IdentityHeaders {
   "x-authenticated-method": string;
 }
 
-// Middleware signature — proves the request went through middleware.
+// Proxy signature - proves the request went through the request gate.
 // Routes should check for this header to prevent header spoofing.
 // LEAD_OS_AUTH_SECRET must be set in all environments; no hardcoded fallback.
 const MIDDLEWARE_SIGNATURE_KEY = process.env.LEAD_OS_AUTH_SECRET ?? "";
@@ -243,7 +241,7 @@ async function forwardWithIdentityAndPolicies(
 }
 
 // ---------------------------------------------------------------------------
-// Middleware
+// Proxy
 // ---------------------------------------------------------------------------
 
 function applySecurityHeaders(response: NextResponse, requestId: string, cspNonce: string): NextResponse {
@@ -270,7 +268,7 @@ function getClientIp(request: NextRequest): string {
   return request.headers.get("x-real-ip") ?? "unknown";
 }
 
-export async function middleware(request: NextRequest): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const requestId = crypto.randomUUID();
   const cspNonce = randomBytes(16).toString("base64");
   const { pathname } = request.nextUrl;
@@ -278,7 +276,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   startTrace(requestId, method, pathname, request.headers.get("user-agent"));
 
-  // Non-API routes (pages) — pass through; attach pathname for server layouts (e.g. operator redirect)
+  // Non-API routes (pages) - pass through; attach pathname for server layouts (e.g. operator redirect)
   if (!pathname.startsWith("/api/")) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-leados-pathname", pathname);
@@ -390,7 +388,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     return applySecurityHeaders(nextWithNonce(), requestId, cspNonce);
   }
 
-  // Cron secret — fast path, no DB required. Timing-safe comparison.
+  // Cron secret - fast path, no DB required. Timing-safe comparison.
   const cronSecret = request.headers.get("x-cron-secret");
   const envCronSecret = process.env.CRON_SECRET;
   if (cronSecret && envCronSecret) {
@@ -413,7 +411,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     }
   }
 
-  // Authenticated paths — dynamic import keeps auth-system out of the public
+  // Authenticated paths - dynamic import keeps auth-system out of the public
   // route bundle
   const { validateApiKey, validateSession, getUserById } = await import(
     "@/lib/auth-system"
@@ -520,7 +518,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 }
 
 // ---------------------------------------------------------------------------
-// Matcher — only API routes; skip Next.js internals and static assets
+// Matcher - only API routes; skip Next.js internals and static assets
 // ---------------------------------------------------------------------------
 
 export const config = {

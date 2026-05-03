@@ -5,7 +5,7 @@ Lead OS is a Next.js App Router SaaS runtime with API, operator dashboard, prici
 ## Runtime Layers
 
 1. Web/API: `src/app/**` and `src/app/api/**` expose public capture surfaces, authenticated SaaS APIs, operator APIs, billing webhooks, health checks, and MCP-compatible routes.
-2. Global policy: `src/middleware.ts` enforces API authentication by default, signed middleware identity headers, single-tenant deployment boundaries, optional billing gates, rate limits, CORS, CSP, and security headers.
+2. Global policy: `src/proxy.ts` enforces API authentication by default, signed request-gate identity headers, single-tenant deployment boundaries, optional billing gates, rate limits, CORS, CSP, and security headers.
 3. Auth: `src/lib/auth-system.ts` handles user API keys and sessions. `src/lib/operator-auth.ts` handles operator magic links and operator-only API sessions.
 4. Billing: `src/lib/billing.ts`, `src/lib/billing-store.ts`, and `src/lib/billing/*` manage Stripe checkout, portal sessions, webhook idempotency, subscription sync, plan entitlements, usage limits, and API tier gates.
 5. Data: `src/lib/db.ts` provides PostgreSQL pooling and migration startup. SQL migrations live in `db/migrations`.
@@ -16,7 +16,7 @@ Lead OS is a Next.js App Router SaaS runtime with API, operator dashboard, prici
 
 ## Security Decisions
 
-- API routes require auth unless explicitly allowlisted in `src/middleware.ts`.
+- API routes require auth unless explicitly allowlisted in `src/proxy.ts`.
 - Middleware identity headers are HMAC signed with `LEAD_OS_AUTH_SECRET`.
 - Operator APIs now only trust forwarded identity when `x-authenticated-method=operator-cookie` and the middleware HMAC is valid.
 - Single-tenant deployments reject authenticated tenant mismatch unless `LEAD_OS_SINGLE_TENANT_ENFORCE=false`.

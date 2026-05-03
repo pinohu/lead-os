@@ -39,6 +39,18 @@ function envCheck(name, requiredInProd, area, note) {
   add(`env:${name}`, area, status, present ? `${name} present` : `${name} missing`, note);
 }
 
+function envAnyCheck(names, requiredInProd, area, note) {
+  const presentName = names.find((name) => Boolean(process.env[name]?.trim()));
+  const status = presentName ? "pass" : requiredInProd && strict ? "fail" : "warn";
+  add(
+    `env:any:${names.join("|")}`,
+    area,
+    status,
+    presentName ? `${presentName} present` : `One of ${names.join(", ")} missing`,
+    note,
+  );
+}
+
 function listMigrations() {
   const dir = join(root, "db", "migrations");
   if (!existsSync(dir)) return [];
@@ -61,7 +73,7 @@ fileContains(
   "verifyMiddlewareOperatorSignature",
   "auth:signed-middleware-identity",
   "security",
-  "Operator API identity is signed by middleware",
+  "Operator API identity is signed by the request gate",
 );
 fileContains(
   "src/app/api/system/route.ts",
@@ -85,11 +97,11 @@ fileContains(
   "Live lead-delivery failures persist into dead_letter_jobs",
 );
 fileContains(
-  "src/middleware.ts",
+  "src/proxy.ts",
   "endTrace(",
   "observability:trace-close",
   "observability",
-  "Middleware closes traces with response status",
+  "Proxy closes traces with response status",
 );
 fileContains(
   "package.json",
@@ -108,13 +120,23 @@ add(
   migrations.map((name) => relative(root, join(root, "db", "migrations", name))),
 );
 
-envCheck("LEAD_OS_AUTH_SECRET", true, "security", "Required to sign operator and middleware identity.");
+envCheck("LEAD_OS_AUTH_SECRET", true, "security", "Required to sign operator and request-gate identity.");
 envCheck("LEAD_OS_OPERATOR_EMAILS", true, "security", "Required to restrict operator access.");
-envCheck("DATABASE_URL", true, "database", "Required for production persistence.");
+envAnyCheck(
+  ["LEAD_OS_DATABASE_URL", "DATABASE_URL", "POSTGRES_URL"],
+  true,
+  "database",
+  "Required for production persistence.",
+);
 envCheck("REDIS_URL", false, "queue", "Required for distributed BullMQ workers; fallback mode works without it.");
 envCheck("STRIPE_SECRET_KEY", true, "billing", "Required for live checkout and subscription sync.");
 envCheck("STRIPE_WEBHOOK_SECRET", true, "billing", "Required for trusted Stripe webhook handling.");
-envCheck("NEXT_PUBLIC_APP_URL", true, "deployment", "Required for canonical production URLs.");
+envAnyCheck(
+  ["NEXT_PUBLIC_SITE_URL", "NEXT_PUBLIC_APP_URL"],
+  true,
+  "deployment",
+  "Required for canonical production URLs.",
+);
 envCheck("CRON_SECRET", true, "security", "Required for protected cron routes.");
 
 const counts = checks.reduce(

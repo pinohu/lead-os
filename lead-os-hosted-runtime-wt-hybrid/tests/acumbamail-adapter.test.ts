@@ -282,8 +282,8 @@ test("createCampaign creates a draft campaign", async () => {
   const campaign = await createCampaign({
     name: "Welcome Campaign",
     subject: "Welcome!",
-    fromName: "CX React",
-    fromEmail: "hello@cxreact.com",
+    fromName: "Lead OS",
+    fromEmail: "hello@lead-os.example",
     htmlBody: "<p>Hello</p>",
     listIds: ["list-1"],
     tenantId: "t1",
@@ -292,8 +292,8 @@ test("createCampaign creates a draft campaign", async () => {
   assert.ok(campaign.id.startsWith("acm-camp-"));
   assert.equal(campaign.name, "Welcome Campaign");
   assert.equal(campaign.subject, "Welcome!");
-  assert.equal(campaign.fromName, "CX React");
-  assert.equal(campaign.fromEmail, "hello@cxreact.com");
+  assert.equal(campaign.fromName, "Lead OS");
+  assert.equal(campaign.fromEmail, "hello@lead-os.example");
   assert.equal(campaign.status, "draft");
   assert.equal(campaign.tenantId, "t1");
 });

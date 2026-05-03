@@ -8,7 +8,7 @@ npm run enumerate:api-routes
 
 ## Authentication
 
-- Public routes are allowlisted in `src/middleware.ts`.
+- Public routes are allowlisted in `src/proxy.ts`.
 - Authenticated API routes accept `Authorization: Bearer los_*`, `Authorization: Bearer sess_*`, `x-api-key`, or `leados_session`.
 - Operator routes require a valid operator session. Forwarded identity headers are accepted only when signed by middleware and marked as `operator-cookie`.
 - Cron routes require `x-cron-secret` or `Authorization: Bearer <CRON_SECRET>`.

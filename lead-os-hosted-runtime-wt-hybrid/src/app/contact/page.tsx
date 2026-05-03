@@ -6,7 +6,7 @@ import Link from "next/link";
 type InquiryType = "sales" | "support" | "partnership" | "other";
 
 function publicSiteUrl() {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxreact.com";
+  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lead-os.example";
   return raw.replace(/\/$/, "");
 }
 

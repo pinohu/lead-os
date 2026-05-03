@@ -126,7 +126,12 @@ export default async function PackagePage({ params }: Props) {
       </section>
 
       <section className="mb-8">
-        <Card>
+        <details className="rounded-lg border border-border bg-muted/20 p-4">
+          <summary className="cursor-pointer text-sm font-semibold text-foreground">
+            Full service-replacement strategy
+            <span className="ml-2 font-normal text-muted-foreground">Expand for the complete operating thesis.</span>
+          </summary>
+          <Card className="mt-4 border-0 bg-transparent shadow-none">
           <CardHeader>
             <CardTitle>Service-replacement strategy</CardTitle>
             <CardDescription>
@@ -830,11 +835,17 @@ export default async function PackagePage({ params }: Props) {
               </ul>
             </div>
           </CardContent>
-        </Card>
+          </Card>
+        </details>
       </section>
 
       <section className="mb-8">
-        <Card>
+        <details className="rounded-lg border border-border bg-muted/20 p-4">
+          <summary className="cursor-pointer text-sm font-semibold text-foreground">
+            Startup idea guardrails
+            <span className="ml-2 font-normal text-muted-foreground">Expand for tar-pit, pricing, and acute-pain checks.</span>
+          </summary>
+          <Card className="mt-4 border-0 bg-transparent shadow-none">
           <CardHeader>
             <CardTitle>Startup idea guardrails</CardTitle>
             <CardDescription>
@@ -1019,7 +1030,8 @@ export default async function PackagePage({ params }: Props) {
               </ul>
             </div>
           </CardContent>
-        </Card>
+          </Card>
+        </details>
       </section>
 
       <section className="mb-8 grid gap-4 md:grid-cols-3">

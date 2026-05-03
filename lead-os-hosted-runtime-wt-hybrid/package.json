@@ -27,6 +27,13 @@
     "assess:production": "node scripts/assess-production.mjs --production",
     "assess:production:json": "node scripts/assess-production.mjs --production --json",
     "detect:env": "node scripts/detect-env-presence.mjs",
+    "verify:env": "node scripts/detect-env-presence.mjs",
+    "verify:env:production": "node scripts/detect-env-presence.mjs --production",
+    "verify:env:production:json": "node scripts/detect-env-presence.mjs --production --json",
+    "smoke:postdeploy": "node scripts/postdeploy-smoke.mjs",
+    "smoke:postdeploy:json": "node scripts/postdeploy-smoke.mjs --json",
+    "smoke:postdeploy:plan": "node scripts/postdeploy-smoke.mjs --plan",
+    "smoke:postdeploy:plan:json": "node scripts/postdeploy-smoke.mjs --plan --json",
     "gtm:print": "node --experimental-strip-types scripts/gtm-print.ts --"
   },
   "dependencies": {

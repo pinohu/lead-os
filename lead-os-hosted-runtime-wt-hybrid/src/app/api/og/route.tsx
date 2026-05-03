@@ -1,7 +1,5 @@
-import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
-
-export const runtime = "edge";
+import { ImageResponse } from "next/og";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;

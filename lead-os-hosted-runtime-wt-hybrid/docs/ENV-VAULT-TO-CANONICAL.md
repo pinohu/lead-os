@@ -4,7 +4,7 @@ Your Vercel **shared** variables can keep **vault-style names**. At **Node serve
 
 ## Auto-mapped (code)
 
-| Your / vault-style name | Canonical name used by CX React kernel |
+| Your / vault-style name | Canonical name used by Lead OS kernel |
 |---------------------------|------------------------------------------|
 | `AITABLE_API_KEY` | `AITABLE_API_TOKEN` |
 | `STRIPE_API_KEY` | `STRIPE_SECRET_KEY` |

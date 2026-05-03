@@ -5,14 +5,14 @@ import { getRequestBaseUrl } from "../src/lib/request-base-url.ts";
 test("getRequestBaseUrl prefers forwarded production host", () => {
   const request = new Request("http://internal.test/onboard", {
     headers: {
-      "x-forwarded-host": "cxreact.com",
+      "x-forwarded-host": "lead-os.example",
       "x-forwarded-proto": "https",
       host: "internal.test",
       origin: "https://wrong.example",
     },
   });
 
-  assert.equal(getRequestBaseUrl(request), "https://cxreact.com");
+  assert.equal(getRequestBaseUrl(request), "https://lead-os.example");
 });
 
 test("getRequestBaseUrl keeps localhost on http for dev", () => {

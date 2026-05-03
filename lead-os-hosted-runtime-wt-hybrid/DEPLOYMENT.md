@@ -33,23 +33,30 @@ The app is Vercel-ready through `vercel.json` and `next.config.mjs` with `output
 - Stripe checkout and portal creation may dry-run only outside production. In production, missing Stripe configuration is a hard error.
 - Package provisioning persists a launch record in Postgres. Production package provisioning fails with `503` if Postgres is not configured.
 - Operator authentication requires `LEAD_OS_AUTH_SECRET`; cron secrets are no longer accepted for operator token signing.
+- `npm run verify:env:production` loads local env files when present, checks required production groups, prints no secret values, and exits non-zero if the vault is incomplete.
+- `npm run smoke:postdeploy -- --url https://your-production-domain.example` verifies health, readiness, packages, onboarding, and build-id surfaces after deploy.
+- `npm run smoke:postdeploy:plan -- --url https://your-production-domain.example` lists those checks without touching the network.
 
 ## Release Procedure
 
 1. Install dependencies with `npm install`.
-2. Run `npm run assess:production`. This is strict and fails when required production env vars are missing.
-3. Run `npm audit --omit=dev`.
-4. Run `npm run verify:migrations`.
-5. Run `npm test`.
-6. Run `npm run build`.
-7. Deploy web app.
-8. Deploy worker using the same commit/build id.
-9. Confirm `/api/health/deep`, `/api/queue`, and `/dashboard/control-plane`.
+2. Run `npm run verify:env:production`. This is strict and fails when required production env groups are missing.
+3. Run `npm run assess:production`. This is strict and fails when required production dependencies are missing.
+4. Run `npm audit --omit=dev`.
+5. Run `npm run verify:migrations`.
+6. Run `npm test`.
+7. Run `npm run build`.
+8. Deploy web app.
+9. Deploy worker using the same commit/build id.
+10. Run `npm run smoke:postdeploy -- --url https://your-production-domain.example`.
+11. Confirm `/api/health/deep`, `/api/queue`, and `/dashboard/control-plane`.
 
 For terminal or CI integrations that need machine-readable output, run:
 
 ```bash
 npm run assess:production:json
+npm run verify:env:production:json
+npm run smoke:postdeploy:json -- --url https://your-production-domain.example
 ```
 
 ## Rollback
