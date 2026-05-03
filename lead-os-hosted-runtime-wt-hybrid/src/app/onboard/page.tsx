@@ -125,6 +125,14 @@ function safeJson<T>(value: string | null): T | null {
   }
 }
 
+function recoveryTargetForStep(step: WizardStep): "niche" | "plan" | "branding" | "integrations" | "review" {
+  if (step === "niche") return "niche";
+  if (step === "plan") return "plan";
+  if (step === "branding") return "branding";
+  if (step === "integrations") return "integrations";
+  return "review";
+}
+
 export default function OnboardPage() {
   const [step, setStep] = useState<WizardStep>("email");
   const [session, setSession] = useState<OnboardingSession | null>(null);
@@ -286,6 +294,12 @@ export default function OnboardPage() {
           setPaymentPending(false);
           return;
         }
+        if (isSessionNotFoundError(message)) {
+          setError(null);
+          setStep("complete");
+          setPaymentPending(false);
+          return;
+        }
         setError(message);
         setPaymentPending(false);
         return;
@@ -320,65 +334,25 @@ export default function OnboardPage() {
     setLoading(true);
     setError(null);
     try {
-      const startRes = await fetch("/api/onboarding", {
+      const recoverRes = await fetch("/api/onboarding/recover", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: normalizedEmail }),
+        body: JSON.stringify({
+          email: normalizedEmail,
+          completeThrough: recoveryTargetForStep(step),
+          niche,
+          planId: selectedPlan,
+          branding,
+          enabledProviders: Array.isArray(stepData.enabledProviders) ? stepData.enabledProviders : [...enabledProviders],
+        }),
       });
-      const startJson = await startRes.json();
-      if (!startRes.ok || !startJson.data) {
-        throw new Error(startJson.error?.message ?? "Failed to recover onboarding session");
+      const recoverJson = await recoverRes.json();
+      if (!recoverRes.ok || !recoverJson.data) {
+        throw new Error(recoverJson.error?.message ?? "Failed to recover onboarding session");
       }
 
-      let recovered = startJson.data as OnboardingSession;
-      const postRecoveredStep = async (data: Record<string, unknown>) => {
-        const res = await fetch(`/api/onboarding/${encodeURIComponent(recovered.id)}/step`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        const json = await res.json();
-        if (!res.ok || !json.data) {
-          throw new Error(json.error?.message ?? "Failed to recover onboarding progress");
-        }
-        recovered = json.data as OnboardingSession;
-        setSession(recovered);
-      };
-
+      const recovered = recoverJson.data as OnboardingSession;
       setSession(recovered);
-
-      if (recovered.currentStep === "niche") {
-        if (!niche.name.trim()) {
-          throw new Error("Your onboarding session expired. Review the client market and continue.");
-        }
-        await postRecoveredStep({ name: niche.name, industry: niche.industry || undefined, keywords: niche.keywords });
-      }
-
-      if (recovered.currentStep === "plan") {
-        await postRecoveredStep({ planId: selectedPlan });
-      }
-
-      if (recovered.currentStep === "branding") {
-        if (!branding.name.trim()) {
-          throw new Error("Your onboarding session expired. Review the business identity and continue.");
-        }
-        await postRecoveredStep({
-          name: branding.name,
-          accent: branding.accent,
-          logoUrl: branding.logoUrl || undefined,
-          siteUrl: branding.siteUrl || undefined,
-          supportEmail: branding.supportEmail || undefined,
-        });
-      }
-
-      if (recovered.currentStep === "integrations") {
-        const providers = Array.isArray(stepData.enabledProviders) ? stepData.enabledProviders : [...enabledProviders];
-        await postRecoveredStep({ enabledProviders: providers });
-      }
-
-      if (step === "review" && recovered.currentStep === "review") {
-        await postRecoveredStep({});
-      }
 
       const stepMap: Record<string, WizardStep> = {
         niche: "niche",
@@ -390,11 +364,9 @@ export default function OnboardPage() {
       };
 
       if (recovered.currentStep === "complete") {
-        const currentPlan = PLANS.find((p) => p.id === selectedPlan);
-        if (currentPlan && currentPlan.priceValue > 0) {
-          await redirectToStripeCheckout(recovered.id);
-          return;
-        }
+        setStep("complete");
+        setError(null);
+        return;
       }
 
       setStep(stepMap[recovered.currentStep] ?? "review");
