@@ -47,6 +47,17 @@ interface IntegrationOption {
   defaultOn: boolean;
 }
 
+interface OnboardingDraft {
+  email: string;
+  session: OnboardingSession | null;
+  step: WizardStep;
+  niche: NicheData;
+  selectedPlan: string;
+  branding: BrandingData;
+  enabledProviders: string[];
+  updatedAt: string;
+}
+
 const INDUSTRIES = [
   "service", "legal", "health", "tech", "construction",
   "real-estate", "education", "finance", "franchise",
@@ -87,12 +98,31 @@ const STEP_LABELS: Record<WizardStep, string> = {
 };
 
 const WIZARD_STEPS: WizardStep[] = ["niche", "plan", "branding", "integrations", "review"];
+const DRAFT_STORAGE_KEY = "lead-os:onboarding-draft";
+const DRAFT_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 7;
 
 function isRecoverableCheckoutConfigError(message: string): boolean {
   const normalized = message.toLowerCase();
   return normalized.includes("no such price") ||
     normalized.includes("stripe is not configured") ||
     normalized.includes("checkout cannot run");
+}
+
+function isSessionNotFoundError(message: string): boolean {
+  return message.toLowerCase().includes("onboarding session not found");
+}
+
+function isWizardStep(value: string): value is WizardStep {
+  return ["email", "niche", "plan", "branding", "integrations", "review", "complete"].includes(value);
+}
+
+function safeJson<T>(value: string | null): T | null {
+  if (!value) return null;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return null;
+  }
 }
 
 export default function OnboardPage() {
@@ -139,6 +169,21 @@ export default function OnboardPage() {
     const sessionId = params.get("session_id");
     const stepParam = params.get("step");
     const onboardingId = params.get("onboarding_id");
+    const planParam = params.get("plan");
+
+    if (!sessionId && !onboardingId) {
+      const draft = safeJson<OnboardingDraft>(window.localStorage.getItem(DRAFT_STORAGE_KEY));
+      const draftAge = draft ? Date.now() - new Date(draft.updatedAt).getTime() : Number.POSITIVE_INFINITY;
+      if (draft && draftAge < DRAFT_MAX_AGE_MS && isWizardStep(draft.step)) {
+        setEmail(draft.email ?? "");
+        setSession(draft.session ?? null);
+        setStep(draft.step);
+        setNiche(draft.niche ?? { name: "", industry: "", keywords: [] });
+        setSelectedPlan(draft.selectedPlan ?? "whitelabel-growth");
+        setBranding(draft.branding ?? { name: "", accent: "#14b8a6", logoUrl: "", siteUrl: "", supportEmail: "" });
+        setEnabledProviders(new Set(draft.enabledProviders?.length ? draft.enabledProviders : ["email"]));
+      }
+    }
 
     if (sessionId && stepParam === "complete" && onboardingId) {
       setStripeSessionId(sessionId);
@@ -165,7 +210,6 @@ export default function OnboardPage() {
       window.history.replaceState({}, "", "/onboard");
     }
 
-    const planParam = params.get("plan");
     if (planParam) {
       const planMap: Record<string, string> = {
         starter: "whitelabel-starter",
@@ -179,6 +223,24 @@ export default function OnboardPage() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    const hasDraftContent = Boolean(email.trim()) || Boolean(session) || step !== "email";
+    if (!hasDraftContent) return;
+
+    const draft: OnboardingDraft = {
+      email,
+      session,
+      step,
+      niche,
+      selectedPlan,
+      branding,
+      enabledProviders: [...enabledProviders],
+      updatedAt: new Date().toISOString(),
+    };
+
+    window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+  }, [email, session, step, niche, selectedPlan, branding, enabledProviders]);
 
   const handleStartOnboarding = useCallback(async () => {
     if (!email.trim()) {
@@ -247,8 +309,109 @@ export default function OnboardPage() {
     }
   }, []);
 
+  const recoverLostOnboarding = useCallback(async (stepData: Record<string, unknown>) => {
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail) {
+      setStep("email");
+      setError("Your onboarding session expired. Enter your email to restart setup.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const startRes = await fetch("/api/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: normalizedEmail }),
+      });
+      const startJson = await startRes.json();
+      if (!startRes.ok || !startJson.data) {
+        throw new Error(startJson.error?.message ?? "Failed to recover onboarding session");
+      }
+
+      let recovered = startJson.data as OnboardingSession;
+      const postRecoveredStep = async (data: Record<string, unknown>) => {
+        const res = await fetch(`/api/onboarding/${encodeURIComponent(recovered.id)}/step`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.data) {
+          throw new Error(json.error?.message ?? "Failed to recover onboarding progress");
+        }
+        recovered = json.data as OnboardingSession;
+        setSession(recovered);
+      };
+
+      setSession(recovered);
+
+      if (recovered.currentStep === "niche") {
+        if (!niche.name.trim()) {
+          throw new Error("Your onboarding session expired. Review the client market and continue.");
+        }
+        await postRecoveredStep({ name: niche.name, industry: niche.industry || undefined, keywords: niche.keywords });
+      }
+
+      if (recovered.currentStep === "plan") {
+        await postRecoveredStep({ planId: selectedPlan });
+      }
+
+      if (recovered.currentStep === "branding") {
+        if (!branding.name.trim()) {
+          throw new Error("Your onboarding session expired. Review the business identity and continue.");
+        }
+        await postRecoveredStep({
+          name: branding.name,
+          accent: branding.accent,
+          logoUrl: branding.logoUrl || undefined,
+          siteUrl: branding.siteUrl || undefined,
+          supportEmail: branding.supportEmail || undefined,
+        });
+      }
+
+      if (recovered.currentStep === "integrations") {
+        const providers = Array.isArray(stepData.enabledProviders) ? stepData.enabledProviders : [...enabledProviders];
+        await postRecoveredStep({ enabledProviders: providers });
+      }
+
+      if (step === "review" && recovered.currentStep === "review") {
+        await postRecoveredStep({});
+      }
+
+      const stepMap: Record<string, WizardStep> = {
+        niche: "niche",
+        plan: "plan",
+        branding: "branding",
+        integrations: "integrations",
+        review: "review",
+        complete: "complete",
+      };
+
+      if (recovered.currentStep === "complete") {
+        const currentPlan = PLANS.find((p) => p.id === selectedPlan);
+        if (currentPlan && currentPlan.priceValue > 0) {
+          await redirectToStripeCheckout(recovered.id);
+          return;
+        }
+      }
+
+      setStep(stepMap[recovered.currentStep] ?? "review");
+      setError(null);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to recover onboarding progress";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  }, [email, niche, selectedPlan, branding, enabledProviders, step, redirectToStripeCheckout]);
+
   const handleAdvanceStep = useCallback(async (stepData: Record<string, unknown>) => {
-    if (!session) return;
+    if (!session) {
+      await recoverLostOnboarding(stepData);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -262,6 +425,10 @@ export default function OnboardPage() {
         const message = json.error?.message ?? "Failed to advance step";
         if (message.toLowerCase().includes("already complete")) {
           await recoverCompletedOnboarding();
+          return;
+        }
+        if (isSessionNotFoundError(message)) {
+          await recoverLostOnboarding(stepData);
           return;
         }
         setError(json.error?.message ?? "Failed to advance step");
@@ -295,7 +462,7 @@ export default function OnboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [session, selectedPlan, redirectToStripeCheckout, recoverCompletedOnboarding]);
+  }, [session, selectedPlan, redirectToStripeCheckout, recoverCompletedOnboarding, recoverLostOnboarding]);
 
   const handleBack = useCallback(() => {
     setError(null);
@@ -334,6 +501,7 @@ export default function OnboardPage() {
   const completedStepIndex = WIZARD_STEPS.indexOf(step as typeof WIZARD_STEPS[number]);
   const alreadyCompleteError = error?.toLowerCase().includes("already complete") ?? false;
   const checkoutConfigError = error ? isRecoverableCheckoutConfigError(error) : false;
+  const sessionNotFoundError = error ? isSessionNotFoundError(error) : false;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -428,7 +596,34 @@ export default function OnboardPage() {
           </div>
         )}
 
-        {error && !alreadyCompleteError && !checkoutConfigError && (
+        {sessionNotFoundError && (
+          <div role="status" aria-live="polite" className="mb-6 rounded-xl border border-teal-500/30 bg-teal-500/[0.08] p-8">
+            <p className="mb-2 text-[0.95rem] font-bold text-teal-300">Setup session needs to be refreshed.</p>
+            <p className="mb-5 text-[0.9rem] leading-relaxed text-muted-foreground">
+              Your choices are still on this screen. Refresh the server session and Lead OS will replay the completed steps so you can keep going.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => void recoverLostOnboarding(step === "integrations" ? { enabledProviders: [...enabledProviders] } : {})}
+                disabled={loading}
+                className="inline-flex min-h-[44px] items-center rounded-lg border border-teal-500/30 bg-teal-500 px-5 py-2.5 text-[0.9rem] font-bold text-[#0a0f1a]"
+                aria-busy={loading}
+              >
+                {loading ? "Recovering..." : "Recover Setup"}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setStep("email"); setError(null); setSession(null); }}
+                className="inline-flex min-h-[44px] items-center rounded-lg border border-slate-400/30 bg-transparent px-5 py-2.5 text-[0.9rem] font-semibold text-muted-foreground"
+              >
+                Start Over
+              </button>
+            </div>
+          </div>
+        )}
+
+        {error && !alreadyCompleteError && !checkoutConfigError && !sessionNotFoundError && (
           <div role="alert" className="mb-6 rounded-xl border border-red-400/30 bg-red-400/10 p-8">
             <p className="text-[0.9rem] text-red-400">{error}</p>
           </div>
