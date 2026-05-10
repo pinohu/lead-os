@@ -12,6 +12,8 @@ Update after reviewing shared ConvertBox design `SE6OC2LI`: the Erie.Pro draft p
 
 Update after professional visual pass: all 10 inactive draft previews now include service-family visual labels, icon-style choice prefixes, trust rows, family-specific accent colors, profile titles, and teaser labels. This improves the professional visual hierarchy, but visual/mobile QA in the actual ConvertBox editor is still required before activation.
 
+Update after profile-photo QA: all 10 inactive draft previews now have non-null `profile.photo` and `teaser.photo` fields using uploaded Erie.Pro service-family avatar SVGs. The generic empty photo icons should no longer appear once the editor refreshes the saved draft data.
+
 ## Audit Criteria
 
 Each box is audited across four dimensions:

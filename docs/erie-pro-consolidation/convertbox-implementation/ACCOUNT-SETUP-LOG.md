@@ -229,6 +229,18 @@ Visual labels now include:
 - `Provider Category Review`
 - `Finish Or Save Your Request`
 
+Eighth correction recorded after profile-photo QA: the prior visual pass enabled profile and teaser labels but left `profile.photo` and `teaser.photo` as `null`. Seven Erie.Pro family avatar SVGs were uploaded to the ConvertBox image library and assigned to both profile and teaser photo fields across all 10 inactive draft previews. Verification confirmed `ep_profile_photos_applied=true`, `active=false`, non-null `profile.photo`, non-null `teaser.photo`, and `teaser.icon=none` on all 10 boxes.
+
+Uploaded avatar assets:
+
+- `erie-pro-emergency-home-response.svg`
+- `erie-pro-cleaning-and-turnover.svg`
+- `erie-pro-planned-home-projects.svg`
+- `erie-pro-health-and-wellness-appointments.svg`
+- `erie-pro-professional-legal-and-financial.svg`
+- `erie-pro-provider-territory-claim.svg`
+- `erie-pro-returning-and-exit-rescue.svg`
+
 The visual editor opened successfully, but the builder uses a drag-and-drop canvas and normal browser text-fill automation intermittently failed on text entry with the in-browser clipboard layer. To avoid leaving blank shells, the completed designs were written through ConvertBox's authenticated editor save endpoint using the same structured JSON schema the builder saves.
 
 To protect Erie.Pro user experience, the boxes were left inactive. They are designed and fielded, but should not be activated until final mobile/desktop preview and test submissions are reviewed.
