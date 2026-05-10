@@ -24,77 +24,107 @@ The following groups were created in the `erie.pro` ConvertBox site:
 
 ## Designed ConvertBoxes Created
 
-The following inactive ConvertBoxes were created and then fully populated with designed content, form fields, and non-live trigger settings:
+The following inactive ConvertBoxes were created and then fully populated with render-verified designed content, form fields, hidden metadata fields, two-step confirmation flows, visitor-safe trigger settings, profile/teaser settings where appropriate, and URL targeting rules:
 
 - `EP-03 Service - Fast Quote - v1`
   - Group: `Erie.Pro - Core`
   - Type: Callout Modal
   - Status: inactive designed draft
-  - Fields: `full_name`, `phone`, `email`, `project_details`
+  - Visible fields: `full_name`, `phone`, `email`, `project_details`
+  - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: 45% scroll
+  - URL targeting: URLs containing `/services`, `/service`, `/quote`
+  - Features: profile enabled, teaser enabled, two-step confirmation
 
 - `EP-02 Emergency - Callback Request - v1`
   - Group: `Erie.Pro - Service Families`
   - Type: Callout Modal
   - Status: inactive designed draft
-  - Fields: `full_name`, `phone`, `emergency_details`
+  - Visible fields: `full_name`, `phone`, `emergency_details`
+  - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: immediate
+  - URL targeting: emergency and high-intent trade pages
+  - Features: profile enabled, teaser enabled, two-step confirmation
 
 - `EP-04 Pricing - Cost Confidence - v1`
   - Group: `Erie.Pro - Research Nurture`
   - Type: Callout Modal
   - Status: inactive designed draft
-  - Fields: `email`, `phone`, `cost_question`
+  - Visible fields: `email`, `phone`, `cost_question`
+  - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: inactivity
+  - URL targeting: pricing, cost, service research pages
+  - Features: profile enabled, teaser enabled, two-step confirmation
 
 - `EP-01 Visitor - Service Finder - v1`
   - Group: `Erie.Pro - Core`
   - Type: Sticky Bar
   - Status: inactive designed draft
-  - Fields: `full_name`, `email`, `phone`, `service_need`
+  - Visible fields: `full_name`, `email`, `phone`, `service_need`
+  - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: delayed
+  - URL targeting: homepage and service category pages
+  - Features: two-step confirmation
 
 - `EP-05 Project - Planner - v1`
   - Group: `Erie.Pro - Service Families`
   - Type: Center Modal
   - Status: inactive designed draft
-  - Fields: `full_name`, `email`, `phone`, `project_scope`
+  - Visible fields: `full_name`, `email`, `phone`, `project_scope`
+  - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: 55% scroll
+  - URL targeting: project, renovation, installation, construction pages
+  - Features: profile enabled, two-step confirmation
 
 - `EP-06 Appointment - Professional Services - v1`
   - Group: `Erie.Pro - Service Families`
   - Type: Callout Modal
   - Status: inactive designed draft
-  - Fields: `full_name`, `phone`, `email`, `appointment_notes`
+  - Visible fields: `full_name`, `phone`, `email`, `appointment_notes`
+  - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: delayed
+  - URL targeting: appointment, consultation, professional service pages
+  - Features: profile enabled, teaser enabled, two-step confirmation
 
 - `EP-07 Research - Checklist Capture - v1`
   - Group: `Erie.Pro - Research Nurture`
   - Type: Callout Modal
   - Status: inactive designed draft
-  - Fields: `email`, `checklist_topic`
+  - Visible fields: `email`, `checklist_topic`
+  - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: 65% scroll
+  - URL targeting: guide, checklist, learning, blog, service pages
+  - Features: profile enabled, teaser enabled, two-step confirmation
 
 - `EP-08 Provider - Claim Territory - v1`
   - Group: `Erie.Pro - Provider Acquisition`
   - Type: Callout Modal
   - Status: inactive designed draft
-  - Fields: `business_name`, `full_name`, `email`, `phone`, `territory_services`
+  - Visible fields: `business_name`, `full_name`, `email`, `phone`, `territory_services`
+  - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: delayed
+  - URL targeting: provider, partner, join, professional pages
+  - Features: profile enabled, teaser enabled, two-step confirmation
 
 - `EP-09 Exit - Quote Rescue - v1`
   - Group: `Erie.Pro - Core`
   - Type: Center Modal
   - Status: inactive designed draft
-  - Fields: `email`, `phone`, `stuck_reason`
+  - Visible fields: `email`, `phone`, `stuck_reason`
+  - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: exit intent
+  - URL targeting: service, quote, pricing pages
+  - Features: profile enabled, two-step confirmation
 
 - `EP-10 Returning - Resume Request - v1`
   - Group: `Erie.Pro - Core`
   - Type: Callout Modal
   - Status: inactive designed draft
-  - Fields: `full_name`, `email`, `phone`, `resume_context`
+  - Visible fields: `full_name`, `email`, `phone`, `resume_context`
+  - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: delayed
+  - URL targeting: service, quote, request pages
+  - Features: profile enabled, teaser enabled, two-step confirmation
 
 ## Dashboard Count Verification
 
@@ -112,16 +142,22 @@ Total configured designs:
 - 0 active.
 - 10 ConvertBoxes with real editor elements.
 - 10 ConvertBoxes with forms.
+- 10 ConvertBoxes with no null editor element ids.
+- 10 ConvertBoxes with two steps: request details and confirmation.
+- 10 ConvertBoxes with hidden metadata fields for routing attribution.
+- 10 ConvertBoxes with `specific_pages` URL targeting and privacy/terms/admin exclusions.
 
 ## Important Implementation Note
 
 No ConvertBox was activated.
 
+Correction recorded after visual QA: the first save pass created form/text objects, but those objects used null element ids and therefore appeared as empty move/drop placeholders in the visual builder. The corrected pass assigns unique element ids to every editor element and button item. Render verification confirmed the visible editor now shows headlines, body copy, fields, and CTA buttons.
+
 The visual editor opened successfully, but the builder uses a drag-and-drop canvas and normal browser text-fill automation intermittently failed on text entry with the in-browser clipboard layer. To avoid leaving blank shells, the completed designs were written through ConvertBox's authenticated editor save endpoint using the same structured JSON schema the builder saves.
 
 To protect Erie.Pro user experience, the boxes were left inactive. They are designed and fielded, but should not be activated until final mobile/desktop preview and test submissions are reviewed.
 
-The account is now ready for the next setup pass: final preview QA, integration/webhook mapping, URL targeting refinement inside the visual targeting UI, and test submissions from `IMPLEMENTATION-PACK.md` and `CAMPAIGN-BUILD-SHEET.csv`.
+The account is now ready for the next setup pass: final mobile/desktop preview QA, integration/webhook mapping, and test submissions from `IMPLEMENTATION-PACK.md` and `CAMPAIGN-BUILD-SHEET.csv`.
 
 Do not publish a ConvertBox until it has:
 
