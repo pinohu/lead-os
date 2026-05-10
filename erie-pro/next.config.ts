@@ -24,11 +24,11 @@ const config: NextConfig = {
             value: [
               "default-src 'self'",
               // TODO: Replace 'unsafe-inline' with nonce-based CSP once Next.js nonce infrastructure is configured
-              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.posthog.com https://*.sentry.io",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https://*.stripe.com https://*.googleusercontent.com https://*.googleapis.com https://*.gstatic.com",
-              "connect-src 'self' https://api.stripe.com https://*.posthog.com https://*.sentry.io https://*.ingest.sentry.io",
-              "frame-src https://js.stripe.com https://hooks.stripe.com https://www.google.com",
+              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.posthog.com https://*.sentry.io https://cdn.convertbox.com https://app.convertbox.com",
+              "style-src 'self' 'unsafe-inline' https://cdn.convertbox.com",
+              "img-src 'self' data: https://*.stripe.com https://*.googleusercontent.com https://*.googleapis.com https://*.gstatic.com https://cdn.convertbox.com https://app.convertbox.com https://images.convertbox.com",
+              "connect-src 'self' https://api.stripe.com https://*.posthog.com https://*.sentry.io https://*.ingest.sentry.io https://cdn.convertbox.com https://app.convertbox.com https://images.convertbox.com",
+              "frame-src https://js.stripe.com https://hooks.stripe.com https://www.google.com https://app.convertbox.com",
               "font-src 'self'",
               "object-src 'none'",
               "base-uri 'self'",
