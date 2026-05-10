@@ -1,0 +1,179 @@
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = path.join(__dirname, "..");
+const AUDIT_PATH = path.join(
+  ROOT,
+  "docs",
+  "erie-pro-consolidation",
+  "convertbox-implementation",
+  "ERIE-CONVERTBOX-112-DRAFT-AUDIT.json",
+);
+const MATRIX_PATH = path.join(
+  ROOT,
+  "docs",
+  "erie-pro-consolidation",
+  "convertbox-implementation",
+  "ERIE-CONVERTBOX-112-SERVICE-MATRIX.json",
+);
+const OUT_TS = path.join(ROOT, "erie-pro", "src", "lib", "convertbox-service-map.ts");
+const OUT_JSON = path.join(
+  ROOT,
+  "docs",
+  "erie-pro-consolidation",
+  "convertbox-implementation",
+  "ERIE-CONVERTBOX-WEBSITE-MAP.json",
+);
+const NICHES_PATHS = [
+  path.join(ROOT, "erie-pro", "src", "lib", "niches.ts"),
+  path.join(ROOT, "erie-pro", "src", "lib", "additional-niches.ts"),
+];
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+function quote(value) {
+  return JSON.stringify(value);
+}
+
+function normalizeLabel(value) {
+  return String(value).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function getCurrentSiteNiches() {
+  const text = NICHES_PATHS.map((file) => fs.readFileSync(file, "utf8")).join("\n");
+  const matches = Array.from(
+    text.matchAll(/slug:\s*"([^"]+)",\s*label:\s*"([^"]+)"/g),
+  );
+  return matches.map((match) => ({
+    slug: match[1],
+    label: match[2],
+    labelKey: normalizeLabel(match[2]),
+  }));
+}
+
+function main() {
+  const audit = readJson(AUDIT_PATH);
+  const matrix = readJson(MATRIX_PATH);
+  const matrixBySlug = new Map(matrix.services.map((service) => [service.service_slug, service]));
+  const currentNiches = getCurrentSiteNiches();
+  const currentByLabel = new Map(currentNiches.map((niche) => [niche.labelKey, niche]));
+
+  const services = audit.audits
+    .filter((item) => item.ok && item.box_id)
+    .map((item) => {
+      const service = matrixBySlug.get(item.service_slug);
+      if (!service) throw new Error(`Missing matrix entry for ${item.service_slug}`);
+      const currentNiche = currentByLabel.get(normalizeLabel(item.service_label));
+      if (!currentNiche) throw new Error(`Missing current Erie.Pro niche for ${item.service_label}`);
+      return {
+        serviceNumber: item.service_number,
+        serviceSlug: currentNiche.slug,
+        convertBoxServiceSlug: item.service_slug,
+        serviceLabel: item.service_label,
+        family: item.family,
+        boxId: item.box_id,
+        boxName: item.box_name,
+        active: item.active,
+        stepCount: item.step_count,
+        targetCount: item.target_count,
+        routeType: service.route_type || service.urgency_profile || service.family,
+        urgencyProfile: service.urgency_profile,
+        persona: service.persona,
+        accountPageTargets: service.convertbox.page_targets,
+        sitePageTargets: {
+          include: service.convertbox.page_targets.include.map((target) =>
+            target.replace(`/${item.service_slug}`, `/${currentNiche.slug}`),
+          ),
+          exclude: service.convertbox.page_targets.exclude,
+        },
+      };
+    });
+
+  if (services.length !== 112) {
+    throw new Error(`Expected 112 website map services, got ${services.length}`);
+  }
+  const uniqueSiteSlugs = new Set(services.map((service) => service.serviceSlug));
+  if (uniqueSiteSlugs.size !== currentNiches.length) {
+    throw new Error(`Expected ${currentNiches.length} unique site slugs, got ${uniqueSiteSlugs.size}`);
+  }
+
+  const payload = {
+    generated_at: new Date().toISOString(),
+    source_audit: path.relative(ROOT, AUDIT_PATH).replace(/\\/g, "/"),
+    source_matrix: path.relative(ROOT, MATRIX_PATH).replace(/\\/g, "/"),
+    services,
+  };
+  fs.writeFileSync(OUT_JSON, `${JSON.stringify(payload, null, 2)}\n`);
+
+  const mapEntries = services
+    .map((service) => {
+      return [
+        `  ${quote(service.serviceSlug)}: {`,
+        `    serviceNumber: ${service.serviceNumber},`,
+        `    serviceSlug: ${quote(service.serviceSlug)},`,
+        `    convertBoxServiceSlug: ${quote(service.convertBoxServiceSlug)},`,
+        `    serviceLabel: ${quote(service.serviceLabel)},`,
+        `    family: ${quote(service.family)},`,
+        `    boxId: ${service.boxId},`,
+        `    boxName: ${quote(service.boxName)},`,
+        `    active: ${service.active},`,
+        `    stepCount: ${service.stepCount},`,
+        `    targetCount: ${service.targetCount},`,
+        `    routeType: ${quote(service.routeType)},`,
+        `    urgencyProfile: ${quote(service.urgencyProfile)},`,
+        `    persona: ${quote(service.persona)},`,
+        `    convertBoxIncludeTargets: ${quote(service.accountPageTargets.include)},`,
+        `    includeTargets: ${quote(service.sitePageTargets.include)},`,
+        `    excludeTargets: ${quote(service.sitePageTargets.exclude)},`,
+        "  },",
+      ].join("\n");
+    })
+    .join("\n");
+
+  const ts = `// Generated by scripts/generate-erie-convertbox-website-map.js.
+// Source: docs/erie-pro-consolidation/convertbox-implementation/ERIE-CONVERTBOX-112-DRAFT-AUDIT.json
+
+export type ConvertBoxServiceMapEntry = {
+  serviceNumber: number;
+  serviceSlug: string;
+  convertBoxServiceSlug: string;
+  serviceLabel: string;
+  family: string;
+  boxId: number;
+  boxName: string;
+  active: boolean;
+  stepCount: number;
+  targetCount: number;
+  routeType: string;
+  urgencyProfile: string;
+  persona: string;
+  convertBoxIncludeTargets: string[];
+  includeTargets: string[];
+  excludeTargets: string[];
+};
+
+export const convertBoxServiceMap = {
+${mapEntries}
+} as const satisfies Record<string, ConvertBoxServiceMapEntry>;
+
+export type ConvertBoxServiceSlug = keyof typeof convertBoxServiceMap;
+
+export const convertBoxServiceSlugs = Object.keys(
+  convertBoxServiceMap,
+) as ConvertBoxServiceSlug[];
+
+export function getConvertBoxService(serviceSlug: string) {
+  return convertBoxServiceMap[serviceSlug as ConvertBoxServiceSlug] ?? null;
+}
+
+export function hasConvertBoxService(serviceSlug: string) {
+  return serviceSlug in convertBoxServiceMap;
+}
+`;
+  fs.writeFileSync(OUT_TS, ts);
+  console.log(JSON.stringify({ services: services.length, out_ts: OUT_TS, out_json: OUT_JSON }, null, 2));
+}
+
+main();

@@ -74,6 +74,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // indexing when a provider claims an existing listing.
   let businessPages: MetadataRoute.Sitemap = []
   try {
+    if (!process.env.DATABASE_URL) {
+      return [...staticPages, ...nichePages]
+    }
+
     const [listings, providers] = await Promise.all([
       getAllDirectoryListingSlugs(),
       prisma.provider.findMany({

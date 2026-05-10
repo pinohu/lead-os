@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { LocalSeoFooter } from "@/components/local-seo-footer"
 import { CookieBanner } from "@/components/cookie-banner"
+import { ConvertBoxLoader } from "@/components/convertbox-loader"
+import { ConvertBoxPageContext } from "@/components/convertbox-page-context"
 import { TrackedPhoneLink } from "@/components/tracked-phone-link"
 import {
   NavigationMenu,
@@ -102,6 +104,8 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} antialiased`}>
+        <ConvertBoxLoader />
+        <ConvertBoxPageContext />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

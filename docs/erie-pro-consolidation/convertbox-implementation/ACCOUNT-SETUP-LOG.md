@@ -270,3 +270,9 @@ Do not publish a ConvertBox until it has:
 - mobile review
 - close and submit suppression
 - test submission verification
+
+Sixteenth correction recorded after the full 112-draft deployment: the Erie.Pro source now includes a generated website bridge that maps every current public service route to its audited ConvertBox draft. The bridge writes `ERIE-CONVERTBOX-WEBSITE-MAP.json` for documentation and `erie-pro/src/lib/convertbox-service-map.ts` for the app. It also adds the site-wide ConvertBox loader and page context components in Erie.Pro.
+
+Important reconciliation finding: several ConvertBox draft slugs came from the live/recovered service inventory and differ from current Erie.Pro source route slugs. The bridge maps by service label and preserves both values: `serviceSlug` is the current Erie.Pro route, and `convertBoxServiceSlug` is the ConvertBox/account draft slug.
+
+The Erie.Pro app now installs the ConvertBox visitor script through `NEXT_PUBLIC_CONVERTBOX_UUID`, sets `window.erieProConvertBox`, pushes the same context to `window.dataLayer`, and writes `data-ep-*` attributes on the document element. Verification passed with `npm.cmd run test -- src/lib/__tests__/convertbox-service-map.test.ts src/lib/__tests__/rate-limit.test.ts` and `npm.cmd run build`. Prisma is now lazily initialized so source builds remain reproducible when `DATABASE_URL` is unavailable, and the sitemap skips dynamic business URLs in that build-only case.
