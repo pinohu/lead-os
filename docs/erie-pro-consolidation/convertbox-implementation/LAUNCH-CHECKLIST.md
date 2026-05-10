@@ -9,6 +9,7 @@ Use this checklist when moving from plan to live ConvertBox configuration.
 - Confirm the script loads on production pages and not on admin or preview-only routes.
 - Confirm the current live service count is 112.
 - Confirm each service is represented in `SERVICE-FAMILY-MAP.csv`.
+- Confirm `BOX-EXPERIENCE-AUDIT.md` has been reviewed and every no-go issue is resolved for the box being edited.
 - Confirm each box uses the service-aware copy and question set from `SERVICE-AWARE-FLOW-COPY.md`.
 - Confirm no consumer-facing box still uses generic developer-style copy without service context.
 - Confirm health, funeral, legal, financial, and senior-care flows use privacy-safe appointment or consultation language instead of contractor or quote language.

@@ -189,6 +189,8 @@ The same pass rewrote developer-facing explanatory text into visitor-facing cust
 
 Third correction recorded after service-fit review: the 10 inactive ConvertBoxes now prove the technical configuration, but their visitor copy is still too generic for Erie.Pro's 112-service catalog. They should not be treated as final production funnels until the service-aware copy and questions in `SERVICE-AWARE-FLOW-COPY.md` are applied. The final production direction is family-specific and service-aware: plumbing should ask leak/drain/water-heater questions, roadside should ask location and vehicle status, health services should use private appointment language, funeral-home flows should use gentle non-promotional copy, and seasonal Erie services should reference timing, storm context, and property type.
 
+Fourth correction recorded before further ConvertBox account edits: `BOX-EXPERIENCE-AUDIT.md` audits all 10 current draft boxes across design, psychology, conversion flow, and journey fit. That audit is the go/no-go gate for the next account pass.
+
 The visual editor opened successfully, but the builder uses a drag-and-drop canvas and normal browser text-fill automation intermittently failed on text entry with the in-browser clipboard layer. To avoid leaving blank shells, the completed designs were written through ConvertBox's authenticated editor save endpoint using the same structured JSON schema the builder saves.
 
 To protect Erie.Pro user experience, the boxes were left inactive. They are designed and fielded, but should not be activated until final mobile/desktop preview and test submissions are reviewed.
