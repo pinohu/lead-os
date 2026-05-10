@@ -133,6 +133,16 @@ function sanitizeDataLayerEvent(item: Record<string, unknown>) {
   return metadata;
 }
 
+function isConvertBoxBridgeMessage(value: unknown): value is {
+  source: "erie-pro-convertbox";
+  eventType: string;
+  payload?: Partial<ConvertBoxEventPayload>;
+} {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  return record.source === "erie-pro-convertbox" && typeof record.eventType === "string";
+}
+
 function hasVisibleConvertBoxNode() {
   const nodes = document.querySelectorAll<HTMLElement>(
     'iframe[src*="convertbox"], [id*="convertbox" i], [class*="convertbox" i], [id*="cbox" i], [class*="cbox" i]',
@@ -224,6 +234,19 @@ export function ConvertBoxEventTracker() {
     };
     document.addEventListener("click", onClick, true);
 
+    const onMessage = (event: MessageEvent) => {
+      if (!isConvertBoxBridgeMessage(event.data)) return;
+      if (!event.origin.includes("convertbox.com") && event.origin !== window.location.origin) return;
+      track(event.data.eventType, {
+        ...(event.data.payload ?? {}),
+        metadata: {
+          origin: event.origin,
+          ...(event.data.payload?.metadata ?? {}),
+        },
+      });
+    };
+    window.addEventListener("message", onMessage);
+
     const onScriptLoad = (event: Event) => {
       const target = event.target;
       if (target instanceof HTMLScriptElement && target.src.includes("convertbox")) {
@@ -237,6 +260,7 @@ export function ConvertBoxEventTracker() {
     return () => {
       observer.disconnect();
       document.removeEventListener("click", onClick, true);
+      window.removeEventListener("message", onMessage);
       document.removeEventListener("load", onScriptLoad, true);
       if (window.dataLayer) window.dataLayer.push = originalPush;
       if (window.erieProTrackConvertBoxEvent === track) delete window.erieProTrackConvertBoxEvent;
