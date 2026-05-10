@@ -1,3 +1,5 @@
+import { additionalNiches } from "./additional-niches";
+
 export interface LocalNiche {
   slug: string;
   label: string;
@@ -11,7 +13,7 @@ export interface LocalNiche {
   subscriberName: string | null;
 }
 
-export const niches: LocalNiche[] = [
+const baseNiches: LocalNiche[] = [
   { slug: "plumbing", label: "Plumbing", icon: "\uD83D\uDD27", description: "Emergency repairs, installations, drain cleaning, and water heater services", searchTerms: ["plumber", "plumbing", "drain", "water heater", "pipe repair"], avgProjectValue: "$150-$5,000", monthlyFee: 750, exclusiveAvailable: true, subscriberSlug: null, subscriberName: null },
   { slug: "hvac", label: "HVAC", icon: "\u2744\uFE0F", description: "Heating, cooling, ventilation, and air quality services", searchTerms: ["hvac", "heating", "cooling", "air conditioning", "furnace"], avgProjectValue: "$200-$10,000", monthlyFee: 750, exclusiveAvailable: true, subscriberSlug: null, subscriberName: null },
   { slug: "electrical", label: "Electrical", icon: "\u26A1", description: "Wiring, panel upgrades, lighting, and electrical repairs", searchTerms: ["electrician", "electrical", "wiring", "panel upgrade"], avgProjectValue: "$150-$8,000", monthlyFee: 700, exclusiveAvailable: true, subscriberSlug: null, subscriberName: null },
@@ -59,6 +61,8 @@ export const niches: LocalNiche[] = [
   { slug: "irrigation", label: "Irrigation & Sprinklers", icon: "\uD83D\uDCA7", description: "Sprinkler installation, irrigation repair, winterization", searchTerms: ["irrigation", "sprinkler", "sprinkler installation", "irrigation repair", "lawn sprinkler", "winterization"], avgProjectValue: "$200-$5,000", monthlyFee: 450, exclusiveAvailable: true, subscriberSlug: null, subscriberName: null },
   { slug: "demolition", label: "Demolition & Excavation", icon: "\uD83D\uDE9C", description: "Building demolition, site clearing, excavation", searchTerms: ["demolition", "excavation", "site clearing", "building demolition", "excavator", "demolition contractor"], avgProjectValue: "$2,000-$25,000", monthlyFee: 900, exclusiveAvailable: true, subscriberSlug: null, subscriberName: null },
 ];
+
+export const niches: LocalNiche[] = [...baseNiches, ...additionalNiches];
 
 export function getNicheBySlug(slug: string): LocalNiche | undefined {
   return niches.find(n => n.slug === slug);

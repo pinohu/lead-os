@@ -119,6 +119,8 @@ export default function LeadForm({ nicheSlug, nicheLabel, citySlug, cityName }: 
           message: formData.get("message"),
           niche: nicheSlug,
           city: citySlug,
+          sourcePage: window.location.href,
+          routingIntent: "general",
           tcpaConsent,
           tcpaConsentText: TCPA_TEXT,
         }),

@@ -8,6 +8,22 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import { sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
+import type { Prisma } from "@/generated/prisma";
+
+function getVerificationCodeSendAttempts(notificationPrefs: unknown): number {
+  if (!notificationPrefs || typeof notificationPrefs !== "object") return 0;
+  const value = (notificationPrefs as { verificationCodeSendAttempts?: unknown }).verificationCodeSendAttempts;
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+function withVerificationCodeSendAttempt(notificationPrefs: unknown): Prisma.InputJsonObject {
+  const base =
+    notificationPrefs && typeof notificationPrefs === "object" && !Array.isArray(notificationPrefs)
+      ? { ...(notificationPrefs as Record<string, unknown>) }
+      : {};
+  base.verificationCodeSendAttempts = getVerificationCodeSendAttempts(base) + 1;
+  return base as Prisma.InputJsonObject;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -39,10 +55,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Rate limit: max 5 code sends per provider
-    if (provider.verificationAttempts >= 10) {
+    // Rate limit code sends separately from code-entry attempts.
+    const sendAttempts = getVerificationCodeSendAttempts(provider.notificationPrefs);
+    if (sendAttempts >= 5) {
       return NextResponse.json(
-        { success: false, error: "Too many verification attempts. Contact support." },
+        { success: false, error: "Too many verification code sends. Contact support." },
         { status: 429 }
       );
     }
@@ -101,7 +118,8 @@ export async function POST(req: NextRequest) {
         verificationCode: code,
         verificationCodeExp: expiresAt,
         verificationStatus: "pending",
-        verificationAttempts: { increment: 1 },
+        verificationAttempts: 0,
+        notificationPrefs: withVerificationCodeSendAttempt(provider.notificationPrefs),
       },
     });
 

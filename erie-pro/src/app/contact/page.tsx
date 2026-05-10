@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import ContactForm from "@/components/contact-form"
+import { TrackedPhoneLink } from "@/components/tracked-phone-link"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -102,12 +103,14 @@ export default function ContactPage() {
                   <Phone className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                   <div>
                     <p className="text-sm font-medium">Phone</p>
-                    <a
-                      href="tel:+18142000328"
+                    <TrackedPhoneLink
+                      phone="+18142000328"
                       className="text-sm text-muted-foreground hover:text-primary"
+                      sourcePageType="contact_page"
+                      routingModel="general"
                     >
                       (814) 200-0328
-                    </a>
+                    </TrackedPhoneLink>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">

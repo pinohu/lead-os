@@ -30,8 +30,9 @@ import { Separator } from "@/components/ui/separator"
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: `Erie pros: exclusive local leads. No bidding. Ever.`,
+  title: "For Pros",
   description: `Become an ${cityConfig.name} pro on ${cityConfig.domain}. We find service requests across Craigslist, Facebook, Nextdoor, and direct inbound — then send one to one pro in your 30-mile zone. Founding members: $39/mo, locked for 24 months.`,
+  alternates: { canonical: `https://${cityConfig.domain}/pros` },
   openGraph: {
     title: `Erie pros: exclusive local leads. No bidding. Ever.`,
     description: `One request. One pro. No bidding. Founding-member rate: $39/mo for 24 months.`,

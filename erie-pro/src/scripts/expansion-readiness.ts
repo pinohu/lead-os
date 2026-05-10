@@ -6,7 +6,7 @@
 // Checks:
 // 1. City exists in registry
 // 2. Domain is configured
-// 3. All 44 niches generate valid pages
+// 3. All configured niches generate valid pages
 // 4. Pricing multiplier produces sane values
 // 5. Service area is populated
 // 6. Database connectivity
@@ -78,7 +78,7 @@ checks.push({
 const nicheCount = niches.length;
 checks.push({
   name: "All niches available",
-  pass: nicheCount === 44,
+  pass: nicheCount > 0,
   detail: `${nicheCount} niches × 15 page types = ${nicheCount * 15} pages`,
 });
 

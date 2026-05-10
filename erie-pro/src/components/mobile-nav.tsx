@@ -80,6 +80,22 @@ export function MobileNav() {
           </Link>
 
           <Link
+            href="/emergency"
+            onClick={close}
+            className="rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+          >
+            Emergency Services
+          </Link>
+
+          <Link
+            href="/pricing"
+            onClick={close}
+            className="rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+          >
+            Pricing Guides
+          </Link>
+
+          <Link
             href="/areas"
             onClick={close}
             className="rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
@@ -106,16 +122,16 @@ export function MobileNav() {
           <Separator className="my-2" />
 
           <Link
-            href="/for-business"
+            href="/pros"
             onClick={close}
             className="rounded-md px-3 py-2.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
-            For Businesses
+            For Pros
           </Link>
 
           <div className="mt-4 px-3">
             <Button asChild className="w-full" size="lg" onClick={close}>
-              <Link href="/#services">Get a Free Quote</Link>
+              <Link href="/get-matched">Get Matched Free</Link>
             </Button>
           </div>
         </nav>

@@ -127,6 +127,8 @@ export function HomepageLeadForm({ niches, citySlug, cityName }: HomepageLeadFor
           message: formData.get("message"),
           niche: selectedNiche,
           city: citySlug,
+          sourcePage: window.location.href,
+          routingIntent: "general",
           tcpaConsent,
           tcpaConsentText: TCPA_TEXT,
         }),

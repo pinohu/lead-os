@@ -7,14 +7,34 @@
 // Usage:
 //   npx tsx src/scripts/scrape-google-places.ts                      # All niches
 //   npx tsx src/scripts/scrape-google-places.ts --niche=plumbing     # Single niche
+//   npx tsx src/scripts/scrape-google-places.ts --niches=plumbing,hvac # Specific list
+//   npx tsx src/scripts/scrape-google-places.ts --new-only           # Newly added niches only
 //   npx tsx src/scripts/scrape-google-places.ts --refresh-older-than=30  # Refresh stale
+//   npx tsx src/scripts/scrape-google-places.ts --dry-run --niche=plumbing # Preview scrape
 
 import dotenv from "dotenv"
 dotenv.config({ path: ".env.local" })
 dotenv.config({ path: ".env" })
 
+function firstNonEmptyEnv(...names: string[]) {
+  for (const name of names) {
+    const value = process.env[name]?.trim()
+    if (value) return value
+  }
+  return ""
+}
+
+process.env.OUTSCRAPER_API_KEY = firstNonEmptyEnv(
+  "OUTSCRAPER_API_KEY",
+  "OUTSCRAPER_API_KEY_POLYCARPOHU",
+  "OUTSCRAPER_NEATCIRCLEMEDIA_API_KEY",
+  "OUTSCRAPER_X_API_KEY_1",
+  "OUTSCRAPER_X_API_KEY_2"
+)
+
 import { PrismaClient } from "../generated/prisma"
 import { PrismaPg } from "@prisma/adapter-pg"
+import { additionalNicheSlugs } from "../lib/additional-niches"
 import { niches } from "../lib/niches"
 import {
   searchPlaces,
@@ -51,10 +71,27 @@ const MAX_DISTANCE_KM = 40
 
 const args = process.argv.slice(2)
 const nicheFilter = args.find((a) => a.startsWith("--niche="))?.split("=")[1]
+const nicheListFilter = args
+  .find((a) => a.startsWith("--niches="))
+  ?.split("=")[1]
+  ?.split(",")
+  .map((slug) => slug.trim())
+  .filter(Boolean)
+const newOnly = args.includes("--new-only")
 const refreshOlderThan = parseInt(
   args.find((a) => a.startsWith("--refresh-older-than="))?.split("=")[1] ?? "0",
   10
 )
+const resultLimit = parseInt(
+  args.find((a) => a.startsWith("--limit="))?.split("=")[1] ?? "20",
+  10
+)
+const maxDistanceKm = parseInt(
+  args.find((a) => a.startsWith("--max-distance-km="))?.split("=")[1] ?? String(MAX_DISTANCE_KM),
+  10
+)
+const dryRun = args.includes("--dry-run")
+const skipReviews = args.includes("--skip-reviews")
 
 // ── Slug generation (mirrors directory-store.ts) ──────────────────
 
@@ -72,19 +109,30 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+function nicheScopedGooglePlaceId(placeId: string, nicheSlug: string) {
+  return `${placeId}:${nicheSlug}`
+}
+
 // ── Main ──────────────────────────────────────────────────────────
 
 async function main() {
   const targetNiches = nicheFilter
     ? niches.filter((n) => n.slug === nicheFilter)
-    : niches
+    : nicheListFilter?.length
+      ? niches.filter((n) => nicheListFilter.includes(n.slug))
+      : newOnly
+        ? niches.filter((n) => additionalNicheSlugs.includes(n.slug))
+        : niches
 
   if (targetNiches.length === 0) {
     console.error(`❌ Niche "${nicheFilter}" not found.`)
+    if (nicheListFilter?.length) console.error(`Niche list filter: ${nicheListFilter.join(", ")}`)
+    if (newOnly) console.error("New-only filter requested.")
     process.exit(1)
   }
 
   console.log(`\n🔍 Scraping ${targetNiches.length} niche(s) in Erie, PA via Outscraper\n`)
+  console.log(`Options: limit=${resultLimit}, maxDistanceKm=${maxDistanceKm}, dryRun=${dryRun}, skipReviews=${skipReviews}`)
 
   let totalCreated = 0
   let totalUpdated = 0
@@ -102,7 +150,7 @@ async function main() {
     ]
 
     // ── Step 1: Search (1 batched API call) ──────────────────────
-    let places = await searchPlaces(queries, 20)
+    let places = await searchPlaces(queries, resultLimit)
     totalApiCalls++
 
     console.log(`  Found ${places.length} unique places from ${queries.length} queries`)
@@ -112,7 +160,7 @@ async function main() {
     places = places.filter((place) => {
       if (place.latitude && place.longitude) {
         const dist = distanceKm(ERIE_LAT, ERIE_LNG, place.latitude, place.longitude)
-        if (dist > MAX_DISTANCE_KM) {
+        if (dist > maxDistanceKm) {
           filtered++
           return false
         }
@@ -121,7 +169,36 @@ async function main() {
     })
 
     if (filtered > 0) {
-      console.log(`  Filtered ${filtered} places beyond ${MAX_DISTANCE_KM}km`)
+      console.log(`  Filtered ${filtered} places beyond ${maxDistanceKm}km`)
+    }
+
+    if (niche.slug === "ev-charger-installation") {
+      const beforeEvIntentFilter = places.length
+      places = places.filter((place) => {
+        const text = [
+          place.name,
+          place.category,
+          place.subtypes,
+          place.description,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+
+        const isStationOnly =
+          text.includes("charging station") &&
+          !text.includes("electrician") &&
+          !text.includes("contractor") &&
+          !text.includes("installation") &&
+          !text.includes("installer")
+
+        return !isStationOnly
+      })
+
+      const removedStationOnly = beforeEvIntentFilter - places.length
+      if (removedStationOnly > 0) {
+        console.log(`  Filtered ${removedStationOnly} EV charging-station-only results`)
+      }
     }
 
     // ── Step 3: Check freshness & upsert ─────────────────────────
@@ -131,8 +208,13 @@ async function main() {
     for (const place of places) {
       // If refreshing, skip recently scraped listings
       if (refreshOlderThan > 0) {
-        const existing = await prisma.directoryListing.findUnique({
-          where: { googlePlaceId: place.place_id },
+        const existing = await prisma.directoryListing.findFirst({
+          where: {
+            niche: niche.slug,
+            googlePlaceId: {
+              in: [place.place_id, nicheScopedGooglePlaceId(place.place_id, niche.slug)],
+            },
+          },
           select: { lastScrapedAt: true },
         })
         if (existing?.lastScrapedAt) {
@@ -149,9 +231,22 @@ async function main() {
         `${place.name}-${niche.slug}-${place.city ?? "erie"}`
       )
 
-      // Check if listing already exists
-      const existing = await prisma.directoryListing.findUnique({
-        where: { googlePlaceId: place.place_id },
+      if (dryRun) {
+        process.stdout.write(data.photoRefs?.length ? "p" : ".")
+        continue
+      }
+
+      // Check if this provider is already represented in this service directory.
+      // The same real business can appear in multiple service directories; when a
+      // Google place id is already owned by another niche, store a niche-scoped id.
+      const googlePlaceId = nicheScopedGooglePlaceId(place.place_id, niche.slug)
+      const existing = await prisma.directoryListing.findFirst({
+        where: {
+          niche: niche.slug,
+          googlePlaceId: {
+            in: [place.place_id, googlePlaceId],
+          },
+        },
       })
 
       if (existing) {
@@ -195,10 +290,15 @@ async function main() {
           finalSlug = `${slug}-${attempt}`
         }
 
+        const exactPlaceIdOwner = await prisma.directoryListing.findUnique({
+          where: { googlePlaceId: place.place_id },
+          select: { niche: true },
+        })
+
         await prisma.directoryListing.create({
           data: {
             slug: finalSlug,
-            googlePlaceId: place.place_id,
+            googlePlaceId: exactPlaceIdOwner ? googlePlaceId : place.place_id,
             businessName: data.businessName,
             niche: niche.slug,
             phone: data.phone,
@@ -234,7 +334,7 @@ async function main() {
       .filter((p) => (p.reviews ?? 0) > 0)
       .map((p) => p.place_id)
 
-    if (placeIdsForReviews.length > 0) {
+    if (!dryRun && !skipReviews && placeIdsForReviews.length > 0) {
       console.log(`\n  Fetching reviews for ${placeIdsForReviews.length} places...`)
       try {
         const reviewsMap = await getReviews(placeIdsForReviews, 5)
@@ -256,7 +356,12 @@ async function main() {
 
           if (cleanReviews.length > 0) {
             await prisma.directoryListing.updateMany({
-              where: { googlePlaceId: placeId },
+              where: {
+                OR: [
+                  { googlePlaceId: placeId },
+                  { googlePlaceId: { startsWith: `${placeId}:` } },
+                ],
+              },
               data: { reviewsJson: cleanReviews },
             })
             reviewsUpdated++

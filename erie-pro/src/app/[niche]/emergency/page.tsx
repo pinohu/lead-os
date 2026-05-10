@@ -2,6 +2,8 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { InternalLinks } from "@/components/internal-links"
+import { SeoLaunchEnhancement } from "@/components/seo-launch-enhancement"
+import { TrackedPhoneLink } from "@/components/tracked-phone-link"
 import {
   Siren,
   Phone,
@@ -338,10 +340,17 @@ export default async function NicheEmergencyPage({ params }: Props) {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <a href="tel:+18142000328">
+              <TrackedPhoneLink
+                phone="+18142000328"
+                serviceNiche={niche.slug}
+                serviceSlug={niche.slug}
+                sourcePageType="emergency_page"
+                keywordCluster={`emergency ${niche.label.toLowerCase()} erie pa`}
+                routingModel="general"
+              >
                 <Phone className="mr-2 h-4 w-4" />
                 Call (814) 200-0328
-              </a>
+              </TrackedPhoneLink>
             </Button>
             <p className="mt-2 text-sm text-muted-foreground">
               Or call your local emergency service provider directly.
@@ -349,6 +358,8 @@ export default async function NicheEmergencyPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      <SeoLaunchEnhancement nicheSlug={slug} nicheLabel={niche.label} pageType="emergency" />
 
       <InternalLinks niche={slug} currentPage="emergency" />
     </main>

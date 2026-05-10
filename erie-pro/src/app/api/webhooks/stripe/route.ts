@@ -4,6 +4,7 @@
 
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@/generated/prisma";
 import {
   constructWebhookEvent,
   handleStripeWebhook,
@@ -17,8 +18,28 @@ import { cityConfig } from "@/lib/city-config";
 import { activatePerks, deactivatePerks } from "@/lib/perk-manager";
 import { deliverBankedLeads } from "@/lib/lead-routing";
 import { audit } from "@/lib/audit-log";
+import { provisionProviderFulfillment } from "@/lib/provider-fulfillment";
+import {
+  inferProviderTierFromMonthlyFee,
+  type ProviderTier,
+} from "@/lib/premium-rewards";
 import { logger } from "@/lib/logger";
 import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
+
+function getVerificationCodeSendAttempts(notificationPrefs: unknown): number {
+  if (!notificationPrefs || typeof notificationPrefs !== "object") return 0;
+  const value = (notificationPrefs as { verificationCodeSendAttempts?: unknown }).verificationCodeSendAttempts;
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+function withVerificationCodeSendAttempt(notificationPrefs: unknown): Prisma.InputJsonObject {
+  const base =
+    notificationPrefs && typeof notificationPrefs === "object" && !Array.isArray(notificationPrefs)
+      ? { ...(notificationPrefs as Record<string, unknown>) }
+      : {};
+  base.verificationCodeSendAttempts = getVerificationCodeSendAttempts(base) + 1;
+  return base as Prisma.InputJsonObject;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -196,10 +217,10 @@ export async function POST(req: NextRequest) {
                 await activatePerks(
                   territory.niche,
                   territory.city,
-                  provider.id,
-                  provider.businessName,
-                  "standard"
-                );
+                provider.id,
+                provider.businessName,
+                "standard"
+              );
               }
 
               const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://erie.pro";
@@ -280,12 +301,23 @@ async function handleCheckoutCompleted(
 ): Promise<void> {
   const checkoutSession = await getCheckoutSession(stripeSessionId);
   if (!checkoutSession) return;
+  const checkoutServiceTier = inferProviderTierFromMonthlyFee(
+    getMonthlyFee(checkoutSession.niche),
+    checkoutSession.monthlyFee
+  );
 
   if (checkoutSession.sessionType === "territory_claim") {
     // 2.1: Find existing provider OR create one from checkout metadata
-    let provider = await prisma.provider.findFirst({
-      where: { email: checkoutSession.providerEmail },
-    });
+    let provider = checkoutSession.providerId
+      ? await prisma.provider.findUnique({ where: { id: checkoutSession.providerId } })
+      : null;
+
+    if (!provider) {
+      provider = await prisma.provider.findFirst({
+        where: { email: checkoutSession.providerEmail },
+        orderBy: { createdAt: "desc" },
+      });
+    }
 
     const isNewProvider = !provider;
 
@@ -331,6 +363,7 @@ async function handleCheckoutCompleted(
         where: { id: provider.id },
         data: {
           subscriptionStatus: "active",
+          monthlyFee: checkoutSession.monthlyFee ?? getMonthlyFee(checkoutSession.niche),
           stripeSubscriptionId: stripeSessionId,
           // 2.2: New providers start unverified
           ...(isNewProvider ? { emailVerified: false } : {}),
@@ -357,12 +390,39 @@ async function handleCheckoutCompleted(
           where: { id: existingUser.id },
           data: { providerId: provider.id },
         });
+      } else if (existingUser.providerId !== provider.id) {
+        const linkedProvider = await tx.provider.findUnique({
+          where: { id: existingUser.providerId },
+          select: { id: true, subscriptionStatus: true },
+        });
+        if (!linkedProvider || !["active", "past_due"].includes(linkedProvider.subscriptionStatus)) {
+          await tx.user.update({
+            where: { id: existingUser.id },
+            data: { providerId: provider.id },
+          });
+        } else {
+          await audit({
+            action: "provider.dashboard_link_conflict",
+            entityType: "provider",
+            entityId: provider.id,
+            providerId: provider.id,
+            metadata: {
+              existingProviderId: existingUser.providerId,
+              stripeEventId,
+              stripeSessionId,
+            },
+          });
+        }
       }
 
       // Mark checkout session as completed (inside transaction)
       await tx.checkoutSession.updateMany({
         where: { stripeSessionId },
-        data: { status: "completed", completedAt: new Date() },
+        data: {
+          providerId: provider.id,
+          status: "completed",
+          completedAt: new Date(),
+        },
       });
     });
 
@@ -383,13 +443,57 @@ async function handleCheckoutCompleted(
     // (external APIs, email sends) that shouldn't be in a DB transaction
 
     // Activate territory and perks
+    const existingActiveTerritory = await prisma.territory.findUnique({
+      where: {
+        niche_city: {
+          niche: checkoutSession.niche.toLowerCase(),
+          city: checkoutSession.city.toLowerCase(),
+        },
+      },
+    });
+    if (
+      existingActiveTerritory &&
+      !existingActiveTerritory.deactivatedAt &&
+      existingActiveTerritory.providerId !== provider.id
+    ) {
+      await audit({
+        action: "territory.claim_conflict",
+        entityType: "territory",
+        entityId: `${checkoutSession.niche}:${checkoutSession.city}`,
+        providerId: provider.id,
+        metadata: {
+          existingProviderId: existingActiveTerritory.providerId,
+          stripeEventId,
+          stripeSessionId,
+          serviceTier: checkoutServiceTier,
+        },
+      });
+      logger.warn("webhook/stripe", "Territory activation skipped because territory is already active", {
+        niche: checkoutSession.niche,
+        city: checkoutSession.city,
+        providerId: provider.id,
+        existingProviderId: existingActiveTerritory.providerId,
+      });
+      return;
+    }
+
     await activatePerks(
       checkoutSession.niche,
       checkoutSession.city,
       provider.id,
       provider.businessName,
-      "standard"
+      checkoutServiceTier
     );
+
+    const fulfillment = await provisionProviderFulfillment({
+      providerId: provider.id,
+      providerName: provider.businessName,
+      providerEmail: provider.email,
+      niche: checkoutSession.niche,
+      city: checkoutSession.city,
+      serviceTier: checkoutServiceTier,
+      monthlyFee: checkoutSession.monthlyFee ?? getMonthlyFee(checkoutSession.niche),
+    });
 
     // Deliver any banked leads to the new provider
     const actualDelivered = await deliverBankedLeads(
@@ -397,6 +501,13 @@ async function handleCheckoutCompleted(
       checkoutSession.city,
       provider.id
     );
+
+    if (provider.claimedListingId) {
+      await prisma.directoryListing.update({
+        where: { id: provider.claimedListingId },
+        data: { claimedByProviderId: provider.id },
+      });
+    }
 
     await audit({
       action: "territory.claimed",
@@ -407,6 +518,9 @@ async function handleCheckoutCompleted(
         niche: checkoutSession.niche,
         city: checkoutSession.city,
         bankedLeadsDelivered: actualDelivered,
+        serviceTier: checkoutServiceTier,
+        fulfillmentPlanId: fulfillment.planId,
+        fulfillmentPromiseCount: fulfillment.deliverables.length,
         stripeEventId,
       },
     });
@@ -445,7 +559,8 @@ async function handleCheckoutCompleted(
               verificationCode: code,
               verificationCodeExp: expiresAt,
               verificationStatus: "pending",
-              verificationAttempts: 1,
+              verificationAttempts: 0,
+              notificationPrefs: withVerificationCodeSendAttempt(provider.notificationPrefs),
             },
           });
           sendClaimVerificationCode(listing.email, listing.businessName, code, provider.businessName)

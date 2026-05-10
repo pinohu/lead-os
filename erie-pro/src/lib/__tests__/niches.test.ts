@@ -1,9 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { niches, getNicheBySlug } from "../niches";
+import { additionalNicheSlugs } from "../additional-niches";
+import { getGlossaryTerms } from "../glossary-data";
+import { getNicheContent } from "../niche-content";
+import { getSeasonalGuide } from "../seasonal-data";
 
 describe("niches", () => {
-  it("has exactly 44 niches", () => {
-    expect(niches.length).toBe(44);
+  it("has the base catalog plus all expansion niches", () => {
+    expect(additionalNicheSlugs.length).toBe(68);
+    expect(niches.length).toBe(112);
   });
 
   it("all niches have required fields", () => {
@@ -39,12 +44,42 @@ describe("niches", () => {
     expect(slugs).toContain("roofing");
     expect(slugs).toContain("dental");
     expect(slugs).toContain("legal");
+    expect(slugs).toContain("general-contractor");
+    expect(slugs).toContain("mold-remediation");
+    expect(slugs).toContain("marina-boat-winterization");
+    expect(slugs).toContain("senior-home-care");
   });
 
   it("monthly fees are in reasonable range", () => {
     for (const niche of niches) {
       expect(niche.monthlyFee).toBeGreaterThanOrEqual(200);
       expect(niche.monthlyFee).toBeLessThanOrEqual(2000);
+    }
+  });
+
+  it("registers every expansion niche in the main catalog", () => {
+    const slugs = new Set(niches.map((n) => n.slug));
+
+    for (const slug of additionalNicheSlugs) {
+      expect(slugs.has(slug)).toBe(true);
+    }
+  });
+
+  it("generates content resources for every niche", () => {
+    for (const niche of niches) {
+      const content = getNicheContent(niche.slug);
+
+      expect(content, niche.slug).toBeDefined();
+      expect(content!.faqItems.length, niche.slug).toBeGreaterThan(0);
+      expect(content!.blogTopics.length, niche.slug).toBeGreaterThan(0);
+      expect(content!.pricingRanges.length, niche.slug).toBeGreaterThan(0);
+    }
+  });
+
+  it("generates seasonal and glossary resources for every niche", () => {
+    for (const niche of niches) {
+      expect(getSeasonalGuide(niche.slug), niche.slug).toBeDefined();
+      expect(getGlossaryTerms(niche.slug).length, niche.slug).toBeGreaterThan(0);
     }
   });
 });

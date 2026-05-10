@@ -15,6 +15,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { InternalLinks } from "@/components/internal-links"
+import { SeoLaunchEnhancement } from "@/components/seo-launch-enhancement"
+import { TrackedPhoneLink } from "@/components/tracked-phone-link"
+import { getBestProviderPhoto, getProviderPhotoSrc } from "@/lib/provider-photos"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -272,10 +275,18 @@ export default async function NicheDirectoryPage({ params }: Props) {
                 "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
               ]
               const colorClass = colors[idx % colors.length]
+              const bestPhoto = getBestProviderPhoto(listing.photoRefs)
               return (
                 <Card key={listing.id} className="hover:border-primary/30 hover:shadow-sm transition-all">
                   <CardContent className="flex items-center gap-4 py-4">
                     <Avatar className={`h-12 w-12 ${colorClass}`}>
+                      {bestPhoto ? (
+                        <AvatarImage
+                          src={getProviderPhotoSrc(bestPhoto, 160)}
+                          alt={`${listing.businessName} photo`}
+                          className="object-cover"
+                        />
+                      ) : null}
                       <AvatarFallback className={`text-sm font-bold ${colorClass}`}>
                         {listing.businessName.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
@@ -315,13 +326,18 @@ export default async function NicheDirectoryPage({ params }: Props) {
                           </span>
                         )}
                         {listing.phone && (
-                          <a
-                            href={`tel:${listing.phone.replace(/\D/g, "")}`}
+                          <TrackedPhoneLink
+                            phone={listing.phone}
                             className="flex items-center gap-1 hover:text-primary"
+                            serviceNiche={niche.slug}
+                            serviceSlug={niche.slug}
+                            sourcePageType="directory_page"
+                            requestedProviderName={listing.businessName}
+                            requestedProviderSlug={listing.slug}
                           >
                             <Phone className="h-3.5 w-3.5" />
                             {listing.phone}
-                          </a>
+                          </TrackedPhoneLink>
                         )}
                         {todayHours && (
                           <span className="flex items-center gap-1">
@@ -583,6 +599,8 @@ export default async function NicheDirectoryPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      <SeoLaunchEnhancement nicheSlug={slug} nicheLabel={niche.label} pageType="directory" />
 
       <InternalLinks niche={slug} currentPage="directory" />
     </main>

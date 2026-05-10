@@ -3,6 +3,7 @@ import { niches } from "@/lib/niches"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+import { LeadDeliveryActions } from "./LeadDeliveryActions"
 
 export const dynamic = "force-dynamic"
 
@@ -95,6 +96,7 @@ export default async function LeadDetailPage({
   const nicheData = niches.find((n) => n.slug === lead.niche)
   const name =
     `${lead.firstName ?? ""} ${lead.lastName ?? ""}`.trim() || "Unknown"
+  const requestedProvider = lead.requestedProviderName || lead.requestedProviderSlug
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
@@ -310,6 +312,122 @@ export default async function LeadDetailPage({
               )}
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Provider-Specific Capture */}
+      <section className="mb-8 rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+        <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Provider-Specific Capture
+          </h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Use this when a customer asked for a specific business, such as AL&apos;s AUTO.
+          </p>
+        </div>
+        <div className="grid gap-4 p-6 sm:grid-cols-2">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Requested Provider
+            </p>
+            <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+              {requestedProvider ?? "--"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Delivery Status
+            </p>
+            <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+              {lead.providerDeliveryStatus.replaceAll("_", " ")}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Provider Phone
+            </p>
+            <p className="mt-1 text-sm text-gray-900 dark:text-white">
+              {lead.requestedProviderPhone ?? "--"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Provider Address
+            </p>
+            <p className="mt-1 text-sm text-gray-900 dark:text-white">
+              {lead.requestedProviderAddress ?? "--"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Source Page
+            </p>
+            <p className="mt-1 break-all text-sm text-gray-900 dark:text-white">
+              {lead.sourcePage ?? "--"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Delivered At
+            </p>
+            <p className="mt-1 text-sm text-gray-900 dark:text-white">
+              {lead.providerDeliveredAt ? formatDateTime(lead.providerDeliveredAt) : "--"}
+            </p>
+          </div>
+          <div className="sm:col-span-2">
+            <LeadDeliveryActions
+              leadId={lead.id}
+              requestedProviderName={lead.requestedProviderName}
+              defaultEmail={lead.routedTo?.email}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* External Sync */}
+      <section className="mb-8 rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+        <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            External Sync
+          </h2>
+        </div>
+        <div className="grid gap-4 p-6 sm:grid-cols-2">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Boost.space
+            </p>
+            <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+              {lead.boostspaceSyncStatus.replaceAll("_", " ")}
+            </p>
+            {lead.boostspaceSyncedAt && (
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Synced {formatDateTime(lead.boostspaceSyncedAt)}
+              </p>
+            )}
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              SuiteDash
+            </p>
+            <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
+              {lead.suitedashSyncStatus.replaceAll("_", " ")}
+            </p>
+            {lead.suitedashRecordId && (
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Record: {lead.suitedashRecordId}
+              </p>
+            )}
+          </div>
+          {lead.boostspaceLastError && (
+            <div className="sm:col-span-2">
+              <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                Last Sync Error
+              </p>
+              <p className="mt-1 whitespace-pre-wrap rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">
+                {lead.boostspaceLastError}
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

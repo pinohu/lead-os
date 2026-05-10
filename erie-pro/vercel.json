@@ -32,8 +32,7 @@
       "maxDuration": 30
     },
     "src/app/api/**/*.ts": {
-      "maxDuration": 10,
-      "memory": 256
+      "maxDuration": 10
     }
   },
   "crons": [

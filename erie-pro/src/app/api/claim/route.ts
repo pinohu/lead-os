@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createProvider } from "@/lib/provider-store";
 import {
   createTerritoryCheckoutSession,
-  getMonthlyFee,
+  getTieredMonthlyFee,
 } from "@/lib/stripe-integration";
 import { getNicheBySlug } from "@/lib/niches";
 import { cityConfig } from "@/lib/city-config";
@@ -65,6 +65,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const pendingClaim = await prisma.checkoutSession.findFirst({
+      where: {
+        sessionType: "territory_claim",
+        niche,
+        city: cityConfig.slug,
+        status: "pending",
+        expiresAt: { gt: new Date() },
+        providerEmail: { not: providerEmail },
+      },
+    });
+    if (pendingClaim) {
+      return NextResponse.json(
+        { success: false, error: "This territory is currently reserved by another checkout. Try again later or contact us about waitlist options." },
+        { status: 409 }
+      );
+    }
+
     // ── If claiming a listing, validate it exists and isn't already claimed ──
     let listing: { id: string; email: string | null; website: string | null; phone: string | null } | null = null;
     if (listingId) {
@@ -78,9 +95,13 @@ export async function POST(req: NextRequest) {
           { status: 404 }
         );
       }
-      // Check if listing is already claimed by another provider
+      // Check if listing is already claimed by a paid provider.
+      // Unpaid checkout attempts must not lock the real owner out.
       const alreadyClaimed = await prisma.provider.findFirst({
-        where: { claimedListingId: listingId, subscriptionStatus: { not: "cancelled" } },
+        where: {
+          claimedListingId: listingId,
+          subscriptionStatus: { in: ["active", "past_due"] },
+        },
       });
       if (alreadyClaimed) {
         return NextResponse.json(
@@ -123,9 +144,10 @@ export async function POST(req: NextRequest) {
       employeeCount: "1-5",
       license: license ?? undefined,
       insurance: true,
+      serviceTier: tier,
       tier: tier === "elite" ? "primary" : tier === "premium" ? "primary" : "primary",
       subscriptionStatus: "trial",
-      monthlyFee: getMonthlyFee(niche),
+      monthlyFee: getTieredMonthlyFee(niche, tier),
       totalLeads: 0,
       convertedLeads: 0,
       avgResponseTime: 0,
@@ -146,19 +168,14 @@ export async function POST(req: NextRequest) {
     });
 
     // ── Link the directory listing to this provider ──────────────
-    if (listing) {
-      await prisma.directoryListing.update({
-        where: { id: listing.id },
-        data: { claimedByProviderId: provider.id },
-      });
-    }
-
     // ── Create Stripe Checkout Session ────────────────────────────
     const checkout = await createTerritoryCheckoutSession(
       niche,
       cityConfig.slug,
       providerEmail,
-      providerName
+      providerName,
+      tier,
+      provider.id
     );
 
     return NextResponse.json({
@@ -168,6 +185,7 @@ export async function POST(req: NextRequest) {
       checkoutUrl: checkout.checkoutUrl,
       sessionId: checkout.sessionId,
       monthlyFee: checkout.monthlyFee,
+      serviceTier: tier,
     });
   } catch (err) {
     logger.error("/api/claim", "Error:", err);

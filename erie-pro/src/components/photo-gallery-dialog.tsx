@@ -48,6 +48,7 @@ export function PhotoGalleryDialog({
                 src={url}
                 alt={`${providerName} photo ${i + 2}`}
                 className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                decoding="async"
                 loading="lazy"
               />
               {i === previewPhotos.length - 1 && remaining > 0 && (
@@ -70,6 +71,8 @@ export function PhotoGalleryDialog({
                     src={url}
                     alt={`${providerName} photo ${i + 1}`}
                     className="max-h-[70vh] w-full rounded-md object-contain"
+                    decoding="async"
+                    loading={i === 0 ? "eager" : "lazy"}
                   />
                 </div>
               </CarouselItem>

@@ -5,6 +5,7 @@
 
 import { PrismaClient } from "@/generated/prisma";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { normalizePostgresSslMode } from "@/lib/db-url";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -18,7 +19,9 @@ function createPrismaClient(): PrismaClient {
     );
   }
 
-  const adapter = new PrismaPg({ connectionString });
+  const adapter = new PrismaPg({
+    connectionString: normalizePostgresSslMode(connectionString),
+  });
 
   return new PrismaClient({
     adapter,

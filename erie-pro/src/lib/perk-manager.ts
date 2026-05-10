@@ -3,7 +3,12 @@
 // Persistent via Prisma/Postgres. All functions are async.
 
 import { prisma } from "@/lib/db";
-import { TIER_BENEFITS, type ProviderTier } from "./premium-rewards";
+import {
+  inferProviderTierFromMonthlyFee,
+  TIER_BENEFITS,
+  type ProviderTier,
+} from "./premium-rewards";
+import { getNicheMonthlyFee } from "./niche-pricing";
 
 // ── Types ─────────────────────────────────────────────────────────
 
@@ -67,12 +72,6 @@ const EMPTY_PERKS: PerkSet = {
   priorityPlacement: false,
 };
 
-function mapMonthlyFeeToTier(monthlyFee: number): ProviderTier {
-  if (monthlyFee >= 800) return "elite";
-  if (monthlyFee >= 500) return "premium";
-  return "standard";
-}
-
 // ── Core Functions ────────────────────────────────────────────────
 
 export async function getPerkStatus(niche: string, city: string): Promise<PerkStatus> {
@@ -95,7 +94,10 @@ export async function getPerkStatus(niche: string, city: string): Promise<PerkSt
     };
   }
 
-  const tier = mapMonthlyFeeToTier(territory.provider.monthlyFee);
+  const tier = inferProviderTierFromMonthlyFee(
+    getNicheMonthlyFee(territory.niche),
+    territory.provider.monthlyFee
+  );
 
   return {
     niche,
@@ -200,7 +202,10 @@ export async function getAllActivePerks(): Promise<PerkStatus[]> {
   });
 
   return territories.map((t) => {
-    const tier = mapMonthlyFeeToTier(t.provider.monthlyFee);
+    const tier = inferProviderTierFromMonthlyFee(
+      getNicheMonthlyFee(t.niche),
+      t.provider.monthlyFee
+    );
     return {
       niche: t.niche,
       city: t.city,

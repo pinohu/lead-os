@@ -6,6 +6,8 @@ import Stripe from "stripe";
 import { prisma } from "@/lib/db";
 import { cityConfig } from "@/lib/city-config";
 import { logger } from "@/lib/logger";
+import { getNicheMonthlyFee } from "@/lib/niche-pricing";
+import { calculateMonthlyFee, type ProviderTier } from "@/lib/premium-rewards";
 
 // ── Public Interfaces ──────────────────────────────────────────────
 
@@ -14,6 +16,7 @@ export interface TerritoryCheckout {
   city: string;
   providerName: string;
   providerEmail: string;
+  serviceTier: ProviderTier;
   monthlyFee: number;
   checkoutUrl: string;
   sessionId: string;
@@ -31,20 +34,24 @@ const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY ?? "";
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET ?? "";
 const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL ?? `https://${cityConfig.domain}`;
 
-// Production guard: Stripe keys MUST be present when running in production.
-// Dry-run mode is NEVER allowed in production — it would silently skip real payments.
-if (process.env.NODE_ENV === "production" && !STRIPE_SECRET_KEY) {
-  throw new Error(
-    "[stripe-integration] STRIPE_SECRET_KEY is required in production. " +
-    "Set the STRIPE_SECRET_KEY environment variable to your Stripe secret key."
-  );
-}
-
+// Dry-run mode is only allowed outside production. Production payment operations
+// fail closed through requireStripe(), while read-only imports remain build-safe.
 const isProduction = process.env.NODE_ENV === "production";
-const isDryRun = isProduction ? false : !STRIPE_SECRET_KEY;
+const isDryRun = !isProduction && !STRIPE_SECRET_KEY;
 
 // Initialize Stripe SDK (only when key is set)
-const stripe = isDryRun ? null : new Stripe(STRIPE_SECRET_KEY);
+const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
+
+function requireStripe(): Stripe {
+  if (!stripe) {
+    throw new Error(
+      "[stripe-integration] STRIPE_SECRET_KEY is required for Stripe payment operations. " +
+      "Set the STRIPE_SECRET_KEY environment variable to your Stripe secret key."
+    );
+  }
+
+  return stripe;
+}
 
 // ── Niche pricing ──────────────────────────────────────────────────
 
@@ -103,7 +110,11 @@ const NICHE_PRICING: Record<string, number> = {
 };
 
 export function getMonthlyFee(niche: string): number {
-  return NICHE_PRICING[niche] ?? 400;
+  return getNicheMonthlyFee(niche);
+}
+
+export function getTieredMonthlyFee(niche: string, serviceTier: ProviderTier): number {
+  return calculateMonthlyFee(getMonthlyFee(niche), serviceTier);
 }
 
 // ── Core Functions ─────────────────────────────────────────────────
@@ -117,13 +128,16 @@ export async function createTerritoryCheckoutSession(
   niche: string,
   city: string,
   providerEmail: string,
-  providerName: string
+  providerName: string,
+  serviceTier: ProviderTier = "standard",
+  providerId?: string
 ): Promise<TerritoryCheckout> {
-  const monthlyFee = getMonthlyFee(niche);
+  const monthlyFee = getTieredMonthlyFee(niche, serviceTier);
 
-  if (!isDryRun && stripe) {
+  if (!isDryRun) {
+    const stripeClient = requireStripe();
     // Production: Real Stripe Checkout
-    const session = await stripe.checkout.sessions.create({
+    const session = await stripeClient.checkout.sessions.create({
       mode: "subscription",
       customer_email: providerEmail,
       line_items: [
@@ -142,7 +156,7 @@ export async function createTerritoryCheckoutSession(
       ],
       success_url: `${APP_DOMAIN}/for-business/claim/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${APP_DOMAIN}/for-business/claim?cancelled=true`,
-      metadata: { niche, city, providerName },
+      metadata: { niche, city, providerName, serviceTier, ...(providerId ? { providerId } : {}) },
     });
 
     // Store checkout session in DB
@@ -154,6 +168,7 @@ export async function createTerritoryCheckoutSession(
         city,
         providerEmail: providerEmail.toLowerCase(),
         providerName,
+        providerId,
         monthlyFee,
         status: "pending",
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
@@ -165,6 +180,7 @@ export async function createTerritoryCheckoutSession(
       city,
       providerName,
       providerEmail,
+      serviceTier,
       monthlyFee,
       checkoutUrl: session.url ?? `${APP_DOMAIN}/for-business/claim/success?session_id=${session.id}`,
       sessionId: session.id,
@@ -182,6 +198,7 @@ export async function createTerritoryCheckoutSession(
       city,
       providerEmail: providerEmail.toLowerCase(),
       providerName,
+      providerId,
       monthlyFee,
       status: "pending",
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
@@ -197,8 +214,9 @@ export async function createTerritoryCheckoutSession(
     city,
     providerName,
     providerEmail,
+    serviceTier,
     monthlyFee,
-    checkoutUrl: `${APP_DOMAIN}/for-business/claim/success?session_id=${sessionId}&niche=${niche}&city=${city}`,
+    checkoutUrl: `${APP_DOMAIN}/for-business/claim/success?session_id=${sessionId}&niche=${niche}&city=${city}&tier=${serviceTier}&fee=${monthlyFee}`,
     sessionId,
   };
 }
@@ -235,8 +253,9 @@ export async function createLeadPurchaseCheckout(
 ): Promise<LeadPurchaseCheckout> {
   const price = LEAD_PRICES[temperature];
 
-  if (!isDryRun && stripe) {
-    const session = await stripe.checkout.sessions.create({
+  if (!isDryRun) {
+    const stripeClient = requireStripe();
+    const session = await stripeClient.checkout.sessions.create({
       mode: "payment",
       customer_email: buyerEmail,
       line_items: [

@@ -102,6 +102,29 @@ export function calculateMonthlyFee(
   return Math.round(baseNicheFee * TIER_BENEFITS[tier].monthlyMultiplier);
 }
 
+export function inferProviderTierFromMonthlyFee(
+  baseNicheFee: number,
+  monthlyFee?: number | null
+): ProviderTier {
+  if (!monthlyFee || !Number.isFinite(monthlyFee) || baseNicheFee <= 0) {
+    return "standard";
+  }
+
+  let closestTier: ProviderTier = "standard";
+  let closestDelta = Number.POSITIVE_INFINITY;
+
+  for (const tier of TIER_ORDER) {
+    const expectedFee = calculateMonthlyFee(baseNicheFee, tier);
+    const delta = Math.abs(monthlyFee - expectedFee);
+    if (delta < closestDelta) {
+      closestTier = tier;
+      closestDelta = delta;
+    }
+  }
+
+  return closestTier;
+}
+
 export function getTierBenefits(tier: ProviderTier): TierBenefits {
   return TIER_BENEFITS[tier];
 }

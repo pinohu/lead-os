@@ -4,6 +4,8 @@
 // Accounts for lake effect snow, freeze-thaw cycles, humid summers, etc.
 // ────────────────────────────────────────────────────────────────────────────
 
+import { getNicheBySlug } from "./niches";
+
 export interface SeasonalTask {
   task: string;
   details: string;
@@ -1218,6 +1220,38 @@ export const SEASONAL_DATA: Record<string, SeasonalGuide> = {
   },
 };
 
+function makeGenericSeasonalGuide(slug: string): SeasonalGuide | undefined {
+  try {
+    const niche = getNicheBySlug(slug);
+    if (!niche) return undefined;
+    const label = niche.label.toLowerCase();
+    return {
+      spring: [
+        { task: `Inspect ${label} needs after winter`, details: `Check for damage, wear, safety issues, and service needs after Erie freeze-thaw cycles and lake-effect weather.`, urgency: "recommended" },
+        { task: "Request quotes before peak season", details: `Spring is a strong time to compare ${label} providers before schedules fill up.`, urgency: "recommended" },
+        { task: "Confirm licenses and insurance", details: "Ask providers for relevant licenses, insurance, references, and written scope before approving work.", urgency: "essential" },
+      ],
+      summer: [
+        { task: `Complete planned ${label} projects`, details: "Longer days and better weather make summer a useful window for larger projects, inspections, and follow-up work.", urgency: "recommended" },
+        { task: "Document work and warranties", details: "Save photos, invoices, warranty terms, and provider contact details for future reference.", urgency: "recommended" },
+        { task: "Watch for storm-related issues", details: "Summer storms can create urgent property and service needs across Erie County.", urgency: "optional" },
+      ],
+      fall: [
+        { task: `Prepare ${label} plans for winter`, details: "Address known issues before snow, ice, and freezing temperatures make service more urgent and scheduling harder.", urgency: "essential" },
+        { task: "Schedule preventive maintenance", details: "Preventive service in fall can reduce emergency calls and protect budgets during Erie winters.", urgency: "recommended" },
+        { task: "Review emergency contacts", details: "Keep your preferred provider's contact information available before winter storm season.", urgency: "optional" },
+      ],
+      winter: [
+        { task: "Handle urgent issues quickly", details: "Winter delays can make small problems more expensive, especially when snow, ice, or freezing temperatures are involved.", urgency: "essential" },
+        { task: "Plan spring projects", details: "Use winter to collect quotes, compare providers, and reserve spring availability.", urgency: "recommended" },
+        { task: "Save documentation for insurance or records", details: "Photos, estimates, and invoices help with claims, budgeting, and future provider handoffs.", urgency: "optional" },
+      ],
+    };
+  } catch {
+    return undefined;
+  }
+}
+
 export function getSeasonalGuide(slug: string): SeasonalGuide | undefined {
-  return SEASONAL_DATA[slug];
+  return SEASONAL_DATA[slug] ?? makeGenericSeasonalGuide(slug);
 }

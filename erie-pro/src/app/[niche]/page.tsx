@@ -28,6 +28,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { InternalLinks } from "@/components/internal-links"
+import { SeoLaunchEnhancement } from "@/components/seo-launch-enhancement"
 import { FeaturedProvider } from "@/components/featured-provider"
 import { getDirectoryListingsByNiche } from "@/lib/directory-store"
 import { getFeaturedProviderId } from "@/lib/perk-manager"
@@ -377,6 +378,8 @@ export default async function NichePage({ params }: Props) {
           __html: JSON.stringify(localSchema),
         }}
       />
+
+      <SeoLaunchEnhancement nicheSlug={niche.slug} nicheLabel={niche.label} pageType="core" />
 
       <InternalLinks niche={niche.slug} currentPage="" />
     </main>

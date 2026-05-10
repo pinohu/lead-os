@@ -123,10 +123,13 @@ export async function sendConsumerConfirmation(
   consumerName: string,
   niche: string,
   routedToProvider: string | null,
-  statusToken?: string
+  statusToken?: string,
+  options?: { requestedProviderName?: string | null }
 ): Promise<boolean> {
   const statusMessage = routedToProvider
     ? `Your request has been sent to <strong>${escapeHtml(routedToProvider)}</strong>, a verified ${escapeHtml(niche)} provider in ${cityConfig.name}. They will contact you shortly.`
+    : options?.requestedProviderName
+      ? `We received your request for <strong>${escapeHtml(options.requestedProviderName)}</strong>. Erie.pro will hold the request for provider follow-up. If the vehicle issue is urgent, please call the shop directly.`
     : `We&apos;re matching your request with a ${escapeHtml(niche)} provider in ${cityConfig.name}. You&apos;ll be contacted once a match is found.`;
 
   const statusLink = statusToken

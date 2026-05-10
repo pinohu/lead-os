@@ -5,7 +5,7 @@
 // To add a new city:
 // 1. Add a CityConfig entry to CITIES below
 // 2. Set CITY_SLUG=<slug> in the Vercel project env vars
-// 3. Deploy — all 44 niches × 15 page types are auto-generated
+// 3. Deploy — all configured niches and page types are auto-generated
 //
 // Pricing multiplier: 1.0 = base rate, 0.8 = 20% cheaper, 1.3 = 30% premium
 

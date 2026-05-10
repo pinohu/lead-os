@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { LocalSeoFooter } from "@/components/local-seo-footer"
 import { CookieBanner } from "@/components/cookie-banner"
+import { TrackedPhoneLink } from "@/components/tracked-phone-link"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -207,10 +208,21 @@ export default function RootLayout({
                     <NavigationMenuItem>
                       <NavigationMenuLink asChild>
                         <Link
-                          href="/about"
+                          href="/emergency"
                           className="inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
                         >
-                          About
+                          Emergency
+                        </Link>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+
+                    <NavigationMenuItem>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href="/pricing"
+                          className="inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                        >
+                          Pricing
                         </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
@@ -228,13 +240,16 @@ export default function RootLayout({
                 <ThemeToggle />
 
                 <Button asChild size="sm" className="ml-2">
-                  <Link href="/#get-matched">Get Matched Free</Link>
+                  <Link href="/get-matched">Get Matched Free</Link>
                 </Button>
               </div>
 
               {/* ── Mobile nav ──────────────────────────────── */}
               <div className="flex items-center gap-2 md:hidden">
                 <ThemeToggle />
+                <Button asChild size="sm" className="h-9 px-3 text-xs">
+                  <Link href="/get-matched">Get Matched</Link>
+                </Button>
                 <MobileNav />
               </div>
             </nav>
@@ -262,9 +277,14 @@ export default function RootLayout({
                   </p>
                   <div className="mt-4 space-y-1.5 text-sm text-muted-foreground">
                     <p>
-                      <a href="tel:+18142000328" className="hover:text-foreground transition-colors">
+                      <TrackedPhoneLink
+                        phone="+18142000328"
+                        className="hover:text-foreground transition-colors"
+                        sourcePageType="site_footer"
+                        routingModel="general"
+                      >
                         (814) 200-0328
-                      </a>
+                      </TrackedPhoneLink>
                     </p>
                     <p>
                       <a href={`mailto:hello@${cityConfig.domain}`} className="hover:text-foreground transition-colors">
@@ -272,12 +292,81 @@ export default function RootLayout({
                       </a>
                     </p>
                   </div>
+                  <nav aria-label="Company links" className="mt-4 space-y-2">
+                    <Link
+                      href="/about"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      About Erie.pro
+                    </Link>
+                    <Link
+                      href="/contact"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Contact
+                    </Link>
+                    <Link
+                      href="/privacy"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Privacy Policy
+                    </Link>
+                    <Link
+                      href="/terms"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Terms of Service
+                    </Link>
+                  </nav>
                 </div>
 
                 {/* Column 2: Services */}
                 <div>
-                  <h4 className="mb-3 text-sm font-semibold">Services</h4>
+                  <h4 className="mb-3 text-sm font-semibold">Find Local Help</h4>
                   <nav aria-label="Service links" className="space-y-2">
+                    <Link
+                      href="/get-matched"
+                      className="block text-sm font-medium text-primary transition-colors hover:text-primary/80"
+                    >
+                      Get Matched Free
+                    </Link>
+                    <Link
+                      href="/services"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Browse Services
+                    </Link>
+                    <Link
+                      href="/directory"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Erie Service Directory
+                    </Link>
+                    <Link
+                      href="/emergency"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Emergency Services
+                    </Link>
+                    <Link
+                      href="/pricing"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Pricing Guides
+                    </Link>
+                    <Link
+                      href="/areas"
+                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Areas Served
+                    </Link>
+                  </nav>
+                </div>
+
+                {/* Column 3: Top Services */}
+                <div>
+                  <h4 className="mb-3 text-sm font-semibold">Top Services</h4>
+                  <nav aria-label="Top service links" className="space-y-2">
                     {["plumbing", "hvac", "roofing", "electrical", "landscaping", "cleaning"].map((slug) => {
                       const niche = niches.find((n) => n.slug === slug)
                       return niche ? (
@@ -290,16 +379,10 @@ export default function RootLayout({
                         </Link>
                       ) : null
                     })}
-                    <Link
-                      href="/services"
-                      className="block text-sm font-medium text-primary transition-colors hover:text-primary/80"
-                    >
-                      View all {niches.length} services &rarr;
-                    </Link>
                   </nav>
                 </div>
 
-                {/* Column 3: For Pros */}
+                {/* Column 4: For Pros */}
                 <div>
                   <h4 className="mb-3 text-sm font-semibold">For Pros</h4>
                   <nav aria-label="Pro links" className="space-y-2">
@@ -330,36 +413,6 @@ export default function RootLayout({
                   </nav>
                 </div>
 
-                {/* Column 4: Company */}
-                <div>
-                  <h4 className="mb-3 text-sm font-semibold">Company</h4>
-                  <nav aria-label="Company links" className="space-y-2">
-                    <Link
-                      href="/about"
-                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      About
-                    </Link>
-                    <Link
-                      href="/contact"
-                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      Contact
-                    </Link>
-                    <Link
-                      href="/privacy"
-                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      Privacy Policy
-                    </Link>
-                    <Link
-                      href="/terms"
-                      className="block text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      Terms of Service
-                    </Link>
-                  </nav>
-                </div>
               </div>
 
               <Separator className="my-8" />

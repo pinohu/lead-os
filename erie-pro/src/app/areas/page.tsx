@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/breadcrumb"
 
 export const metadata: Metadata = {
-  title: `Service Areas — ${cityConfig.name} Metro | ${cityConfig.domain}`,
+  title: "Areas Served",
   description: `${cityConfig.domain} serves ${cityConfig.serviceArea.length} communities in the ${cityConfig.name}, ${cityConfig.stateCode} metro area. Find verified local professionals near you.`,
+  alternates: { canonical: `https://${cityConfig.domain}/areas` },
 }
 
 const AREA_DESCRIPTIONS: Record<string, string> = {

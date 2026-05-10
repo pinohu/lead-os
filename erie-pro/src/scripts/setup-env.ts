@@ -151,7 +151,7 @@ async function main() {
   if (finalEnv.STRIPE_SECRET_KEY) {
     console.log("\n🎯 Next steps:");
     console.log("   1. Run: npx tsx src/scripts/stripe-setup.ts");
-    console.log("      (Creates 44 products + 136 prices in Stripe)");
+    console.log("      (Creates products and tier prices for all configured niches in Stripe)");
     console.log("   2. For local webhook testing:");
     console.log("      stripe listen --forward-to localhost:3002/api/webhooks/stripe");
     console.log("   3. Copy the webhook signing secret to STRIPE_WEBHOOK_SECRET");

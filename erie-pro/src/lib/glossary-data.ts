@@ -4,6 +4,8 @@
 // Each term includes a definition useful for Erie, PA homeowners.
 // ────────────────────────────────────────────────────────────────────────────
 
+import { getNicheBySlug } from "./niches";
+
 export interface GlossaryTerm {
   term: string;
   definition: string;
@@ -764,6 +766,25 @@ export const GLOSSARY_DATA: Record<string, GlossaryTerm[]> = {
   ],
 };
 
+function makeGenericGlossaryTerms(slug: string): GlossaryTerm[] {
+  try {
+    const niche = getNicheBySlug(slug);
+    if (!niche) return [];
+    return [
+      { term: "Estimate", definition: `A written price range or quote for ${niche.label.toLowerCase()} work. Good estimates describe scope, materials, timing, exclusions, and payment terms.` },
+      { term: "Service Area", definition: "The neighborhoods, zip codes, and nearby communities a provider serves. Erie-area providers often cover Millcreek, Harborcreek, Fairview, Summit Township, and nearby Erie County towns." },
+      { term: "Licensed and Insured", definition: "A provider has the required trade or business credentials and insurance coverage for the work being performed. Requirements vary by service category." },
+      { term: "Warranty", definition: "A written promise covering workmanship, parts, materials, or service results for a stated period. Always confirm warranty terms before approving work." },
+      { term: "Emergency Service", definition: "A same-day or after-hours response for urgent issues that could cause damage, safety risks, lost access, or business interruption." },
+      { term: "Project Scope", definition: "The detailed list of tasks, materials, deliverables, deadlines, and assumptions included in the work. A clear scope helps prevent surprise costs." },
+      { term: "Lead Time", definition: "The time between requesting service and the provider starting work. Seasonal Erie demand can make lead times longer for popular categories." },
+      { term: "Preventive Maintenance", definition: "Routine service intended to catch small issues early and reduce emergency repairs, callbacks, or avoidable failures." },
+    ];
+  } catch {
+    return [];
+  }
+}
+
 export function getGlossaryTerms(slug: string): GlossaryTerm[] {
-  return GLOSSARY_DATA[slug] ?? [];
+  return GLOSSARY_DATA[slug] ?? makeGenericGlossaryTerms(slug);
 }

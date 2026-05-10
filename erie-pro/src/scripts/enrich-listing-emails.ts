@@ -14,6 +14,7 @@ dotenv.config({ path: ".env" })
 
 import { PrismaClient } from "../generated/prisma"
 import { PrismaPg } from "@prisma/adapter-pg"
+import { getOutscraperApiKey } from "../lib/outscraper"
 import Outscraper from "outscraper"
 
 // ── DB setup ──────────────────────────────────────────────────────
@@ -26,14 +27,16 @@ if (!connectionString) {
   process.exit(1)
 }
 
-if (!process.env.OUTSCRAPER_API_KEY) {
+const outscraperApiKey = getOutscraperApiKey()
+
+if (!outscraperApiKey) {
   console.error("❌ OUTSCRAPER_API_KEY is not set.")
   process.exit(1)
 }
 
 const adapter = new PrismaPg({ connectionString })
 const prisma = new PrismaClient({ adapter }) as unknown as PrismaClient
-const client = new Outscraper(process.env.OUTSCRAPER_API_KEY)
+const client = new Outscraper(outscraperApiKey)
 
 // ── CLI args ──────────────────────────────────────────────────────
 

@@ -8,6 +8,7 @@ import { getNicheBySlug } from "@/lib/niches";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import VerificationCodeForm from "./verification-code-form";
+import SendVerificationCodeButton from "./send-verification-code-button";
 
 export const dynamic = "force-dynamic";
 
@@ -81,14 +82,7 @@ export default async function DashboardPage() {
               <p className="mt-1 text-sm text-amber-800 dark:text-amber-300">
                 Leads are held until you verify ownership of your business. Click below to receive a verification code.
               </p>
-              <form action="/api/verify-claim/send" method="POST" className="mt-3">
-                <button
-                  type="submit"
-                  className="inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-500"
-                >
-                  Send Verification Code
-                </button>
-              </form>
+              <SendVerificationCodeButton className="mt-3 inline-flex items-center rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-60" />
             </div>
           </div>
         </div>
@@ -106,9 +100,10 @@ export default async function DashboardPage() {
               <VerificationCodeForm />
               <p className="mt-2 text-xs text-blue-600 dark:text-blue-400">
                 Didn&apos;t receive it?{" "}
-                <form action="/api/verify-claim/send" method="POST" className="inline">
-                  <button type="submit" className="underline hover:no-underline">Resend code</button>
-                </form>
+                <SendVerificationCodeButton
+                  label="Resend code"
+                  className="inline underline hover:no-underline disabled:cursor-not-allowed disabled:opacity-60"
+                />
               </p>
             </div>
           </div>

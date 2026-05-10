@@ -17,7 +17,10 @@ export const RATE_LIMITS = {
   claim: { limit: 3, windowSeconds: 3600 } as RateLimitConfig,
   contact: { limit: 5, windowSeconds: 60 } as RateLimitConfig,
   leadPurchase: { limit: 10, windowSeconds: 60 } as RateLimitConfig,
+  "lead-event": { limit: 60, windowSeconds: 60 } as RateLimitConfig,
+  "call-event": { limit: 120, windowSeconds: 60 } as RateLimitConfig,
   "places-photo": { limit: 100, windowSeconds: 60 } as RateLimitConfig,
+  "provider-image": { limit: 200, windowSeconds: 60 } as RateLimitConfig,
 } as const;
 
 // ── Postgres Rate Limiting (via Prisma) ─────────────────────────────

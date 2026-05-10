@@ -6,6 +6,7 @@
 
 import Outscraper from "outscraper"
 import { normalizePhone, distanceKm } from "./google-places"
+import { cleanProviderPhotoRefs } from "./provider-photos"
 
 // Re-export utilities used by the scraper script
 export { normalizePhone, distanceKm }
@@ -37,6 +38,10 @@ export interface OutscraperPlace {
   logo: string | null
   street_view: string | null
   photo: string | null            // main photo URL
+  photo_url?: string | null
+  photos?: string[] | null
+  photos_sample?: string[] | null
+  site_photos?: string[] | null
   photos_count: number | null
   business_status: string | null
   // Reviews data (when fetched via googleMapsReviews)
@@ -55,9 +60,26 @@ export interface OutscraperReview {
 
 let _client: InstanceType<typeof Outscraper> | null = null
 
+export function getOutscraperApiKey(): string {
+  const envNames = [
+    "OUTSCRAPER_API_KEY",
+    "OUTSCRAPER_API_KEY_POLYCARPOHU",
+    "OUTSCRAPER_NEATCIRCLEMEDIA_API_KEY",
+    "OUTSCRAPER_X_API_KEY_1",
+    "OUTSCRAPER_X_API_KEY_2",
+  ]
+
+  for (const name of envNames) {
+    const value = process.env[name]?.trim()
+    if (value) return value
+  }
+
+  return ""
+}
+
 function getClient(): InstanceType<typeof Outscraper> {
   if (!_client) {
-    const key = process.env.OUTSCRAPER_API_KEY
+    const key = getOutscraperApiKey()
     if (!key) throw new Error("OUTSCRAPER_API_KEY is not set")
     _client = new Outscraper(key)
   }
@@ -170,10 +192,15 @@ export function mapToDirectoryListing(
   place: OutscraperPlace,
   niche: string
 ): UpsertDirectoryListingInput {
-  const photoRefs: string[] = []
-  if (place.photo) photoRefs.push(place.photo)
-  if (place.logo) photoRefs.push(place.logo)
-  if (place.street_view) photoRefs.push(place.street_view)
+  const photoRefs = cleanProviderPhotoRefs([
+    place.photo,
+    place.photo_url,
+    ...(Array.isArray(place.photos) ? place.photos : []),
+    ...(Array.isArray(place.photos_sample) ? place.photos_sample : []),
+    ...(Array.isArray(place.site_photos) ? place.site_photos : []),
+    place.logo,
+    place.street_view,
+  ])
 
   // Parse subtypes: Outscraper returns comma-separated string
   const categories = place.subtypes

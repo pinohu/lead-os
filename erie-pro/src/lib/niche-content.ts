@@ -4,6 +4,9 @@
 // per niche. Replaces hardcoded strings throughout the app.
 // ────────────────────────────────────────────────────────────────────────────
 
+import { cityConfig } from "./city-config";
+import { getNicheBySlug, niches } from "./niches";
+
 export interface NicheFaqItem {
   question: string;
   answer: string;
@@ -64,6 +67,120 @@ export interface LocalNicheContent {
 // ────────────────────────────────────────────────────────────────────────────
 // All niches with comprehensive Erie, PA specific content (see niches.ts for count)
 // ────────────────────────────────────────────────────────────────────────────
+
+function pluralizeLabel(label: string): string {
+  if (/\bServices?\s*$/i.test(label)) return label;
+  if (/y$/i.test(label)) return `${label.slice(0, -1)}ies`;
+  if (/s$/i.test(label)) return label;
+  return `${label} Pros`;
+}
+
+function makeGenericNicheContent(slug: string): LocalNicheContent | undefined {
+  try {
+    const niche = getNicheBySlug(slug);
+    if (!niche) return undefined;
+
+    const lowerLabel = niche.label.toLowerCase();
+    const pluralLabel = pluralizeLabel(niche.label);
+    const serviceLabel = /\bServices?\s*$/i.test(niche.label)
+      ? lowerLabel
+      : `${lowerLabel} services`;
+    const city = `${cityConfig.name}, ${cityConfig.stateCode}`;
+
+    return {
+      slug,
+      label: niche.label,
+      pluralLabel,
+      serviceLabel,
+      heroHeadline: `Find ${niche.label} in ${city}`,
+      heroSubheadline: `Compare local ${pluralLabel.toLowerCase()} serving ${cityConfig.name} and the surrounding Erie County communities. Get fast quotes from local providers.`,
+      metaTitle: `${niche.label} in ${city} | ${cityConfig.domain}`,
+      metaDescription: `Find trusted ${serviceLabel} in ${city}. Compare local providers, read reviews, and request a free quote.`,
+      primaryKeywords: [
+        `${lowerLabel} ${cityConfig.name.toLowerCase()} pa`,
+        `${serviceLabel} ${cityConfig.name.toLowerCase()}`,
+        `${lowerLabel} near me`,
+        `${lowerLabel} ${cityConfig.stateCode.toLowerCase()}`,
+      ],
+      secondaryKeywords: niche.searchTerms.flatMap((term) => [
+        `${term} ${cityConfig.name}`,
+        `${term} near ${cityConfig.name}`,
+      ]),
+      aboutDescription: `${niche.description}. ${cityConfig.name} residents and local businesses can use ${cityConfig.domain} to compare providers, request quotes, and find service teams familiar with local neighborhoods, weather patterns, and permitting expectations.`,
+      commonServices: niche.searchTerms.slice(0, 6).map((term) => `${term.charAt(0).toUpperCase()}${term.slice(1)} service`),
+      faqItems: [
+        {
+          question: `How do I choose a ${lowerLabel} provider in ${cityConfig.name}?`,
+          answer: `Compare licensing, insurance, reviews, response time, and experience with Erie-area projects. Request a clear scope, timeline, and written estimate before approving work.`,
+        },
+        {
+          question: `How much does ${serviceLabel} cost in ${cityConfig.name}?`,
+          answer: `Typical projects range from ${niche.avgProjectValue}. Final pricing depends on urgency, scope, materials, access, and whether permits or specialty equipment are required.`,
+        },
+        {
+          question: `Can I get multiple ${lowerLabel} quotes?`,
+          answer: `Yes. Submit one request and ${cityConfig.domain} routes it to relevant local providers so you can compare availability, pricing, and fit.`,
+        },
+        {
+          question: `Do ${pluralLabel.toLowerCase()} serve nearby communities?`,
+          answer: `Most Erie providers also serve Millcreek, Harborcreek, Fairview, Summit Township, North East, Edinboro, Girard, and nearby Erie County communities.`,
+        },
+      ],
+      blogTopics: [
+        `How to choose ${serviceLabel} in ${cityConfig.name}`,
+        `${niche.label} cost guide for Erie County`,
+        `Questions to ask before hiring ${pluralLabel.toLowerCase()}`,
+        `Seasonal ${lowerLabel} planning tips for Erie homeowners`,
+      ],
+      guideTopics: [
+        `Complete guide to ${serviceLabel} in ${cityConfig.name}`,
+        `${niche.label} pricing and project planning guide`,
+        `How to compare ${pluralLabel.toLowerCase()} in Erie County`,
+      ],
+      comparisonPoints: [
+        "Local licensing, insurance, and trade credentials",
+        "Verified customer reviews and recent project examples",
+        "Response time for urgent requests",
+        "Clear written estimates and warranty terms",
+        "Experience serving Erie County neighborhoods",
+      ],
+      certifications: [
+        "Pennsylvania business registration or applicable professional license",
+        "General liability insurance",
+        "Workers' compensation coverage where required",
+        "Manufacturer or trade certifications where applicable",
+      ],
+      trustSignals: [
+        "Local Erie-area provider",
+        "Reviews and references available",
+        "Clear written estimate",
+        "Licensed and insured where required",
+      ],
+      pricingRanges: [
+        { service: "Basic service request", range: `${niche.avgProjectValue.split("-")[0]}+` },
+        { service: "Typical project range", range: niche.avgProjectValue },
+        { service: "Urgent or specialty work", range: "Varies by scope and availability" },
+      ],
+      emergencyServices: [
+        `Urgent ${lowerLabel} request`,
+        "Same-day availability check",
+        "Damage prevention and temporary stabilization",
+      ],
+      seasonalTips: [
+        `Spring: Inspect and plan ${serviceLabel} before peak contractor schedules fill up`,
+        `Summer: Complete outdoor or weather-sensitive ${lowerLabel} work while conditions are favorable`,
+        `Fall: Prepare for Erie winter conditions and schedule preventive service`,
+        `Winter: Address urgent issues quickly and plan larger spring projects early`,
+      ],
+      ctaPrimary: `Get a Free ${niche.label} Quote`,
+      ctaSecondary: `Compare ${pluralLabel}`,
+      quoteFormTitle: `Get Your Free ${niche.label} Quote`,
+      quoteFormDescription: `Tell us what you need and we will connect you with local ${pluralLabel.toLowerCase()} serving ${cityConfig.name}.`,
+    };
+  } catch {
+    return undefined;
+  }
+}
 
 export const NICHE_CONTENT: Record<string, LocalNicheContent> = {
   // ── Plumbing ─────────────────────────────────────────────────────────────
@@ -3253,7 +3370,7 @@ export const NICHE_CONTENT: Record<string, LocalNicheContent> = {
  * Replaces hardcoded "erie.pro" in meta titles/descriptions with the active domain.
  */
 export function getNicheContent(slug: string): LocalNicheContent | undefined {
-  const content = NICHE_CONTENT[slug];
+  const content = NICHE_CONTENT[slug] ?? makeGenericNicheContent(slug);
   if (!content) return undefined;
 
   // Lazy-load cityConfig to avoid circular imports at module init
@@ -3277,21 +3394,13 @@ export function getNicheContent(slug: string): LocalNicheContent | undefined {
  * Get all niche slugs for static params generation.
  */
 export function getAllNicheSlugs(): string[] {
-  // Return ALL niche slugs from niches.ts (source of truth),
-  // not just the ones with content entries. Pages that need content should
-  // call getNicheContent() and handle undefined gracefully.
-  try {
-    const { niches } = require("./niches");
-    return niches.map((n: { slug: string }) => n.slug);
-  } catch {
-    return Object.keys(NICHE_CONTENT);
-  }
+  return niches.map((niche) => niche.slug);
 }
 
 /**
  * Check if a niche has emergency services.
  */
 export function hasEmergencyServices(slug: string): boolean {
-  const content = NICHE_CONTENT[slug];
+  const content = getNicheContent(slug);
   return !!content && content.emergencyServices.length > 0;
 }

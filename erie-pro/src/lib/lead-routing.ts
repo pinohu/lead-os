@@ -296,6 +296,18 @@ export async function routeLead(
       statusToken,
       source: (leadData.source as string) ?? "erie-pro",
       deliverAt: deliverAt ?? undefined,
+      requestedProviderName: (leadData.requestedProviderName as string) ?? null,
+      requestedProviderSlug: (leadData.requestedProviderSlug as string) ?? null,
+      requestedProviderPhone: (leadData.requestedProviderPhone as string) ?? null,
+      requestedProviderAddress: (leadData.requestedProviderAddress as string) ?? null,
+      sourcePage: (leadData.sourcePage as string) ?? null,
+      routingIntent: (leadData.routingIntent as string) ?? "general",
+      providerDeliveryStatus: leadData.requestedProviderName
+        ? routedToId
+          ? "delivered"
+          : "pending_provider_delivery"
+        : "not_applicable",
+      providerDeliveredAt: leadData.requestedProviderName && routedToId ? now : null,
       tcpaConsent: (leadData.tcpaConsent as boolean) ?? false,
       tcpaConsentText: (leadData.tcpaConsentText as string) ?? null,
       tcpaIpAddress: (leadData.tcpaIpAddress as string) ?? null,

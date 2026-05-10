@@ -30,7 +30,15 @@ interface SessionData {
   providerEmail: string;
   tier: string;
   monthlyFee: number;
+  status?: "pending" | "completed" | "expired" | "cancelled";
   bankedLeadsDelivered?: number;
+  fulfillmentPromiseCount?: number;
+  fulfillmentPromises?: Array<{
+    id: string;
+    label: string;
+    cadence: string;
+    status: string;
+  }>;
 }
 
 export default function ClaimSuccessPage() {
@@ -95,6 +103,8 @@ export default function ClaimSuccessPage() {
     );
   }
 
+  const isCompleted = session?.status === "completed";
+
   if (error) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
@@ -125,16 +135,28 @@ export default function ClaimSuccessPage() {
         </div>
         <Badge variant="secondary" className="mb-4">
           <Shield className="mr-1.5 h-3 w-3" />
-          Territory Secured
+          {isCompleted ? "Territory Secured" : "Payment Processing"}
         </Badge>
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          Welcome to {cityConfig.name}&apos;s{" "}
-          <span className="capitalize">{session?.nicheLabel}</span> Territory!
+          {isCompleted ? (
+            <>
+              Welcome to {cityConfig.name}&apos;s{" "}
+              <span className="capitalize">{session?.nicheLabel}</span> Territory!
+            </>
+          ) : (
+            "We are confirming your payment"
+          )}
         </h1>
         <p className="mt-3 text-lg text-muted-foreground">
-          Your exclusive territory is now active. You&apos;re the only{" "}
-          <span className="lowercase">{session?.nicheLabel}</span> provider
-          receiving leads from {cityConfig.name}.
+          {isCompleted ? (
+            <>
+              Your exclusive territory is now active. You&apos;re the only{" "}
+              <span className="lowercase">{session?.nicheLabel}</span> provider
+              receiving leads from {cityConfig.name}.
+            </>
+          ) : (
+            "Your claim has been received, but we will only activate the territory after Stripe confirms payment."
+          )}
         </p>
       </div>
 
@@ -207,9 +229,9 @@ export default function ClaimSuccessPage() {
       {/* What Happens Next */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>What Happens Next</CardTitle>
+          <CardTitle>Provisioning Is Automatic</CardTitle>
           <CardDescription>
-            Your territory is live. Here&apos;s what to expect:
+            Your territory is live and your tier promises are tracked from the fulfillment ledger.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -224,8 +246,7 @@ export default function ClaimSuccessPage() {
                   Confirmation Email
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  You&apos;ll receive a confirmation email with your account
-                  details and next steps.
+                  You&apos;ll receive a confirmation email with your account details, verification flow, and dashboard access.
                 </p>
               </div>
             </li>
@@ -253,26 +274,45 @@ export default function ClaimSuccessPage() {
               <div>
                 <p className="font-medium flex items-center gap-2">
                   <Clock className="h-4 w-4 text-muted-foreground" />
-                  Respond Quickly
+                  Fulfillment Tracking
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Respond to leads within 90 seconds for the best conversion
-                  rates. Your dashboard will track response times and outcomes.
+                  {session?.fulfillmentPromiseCount ?? "All"} tier promises are provisioned with evidence, cadence, and acceptance checks.
                 </p>
               </div>
             </li>
           </ol>
+          {session?.fulfillmentPromises?.length ? (
+            <div className="mt-6 rounded-lg border bg-muted/30 p-4">
+              <p className="mb-3 text-sm font-medium">Active deliverables</p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {session.fulfillmentPromises.slice(0, 8).map((promise) => (
+                  <div key={promise.id} className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-primary" />
+                    <span>{promise.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </CardContent>
       </Card>
 
       {/* CTA */}
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Button asChild size="lg" className="flex-1">
-          <Link href="/dashboard">
-            Go to Provider Dashboard
+        {isCompleted ? (
+          <Button asChild size="lg" className="flex-1">
+            <Link href="/dashboard">
+              Go to Provider Dashboard
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        ) : (
+          <Button size="lg" className="flex-1" disabled>
+            Dashboard unlocks after payment
             <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
+          </Button>
+        )}
         <Button asChild variant="outline" size="lg" className="flex-1">
           <Link href={`/${session?.niche ?? ""}/directory`}>
             View Your Directory Listing

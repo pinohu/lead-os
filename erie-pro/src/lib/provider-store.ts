@@ -8,6 +8,11 @@ import type {
   ProviderTier,
   SubscriptionStatus,
 } from "@/generated/prisma";
+import {
+  inferProviderTierFromMonthlyFee,
+  type ProviderTier as PublicProviderTier,
+} from "./premium-rewards";
+import { getNicheMonthlyFee } from "./niche-pricing";
 
 // ── Public Interface ───────────────────────────────────────────────
 // Kept for backward compatibility — maps Prisma model to the shape
@@ -30,7 +35,8 @@ export interface ProviderProfile {
   license?: string;
   insurance: boolean;
   tier: "primary" | "backup" | "overflow";
-  subscriptionStatus: "active" | "trial" | "expired" | "cancelled";
+  serviceTier: PublicProviderTier;
+  subscriptionStatus: "active" | "trial" | "past_due" | "expired" | "cancelled";
   monthlyFee: number;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
@@ -40,6 +46,7 @@ export interface ProviderProfile {
   avgRating: number;
   reviewCount: number;
   photoUrl?: string;
+  coverPhotoUrl?: string;
   claimedAt: string;
   lastLeadAt?: string;
 }
@@ -69,6 +76,7 @@ function toProfile(p: PrismaProvider): ProviderProfile {
     license: p.license ?? undefined,
     insurance: p.insurance,
     tier: p.tier as ProviderProfile["tier"],
+    serviceTier: inferProviderTierFromMonthlyFee(getNicheMonthlyFee(p.niche), p.monthlyFee),
     subscriptionStatus: p.subscriptionStatus as ProviderProfile["subscriptionStatus"],
     monthlyFee: p.monthlyFee,
     stripeCustomerId: p.stripeCustomerId ?? undefined,
@@ -79,6 +87,7 @@ function toProfile(p: PrismaProvider): ProviderProfile {
     avgRating: p.avgRating,
     reviewCount: p.reviewCount,
     photoUrl: p.photoUrl ?? undefined,
+    coverPhotoUrl: p.coverPhotoUrl ?? undefined,
     claimedAt: p.claimedAt.toISOString(),
     lastLeadAt: p.lastLeadAt?.toISOString(),
   };
@@ -140,7 +149,14 @@ export async function getActiveProviders(): Promise<ProviderProfile[]> {
 export async function createProvider(
   data: Omit<ProviderProfile, "id" | "claimedAt">
 ): Promise<ProviderProfile> {
-  const slug = data.slug || slugify(data.businessName, data.city);
+  const baseSlug = data.slug || slugify(data.businessName, data.city);
+  let slug = baseSlug;
+  let attempt = 0;
+
+  while (await prisma.provider.findUnique({ where: { slug } })) {
+    attempt += 1;
+    slug = `${baseSlug}-${attempt}`;
+  }
 
   const p = await prisma.provider.create({
     data: {

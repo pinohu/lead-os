@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2 } from "lucide-react";
 
+const TCPA_TEXT =
+  "By submitting this form, I consent to be contacted by phone, text message, or email by Erie.pro and the requested service provider regarding my service request. I understand that message and data rates may apply for text messages and I can opt out at any time."
+
 // ── Validation helpers ──────────────────────────────────────────────
 function isValidEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
@@ -30,6 +33,7 @@ interface FieldErrors {
 interface ContactFormProps {
   /** Optional hidden fields */
   nicheSlug?: string;
+  providerName?: string;
   providerSlug?: string;
   citySlug?: string;
   /** When set, this form is on an unclaimed directory listing page */
@@ -42,6 +46,7 @@ interface ContactFormProps {
 
 export default function ContactForm({
   nicheSlug,
+  providerName,
   providerSlug,
   citySlug,
   listingId,
@@ -52,8 +57,10 @@ export default function ContactForm({
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [phoneDisplay, setPhoneDisplay] = useState("");
+  const [tcpaConsent, setTcpaConsent] = useState(false);
   const [canResubmit, setCanResubmit] = useState(true);
   const formRef = useRef<HTMLFormElement>(null);
+  const shouldCreateLead = Boolean(nicheSlug && providerSlug);
 
   const clearError = useCallback((field: keyof FieldErrors) => {
     setErrors((prev) => {
@@ -88,7 +95,7 @@ export default function ContactForm({
     clearError("phone");
   }
 
-  const isFormValid = !errors.name && !errors.email && !errors.phone;
+  const isFormValid = !errors.name && !errors.email && !errors.phone && (!shouldCreateLead || tcpaConsent);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -98,6 +105,7 @@ export default function ContactForm({
     const nm = (formData.get("name") as string) ?? "";
     const em = (formData.get("email") as string) ?? "";
     const ph = (formData.get("phone") as string) ?? "";
+    const msg = String(formData.get("message") ?? "");
 
     const nmErr = validateField("name", nm);
     const emErr = validateField("email", em);
@@ -115,17 +123,38 @@ export default function ContactForm({
     setResult(null);
 
     try {
-      const res = await fetch("/api/contact", {
+      const nameParts = nm.trim().split(/\s+/);
+      const endpoint = shouldCreateLead ? "/api/lead" : "/api/contact";
+      const payload = shouldCreateLead
+        ? {
+            firstName: nameParts[0] || nm,
+            lastName: nameParts.slice(1).join(" "),
+            email: em,
+            phone: ph || undefined,
+            message: msg,
+            niche: nicheSlug,
+            city: citySlug ?? "erie",
+            provider: providerName ?? providerSlug,
+            requestedProviderName: providerName,
+            requestedProviderSlug: providerSlug,
+            sourcePage: window.location.href,
+            routingIntent: "provider_specific",
+            tcpaConsent,
+            tcpaConsentText: TCPA_TEXT,
+          }
+        : {
+            name: nm,
+            email: em,
+            phone: ph || undefined,
+            message: msg,
+            niche: nicheSlug ?? formData.get("niche") ?? undefined,
+            listingId: listingId ?? undefined,
+          };
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: nm,
-          email: em,
-          phone: ph || undefined,
-          message: formData.get("message"),
-          niche: nicheSlug ?? formData.get("niche") ?? undefined,
-          listingId: listingId ?? undefined,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -137,6 +166,7 @@ export default function ContactForm({
         });
         formRef.current?.reset();
         setPhoneDisplay("");
+        setTcpaConsent(false);
         setErrors({});
         setCanResubmit(false);
         setTimeout(() => setCanResubmit(true), 5000);
@@ -244,6 +274,20 @@ export default function ContactForm({
         <Label htmlFor="message">Message <span className="text-destructive" aria-label="required">*</span></Label>
         <Textarea id="message" name="message" required aria-required="true" rows={4} placeholder={messagePlaceholder} />
       </div>
+
+      {shouldCreateLead && (
+        <label className="flex items-start gap-3 rounded-md border border-border bg-muted/40 p-3 text-xs leading-5 text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={tcpaConsent}
+            onChange={(e) => setTcpaConsent(e.target.checked)}
+            required
+            aria-required="true"
+            className="mt-1 h-4 w-4 shrink-0 accent-primary"
+          />
+          <span>{TCPA_TEXT}</span>
+        </label>
+      )}
 
       <Button type="submit" className="w-full" size="lg" disabled={loading || !isFormValid}>
         {loading ? "Sending..." : submitLabel}

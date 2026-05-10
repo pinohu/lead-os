@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
 import { z } from "zod";
+import crypto from "crypto";
 
 const CheckSchema = z.object({
   code: z.string().length(6, "Code must be 6 digits").regex(/^\d{6}$/, "Code must be numeric"),
@@ -76,7 +77,10 @@ export async function POST(req: NextRequest) {
     // Constant-time comparison to prevent timing attacks
     const codeBuffer = Buffer.from(parsed.data.code);
     const storedBuffer = Buffer.from(provider.verificationCode);
-    if (codeBuffer.length !== storedBuffer.length || !codeBuffer.equals(storedBuffer)) {
+    const codesMatch =
+      codeBuffer.length === storedBuffer.length &&
+      crypto.timingSafeEqual(codeBuffer, storedBuffer);
+    if (!codesMatch) {
       const remaining = 10 - (provider.verificationAttempts + 1);
       return NextResponse.json(
         { success: false, error: `Incorrect code. ${remaining} attempts remaining.` },

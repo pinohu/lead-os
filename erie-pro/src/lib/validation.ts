@@ -126,7 +126,13 @@ export const LeadRequestSchema = z.object({
     .optional(),
   niche: nicheSchema,
   city: citySchema,
-  provider: z.string().max(200).optional(),
+  provider: z.string().max(200).transform(sanitizeText).optional(),
+  requestedProviderName: z.string().max(200).transform(sanitizeText).optional(),
+  requestedProviderSlug: z.string().max(200).transform(sanitizeText).optional(),
+  requestedProviderPhone: z.string().max(40).transform(sanitizeText).optional(),
+  requestedProviderAddress: z.string().max(500).transform(sanitizeText).optional(),
+  sourcePage: z.string().max(1000).transform(sanitizeText).optional(),
+  routingIntent: z.enum(["general", "provider_specific"]).default("general").optional(),
   // TCPA consent fields
   tcpaConsent: z.literal(true, {
     error: "You must consent to be contacted to submit this form. Check the consent box and try again.",

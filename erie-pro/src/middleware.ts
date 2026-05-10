@@ -8,6 +8,33 @@ export function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") ?? ""
   const url = request.nextUrl.clone()
 
+  if (pathname.startsWith("/admin")) {
+    const adminKey = process.env.ADMIN_ACCESS_KEY
+    if (adminKey) {
+      const queryKey = url.searchParams.get("admin_key")
+      const cookieKey = request.cookies.get("erie_admin_key")?.value
+
+      if (queryKey === adminKey) {
+        url.searchParams.delete("admin_key")
+        const response = NextResponse.redirect(url)
+        response.cookies.set("erie_admin_key", adminKey, {
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+          path: "/admin",
+          maxAge: 60 * 60 * 12,
+        })
+        return response
+      }
+
+      if (cookieKey !== adminKey) {
+        const loginUrl = new URL("/login", request.url)
+        loginUrl.searchParams.set("callbackUrl", pathname)
+        return NextResponse.redirect(loginUrl)
+      }
+    }
+  }
+
   // ── www → non-www redirect ─────────────────────────────────────
   if (hostname.startsWith("www.")) {
     const newHost = hostname.replace(/^www\./, "")

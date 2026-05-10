@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { routeLead } from "@/lib/lead-routing";
+import { syncLeadToBoostspace } from "@/lib/lead-external-sync";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { audit } from "@/lib/audit-log";
@@ -40,6 +41,12 @@ const InboundLeadSchema = z.object({
   niche: z.string().min(1).optional(),
   message: z.string().optional(),
   source: z.string().optional(),
+  sourcePage: z.string().max(1000).optional(),
+  requestedProviderName: z.string().max(200).optional(),
+  requestedProviderSlug: z.string().max(200).optional(),
+  requestedProviderPhone: z.string().max(40).optional(),
+  requestedProviderAddress: z.string().max(500).optional(),
+  routingIntent: z.enum(["general", "provider_specific"]).optional(),
 });
 
 // ── HMAC Signature Verification ────────────────────────────────────
@@ -70,7 +77,8 @@ export async function POST(req: NextRequest) {
     if (!apiKeyRaw) {
       return corsJson(
         { success: false, error: "Missing X-API-Key header" },
-        401
+        401,
+        origin
       );
     }
 
@@ -86,7 +94,16 @@ export async function POST(req: NextRequest) {
     if (!apiKey || !apiKey.isActive) {
       return corsJson(
         { success: false, error: "Invalid or revoked API key" },
-        401
+        401,
+        origin
+      );
+    }
+
+    if (!hasApiPermission(apiKey.permissions, ["leads:write", "leads:inbound"])) {
+      return corsJson(
+        { success: false, error: "API key is not permitted to submit inbound leads" },
+        403,
+        origin
       );
     }
 
@@ -110,13 +127,15 @@ export async function POST(req: NextRequest) {
           if (!valid) {
             return corsJson(
               { success: false, error: "Invalid HMAC signature" },
-              401
+              401,
+              origin
             );
           }
         } catch {
           return corsJson(
             { success: false, error: "Invalid HMAC signature format" },
-            401
+            401,
+            origin
           );
         }
       }
@@ -127,7 +146,7 @@ export async function POST(req: NextRequest) {
     try {
       body = JSON.parse(rawBody);
     } catch {
-      return corsJson({ success: false, error: "Invalid JSON" }, 400);
+      return corsJson({ success: false, error: "Invalid JSON" }, 400, origin);
     }
 
     const parsed = InboundLeadSchema.safeParse(body);
@@ -137,7 +156,8 @@ export async function POST(req: NextRequest) {
           success: false,
           error: parsed.error.issues.map((e) => e.message).join("; "),
         },
-        400
+        400,
+        origin
       );
     }
 
@@ -159,7 +179,7 @@ export async function POST(req: NextRequest) {
       },
     });
     if (suppressed) {
-      return corsJson({ success: false, error: "Contact opted out" }, 403);
+      return corsJson({ success: false, error: "Contact opted out" }, 403, origin);
     }
 
     // 7. Route the lead
@@ -170,6 +190,12 @@ export async function POST(req: NextRequest) {
       email: data.email,
       message: data.message,
       source: data.source || "webhook",
+      sourcePage: data.sourcePage,
+      routingIntent: data.routingIntent ?? (data.requestedProviderSlug || data.requestedProviderName ? "provider_specific" : "general"),
+      requestedProviderName: data.requestedProviderName,
+      requestedProviderSlug: data.requestedProviderSlug,
+      requestedProviderPhone: data.requestedProviderPhone,
+      requestedProviderAddress: data.requestedProviderAddress,
       timestamp: new Date().toISOString(),
       tcpaConsent: true,
       tcpaConsentText: "Submitted via provider webhook integration",
@@ -198,14 +224,18 @@ export async function POST(req: NextRequest) {
       }).catch(() => {});
     }
 
+    syncLeadToBoostspace(result.leadId).catch((error) => {
+      logger.error("api/leads/inbound", "Boost.space sync failed:", error);
+    });
+
     return corsJson({
       success: true,
       leadId: result.leadId,
       routedTo: result.routedTo?.businessName ?? "Queued",
-    });
+    }, 200, origin);
   } catch (err) {
     logger.error("api/leads/inbound", "Error processing inbound lead:", err);
-    return corsJson({ success: false, error: "Internal server error" }, 500);
+    return corsJson({ success: false, error: "Internal server error" }, 500, origin);
   }
 }
 
@@ -231,4 +261,9 @@ function addCors(res: NextResponse, origin?: string | null): NextResponse {
     res.headers.set(k, v);
   }
   return res;
+}
+
+function hasApiPermission(permissions: string[], accepted: string[]): boolean {
+  if (!permissions || permissions.length === 0) return true;
+  return permissions.includes("*") || accepted.some((permission) => permissions.includes(permission));
 }

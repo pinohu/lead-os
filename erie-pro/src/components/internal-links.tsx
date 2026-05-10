@@ -22,11 +22,42 @@ export function InternalLinks({ niche, currentPage = "" }: InternalLinksProps) {
   )
   const crossNicheLinks = getCrossNicheLinks(niche, currentPage)
   const nicheLabel = getNicheLabel(niche)
+  const primaryLinks = [
+    { href: "/get-matched", label: "Get matched with a local Erie pro" },
+    { href: "/services", label: "Browse Erie services" },
+    { href: "/directory", label: "Compare local providers" },
+    { href: "/emergency", label: "Emergency help in Erie" },
+    { href: "/pricing", label: "See pricing guides" },
+    { href: "/areas", label: "Check areas served" },
+  ]
 
   return (
     <section className="border-t bg-muted/30 py-12">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-4">
+          {/* Primary sitelink targets */}
+          <Card className="border-0 bg-transparent shadow-none">
+            <CardHeader className="px-0 pb-3 pt-0">
+              <CardTitle className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Erie.pro Shortcuts
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-0">
+              <ul className="space-y-1.5">
+                {primaryLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-foreground/80 transition-colors hover:text-primary hover:underline"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
           {/* Related services */}
           <Card className="border-0 bg-transparent shadow-none">
             <CardHeader className="px-0 pb-3 pt-0">

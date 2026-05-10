@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/breadcrumb"
 
 export const metadata: Metadata = {
-  title: `All Services — ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
+  title: "Services",
   description: `Browse all ${niches.length} service categories on ${cityConfig.domain}. Find verified professionals for plumbing, HVAC, electrical, roofing, landscaping, dental, legal, cleaning, auto repair, pest control, painting, and real estate in ${cityConfig.name}, ${cityConfig.stateCode}.`,
   alternates: { canonical: `https://${cityConfig.domain}/services` },
 }

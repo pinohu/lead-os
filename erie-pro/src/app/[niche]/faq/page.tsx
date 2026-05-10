@@ -22,6 +22,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { InternalLinks } from "@/components/internal-links"
+import { SeoLaunchEnhancement } from "@/components/seo-launch-enhancement"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -151,6 +152,8 @@ export default async function NicheFaqPage({ params }: Props) {
           }),
         }}
       />
+
+      <SeoLaunchEnhancement nicheSlug={slug} nicheLabel={niche.label} pageType="faq" />
 
       <InternalLinks niche={slug} currentPage="faq" />
     </main>

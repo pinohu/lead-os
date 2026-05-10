@@ -39,6 +39,7 @@ const navSections: NavSection[] = [
       { href: "/admin/providers", label: "Providers", icon: "👥" },
       { href: "/admin/territories", label: "Territories", icon: "📍" },
       { href: "/admin/listings", label: "Listings", icon: "🏢" },
+      { href: "/admin/website-opportunities", label: "Website Ops", icon: "🌐" },
       { href: "/admin/claims", label: "Claims", icon: "🛡️", badgeKey: "claims" as const },
       { href: "/admin/disputes", label: "Disputes", icon: "⚖️", badgeKey: "disputes" as const },
       { href: "/admin/messages", label: "Messages", icon: "💬", badgeKey: "messages" as const },

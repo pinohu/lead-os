@@ -17,10 +17,40 @@ const HOME_SERVICE_NICHES = new Set([
   "insulation", "pressure-washing", "carpet-cleaning", "handyman",
   "restoration", "glass", "irrigation", "demolition", "pool-spa",
   "home-security", "snow-removal", "tree-service", "solar",
+  "general-contractor", "home-remodeling", "kitchen-remodeling",
+  "bathroom-remodeling", "siding", "decks-patios", "basement-finishing",
+  "mold-remediation", "fire-damage-restoration", "storm-damage-repair",
+  "water-heater-services", "drain-cleaning", "sewer-line-repair",
+  "ac-repair", "furnace-repair", "duct-cleaning", "driveway-paving",
+  "asphalt-sealing", "junk-removal", "dumpster-rental", "home-inspection",
+  "rental-turnover-cleaning", "commercial-cleaning", "commercial-snow-removal",
+  "home-builders", "outdoor-lighting", "holiday-lighting", "fence-repair",
+  "retaining-walls", "epoxy-flooring", "closet-storage-systems",
+  "cabinet-refinishing", "countertops", "tile-installation",
+  "smart-home-installation", "ev-charger-installation", "generator-installation",
+  "radon-testing-mitigation", "wildlife-removal", "bat-removal",
+  "bee-wasp-removal", "septic-inspection", "well-water-testing",
+  "dock-installation-repair", "ice-dam-removal", "emergency-board-up",
+  "basement-flood-cleanup", "lakefront-property-maintenance",
+  "vacation-rental-cleaning", "airbnb-property-management",
+  "snow-plow-contractors", "salt-deicing-services", "storm-window-repair",
 ]);
-const AUTO_NICHES = new Set(["auto-repair", "towing"]);
-const HEALTH_NICHES = new Set(["dental", "veterinary", "chiropractic"]);
-const PROFESSIONAL_NICHES = new Set(["legal", "accounting", "photography", "real-estate"]);
+const AUTO_NICHES = new Set([
+  "auto-repair",
+  "towing",
+  "boat-repair-marine-services",
+  "marina-boat-winterization",
+]);
+const HEALTH_NICHES = new Set([
+  "dental", "veterinary", "chiropractic", "optometry", "dermatology",
+  "physical-therapy", "mental-health-counseling", "senior-home-care",
+  "home-health-care", "hearing-aids-audiology",
+]);
+const PROFESSIONAL_NICHES = new Set([
+  "legal", "accounting", "photography", "real-estate", "property-management",
+  "funeral-homes", "insurance-agents", "financial-advisors",
+  "mortgage-brokers", "estate-sale-services",
+]);
 
 export function getLocalContext(nicheSlug: string): string {
   const cityName = cityConfig.name;

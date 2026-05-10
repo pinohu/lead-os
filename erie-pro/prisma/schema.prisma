@@ -148,7 +148,7 @@ model Provider {
   verificationStatus  VerificationStatus @default(unverified)
   verificationCode    String?            // 6-digit code
   verificationCodeExp DateTime?          // Code expiry (15 min)
-  verificationAttempts Int               @default(0) // Brute-force protection
+  verificationAttempts Int               @default(0) // Code-entry brute-force protection
   claimedListingId    String?            // DirectoryListing.id being claimed
 
   // SLA tracking
@@ -209,6 +209,26 @@ model Lead {
   source            String          @default("erie-pro")
   deliverAt         DateTime?
 
+  // Provider-specific capture and delayed delivery
+  requestedProviderName    String?
+  requestedProviderSlug    String?
+  requestedProviderPhone   String?
+  requestedProviderAddress String?
+  sourcePage               String?
+  routingIntent            String?   @default("general")
+  providerDeliveryStatus   String    @default("not_applicable") // not_applicable | pending_provider_delivery | delivered | failed | cancelled
+  providerDeliveredAt      DateTime?
+  providerDeliveredBy      String?
+  providerDeliveryNotes    String?
+
+  // External sync tracking (Boost.space, SuiteDash, etc.)
+  boostspaceSyncStatus     String    @default("not_configured") // not_configured | pending | synced | failed
+  boostspaceSyncedAt       DateTime?
+  boostspaceLastError      String?
+  suitedashSyncStatus      String    @default("not_configured")
+  suitedashRecordId        String?
+  externalSyncPayload      Json?
+
   // TCPA compliance fields
   tcpaConsent       Boolean         @default(false)
   tcpaConsentText   String?
@@ -230,7 +250,83 @@ model Lead {
   @@index([niche, city])
   @@index([routedToId])
   @@index([routeType, niche])
+  @@index([requestedProviderSlug])
+  @@index([providerDeliveryStatus])
   @@map("leads")
+}
+
+// ── Universal Lead / Phone / Call Event Ledger ─────────────────────
+
+model LeadEvent {
+  id                      String   @id @default(cuid())
+  eventType               String
+  sourceSystem            String   @default("erie-pro")
+  sourceDomain            String   @default("erie.pro")
+  sourcePage              String?
+  sourcePageType          String?
+  serviceNiche            String?
+  serviceSlug             String?
+  city                    String   @default("erie")
+  keywordCluster          String?
+  intentType              String?
+  urgency                 String   @default("standard")
+
+  // Event identity and call attribution
+  externalEventId         String?
+  callId                  String?
+  phoneNumberClicked      String?
+  trackingNumber          String?
+  dialedNumber            String?
+  callerPhone             String?
+  callDurationSeconds     Int?
+  callOutcome             String?
+  transferStatus          String?
+  recordingUrl            String?
+  transcriptUrl           String?
+
+  // Extracted consumer/provider intent
+  consumerName            String?
+  consumerPhone           String?
+  consumerEmail           String?
+  requestSummary          String?
+  requestedProviderName   String?
+  requestedProviderSlug   String?
+  exclusiveProviderId     String?
+  exclusiveProviderName   String?
+  routingModel            String?
+  providerDeliveryStatus  String   @default("not_applicable")
+  manualReviewRequired    Boolean  @default(false)
+
+  // Consent and payload preservation
+  consentToContact        Boolean  @default(false)
+  marketingConsent        Boolean  @default(false)
+  rawPayload              Json?
+  normalizedPayload       Json?
+
+  // External sync tracking
+  boostspaceSyncStatus    String   @default("not_configured")
+  boostspaceSyncedAt      DateTime?
+  boostspaceLastError     String?
+  suitedashSyncStatus     String   @default("not_configured")
+  suitedashRecordId       String?
+
+  // Optional link to a full lead row when the event becomes one
+  leadId                  String?
+
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@index([eventType])
+  @@index([sourceSystem])
+  @@index([serviceNiche, city])
+  @@index([requestedProviderSlug])
+  @@index([exclusiveProviderId])
+  @@index([providerDeliveryStatus])
+  @@index([boostspaceSyncStatus])
+  @@index([callId])
+  @@index([externalEventId])
+  @@index([leadId])
+  @@map("lead_events")
 }
 
 // ── Lead Outcome ───────────────────────────────────────────────────

@@ -12,9 +12,13 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "stripe:setup": "npx tsx src/scripts/stripe-setup.ts",
+    "scrape:places": "npx tsx src/scripts/scrape-google-places.ts",
+    "scrape:places:dry": "npx tsx src/scripts/scrape-google-places.ts --dry-run --skip-reviews --limit=5",
+    "scrape:places:new": "npx tsx src/scripts/scrape-google-places.ts --new-only",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "website-opps:seed": "npx tsx src/scripts/setup-website-opportunities.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
@@ -87,10 +91,14 @@
     "@types/react": "^19.1.4",
     "@vitejs/plugin-react": "^6.0.1",
     "jsdom": "^29.0.1",
-    "postcss": "^8.5.8",
+    "postcss": "^8.5.14",
     "prisma": "^7.6.0",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.9.3",
     "vitest": "^4.1.2"
+  },
+  "overrides": {
+    "@hono/node-server": "1.19.13",
+    "postcss": "$postcss"
   }
 }

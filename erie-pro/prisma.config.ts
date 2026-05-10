@@ -5,6 +5,9 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 dotenv.config({ path: ".env" });
 import { defineConfig } from "prisma/config";
+import { normalizePostgresSslMode } from "./src/lib/db-url";
+
+const datasourceUrl = process.env["DATABASE_URL_UNPOOLED"] ?? process.env["DATABASE_URL"];
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -13,6 +16,6 @@ export default defineConfig({
   },
   datasource: {
     // Use unpooled (direct) URL for migrations; fall back to pooled URL
-    url: process.env["DATABASE_URL_UNPOOLED"] ?? process.env["DATABASE_URL"],
+    url: datasourceUrl ? normalizePostgresSslMode(datasourceUrl) : undefined,
   },
 });

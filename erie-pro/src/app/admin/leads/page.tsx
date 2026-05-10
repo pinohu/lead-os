@@ -35,6 +35,7 @@ export default async function AdminLeadsPage({
     niche?: string
     route?: string
     temp?: string
+    delivery?: string
     q?: string
   }>
 }) {
@@ -43,6 +44,7 @@ export default async function AdminLeadsPage({
   const nicheFilter = params.niche || undefined
   const routeFilter = params.route || undefined
   const tempFilter = params.temp || undefined
+  const deliveryFilter = params.delivery || undefined
   const searchQuery = params.q || undefined
 
   // Build Prisma where clause
@@ -60,6 +62,13 @@ export default async function AdminLeadsPage({
     where.temperature = tempFilter
   }
 
+  if (
+    deliveryFilter &&
+    ["pending_provider_delivery", "delivered", "failed", "not_applicable"].includes(deliveryFilter)
+  ) {
+    where.providerDeliveryStatus = deliveryFilter
+  }
+
   if (searchQuery) {
     where.OR = [
       { firstName: { contains: searchQuery, mode: "insensitive" } },
@@ -70,7 +79,7 @@ export default async function AdminLeadsPage({
   }
 
   // Fetch leads and counts in parallel
-  const [leads, totalCount, matchedCount, unmatchedCount, todayCount] =
+  const [leads, totalCount, matchedCount, unmatchedCount, pendingDeliveryCount] =
     await Promise.all([
       prisma.lead.findMany({
         where,
@@ -88,14 +97,7 @@ export default async function AdminLeadsPage({
       prisma.lead.count({
         where: { ...where, routeType: "unmatched" },
       }),
-      prisma.lead.count({
-        where: {
-          ...where,
-          createdAt: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0)),
-          },
-        },
-      }),
+      prisma.lead.count({ where: { ...where, providerDeliveryStatus: "pending_provider_delivery" } }),
     ])
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
@@ -106,6 +108,7 @@ export default async function AdminLeadsPage({
     if (params.niche) merged.niche = params.niche
     if (params.route) merged.route = params.route
     if (params.temp) merged.temp = params.temp
+    if (params.delivery) merged.delivery = params.delivery
     if (params.q) merged.q = params.q
     if (params.page) merged.page = params.page
 
@@ -174,10 +177,10 @@ export default async function AdminLeadsPage({
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Leads Today
+            Pending Delivery
           </p>
           <p className="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400">
-            {todayCount.toLocaleString()}
+            {pendingDeliveryCount.toLocaleString()}
           </p>
         </div>
       </div>
@@ -201,6 +204,9 @@ export default async function AdminLeadsPage({
             )}
             {tempFilter && (
               <input type="hidden" name="temp" value={tempFilter} />
+            )}
+            {deliveryFilter && (
+              <input type="hidden" name="delivery" value={deliveryFilter} />
             )}
             <div className="flex gap-2">
               <input
@@ -326,8 +332,40 @@ export default async function AdminLeadsPage({
           </div>
         </div>
 
+        {/* Provider Delivery Filter */}
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+            Provider Delivery
+          </label>
+          <div className="flex flex-wrap gap-1">
+            <Link
+              href={buildUrl({ delivery: undefined })}
+              className={`rounded-md px-3 py-2 text-xs font-medium ${
+                !deliveryFilter
+                  ? "bg-blue-600 text-white"
+                  : "border border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+              }`}
+            >
+              All
+            </Link>
+            {(["pending_provider_delivery", "delivered", "failed"] as const).map((status) => (
+              <Link
+                key={status}
+                href={buildUrl({ delivery: status })}
+                className={`rounded-md px-3 py-2 text-xs font-medium capitalize ${
+                  deliveryFilter === status
+                    ? "bg-blue-600 text-white"
+                    : "border border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                }`}
+              >
+                {status.replaceAll("_", " ")}
+              </Link>
+            ))}
+          </div>
+        </div>
+
         {/* Clear Filters */}
-        {(nicheFilter || routeFilter || tempFilter || searchQuery) && (
+        {(nicheFilter || routeFilter || tempFilter || deliveryFilter || searchQuery) && (
           <Link
             href="/admin/leads"
             className="rounded-md border border-red-300 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
@@ -370,6 +408,15 @@ export default async function AdminLeadsPage({
                 </th>
                 <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
                   Routed To
+                </th>
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                  Requested Provider
+                </th>
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                  Delivery
+                </th>
+                <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
+                  Boost.space
                 </th>
                 <th className="whitespace-nowrap px-4 py-3 font-medium text-gray-500 dark:text-gray-400">
                   Route Type
@@ -465,6 +512,15 @@ export default async function AdminLeadsPage({
                           Unmatched
                         </span>
                       )}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-sm">
+                      {lead.requestedProviderName || lead.requestedProviderSlug || "--"}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-sm capitalize">
+                      {lead.providerDeliveryStatus.replaceAll("_", " ")}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-sm capitalize">
+                      {lead.boostspaceSyncStatus.replaceAll("_", " ")}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3">
                       <span

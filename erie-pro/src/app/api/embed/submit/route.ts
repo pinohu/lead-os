@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { routeLead } from "@/lib/lead-routing";
+import { syncLeadToBoostspace } from "@/lib/lead-external-sync";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { audit } from "@/lib/audit-log";
@@ -27,6 +28,12 @@ const EmbedLeadSchema = z.object({
   phone: z.string().min(7).optional(),
   message: z.string().optional(),
   niche: z.string().min(1).optional(),
+  sourcePage: z.string().max(1000).optional(),
+  requestedProviderName: z.string().max(200).optional(),
+  requestedProviderSlug: z.string().max(200).optional(),
+  requestedProviderPhone: z.string().max(40).optional(),
+  requestedProviderAddress: z.string().max(500).optional(),
+  routingIntent: z.enum(["general", "provider_specific"]).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -39,7 +46,7 @@ export async function POST(req: NextRequest) {
     // Validate API key
     const apiKeyRaw = req.headers.get("x-api-key");
     if (!apiKeyRaw) {
-      return corsJson({ success: false, error: "Missing API key" }, 401);
+      return corsJson({ success: false, error: "Missing API key" }, 401, origin);
     }
 
     const keyHash = crypto.createHash("sha256").update(apiKeyRaw).digest("hex");
@@ -49,7 +56,11 @@ export async function POST(req: NextRequest) {
     });
 
     if (!apiKey || !apiKey.isActive) {
-      return corsJson({ success: false, error: "Invalid API key" }, 401);
+      return corsJson({ success: false, error: "Invalid API key" }, 401, origin);
+    }
+
+    if (!hasApiPermission(apiKey.permissions, ["leads:write", "embed:submit"])) {
+      return corsJson({ success: false, error: "API key is not permitted to submit embedded leads" }, 403, origin);
     }
 
     // Update lastUsedAt
@@ -59,13 +70,14 @@ export async function POST(req: NextRequest) {
 
     // Parse body
     const body = await req.json().catch(() => null);
-    if (!body) return corsJson({ success: false, error: "Invalid JSON" }, 400);
+    if (!body) return corsJson({ success: false, error: "Invalid JSON" }, 400, origin);
 
     const parsed = EmbedLeadSchema.safeParse(body);
     if (!parsed.success) {
       return corsJson(
         { success: false, error: parsed.error.issues.map((e) => e.message).join("; ") },
-        400
+        400,
+        origin
       );
     }
 
@@ -85,7 +97,7 @@ export async function POST(req: NextRequest) {
       },
     });
     if (suppressed) {
-      return corsJson({ success: false, error: "Contact opted out" }, 403);
+      return corsJson({ success: false, error: "Contact opted out" }, 403, origin);
     }
 
     // Route the lead
@@ -99,6 +111,12 @@ export async function POST(req: NextRequest) {
       email: data.email,
       message: data.message,
       source: "embed",
+      sourcePage: data.sourcePage,
+      routingIntent: data.routingIntent ?? (data.requestedProviderSlug || data.requestedProviderName ? "provider_specific" : "general"),
+      requestedProviderName: data.requestedProviderName,
+      requestedProviderSlug: data.requestedProviderSlug,
+      requestedProviderPhone: data.requestedProviderPhone,
+      requestedProviderAddress: data.requestedProviderAddress,
       timestamp: new Date().toISOString(),
       tcpaConsent: true,
       tcpaConsentText: "Submitted via embedded lead form widget",
@@ -127,14 +145,18 @@ export async function POST(req: NextRequest) {
       }).catch(() => {});
     }
 
+    syncLeadToBoostspace(result.leadId).catch((error) => {
+      logger.error("api/embed/submit", "Boost.space sync failed:", error);
+    });
+
     return corsJson({
       success: true,
       leadId: result.leadId,
       routedTo: result.routedTo?.businessName ?? "Queued",
-    });
+    }, 200, origin);
   } catch (err) {
     logger.error("api/embed/submit", "Error:", err);
-    return corsJson({ success: false, error: "Internal server error" }, 500);
+    return corsJson({ success: false, error: "Internal server error" }, 500, origin);
   }
 }
 
@@ -166,4 +188,9 @@ function addCors(res: NextResponse, origin?: string): NextResponse {
     res.headers.set(k, v);
   }
   return res;
+}
+
+function hasApiPermission(permissions: string[], accepted: string[]): boolean {
+  if (!permissions || permissions.length === 0) return true;
+  return permissions.includes("*") || accepted.some((permission) => permissions.includes(permission));
 }

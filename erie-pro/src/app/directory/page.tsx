@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/breadcrumb"
 
 export const metadata: Metadata = {
-  title: `Business Directory — ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
+  title: "Erie Service Directory",
   description: `Browse all ${niches.length} service categories and hundreds of verified local businesses in ${cityConfig.name}, ${cityConfig.stateCode}. Find providers for plumbing, HVAC, electrical, roofing, dental, legal, and more.`,
   alternates: { canonical: `https://${cityConfig.domain}/directory` },
 }

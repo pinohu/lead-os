@@ -99,6 +99,11 @@ npx vercel deploy --prod
 
 See [STRATEGY.md](./STRATEGY.md) for the complete distributed lead monopoly system strategy.
 
+## Lead Intake Docs
+
+- [Universal Lead Intake and Routing](./docs/universal-lead-intake-routing.md) documents the Erie.pro-wide form, phone, CallScaler, Thoughtly, Insighto.ai, Boost.space, SuiteDash, routing, escalation, and audit pipeline.
+- [Provider-Specific Lead Routing](./docs/provider-specific-lead-routing.md) documents the provider-specific subset used by client-site pages.
+
 ## License
 
 MIT

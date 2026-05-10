@@ -139,11 +139,37 @@ export default function HomePage() {
           {/* Primary CTA */}
           <div className="mt-10">
             <Button asChild size="lg" className="text-base">
-              <a href="#get-matched">
+              <Link href="/get-matched">
                 Get Matched Free
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
+              </Link>
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Sitelink shortcuts */}
+      <section className="border-b bg-background">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <h2 className="sr-only">Primary Erie.pro links</h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+            {[
+              { href: "/get-matched", label: "Get Matched Free", desc: "Start a local request" },
+              { href: "/services", label: "Services", desc: "Browse every category" },
+              { href: "/directory", label: "Directory", desc: "Compare providers" },
+              { href: "/emergency", label: "Emergency", desc: "Urgent local help" },
+              { href: "/pricing", label: "Pricing Guides", desc: "Plan likely costs" },
+              { href: "/pros", label: "For Pros", desc: "Join Erie.pro" },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="rounded-lg border bg-muted/30 p-4 transition-colors hover:border-primary hover:bg-muted"
+              >
+                <span className="block text-sm font-semibold">{link.label}</span>
+                <span className="mt-1 block text-xs text-muted-foreground">{link.desc}</span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -564,10 +590,10 @@ export default function HomePage() {
               variant="secondary"
               className="text-base"
             >
-              <a href="#get-matched">
+              <Link href="/get-matched">
                 Get Matched Free
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
+              </Link>
             </Button>
           </div>
         </div>

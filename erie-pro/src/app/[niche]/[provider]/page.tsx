@@ -43,7 +43,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import ContactForm from "@/components/contact-form"
+import { TrackedPhoneLink } from "@/components/tracked-phone-link"
 import { PhotoGalleryDialog } from "@/components/photo-gallery-dialog"
+import { cleanProviderPhotoRefs, getBestProviderPhoto, getProviderPhotoSrc } from "@/lib/provider-photos"
 
 type Props = { params: Promise<{ niche: string; provider: string }> }
 
@@ -108,7 +110,7 @@ async function resolveProvider(
         rating: provider.avgRating || null,
         reviewCount: provider.reviewCount,
         hoursJson: null,
-        photoRefs: [],
+        photoRefs: cleanProviderPhotoRefs([provider.coverPhotoUrl, provider.photoUrl]),
         reviewsJson: null,
         isVerified: true,
         avgResponseTime: provider.avgResponseTime || null,
@@ -147,7 +149,7 @@ async function resolveProvider(
         rating: listing.rating,
         reviewCount: listing.reviewCount,
         hoursJson: listing.hoursJson,
-        photoRefs: listing.photoRefs,
+        photoRefs: cleanProviderPhotoRefs(listing.photoRefs),
         reviewsJson: listing.reviewsJson,
         isVerified: false,
         avgResponseTime: null,
@@ -272,13 +274,6 @@ function computeRatingDistribution(reviews: ParsedReview[]): { star: number; cou
   }))
 }
 
-/* ── Photo src helper ────────────────────────────────────────── */
-
-function getPhotoSrc(ref: string, width: number = 400): string {
-  if (ref.startsWith("http://") || ref.startsWith("https://")) return ref
-  return `/api/places-photo?ref=${encodeURIComponent(ref)}&w=${width}`
-}
-
 /* ── Schema.org hours helper ─────────────────────────────────── */
 
 function buildOpeningHoursSpec(parsedHours: { day: string; hours: string }[] | null) {
@@ -382,8 +377,10 @@ export default async function ProviderPage({ params }: Props) {
   const reviewCount = data?.reviewCount ?? 0
   const isVerified = data?.isVerified ?? false
   const isListing = data?.type === "listing"
-  const hasPhotos = (data?.photoRefs?.length ?? 0) > 0
-  const heroPhoto = hasPhotos ? getPhotoSrc(data!.photoRefs[0], 1200) : null
+  const photoRefs = cleanProviderPhotoRefs(data?.photoRefs ?? [])
+  const bestPhoto = getBestProviderPhoto(photoRefs)
+  const hasPhotos = photoRefs.length > 0
+  const heroPhoto = bestPhoto ? getProviderPhotoSrc(bestPhoto, 1200) : null
 
   const mapsUrl = data?.latitude && data?.longitude
     ? `https://maps.google.com/?q=${data.latitude},${data.longitude}`
@@ -476,19 +473,27 @@ export default async function ProviderPage({ params }: Props) {
             </Button>
             {phone && (
               <Button asChild size="lg" variant={heroPhoto ? "secondary" : "outline"} className={`text-base px-6 ${heroPhoto ? "bg-white/15 text-white border-white/25 hover:bg-white/25 backdrop-blur-sm" : ""}`}>
-                <a href={`tel:${phone.replace(/\D/g, "")}`} aria-label={`Call ${providerName} at ${phone}`}>
+                <TrackedPhoneLink
+                  phone={phone}
+                  aria-label={`Call ${providerName} at ${phone}`}
+                  serviceNiche={niche.slug}
+                  serviceSlug={niche.slug}
+                  sourcePageType="provider_profile"
+                  requestedProviderName={providerName}
+                  requestedProviderSlug={data?.slug ?? providerSlug}
+                >
                   <Phone className="mr-2 h-4 w-4" aria-hidden="true" />
                   {phone}
-                </a>
+                </TrackedPhoneLink>
               </Button>
             )}
           </div>
 
           {/* Photo Gallery */}
-          {hasPhotos && data!.photoRefs.length > 1 && (
+          {hasPhotos && photoRefs.length > 1 && (
             <PhotoGalleryDialog
-              thumbnailUrls={data!.photoRefs.map((ref) => getPhotoSrc(ref, 400))}
-              fullUrls={data!.photoRefs.map((ref) => getPhotoSrc(ref, 800))}
+              thumbnailUrls={photoRefs.map((ref) => getProviderPhotoSrc(ref, 400))}
+              fullUrls={photoRefs.map((ref) => getProviderPhotoSrc(ref, 1000))}
               providerName={providerName}
             />
           )}
@@ -1089,6 +1094,7 @@ export default async function ProviderPage({ params }: Props) {
                 )}
                 <ContactForm
                   nicheSlug={niche.slug}
+                  providerName={providerName}
                   providerSlug={data?.slug ?? providerSlug}
                   citySlug={cityConfig.slug}
                   listingId={data?.type === "listing" ? data.id : undefined}
@@ -1172,10 +1178,18 @@ export default async function ProviderPage({ params }: Props) {
               <CardContent className="space-y-3">
                 {phone && (
                   <Button asChild variant="outline" className="w-full justify-start">
-                    <a href={`tel:${phone.replace(/\D/g, "")}`} aria-label={`Call ${providerName}`}>
+                    <TrackedPhoneLink
+                      phone={phone}
+                      aria-label={`Call ${providerName}`}
+                      serviceNiche={niche.slug}
+                      serviceSlug={niche.slug}
+                      sourcePageType="provider_profile"
+                      requestedProviderName={providerName}
+                      requestedProviderSlug={data?.slug ?? providerSlug}
+                    >
                       <Phone className="mr-2 h-4 w-4" aria-hidden="true" />
                       {phone}
-                    </a>
+                    </TrackedPhoneLink>
                   </Button>
                 )}
                 {data?.email && (
@@ -1236,10 +1250,17 @@ export default async function ProviderPage({ params }: Props) {
           {phone ? (
             <>
               <Button asChild variant="outline" className="flex-1">
-                <a href={`tel:${phone.replace(/\D/g, "")}`}>
+                <TrackedPhoneLink
+                  phone={phone}
+                  serviceNiche={niche.slug}
+                  serviceSlug={niche.slug}
+                  sourcePageType="provider_profile"
+                  requestedProviderName={providerName}
+                  requestedProviderSlug={data?.slug ?? providerSlug}
+                >
                   <Phone className="mr-2 h-4 w-4" aria-hidden="true" />
                   Call
-                </a>
+                </TrackedPhoneLink>
               </Button>
               <Button asChild className="flex-1">
                 <a href="#quote">
@@ -1318,7 +1339,7 @@ export default async function ProviderPage({ params }: Props) {
                   name: "Request a Free Quote",
                 },
                 priceRange: niche.avgProjectValue,
-                image: hasPhotos ? getPhotoSrc(data!.photoRefs[0], 800) : `/api/og/${niche.slug}/${data?.slug ?? providerSlug}`,
+                image: bestPhoto ? getProviderPhotoSrc(bestPhoto, 800) : `/api/og/${niche.slug}/${data?.slug ?? providerSlug}`,
               },
               {
                 "@type": "BreadcrumbList",

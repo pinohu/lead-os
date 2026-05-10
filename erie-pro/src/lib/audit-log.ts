@@ -7,6 +7,7 @@ import { logger } from "@/lib/logger";
 
 export type AuditAction =
   | "territory.claimed"
+  | "territory.claim_conflict"
   | "territory.released"
   | "territory.paused"
   | "territory.resumed"
@@ -18,6 +19,8 @@ export type AuditAction =
   | "provider.ownership_verified"
   | "provider.admin_approved"
   | "provider.claim_rejected"
+  | "provider.dashboard_link_conflict"
+  | "provider.fulfillment_provisioned"
   | "subscription.activated"
   | "subscription.cancelled"
   | "subscription.payment_failed"
@@ -25,7 +28,10 @@ export type AuditAction =
   | "subscription.status_changed"
   | "subscription.grace_period_expired"
   | "lead.submitted"
+  | "lead.event_captured"
   | "lead.routed"
+  | "lead.provider_delivered"
+  | "lead.external_sync_requested"
   | "lead.purchased"
   | "lead.disputed"
   | "lead.dispute_resolved"
@@ -41,6 +47,7 @@ export type AuditAction =
 export type AuditEntityType =
   | "provider"
   | "lead"
+  | "lead_event"
   | "territory"
   | "subscription"
   | "checkout"
@@ -48,7 +55,8 @@ export type AuditEntityType =
   | "dispute"
   | "api_key"
   | "webhook"
-  | "setting";
+  | "setting"
+  | "fulfillment";
 
 interface AuditEntry {
   action: AuditAction;
