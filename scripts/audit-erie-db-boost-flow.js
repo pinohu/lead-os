@@ -53,7 +53,7 @@ async function main() {
     : "https://erie.pro";
 
   const timestamp = Date.now();
-  const testEmail = `codex-db-boost-test+${timestamp}@example.com`;
+  const testEmail = `codex-db-boost-test+${timestamp}@lead-audit.invalid`;
   const sourcePage = `${baseUrl}/plumbing?codex_db_boost_test=${timestamp}`;
   const payload = {
     firstName: "Codex",
@@ -120,21 +120,21 @@ async function main() {
     const leadId = report.leadSubmit?.data?.leadId;
     const byId = leadId
       ? await client.query(
-          `select id, niche, city, email, source, route_type, boostspace_sync_status,
-                  boostspace_synced_at, boostspace_last_error, external_sync_payload is not null as has_external_sync_payload,
-                  created_at
+          `select id, niche, city, email, source, "routeType", "boostspaceSyncStatus",
+                  "boostspaceSyncedAt", "boostspaceLastError", "externalSyncPayload" is not null as has_external_sync_payload,
+                  "createdAt"
              from leads
             where id = $1`,
           [leadId],
         )
       : { rows: [] };
     const byEmail = await client.query(
-      `select id, niche, city, email, source, route_type, boostspace_sync_status,
-              boostspace_synced_at, boostspace_last_error, external_sync_payload is not null as has_external_sync_payload,
-              created_at
+      `select id, niche, city, email, source, "routeType", "boostspaceSyncStatus",
+              "boostspaceSyncedAt", "boostspaceLastError", "externalSyncPayload" is not null as has_external_sync_payload,
+              "createdAt"
          from leads
         where email = $1
-        order by created_at desc
+        order by "createdAt" desc
         limit 3`,
       [testEmail],
     );
@@ -148,9 +148,9 @@ async function main() {
     };
     report.boostSync = leadRow
       ? {
-          status: leadRow.boostspace_sync_status,
-          syncedAt: leadRow.boostspace_synced_at,
-          lastError: leadRow.boostspace_last_error,
+          status: leadRow.boostspaceSyncStatus,
+          syncedAt: leadRow.boostspaceSyncedAt,
+          lastError: leadRow.boostspaceLastError,
           hasPayload: leadRow.has_external_sync_payload,
         }
       : null;
