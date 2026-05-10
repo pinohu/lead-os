@@ -30,6 +30,12 @@ type ConvertBoxEventPayload = {
   stepIndex?: number | null;
   branchId?: string | null;
   branchLabel?: string | null;
+  consumerName?: string | null;
+  consumerPhone?: string | null;
+  consumerEmail?: string | null;
+  requestSummary?: string | null;
+  consentToContact?: boolean;
+  marketingConsent?: boolean;
   sessionId?: string;
   visitorId?: string;
   utmSource?: string | null;

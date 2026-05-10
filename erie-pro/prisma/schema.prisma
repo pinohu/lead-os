@@ -100,89 +100,132 @@ enum DisputeStatus {
 }
 
 enum VerificationStatus {
-  unverified        // Just claimed, no verification attempted
-  pending           // Verification code sent, awaiting entry
-  verified          // Ownership confirmed
-  auto_verified     // Email domain matched listing website
-  admin_approved    // Manually approved by admin
-  rejected          // Admin rejected claim
+  unverified // Just claimed, no verification attempted
+  pending // Verification code sent, awaiting entry
+  verified // Ownership confirmed
+  auto_verified // Email domain matched listing website
+  admin_approved // Manually approved by admin
+  rejected // Admin rejected claim
+}
+
+enum OfferFulfillmentType {
+  scorecard
+  blueprint
+  template_kit
+  campaign_kit
+  automation_kit
+  subscription_report
+  website_blueprint
+}
+
+enum OfferStatus {
+  active
+  paused
+  archived
+}
+
+enum OfferPurchaseStatus {
+  pending
+  paid
+  fulfilled
+  failed
+  refunded
+  cancelled
+}
+
+enum FulfillmentJobStatus {
+  pending
+  generating
+  fulfilled
+  emailed
+  synced
+  failed
+  cancelled
+}
+
+enum GeneratedAssetType {
+  html_report
+  pdf_blueprint
+  template_pack
+  checklist
+  dashboard_link
 }
 
 // ── Provider ───────────────────────────────────────────────────────
 
 model Provider {
-  id                  String             @id @default(cuid())
-  slug                String             @unique
-  businessName        String
-  niche               String
-  city                String             @default("erie")
-  phone               String
-  email               String
-  website             String?
-  addressStreet       String?
-  addressCity         String?
-  addressState        String?
-  addressZip          String?
-  serviceAreas        String[]           @default([])
-  description         String             @default("")
-  yearEstablished     Int?
-  employeeCount       String?
-  license             String?
-  insurance           Boolean            @default(false)
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  businessName    String
+  niche           String
+  city            String   @default("erie")
+  phone           String
+  email           String
+  website         String?
+  addressStreet   String?
+  addressCity     String?
+  addressState    String?
+  addressZip      String?
+  serviceAreas    String[] @default([])
+  description     String   @default("")
+  yearEstablished Int?
+  employeeCount   String?
+  license         String?
+  insurance       Boolean  @default(false)
 
   // Subscription & billing
-  tier                ProviderTier       @default(primary)
-  subscriptionStatus  SubscriptionStatus @default(trial)
-  monthlyFee          Float              @default(400)
-  billingInterval     String             @default("monthly") // "monthly" | "annual"
-  stripeCustomerId    String?
+  tier                 ProviderTier       @default(primary)
+  subscriptionStatus   SubscriptionStatus @default(trial)
+  monthlyFee           Float              @default(400)
+  billingInterval      String             @default("monthly") // "monthly" | "annual"
+  stripeCustomerId     String?
   stripeSubscriptionId String?
-  emailVerified       Boolean            @default(false)
-  emailVerifyToken    String?
-  passwordHash        String?
-  tosAcceptedAt       DateTime?
-  gracePeriodEndsAt   DateTime?
-  notificationPrefs   Json?              @default("{}")
+  emailVerified        Boolean            @default(false)
+  emailVerifyToken     String?
+  passwordHash         String?
+  tosAcceptedAt        DateTime?
+  gracePeriodEndsAt    DateTime?
+  notificationPrefs    Json?              @default("{}")
 
   // Ownership verification (claim anti-fraud)
-  verificationStatus  VerificationStatus @default(unverified)
-  verificationCode    String?            // 6-digit code
-  verificationCodeExp DateTime?          // Code expiry (15 min)
-  verificationAttempts Int               @default(0) // Code-entry brute-force protection
-  claimedListingId    String?            // DirectoryListing.id being claimed
+  verificationStatus   VerificationStatus @default(unverified)
+  verificationCode     String? // 6-digit code
+  verificationCodeExp  DateTime? // Code expiry (15 min)
+  verificationAttempts Int                @default(0) // Code-entry brute-force protection
+  claimedListingId     String? // DirectoryListing.id being claimed
 
   // SLA tracking
-  slaViolationCount   Int                @default(0)
-  businessHours       Json?
-  timezone            String             @default("America/New_York")
-  photoUrl            String?
-  coverPhotoUrl       String?
+  slaViolationCount Int     @default(0)
+  businessHours     Json?
+  timezone          String  @default("America/New_York")
+  photoUrl          String?
+  coverPhotoUrl     String?
 
   // Performance metrics (denormalized for fast reads)
-  totalLeads          Int                @default(0)
-  convertedLeads      Int                @default(0)
-  avgResponseTime     Float              @default(0) // seconds
-  avgRating           Float              @default(0) // 0-5
-  reviewCount         Int                @default(0)
+  totalLeads      Int   @default(0)
+  convertedLeads  Int   @default(0)
+  avgResponseTime Float @default(0) // seconds
+  avgRating       Float @default(0) // 0-5
+  reviewCount     Int   @default(0)
 
   // Timestamps
-  claimedAt           DateTime           @default(now())
-  lastLeadAt          DateTime?
-  churnedAt           DateTime?
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
+  claimedAt  DateTime  @default(now())
+  lastLeadAt DateTime?
+  churnedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   // Relations
-  territories         Territory[]
-  leads               Lead[]             @relation("RoutedLeads")
-  leadOutcomes        LeadOutcome[]
-  notifications       Notification[]
-  trackedCalls        TrackedCall[]
-  disputes            LeadDispute[]
-  auditLogs           AuditLog[]
-  checkoutSessions    CheckoutSession[]
-  apiKeys             ApiKey[]
-  webhookEndpoints    WebhookEndpoint[]
+  territories      Territory[]
+  leads            Lead[]            @relation("RoutedLeads")
+  leadOutcomes     LeadOutcome[]
+  notifications    Notification[]
+  trackedCalls     TrackedCall[]
+  disputes         LeadDispute[]
+  auditLogs        AuditLog[]
+  checkoutSessions CheckoutSession[]
+  apiKeys          ApiKey[]
+  webhookEndpoints WebhookEndpoint[]
 
   @@index([niche, city])
   @@index([niche, subscriptionStatus])
@@ -194,20 +237,20 @@ model Provider {
 // ── Lead ───────────────────────────────────────────────────────────
 
 model Lead {
-  id                String          @id @default(cuid())
-  niche             String
-  city              String          @default("erie")
-  firstName         String?
-  lastName          String?
-  email             String
-  phone             String?
-  message           String?
-  routeType         LeadRouteType   @default(unmatched)
-  temperature       LeadTemperature @default(warm)
-  slaDeadline       DateTime?
-  statusToken       String?         @unique
-  source            String          @default("erie-pro")
-  deliverAt         DateTime?
+  id          String          @id @default(cuid())
+  niche       String
+  city        String          @default("erie")
+  firstName   String?
+  lastName    String?
+  email       String
+  phone       String?
+  message     String?
+  routeType   LeadRouteType   @default(unmatched)
+  temperature LeadTemperature @default(warm)
+  slaDeadline DateTime?
+  statusToken String?         @unique
+  source      String          @default("erie-pro")
+  deliverAt   DateTime?
 
   // Provider-specific capture and delayed delivery
   requestedProviderName    String?
@@ -222,30 +265,30 @@ model Lead {
   providerDeliveryNotes    String?
 
   // External sync tracking (Boost.space, SuiteDash, etc.)
-  boostspaceSyncStatus     String    @default("not_configured") // not_configured | pending | synced | failed
-  boostspaceSyncedAt       DateTime?
-  boostspaceLastError      String?
-  suitedashSyncStatus      String    @default("not_configured")
-  suitedashRecordId        String?
-  externalSyncPayload      Json?
+  boostspaceSyncStatus String    @default("not_configured") // not_configured | pending | synced | failed
+  boostspaceSyncedAt   DateTime?
+  boostspaceLastError  String?
+  suitedashSyncStatus  String    @default("not_configured")
+  suitedashRecordId    String?
+  externalSyncPayload  Json?
 
   // TCPA compliance fields
-  tcpaConsent       Boolean         @default(false)
-  tcpaConsentText   String?
-  tcpaConsentAt     DateTime?
-  tcpaIpAddress     String?
+  tcpaConsent     Boolean   @default(false)
+  tcpaConsentText String?
+  tcpaConsentAt   DateTime?
+  tcpaIpAddress   String?
 
   // Routing
-  routedToId        String?
-  routedTo          Provider?       @relation("RoutedLeads", fields: [routedToId], references: [id], onDelete: SetNull)
+  routedToId String?
+  routedTo   Provider? @relation("RoutedLeads", fields: [routedToId], references: [id], onDelete: SetNull)
 
   // Timestamps
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  outcomes          LeadOutcome[]
-  disputes          LeadDispute[]
+  outcomes LeadOutcome[]
+  disputes LeadDispute[]
 
   @@index([niche, city])
   @@index([routedToId])
@@ -258,63 +301,63 @@ model Lead {
 // ── Universal Lead / Phone / Call Event Ledger ─────────────────────
 
 model LeadEvent {
-  id                      String   @id @default(cuid())
-  eventType               String
-  sourceSystem            String   @default("erie-pro")
-  sourceDomain            String   @default("erie.pro")
-  sourcePage              String?
-  sourcePageType          String?
-  serviceNiche            String?
-  serviceSlug             String?
-  city                    String   @default("erie")
-  keywordCluster          String?
-  intentType              String?
-  urgency                 String   @default("standard")
+  id             String  @id @default(cuid())
+  eventType      String
+  sourceSystem   String  @default("erie-pro")
+  sourceDomain   String  @default("erie.pro")
+  sourcePage     String?
+  sourcePageType String?
+  serviceNiche   String?
+  serviceSlug    String?
+  city           String  @default("erie")
+  keywordCluster String?
+  intentType     String?
+  urgency        String  @default("standard")
 
   // Event identity and call attribution
-  externalEventId         String?
-  callId                  String?
-  phoneNumberClicked      String?
-  trackingNumber          String?
-  dialedNumber            String?
-  callerPhone             String?
-  callDurationSeconds     Int?
-  callOutcome             String?
-  transferStatus          String?
-  recordingUrl            String?
-  transcriptUrl           String?
+  externalEventId     String?
+  callId              String?
+  phoneNumberClicked  String?
+  trackingNumber      String?
+  dialedNumber        String?
+  callerPhone         String?
+  callDurationSeconds Int?
+  callOutcome         String?
+  transferStatus      String?
+  recordingUrl        String?
+  transcriptUrl       String?
 
   // Extracted consumer/provider intent
-  consumerName            String?
-  consumerPhone           String?
-  consumerEmail           String?
-  requestSummary          String?
-  requestedProviderName   String?
-  requestedProviderSlug   String?
-  exclusiveProviderId     String?
-  exclusiveProviderName   String?
-  routingModel            String?
-  providerDeliveryStatus  String   @default("not_applicable")
-  manualReviewRequired    Boolean  @default(false)
+  consumerName           String?
+  consumerPhone          String?
+  consumerEmail          String?
+  requestSummary         String?
+  requestedProviderName  String?
+  requestedProviderSlug  String?
+  exclusiveProviderId    String?
+  exclusiveProviderName  String?
+  routingModel           String?
+  providerDeliveryStatus String  @default("not_applicable")
+  manualReviewRequired   Boolean @default(false)
 
   // Consent and payload preservation
-  consentToContact        Boolean  @default(false)
-  marketingConsent        Boolean  @default(false)
-  rawPayload              Json?
-  normalizedPayload       Json?
+  consentToContact  Boolean @default(false)
+  marketingConsent  Boolean @default(false)
+  rawPayload        Json?
+  normalizedPayload Json?
 
   // External sync tracking
-  boostspaceSyncStatus    String   @default("not_configured")
-  boostspaceSyncedAt      DateTime?
-  boostspaceLastError     String?
-  suitedashSyncStatus     String   @default("not_configured")
-  suitedashRecordId       String?
+  boostspaceSyncStatus String    @default("not_configured")
+  boostspaceSyncedAt   DateTime?
+  boostspaceLastError  String?
+  suitedashSyncStatus  String    @default("not_configured")
+  suitedashRecordId    String?
 
   // Optional link to a full lead row when the event becomes one
-  leadId                  String?
+  leadId String?
 
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([eventType])
   @@index([sourceSystem])
@@ -332,15 +375,15 @@ model LeadEvent {
 // ── Lead Outcome ───────────────────────────────────────────────────
 
 model LeadOutcome {
-  id                  String         @id @default(cuid())
+  id                  String          @id @default(cuid())
   leadId              String
-  lead                Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  lead                Lead            @relation(fields: [leadId], references: [id], onDelete: Cascade)
   providerId          String
-  provider            Provider       @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  provider            Provider        @relation(fields: [providerId], references: [id], onDelete: Cascade)
   outcome             LeadOutcomeType
   responseTimeSeconds Float?
-  satisfactionRating  Float?         // 0-5
-  createdAt           DateTime       @default(now())
+  satisfactionRating  Float? // 0-5
+  createdAt           DateTime        @default(now())
 
   @@index([leadId])
   @@index([providerId])
@@ -392,7 +435,7 @@ model TrackedCall {
   city           String      @default("erie")
   callerPhone    String
   trackingNumber String
-  routedTo       String      // provider phone number
+  routedTo       String // provider phone number
   providerId     String?
   provider       Provider?   @relation(fields: [providerId], references: [id], onDelete: SetNull)
   duration       Int         @default(0) // seconds
@@ -408,26 +451,26 @@ model TrackedCall {
 // ── Checkout Session ───────────────────────────────────────────────
 
 model CheckoutSession {
-  id                String                @id @default(cuid())
-  sessionType       CheckoutSessionType
-  stripeSessionId   String?               @unique
-  niche             String
-  city              String                @default("erie")
-  providerEmail     String
-  providerName      String?
-  providerId        String?
-  provider          Provider?             @relation(fields: [providerId], references: [id], onDelete: SetNull)
-  monthlyFee        Float?
-  status            CheckoutSessionStatus @default(pending)
+  id              String                @id @default(cuid())
+  sessionType     CheckoutSessionType
+  stripeSessionId String?               @unique
+  niche           String
+  city            String                @default("erie")
+  providerEmail   String
+  providerName    String?
+  providerId      String?
+  provider        Provider?             @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  monthlyFee      Float?
+  status          CheckoutSessionStatus @default(pending)
 
   // For lead purchases
-  leadId            String?
-  temperature       LeadTemperature?
-  price             Float?
+  leadId      String?
+  temperature LeadTemperature?
+  price       Float?
 
-  createdAt         DateTime              @default(now())
-  expiresAt         DateTime?
-  completedAt       DateTime?
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+  completedAt DateTime?
 
   // ── Concierge ops fields ──────────────────────────────────────
   // Populated by the ops team on /admin/concierge. Tracks who the
@@ -459,7 +502,7 @@ model LeadDispute {
   lead         Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
   providerId   String
   provider     Provider      @relation(fields: [providerId], references: [id], onDelete: Cascade)
-  reason       String        // "wrong_number" | "spam" | "out_of_area" | "duplicate" | "other"
+  reason       String // "wrong_number" | "spam" | "out_of_area" | "duplicate" | "other"
   description  String?
   status       DisputeStatus @default(pending)
   creditAmount Float?
@@ -479,12 +522,12 @@ model LeadDispute {
 // put numbers, flags, or small objects behind the same interface.
 
 model Setting {
-  id         String   @id @default(cuid())
-  key        String   @unique
-  value      String   // JSON-serialized
-  updatedAt  DateTime @updatedAt
-  updatedBy  String?  // email of admin who last touched it
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String // JSON-serialized
+  updatedAt DateTime @updatedAt
+  updatedBy String? // email of admin who last touched it
+  createdAt DateTime @default(now())
 
   @@index([key])
   @@map("settings")
@@ -493,15 +536,15 @@ model Setting {
 // ── Audit Log ──────────────────────────────────────────────────────
 
 model AuditLog {
-  id         String   @id @default(cuid())
-  action     String   // "territory.claimed", "provider.login", "subscription.changed", etc.
-  entityType String   // "provider", "lead", "territory", etc.
+  id         String    @id @default(cuid())
+  action     String // "territory.claimed", "provider.login", "subscription.changed", etc.
+  entityType String // "provider", "lead", "territory", etc.
   entityId   String?
   providerId String?
   provider   Provider? @relation(fields: [providerId], references: [id], onDelete: SetNull)
-  metadata   Json?    // Arbitrary context data
+  metadata   Json? // Arbitrary context data
   ipAddress  String?
-  createdAt  DateTime @default(now())
+  createdAt  DateTime  @default(now())
 
   @@index([action])
   @@index([providerId])
@@ -548,7 +591,7 @@ model User {
   emailVerified DateTime?
   image         String?
   role          String    @default("provider") // "provider" | "admin"
-  providerId    String?   // Links user to their provider profile
+  providerId    String? // Links user to their provider profile
 
   accounts Account[]
   sessions Session[]
@@ -570,7 +613,7 @@ model VerificationToken {
 
 model RateLimitEntry {
   id        String   @id @default(cuid())
-  key       String   // e.g., "lead:192.168.1.1"
+  key       String // e.g., "lead:192.168.1.1"
   createdAt DateTime @default(now())
 
   @@index([key, createdAt])
@@ -671,16 +714,298 @@ model ApiKey {
 // ── Webhook Endpoint ──────────────────────────────────────────────
 
 model WebhookEndpoint {
-  id          String   @id @default(cuid())
-  providerId  String
-  provider    Provider @relation(fields: [providerId], references: [id])
-  url         String
-  secret      String
-  events      String[] @default(["lead.created", "lead.routed"])
-  isActive    Boolean  @default(true)
-  failCount   Int      @default(0)
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  providerId String
+  provider   Provider @relation(fields: [providerId], references: [id])
+  url        String
+  secret     String
+  events     String[] @default(["lead.created", "lead.routed"])
+  isActive   Boolean  @default(true)
+  failCount  Int      @default(0)
+  createdAt  DateTime @default(now())
 
   @@index([providerId])
   @@map("webhook_endpoints")
+}
+
+// Automated offer engine: ThriveCart/ConvertBox -> Neon -> fulfillment -> Boost/SuiteDash.
+
+model Offer {
+  id                String               @id @default(cuid())
+  slug              String               @unique
+  title             String
+  shortTitle        String?
+  description       String
+  category          String
+  fulfillmentType   OfferFulfillmentType
+  status            OfferStatus          @default(active)
+  basePriceCents    Int                  @default(0)
+  currency          String               @default("USD")
+  checkoutUrl       String?
+  checkoutProductId String?
+  repoSource        String?
+  autoFulfillable   Boolean              @default(true)
+  sortOrder         Int                  @default(100)
+  metadata          Json?                @default("{}")
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  variants      OfferVariant[]
+  serviceMaps   ServiceOfferMap[]
+  purchases     OfferPurchase[]
+  interactions  OfferInteraction[]
+  subscriptions OfferSubscriptionEntitlement[]
+
+  @@index([status, category])
+  @@index([checkoutProductId])
+  @@map("offers")
+}
+
+model OfferVariant {
+  id                String   @id @default(cuid())
+  offerId           String
+  offer             Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  serviceSlug       String?
+  serviceFamily     String?
+  headline          String
+  subheadline       String
+  painPoint         String
+  promise           String
+  primaryCta        String
+  deliverySummary   String
+  deliverableConfig Json?    @default("{}")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([offerId, serviceSlug, serviceFamily])
+  @@index([serviceSlug])
+  @@index([serviceFamily])
+  @@map("offer_variants")
+}
+
+model ServiceOfferMap {
+  id                    String   @id @default(cuid())
+  serviceSlug           String
+  serviceLabel          String
+  serviceFamily         String
+  offerId               String
+  offer                 Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  priority              Int      @default(100)
+  visitorSegment        String   @default("provider")
+  urgency               String   @default("standard")
+  conversionAngle       String
+  painPoint             String
+  recommendedPriceCents Int?
+  isPrimary             Boolean  @default(false)
+  metadata              Json?    @default("{}")
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([serviceSlug, offerId, visitorSegment])
+  @@index([serviceSlug, priority])
+  @@index([serviceFamily])
+  @@index([offerId])
+  @@map("service_offer_maps")
+}
+
+model OfferCustomer {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  firstName         String?
+  lastName          String?
+  fullName          String?
+  phone             String?
+  companyName       String?
+  websiteUrl        String?
+  googleBusinessUrl String?
+  city              String   @default("erie")
+  county            String   @default("Erie County")
+  state             String   @default("PA")
+  suitedashRecordId String?
+  metadata          Json?    @default("{}")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  purchases     OfferPurchase[]
+  interactions  OfferInteraction[]
+  subscriptions OfferSubscriptionEntitlement[]
+
+  @@index([email])
+  @@map("offer_customers")
+}
+
+model OfferPurchase {
+  id                   String              @id @default(cuid())
+  offerId              String
+  offer                Offer               @relation(fields: [offerId], references: [id], onDelete: Restrict)
+  customerId           String
+  customer             OfferCustomer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  serviceSlug          String
+  serviceLabel         String
+  serviceFamily        String
+  status               OfferPurchaseStatus @default(pending)
+  amountCents          Int                 @default(0)
+  currency             String              @default("USD")
+  sourceSystem         String              @default("erie-pro")
+  sourcePage           String?
+  sourcePageType       String?
+  convertBoxId         String?
+  convertBoxEventId    String?
+  thriveCartOrderId    String?
+  thriveCartProductId  String?
+  checkoutSessionId    String?
+  coupon               String?
+  affiliate            String?
+  utmSource            String?
+  utmMedium            String?
+  utmCampaign          String?
+  gclid                String?
+  rawPayload           Json?               @default("{}")
+  normalizedPayload    Json?               @default("{}")
+  boostspaceSyncStatus String              @default("not_configured")
+  boostspaceSyncedAt   DateTime?
+  boostspaceLastError  String?
+  suitedashSyncStatus  String              @default("not_configured")
+  suitedashRecordId    String?
+  emailDeliveryStatus  String              @default("pending")
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  paidAt               DateTime?
+  fulfilledAt          DateTime?
+
+  fulfillmentJobs FulfillmentJob[]
+  generatedAssets GeneratedAsset[]
+  subscriptions   OfferSubscriptionEntitlement[]
+
+  @@index([status, createdAt])
+  @@index([serviceSlug])
+  @@index([serviceFamily])
+  @@index([thriveCartOrderId])
+  @@index([customerId])
+  @@map("offer_purchases")
+}
+
+model FulfillmentJob {
+  id          String               @id @default(cuid())
+  purchaseId  String
+  purchase    OfferPurchase        @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  jobType     String
+  status      FulfillmentJobStatus @default(pending)
+  attempts    Int                  @default(0)
+  lastError   String?
+  input       Json?                @default("{}")
+  output      Json?                @default("{}")
+  runAfter    DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  generatedAssets GeneratedAsset[]
+
+  @@index([status, runAfter])
+  @@index([purchaseId])
+  @@map("fulfillment_jobs")
+}
+
+model GeneratedAsset {
+  id               String             @id @default(cuid())
+  purchaseId       String
+  purchase         OfferPurchase      @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  fulfillmentJobId String?
+  fulfillmentJob   FulfillmentJob?    @relation(fields: [fulfillmentJobId], references: [id], onDelete: SetNull)
+  assetType        GeneratedAssetType
+  title            String
+  summary          String
+  contentHtml      String?
+  contentMarkdown  String?
+  downloadUrl      String?
+  publicToken      String             @unique
+  expiresAt        DateTime?
+  metadata         Json?              @default("{}")
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([purchaseId])
+  @@index([assetType])
+  @@map("generated_assets")
+}
+
+model ThriveCartEvent {
+  id                String    @id @default(cuid())
+  eventType         String
+  orderId           String?
+  productId         String?
+  customerEmail     String?
+  purchaseId        String?
+  signatureValid    Boolean   @default(false)
+  rawPayload        Json      @default("{}")
+  normalizedPayload Json?     @default("{}")
+  processedAt       DateTime?
+  processingStatus  String    @default("pending")
+  lastError         String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([eventType])
+  @@index([orderId])
+  @@index([productId])
+  @@index([customerEmail])
+  @@index([processingStatus])
+  @@map("thrivecart_events")
+}
+
+model OfferInteraction {
+  id             String         @id @default(cuid())
+  offerId        String?
+  offer          Offer?         @relation(fields: [offerId], references: [id], onDelete: SetNull)
+  customerId     String?
+  customer       OfferCustomer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  eventType      String
+  serviceSlug    String?
+  serviceLabel   String?
+  serviceFamily  String?
+  sourcePage     String?
+  sourcePageType String?
+  visitorSegment String?
+  convertBoxId   String?
+  sessionId      String?
+  visitorId      String?
+  utmSource      String?
+  utmMedium      String?
+  utmCampaign    String?
+  gclid          String?
+  metadata       Json?          @default("{}")
+  createdAt      DateTime       @default(now())
+
+  @@index([eventType])
+  @@index([serviceSlug])
+  @@index([offerId])
+  @@index([customerId])
+  @@map("offer_interactions")
+}
+
+model OfferSubscriptionEntitlement {
+  id                     String         @id @default(cuid())
+  offerId                String
+  offer                  Offer          @relation(fields: [offerId], references: [id], onDelete: Restrict)
+  customerId             String
+  customer               OfferCustomer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  purchaseId             String?
+  purchase               OfferPurchase? @relation(fields: [purchaseId], references: [id], onDelete: SetNull)
+  serviceSlug            String?
+  serviceFamily          String?
+  status                 String         @default("active")
+  startsAt               DateTime       @default(now())
+  renewsAt               DateTime?
+  endsAt                 DateTime?
+  externalSubscriptionId String?
+  metadata               Json?          @default("{}")
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  @@index([status, renewsAt])
+  @@index([customerId])
+  @@index([externalSubscriptionId])
+  @@map("offer_subscription_entitlements")
 }

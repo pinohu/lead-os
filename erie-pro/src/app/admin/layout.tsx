@@ -50,6 +50,7 @@ const navSections: NavSection[] = [
     label: "Business",
     items: [
       { href: "/admin/revenue", label: "Revenue", icon: "💰" },
+      { href: "/admin/offers", label: "Automated Offers", icon: "🛒" },
       { href: "/admin/founding", label: "Founding Offer", icon: "🔒" },
       { href: "/admin/concierge", label: "Concierge Inbox", icon: "🛎️", badgeKey: "concierge" as const },
       { href: "/admin/calls", label: "Call Tracking", icon: "📞" },

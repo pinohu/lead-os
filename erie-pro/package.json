@@ -11,6 +11,7 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
+    "offers:sync": "npx tsx src/scripts/sync-offer-catalog.ts",
     "stripe:setup": "npx tsx src/scripts/stripe-setup.ts",
     "scrape:places": "npx tsx src/scripts/scrape-google-places.ts",
     "scrape:places:dry": "npx tsx src/scripts/scrape-google-places.ts --dry-run --skip-reviews --limit=5",
