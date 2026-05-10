@@ -2,6 +2,12 @@
 
 This pack turns the Erie.Pro ConvertBox strategy into a build-ready configuration. It assumes the live site has 112 service groups and thousands of intent URLs, so the ConvertBox setup should be systematic rather than one-off popups.
 
+## Current Correction
+
+The earlier 10-box build pattern is now superseded by the service-aware family plan in `SERVICE-AWARE-FLOW-COPY.md` and `CAMPAIGN-BUILD-SHEET.csv`.
+
+The original 10 boxes should be treated as inactive technical drafts only. They prove ConvertBox steps, forms, targeting, and styling can be configured, but they are too generic for final production. The next production build should use family-specific copy and questions for emergency home response, planned projects, seasonal Erie services, cleaning/turnover, pest/environmental, auto/roadside/marine, health appointments, professional consultations, provider claims, and exit/return rescue.
+
 ## Goal
 
 Use ConvertBox as a polite conversion layer on top of Erie.Pro authority pages. The overlay should help visitors move faster, not distract them.
@@ -32,13 +38,13 @@ Create these groups:
 
 Recommended naming:
 
-`EP-[number] [Audience] - [Intent] - [Version]`
+`EP-F[number] [Service Family] - [Version]`
 
 Examples:
 
-- `EP-01 Visitor - Service Finder - v1`
-- `EP-02 Emergency - Callback Request - v1`
-- `EP-04 Pricing - Cost Confidence - v1`
+- `EP-F01 Emergency Home Response - v1`
+- `EP-F02 Planned Home Projects - v1`
+- `EP-F07 Health And Wellness Appointments - v1`
 
 ## Global UX Rules
 
@@ -397,4 +403,3 @@ Start with draft mode, then activate by family:
 8. Provider acquisition
 
 Do not activate all ten campaigns at once. Launch the first three, review submissions and UX, then expand.
-

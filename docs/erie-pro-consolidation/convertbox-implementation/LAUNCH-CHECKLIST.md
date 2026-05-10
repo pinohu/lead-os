@@ -9,20 +9,25 @@ Use this checklist when moving from plan to live ConvertBox configuration.
 - Confirm the script loads on production pages and not on admin or preview-only routes.
 - Confirm the current live service count is 112.
 - Confirm each service is represented in `SERVICE-FAMILY-MAP.csv`.
+- Confirm each box uses the service-aware copy and question set from `SERVICE-AWARE-FLOW-COPY.md`.
+- Confirm no consumer-facing box still uses generic developer-style copy without service context.
+- Confirm health, funeral, legal, financial, and senior-care flows use privacy-safe appointment or consultation language instead of contractor or quote language.
+- Confirm urgent service flows ask the right first triage question for the service: leak, no heat, electrical hazard, sewage backup, lockout, disabled vehicle, storm damage, or similar.
+- Confirm seasonal Erie flows ask timing, property type, storm/season context, and recurring-vs-one-time need.
 - Confirm the lead destination is ready before activating public boxes.
 
 ## Build Order
 
-- Build `EP-03 Service - Fast Quote - v1`.
-- Build `EP-02 Emergency - Callback Request - v1`.
-- Build `EP-04 Pricing - Cost Confidence - v1`.
-- Build `EP-01 Visitor - Service Finder - v1`.
-- Build `EP-05 Project - Planner - v1`.
-- Build `EP-06 Appointment - Professional Services - v1`.
-- Build `EP-07 Research - Checklist Capture - v1`.
-- Build `EP-08 Provider - Claim Territory - v1`.
-- Build `EP-09 Exit - Quote Rescue - v1`.
-- Build `EP-10 Returning - Resume Request - v1`.
+- Build `EP-F01 Emergency Home Response - v1`.
+- Build `EP-F02 Planned Home Projects - v1`.
+- Build `EP-F03 Seasonal Erie Services - v1`.
+- Build `EP-F04 Cleaning And Turnover - v1`.
+- Build `EP-F05 Pest And Environmental - v1`.
+- Build `EP-F06 Auto Roadside And Marine - v1`.
+- Build `EP-F07 Health And Wellness Appointments - v1`.
+- Build `EP-F08 Professional Legal And Financial - v1`.
+- Build `EP-F09 Provider Territory Claim - v1`.
+- Build `EP-F10 Returning And Exit Rescue - v1`.
 
 ## QA Tests
 
@@ -37,14 +42,15 @@ Test desktop and mobile for each active box:
 - The box does not cover primary navigation or native forms.
 - Submission reaches the expected lead destination.
 - Hidden fields include campaign, service, page, and attribution data.
+- Copy matches the service family and does not read like internal documentation.
 
 ## First Activation
 
 Activate only these first:
 
-- `EP-03 Service - Fast Quote - v1`
-- `EP-02 Emergency - Callback Request - v1`
-- `EP-04 Pricing - Cost Confidence - v1`
+- `EP-F01 Emergency Home Response - v1`
+- `EP-F03 Seasonal Erie Services - v1`
+- `EP-F04 Cleaning And Turnover - v1`
 
 Run the first activation for 48 to 72 hours before expanding.
 
@@ -62,12 +68,13 @@ Watch:
 
 After the first three boxes are stable:
 
-- Add `EP-01 Visitor - Service Finder - v1` to broad pages.
-- Add `EP-05 Project - Planner - v1` to planned project families.
-- Add `EP-06 Appointment - Professional Services - v1` to health and professional service families.
-- Add `EP-07 Research - Checklist Capture - v1` to guides and checklist pages.
-- Add `EP-08 Provider - Claim Territory - v1` only after provider intake routing is ready.
-- Add exit intent and returning visitor boxes last.
+- Add `EP-F02 Planned Home Projects - v1`.
+- Add `EP-F05 Pest And Environmental - v1`.
+- Add `EP-F06 Auto Roadside And Marine - v1`.
+- Add `EP-F07 Health And Wellness Appointments - v1`.
+- Add `EP-F08 Professional Legal And Financial - v1`.
+- Add `EP-F09 Provider Territory Claim - v1` only after provider intake routing is ready.
+- Add `EP-F10 Returning And Exit Rescue - v1` last.
 
 ## Stop Conditions
 
@@ -79,4 +86,3 @@ Pause a box immediately if:
 - It sends test or live submissions to the wrong destination.
 - It creates duplicate lead storms.
 - It creates a poor mobile experience.
-
