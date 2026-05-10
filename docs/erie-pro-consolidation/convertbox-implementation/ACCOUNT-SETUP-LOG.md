@@ -241,6 +241,8 @@ Uploaded avatar assets:
 - `erie-pro-provider-territory-claim.svg`
 - `erie-pro-returning-and-exit-rescue.svg`
 
+Ninth correction recorded after full-box audit: `FULL-BOX-AUDIT-2026-05-10.md` was generated from fresh authenticated ConvertBox API snapshots. The audit found one UX issue in seven boxes: the visual/icon pass had weakened the explicit `not sure / help me choose` fallback path on the first screen. Those seven boxes were corrected, snapshots were refreshed, and the audit now reports zero JSON-level structural issues across all 10 drafts. The boxes are still not approved for activation until visual/mobile preview and test submissions are completed.
+
 The visual editor opened successfully, but the builder uses a drag-and-drop canvas and normal browser text-fill automation intermittently failed on text entry with the in-browser clipboard layer. To avoid leaving blank shells, the completed designs were written through ConvertBox's authenticated editor save endpoint using the same structured JSON schema the builder saves.
 
 To protect Erie.Pro user experience, the boxes were left inactive. They are designed and fielded, but should not be activated until final mobile/desktop preview and test submissions are reviewed.

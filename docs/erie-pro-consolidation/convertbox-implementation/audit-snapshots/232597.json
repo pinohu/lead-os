@@ -1,0 +1,1723 @@
+{
+  "id": 232597,
+  "created_at": "2026-05-10T07:55:49.000000Z",
+  "updated_at": "2026-05-10T10:11:23.000000Z",
+  "deleted_at": null,
+  "site_id": 0,
+  "active": false,
+  "position": 0,
+  "name": "EP-F01 Emergency Home Response - Draft Preview",
+  "campaign_id": 68103,
+  "preview": "production/previews/232597-A.jpg",
+  "has_form": true,
+  "meta": {
+    "steps_introduction": false,
+    "ep_service_aware_preview": true,
+    "ep_service_family": "Emergency Home Response",
+    "ep_audit_applied_at": "2026-05-10T09:45:52.116Z",
+    "ep_branching_lessons_applied": true,
+    "ep_branching_lesson_source": "https://app.convertbox.com/share/SE6OC2LI",
+    "ep_branching_lessons_applied_at": "2026-05-10T09:53:16.661Z",
+    "ep_professional_visual_system_applied": true,
+    "ep_professional_visual_system_applied_at": "2026-05-10T10:02:46.499Z",
+    "ep_visual_label": "Urgent Erie County Help",
+    "ep_profile_photos_applied": true,
+    "ep_profile_photos_applied_at": "2026-05-10T10:11:12.170Z",
+    "ep_profile_photo_id": 134777
+  },
+  "variations": [
+    {
+      "id": "A",
+      "preview": "production/previews/232597-A.jpg",
+      "layout": {
+        "type": "bar",
+        "bar": {
+          "position": "top",
+          "push_page_down": false
+        },
+        "slide_in": {
+          "position": "bottom-left"
+        },
+        "embedded_large": {
+          "width": 750
+        },
+        "embedded_small": {
+          "width": 300
+        }
+      },
+      "timer": {
+        "type": "evergreen",
+        "days": null,
+        "hours": null,
+        "minutes": null,
+        "ends": null,
+        "action": {
+          "type": "stop",
+          "link": null
+        },
+        "custom_labels": false,
+        "label_days": "days",
+        "label_hours": "hrs",
+        "label_minutes": "mins",
+        "label_seconds": "secs"
+      },
+      "profile": {
+        "enabled": true,
+        "photo": {
+          "id": 134777,
+          "path": "users/952/1b0bd9ce051f82279461f6ae1977410f.svg",
+          "name": "erie-pro-emergency-home-response.svg",
+          "ext": "svg"
+        },
+        "name": "Erie.Pro",
+        "name_show": true,
+        "title": "Urgent Erie County Help",
+        "title_show": true,
+        "color": "dark",
+        "layout": "chat"
+      },
+      "teaser": {
+        "enabled": true,
+        "text_color": "#1F3A5F",
+        "background_color": "#ffffff",
+        "message": "Urgent Erie County Help",
+        "message_show": true,
+        "icon": "none",
+        "photo": {
+          "id": 134777,
+          "path": "users/952/1b0bd9ce051f82279461f6ae1977410f.svg",
+          "name": "erie-pro-emergency-home-response.svg",
+          "ext": "svg"
+        },
+        "position": "left",
+        "pulse": true,
+        "sound": "none",
+        "retain": false,
+        "reveal": false,
+        "animation": "teaser-slide-up"
+      },
+      "steps": [
+        {
+          "id": "step88e16869a1a140c1",
+          "name": "What happened?",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep1d8a525879f74189",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "34",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 0,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#FFF5F5;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[!] Urgent Erie County Help</span><br><b>Need urgent Erie County help?</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep385f258fdda04f00",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "18",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "Start with the issue. We will keep the next step short and focused.<br><br><b>Choose the closest path. You can still change direction later.</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "23",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep41a50cfeabf14c20",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#4A4A4A",
+                  "fontSize": "20",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<b>Start with one quick choice. Contact details come after the request is clear.</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "13",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep6f6abe46f8d24ff5",
+                "type": "divider",
+                "title": "Divider",
+                "options": {
+                  "hideOnMobile": false,
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "color": "#D7DEE6",
+                  "width": 500,
+                  "height": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "visual-divider-232597-0",
+                "type": "divider",
+                "title": "Divider",
+                "options": {
+                  "hideOnMobile": false,
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "color": "#D7DEE6",
+                  "width": 500,
+                  "height": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "visual-trust-232597-0",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#4A4A4A",
+                  "fontSize": "13",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Fast routing</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Safety-first</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span></div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "13",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 0,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epeed6390f39234dc9",
+                "type": "button",
+                "title": "Button",
+                "options": {
+                  "fontFamily": "roboto",
+                  "multiple": true,
+                  "amount": 3,
+                  "items": [
+                    {
+                      "id": "btn216f871949644d09",
+                      "color": "#ffffff",
+                      "backgroundColor": "#C8102E",
+                      "text": "<b>[!] Water, heat, power, or storm</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "step5f3e144b746e4ae4",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_path",
+                        "custom_field_value": "urgent",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "water-heat-power-or-storm"
+                    },
+                    {
+                      "id": "btne156c261ab9e43a6",
+                      "color": "#ffffff",
+                      "backgroundColor": "#1F3A5F",
+                      "text": "<b>[phone] Lockout, access, or roadside</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "step9a9eeb74c58a4617",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_path",
+                        "custom_field_value": "standard",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "lockout-access-or-roadside"
+                    },
+                    {
+                      "id": "btn5c84e015076d410c",
+                      "color": "#ffffff",
+                      "backgroundColor": "#6B7280",
+                      "text": "<b>[?] Not sure what counts as urgent</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "step7e777e6a51b84357",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_path",
+                        "custom_field_value": "project",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "not-sure-what-counts-as-urgent"
+                    }
+                  ],
+                  "shape": "rounded",
+                  "size": "l",
+                  "width": "wide",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  }
+                }
+              },
+              {
+                "id": "ep778933254f6141d9",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#5D6978",
+                  "fontSize": "12",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">For emergencies, keep your phone nearby. Erie.Pro helps route the request; call 911 for immediate danger.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#FFF5F5",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#FFF5F5",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "step5f3e144b746e4ae4",
+          "name": "Is there active damage or risk?",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep3e7f940a5e3a41d6",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#FFF5F5;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[!] Urgent Erie County Help</span><br><b>Urgent Erie request</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep44799573fd5b4ef1",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">If this needs attention today, send the key details now.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep7647f92dd505496a",
+                "type": "form",
+                "title": "Form",
+                "options": {
+                  "size": "m",
+                  "shape": "rounded",
+                  "fontFamily": "roboto",
+                  "buttonBackgroundColor": "#C8102E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "labelTextColor": "#1F3A5F",
+                  "hidePrefilledFields": true,
+                  "action": {
+                    "type": "next_step",
+                    "link": null,
+                    "pass": false,
+                    "step": "step71ee21e5c54344a1",
+                    "prevent_showing": true,
+                    "box": null,
+                    "close": false
+                  },
+                  "fields": [
+                    {
+                      "type": "full_name",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "First and last name",
+                        "name": "full_name",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the emergency home response need",
+                        "name": "emergency_details",
+                        "type": "textarea",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_urgency",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "emergency"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_convertbox_id",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "232597"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_intent",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "service_finder"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_family",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "core"
+                      }
+                    }
+                  ],
+                  "actions": [],
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "buttonText": "<b>Send urgent request</b>",
+                  "layout": "vertical",
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  },
+                  "conditional_integrations": [],
+                  "conditional_actions": []
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "step9a9eeb74c58a4617",
+          "name": "Where do you need help?",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep42747a055ad04459",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#FFF5F5;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[!] Urgent Erie County Help</span><br><b>Get matched free</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epc488762ebda74570",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">What happened? and we will look for one solid Erie County match.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep8f113b6850774ded",
+                "type": "form",
+                "title": "Form",
+                "options": {
+                  "size": "m",
+                  "shape": "rounded",
+                  "fontFamily": "roboto",
+                  "buttonBackgroundColor": "#C8102E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "labelTextColor": "#1F3A5F",
+                  "hidePrefilledFields": true,
+                  "action": {
+                    "type": "next_step",
+                    "link": null,
+                    "pass": false,
+                    "step": "stepa33c68cfd5ec4c62",
+                    "prevent_showing": true,
+                    "box": null,
+                    "close": false
+                  },
+                  "fields": [
+                    {
+                      "type": "full_name",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "First and last name",
+                        "name": "full_name",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the emergency home response need",
+                        "name": "service_need",
+                        "type": "textarea",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_urgency",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "standard"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_convertbox_id",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "232597"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_intent",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "service_finder"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_family",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "core"
+                      }
+                    }
+                  ],
+                  "actions": [],
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "buttonText": "<b>Send urgent request</b>",
+                  "layout": "vertical",
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  },
+                  "conditional_integrations": [],
+                  "conditional_actions": []
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "step7e777e6a51b84357",
+          "name": "How should we reach you?",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep21b2f2eb24344960",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#FFF5F5;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[!] Urgent Erie County Help</span><br><b>Plan a larger job</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep21e48d53e6e1454c",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">For bigger jobs, share the scope and timing so the first conversation starts prepared.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epfd576435edcf4e06",
+                "type": "form",
+                "title": "Form",
+                "options": {
+                  "size": "m",
+                  "shape": "rounded",
+                  "fontFamily": "roboto",
+                  "buttonBackgroundColor": "#C8102E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "labelTextColor": "#1F3A5F",
+                  "hidePrefilledFields": true,
+                  "action": {
+                    "type": "next_step",
+                    "link": null,
+                    "pass": false,
+                    "step": "stepa33c68cfd5ec4c62",
+                    "prevent_showing": true,
+                    "box": null,
+                    "close": false
+                  },
+                  "fields": [
+                    {
+                      "type": "full_name",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "First and last name",
+                        "name": "full_name",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the emergency home response need",
+                        "name": "project_scope",
+                        "type": "textarea",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_urgency",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "project"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_convertbox_id",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "232597"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_intent",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "service_finder"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_family",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "core"
+                      }
+                    }
+                  ],
+                  "actions": [],
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "buttonText": "<b>Send urgent request</b>",
+                  "layout": "vertical",
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  },
+                  "conditional_integrations": [],
+                  "conditional_actions": []
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "stepa33c68cfd5ec4c62",
+          "name": "Not ready yet?",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep741bc5abe58b4977",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#FFF5F5;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[!] Urgent Erie County Help</span><br><b>Not sure what to request?</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epb4fc28e06a194199",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "Choose the closest issue and add one sentence. Erie.Pro can route from symptoms, not just service names.<br><br>This is the low-pressure path: save it, ask a question, or get routed from context.",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epcb74e82524fe4099",
+                "type": "button",
+                "title": "Button",
+                "options": {
+                  "fontFamily": "roboto",
+                  "multiple": true,
+                  "amount": 2,
+                  "items": [
+                    {
+                      "id": "btnb7953da98137407f",
+                      "color": "#ffffff",
+                      "backgroundColor": "#C8102E",
+                      "text": "<b>[!] Help me choose the right urgent path</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "step71ee21e5c54344a1",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_offer",
+                        "custom_field_value": "free_match",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "help-me-choose-the-right-urgent-path"
+                    },
+                    {
+                      "id": "btn13b581a88e0a45be",
+                      "color": "#ffffff",
+                      "backgroundColor": "#1F3A5F",
+                      "text": "<b>[phone] Help me choose first</b>",
+                      "action": {
+                        "type": "link",
+                        "link": "https://erie.pro/#concierge",
+                        "step": null,
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_offer",
+                        "custom_field_value": "concierge_interest",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "help-me-choose-first"
+                    }
+                  ],
+                  "shape": "rounded",
+                  "size": "l",
+                  "width": "wide",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  }
+                }
+              },
+              {
+                "id": "ep9ecf73983d4a48ab",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#5D6978",
+                  "fontSize": "12",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">You can stay with the free match. No pressure.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "step71ee21e5c54344a1",
+          "name": "Request received",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "epbe8c49fad2c3405b",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 2,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#FFF5F5;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[!] Urgent Erie County Help</span><br><b>Request received. Keep your phone nearby if this is urgent.</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epfbfef3dd8d57437e",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "Thanks. Erie.Pro will use the service-family context before routing this request.",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epcb25f86b0da84c63",
+                "type": "button",
+                "title": "Button",
+                "options": {
+                  "fontFamily": "roboto",
+                  "multiple": false,
+                  "amount": 1,
+                  "items": [
+                    {
+                      "id": "btncea483b10e574c87",
+                      "color": "#ffffff",
+                      "backgroundColor": "#C8102E",
+                      "text": "<b>[!] Water, heat, power, lock, or storm</b>",
+                      "action": {
+                        "type": "close",
+                        "link": null,
+                        "step": null,
+                        "new_tab": false,
+                        "prevent_showing": true,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": false,
+                        "custom_field_name": null,
+                        "custom_field_value": null,
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": []
+                    }
+                  ],
+                  "shape": "rounded",
+                  "size": "l",
+                  "width": "wide",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  }
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "testing": {
+    "notes": null,
+    "type": "sticky",
+    "max_variation_id": "A"
+  },
+  "scheduled": false,
+  "schedule_start": null,
+  "schedule_end": null,
+  "layout_type_group": "overlay",
+  "campaign": {
+    "id": 68103,
+    "name": "Erie.Pro - Core",
+    "has_goal": 0,
+    "goal": null,
+    "site_id": 8358,
+    "created_at": "2026-05-10T07:40:31.000000Z",
+    "updated_at": "2026-05-10T07:40:57.000000Z",
+    "active": 0,
+    "position": 4,
+    "goal_site": null,
+    "deleted_at": null,
+    "site": {
+      "id": 8358,
+      "account_id": 952,
+      "created_at": "2020-01-02T11:29:05.000000Z",
+      "updated_at": "2020-08-18T09:11:26.000000Z",
+      "deleted_at": null,
+      "hostname": "erie.pro",
+      "ga": false,
+      "excluded_urls": null
+    }
+  },
+  "rules_display": {
+    "target": "specific_pages",
+    "target_pages": {
+      "include": [
+        {
+          "type": "contains",
+          "value": "/services"
+        },
+        {
+          "type": "contains",
+          "value": "/service-categories"
+        }
+      ],
+      "exclude": [
+        {
+          "type": "contains",
+          "value": "/privacy"
+        },
+        {
+          "type": "contains",
+          "value": "/terms"
+        },
+        {
+          "type": "contains",
+          "value": "/admin"
+        },
+        {
+          "type": "contains",
+          "value": "/dashboard"
+        }
+      ]
+    },
+    "trigger": null,
+    "trigger_in_seconds": 10,
+    "trigger_scroll_percent": 5,
+    "duration": "indefinitly",
+    "duration_days": null,
+    "duration_views": 3,
+    "limit_per_day_times": 1,
+    "overlay_link": null,
+    "overlay_uuid": "2b3d36d7",
+    "trigger_link": "cb7e96a66e",
+    "overlay_link_meta": null,
+    "trigger_inactive_seconds": 10,
+    "trigger_time": true,
+    "trigger_scroll": false,
+    "trigger_inactive": false,
+    "trigger_leave": false,
+    "trigger_by_link": false,
+    "device": "all",
+    "duration_times": 1,
+    "duration_type": "visit",
+    "suppress_if_closed": true,
+    "suppress_until": "never"
+  },
+  "rules_visitor": {
+    "target": "all",
+    "target_rules": null,
+    "has_goal": true,
+    "goal": null,
+    "visited_page": null,
+    "conditional_rules": []
+  },
+  "design_export": {
+    "meta": [],
+    "source_box_id": 232597,
+    "share_name": "",
+    "share_url": "https://app.convertbox.com/share",
+    "share_desc_safe": ""
+  },
+  "areas": []
+}

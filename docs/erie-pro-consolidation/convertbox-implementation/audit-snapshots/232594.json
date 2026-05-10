@@ -1,0 +1,1729 @@
+{
+  "id": 232594,
+  "created_at": "2026-05-10T07:44:10.000000Z",
+  "updated_at": "2026-05-10T10:16:38.000000Z",
+  "deleted_at": null,
+  "site_id": 0,
+  "active": false,
+  "position": 0,
+  "name": "EP-F04 Cleaning And Turnover - Draft Preview",
+  "campaign_id": 68103,
+  "preview": "production/previews/232594-A.jpg",
+  "has_form": true,
+  "meta": {
+    "steps_introduction": false,
+    "ep_service_aware_preview": true,
+    "ep_service_family": "Cleaning And Turnover",
+    "ep_audit_applied_at": "2026-05-10T09:45:52.739Z",
+    "ep_branching_lessons_applied": true,
+    "ep_branching_lesson_source": "https://app.convertbox.com/share/SE6OC2LI",
+    "ep_branching_lessons_applied_at": "2026-05-10T09:53:17.417Z",
+    "ep_professional_visual_system_applied": true,
+    "ep_professional_visual_system_applied_at": "2026-05-10T10:02:47.292Z",
+    "ep_visual_label": "Cleaning, Moving, And Turnover",
+    "ep_profile_photos_applied": true,
+    "ep_profile_photos_applied_at": "2026-05-10T10:11:12.984Z",
+    "ep_profile_photo_id": 134778,
+    "ep_low_pressure_path_fixed": true,
+    "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:27.267Z"
+  },
+  "variations": [
+    {
+      "id": "A",
+      "preview": "production/previews/232594-A.jpg",
+      "layout": {
+        "type": "slide-in",
+        "bar": {
+          "position": "top",
+          "push_page_down": false
+        },
+        "slide_in": {
+          "position": "bottom-left"
+        },
+        "embedded_large": {
+          "width": 750
+        },
+        "embedded_small": {
+          "width": 300
+        }
+      },
+      "timer": {
+        "type": "evergreen",
+        "days": null,
+        "hours": null,
+        "minutes": null,
+        "ends": null,
+        "action": {
+          "type": "stop",
+          "link": null
+        },
+        "custom_labels": false,
+        "label_days": "days",
+        "label_hours": "hrs",
+        "label_minutes": "mins",
+        "label_seconds": "secs"
+      },
+      "profile": {
+        "enabled": true,
+        "photo": {
+          "id": 134778,
+          "path": "users/952/2713cd6aa58e3b98215b83311a22266e.svg",
+          "name": "erie-pro-cleaning-and-turnover.svg",
+          "ext": "svg"
+        },
+        "name": "Erie.Pro",
+        "name_show": true,
+        "title": "Cleaning, Moving, And Turnover",
+        "title_show": true,
+        "color": "dark",
+        "layout": "chat"
+      },
+      "teaser": {
+        "enabled": true,
+        "text_color": "#1F3A5F",
+        "background_color": "#ffffff",
+        "message": "Cleaning, Moving, And Turnover",
+        "message_show": true,
+        "icon": "none",
+        "photo": {
+          "id": 134778,
+          "path": "users/952/2713cd6aa58e3b98215b83311a22266e.svg",
+          "name": "erie-pro-cleaning-and-turnover.svg",
+          "ext": "svg"
+        },
+        "position": "left",
+        "pulse": true,
+        "sound": "none",
+        "retain": false,
+        "reveal": false,
+        "animation": "teaser-slide-up"
+      },
+      "steps": [
+        {
+          "id": "step460d51b38e4a4c1c",
+          "name": "What needs to be handled?",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep66c7a6f85c304804",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#0F766E",
+                  "fontSize": "34",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 0,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Need cleaning, hauling, moving, or turnover help?</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epcff4805d2ad54c3b",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "18",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "Tell us what has to be ready and when. Timing matters more than a long form.<br><br><b>Choose the closest path. You can still change direction later.</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "23",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep6ddd37c0e51b4ccc",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#4A4A4A",
+                  "fontSize": "20",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<b>Start with one quick choice. Contact details come after the request is clear.</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "13",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep369c826921314eec",
+                "type": "divider",
+                "title": "Divider",
+                "options": {
+                  "hideOnMobile": false,
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "color": "#D7DEE6",
+                  "width": 500,
+                  "height": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "visual-divider-232594-0",
+                "type": "divider",
+                "title": "Divider",
+                "options": {
+                  "hideOnMobile": false,
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "color": "#D7DEE6",
+                  "width": 500,
+                  "height": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "visual-trust-232594-0",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#4A4A4A",
+                  "fontSize": "13",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Date-aware</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Property-ready</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">No public blast</span></div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "13",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 0,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep87a35a9a6d8c4117",
+                "type": "button",
+                "title": "Button",
+                "options": {
+                  "fontFamily": "roboto",
+                  "multiple": true,
+                  "amount": 3,
+                  "items": [
+                    {
+                      "id": "btna6fbed07acef42f1",
+                      "color": "#ffffff",
+                      "backgroundColor": "#0F766E",
+                      "text": "<b>[spark] Cleaning or turnover</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "step3119a0256b2b416d",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_path",
+                        "custom_field_value": "urgent",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "cleaning-or-turnover"
+                    },
+                    {
+                      "id": "btna93dbfb9daf643d9",
+                      "color": "#ffffff",
+                      "backgroundColor": "#1F3A5F",
+                      "text": "<b>[box] Moving, junk, or dumpster</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "step74f60c23cd2547f0",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_path",
+                        "custom_field_value": "standard",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "moving-junk-or-dumpster"
+                    },
+                    {
+                      "id": "btnc768a653ade341f3",
+                      "color": "#ffffff",
+                      "backgroundColor": "#6B7280",
+                      "text": "<b>[?] Not sure which cleaning path fits</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "step374ca127f32e46ce",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_path",
+                        "custom_field_value": "project",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "not-sure-which-cleaning-path-fits"
+                    }
+                  ],
+                  "shape": "rounded",
+                  "size": "l",
+                  "width": "wide",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  }
+                }
+              },
+              {
+                "id": "epc6a1b40c80694d0b",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#5D6978",
+                  "fontSize": "12",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">Good timing details help avoid back-and-forth before a quote.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#F0FDFA",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#F0FDFA",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "step3119a0256b2b416d",
+          "name": "Tell us the size or scope",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "epad2d38f5befe4915",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#0F766E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Urgent Erie request</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep6df078eb536b4157",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">If this needs attention today, send the key details now.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epc282ac9ad1f342b4",
+                "type": "form",
+                "title": "Form",
+                "options": {
+                  "size": "m",
+                  "shape": "rounded",
+                  "fontFamily": "roboto",
+                  "buttonBackgroundColor": "#0F766E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "labelTextColor": "#1F3A5F",
+                  "hidePrefilledFields": true,
+                  "action": {
+                    "type": "next_step",
+                    "link": null,
+                    "pass": false,
+                    "step": "stepa4de3dc2c6b247dd",
+                    "prevent_showing": true,
+                    "box": null,
+                    "close": false
+                  },
+                  "fields": [
+                    {
+                      "type": "full_name",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "First and last name",
+                        "name": "full_name",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the cleaning and turnover need",
+                        "name": "emergency_details",
+                        "type": "textarea",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_urgency",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "emergency"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_convertbox_id",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "232594"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_intent",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "fast_quote"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_family",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "service"
+                      }
+                    }
+                  ],
+                  "actions": [],
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "buttonText": "<b>Send cleaning request</b>",
+                  "layout": "vertical",
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  },
+                  "conditional_integrations": [],
+                  "conditional_actions": []
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "step74f60c23cd2547f0",
+          "name": "When does it need to be ready?",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep75d1d85756a24456",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#0F766E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Get matched free</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep959d1bdbbdd14104",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">What needs to be handled? and we will look for one solid Erie County match.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epb7148d2bf83f4347",
+                "type": "form",
+                "title": "Form",
+                "options": {
+                  "size": "m",
+                  "shape": "rounded",
+                  "fontFamily": "roboto",
+                  "buttonBackgroundColor": "#0F766E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "labelTextColor": "#1F3A5F",
+                  "hidePrefilledFields": true,
+                  "action": {
+                    "type": "next_step",
+                    "link": null,
+                    "pass": false,
+                    "step": "stepb26057c219b14b8f",
+                    "prevent_showing": true,
+                    "box": null,
+                    "close": false
+                  },
+                  "fields": [
+                    {
+                      "type": "full_name",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "First and last name",
+                        "name": "full_name",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the cleaning and turnover need",
+                        "name": "service_need",
+                        "type": "textarea",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_urgency",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "standard"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_convertbox_id",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "232594"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_intent",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "fast_quote"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_family",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "service"
+                      }
+                    }
+                  ],
+                  "actions": [],
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "buttonText": "<b>Send cleaning request</b>",
+                  "layout": "vertical",
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  },
+                  "conditional_integrations": [],
+                  "conditional_actions": []
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "step374ca127f32e46ce",
+          "name": "Where should a pro follow up?",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "epd4a1fb2386e64013",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#0F766E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Plan a larger job</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep563ad58020fd4ff5",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">For bigger jobs, share the scope and timing so the first conversation starts prepared.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epc8437e5d5e7e45d4",
+                "type": "form",
+                "title": "Form",
+                "options": {
+                  "size": "m",
+                  "shape": "rounded",
+                  "fontFamily": "roboto",
+                  "buttonBackgroundColor": "#0F766E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "labelTextColor": "#1F3A5F",
+                  "hidePrefilledFields": true,
+                  "action": {
+                    "type": "next_step",
+                    "link": null,
+                    "pass": false,
+                    "step": "stepb26057c219b14b8f",
+                    "prevent_showing": true,
+                    "box": null,
+                    "close": false
+                  },
+                  "fields": [
+                    {
+                      "type": "full_name",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "First and last name",
+                        "name": "full_name",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the cleaning and turnover need",
+                        "name": "project_scope",
+                        "type": "textarea",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_urgency",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "project"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_convertbox_id",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "232594"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_intent",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "fast_quote"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_family",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "service"
+                      }
+                    }
+                  ],
+                  "actions": [],
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "buttonText": "<b>Send cleaning request</b>",
+                  "layout": "vertical",
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  },
+                  "conditional_integrations": [],
+                  "conditional_actions": []
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "stepb26057c219b14b8f",
+          "name": "Not ready yet?",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "epe58d0de6746a40a8",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#0F766E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Still comparing options?</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epdd91a83c89d1474f",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "Tell us the date, size, or obstacle and we will help route the request without overcomplicating it.<br><br>This is the low-pressure path: save it, ask a question, or get routed from context.",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epf6390aa904354a0e",
+                "type": "button",
+                "title": "Button",
+                "options": {
+                  "fontFamily": "roboto",
+                  "multiple": true,
+                  "amount": 2,
+                  "items": [
+                    {
+                      "id": "btn935fcc5d2d2c46ed",
+                      "color": "#ffffff",
+                      "backgroundColor": "#0F766E",
+                      "text": "<b>[spark] Help me pick the right cleaning path</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "stepa4de3dc2c6b247dd",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_offer",
+                        "custom_field_value": "free_match",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "help-me-pick-the-right-cleaning-path"
+                    },
+                    {
+                      "id": "btn082aab34d9ff4076",
+                      "color": "#ffffff",
+                      "backgroundColor": "#1F3A5F",
+                      "text": "<b>[box] Ask a timing question</b>",
+                      "action": {
+                        "type": "link",
+                        "link": "https://erie.pro/#concierge",
+                        "step": null,
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_offer",
+                        "custom_field_value": "concierge_interest",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "ask-a-timing-question"
+                    }
+                  ],
+                  "shape": "rounded",
+                  "size": "l",
+                  "width": "wide",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  }
+                }
+              },
+              {
+                "id": "epabf72019104e4a14",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#5D6978",
+                  "fontSize": "12",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">You can stay with the free match. No pressure.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "stepa4de3dc2c6b247dd",
+          "name": "Request received",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep0f80f6bc0ece4e0c",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#0F766E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 2,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Request received with timing and property context.</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epd0563a9df0f64eaa",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "Thanks. Erie.Pro will use the service-family context before routing this request.",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epd1fe4d3762404dbb",
+                "type": "button",
+                "title": "Button",
+                "options": {
+                  "fontFamily": "roboto",
+                  "multiple": false,
+                  "amount": 1,
+                  "items": [
+                    {
+                      "id": "btn3da4f79a35ae45df",
+                      "color": "#ffffff",
+                      "backgroundColor": "#0F766E",
+                      "text": "<b>[spark] Cleaning or turnover</b>",
+                      "action": {
+                        "type": "close",
+                        "link": null,
+                        "step": null,
+                        "new_tab": false,
+                        "prevent_showing": true,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": false,
+                        "custom_field_name": null,
+                        "custom_field_value": null,
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": []
+                    }
+                  ],
+                  "shape": "rounded",
+                  "size": "l",
+                  "width": "wide",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  }
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "testing": {
+    "notes": null,
+    "type": "sticky",
+    "max_variation_id": "A"
+  },
+  "scheduled": false,
+  "schedule_start": null,
+  "schedule_end": null,
+  "layout_type_group": "overlay",
+  "campaign": {
+    "id": 68103,
+    "name": "Erie.Pro - Core",
+    "has_goal": 0,
+    "goal": null,
+    "site_id": 8358,
+    "created_at": "2026-05-10T07:40:31.000000Z",
+    "updated_at": "2026-05-10T07:40:57.000000Z",
+    "active": 0,
+    "position": 4,
+    "goal_site": null,
+    "deleted_at": null,
+    "site": {
+      "id": 8358,
+      "account_id": 952,
+      "created_at": "2020-01-02T11:29:05.000000Z",
+      "updated_at": "2020-08-18T09:11:26.000000Z",
+      "deleted_at": null,
+      "hostname": "erie.pro",
+      "ga": false,
+      "excluded_urls": null
+    }
+  },
+  "rules_display": {
+    "target": "specific_pages",
+    "target_pages": {
+      "include": [
+        {
+          "type": "contains",
+          "value": "/services"
+        },
+        {
+          "type": "contains",
+          "value": "/service"
+        },
+        {
+          "type": "contains",
+          "value": "/quote"
+        }
+      ],
+      "exclude": [
+        {
+          "type": "contains",
+          "value": "/privacy"
+        },
+        {
+          "type": "contains",
+          "value": "/terms"
+        },
+        {
+          "type": "contains",
+          "value": "/admin"
+        },
+        {
+          "type": "contains",
+          "value": "/dashboard"
+        }
+      ]
+    },
+    "trigger": "scroll",
+    "trigger_in_seconds": 5,
+    "trigger_scroll_percent": 45,
+    "duration": "indefinitly",
+    "duration_days": null,
+    "duration_views": 3,
+    "limit_per_day_times": 1,
+    "overlay_link": null,
+    "overlay_uuid": "7f0f7788",
+    "trigger_link": "cb747d3412",
+    "overlay_link_meta": null,
+    "trigger_inactive_seconds": 5,
+    "trigger_time": false,
+    "trigger_scroll": true,
+    "trigger_inactive": false,
+    "trigger_leave": false,
+    "trigger_by_link": false,
+    "device": "all",
+    "duration_times": 1,
+    "duration_type": "visit",
+    "suppress_if_closed": true,
+    "suppress_until": "never"
+  },
+  "rules_visitor": {
+    "target": "all",
+    "target_rules": null,
+    "has_goal": true,
+    "goal": null,
+    "visited_page": null,
+    "conditional_rules": []
+  },
+  "design_export": {
+    "meta": [],
+    "source_box_id": 232594,
+    "share_name": "",
+    "share_url": "https://app.convertbox.com/share",
+    "share_desc_safe": ""
+  },
+  "areas": []
+}

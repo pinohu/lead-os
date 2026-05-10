@@ -1,0 +1,1731 @@
+{
+  "id": 232603,
+  "created_at": "2026-05-10T07:59:35.000000Z",
+  "updated_at": "2026-05-10T10:11:38.000000Z",
+  "deleted_at": null,
+  "site_id": 0,
+  "active": false,
+  "position": 0,
+  "name": "EP-F10 Returning And Exit Rescue - Draft Preview",
+  "campaign_id": 68103,
+  "preview": "production/previews/232603-A.jpg",
+  "has_form": true,
+  "meta": {
+    "steps_introduction": false,
+    "ep_service_aware_preview": true,
+    "ep_service_family": "Returning And Exit Rescue",
+    "ep_audit_applied_at": "2026-05-10T09:45:54.935Z",
+    "ep_branching_lessons_applied": true,
+    "ep_branching_lesson_source": "https://app.convertbox.com/share/SE6OC2LI",
+    "ep_branching_lessons_applied_at": "2026-05-10T09:53:20.023Z",
+    "ep_professional_visual_system_applied": true,
+    "ep_professional_visual_system_applied_at": "2026-05-10T10:02:49.694Z",
+    "ep_visual_label": "Finish Or Save Your Request",
+    "ep_profile_photos_applied": true,
+    "ep_profile_photos_applied_at": "2026-05-10T10:11:15.742Z",
+    "ep_profile_photo_id": 134783
+  },
+  "variations": [
+    {
+      "id": "A",
+      "preview": "production/previews/232603-A.jpg",
+      "layout": {
+        "type": "slide-in",
+        "bar": {
+          "position": "top",
+          "push_page_down": false
+        },
+        "slide_in": {
+          "position": "bottom-left"
+        },
+        "embedded_large": {
+          "width": 750
+        },
+        "embedded_small": {
+          "width": 300
+        }
+      },
+      "timer": {
+        "type": "evergreen",
+        "days": null,
+        "hours": null,
+        "minutes": null,
+        "ends": null,
+        "action": {
+          "type": "stop",
+          "link": null
+        },
+        "custom_labels": false,
+        "label_days": "days",
+        "label_hours": "hrs",
+        "label_minutes": "mins",
+        "label_seconds": "secs"
+      },
+      "profile": {
+        "enabled": true,
+        "photo": {
+          "id": 134783,
+          "path": "users/952/e54cb0c97ac20004ec58545eb1739306.svg",
+          "name": "erie-pro-returning-and-exit-rescue.svg",
+          "ext": "svg"
+        },
+        "name": "Erie.Pro",
+        "name_show": true,
+        "title": "Finish Or Save Your Request",
+        "title_show": true,
+        "color": "dark",
+        "layout": "chat"
+      },
+      "teaser": {
+        "enabled": true,
+        "text_color": "#1F3A5F",
+        "background_color": "#ffffff",
+        "message": "Finish Or Save Your Request",
+        "message_show": true,
+        "icon": "none",
+        "photo": {
+          "id": 134783,
+          "path": "users/952/e54cb0c97ac20004ec58545eb1739306.svg",
+          "name": "erie-pro-returning-and-exit-rescue.svg",
+          "ext": "svg"
+        },
+        "position": "left",
+        "pulse": true,
+        "sound": "none",
+        "retain": false,
+        "reveal": false,
+        "animation": "teaser-slide-up"
+      },
+      "steps": [
+        {
+          "id": "stepc4f35c9be5644ea3",
+          "name": "What were you working on?",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "epa75ef42b2ac14d92",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "34",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 0,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[arrow] Finish Or Save Your Request</span><br><b>Want to continue your Erie County request?</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epb20d82a4a1544f43",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "18",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "Pick up where you left off. You do not have to start over.<br><br><b>Choose the closest path. You can still change direction later.</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "23",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epfd90072dd17145de",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#4A4A4A",
+                  "fontSize": "20",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<b>Start with one quick choice. Contact details come after the request is clear.</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "13",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epef56b602153c4fe0",
+                "type": "divider",
+                "title": "Divider",
+                "options": {
+                  "hideOnMobile": false,
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "color": "#D7DEE6",
+                  "width": 500,
+                  "height": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "visual-divider-232603-0",
+                "type": "divider",
+                "title": "Divider",
+                "options": {
+                  "hideOnMobile": false,
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "color": "#D7DEE6",
+                  "width": 500,
+                  "height": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "visual-trust-232603-0",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#4A4A4A",
+                  "fontSize": "13",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Pick up faster</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Ask a smaller question</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">No pressure</span></div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "13",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 0,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep74c08e1a5692455f",
+                "type": "button",
+                "title": "Button",
+                "options": {
+                  "fontFamily": "roboto",
+                  "multiple": true,
+                  "amount": 3,
+                  "items": [
+                    {
+                      "id": "btnba8914c385844a54",
+                      "color": "#ffffff",
+                      "backgroundColor": "#C8102E",
+                      "text": "<b>[?] Finish a service request</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "stepc8763df9357543e1",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_path",
+                        "custom_field_value": "urgent",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "finish-a-service-request"
+                    },
+                    {
+                      "id": "btn61a9a08a0cfe4916",
+                      "color": "#ffffff",
+                      "backgroundColor": "#1F3A5F",
+                      "text": "<b>[$] Ask about price or timing</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "stepc7212af0d0db4696",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_path",
+                        "custom_field_value": "standard",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "ask-about-price-or-timing"
+                    },
+                    {
+                      "id": "btn7052ffeb81ae4137",
+                      "color": "#ffffff",
+                      "backgroundColor": "#6B7280",
+                      "text": "<b>[phone] Request a callback</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "stepadaee9957dcd415a",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_path",
+                        "custom_field_value": "project",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "request-a-callback"
+                    }
+                  ],
+                  "shape": "rounded",
+                  "size": "l",
+                  "width": "wide",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  }
+                }
+              },
+              {
+                "id": "epf0f9b6b914c84796",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#5D6978",
+                  "fontSize": "12",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">Returning visitors should not have to start from scratch.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#F8FAFC",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#F8FAFC",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "stepc8763df9357543e1",
+          "name": "What changed?",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "epbef84994a9f14a1f",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[arrow] Finish Or Save Your Request</span><br><b>Urgent Erie request</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep9cab4be43543430d",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">If this needs attention today, send the key details now.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epe7e7dc93301b4d81",
+                "type": "form",
+                "title": "Form",
+                "options": {
+                  "size": "m",
+                  "shape": "rounded",
+                  "fontFamily": "roboto",
+                  "buttonBackgroundColor": "#C8102E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "labelTextColor": "#1F3A5F",
+                  "hidePrefilledFields": true,
+                  "action": {
+                    "type": "next_step",
+                    "link": null,
+                    "pass": false,
+                    "step": "step5b6c1daee33945dc",
+                    "prevent_showing": true,
+                    "box": null,
+                    "close": false
+                  },
+                  "fields": [
+                    {
+                      "type": "full_name",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "First and last name",
+                        "name": "full_name",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the returning and exit rescue need",
+                        "name": "emergency_details",
+                        "type": "textarea",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_urgency",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "emergency"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_convertbox_id",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "232603"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_intent",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "resume_request"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_family",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "core"
+                      }
+                    }
+                  ],
+                  "actions": [],
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "buttonText": "<b>Continue my request</b>",
+                  "layout": "vertical",
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  },
+                  "conditional_integrations": [],
+                  "conditional_actions": []
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "stepc7212af0d0db4696",
+          "name": "Choose the next step",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep5f2f2078900a40e9",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[arrow] Finish Or Save Your Request</span><br><b>Get matched free</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep6ab10b0a3a23415d",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">What were you working on? and we will look for one solid Erie County match.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep4d141d6bedee477f",
+                "type": "form",
+                "title": "Form",
+                "options": {
+                  "size": "m",
+                  "shape": "rounded",
+                  "fontFamily": "roboto",
+                  "buttonBackgroundColor": "#C8102E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "labelTextColor": "#1F3A5F",
+                  "hidePrefilledFields": true,
+                  "action": {
+                    "type": "next_step",
+                    "link": null,
+                    "pass": false,
+                    "step": "step917f0cf96b6b4c28",
+                    "prevent_showing": true,
+                    "box": null,
+                    "close": false
+                  },
+                  "fields": [
+                    {
+                      "type": "full_name",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "First and last name",
+                        "name": "full_name",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the returning and exit rescue need",
+                        "name": "service_need",
+                        "type": "textarea",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_urgency",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "standard"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_convertbox_id",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "232603"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_intent",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "resume_request"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_family",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "core"
+                      }
+                    }
+                  ],
+                  "actions": [],
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "buttonText": "<b>Continue my request</b>",
+                  "layout": "vertical",
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  },
+                  "conditional_integrations": [],
+                  "conditional_actions": []
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "stepadaee9957dcd415a",
+          "name": "Confirm contact details",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep0833b26cc1334d30",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[arrow] Finish Or Save Your Request</span><br><b>Plan a larger job</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep8854a6fd7fa6468c",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">For bigger jobs, share the scope and timing so the first conversation starts prepared.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep7d0083a0d2474aa0",
+                "type": "form",
+                "title": "Form",
+                "options": {
+                  "size": "m",
+                  "shape": "rounded",
+                  "fontFamily": "roboto",
+                  "buttonBackgroundColor": "#C8102E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "labelTextColor": "#1F3A5F",
+                  "hidePrefilledFields": true,
+                  "action": {
+                    "type": "next_step",
+                    "link": null,
+                    "pass": false,
+                    "step": "step917f0cf96b6b4c28",
+                    "prevent_showing": true,
+                    "box": null,
+                    "close": false
+                  },
+                  "fields": [
+                    {
+                      "type": "full_name",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "First and last name",
+                        "name": "full_name",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the returning and exit rescue need",
+                        "name": "project_scope",
+                        "type": "textarea",
+                        "required": true,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_urgency",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "project"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_convertbox_id",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "232603"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_intent",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "resume_request"
+                      }
+                    },
+                    {
+                      "type": "hidden",
+                      "composite": false,
+                      "input": {
+                        "placeholder": null,
+                        "name": "ep_family",
+                        "type": "hidden",
+                        "required": false,
+                        "show_label": false,
+                        "label": null,
+                        "prefill_custom_url_param": false,
+                        "custom_url_param": null,
+                        "prefill_cookie": false,
+                        "cookie_param": null,
+                        "use_custom_redirect_param": false,
+                        "custom_redirect_param": null,
+                        "hide_prefilled": false,
+                        "value": "core"
+                      }
+                    }
+                  ],
+                  "actions": [],
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "buttonText": "<b>Continue my request</b>",
+                  "layout": "vertical",
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  },
+                  "conditional_integrations": [],
+                  "conditional_actions": []
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "step917f0cf96b6b4c28",
+          "name": "Review your request",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep0411e0b479834645",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[arrow] Finish Or Save Your Request</span><br><b>Need a different next step now?</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep21300ea75a144cc2",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "Choose what changed so the follow-up matches your current situation.<br><br>This is the low-pressure path: save it, ask a question, or get routed from context.",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "epdca7774f29e34d5c",
+                "type": "button",
+                "title": "Button",
+                "options": {
+                  "fontFamily": "roboto",
+                  "multiple": true,
+                  "amount": 2,
+                  "items": [
+                    {
+                      "id": "btn14a1c2186de14fdc",
+                      "color": "#ffffff",
+                      "backgroundColor": "#C8102E",
+                      "text": "<b>[?] Change my request path</b>",
+                      "action": {
+                        "type": "step",
+                        "link": null,
+                        "step": "step5b6c1daee33945dc",
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_offer",
+                        "custom_field_value": "free_match",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "change-my-request-path"
+                    },
+                    {
+                      "id": "btn34d59e95081c446c",
+                      "color": "#ffffff",
+                      "backgroundColor": "#1F3A5F",
+                      "text": "<b>[$] Update my next step</b>",
+                      "action": {
+                        "type": "link",
+                        "link": "https://erie.pro/#concierge",
+                        "step": null,
+                        "new_tab": false,
+                        "prevent_showing": false,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": true,
+                        "custom_field_name": "ep_offer",
+                        "custom_field_value": "concierge_interest",
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": [],
+                      "value": "update-my-next-step"
+                    }
+                  ],
+                  "shape": "rounded",
+                  "size": "l",
+                  "width": "wide",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  }
+                }
+              },
+              {
+                "id": "ep4105688ab7aa43cc",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#5D6978",
+                  "fontSize": "12",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<div style=\"text-align:center;\">You can stay with the free match. No pressure.</div>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "step5b6c1daee33945dc",
+          "name": "We will help from here",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "ep39ceae842a84467e",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 2,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[arrow] Finish Or Save Your Request</span><br><b>Request context updated for follow-up.</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "21",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep152526a1a3124042",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 0,
+                  "vSpacingBottom": 1,
+                  "text": "Thanks. Erie.Pro will use the service-family context before routing this request.",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "12",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "ep6ab75dd10d2940d2",
+                "type": "button",
+                "title": "Button",
+                "options": {
+                  "fontFamily": "roboto",
+                  "multiple": false,
+                  "amount": 1,
+                  "items": [
+                    {
+                      "id": "btnf782347337184080",
+                      "color": "#ffffff",
+                      "backgroundColor": "#C8102E",
+                      "text": "<b>[?] Finish a service request</b>",
+                      "action": {
+                        "type": "close",
+                        "link": null,
+                        "step": null,
+                        "new_tab": false,
+                        "prevent_showing": true,
+                        "fire_scripts": false,
+                        "scripts": null,
+                        "custom_field": false,
+                        "custom_field_name": null,
+                        "custom_field_value": null,
+                        "quiz": false,
+                        "quiz_score": 0,
+                        "pass_field_params": false
+                      },
+                      "automations": [],
+                      "type": "button",
+                      "size": 200,
+                      "align": "center",
+                      "internal_id": null,
+                      "image": []
+                    }
+                  ],
+                  "shape": "rounded",
+                  "size": "l",
+                  "width": "wide",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "mobile": {
+                    "overwritten": true,
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1,
+                    "size": "m"
+                  }
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "testing": {
+    "notes": null,
+    "type": "sticky",
+    "max_variation_id": "A"
+  },
+  "scheduled": false,
+  "schedule_start": null,
+  "schedule_end": null,
+  "layout_type_group": "overlay",
+  "campaign": {
+    "id": 68103,
+    "name": "Erie.Pro - Core",
+    "has_goal": 0,
+    "goal": null,
+    "site_id": 8358,
+    "created_at": "2026-05-10T07:40:31.000000Z",
+    "updated_at": "2026-05-10T07:40:57.000000Z",
+    "active": 0,
+    "position": 4,
+    "goal_site": null,
+    "deleted_at": null,
+    "site": {
+      "id": 8358,
+      "account_id": 952,
+      "created_at": "2020-01-02T11:29:05.000000Z",
+      "updated_at": "2020-08-18T09:11:26.000000Z",
+      "deleted_at": null,
+      "hostname": "erie.pro",
+      "ga": false,
+      "excluded_urls": null
+    }
+  },
+  "rules_display": {
+    "target": "specific_pages",
+    "target_pages": {
+      "include": [
+        {
+          "type": "contains",
+          "value": "/services"
+        },
+        {
+          "type": "contains",
+          "value": "/service"
+        },
+        {
+          "type": "contains",
+          "value": "/quote"
+        },
+        {
+          "type": "contains",
+          "value": "/request"
+        }
+      ],
+      "exclude": [
+        {
+          "type": "contains",
+          "value": "/privacy"
+        },
+        {
+          "type": "contains",
+          "value": "/terms"
+        },
+        {
+          "type": "contains",
+          "value": "/admin"
+        },
+        {
+          "type": "contains",
+          "value": "/dashboard"
+        }
+      ]
+    },
+    "trigger": null,
+    "trigger_in_seconds": 6,
+    "trigger_scroll_percent": 5,
+    "duration": "indefinitly",
+    "duration_days": null,
+    "duration_views": 3,
+    "limit_per_day_times": 1,
+    "overlay_link": null,
+    "overlay_uuid": "7fee6ea1",
+    "trigger_link": "cb6778a0a8",
+    "overlay_link_meta": null,
+    "trigger_inactive_seconds": 6,
+    "trigger_time": true,
+    "trigger_scroll": false,
+    "trigger_inactive": false,
+    "trigger_leave": false,
+    "trigger_by_link": false,
+    "device": "all",
+    "duration_times": 1,
+    "duration_type": "visit",
+    "suppress_if_closed": true,
+    "suppress_until": "never"
+  },
+  "rules_visitor": {
+    "target": "all",
+    "target_rules": null,
+    "has_goal": true,
+    "goal": null,
+    "visited_page": null,
+    "conditional_rules": []
+  },
+  "design_export": {
+    "meta": [],
+    "source_box_id": 232603,
+    "share_name": "",
+    "share_url": "https://app.convertbox.com/share",
+    "share_desc_safe": ""
+  },
+  "areas": []
+}
