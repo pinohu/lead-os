@@ -34,6 +34,8 @@ Use this checklist when moving from plan to live ConvertBox configuration.
 
 Test desktop and mobile for each active box:
 
+- Confirm the account draft name includes the intended service family and `Draft Preview`.
+- Confirm `active=false` before preview QA is complete.
 - Page load does not show an immediate interruption.
 - Scroll trigger fires only after the configured threshold.
 - CTA click trigger opens the correct flow.

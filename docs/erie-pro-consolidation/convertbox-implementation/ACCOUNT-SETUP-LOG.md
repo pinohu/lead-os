@@ -191,6 +191,21 @@ Third correction recorded after service-fit review: the 10 inactive ConvertBoxes
 
 Fourth correction recorded before further ConvertBox account edits: `BOX-EXPERIENCE-AUDIT.md` audits all 10 current draft boxes across design, psychology, conversion flow, and journey fit. That audit is the go/no-go gate for the next account pass.
 
+Fifth correction recorded after applying the audit findings: the 10 inactive ConvertBox drafts were updated in the ConvertBox account as service-aware draft previews. All 10 saved successfully through the authenticated ConvertBox API, and verification read the updated names, step labels, `ep_service_aware_preview=true`, service-family metadata, and Erie County copy back from the account. The boxes remain inactive (`active=false` verified on box `232597`; all updates preserved inactive draft-preview intent).
+
+Updated draft-preview mapping:
+
+- `232597`: `EP-F01 Emergency Home Response - Draft Preview`
+- `232595`: `EP-F01 Emergency Home Response - Draft Preview`
+- `232594`: `EP-F04 Cleaning And Turnover - Draft Preview`
+- `232596`: `EP-F02 Planned Home Projects - Draft Preview`
+- `232598`: `EP-F02 Planned Home Projects - Draft Preview`
+- `232599`: `EP-F07 Health And Wellness Appointments - Draft Preview`
+- `232600`: `EP-F08 Professional Legal And Financial - Draft Preview`
+- `232601`: `EP-F09 Provider Territory Claim - Draft Preview`
+- `232602`: `EP-F10 Returning And Exit Rescue - Draft Preview`
+- `232603`: `EP-F10 Returning And Exit Rescue - Draft Preview`
+
 The visual editor opened successfully, but the builder uses a drag-and-drop canvas and normal browser text-fill automation intermittently failed on text entry with the in-browser clipboard layer. To avoid leaving blank shells, the completed designs were written through ConvertBox's authenticated editor save endpoint using the same structured JSON schema the builder saves.
 
 To protect Erie.Pro user experience, the boxes were left inactive. They are designed and fielded, but should not be activated until final mobile/desktop preview and test submissions are reviewed.

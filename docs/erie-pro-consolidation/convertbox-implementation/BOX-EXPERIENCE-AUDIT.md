@@ -6,6 +6,8 @@ Scope: audit the 10 inactive Erie.Pro ConvertBox drafts before applying any furt
 
 Verdict: the boxes are not ready for activation. They prove mechanics, but they do not yet deliver the service-specific customer journey Erie.Pro needs.
 
+Update after audit application: the findings in this document have now been applied to the existing inactive ConvertBox drafts as draft previews. They are visible in the ConvertBox account under service-family names such as `EP-F01 Emergency Home Response - Draft Preview`, `EP-F07 Health And Wellness Appointments - Draft Preview`, and `EP-F10 Returning And Exit Rescue - Draft Preview`. This does not change the launch verdict: preview is allowed, activation still requires visual/mobile QA and test submissions.
+
 ## Audit Criteria
 
 Each box is audited across four dimensions:
