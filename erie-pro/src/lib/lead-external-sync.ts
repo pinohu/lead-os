@@ -504,7 +504,7 @@ async function createBoostspaceLeadEventRecord(flatPayload: Record<string, unkno
       return {
         customFieldInputId,
         module: "custom-module-item",
-        value: typeof value === "boolean" ? String(value) : String(value),
+        value: typeof value === "boolean" ? (value ? "1" : "0") : String(value),
       }
     })
     .filter((entry): entry is { customFieldInputId: number; module: string; value: string } => Boolean(entry))
