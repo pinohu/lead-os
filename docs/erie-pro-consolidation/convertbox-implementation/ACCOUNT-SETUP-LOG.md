@@ -217,7 +217,7 @@ Sixth correction recorded after reviewing shared ConvertBox design `https://app.
 
 All 10 boxes saved successfully and verified as `active=false`.
 
-Seventh correction recorded after visual-system pass: professional visual elements were applied to all 10 inactive draft previews. The pass added service-family labels, icon-style prefixes on choice buttons, trust rows, family-specific accent colors, profile titles, and teaser labels. Verification confirmed `ep_professional_visual_system_applied=true`, `active=false`, a saved visual label, trust-row markup, and icon-backed choice text on all 10 boxes.
+Seventh correction recorded after visual-system pass: professional visual elements were applied to all 10 inactive draft previews. The pass added service-family labels, trust rows, family-specific accent colors, profile titles, and teaser labels. Verification confirmed `ep_professional_visual_system_applied=true`, `active=false`, a saved visual label, and trust-row markup on all 10 boxes.
 
 Visual labels now include:
 
@@ -244,6 +244,8 @@ Uploaded avatar assets:
 Ninth correction recorded after full-box audit: `FULL-BOX-AUDIT-2026-05-10.md` was generated from fresh authenticated ConvertBox API snapshots. The audit found one UX issue in seven boxes: the visual/icon pass had weakened the explicit `not sure / help me choose` fallback path on the first screen. Those seven boxes were corrected, snapshots were refreshed, and the audit now reports zero JSON-level structural issues across all 10 drafts. The boxes are still not approved for activation until visual/mobile preview and test submissions are completed.
 
 Tenth correction recorded after persona-fit review: the earlier `six steps for every box` assumption was removed. Step counts are now driven by persona mental model, urgency, sensitivity, and complexity. Emergency and health flows were shortened, exit/return rescue was made very short, provider claim remains moderately guided, and planned project flows were expanded for comprehensive scoping. The refreshed audit now checks expected persona-fit step counts instead of uniform six-step counts and reports zero JSON-level structural issues.
+
+Eleventh correction recorded after visual-editor QA: the earlier visual pass used bracketed pseudo-icon text such as `[home]`, `[brief]`, and `[phone]` inside choice labels. ConvertBox rendered those tokens literally, so they looked like unfinished placeholder copy instead of professional icons. Those pseudo-icons have now been stripped from all 10 inactive draft boxes, the snapshots were refreshed, and the audit reports zero JSON-level structural issues. Future icon work must use actual ConvertBox image/icon elements or approved uploaded assets, never bracketed text tokens in customer-facing copy.
 
 The visual editor opened successfully, but the builder uses a drag-and-drop canvas and normal browser text-fill automation intermittently failed on text entry with the in-browser clipboard layer. To avoid leaving blank shells, the completed designs were written through ConvertBox's authenticated editor save endpoint using the same structured JSON schema the builder saves.
 

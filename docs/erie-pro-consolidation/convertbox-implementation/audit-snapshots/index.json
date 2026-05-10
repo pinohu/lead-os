@@ -20,7 +20,9 @@
       "ep_persona_fit_steps_applied": true,
       "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.637Z",
       "ep_desired_step_count": 4,
-      "ep_step_count_rationale": "Urgent visitors need speed, not long scoping."
+      "ep_step_count_rationale": "Urgent visitors need speed, not long scoping.",
+      "ep_pseudo_icons_removed": true,
+      "ep_pseudo_icons_removed_at": "2026-05-10T10:29:06.151Z"
     },
     "steps": [
       "What happened?",
@@ -52,7 +54,9 @@
       "ep_persona_fit_steps_applied": true,
       "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.123Z",
       "ep_desired_step_count": 4,
-      "ep_step_count_rationale": "Emergency callback should be compact and phone-first."
+      "ep_step_count_rationale": "Emergency callback should be compact and phone-first.",
+      "ep_pseudo_icons_removed": true,
+      "ep_pseudo_icons_removed_at": "2026-05-10T10:29:06.460Z"
     },
     "steps": [
       "Choose the urgent issue",
@@ -84,7 +88,9 @@
       "ep_persona_fit_steps_applied": true,
       "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:45.905Z",
       "ep_desired_step_count": 5,
-      "ep_step_count_rationale": "Cleaning and turnover decisions need task, size, timing, access, and contact."
+      "ep_step_count_rationale": "Cleaning and turnover decisions need task, size, timing, access, and contact.",
+      "ep_pseudo_icons_removed": true,
+      "ep_pseudo_icons_removed_at": "2026-05-10T10:29:06.777Z"
     },
     "steps": [
       "What needs to be handled?",
@@ -117,7 +123,9 @@
       "ep_persona_fit_steps_applied": true,
       "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.374Z",
       "ep_desired_step_count": 7,
-      "ep_step_count_rationale": "Complex projects benefit from comprehensive guided scoping."
+      "ep_step_count_rationale": "Complex projects benefit from comprehensive guided scoping.",
+      "ep_pseudo_icons_removed": true,
+      "ep_pseudo_icons_removed_at": "2026-05-10T10:29:07.111Z"
     },
     "steps": [
       "What are you planning?",
@@ -152,7 +160,9 @@
       "ep_persona_fit_steps_applied": true,
       "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.896Z",
       "ep_desired_step_count": 7,
-      "ep_step_count_rationale": "High-value project estimates need enough context to make the first call useful."
+      "ep_step_count_rationale": "High-value project estimates need enough context to make the first call useful.",
+      "ep_pseudo_icons_removed": true,
+      "ep_pseudo_icons_removed_at": "2026-05-10T10:29:07.454Z"
     },
     "steps": [
       "Choose the project type",
@@ -187,7 +197,9 @@
       "ep_persona_fit_steps_applied": true,
       "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.128Z",
       "ep_desired_step_count": 4,
-      "ep_step_count_rationale": "Appointment visitors need privacy, fit, and scheduling without over-sharing."
+      "ep_step_count_rationale": "Appointment visitors need privacy, fit, and scheduling without over-sharing.",
+      "ep_pseudo_icons_removed": true,
+      "ep_pseudo_icons_removed_at": "2026-05-10T10:29:07.784Z"
     },
     "steps": [
       "What kind of appointment?",
@@ -219,7 +231,9 @@
       "ep_persona_fit_steps_applied": true,
       "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.421Z",
       "ep_desired_step_count": 5,
-      "ep_step_count_rationale": "Professional and sensitive services need matter type, deadline, privacy-safe summary, contact, and confirmation."
+      "ep_step_count_rationale": "Professional and sensitive services need matter type, deadline, privacy-safe summary, contact, and confirmation.",
+      "ep_pseudo_icons_removed": true,
+      "ep_pseudo_icons_removed_at": "2026-05-10T10:29:08.096Z"
     },
     "steps": [
       "What kind of help?",
@@ -252,7 +266,9 @@
       "ep_persona_fit_steps_applied": true,
       "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.685Z",
       "ep_desired_step_count": 6,
-      "ep_step_count_rationale": "Provider acquisition needs category fit, territory, business info, response capacity, contact, and review."
+      "ep_step_count_rationale": "Provider acquisition needs category fit, territory, business info, response capacity, contact, and review.",
+      "ep_pseudo_icons_removed": true,
+      "ep_pseudo_icons_removed_at": "2026-05-10T10:29:08.437Z"
     },
     "steps": [
       "What service do you provide?",
@@ -284,7 +300,9 @@
       "ep_persona_fit_steps_applied": true,
       "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.931Z",
       "ep_desired_step_count": 3,
-      "ep_step_count_rationale": "Exit rescue should be tiny: obstacle, next step/contact, confirmation."
+      "ep_step_count_rationale": "Exit rescue should be tiny: obstacle, next step/contact, confirmation.",
+      "ep_pseudo_icons_removed": true,
+      "ep_pseudo_icons_removed_at": "2026-05-10T10:29:08.722Z"
     },
     "steps": [
       "What got in the way?",
@@ -313,7 +331,9 @@
       "ep_persona_fit_steps_applied": true,
       "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:48.173Z",
       "ep_desired_step_count": 3,
-      "ep_step_count_rationale": "Returning visitors should not restart a long flow."
+      "ep_step_count_rationale": "Returning visitors should not restart a long flow.",
+      "ep_pseudo_icons_removed": true,
+      "ep_pseudo_icons_removed_at": "2026-05-10T10:29:09.071Z"
     },
     "steps": [
       "What were you working on?",

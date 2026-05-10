@@ -42,9 +42,9 @@ Steps:
 
 First-step choice buttons:
 
-- [spark] Cleaning or turnover
-- [box] Moving, junk, or dumpster
-- [?] Not sure which cleaning path fits
+- Cleaning or turnover
+- Moving, junk, or dumpster
+- Not sure which cleaning path fits
 
 Strengths:
 
@@ -89,9 +89,9 @@ Steps:
 
 First-step choice buttons:
 
-- [!] Leak, backup, no heat, or no power
-- [phone] Lockout, towing, or access issue
-- [?] Help me choose the urgent path
+- Leak, backup, no heat, or no power
+- Lockout, towing, or access issue
+- Help me choose the urgent path
 
 Strengths:
 
@@ -139,9 +139,9 @@ Steps:
 
 First-step choice buttons:
 
-- [tool] Repair or replacement
-- [home] Remodel or build
-- [?] Help me scope the project first
+- Repair or replacement
+- Remodel or build
+- Help me scope the project first
 
 Strengths:
 
@@ -186,9 +186,9 @@ Steps:
 
 First-step choice buttons:
 
-- [!] Water, heat, power, or storm
-- [phone] Lockout, access, or roadside
-- [?] Not sure what counts as urgent
+- Water, heat, power, or storm
+- Lockout, access, or roadside
+- Not sure what counts as urgent
 
 Strengths:
 
@@ -236,9 +236,9 @@ Steps:
 
 First-step choice buttons:
 
-- [tool] Kitchen, bath, basement, or remodel
-- [home] Roof, siding, windows, or exterior
-- [?] Help me compare project options
+- Kitchen, bath, basement, or remodel
+- Roof, siding, windows, or exterior
+- Help me compare project options
 
 Strengths:
 
@@ -283,9 +283,9 @@ Steps:
 
 First-step choice buttons:
 
-- [cal] Dental, vision, skin, hearing, or therapy
-- [pet] Pet care or grooming
-- [?] I want help choosing privately
+- Dental, vision, skin, hearing, or therapy
+- Pet care or grooming
+- I want help choosing privately
 
 Strengths:
 
@@ -332,9 +332,9 @@ Steps:
 
 First-step choice buttons:
 
-- [doc] Legal, tax, insurance, or financial
-- [home] Real estate, inspection, or mortgage
-- [?] Help me choose the right professional
+- Legal, tax, insurance, or financial
+- Real estate, inspection, or mortgage
+- Help me choose the right professional
 
 Strengths:
 
@@ -382,9 +382,9 @@ Steps:
 
 First-step choice buttons:
 
-- [home] Home or property service
-- [brief] Health, professional, or appointment service
-- [?] Help classify my service
+- Home or property service
+- Health, professional, or appointment service
+- Help classify my service
 
 Strengths:
 
@@ -428,9 +428,9 @@ Steps:
 
 First-step choice buttons:
 
-- [?] Not sure which service fits
-- [$] Still comparing price or providers
-- [phone] Need help today
+- Not sure which service fits
+- Still comparing price or providers
+- Need help today
 
 Strengths:
 
@@ -474,9 +474,9 @@ Steps:
 
 First-step choice buttons:
 
-- [?] Finish a service request
-- [$] Ask about price or timing
-- [phone] Request a callback
+- Finish a service request
+- Ask about price or timing
+- Request a callback
 
 Strengths:
 

@@ -1,7 +1,7 @@
 {
   "id": 232597,
   "created_at": "2026-05-10T07:55:49.000000Z",
-  "updated_at": "2026-05-10T10:24:00.000000Z",
+  "updated_at": "2026-05-10T10:29:16.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -27,7 +27,9 @@
     "ep_persona_fit_steps_applied": true,
     "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.637Z",
     "ep_desired_step_count": 4,
-    "ep_step_count_rationale": "Urgent visitors need speed, not long scoping."
+    "ep_step_count_rationale": "Urgent visitors need speed, not long scoping.",
+    "ep_pseudo_icons_removed": true,
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:06.151Z"
   },
   "variations": [
     {
@@ -185,7 +187,7 @@
                       "id": "btn23259701e9dbcitem0",
                       "color": "#ffffff",
                       "backgroundColor": "#C8102E",
-                      "text": "<b>[!] Water, heat, power, or storm</b>",
+                      "text": "<b>Water, heat, power, or storm</b>",
                       "value": "water-heat-power-or-storm",
                       "action": {
                         "type": "step",
@@ -200,8 +202,8 @@
                       "id": "btn23259701e9dbcitem1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
-                      "text": "<b>[phone] Lockout, access, or roadside</b>",
-                      "value": "phone-lockout-access-or-roadside",
+                      "text": "<b>Lockout, access, or roadside</b>",
+                      "value": "lockout-access-or-roadside",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -215,7 +217,7 @@
                       "id": "btn23259701e9dbcitem2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
-                      "text": "<b>[?] Not sure what counts as urgent</b>",
+                      "text": "<b>Not sure what counts as urgent</b>",
                       "value": "not-sure-what-counts-as-urgent",
                       "action": {
                         "type": "step",

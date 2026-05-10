@@ -1,7 +1,7 @@
 {
   "id": 232595,
   "created_at": "2026-05-10T07:45:20.000000Z",
-  "updated_at": "2026-05-10T10:23:59.000000Z",
+  "updated_at": "2026-05-10T10:29:18.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -29,7 +29,9 @@
     "ep_persona_fit_steps_applied": true,
     "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.123Z",
     "ep_desired_step_count": 4,
-    "ep_step_count_rationale": "Emergency callback should be compact and phone-first."
+    "ep_step_count_rationale": "Emergency callback should be compact and phone-first.",
+    "ep_pseudo_icons_removed": true,
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:06.460Z"
   },
   "variations": [
     {
@@ -187,7 +189,7 @@
                       "id": "btn232595055212fitem0",
                       "color": "#ffffff",
                       "backgroundColor": "#C8102E",
-                      "text": "<b>[!] Leak, backup, no heat, or no power</b>",
+                      "text": "<b>Leak, backup, no heat, or no power</b>",
                       "value": "leak-backup-no-heat-or-no-power",
                       "action": {
                         "type": "step",
@@ -202,8 +204,8 @@
                       "id": "btn232595055212fitem1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
-                      "text": "<b>[phone] Lockout, towing, or access issue</b>",
-                      "value": "phone-lockout-towing-or-access-issue",
+                      "text": "<b>Lockout, towing, or access issue</b>",
+                      "value": "lockout-towing-or-access-issue",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -217,7 +219,7 @@
                       "id": "btn232595055212fitem2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
-                      "text": "<b>[?] Help me choose the urgent path</b>",
+                      "text": "<b>Help me choose the urgent path</b>",
                       "value": "help-me-choose-the-urgent-path",
                       "action": {
                         "type": "step",

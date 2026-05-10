@@ -1,7 +1,7 @@
 {
   "id": 232603,
   "created_at": "2026-05-10T07:59:35.000000Z",
-  "updated_at": "2026-05-10T10:24:13.000000Z",
+  "updated_at": "2026-05-10T10:29:32.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -27,7 +27,9 @@
     "ep_persona_fit_steps_applied": true,
     "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:48.173Z",
     "ep_desired_step_count": 3,
-    "ep_step_count_rationale": "Returning visitors should not restart a long flow."
+    "ep_step_count_rationale": "Returning visitors should not restart a long flow.",
+    "ep_pseudo_icons_removed": true,
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:09.071Z"
   },
   "variations": [
     {
@@ -185,7 +187,7 @@
                       "id": "btn2326030b0e54fitem0",
                       "color": "#ffffff",
                       "backgroundColor": "#C8102E",
-                      "text": "<b>[?] Finish a service request</b>",
+                      "text": "<b>Finish a service request</b>",
                       "value": "finish-a-service-request",
                       "action": {
                         "type": "step",
@@ -200,7 +202,7 @@
                       "id": "btn2326030b0e54fitem1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
-                      "text": "<b>[$] Ask about price or timing</b>",
+                      "text": "<b>Ask about price or timing</b>",
                       "value": "ask-about-price-or-timing",
                       "action": {
                         "type": "step",
@@ -215,8 +217,8 @@
                       "id": "btn2326030b0e54fitem2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
-                      "text": "<b>[phone] Request a callback</b>",
-                      "value": "phone-request-a-callback",
+                      "text": "<b>Request a callback</b>",
+                      "value": "request-a-callback",
                       "action": {
                         "type": "step",
                         "link": null,

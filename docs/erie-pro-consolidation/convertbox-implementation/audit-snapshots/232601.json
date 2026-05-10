@@ -1,7 +1,7 @@
 {
   "id": 232601,
   "created_at": "2026-05-10T07:58:19.000000Z",
-  "updated_at": "2026-05-10T10:24:10.000000Z",
+  "updated_at": "2026-05-10T10:29:29.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -29,7 +29,9 @@
     "ep_persona_fit_steps_applied": true,
     "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.685Z",
     "ep_desired_step_count": 6,
-    "ep_step_count_rationale": "Provider acquisition needs category fit, territory, business info, response capacity, contact, and review."
+    "ep_step_count_rationale": "Provider acquisition needs category fit, territory, business info, response capacity, contact, and review.",
+    "ep_pseudo_icons_removed": true,
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:08.437Z"
   },
   "variations": [
     {
@@ -187,8 +189,8 @@
                       "id": "btn2326010fb9bfbitem0",
                       "color": "#ffffff",
                       "backgroundColor": "#C8102E",
-                      "text": "<b>[home] Home or property service</b>",
-                      "value": "home-home-or-property-service",
+                      "text": "<b>Home or property service</b>",
+                      "value": "home-or-property-service",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -202,8 +204,8 @@
                       "id": "btn2326010fb9bfbitem1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
-                      "text": "<b>[brief] Health, professional, or appointment service</b>",
-                      "value": "brief-health-professional-or-appointment-service",
+                      "text": "<b>Health, professional, or appointment service</b>",
+                      "value": "health-professional-or-appointment-service",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -217,7 +219,7 @@
                       "id": "btn2326010fb9bfbitem2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
-                      "text": "<b>[?] Help classify my service</b>",
+                      "text": "<b>Help classify my service</b>",
                       "value": "help-classify-my-service",
                       "action": {
                         "type": "step",

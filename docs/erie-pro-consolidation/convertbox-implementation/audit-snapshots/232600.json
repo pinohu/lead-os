@@ -1,7 +1,7 @@
 {
   "id": 232600,
   "created_at": "2026-05-10T07:57:41.000000Z",
-  "updated_at": "2026-05-10T10:24:09.000000Z",
+  "updated_at": "2026-05-10T10:29:28.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -29,7 +29,9 @@
     "ep_persona_fit_steps_applied": true,
     "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.421Z",
     "ep_desired_step_count": 5,
-    "ep_step_count_rationale": "Professional and sensitive services need matter type, deadline, privacy-safe summary, contact, and confirmation."
+    "ep_step_count_rationale": "Professional and sensitive services need matter type, deadline, privacy-safe summary, contact, and confirmation.",
+    "ep_pseudo_icons_removed": true,
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:08.096Z"
   },
   "variations": [
     {
@@ -187,8 +189,8 @@
                       "id": "btn232600004c3bditem0",
                       "color": "#ffffff",
                       "backgroundColor": "#C8102E",
-                      "text": "<b>[doc] Legal, tax, insurance, or financial</b>",
-                      "value": "doc-legal-tax-insurance-or-financial",
+                      "text": "<b>Legal, tax, insurance, or financial</b>",
+                      "value": "legal-tax-insurance-or-financial",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -202,8 +204,8 @@
                       "id": "btn232600004c3bditem1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
-                      "text": "<b>[home] Real estate, inspection, or mortgage</b>",
-                      "value": "home-real-estate-inspection-or-mortgage",
+                      "text": "<b>Real estate, inspection, or mortgage</b>",
+                      "value": "real-estate-inspection-or-mortgage",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -217,7 +219,7 @@
                       "id": "btn232600004c3bditem2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
-                      "text": "<b>[?] Help me choose the right professional</b>",
+                      "text": "<b>Help me choose the right professional</b>",
                       "value": "help-me-choose-the-right-professional",
                       "action": {
                         "type": "step",

@@ -1,7 +1,7 @@
 {
   "id": 232598,
   "created_at": "2026-05-10T07:56:21.000000Z",
-  "updated_at": "2026-05-10T10:24:02.000000Z",
+  "updated_at": "2026-05-10T10:29:21.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -29,7 +29,9 @@
     "ep_persona_fit_steps_applied": true,
     "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.896Z",
     "ep_desired_step_count": 7,
-    "ep_step_count_rationale": "High-value project estimates need enough context to make the first call useful."
+    "ep_step_count_rationale": "High-value project estimates need enough context to make the first call useful.",
+    "ep_pseudo_icons_removed": true,
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:07.454Z"
   },
   "variations": [
     {
@@ -187,8 +189,8 @@
                       "id": "btn2325980d03a0ditem0",
                       "color": "#ffffff",
                       "backgroundColor": "#C8102E",
-                      "text": "<b>[tool] Kitchen, bath, basement, or remodel</b>",
-                      "value": "tool-kitchen-bath-basement-or-remodel",
+                      "text": "<b>Kitchen, bath, basement, or remodel</b>",
+                      "value": "kitchen-bath-basement-or-remodel",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -202,8 +204,8 @@
                       "id": "btn2325980d03a0ditem1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
-                      "text": "<b>[home] Roof, siding, windows, or exterior</b>",
-                      "value": "home-roof-siding-windows-or-exterior",
+                      "text": "<b>Roof, siding, windows, or exterior</b>",
+                      "value": "roof-siding-windows-or-exterior",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -217,7 +219,7 @@
                       "id": "btn2325980d03a0ditem2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
-                      "text": "<b>[?] Help me compare project options</b>",
+                      "text": "<b>Help me compare project options</b>",
                       "value": "help-me-compare-project-options",
                       "action": {
                         "type": "step",
