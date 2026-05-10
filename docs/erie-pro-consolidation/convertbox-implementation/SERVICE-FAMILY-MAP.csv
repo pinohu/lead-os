@@ -1,0 +1,114 @@
+service_number,service_label,service_slug,family,primary_flow,urgency_profile,notes
+1,Plumbing,plumbing,Emergency Home Response,EP-02 Emergency Callback,emergency,Use emergency callback for leaks and no-water issues; fast quote for planned work.
+2,HVAC,hvac,Emergency Home Response,EP-02 Emergency Callback,emergency,Split comfort emergency from maintenance quote.
+3,Electrical,electrical,Emergency Home Response,EP-02 Emergency Callback,emergency,Use safety-oriented language for outages and hazards.
+4,Roofing,roofing,Emergency Home Response,EP-02 Emergency Callback,emergency,Storm/leak visitors should see urgent callback; replacement visitors use project planner.
+5,Landscaping,landscaping,Seasonal Erie Services,EP-03 Fast Quote,seasonal,Use quote flow and seasonal checklist support.
+6,Dental,dental,Health and Appointments,EP-06 Appointment Request,appointment,Avoid contractor language; appointment window matters.
+7,Legal,legal,Professional and Financial,EP-06 Appointment Request,consultation,Consultation-oriented flow with matter type.
+8,Cleaning,cleaning,Cleaning and Turnover,EP-03 Fast Quote,standard,Ask residential/commercial and frequency.
+9,Auto Repair,auto-repair,Auto Marine Roadside,EP-03 Fast Quote,standard,Collect vehicle issue and urgency.
+10,Pest Control,pest-control,Pest and Environmental,EP-02 Emergency Callback,urgent,Emergency for active infestation; quote for prevention.
+11,Painting,painting,Planned Home Projects,EP-05 Project Planner,planned,Ask interior/exterior, rooms, timing.
+12,Real Estate,real-estate,Professional and Financial,EP-06 Appointment Request,consultation,Buyer/seller/renter path.
+13,Garage Door,garage-door,Emergency Home Response,EP-02 Emergency Callback,emergency,Emergency for stuck/broken door; quote for replacement.
+14,Fencing,fencing,Planned Home Projects,EP-05 Project Planner,planned,Ask repair/new install, material, length.
+15,Flooring,flooring,Planned Home Projects,EP-05 Project Planner,planned,Ask material, rooms, install/repair.
+16,Windows & Doors,windows-doors,Planned Home Projects,EP-05 Project Planner,planned,Ask repair/replacement and count.
+17,Moving,moving,Cleaning and Turnover,EP-03 Fast Quote,date_sensitive,Ask move date, origin/destination, size.
+18,Tree Service,tree-service,Seasonal Erie Services,EP-02 Emergency Callback,urgent,Emergency for fallen limbs; quote for trimming/removal.
+19,Appliance Repair,appliance-repair,Emergency Home Response,EP-03 Fast Quote,urgent,Ask appliance type, brand, issue.
+20,Foundation & Waterproofing,foundation-waterproofing,Planned Home Projects,EP-05 Project Planner,urgent,Water intrusion can become urgent; collect symptoms.
+21,Home Security,home-security,Planned Home Projects,EP-05 Project Planner,planned,Ask install/monitoring/camera needs.
+22,Concrete & Masonry,concrete-masonry,Planned Home Projects,EP-05 Project Planner,planned,Ask driveway/patio/repair and dimensions.
+23,Septic & Sewer,septic-sewer,Emergency Home Response,EP-02 Emergency Callback,emergency,Strong emergency routing for backups and sewage smells.
+24,Chimney & Fireplace,chimney-fireplace,Seasonal Erie Services,EP-03 Fast Quote,seasonal,Use seasonal inspection checklist.
+25,Pool & Spa Services,pool-spa-services,Seasonal Erie Services,EP-03 Fast Quote,seasonal,Ask open/close/repair/maintenance.
+26,Locksmith Services,locksmith-services,Emergency Home Response,EP-02 Emergency Callback,emergency,Phone-first lockout flow.
+27,Towing & Roadside Assistance,towing-roadside-assistance,Auto Marine Roadside,EP-02 Emergency Callback,emergency,Location and phone first.
+28,Carpet Cleaning,carpet-cleaning,Cleaning and Turnover,EP-03 Fast Quote,standard,Ask room count and stain/pet issues.
+29,Pressure Washing,pressure-washing,Cleaning and Turnover,EP-03 Fast Quote,seasonal,Ask surface type and approximate size.
+30,Drywall & Plastering,drywall-plastering,Planned Home Projects,EP-05 Project Planner,planned,Ask repair/finish, rooms, damage source.
+31,Insulation Services,insulation-services,Planned Home Projects,EP-05 Project Planner,planned,Ask attic/wall/basement and comfort issue.
+32,Solar & Energy,solar-energy,Planned Home Projects,EP-05 Project Planner,planned,Ask electric bill range and roof/property type.
+33,Gutter Services,gutter-services,Seasonal Erie Services,EP-03 Fast Quote,seasonal,Ask cleaning/repair/install and stories.
+34,Handyman Services,handyman-services,Planned Home Projects,EP-03 Fast Quote,standard,Ask task list and timing.
+35,Veterinary Services,veterinary-services,Health and Appointments,EP-06 Appointment Request,appointment,Appointment flow; avoid emergency unless supported by providers.
+36,Chiropractic Care,chiropractic-care,Health and Appointments,EP-06 Appointment Request,appointment,Ask new patient and preferred time.
+37,Accounting & Tax,accounting-tax,Professional and Financial,EP-06 Appointment Request,deadline_sensitive,Ask individual/business and tax/booking need.
+38,Photography Services,photography-services,Professional and Financial,EP-03 Fast Quote,date_sensitive,Ask event type/date/location.
+39,Pet Grooming,pet-grooming,Health and Appointments,EP-06 Appointment Request,appointment,Ask pet type/size and preferred date.
+40,Snow Removal,snow-removal,Seasonal Erie Services,EP-02 Emergency Callback,urgent,Seasonal urgent flow during storms.
+41,Water Damage Restoration,water-damage-restoration,Emergency Home Response,EP-02 Emergency Callback,emergency,High-priority emergency path.
+42,Glass & Glazing,glass-glazing,Emergency Home Response,EP-03 Fast Quote,urgent,Emergency board-up/glass break can route urgent.
+43,Irrigation & Sprinklers,irrigation-sprinklers,Seasonal Erie Services,EP-03 Fast Quote,seasonal,Ask startup/repair/winterization.
+44,Demolition & Excavation,demolition-excavation,Planned Home Projects,EP-05 Project Planner,planned,Ask scope, permits, access.
+45,General Contractor,general-contractor,Planned Home Projects,EP-05 Project Planner,planned,Project planner is primary.
+46,Home Remodeling,home-remodeling,Planned Home Projects,EP-05 Project Planner,planned,Ask area, scope, budget, timing.
+47,Kitchen Remodeling,kitchen-remodeling,Planned Home Projects,EP-05 Project Planner,planned,Ask layout/cabinets/countertops/timeline.
+48,Bathroom Remodeling,bathroom-remodeling,Planned Home Projects,EP-05 Project Planner,planned,Ask full/partial, fixtures, timeline.
+49,Siding,siding,Planned Home Projects,EP-05 Project Planner,planned,Ask repair/replacement and material.
+50,Decks & Patios,decks-patios,Planned Home Projects,EP-05 Project Planner,planned,Ask new/repair, material, size.
+51,Basement Finishing,basement-finishing,Planned Home Projects,EP-05 Project Planner,planned,Ask square footage and desired rooms.
+52,Mold Remediation,mold-remediation,Pest and Environmental,EP-02 Emergency Callback,urgent,Health/safety language; collect location and water source.
+53,Fire Damage Restoration,fire-damage-restoration,Emergency Home Response,EP-02 Emergency Callback,emergency,Emergency callback primary.
+54,Storm Damage Repair,storm-damage-repair,Emergency Home Response,EP-02 Emergency Callback,emergency,Storm response and insurance-aware path.
+55,Water Heater Services,water-heater-services,Emergency Home Response,EP-02 Emergency Callback,urgent,No hot water can be urgent; ask repair/replace.
+56,Drain Cleaning,drain-cleaning,Emergency Home Response,EP-02 Emergency Callback,urgent,Backup and clog urgency.
+57,Sewer Line Repair,sewer-line-repair,Emergency Home Response,EP-02 Emergency Callback,emergency,Emergency callback primary.
+58,AC Repair,ac-repair,Emergency Home Response,EP-02 Emergency Callback,urgent,Seasonal emergency during heat.
+59,Furnace Repair,furnace-repair,Emergency Home Response,EP-02 Emergency Callback,urgent,Winter emergency language.
+60,Duct Cleaning,duct-cleaning,Planned Home Projects,EP-03 Fast Quote,standard,Ask system size and concerns.
+61,Driveway Paving,driveway-paving,Planned Home Projects,EP-05 Project Planner,planned,Ask new/resurface/repair and dimensions.
+62,Asphalt Sealing,asphalt-sealing,Seasonal Erie Services,EP-03 Fast Quote,seasonal,Ask driveway size and timing.
+63,Junk Removal,junk-removal,Cleaning and Turnover,EP-03 Fast Quote,date_sensitive,Ask volume and pickup timing.
+64,Dumpster Rental,dumpster-rental,Cleaning and Turnover,EP-03 Fast Quote,date_sensitive,Ask size/date/material.
+65,Home Inspection,home-inspection,Professional and Financial,EP-06 Appointment Request,date_sensitive,Ask closing/inspection date and property type.
+66,Property Management,property-management,Professional and Financial,EP-06 Appointment Request,consultation,Ask owner/investor and unit count.
+67,Rental Turnover Cleaning,rental-turnover-cleaning,Cleaning and Turnover,EP-03 Fast Quote,date_sensitive,Ask unit size and turnover date.
+68,Commercial Cleaning,commercial-cleaning,Cleaning and Turnover,EP-03 Fast Quote,standard,Ask facility type, frequency, square footage.
+69,Commercial Snow Removal,commercial-snow-removal,Seasonal Erie Services,EP-02 Emergency Callback,seasonal_urgent,Ask property type and storm coverage need.
+70,Home Builders,home-builders,Planned Home Projects,EP-05 Project Planner,planned,Ask land status, budget, timeline.
+71,Outdoor Lighting,outdoor-lighting,Seasonal Erie Services,EP-05 Project Planner,planned,Ask landscape/security/architectural.
+72,Holiday Lighting,holiday-lighting,Seasonal Erie Services,EP-03 Fast Quote,seasonal,Ask install/removal/storage and date.
+73,Fence Repair,fence-repair,Planned Home Projects,EP-03 Fast Quote,standard,Ask material and damage type.
+74,Retaining Walls,retaining-walls,Planned Home Projects,EP-05 Project Planner,planned,Ask purpose, height, drainage concerns.
+75,Epoxy Flooring,epoxy-flooring,Planned Home Projects,EP-05 Project Planner,planned,Ask garage/commercial and square footage.
+76,Closet & Storage Systems,closet-storage-systems,Planned Home Projects,EP-05 Project Planner,planned,Ask room type and custom needs.
+77,Cabinet Refinishing,cabinet-refinishing,Planned Home Projects,EP-05 Project Planner,planned,Ask kitchen/bath, count, finish.
+78,Countertops,countertops,Planned Home Projects,EP-05 Project Planner,planned,Ask material and measurements status.
+79,Tile Installation,tile-installation,Planned Home Projects,EP-05 Project Planner,planned,Ask area, material, square footage.
+80,Smart Home Installation,smart-home-installation,Planned Home Projects,EP-05 Project Planner,planned,Ask device types and home setup.
+81,EV Charger Installation,ev-charger-installation,Planned Home Projects,EP-05 Project Planner,planned,Ask charger type, panel location, vehicle.
+82,Generator Installation,generator-installation,Planned Home Projects,EP-05 Project Planner,planned,Ask standby/portable and load needs.
+83,Radon Testing & Mitigation,radon-testing-mitigation,Pest and Environmental,EP-06 Appointment Request,appointment,Ask testing/mitigation and property type.
+84,Wildlife Removal,wildlife-removal,Pest and Environmental,EP-02 Emergency Callback,urgent,Ask animal type/location and safety concern.
+85,Bat Removal,bat-removal,Pest and Environmental,EP-02 Emergency Callback,urgent,Health/safety and exclusion-oriented flow.
+86,Bee/Wasp Removal,bee-wasp-removal,Pest and Environmental,EP-02 Emergency Callback,urgent,Sting risk and location first.
+87,Septic Inspection,septic-inspection,Professional and Financial,EP-06 Appointment Request,date_sensitive,Ask real estate/maintenance and date.
+88,Well Water Testing,well-water-testing,Pest and Environmental,EP-06 Appointment Request,appointment,Ask testing reason and property type.
+89,Boat Repair / Marine Services,boat-repair-marine-services,Auto Marine Roadside,EP-03 Fast Quote,seasonal,Ask boat type, issue, marina/location.
+90,Dock Installation & Repair,dock-installation-repair,Auto Marine Roadside,EP-05 Project Planner,seasonal,Ask install/repair, shoreline, timing.
+91,Marina / Boat Winterization,marina-boat-winterization,Auto Marine Roadside,EP-03 Fast Quote,seasonal,Ask service date and boat details.
+92,Ice Dam Removal,ice-dam-removal,Emergency Home Response,EP-02 Emergency Callback,emergency,Winter emergency callback.
+93,Emergency Board-Up,emergency-board-up,Emergency Home Response,EP-02 Emergency Callback,emergency,Immediate callback; collect address/phone.
+94,Basement Flood Cleanup,basement-flood-cleanup,Emergency Home Response,EP-02 Emergency Callback,emergency,Immediate restoration flow.
+95,Lakefront Property Maintenance,lakefront-property-maintenance,Seasonal Erie Services,EP-03 Fast Quote,seasonal,Ask property type and recurring needs.
+96,Vacation Rental Cleaning,vacation-rental-cleaning,Cleaning and Turnover,EP-03 Fast Quote,date_sensitive,Ask checkout/checkin schedule.
+97,Airbnb Property Management,airbnb-property-management,Professional and Financial,EP-06 Appointment Request,consultation,Ask unit count and management scope.
+98,Snow Plow Contractors,snow-plow-contractors,Seasonal Erie Services,EP-02 Emergency Callback,seasonal_urgent,Ask residential/commercial and storm timing.
+99,Salt & De-Icing Services,salt-de-icing-services,Seasonal Erie Services,EP-02 Emergency Callback,seasonal_urgent,Ask property type and coverage frequency.
+100,Storm Window Repair,storm-window-repair,Seasonal Erie Services,EP-03 Fast Quote,seasonal,Ask repair type and window count.
+101,Optometry,optometry,Health and Appointments,EP-06 Appointment Request,appointment,Appointment flow with exam/contact/lens need.
+102,Dermatology,dermatology,Health and Appointments,EP-06 Appointment Request,appointment,Appointment flow with concern type.
+103,Physical Therapy,physical-therapy,Health and Appointments,EP-06 Appointment Request,appointment,Ask condition/referral/preferred time.
+104,Mental Health Counseling,mental-health-counseling,Health and Appointments,EP-06 Appointment Request,appointment,Use respectful private appointment language.
+105,Senior Home Care,senior-home-care,Health and Appointments,EP-06 Appointment Request,consultation,Ask care type, schedule, start timeline.
+106,Home Health Care,home-health-care,Health and Appointments,EP-06 Appointment Request,consultation,Ask care need, insurance/private pay if appropriate later.
+107,Hearing Aids / Audiology,hearing-aids-audiology,Health and Appointments,EP-06 Appointment Request,appointment,Appointment flow with hearing test/device need.
+108,Funeral Homes,funeral-homes,Professional and Financial,EP-06 Appointment Request,sensitive,Use gentle language; avoid aggressive prompts.
+109,Insurance Agents,insurance-agents,Professional and Financial,EP-06 Appointment Request,consultation,Ask policy type and timing.
+110,Financial Advisors,financial-advisors,Professional and Financial,EP-06 Appointment Request,consultation,Ask planning need and preferred consultation window.
+111,Mortgage Brokers,mortgage-brokers,Professional and Financial,EP-06 Appointment Request,consultation,Ask purchase/refi/preapproval.
+112,Estate Sale Services,estate-sale-services,Professional and Financial,EP-06 Appointment Request,consultation,Ask property timeline and estate sale scope.
+

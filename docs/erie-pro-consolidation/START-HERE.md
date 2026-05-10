@@ -133,6 +133,14 @@ Planning documents:
 - `ERIE-PRO-SERVICE-CONVERTBOX-BLUEPRINTS.md`
 - `CONVERTBOX-LEAD-OS-CONFIGURATION-BLUEPRINT.md`
 
+Build-ready ConvertBox implementation documents:
+
+- `convertbox-implementation/IMPLEMENTATION-PACK.md`
+- `convertbox-implementation/CAMPAIGN-BUILD-SHEET.csv`
+- `convertbox-implementation/SERVICE-FAMILY-MAP.csv`
+- `convertbox-implementation/WEBHOOK-PAYLOAD-SPEC.md`
+- `convertbox-implementation/LAUNCH-CHECKLIST.md`
+
 Important correction:
 
 Earlier 44-service ConvertBox thinking is incomplete. All Erie.Pro ConvertBox planning must assume 112 service groups and hundreds of subservice intents.
