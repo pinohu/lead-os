@@ -34,20 +34,20 @@ Each ConvertBox now uses Erie.Pro brand positioning and colors:
 - Trust/heading color: Bayfront Blue `#1F3A5F`
 - Support text: Steel Gray `#4A4A4A`
 
-Each full funnel contains six native ConvertBox steps:
+Each full funnel contains six native ConvertBox steps. These names are written for the visitor inside the ConvertBox builder, not for developer documentation:
 
-- `Choose request path`
-- `Urgent details`
-- `Free match details`
-- `Project details`
-- `Optional concierge offer`
-- `Confirmation`
+- `How can we help?`
+- `Tell us what happened`
+- `Tell us what you need`
+- `Tell us about the project`
+- `Want extra help?`
+- `You are all set`
 
 The opening step segments visitors with ConvertBox button actions:
 
-- `Emergency or today`
-- `Get matched free`
-- `Plan a larger job`
+- `I need help today`
+- `Find me a local pro`
+- `I am planning a project`
 
 The button actions store path metadata through ConvertBox custom field settings where supported, and the downstream form steps add hidden fields for `ep_convertbox_id`, `ep_intent`, `ep_family`, and `ep_urgency`.
 
@@ -175,12 +175,17 @@ Total configured designs:
 - 10 ConvertBoxes with hidden metadata fields for routing attribution.
 - 10 ConvertBoxes with `specific_pages` URL targeting and privacy/terms/admin exclusions.
 - 10 ConvertBoxes themed with Erie.Pro's red, blue, gray, and local trust promise.
+- 10 ConvertBoxes with the ConvertBox step onboarding flag disabled so the visual Steps panel shows the real six-step funnel instead of the default `Start creating steps` prompt.
 
 ## Important Implementation Note
 
 No ConvertBox was activated.
 
-Correction recorded after visual QA: the first save pass created form/text objects, but those objects used null element ids and therefore appeared as empty move/drop placeholders in the visual builder. The corrected pass assigns unique element ids to every editor element and button item. A later funnel pass replaced the shallow one-step capture boxes with native ConvertBox multi-step funnels using Erie.Pro branding, segmentation buttons, routed forms, hidden metadata, optional Concierge offer steps, and confirmation steps. A geography correction then replaced radius-based messaging with Erie County-focused copy. Render verification confirmed the visible editor now shows the Erie.Pro promise, headings, path buttons, fields, and CTA buttons.
+Correction recorded after visual QA: the first save pass created form/text objects, but those objects used null element ids and therefore appeared as empty move/drop placeholders in the visual builder. The corrected pass assigns unique element ids to every editor element and button item. A later funnel pass replaced the shallow one-step capture boxes with native ConvertBox multi-step funnels using Erie.Pro branding, segmentation buttons, routed forms, hidden metadata, optional Concierge offer steps, and confirmation steps. A geography correction then replaced radius-based messaging with Erie County-focused copy.
+
+Second correction recorded after visual QA: ConvertBox still had `meta.steps_introduction` enabled, which caused the visual Steps drawer to show the default onboarding prompt instead of the six configured steps. That flag has now been disabled on all 10 Erie.Pro ConvertBoxes. The visual editor was verified showing the real step list: `How can we help?`, `Tell us what happened`, `Tell us what you need`, `Tell us about the project`, `Want extra help?`, and `You are all set`.
+
+The same pass rewrote developer-facing explanatory text into visitor-facing customer copy. The boxes now speak to the person requesting help, for example: `Need help from a trusted Erie County pro?`, `Tell us what you need. We will match you with one local pro, not a list of companies chasing the same job.`, and `Private until you say yes. One vetted local pro serving Erie County.`
 
 The visual editor opened successfully, but the builder uses a drag-and-drop canvas and normal browser text-fill automation intermittently failed on text entry with the in-browser clipboard layer. To avoid leaving blank shells, the completed designs were written through ConvertBox's authenticated editor save endpoint using the same structured JSON schema the builder saves.
 
