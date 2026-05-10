@@ -25,6 +25,10 @@ const PassthroughSchema = z.object({
 
 type AnyRecord = Record<string, unknown>
 
+export async function GET() {
+  return NextResponse.json({ success: true, webhook: "thrivecart" })
+}
+
 function asRecord(value: unknown): AnyRecord {
   return value && typeof value === "object" && !Array.isArray(value) ? value as AnyRecord : {}
 }
