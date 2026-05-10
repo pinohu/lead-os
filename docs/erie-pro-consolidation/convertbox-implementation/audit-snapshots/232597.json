@@ -1,7 +1,7 @@
 {
   "id": 232597,
   "created_at": "2026-05-10T07:55:49.000000Z",
-  "updated_at": "2026-05-10T10:29:16.000000Z",
+  "updated_at": "2026-05-10T10:37:59.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -29,7 +29,10 @@
     "ep_desired_step_count": 4,
     "ep_step_count_rationale": "Urgent visitors need speed, not long scoping.",
     "ep_pseudo_icons_removed": true,
-    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:06.151Z"
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:06.151Z",
+    "ep_persona_copy_rewrite_applied": true,
+    "ep_persona_copy_rewrite_at": "2026-05-10T10:37:58.552Z",
+    "ep_persona_copy_audit_source": "COPY-PERSONA-AUDIT-2026-05-10.md"
   },
   "variations": [
     {
@@ -86,7 +89,7 @@
         "enabled": true,
         "text_color": "#1F3A5F",
         "background_color": "#ffffff",
-        "message": "Urgent Erie County Help",
+        "message": "Need urgent local help?",
         "message_show": true,
         "icon": "none",
         "photo": {
@@ -122,7 +125,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Emergency Home Response</span><br><b>What needs urgent help?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Urgent Erie County Help</span><br><b>Need urgent local help?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -143,7 +146,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Choose the closest issue. If this is immediate danger, call 911 first.",
+                  "text": "Tell us what happened and where you are in Erie County. If anyone is in immediate danger, call 911 first.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -164,7 +167,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private request</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One routed path</span></div>",
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County only</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Fastest safe contact</span></div>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "13",
@@ -290,7 +293,7 @@
         },
         {
           "id": "step5f3e144b746e4ae4",
-          "name": "Where do you need help?",
+          "name": "Where is help needed?",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -307,7 +310,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Emergency Home Response</span><br><b>Where should help be routed?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Urgent Erie County Help</span><br><b>Where is the help needed?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -328,7 +331,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Share the Erie County community, ZIP, or address context so the request is useful.",
+                  "text": "Share the Erie County community, ZIP, or address context so a local pro has the right starting point.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -361,7 +364,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the emergency home response need",
+                        "placeholder": "Describe what happened and where help is needed",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -462,7 +465,7 @@
         },
         {
           "id": "step9a9eeb74c58a4617",
-          "name": "How should we reach you?",
+          "name": "Fastest contact",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -479,7 +482,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Emergency Home Response</span><br><b>What is the fastest safe contact?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Urgent Erie County Help</span><br><b>What is the fastest safe way to reach you?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -500,7 +503,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "For urgent requests, a phone number is usually the fastest way to avoid delay.",
+                  "text": "For urgent requests, a phone number is usually the quickest way to avoid delay.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -533,7 +536,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the emergency home response need",
+                        "placeholder": "Best contact details and any access notes",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -651,7 +654,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Emergency Home Response</span><br><b>Urgent request received.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Urgent Erie County Help</span><br><b>Urgent request received.</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -672,7 +675,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Keep your phone nearby. Erie.Pro will use the issue and location context to route the request.",
+                  "text": "Thanks. Keep your phone nearby while the request is sent through the right Erie County service path.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",

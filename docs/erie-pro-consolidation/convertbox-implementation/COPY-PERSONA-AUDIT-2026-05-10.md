@@ -4,11 +4,13 @@ Date: 2026-05-10
 
 Source: latest authenticated ConvertBox draft snapshots in `audit-snapshots/` after pseudo-icon removal.
 
+Status update: this audit has now been applied to the inactive ConvertBox drafts. The implementation script is `scripts/apply-convertbox-persona-copy-rewrite.js`, and refreshed snapshots show `ep_persona_copy_rewrite_applied=true` on all 10 boxes.
+
 ## Verdict
 
 The current ConvertBox drafts are mechanically complete but not copy-complete. They are much better than the earlier shells, but several strings still sound like internal routing, product taxonomy, or developer explanation rather than a calm Erie.Pro concierge speaking to a real visitor.
 
-Do not activate these boxes as final customer-facing copy yet.
+The audit findings below describe the pre-rewrite problem state. After the rewrite, the remaining activation blockers are visual/mobile preview, test submissions, and per-service/per-subservice expansion for the 112-service catalog.
 
 ## Main Copy Problems
 
@@ -283,4 +285,3 @@ Recommended metadata after that pass:
 - `ep_persona_copy_rewrite_applied=true`
 - `ep_persona_copy_rewrite_at=<timestamp>`
 - `ep_persona_copy_audit_source=COPY-PERSONA-AUDIT-2026-05-10.md`
-

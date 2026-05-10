@@ -1,7 +1,7 @@
 {
   "id": 232599,
   "created_at": "2026-05-10T07:57:02.000000Z",
-  "updated_at": "2026-05-10T10:29:28.000000Z",
+  "updated_at": "2026-05-10T10:38:02.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -31,7 +31,10 @@
     "ep_desired_step_count": 4,
     "ep_step_count_rationale": "Appointment visitors need privacy, fit, and scheduling without over-sharing.",
     "ep_pseudo_icons_removed": true,
-    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:07.784Z"
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:07.784Z",
+    "ep_persona_copy_rewrite_applied": true,
+    "ep_persona_copy_rewrite_at": "2026-05-10T10:38:00.779Z",
+    "ep_persona_copy_audit_source": "COPY-PERSONA-AUDIT-2026-05-10.md"
   },
   "variations": [
     {
@@ -79,7 +82,7 @@
         },
         "name": "Erie.Pro",
         "name_show": true,
-        "title": "Private Appointment Request",
+        "title": "Private Appointment Help",
         "title_show": true,
         "color": "dark",
         "layout": "chat"
@@ -88,7 +91,7 @@
         "enabled": true,
         "text_color": "#1F3A5F",
         "background_color": "#ffffff",
-        "message": "Private Appointment Request",
+        "message": "Looking for an appointment?",
         "message_show": true,
         "icon": "none",
         "photo": {
@@ -107,7 +110,7 @@
       "steps": [
         {
           "id": "step7db039d41bd84636",
-          "name": "What kind of appointment?",
+          "name": "Appointment type",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -124,7 +127,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Health And Wellness Appointments</span><br><b>What kind of appointment are you looking for?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Private Appointment Help</span><br><b>Looking for an appointment?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -145,7 +148,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Choose the closest care category. Keep details brief.",
+                  "text": "Choose the closest care type. A brief note is enough here.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -166,7 +169,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private request</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One routed path</span></div>",
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private until you submit</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County only</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One clear next step</span></div>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "13",
@@ -309,7 +312,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Health And Wellness Appointments</span><br><b>What care type and timing fit?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Private Appointment Help</span><br><b>What kind of visit and timing fit?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -330,7 +333,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Share appointment type, preferred window, and whether this is new or follow-up care.",
+                  "text": "Share the appointment type, preferred window, and whether this is new or follow-up care.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -363,7 +366,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the health and wellness appointments need",
+                        "placeholder": "Appointment type, preferred time, and new or follow-up care",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -464,7 +467,7 @@
         },
         {
           "id": "step24e911d77770418c",
-          "name": "Private contact details",
+          "name": "Private contact",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -481,7 +484,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Health And Wellness Appointments</span><br><b>How should someone follow up?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Private Appointment Help</span><br><b>How should someone follow up?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -502,7 +505,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Avoid detailed medical history here. A provider can follow up privately.",
+                  "text": "Share only what you are comfortable sharing. Avoid detailed medical history here.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -535,7 +538,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the health and wellness appointments need",
+                        "placeholder": "Best contact method and a brief privacy-safe note",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -653,7 +656,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Health And Wellness Appointments</span><br><b>Appointment request received.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Private Appointment Help</span><br><b>Appointment request received.</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -674,7 +677,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "The request is brief, private, and appointment-focused.",
+                  "text": "Thanks. Your request stays brief, private, and focused on the appointment path.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",

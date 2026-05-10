@@ -1,7 +1,7 @@
 {
   "id": 232598,
   "created_at": "2026-05-10T07:56:21.000000Z",
-  "updated_at": "2026-05-10T10:29:21.000000Z",
+  "updated_at": "2026-05-10T10:38:01.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -31,7 +31,10 @@
     "ep_desired_step_count": 7,
     "ep_step_count_rationale": "High-value project estimates need enough context to make the first call useful.",
     "ep_pseudo_icons_removed": true,
-    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:07.454Z"
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:07.454Z",
+    "ep_persona_copy_rewrite_applied": true,
+    "ep_persona_copy_rewrite_at": "2026-05-10T10:38:00.184Z",
+    "ep_persona_copy_audit_source": "COPY-PERSONA-AUDIT-2026-05-10.md"
   },
   "variations": [
     {
@@ -88,7 +91,7 @@
         "enabled": true,
         "text_color": "#1F3A5F",
         "background_color": "#ffffff",
-        "message": "Project Planning",
+        "message": "Planning a home project?",
         "message_show": true,
         "icon": "none",
         "photo": {
@@ -124,7 +127,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>Which project path fits best?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Project Planning</span><br><b>What kind of project are you planning?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -145,7 +148,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "This keeps the first estimate from being too broad.",
+                  "text": "Choose the closest option so the first conversation is not too broad.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -166,7 +169,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private request</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One routed path</span></div>",
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private until you submit</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County only</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One clear next step</span></div>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "13",
@@ -309,7 +312,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>What outcome do you want?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Project Planning</span><br><b>What outcome do you want?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -363,7 +366,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the planned home projects need",
+                        "placeholder": "Desired outcome or problem you want solved",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -464,7 +467,7 @@
         },
         {
           "id": "step56cb291f816c42cd",
-          "name": "Scope details",
+          "name": "Useful details",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -481,7 +484,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>Add the useful project details.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Project Planning</span><br><b>What details would help a pro prepare?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -535,7 +538,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the planned home projects need",
+                        "placeholder": "Size, count, rooms, materials, surfaces, or current condition",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -653,7 +656,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>Where are you in the decision?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Project Planning</span><br><b>Where are you in the decision?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -674,7 +677,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Researching, pricing, selecting a pro, ready to start, or urgent repair.",
+                  "text": "Researching, pricing, selecting a pro, ready to start, or handling an urgent repair.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -707,7 +710,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the planned home projects need",
+                        "placeholder": "Researching, pricing, selecting, ready, or urgent",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -825,7 +828,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>What timing or constraints matter?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Project Planning</span><br><b>What timing or constraints matter?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -879,7 +882,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the planned home projects need",
+                        "placeholder": "Timing, financing, insurance, access, permits, or other constraints",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -980,7 +983,7 @@
         },
         {
           "id": "step28f1dd4743854a7f",
-          "name": "Contact and next step",
+          "name": "Best next step",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -997,7 +1000,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>How should the next step happen?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Project Planning</span><br><b>How would you like to continue?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -1018,7 +1021,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Choose contact preference and whether you want free matching or extra guidance.",
+                  "text": "Choose the best contact path and whether you want free matching or extra guidance.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -1051,7 +1054,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the planned home projects need",
+                        "placeholder": "Best contact path and preferred next step",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -1169,7 +1172,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>Project details saved.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Project Planning</span><br><b>Project details saved.</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -1190,7 +1193,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "The request is more specific than a generic project quote.",
+                  "text": "Thanks. Your project details are ready for a clearer Erie County provider conversation.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",

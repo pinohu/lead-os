@@ -1,7 +1,7 @@
 {
   "id": 232595,
   "created_at": "2026-05-10T07:45:20.000000Z",
-  "updated_at": "2026-05-10T10:29:18.000000Z",
+  "updated_at": "2026-05-10T10:37:59.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -31,7 +31,10 @@
     "ep_desired_step_count": 4,
     "ep_step_count_rationale": "Emergency callback should be compact and phone-first.",
     "ep_pseudo_icons_removed": true,
-    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:06.460Z"
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:06.460Z",
+    "ep_persona_copy_rewrite_applied": true,
+    "ep_persona_copy_rewrite_at": "2026-05-10T10:37:58.930Z",
+    "ep_persona_copy_audit_source": "COPY-PERSONA-AUDIT-2026-05-10.md"
   },
   "variations": [
     {
@@ -88,7 +91,7 @@
         "enabled": true,
         "text_color": "#1F3A5F",
         "background_color": "#ffffff",
-        "message": "Urgent Erie County Help",
+        "message": "Need urgent local help?",
         "message_show": true,
         "icon": "none",
         "photo": {
@@ -124,7 +127,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Emergency Home Response</span><br><b>Choose the urgent issue.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Urgent Erie County Help</span><br><b>What needs urgent help?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -145,7 +148,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Pick the closest situation so the request starts in the right lane.",
+                  "text": "Choose the closest situation. If anyone is in immediate danger, call 911 first.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -166,7 +169,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private request</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One routed path</span></div>",
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County only</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Fastest safe contact</span></div>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "13",
@@ -292,7 +295,7 @@
         },
         {
           "id": "step9d020c427cd24433",
-          "name": "Tell us the risk",
+          "name": "Damage or safety risk",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -309,7 +312,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Emergency Home Response</span><br><b>Is there active damage or safety risk?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Urgent Erie County Help</span><br><b>Is there active damage or safety risk?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -330,7 +333,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "A short risk note helps route urgent jobs without slowing you down.",
+                  "text": "A short note is enough. This helps the next conversation start with the right urgency.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -363,7 +366,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the emergency home response need",
+                        "placeholder": "Briefly describe the risk, damage, or symptom",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -464,7 +467,7 @@
         },
         {
           "id": "step9e6dd24d377a468d",
-          "name": "Share contact details",
+          "name": "Best contact",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -481,7 +484,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Emergency Home Response</span><br><b>How should a provider reach you?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Urgent Erie County Help</span><br><b>How should a local pro reach you?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -535,7 +538,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the emergency home response need",
+                        "placeholder": "Best number, location, and any access notes",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -653,7 +656,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Emergency Home Response</span><br><b>Urgent request received.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Urgent Erie County Help</span><br><b>Urgent request received.</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -674,7 +677,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "The request includes your issue, risk, location, and contact details.",
+                  "text": "Thanks. Your issue, risk, location, and contact details are ready for follow-up.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",

@@ -46,6 +46,22 @@ function elements(step) {
   return ["center", "left", "right"].flatMap((key) => step.elements[key] || []);
 }
 
+function visibleCopy(box) {
+  const copy = [];
+  walk(box, (node) => {
+    if (node?.options?.text) copy.push(strip(node.options.text));
+    if (node?.options?.items) {
+      for (const item of node.options.items || []) {
+        if (item?.text) copy.push(strip(item.text));
+      }
+    }
+    if (node?.input?.placeholder) copy.push(node.input.placeholder);
+    if (node?.profile?.title) copy.push(node.profile.title);
+    if (node?.teaser?.message) copy.push(node.teaser.message);
+  });
+  return copy.join(" ");
+}
+
 function summarizeBox(box) {
   const variation = (box.variations || [])[0] || {};
   const steps = variation.steps || [];
@@ -57,6 +73,7 @@ function summarizeBox(box) {
   const buttons = all.filter((node) => node.type === "button");
   const forms = all.filter((node) => node.type === "form");
   const text = JSON.stringify(box);
+  const visibleText = visibleCopy(box);
   const formFields = forms.flatMap((form) => (form.options?.fields || []).map((field) => ({
     type: field.type,
     name: field.input?.name,
@@ -97,13 +114,20 @@ function summarizeBox(box) {
   if ((box.meta || {}).ep_persona_fit_steps_applied) strengths.push("Persona-fit step metadata is present.");
   else issues.push("Missing persona-fit step metadata.");
 
+  if ((box.meta || {}).ep_persona_copy_rewrite_applied) strengths.push("Persona copy rewrite metadata is present.");
+  else issues.push("Missing persona copy rewrite metadata.");
+
   if (variation.profile?.enabled && variation.profile?.photo?.path) strengths.push("Profile photo is attached.");
   else issues.push("Profile photo is missing or disabled.");
 
   if (variation.teaser?.enabled && variation.teaser?.photo?.path) strengths.push("Teaser photo is attached.");
   else issues.push("Teaser photo is missing or disabled.");
 
-  if (text.includes("visual-trust-") || (text.includes("Private request") && text.includes("Erie County focused") && text.includes("One routed path"))) strengths.push("Trust row markup is present.");
+  if (
+    text.includes("visual-trust-") ||
+    (text.includes("Private until you submit") && text.includes("Erie County only") && text.includes("One clear next step")) ||
+    (text.includes("Erie County only") && text.includes("Fastest safe contact"))
+  ) strengths.push("Trust row markup is present.");
   else issues.push("Trust row markup not found.");
 
   if (firstButtons.length >= 2) strengths.push("First step has multiple choice buttons.");
@@ -124,6 +148,23 @@ function summarizeBox(box) {
 
   if (/30-mile|30 miles|within 30/i.test(text)) issues.push("Radius-based geography copy found.");
   else strengths.push("No targeted 30-mile/radius copy found.");
+
+  const bannedVisibleTerms = [
+    "Provider Territory Claim",
+    "Returning And Exit Rescue",
+    "Emergency Home Response",
+    "Professional Legal And Financial",
+    "Health And Wellness Appointments",
+    "Cleaning And Turnover",
+    "One routed path",
+    "category review",
+    "provider family",
+    "Help classify my service",
+    "right lane",
+  ];
+  const visibleViolations = bannedVisibleTerms.filter((term) => visibleText.toLowerCase().includes(term.toLowerCase()));
+  if (visibleViolations.length) issues.push(`Internal/customer-hostile copy remains visible: ${visibleViolations.join(", ")}.`);
+  else strengths.push("Visible copy avoids internal funnel labels and routing jargon.");
 
   const mobileTooSmall = [];
   walk(box, (node) => {
@@ -169,13 +210,13 @@ const boxes = Object.keys(expected).map((id) => {
 const audits = boxes.map(summarizeBox);
 const totalIssues = audits.reduce((sum, audit) => sum + audit.issues.length, 0);
 const highLevelIssues = [
-  "The drafts are structurally much stronger than the first shells: service-family routing, branching, photos, trust rows, and inactive status are all present.",
+  "The drafts are structurally much stronger than the first shells: service-family routing, branching, photos, trust rows, persona-native copy, and inactive status are all present.",
   "The main residual risk is visual fidelity inside the live ConvertBox canvas: API data confirms the elements, but final activation still requires manual visual/mobile preview.",
   "The current avatar graphics are functional service-family badges, not polished photography. They solve the empty photo icon problem, but can be upgraded to branded human/team or service imagery later.",
   "The drafts still use family-level routing, not true per-service/per-subservice flows for all 112 services. They are good preview templates, not the final exhaustive service matrix.",
 ];
 
-let md = `# Erie.Pro ConvertBox Full Draft Audit\n\nDate: 2026-05-10\n\nSource: fresh authenticated ConvertBox API snapshots saved under \`audit-snapshots/\`.\n\n## Overall Verdict\n\nThe 10 ConvertBox drafts are now suitable for preview and stakeholder review, but they are not ready for activation. They have meaningful service-family journeys, branching, profile photos, trust rows, persona-fit step counts, and Erie County-focused copy. Remaining work is visual/mobile QA inside the ConvertBox editor, test submissions, and per-service/subservice expansion.\n\n## High-Level Findings\n\n${highLevelIssues.map((item) => `- ${item}`).join("\n")}\n\n## Audit Scorecard\n\n- Boxes audited: ${audits.length}\n- Total issues/risks found: ${totalIssues}\n- All boxes inactive: ${audits.every((audit) => audit.active === false) ? "yes" : "no"}\n- All boxes use persona-fit step counts: ${audits.every((audit) => audit.steps.length === expectedStepCounts[audit.id]) ? "yes" : "no"}\n- All boxes have profile photos: ${audits.every((audit) => audit.profilePhoto) ? "yes" : "no"}\n- All boxes have teaser photos: ${audits.every((audit) => audit.teaserPhoto) ? "yes" : "no"}\n\n`;
+let md = `# Erie.Pro ConvertBox Full Draft Audit\n\nDate: 2026-05-10\n\nSource: fresh authenticated ConvertBox API snapshots saved under \`audit-snapshots/\`.\n\n## Overall Verdict\n\nThe 10 ConvertBox drafts are now suitable for preview and stakeholder review, but they are not ready for activation. They have meaningful service-family journeys, branching, profile photos, trust rows, persona-fit step counts, and rewritten visitor-facing copy. Remaining work is visual/mobile QA inside the ConvertBox editor, test submissions, and per-service/subservice expansion.\n\n## High-Level Findings\n\n${highLevelIssues.map((item) => `- ${item}`).join("\n")}\n\n## Audit Scorecard\n\n- Boxes audited: ${audits.length}\n- Total issues/risks found: ${totalIssues}\n- All boxes inactive: ${audits.every((audit) => audit.active === false) ? "yes" : "no"}\n- All boxes use persona-fit step counts: ${audits.every((audit) => audit.steps.length === expectedStepCounts[audit.id]) ? "yes" : "no"}\n- All boxes have profile photos: ${audits.every((audit) => audit.profilePhoto) ? "yes" : "no"}\n- All boxes have teaser photos: ${audits.every((audit) => audit.teaserPhoto) ? "yes" : "no"}\n- All boxes have persona-copy rewrite metadata: ${audits.every((audit) => (JSON.parse(fs.readFileSync(path.join(SNAPSHOT_DIR, `${audit.id}.json`), "utf8")).meta || {}).ep_persona_copy_rewrite_applied) ? "yes" : "no"}\n\n`;
 
 for (const audit of audits) {
   md += `## ${audit.name}\n\n`;

@@ -1,7 +1,7 @@
 {
   "id": 232600,
   "created_at": "2026-05-10T07:57:41.000000Z",
-  "updated_at": "2026-05-10T10:29:28.000000Z",
+  "updated_at": "2026-05-10T10:38:02.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -31,7 +31,10 @@
     "ep_desired_step_count": 5,
     "ep_step_count_rationale": "Professional and sensitive services need matter type, deadline, privacy-safe summary, contact, and confirmation.",
     "ep_pseudo_icons_removed": true,
-    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:08.096Z"
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:08.096Z",
+    "ep_persona_copy_rewrite_applied": true,
+    "ep_persona_copy_rewrite_at": "2026-05-10T10:38:01.502Z",
+    "ep_persona_copy_audit_source": "COPY-PERSONA-AUDIT-2026-05-10.md"
   },
   "variations": [
     {
@@ -79,7 +82,7 @@
         },
         "name": "Erie.Pro",
         "name_show": true,
-        "title": "Professional Consultation",
+        "title": "Local Professional Help",
         "title_show": true,
         "color": "dark",
         "layout": "chat"
@@ -88,7 +91,7 @@
         "enabled": true,
         "text_color": "#1F3A5F",
         "background_color": "#ffffff",
-        "message": "Professional Consultation",
+        "message": "Need a local professional?",
         "message_show": true,
         "icon": "none",
         "photo": {
@@ -107,7 +110,7 @@
       "steps": [
         {
           "id": "step91f4b0326b374a39",
-          "name": "What kind of help?",
+          "name": "Type of help",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -124,7 +127,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Professional Legal And Financial</span><br><b>What kind of professional help do you need?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Local Professional Help</span><br><b>Need a local professional?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -145,7 +148,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Choose the closest category. Keep sensitive details brief.",
+                  "text": "Tell us the type of help you need and when you would like to speak with someone.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -166,7 +169,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private request</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One routed path</span></div>",
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private until you submit</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County only</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One clear next step</span></div>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "13",
@@ -189,8 +192,8 @@
                       "id": "btn232600004c3bditem0",
                       "color": "#ffffff",
                       "backgroundColor": "#C8102E",
-                      "text": "<b>Legal, tax, insurance, or financial</b>",
-                      "value": "legal-tax-insurance-or-financial",
+                      "text": "<b>I need legal, tax, insurance, or money help</b>",
+                      "value": "i-need-legal-tax-insurance-or-money-help",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -204,8 +207,8 @@
                       "id": "btn232600004c3bditem1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
-                      "text": "<b>Real estate, inspection, or mortgage</b>",
-                      "value": "real-estate-inspection-or-mortgage",
+                      "text": "<b>I need property, inspection, or mortgage help</b>",
+                      "value": "i-need-property-inspection-or-mortgage-help",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -309,7 +312,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Professional Legal And Financial</span><br><b>Is there a deadline or important date?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Local Professional Help</span><br><b>Is there a deadline or important date?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -363,7 +366,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the professional legal and financial need",
+                        "placeholder": "Deadline, important date, or planning window",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -464,7 +467,7 @@
         },
         {
           "id": "stepde1c7ed94c24470a",
-          "name": "Brief private summary",
+          "name": "Brief private note",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -481,7 +484,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Professional Legal And Financial</span><br><b>Share a brief routing summary.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Local Professional Help</span><br><b>Share a brief private note.</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -502,7 +505,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Do not upload documents or share detailed private facts in this box.",
+                  "text": "A brief note is enough. Please do not include private documents or detailed confidential facts here.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -535,7 +538,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the professional legal and financial need",
+                        "placeholder": "Brief privacy-safe summary",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -653,7 +656,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Professional Legal And Financial</span><br><b>How should a professional follow up?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Local Professional Help</span><br><b>How should a professional follow up?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -707,7 +710,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the professional legal and financial need",
+                        "placeholder": "Best contact method and time window",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -825,7 +828,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Professional Legal And Financial</span><br><b>Consultation request received.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Local Professional Help</span><br><b>Consultation request received.</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -846,7 +849,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Your category, timing, and contact preference are included.",
+                  "text": "Thanks. The next conversation can start with the right context and a respectful pace.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",

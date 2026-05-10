@@ -1,7 +1,7 @@
 {
   "id": 232601,
   "created_at": "2026-05-10T07:58:19.000000Z",
-  "updated_at": "2026-05-10T10:29:29.000000Z",
+  "updated_at": "2026-05-10T10:38:03.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -31,7 +31,10 @@
     "ep_desired_step_count": 6,
     "ep_step_count_rationale": "Provider acquisition needs category fit, territory, business info, response capacity, contact, and review.",
     "ep_pseudo_icons_removed": true,
-    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:08.437Z"
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:08.437Z",
+    "ep_persona_copy_rewrite_applied": true,
+    "ep_persona_copy_rewrite_at": "2026-05-10T10:38:01.975Z",
+    "ep_persona_copy_audit_source": "COPY-PERSONA-AUDIT-2026-05-10.md"
   },
   "variations": [
     {
@@ -79,7 +82,7 @@
         },
         "name": "Erie.Pro",
         "name_show": true,
-        "title": "Provider Category Review",
+        "title": "Erie County Provider Review",
         "title_show": true,
         "color": "dark",
         "layout": "chat"
@@ -88,7 +91,7 @@
         "enabled": true,
         "text_color": "#1F3A5F",
         "background_color": "#ffffff",
-        "message": "Provider Category Review",
+        "message": "Serve Erie County?",
         "message_show": true,
         "icon": "none",
         "photo": {
@@ -107,7 +110,7 @@
       "steps": [
         {
           "id": "stepb02dcd2b19ba4f0c",
-          "name": "What service do you provide?",
+          "name": "Service category",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -124,7 +127,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>What Erie County service do you provide?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Availability</span><br><b>Serve Erie County?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -145,7 +148,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Choose the closest provider family so category review starts correctly.",
+                  "text": "Check whether your service category is open for local requests.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -166,7 +169,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private request</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One routed path</span></div>",
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private until you submit</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County only</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One clear next step</span></div>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "13",
@@ -189,8 +192,8 @@
                       "id": "btn2326010fb9bfbitem0",
                       "color": "#ffffff",
                       "backgroundColor": "#C8102E",
-                      "text": "<b>Home or property service</b>",
-                      "value": "home-or-property-service",
+                      "text": "<b>I provide home or property services</b>",
+                      "value": "i-provide-home-or-property-services",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -204,8 +207,8 @@
                       "id": "btn2326010fb9bfbitem1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
-                      "text": "<b>Health, professional, or appointment service</b>",
-                      "value": "health-professional-or-appointment-service",
+                      "text": "<b>I provide health, professional, or appointment services</b>",
+                      "value": "i-provide-health-professional-or-appointment-services",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -219,8 +222,8 @@
                       "id": "btn2326010fb9bfbitem2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
-                      "text": "<b>Help classify my service</b>",
-                      "value": "help-classify-my-service",
+                      "text": "<b>Help me choose my category</b>",
+                      "value": "help-me-choose-my-category",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -292,7 +295,7 @@
         },
         {
           "id": "stepc8684ef5b8ed468d",
-          "name": "Communities served",
+          "name": "Service area",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -309,7 +312,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>Which Erie County communities do you serve?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Availability</span><br><b>Where do you serve?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -330,7 +333,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "List the areas where you can realistically respond.",
+                  "text": "List the Erie County communities where you can realistically respond.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -363,7 +366,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the provider territory claim need",
+                        "placeholder": "Communities served in Erie County",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -481,7 +484,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>Tell us about the business.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Availability</span><br><b>Tell us about your business.</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -502,7 +505,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Business name, website, license/insurance notes, or profile claim context.",
+                  "text": "Business name, website, license or insurance notes, and whether you are claiming an existing profile.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -535,7 +538,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the provider territory claim need",
+                        "placeholder": "Business name, website, license or insurance notes, profile claim context",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -636,7 +639,7 @@
         },
         {
           "id": "step99108cd304b34389",
-          "name": "Lead response readiness",
+          "name": "Response readiness",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -653,7 +656,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>How quickly can you respond?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Availability</span><br><b>How quickly can you respond to new requests?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -674,7 +677,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Response speed affects fit for urgent and high-intent requests.",
+                  "text": "Response speed helps determine fit for urgent and high-intent local requests.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -707,7 +710,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the provider territory claim need",
+                        "placeholder": "Typical response speed and capacity",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -808,7 +811,7 @@
         },
         {
           "id": "step29adf05f67384116",
-          "name": "Owner contact",
+          "name": "Best business contact",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -825,7 +828,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>Who should Erie.Pro contact?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Availability</span><br><b>Who is the best person to contact?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -879,7 +882,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the provider territory claim need",
+                        "placeholder": "Owner or manager name, phone, and email",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -980,7 +983,7 @@
         },
         {
           "id": "step4078c85287ac409b",
-          "name": "Claim request received",
+          "name": "Review request received",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -997,7 +1000,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>Claim request received.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Availability</span><br><b>Review request received.</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -1018,7 +1021,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Category and territory fit will be reviewed before any promise is made.",
+                  "text": "Thanks. We will review your service category and follow up about profile claim or availability.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",

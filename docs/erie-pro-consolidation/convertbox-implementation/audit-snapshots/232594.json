@@ -1,7 +1,7 @@
 {
   "id": 232594,
   "created_at": "2026-05-10T07:44:10.000000Z",
-  "updated_at": "2026-05-10T10:29:20.000000Z",
+  "updated_at": "2026-05-10T10:38:00.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -31,7 +31,10 @@
     "ep_desired_step_count": 5,
     "ep_step_count_rationale": "Cleaning and turnover decisions need task, size, timing, access, and contact.",
     "ep_pseudo_icons_removed": true,
-    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:06.777Z"
+    "ep_pseudo_icons_removed_at": "2026-05-10T10:29:06.777Z",
+    "ep_persona_copy_rewrite_applied": true,
+    "ep_persona_copy_rewrite_at": "2026-05-10T10:37:59.373Z",
+    "ep_persona_copy_audit_source": "COPY-PERSONA-AUDIT-2026-05-10.md"
   },
   "variations": [
     {
@@ -88,7 +91,7 @@
         "enabled": true,
         "text_color": "#1F3A5F",
         "background_color": "#ffffff",
-        "message": "Cleaning, Moving, And Turnover",
+        "message": "Need something ready on time?",
         "message_show": true,
         "icon": "none",
         "photo": {
@@ -107,7 +110,7 @@
       "steps": [
         {
           "id": "step460d51b38e4a4c1c",
-          "name": "What needs to be handled?",
+          "name": "What needs to be ready?",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -124,7 +127,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Cleaning And Turnover</span><br><b>What needs to be cleaned, moved, or prepared?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Ready On Time</span><br><b>What needs to be ready?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -145,7 +148,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Start with the work type so we can ask the right timing question.",
+                  "text": "Tell us what needs cleaning, moving, hauling, or turning over and when it has to be done.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -166,7 +169,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private request</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One routed path</span></div>",
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private until you submit</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County only</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One clear next step</span></div>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "13",
@@ -189,8 +192,8 @@
                       "id": "btn2325940ba7812item0",
                       "color": "#ffffff",
                       "backgroundColor": "#C8102E",
-                      "text": "<b>Cleaning or turnover</b>",
-                      "value": "cleaning-or-turnover",
+                      "text": "<b>I need cleaning or turnover help</b>",
+                      "value": "i-need-cleaning-or-turnover-help",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -204,8 +207,8 @@
                       "id": "btn2325940ba7812item1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
-                      "text": "<b>Moving, junk, or dumpster</b>",
-                      "value": "moving-junk-or-dumpster",
+                      "text": "<b>I need moving, junk, or dumpster help</b>",
+                      "value": "i-need-moving-junk-or-dumpster-help",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -219,8 +222,8 @@
                       "id": "btn2325940ba7812item2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
-                      "text": "<b>Not sure which cleaning path fits</b>",
-                      "value": "not-sure-which-cleaning-path-fits",
+                      "text": "<b>Help me choose the right path</b>",
+                      "value": "help-me-choose-the-right-path",
                       "action": {
                         "type": "step",
                         "link": null,
@@ -292,7 +295,7 @@
         },
         {
           "id": "step3119a0256b2b416d",
-          "name": "Size and property context",
+          "name": "Size and property",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -309,7 +312,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Cleaning And Turnover</span><br><b>How large is the job?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Ready On Time</span><br><b>How big is the job?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -330,7 +333,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Rooms, square footage, item volume, or property type helps avoid a vague quote.",
+                  "text": "Rooms, square footage, item volume, or property type helps a quote start closer to reality.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
@@ -363,7 +366,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the cleaning and turnover need",
+                        "placeholder": "Rooms, size, items, property type, or surfaces",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -481,7 +484,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Cleaning And Turnover</span><br><b>When does it need to be ready?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Ready On Time</span><br><b>When does it need to be ready?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -535,7 +538,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the cleaning and turnover need",
+                        "placeholder": "Date needed, access notes, or turnover window",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -636,7 +639,7 @@
         },
         {
           "id": "step374ca127f32e46ce",
-          "name": "Contact for scheduling",
+          "name": "Scheduling contact",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
@@ -653,7 +656,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Cleaning And Turnover</span><br><b>Where should a pro follow up?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Ready On Time</span><br><b>Who is the best contact for scheduling?</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -707,7 +710,7 @@
                       "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "Briefly describe the cleaning and turnover need",
+                        "placeholder": "Best contact method and scheduling notes",
                         "name": "request_context",
                         "type": "textarea",
                         "required": true
@@ -747,7 +750,7 @@
                   "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "buttonText": "<b>Send cleaning request</b>",
+                  "buttonText": "<b>Send request</b>",
                   "layout": "vertical",
                   "shape": "rounded",
                   "mobile": {
@@ -825,7 +828,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Cleaning And Turnover</span><br><b>Request received.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Ready On Time</span><br><b>Request received.</b>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "22",
@@ -846,7 +849,7 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Your timing, size, and property context are included.",
+                  "text": "Thanks. Your timing, size, and access details are ready for a useful quote.",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "17",
