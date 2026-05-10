@@ -206,6 +206,17 @@ Updated draft-preview mapping:
 - `232602`: `EP-F10 Returning And Exit Rescue - Draft Preview`
 - `232603`: `EP-F10 Returning And Exit Rescue - Draft Preview`
 
+Sixth correction recorded after reviewing shared ConvertBox design `https://app.convertbox.com/share/SE6OC2LI`: the useful lessons from that design were applied to the inactive Erie.Pro draft previews without copying the ecommerce pressure style. The applied lessons are:
+
+- choice-first branching before contact fields
+- a meaningful `not sure / not ready / save or ask a question` path instead of dead-end declines
+- progressive commitment: clarify service context first, contact details later
+- service-family-specific first choices and confirmation language
+- softer alternate paths for sensitive health, funeral, legal, financial, and senior-care contexts
+- draft metadata `ep_branching_lessons_applied=true` and `ep_branching_lesson_source=https://app.convertbox.com/share/SE6OC2LI`
+
+All 10 boxes saved successfully and verified as `active=false`.
+
 The visual editor opened successfully, but the builder uses a drag-and-drop canvas and normal browser text-fill automation intermittently failed on text entry with the in-browser clipboard layer. To avoid leaving blank shells, the completed designs were written through ConvertBox's authenticated editor save endpoint using the same structured JSON schema the builder saves.
 
 To protect Erie.Pro user experience, the boxes were left inactive. They are designed and fielded, but should not be activated until final mobile/desktop preview and test submissions are reviewed.

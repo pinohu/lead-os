@@ -8,6 +8,8 @@ Verdict: the boxes are not ready for activation. They prove mechanics, but they 
 
 Update after audit application: the findings in this document have now been applied to the existing inactive ConvertBox drafts as draft previews. They are visible in the ConvertBox account under service-family names such as `EP-F01 Emergency Home Response - Draft Preview`, `EP-F07 Health And Wellness Appointments - Draft Preview`, and `EP-F10 Returning And Exit Rescue - Draft Preview`. This does not change the launch verdict: preview is allowed, activation still requires visual/mobile QA and test submissions.
 
+Update after reviewing shared ConvertBox design `SE6OC2LI`: the Erie.Pro draft previews now also include the useful structural lessons from that design. The ecommerce urgency, countdown, and pressure style were intentionally not copied. The adopted pattern is: easy first choice, branched follow-up, useful alternate path when the visitor declines or is unsure, and contact details only after the service context is clear.
+
 ## Audit Criteria
 
 Each box is audited across four dimensions:
