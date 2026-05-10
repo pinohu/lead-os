@@ -6,7 +6,7 @@ Source: fresh authenticated ConvertBox API snapshots saved under `audit-snapshot
 
 ## Overall Verdict
 
-The 10 ConvertBox drafts are now suitable for preview and stakeholder review, but they are not ready for activation. They have meaningful service-family journeys, branching, profile photos, trust rows, and Erie County-focused copy. Remaining work is visual/mobile QA inside the ConvertBox editor, test submissions, and per-service/subservice expansion.
+The 10 ConvertBox drafts are now suitable for preview and stakeholder review, but they are not ready for activation. They have meaningful service-family journeys, branching, profile photos, trust rows, persona-fit step counts, and Erie County-focused copy. Remaining work is visual/mobile QA inside the ConvertBox editor, test submissions, and per-service/subservice expansion.
 
 ## High-Level Findings
 
@@ -15,30 +15,12 @@ The 10 ConvertBox drafts are now suitable for preview and stakeholder review, bu
 - The current avatar graphics are functional service-family badges, not polished photography. They solve the empty photo icon problem, but can be upgraded to branded human/team or service imagery later.
 - The drafts still use family-level routing, not true per-service/per-subservice flows for all 112 services. They are good preview templates, not the final exhaustive service matrix.
 
-## UX/UI Verdict
-
-The drafts now behave like useful guided mini-journeys instead of generic popup forms. The first screen asks a family-specific question, offers three clear paths, includes a low-pressure fallback, and postpones contact capture until the visitor has given context. This is a major improvement for trust and completion.
-
-The UI system is coherent enough for preview: each family has a label, avatar, trust row, Erie.Pro profile identity, and button choices that signal the type of help being requested. The experience should feel more professional than the earlier text-only drafts.
-
-The remaining design concern is polish, not structure. The current avatars are clean functional SVG badges. They fix the blank photo icons, but they are not yet a premium branded image system. Before full deployment, the best upgrade would be custom Erie.Pro team/concierge portraits or polished service-family illustrations that match the site.
-
-## Conversion Psychology Verdict
-
-The strongest conversion improvement is the addition of a third "not sure / help me choose" path. That matters because many Erie.Pro visitors will not know whether they need plumbing vs drain cleaning, snow removal vs de-icing, legal vs financial help, or an appointment vs consultation. The boxes now reduce anxiety instead of punishing uncertainty.
-
-The emergency boxes are appropriately shorter and direct. The health and professional boxes include privacy/sensitive-detail language. The project boxes gather planning context before pushing for contact. The provider box correctly avoids promising territory before review.
-
-## Journey Verdict
-
-These drafts are appropriate as family-level previews and early launch templates. They are not yet the final 112-service journey system. The next journey layer should duplicate or specialize these family templates for the highest-intent service pages first: plumbing, HVAC, roofing, snow removal, cleaning/turnover, planned remodels, mental health, funeral homes, legal, and provider claims.
-
 ## Audit Scorecard
 
 - Boxes audited: 10
 - Total issues/risks found: 0
 - All boxes inactive: yes
-- All boxes have six steps: yes
+- All boxes use persona-fit step counts: yes
 - All boxes have profile photos: yes
 - All boxes have teaser photos: yes
 
@@ -53,10 +35,9 @@ These drafts are appropriate as family-level previews and early launch templates
 Steps:
 
 - What needs to be handled?
-- Tell us the size or scope
-- When does it need to be ready?
-- Where should a pro follow up?
-- Not ready yet?
+- Size and property context
+- Timing and access
+- Contact for scheduling
 - Request received
 
 First-step choice buttons:
@@ -69,11 +50,12 @@ Strengths:
 
 - Inactive draft state is preserved.
 - Service-family metadata matches the intended family.
-- Uses six native ConvertBox steps.
+- Uses persona-fit step count: 5.
 - ConvertBox Steps drawer onboarding flag is disabled.
 - Branching lessons metadata is present.
 - Professional visual-system metadata is present.
 - Profile-photo metadata is present.
+- Persona-fit step metadata is present.
 - Profile photo is attached.
 - Teaser photo is attached.
 - Trust row markup is present.
@@ -102,9 +84,7 @@ Steps:
 
 - Choose the urgent issue
 - Tell us the risk
-- Add location context
 - Share contact details
-- Not ready yet?
 - Urgent request received
 
 First-step choice buttons:
@@ -117,11 +97,12 @@ Strengths:
 
 - Inactive draft state is preserved.
 - Service-family metadata matches the intended family.
-- Uses six native ConvertBox steps.
+- Uses persona-fit step count: 4.
 - ConvertBox Steps drawer onboarding flag is disabled.
 - Branching lessons metadata is present.
 - Professional visual-system metadata is present.
 - Profile-photo metadata is present.
+- Persona-fit step metadata is present.
 - Profile photo is attached.
 - Teaser photo is attached.
 - Trust row markup is present.
@@ -149,10 +130,11 @@ Issues / risks:
 Steps:
 
 - What are you planning?
-- How far along are you?
-- Share the project scope
-- Add timing and contact
-- Not ready yet?
+- Planning stage
+- Scope and property details
+- Timing and budget comfort
+- Photos or special constraints
+- Contact and optional concierge
 - Project request received
 
 First-step choice buttons:
@@ -165,11 +147,12 @@ Strengths:
 
 - Inactive draft state is preserved.
 - Service-family metadata matches the intended family.
-- Uses six native ConvertBox steps.
+- Uses persona-fit step count: 7.
 - ConvertBox Steps drawer onboarding flag is disabled.
 - Branching lessons metadata is present.
 - Professional visual-system metadata is present.
 - Profile-photo metadata is present.
+- Persona-fit step metadata is present.
 - Profile photo is attached.
 - Teaser photo is attached.
 - Trust row markup is present.
@@ -197,10 +180,8 @@ Issues / risks:
 Steps:
 
 - What happened?
-- Is there active damage or risk?
 - Where do you need help?
 - How should we reach you?
-- Not ready yet?
 - Request received
 
 First-step choice buttons:
@@ -213,11 +194,12 @@ Strengths:
 
 - Inactive draft state is preserved.
 - Service-family metadata matches the intended family.
-- Uses six native ConvertBox steps.
+- Uses persona-fit step count: 4.
 - ConvertBox Steps drawer onboarding flag is disabled.
 - Branching lessons metadata is present.
 - Professional visual-system metadata is present.
 - Profile-photo metadata is present.
+- Persona-fit step metadata is present.
 - Profile photo is attached.
 - Teaser photo is attached.
 - Trust row markup is present.
@@ -245,11 +227,12 @@ Issues / risks:
 Steps:
 
 - Choose the project type
-- Tell us your planning stage
-- Add scope details
-- Share contact details
-- Not ready yet?
-- Project request received
+- Goal and outcome
+- Scope details
+- Decision stage
+- Timing and constraints
+- Contact and next step
+- Project details saved
 
 First-step choice buttons:
 
@@ -261,11 +244,12 @@ Strengths:
 
 - Inactive draft state is preserved.
 - Service-family metadata matches the intended family.
-- Uses six native ConvertBox steps.
+- Uses persona-fit step count: 7.
 - ConvertBox Steps drawer onboarding flag is disabled.
 - Branching lessons metadata is present.
 - Professional visual-system metadata is present.
 - Profile-photo metadata is present.
+- Persona-fit step metadata is present.
 - Profile photo is attached.
 - Teaser photo is attached.
 - Trust row markup is present.
@@ -293,10 +277,8 @@ Issues / risks:
 Steps:
 
 - What kind of appointment?
-- Tell us the care type
-- Choose a contact window
-- Share contact details
-- Review your request
+- Care type and timing
+- Private contact details
 - Appointment request received
 
 First-step choice buttons:
@@ -309,11 +291,12 @@ Strengths:
 
 - Inactive draft state is preserved.
 - Service-family metadata matches the intended family.
-- Uses six native ConvertBox steps.
+- Uses persona-fit step count: 4.
 - ConvertBox Steps drawer onboarding flag is disabled.
 - Branching lessons metadata is present.
 - Professional visual-system metadata is present.
 - Profile-photo metadata is present.
+- Persona-fit step metadata is present.
 - Profile photo is attached.
 - Teaser photo is attached.
 - Trust row markup is present.
@@ -342,10 +325,9 @@ Issues / risks:
 Steps:
 
 - What kind of help?
-- Is there a deadline?
-- Share a brief summary
-- Choose contact preference
-- Review your request
+- Deadline or timing
+- Brief private summary
+- Contact preference
 - Consultation request received
 
 First-step choice buttons:
@@ -358,11 +340,12 @@ Strengths:
 
 - Inactive draft state is preserved.
 - Service-family metadata matches the intended family.
-- Uses six native ConvertBox steps.
+- Uses persona-fit step count: 5.
 - ConvertBox Steps drawer onboarding flag is disabled.
 - Branching lessons metadata is present.
 - Professional visual-system metadata is present.
 - Profile-photo metadata is present.
+- Persona-fit step metadata is present.
 - Profile photo is attached.
 - Teaser photo is attached.
 - Trust row markup is present.
@@ -391,10 +374,10 @@ Issues / risks:
 Steps:
 
 - What service do you provide?
-- Where do you serve?
-- Tell us about the business
-- Add owner contact
-- Review territory interest
+- Communities served
+- Business details
+- Lead response readiness
+- Owner contact
 - Claim request received
 
 First-step choice buttons:
@@ -407,11 +390,12 @@ Strengths:
 
 - Inactive draft state is preserved.
 - Service-family metadata matches the intended family.
-- Uses six native ConvertBox steps.
+- Uses persona-fit step count: 6.
 - ConvertBox Steps drawer onboarding flag is disabled.
 - Branching lessons metadata is present.
 - Professional visual-system metadata is present.
 - Profile-photo metadata is present.
+- Persona-fit step metadata is present.
 - Profile photo is attached.
 - Teaser photo is attached.
 - Trust row markup is present.
@@ -439,10 +423,7 @@ Issues / risks:
 Steps:
 
 - What got in the way?
-- What service were you looking for?
-- Pick the better next step
-- Leave a contact option
-- Review your request
+- Choose the next step
 - Saved for follow-up
 
 First-step choice buttons:
@@ -455,11 +436,12 @@ Strengths:
 
 - Inactive draft state is preserved.
 - Service-family metadata matches the intended family.
-- Uses six native ConvertBox steps.
+- Uses persona-fit step count: 3.
 - ConvertBox Steps drawer onboarding flag is disabled.
 - Branching lessons metadata is present.
 - Professional visual-system metadata is present.
 - Profile-photo metadata is present.
+- Persona-fit step metadata is present.
 - Profile photo is attached.
 - Teaser photo is attached.
 - Trust row markup is present.
@@ -487,10 +469,7 @@ Issues / risks:
 Steps:
 
 - What were you working on?
-- What changed?
-- Choose the next step
-- Confirm contact details
-- Review your request
+- Update the next step
 - We will help from here
 
 First-step choice buttons:
@@ -503,11 +482,12 @@ Strengths:
 
 - Inactive draft state is preserved.
 - Service-family metadata matches the intended family.
-- Uses six native ConvertBox steps.
+- Uses persona-fit step count: 3.
 - ConvertBox Steps drawer onboarding flag is disabled.
 - Branching lessons metadata is present.
 - Professional visual-system metadata is present.
 - Profile-photo metadata is present.
+- Persona-fit step metadata is present.
 - Profile photo is attached.
 - Teaser photo is attached.
 - Trust row markup is present.

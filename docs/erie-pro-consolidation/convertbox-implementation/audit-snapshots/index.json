@@ -16,8 +16,18 @@
       "ep_visual_label": "Urgent Erie County Help",
       "ep_profile_photos_applied": true,
       "ep_profile_photos_applied_at": "2026-05-10T10:11:12.170Z",
-      "ep_profile_photo_id": 134777
-    }
+      "ep_profile_photo_id": 134777,
+      "ep_persona_fit_steps_applied": true,
+      "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.637Z",
+      "ep_desired_step_count": 4,
+      "ep_step_count_rationale": "Urgent visitors need speed, not long scoping."
+    },
+    "steps": [
+      "What happened?",
+      "Where do you need help?",
+      "How should we reach you?",
+      "Request received"
+    ]
   },
   {
     "id": 232595,
@@ -38,8 +48,18 @@
       "ep_profile_photos_applied_at": "2026-05-10T10:11:12.624Z",
       "ep_profile_photo_id": 134777,
       "ep_low_pressure_path_fixed": true,
-      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:27.674Z"
-    }
+      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:27.674Z",
+      "ep_persona_fit_steps_applied": true,
+      "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.123Z",
+      "ep_desired_step_count": 4,
+      "ep_step_count_rationale": "Emergency callback should be compact and phone-first."
+    },
+    "steps": [
+      "Choose the urgent issue",
+      "Tell us the risk",
+      "Share contact details",
+      "Urgent request received"
+    ]
   },
   {
     "id": 232594,
@@ -60,8 +80,19 @@
       "ep_profile_photos_applied_at": "2026-05-10T10:11:12.984Z",
       "ep_profile_photo_id": 134778,
       "ep_low_pressure_path_fixed": true,
-      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:27.267Z"
-    }
+      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:27.267Z",
+      "ep_persona_fit_steps_applied": true,
+      "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:45.905Z",
+      "ep_desired_step_count": 5,
+      "ep_step_count_rationale": "Cleaning and turnover decisions need task, size, timing, access, and contact."
+    },
+    "steps": [
+      "What needs to be handled?",
+      "Size and property context",
+      "Timing and access",
+      "Contact for scheduling",
+      "Request received"
+    ]
   },
   {
     "id": 232596,
@@ -82,8 +113,21 @@
       "ep_profile_photos_applied_at": "2026-05-10T10:11:13.381Z",
       "ep_profile_photo_id": 134779,
       "ep_low_pressure_path_fixed": true,
-      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:27.908Z"
-    }
+      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:27.908Z",
+      "ep_persona_fit_steps_applied": true,
+      "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.374Z",
+      "ep_desired_step_count": 7,
+      "ep_step_count_rationale": "Complex projects benefit from comprehensive guided scoping."
+    },
+    "steps": [
+      "What are you planning?",
+      "Planning stage",
+      "Scope and property details",
+      "Timing and budget comfort",
+      "Photos or special constraints",
+      "Contact and optional concierge",
+      "Project request received"
+    ]
   },
   {
     "id": 232598,
@@ -104,8 +148,21 @@
       "ep_profile_photos_applied_at": "2026-05-10T10:11:13.842Z",
       "ep_profile_photo_id": 134779,
       "ep_low_pressure_path_fixed": true,
-      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.165Z"
-    }
+      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.165Z",
+      "ep_persona_fit_steps_applied": true,
+      "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.896Z",
+      "ep_desired_step_count": 7,
+      "ep_step_count_rationale": "High-value project estimates need enough context to make the first call useful."
+    },
+    "steps": [
+      "Choose the project type",
+      "Goal and outcome",
+      "Scope details",
+      "Decision stage",
+      "Timing and constraints",
+      "Contact and next step",
+      "Project details saved"
+    ]
   },
   {
     "id": 232599,
@@ -126,8 +183,18 @@
       "ep_profile_photos_applied_at": "2026-05-10T10:11:14.207Z",
       "ep_profile_photo_id": 134780,
       "ep_low_pressure_path_fixed": true,
-      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.407Z"
-    }
+      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.407Z",
+      "ep_persona_fit_steps_applied": true,
+      "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.128Z",
+      "ep_desired_step_count": 4,
+      "ep_step_count_rationale": "Appointment visitors need privacy, fit, and scheduling without over-sharing."
+    },
+    "steps": [
+      "What kind of appointment?",
+      "Care type and timing",
+      "Private contact details",
+      "Appointment request received"
+    ]
   },
   {
     "id": 232600,
@@ -148,8 +215,19 @@
       "ep_profile_photos_applied_at": "2026-05-10T10:11:14.562Z",
       "ep_profile_photo_id": 134781,
       "ep_low_pressure_path_fixed": true,
-      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.703Z"
-    }
+      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.703Z",
+      "ep_persona_fit_steps_applied": true,
+      "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.421Z",
+      "ep_desired_step_count": 5,
+      "ep_step_count_rationale": "Professional and sensitive services need matter type, deadline, privacy-safe summary, contact, and confirmation."
+    },
+    "steps": [
+      "What kind of help?",
+      "Deadline or timing",
+      "Brief private summary",
+      "Contact preference",
+      "Consultation request received"
+    ]
   },
   {
     "id": 232601,
@@ -170,8 +248,20 @@
       "ep_profile_photos_applied_at": "2026-05-10T10:11:14.964Z",
       "ep_profile_photo_id": 134782,
       "ep_low_pressure_path_fixed": true,
-      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.949Z"
-    }
+      "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.949Z",
+      "ep_persona_fit_steps_applied": true,
+      "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.685Z",
+      "ep_desired_step_count": 6,
+      "ep_step_count_rationale": "Provider acquisition needs category fit, territory, business info, response capacity, contact, and review."
+    },
+    "steps": [
+      "What service do you provide?",
+      "Communities served",
+      "Business details",
+      "Lead response readiness",
+      "Owner contact",
+      "Claim request received"
+    ]
   },
   {
     "id": 232602,
@@ -190,8 +280,17 @@
       "ep_visual_label": "Finish Or Save Your Request",
       "ep_profile_photos_applied": true,
       "ep_profile_photos_applied_at": "2026-05-10T10:11:15.335Z",
-      "ep_profile_photo_id": 134783
-    }
+      "ep_profile_photo_id": 134783,
+      "ep_persona_fit_steps_applied": true,
+      "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.931Z",
+      "ep_desired_step_count": 3,
+      "ep_step_count_rationale": "Exit rescue should be tiny: obstacle, next step/contact, confirmation."
+    },
+    "steps": [
+      "What got in the way?",
+      "Choose the next step",
+      "Saved for follow-up"
+    ]
   },
   {
     "id": 232603,
@@ -210,7 +309,16 @@
       "ep_visual_label": "Finish Or Save Your Request",
       "ep_profile_photos_applied": true,
       "ep_profile_photos_applied_at": "2026-05-10T10:11:15.742Z",
-      "ep_profile_photo_id": 134783
-    }
+      "ep_profile_photo_id": 134783,
+      "ep_persona_fit_steps_applied": true,
+      "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:48.173Z",
+      "ep_desired_step_count": 3,
+      "ep_step_count_rationale": "Returning visitors should not restart a long flow."
+    },
+    "steps": [
+      "What were you working on?",
+      "Update the next step",
+      "We will help from here"
+    ]
   }
 ]

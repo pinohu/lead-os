@@ -1,7 +1,7 @@
 {
   "id": 232600,
   "created_at": "2026-05-10T07:57:41.000000Z",
-  "updated_at": "2026-05-10T10:16:47.000000Z",
+  "updated_at": "2026-05-10T10:24:09.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -25,7 +25,11 @@
     "ep_profile_photos_applied_at": "2026-05-10T10:11:14.562Z",
     "ep_profile_photo_id": 134781,
     "ep_low_pressure_path_fixed": true,
-    "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.703Z"
+    "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.703Z",
+    "ep_persona_fit_steps_applied": true,
+    "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.421Z",
+    "ep_desired_step_count": 5,
+    "ep_step_count_rationale": "Professional and sensitive services need matter type, deadline, privacy-safe summary, contact, and confirmation."
   },
   "variations": [
     {
@@ -108,20 +112,20 @@
           "elements": {
             "center": [
               {
-                "id": "epadd4c0cd31124cea",
+                "id": "label23260008d44b4",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#31456A",
+                  "color": "#C8102E",
                   "fontSize": "34",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
-                  "vSpacingBottom": 0,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#31456A;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[doc] Professional Consultation</span><br><b>Need a local professional consultation?</b>",
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Professional Legal And Financial</span><br><b>What kind of professional help do you need?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -129,20 +133,20 @@
                 }
               },
               {
-                "id": "epd9f5be560a2e4a11",
+                "id": "body23260000e1578",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
                   "color": "#1F3A5F",
-                  "fontSize": "18",
+                  "fontSize": "17",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Start with the type of matter and any timing concern. Keep sensitive details brief.<br><br><b>Choose the closest path. You can still change direction later.</b>",
+                  "text": "Choose the closest category. Keep sensitive details brief.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "23",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -150,64 +154,7 @@
                 }
               },
               {
-                "id": "ep5ded61cb60be43df",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#4A4A4A",
-                  "fontSize": "20",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 0,
-                  "vSpacingBottom": 1,
-                  "text": "<b>Start with one quick choice. Contact details come after the request is clear.</b>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "13",
-                    "lineHeight": "1.32",
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "ep52d09da5f55643b3",
-                "type": "divider",
-                "title": "Divider",
-                "options": {
-                  "hideOnMobile": false,
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "color": "#D7DEE6",
-                  "width": 500,
-                  "height": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "visual-divider-232600-0",
-                "type": "divider",
-                "title": "Divider",
-                "options": {
-                  "hideOnMobile": false,
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "color": "#D7DEE6",
-                  "width": 500,
-                  "height": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "visual-trust-232600-0",
+                "id": "trust2326000e26c6a",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -215,20 +162,20 @@
                   "color": "#4A4A4A",
                   "fontSize": "13",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Brief summary</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Deadline-aware</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Sensitive details protected</span></div>",
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private request</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One routed path</span></div>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "13",
                     "lineHeight": "1.32",
-                    "vSpacingTop": 0,
+                    "vSpacingTop": 1,
                     "vSpacingBottom": 1
                   }
                 }
               },
               {
-                "id": "ep63ba351e13984763",
+                "id": "btn232600004c3bd",
                 "type": "button",
                 "title": "Button",
                 "options": {
@@ -237,88 +184,49 @@
                   "amount": 3,
                   "items": [
                     {
-                      "id": "btndc8355f9b57146a9",
+                      "id": "btn232600004c3bditem0",
                       "color": "#ffffff",
-                      "backgroundColor": "#31456A",
+                      "backgroundColor": "#C8102E",
                       "text": "<b>[doc] Legal, tax, insurance, or financial</b>",
+                      "value": "doc-legal-tax-insurance-or-financial",
                       "action": {
                         "type": "step",
                         "link": null,
                         "step": "step1f79dadd8bfd4b6b",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "urgent",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "legal-tax-insurance-or-financial"
+                      "automations_type": "immediately"
                     },
                     {
-                      "id": "btn585df0ced23e4d84",
+                      "id": "btn232600004c3bditem1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
                       "text": "<b>[home] Real estate, inspection, or mortgage</b>",
+                      "value": "home-real-estate-inspection-or-mortgage",
                       "action": {
                         "type": "step",
                         "link": null,
-                        "step": "stepde1c7ed94c24470a",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "standard",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "step": "step1f79dadd8bfd4b6b",
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "real-estate-inspection-or-mortgage"
+                      "automations_type": "immediately"
                     },
                     {
-                      "id": "btn708488cdb44c4741",
+                      "id": "btn232600004c3bditem2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
                       "text": "<b>[?] Help me choose the right professional</b>",
+                      "value": "help-me-choose-the-right-professional",
                       "action": {
                         "type": "step",
                         "link": null,
-                        "step": "step06ee182287bf4302",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "project",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "step": "step1f79dadd8bfd4b6b",
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "help-me-choose-the-right-professional"
+                      "automations_type": "immediately"
                     }
                   ],
                   "shape": "rounded",
@@ -328,28 +236,7 @@
                   "vSpacingBottom": 1,
                   "mobile": {
                     "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
-                  }
-                }
-              },
-              {
-                "id": "ep2f9c0d0b65c44454",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#5D6978",
-                  "fontSize": "12",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">Keep sensitive details brief. The first goal is routing, not collecting private documents.</div>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "12",
-                    "lineHeight": "1.32",
+                    "size": "m",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
                   }
@@ -403,27 +290,27 @@
         },
         {
           "id": "step1f79dadd8bfd4b6b",
-          "name": "Is there a deadline?",
+          "name": "Deadline or timing",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "ep7b75282fb4734152",
+                "id": "label232600186fd3c",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#31456A",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#31456A;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[doc] Professional Consultation</span><br><b>Urgent Erie request</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Professional Legal And Financial</span><br><b>Is there a deadline or important date?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -431,7 +318,7 @@
                 }
               },
               {
-                "id": "ep2c322a9df36e43e4",
+                "id": "body23260014afa6d",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -439,12 +326,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">If this needs attention today, send the key details now.</div>",
+                  "text": "Court date, closing date, tax deadline, event date, or planning window.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -452,45 +339,42 @@
                 }
               },
               {
-                "id": "epf2ee7f84db464588",
+                "id": "form232600129d69f",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
-                  "buttonBackgroundColor": "#31456A",
+                  "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
-                    "step": "stepb6b6c8556f3a4f03",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "step": "stepde1c7ed94c24470a",
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the professional legal and financial need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -500,16 +384,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -519,131 +394,24 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the professional legal and financial need",
-                        "name": "emergency_details",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "emergency"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232600"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "checklist_capture"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "research"
+                        "required": false
                       }
                     }
                   ],
                   "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "buttonText": "<b>Request consultation help</b>",
+                  "buttonText": "<b>Continue</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -659,7 +427,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -685,7 +453,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -694,27 +462,27 @@
         },
         {
           "id": "stepde1c7ed94c24470a",
-          "name": "Share a brief summary",
+          "name": "Brief private summary",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "ep07a5212f87fc4c47",
+                "id": "label232600221d664",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#31456A",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#31456A;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[doc] Professional Consultation</span><br><b>Get matched free</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Professional Legal And Financial</span><br><b>Share a brief routing summary.</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -722,7 +490,7 @@
                 }
               },
               {
-                "id": "epc1df4b96b1a74b6e",
+                "id": "body2326002ccc5ad",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -730,12 +498,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">What kind of help? and we will look for one solid Erie County match.</div>",
+                  "text": "Do not upload documents or share detailed private facts in this box.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -743,45 +511,42 @@
                 }
               },
               {
-                "id": "ep209af878a7eb4c6f",
+                "id": "form2326002fae612",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
-                  "buttonBackgroundColor": "#31456A",
+                  "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
-                    "step": "stepfee282efea2d4aa8",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "step": "step06ee182287bf4302",
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the professional legal and financial need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -791,16 +556,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -810,131 +566,24 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the professional legal and financial need",
-                        "name": "service_need",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "standard"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232600"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "checklist_capture"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "research"
+                        "required": false
                       }
                     }
                   ],
                   "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "buttonText": "<b>Request consultation help</b>",
+                  "buttonText": "<b>Continue</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -950,7 +599,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -976,7 +625,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -985,27 +634,27 @@
         },
         {
           "id": "step06ee182287bf4302",
-          "name": "Choose contact preference",
+          "name": "Contact preference",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "ep09990c04586c4420",
+                "id": "label2326003da49bb",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#31456A",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#31456A;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[doc] Professional Consultation</span><br><b>Plan a larger job</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Professional Legal And Financial</span><br><b>How should a professional follow up?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1013,7 +662,7 @@
                 }
               },
               {
-                "id": "ep29e5f1d5dfc44374",
+                "id": "body2326003fc7019",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1021,12 +670,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">For bigger jobs, share the scope and timing so the first conversation starts prepared.</div>",
+                  "text": "Choose the best contact method and time window.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1034,45 +683,42 @@
                 }
               },
               {
-                "id": "epddac52dc15d34f77",
+                "id": "form2326003f606dd",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
-                  "buttonBackgroundColor": "#31456A",
+                  "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
                     "step": "stepfee282efea2d4aa8",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the professional legal and financial need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -1082,16 +728,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -1101,115 +738,7 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the professional legal and financial need",
-                        "name": "project_scope",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "project"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232600"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "checklist_capture"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "research"
+                        "required": false
                       }
                     }
                   ],
@@ -1218,14 +747,15 @@
                   "vSpacingBottom": 1,
                   "buttonText": "<b>Request consultation help</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -1241,7 +771,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1267,7 +797,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1276,202 +806,6 @@
         },
         {
           "id": "stepfee282efea2d4aa8",
-          "name": "Review your request",
-          "loading_screen": false,
-          "loading_message": "Matching your request...",
-          "conditional_skips": [],
-          "elements": {
-            "center": [
-              {
-                "id": "ep4f41bb5047824dc8",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#31456A",
-                  "fontSize": "28",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#31456A;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[doc] Professional Consultation</span><br><b>Not sure who to talk to first?</b>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "21",
-                    "lineHeight": "1.32",
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "ep2d7fd0263c404532",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#1F3A5F",
-                  "fontSize": "17",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 0,
-                  "vSpacingBottom": 1,
-                  "text": "Share the category and deadline. Erie.Pro can route from the situation without collecting private documents.<br><br>This is the low-pressure path: save it, ask a question, or get routed from context.",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "12",
-                    "lineHeight": "1.32",
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "ep1f1903d56d9d4c7d",
-                "type": "button",
-                "title": "Button",
-                "options": {
-                  "fontFamily": "roboto",
-                  "multiple": true,
-                  "amount": 2,
-                  "items": [
-                    {
-                      "id": "btn74d76c38ae6f4ca4",
-                      "color": "#ffffff",
-                      "backgroundColor": "#31456A",
-                      "text": "<b>[doc] Help me choose the right professional</b>",
-                      "action": {
-                        "type": "step",
-                        "link": null,
-                        "step": "stepb6b6c8556f3a4f03",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_offer",
-                        "custom_field_value": "free_match",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "help-me-choose-the-right-professional"
-                    },
-                    {
-                      "id": "btn0ce13bf677ef4e71",
-                      "color": "#ffffff",
-                      "backgroundColor": "#1F3A5F",
-                      "text": "<b>[home] Ask who fits best</b>",
-                      "action": {
-                        "type": "link",
-                        "link": "https://erie.pro/#concierge",
-                        "step": null,
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_offer",
-                        "custom_field_value": "concierge_interest",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "ask-who-fits-best"
-                    }
-                  ],
-                  "shape": "rounded",
-                  "size": "l",
-                  "width": "wide",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
-                  }
-                }
-              },
-              {
-                "id": "epc07a41055594445d",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#5D6978",
-                  "fontSize": "12",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">You can stay with the free match. No pressure.</div>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "12",
-                    "lineHeight": "1.32",
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              }
-            ],
-            "left": [],
-            "right": []
-          },
-          "layout": {
-            "column_number": 1,
-            "column_layout": "center"
-          },
-          "background": {
-            "close": "#6B7280",
-            "center": {
-              "overlayEnabled": false,
-              "overlayColor": "#ffffff",
-              "color": "#ffffff",
-              "image": null,
-              "size": "fill",
-              "position": "center center"
-            },
-            "left": {
-              "overlayEnabled": false,
-              "overlayColor": "#ffffff",
-              "color": "#ffffff",
-              "image": null,
-              "size": "fill",
-              "position": "center center",
-              "hideOnMobile": false
-            },
-            "right": {
-              "overlayEnabled": false,
-              "overlayColor": "#ffffff",
-              "color": "#ffffff",
-              "image": null,
-              "size": "fill",
-              "position": "center center",
-              "hideOnMobile": false
-            },
-            "underlay": {
-              "overlayEnabled": false,
-              "overlayColor": "#ffffff",
-              "color": "#ffffff",
-              "image": null,
-              "size": "fill",
-              "position": "center center"
-            }
-          }
-        },
-        {
-          "id": "stepb6b6c8556f3a4f03",
           "name": "Consultation request received",
           "loading_screen": false,
           "loading_message": "Matching your request...",
@@ -1479,20 +813,20 @@
           "elements": {
             "center": [
               {
-                "id": "ep1c16e513a4874eb4",
+                "id": "label2326004dd7a91",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#31456A",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 2,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#31456A;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[doc] Professional Consultation</span><br><b>Consultation request received with category and timing context.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Professional Legal And Financial</span><br><b>Consultation request received.</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1500,7 +834,7 @@
                 }
               },
               {
-                "id": "ep6c1ba67a14934ed9",
+                "id": "body2326004396096",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1508,65 +842,15 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Thanks. Erie.Pro will use the service-family context before routing this request.",
+                  "text": "Your category, timing, and contact preference are included.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "ep7f3f3a87a79e4ab1",
-                "type": "button",
-                "title": "Button",
-                "options": {
-                  "fontFamily": "roboto",
-                  "multiple": false,
-                  "amount": 1,
-                  "items": [
-                    {
-                      "id": "btnaba2fb46da6f4cfc",
-                      "color": "#ffffff",
-                      "backgroundColor": "#31456A",
-                      "text": "<b>[doc] Legal, tax, insurance, or financial</b>",
-                      "action": {
-                        "type": "close",
-                        "link": null,
-                        "step": null,
-                        "new_tab": false,
-                        "prevent_showing": true,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": false,
-                        "custom_field_name": null,
-                        "custom_field_value": null,
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": []
-                    }
-                  ],
-                  "shape": "rounded",
-                  "size": "l",
-                  "width": "wide",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
                   }
                 }
               }
@@ -1583,7 +867,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1609,7 +893,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"

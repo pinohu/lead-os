@@ -1,7 +1,7 @@
 {
   "id": 232601,
   "created_at": "2026-05-10T07:58:19.000000Z",
-  "updated_at": "2026-05-10T10:16:48.000000Z",
+  "updated_at": "2026-05-10T10:24:10.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -25,7 +25,11 @@
     "ep_profile_photos_applied_at": "2026-05-10T10:11:14.964Z",
     "ep_profile_photo_id": 134782,
     "ep_low_pressure_path_fixed": true,
-    "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.949Z"
+    "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.949Z",
+    "ep_persona_fit_steps_applied": true,
+    "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:47.685Z",
+    "ep_desired_step_count": 6,
+    "ep_step_count_rationale": "Provider acquisition needs category fit, territory, business info, response capacity, contact, and review."
   },
   "variations": [
     {
@@ -108,20 +112,20 @@
           "elements": {
             "center": [
               {
-                "id": "epf4a2cc6145e6449b",
+                "id": "label2326010e3891a",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#0F766E",
+                  "color": "#C8102E",
                   "fontSize": "34",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
-                  "vSpacingBottom": 0,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[badge] Provider Category Review</span><br><b>Serve Erie County?</b>",
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>What Erie County service do you provide?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -129,20 +133,20 @@
                 }
               },
               {
-                "id": "ep72066bddd4724a4f",
+                "id": "body23260103a8fbb",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
                   "color": "#1F3A5F",
-                  "fontSize": "18",
+                  "fontSize": "17",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Start by checking your service category. Territory fit comes before any promise.<br><br><b>Choose the closest path. You can still change direction later.</b>",
+                  "text": "Choose the closest provider family so category review starts correctly.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "23",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -150,64 +154,7 @@
                 }
               },
               {
-                "id": "ep9b412de8f67d40f6",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#4A4A4A",
-                  "fontSize": "20",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 0,
-                  "vSpacingBottom": 1,
-                  "text": "<b>Start with one quick choice. Contact details come after the request is clear.</b>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "13",
-                    "lineHeight": "1.32",
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "ep9e630c0434854274",
-                "type": "divider",
-                "title": "Divider",
-                "options": {
-                  "hideOnMobile": false,
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "color": "#D7DEE6",
-                  "width": 500,
-                  "height": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "visual-divider-232601-0",
-                "type": "divider",
-                "title": "Divider",
-                "options": {
-                  "hideOnMobile": false,
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "color": "#D7DEE6",
-                  "width": 500,
-                  "height": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "visual-trust-232601-0",
+                "id": "trust2326010112b1f",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -215,20 +162,20 @@
                   "color": "#4A4A4A",
                   "fontSize": "13",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Category check</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Community fit</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">No territory promise before review</span></div>",
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private request</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One routed path</span></div>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "13",
                     "lineHeight": "1.32",
-                    "vSpacingTop": 0,
+                    "vSpacingTop": 1,
                     "vSpacingBottom": 1
                   }
                 }
               },
               {
-                "id": "ep120c7007dd4e48f3",
+                "id": "btn2326010fb9bfb",
                 "type": "button",
                 "title": "Button",
                 "options": {
@@ -237,88 +184,49 @@
                   "amount": 3,
                   "items": [
                     {
-                      "id": "btn02e24a3e307b43ea",
+                      "id": "btn2326010fb9bfbitem0",
                       "color": "#ffffff",
-                      "backgroundColor": "#0F766E",
+                      "backgroundColor": "#C8102E",
                       "text": "<b>[home] Home or property service</b>",
+                      "value": "home-home-or-property-service",
                       "action": {
                         "type": "step",
                         "link": null,
                         "step": "stepc8684ef5b8ed468d",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "urgent",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "home-or-property-service"
+                      "automations_type": "immediately"
                     },
                     {
-                      "id": "btnb37bd50a415e4237",
+                      "id": "btn2326010fb9bfbitem1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
                       "text": "<b>[brief] Health, professional, or appointment service</b>",
+                      "value": "brief-health-professional-or-appointment-service",
                       "action": {
                         "type": "step",
                         "link": null,
-                        "step": "step91ce3c6d74b94c5b",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "standard",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "step": "stepc8684ef5b8ed468d",
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "health-professional-or-appointment-service"
+                      "automations_type": "immediately"
                     },
                     {
-                      "id": "btn6fe5d5d4e818444f",
+                      "id": "btn2326010fb9bfbitem2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
                       "text": "<b>[?] Help classify my service</b>",
+                      "value": "help-classify-my-service",
                       "action": {
                         "type": "step",
                         "link": null,
-                        "step": "step99108cd304b34389",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "project",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "step": "stepc8684ef5b8ed468d",
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "help-classify-my-service"
+                      "automations_type": "immediately"
                     }
                   ],
                   "shape": "rounded",
@@ -328,28 +236,7 @@
                   "vSpacingBottom": 1,
                   "mobile": {
                     "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
-                  }
-                }
-              },
-              {
-                "id": "ep1976688279054cf6",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#5D6978",
-                  "fontSize": "12",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">Category availability is reviewed before any territory promise is made.</div>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "12",
-                    "lineHeight": "1.32",
+                    "size": "m",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
                   }
@@ -403,27 +290,27 @@
         },
         {
           "id": "stepc8684ef5b8ed468d",
-          "name": "Where do you serve?",
+          "name": "Communities served",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "epb1425790ddf1412e",
+                "id": "label232601150d9e3",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#0F766E",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[badge] Provider Category Review</span><br><b>Urgent Erie request</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>Which Erie County communities do you serve?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -431,7 +318,7 @@
                 }
               },
               {
-                "id": "ep6f0e65e1cd9f403d",
+                "id": "body2326011191711",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -439,12 +326,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">If this needs attention today, send the key details now.</div>",
+                  "text": "List the areas where you can realistically respond.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -452,45 +339,42 @@
                 }
               },
               {
-                "id": "ep655cc0809ad7441e",
+                "id": "form23260111e54e6",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
-                  "buttonBackgroundColor": "#0F766E",
+                  "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
-                    "step": "step4078c85287ac409b",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "step": "step91ce3c6d74b94c5b",
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the provider territory claim need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -500,16 +384,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -519,131 +394,24 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the provider territory claim need",
-                        "name": "emergency_details",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "emergency"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232601"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "provider_acquisition"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "provider"
+                        "required": false
                       }
                     }
                   ],
                   "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "buttonText": "<b>Check my service category</b>",
+                  "buttonText": "<b>Continue</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -659,7 +427,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -685,7 +453,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -694,27 +462,27 @@
         },
         {
           "id": "step91ce3c6d74b94c5b",
-          "name": "Tell us about the business",
+          "name": "Business details",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "epa9cf3072f868486d",
+                "id": "label2326012c8c8df",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#0F766E",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[badge] Provider Category Review</span><br><b>Get matched free</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>Tell us about the business.</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -722,7 +490,7 @@
                 }
               },
               {
-                "id": "ep6d5fa8e758a74c57",
+                "id": "body23260125817c1",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -730,12 +498,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">What service do you provide? and we will look for one solid Erie County match.</div>",
+                  "text": "Business name, website, license/insurance notes, or profile claim context.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -743,45 +511,42 @@
                 }
               },
               {
-                "id": "epb6c1068d596c4a53",
+                "id": "form2326012d8c2a8",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
-                  "buttonBackgroundColor": "#0F766E",
+                  "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
-                    "step": "step29adf05f67384116",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "step": "step99108cd304b34389",
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the provider territory claim need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -791,16 +556,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -810,131 +566,24 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the provider territory claim need",
-                        "name": "service_need",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "standard"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232601"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "provider_acquisition"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "provider"
+                        "required": false
                       }
                     }
                   ],
                   "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "buttonText": "<b>Check my service category</b>",
+                  "buttonText": "<b>Continue</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -950,7 +599,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -976,7 +625,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -985,27 +634,27 @@
         },
         {
           "id": "step99108cd304b34389",
-          "name": "Add owner contact",
+          "name": "Lead response readiness",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "epfced237ce58d4334",
+                "id": "label23260134d5ce5",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#0F766E",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[badge] Provider Category Review</span><br><b>Plan a larger job</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>How quickly can you respond?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1013,7 +662,7 @@
                 }
               },
               {
-                "id": "epf7515ac337a94a95",
+                "id": "body2326013d8801c",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1021,12 +670,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">For bigger jobs, share the scope and timing so the first conversation starts prepared.</div>",
+                  "text": "Response speed affects fit for urgent and high-intent requests.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1034,45 +683,42 @@
                 }
               },
               {
-                "id": "epcddc3da7f9774e10",
+                "id": "form232601319f111",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
-                  "buttonBackgroundColor": "#0F766E",
+                  "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
                     "step": "step29adf05f67384116",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the provider territory claim need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -1082,16 +728,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -1101,131 +738,24 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the provider territory claim need",
-                        "name": "project_scope",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "project"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232601"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "provider_acquisition"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "provider"
+                        "required": false
                       }
                     }
                   ],
                   "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "buttonText": "<b>Check my service category</b>",
+                  "buttonText": "<b>Continue</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -1241,7 +771,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1267,7 +797,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1276,27 +806,27 @@
         },
         {
           "id": "step29adf05f67384116",
-          "name": "Review territory interest",
+          "name": "Owner contact",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "epf1e8f8d338cc4bab",
+                "id": "label2326014f34987",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#0F766E",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[badge] Provider Category Review</span><br><b>Not sure where your business fits?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>Who should Erie.Pro contact?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1304,7 +834,7 @@
                 }
               },
               {
-                "id": "ep643e0fd72a944cf8",
+                "id": "body2326014e72e28",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1312,12 +842,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Tell us what you provide and which Erie County communities you serve. We will review the category.<br><br>This is the low-pressure path: save it, ask a question, or get routed from context.",
+                  "text": "Add owner or manager contact details for review.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1325,103 +855,79 @@
                 }
               },
               {
-                "id": "ep80617ab33cc94d47",
-                "type": "button",
-                "title": "Button",
+                "id": "form23260147fc1bc",
+                "type": "form",
+                "title": "Form",
                 "options": {
+                  "size": "m",
                   "fontFamily": "roboto",
-                  "multiple": true,
-                  "amount": 2,
-                  "items": [
+                  "buttonBackgroundColor": "#C8102E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "action": {
+                    "type": "step",
+                    "link": null,
+                    "pass": false,
+                    "step": "step4078c85287ac409b",
+                    "fire_scripts": false,
+                    "scripts": null
+                  },
+                  "fields": [
                     {
-                      "id": "btn655c3abfbbcd401c",
-                      "color": "#ffffff",
-                      "backgroundColor": "#0F766E",
-                      "text": "<b>[home] Help classify my service</b>",
-                      "action": {
-                        "type": "step",
-                        "link": null,
-                        "step": "step4078c85287ac409b",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_offer",
-                        "custom_field_value": "free_match",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "help-classify-my-service"
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the provider territory claim need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
                     },
                     {
-                      "id": "btn23213df813114e75",
-                      "color": "#ffffff",
-                      "backgroundColor": "#1F3A5F",
-                      "text": "<b>[brief] Ask about fit first</b>",
-                      "action": {
-                        "type": "link",
-                        "link": "https://erie.pro/#concierge",
-                        "step": null,
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_offer",
-                        "custom_field_value": "concierge_interest",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "ask-about-fit-first"
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
+                        "type": "text",
+                        "required": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": false
+                      }
                     }
                   ],
+                  "actions": [],
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "buttonText": "<b>Check my service category</b>",
+                  "layout": "vertical",
                   "shape": "rounded",
-                  "size": "l",
-                  "width": "wide",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
                   "mobile": {
                     "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
-                  }
-                }
-              },
-              {
-                "id": "epb50541edd29043e5",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#5D6978",
-                  "fontSize": "12",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">You can stay with the free match. No pressure.</div>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "12",
-                    "lineHeight": "1.32",
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
-                  }
+                  },
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -1437,7 +943,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1463,7 +969,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1479,20 +985,20 @@
           "elements": {
             "center": [
               {
-                "id": "ep49396a3e10624bcc",
+                "id": "label2326015319739",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#0F766E",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 2,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[badge] Provider Category Review</span><br><b>Provider claim request received for review.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Provider Territory Claim</span><br><b>Claim request received.</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1500,7 +1006,7 @@
                 }
               },
               {
-                "id": "ep4b99f857a54746ef",
+                "id": "body2326015c35655",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1508,65 +1014,15 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Thanks. Erie.Pro will use the service-family context before routing this request.",
+                  "text": "Category and territory fit will be reviewed before any promise is made.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "ep3629e3e383764bae",
-                "type": "button",
-                "title": "Button",
-                "options": {
-                  "fontFamily": "roboto",
-                  "multiple": false,
-                  "amount": 1,
-                  "items": [
-                    {
-                      "id": "btnd558d53985c440c8",
-                      "color": "#ffffff",
-                      "backgroundColor": "#0F766E",
-                      "text": "<b>[home] Home or property service</b>",
-                      "action": {
-                        "type": "close",
-                        "link": null,
-                        "step": null,
-                        "new_tab": false,
-                        "prevent_showing": true,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": false,
-                        "custom_field_name": null,
-                        "custom_field_value": null,
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": []
-                    }
-                  ],
-                  "shape": "rounded",
-                  "size": "l",
-                  "width": "wide",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
                   }
                 }
               }
@@ -1583,7 +1039,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1609,7 +1065,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"

@@ -17,6 +17,19 @@ const expected = {
   232603: "Returning And Exit Rescue",
 };
 
+const expectedStepCounts = {
+  232597: 4,
+  232595: 4,
+  232594: 5,
+  232596: 7,
+  232598: 7,
+  232599: 4,
+  232600: 5,
+  232601: 6,
+  232602: 3,
+  232603: 3,
+};
+
 function strip(html) {
   return String(html || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 }
@@ -66,8 +79,8 @@ function summarizeBox(box) {
   if ((box.meta || {}).ep_service_family === expected[box.id]) strengths.push("Service-family metadata matches the intended family.");
   else issues.push(`Service-family metadata mismatch: expected ${expected[box.id]}, got ${(box.meta || {}).ep_service_family || "missing"}.`);
 
-  if (steps.length === 6) strengths.push("Uses six native ConvertBox steps.");
-  else issues.push(`Unexpected step count: ${steps.length}.`);
+  if (steps.length === expectedStepCounts[box.id]) strengths.push(`Uses persona-fit step count: ${steps.length}.`);
+  else issues.push(`Unexpected step count: expected ${expectedStepCounts[box.id]}, got ${steps.length}.`);
 
   if ((box.meta || {}).steps_introduction === false) strengths.push("ConvertBox Steps drawer onboarding flag is disabled.");
   else issues.push("Steps drawer onboarding flag may still hide steps.");
@@ -81,13 +94,16 @@ function summarizeBox(box) {
   if ((box.meta || {}).ep_profile_photos_applied) strengths.push("Profile-photo metadata is present.");
   else issues.push("Missing profile-photo metadata.");
 
+  if ((box.meta || {}).ep_persona_fit_steps_applied) strengths.push("Persona-fit step metadata is present.");
+  else issues.push("Missing persona-fit step metadata.");
+
   if (variation.profile?.enabled && variation.profile?.photo?.path) strengths.push("Profile photo is attached.");
   else issues.push("Profile photo is missing or disabled.");
 
   if (variation.teaser?.enabled && variation.teaser?.photo?.path) strengths.push("Teaser photo is attached.");
   else issues.push("Teaser photo is missing or disabled.");
 
-  if (text.includes("visual-trust-")) strengths.push("Trust row markup is present.");
+  if (text.includes("visual-trust-") || (text.includes("Private request") && text.includes("Erie County focused") && text.includes("One routed path"))) strengths.push("Trust row markup is present.");
   else issues.push("Trust row markup not found.");
 
   if (firstButtons.length >= 2) strengths.push("First step has multiple choice buttons.");
@@ -159,7 +175,7 @@ const highLevelIssues = [
   "The drafts still use family-level routing, not true per-service/per-subservice flows for all 112 services. They are good preview templates, not the final exhaustive service matrix.",
 ];
 
-let md = `# Erie.Pro ConvertBox Full Draft Audit\n\nDate: 2026-05-10\n\nSource: fresh authenticated ConvertBox API snapshots saved under \`audit-snapshots/\`.\n\n## Overall Verdict\n\nThe 10 ConvertBox drafts are now suitable for preview and stakeholder review, but they are not ready for activation. They have meaningful service-family journeys, branching, profile photos, trust rows, and Erie County-focused copy. Remaining work is visual/mobile QA inside the ConvertBox editor, test submissions, and per-service/subservice expansion.\n\n## High-Level Findings\n\n${highLevelIssues.map((item) => `- ${item}`).join("\n")}\n\n## Audit Scorecard\n\n- Boxes audited: ${audits.length}\n- Total issues/risks found: ${totalIssues}\n- All boxes inactive: ${audits.every((audit) => audit.active === false) ? "yes" : "no"}\n- All boxes have six steps: ${audits.every((audit) => audit.steps.length === 6) ? "yes" : "no"}\n- All boxes have profile photos: ${audits.every((audit) => audit.profilePhoto) ? "yes" : "no"}\n- All boxes have teaser photos: ${audits.every((audit) => audit.teaserPhoto) ? "yes" : "no"}\n\n`;
+let md = `# Erie.Pro ConvertBox Full Draft Audit\n\nDate: 2026-05-10\n\nSource: fresh authenticated ConvertBox API snapshots saved under \`audit-snapshots/\`.\n\n## Overall Verdict\n\nThe 10 ConvertBox drafts are now suitable for preview and stakeholder review, but they are not ready for activation. They have meaningful service-family journeys, branching, profile photos, trust rows, persona-fit step counts, and Erie County-focused copy. Remaining work is visual/mobile QA inside the ConvertBox editor, test submissions, and per-service/subservice expansion.\n\n## High-Level Findings\n\n${highLevelIssues.map((item) => `- ${item}`).join("\n")}\n\n## Audit Scorecard\n\n- Boxes audited: ${audits.length}\n- Total issues/risks found: ${totalIssues}\n- All boxes inactive: ${audits.every((audit) => audit.active === false) ? "yes" : "no"}\n- All boxes use persona-fit step counts: ${audits.every((audit) => audit.steps.length === expectedStepCounts[audit.id]) ? "yes" : "no"}\n- All boxes have profile photos: ${audits.every((audit) => audit.profilePhoto) ? "yes" : "no"}\n- All boxes have teaser photos: ${audits.every((audit) => audit.teaserPhoto) ? "yes" : "no"}\n\n`;
 
 for (const audit of audits) {
   md += `## ${audit.name}\n\n`;

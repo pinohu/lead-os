@@ -1,7 +1,7 @@
 {
   "id": 232594,
   "created_at": "2026-05-10T07:44:10.000000Z",
-  "updated_at": "2026-05-10T10:16:38.000000Z",
+  "updated_at": "2026-05-10T10:23:56.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -25,7 +25,11 @@
     "ep_profile_photos_applied_at": "2026-05-10T10:11:12.984Z",
     "ep_profile_photo_id": 134778,
     "ep_low_pressure_path_fixed": true,
-    "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:27.267Z"
+    "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:27.267Z",
+    "ep_persona_fit_steps_applied": true,
+    "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:45.905Z",
+    "ep_desired_step_count": 5,
+    "ep_step_count_rationale": "Cleaning and turnover decisions need task, size, timing, access, and contact."
   },
   "variations": [
     {
@@ -108,20 +112,20 @@
           "elements": {
             "center": [
               {
-                "id": "ep66c7a6f85c304804",
+                "id": "label2325940ff73a9",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#0F766E",
+                  "color": "#C8102E",
                   "fontSize": "34",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
-                  "vSpacingBottom": 0,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Need cleaning, hauling, moving, or turnover help?</b>",
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Cleaning And Turnover</span><br><b>What needs to be cleaned, moved, or prepared?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -129,20 +133,20 @@
                 }
               },
               {
-                "id": "epcff4805d2ad54c3b",
+                "id": "body23259403fd76f",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
                   "color": "#1F3A5F",
-                  "fontSize": "18",
+                  "fontSize": "17",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Tell us what has to be ready and when. Timing matters more than a long form.<br><br><b>Choose the closest path. You can still change direction later.</b>",
+                  "text": "Start with the work type so we can ask the right timing question.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "23",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -150,64 +154,7 @@
                 }
               },
               {
-                "id": "ep6ddd37c0e51b4ccc",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#4A4A4A",
-                  "fontSize": "20",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 0,
-                  "vSpacingBottom": 1,
-                  "text": "<b>Start with one quick choice. Contact details come after the request is clear.</b>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "13",
-                    "lineHeight": "1.32",
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "ep369c826921314eec",
-                "type": "divider",
-                "title": "Divider",
-                "options": {
-                  "hideOnMobile": false,
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "color": "#D7DEE6",
-                  "width": 500,
-                  "height": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "visual-divider-232594-0",
-                "type": "divider",
-                "title": "Divider",
-                "options": {
-                  "hideOnMobile": false,
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "color": "#D7DEE6",
-                  "width": 500,
-                  "height": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "visual-trust-232594-0",
+                "id": "trust2325940fb1c42",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -215,20 +162,20 @@
                   "color": "#4A4A4A",
                   "fontSize": "13",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Date-aware</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Property-ready</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">No public blast</span></div>",
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private request</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One routed path</span></div>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "13",
                     "lineHeight": "1.32",
-                    "vSpacingTop": 0,
+                    "vSpacingTop": 1,
                     "vSpacingBottom": 1
                   }
                 }
               },
               {
-                "id": "ep87a35a9a6d8c4117",
+                "id": "btn2325940ba7812",
                 "type": "button",
                 "title": "Button",
                 "options": {
@@ -237,88 +184,49 @@
                   "amount": 3,
                   "items": [
                     {
-                      "id": "btna6fbed07acef42f1",
+                      "id": "btn2325940ba7812item0",
                       "color": "#ffffff",
-                      "backgroundColor": "#0F766E",
+                      "backgroundColor": "#C8102E",
                       "text": "<b>[spark] Cleaning or turnover</b>",
+                      "value": "spark-cleaning-or-turnover",
                       "action": {
                         "type": "step",
                         "link": null,
                         "step": "step3119a0256b2b416d",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "urgent",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "cleaning-or-turnover"
+                      "automations_type": "immediately"
                     },
                     {
-                      "id": "btna93dbfb9daf643d9",
+                      "id": "btn2325940ba7812item1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
                       "text": "<b>[box] Moving, junk, or dumpster</b>",
+                      "value": "box-moving-junk-or-dumpster",
                       "action": {
                         "type": "step",
                         "link": null,
-                        "step": "step74f60c23cd2547f0",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "standard",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "step": "step3119a0256b2b416d",
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "moving-junk-or-dumpster"
+                      "automations_type": "immediately"
                     },
                     {
-                      "id": "btnc768a653ade341f3",
+                      "id": "btn2325940ba7812item2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
                       "text": "<b>[?] Not sure which cleaning path fits</b>",
+                      "value": "not-sure-which-cleaning-path-fits",
                       "action": {
                         "type": "step",
                         "link": null,
-                        "step": "step374ca127f32e46ce",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "project",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "step": "step3119a0256b2b416d",
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "not-sure-which-cleaning-path-fits"
+                      "automations_type": "immediately"
                     }
                   ],
                   "shape": "rounded",
@@ -328,28 +236,7 @@
                   "vSpacingBottom": 1,
                   "mobile": {
                     "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
-                  }
-                }
-              },
-              {
-                "id": "epc6a1b40c80694d0b",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#5D6978",
-                  "fontSize": "12",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">Good timing details help avoid back-and-forth before a quote.</div>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "12",
-                    "lineHeight": "1.32",
+                    "size": "m",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
                   }
@@ -403,27 +290,27 @@
         },
         {
           "id": "step3119a0256b2b416d",
-          "name": "Tell us the size or scope",
+          "name": "Size and property context",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "epad2d38f5befe4915",
+                "id": "label23259417134ce",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#0F766E",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Urgent Erie request</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Cleaning And Turnover</span><br><b>How large is the job?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -431,7 +318,7 @@
                 }
               },
               {
-                "id": "ep6df078eb536b4157",
+                "id": "body23259419e6d0a",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -439,12 +326,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">If this needs attention today, send the key details now.</div>",
+                  "text": "Rooms, square footage, item volume, or property type helps avoid a vague quote.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -452,45 +339,42 @@
                 }
               },
               {
-                "id": "epc282ac9ad1f342b4",
+                "id": "form23259412cf04f",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
-                  "buttonBackgroundColor": "#0F766E",
+                  "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
-                    "step": "stepa4de3dc2c6b247dd",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "step": "step74f60c23cd2547f0",
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the cleaning and turnover need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -500,16 +384,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -519,131 +394,24 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the cleaning and turnover need",
-                        "name": "emergency_details",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "emergency"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232594"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "fast_quote"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "service"
+                        "required": false
                       }
                     }
                   ],
                   "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "buttonText": "<b>Send cleaning request</b>",
+                  "buttonText": "<b>Continue</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -659,7 +427,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -685,7 +453,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -694,27 +462,27 @@
         },
         {
           "id": "step74f60c23cd2547f0",
-          "name": "When does it need to be ready?",
+          "name": "Timing and access",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "ep75d1d85756a24456",
+                "id": "label2325942cf5d40",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#0F766E",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Get matched free</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Cleaning And Turnover</span><br><b>When does it need to be ready?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -722,7 +490,7 @@
                 }
               },
               {
-                "id": "ep959d1bdbbdd14104",
+                "id": "body2325942bd4bd0",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -730,12 +498,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">What needs to be handled? and we will look for one solid Erie County match.</div>",
+                  "text": "Share the date, deadline, access notes, or turnover window.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -743,45 +511,42 @@
                 }
               },
               {
-                "id": "epb7148d2bf83f4347",
+                "id": "form2325942da31b9",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
-                  "buttonBackgroundColor": "#0F766E",
+                  "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
-                    "step": "stepb26057c219b14b8f",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "step": "step374ca127f32e46ce",
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the cleaning and turnover need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -791,16 +556,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -810,131 +566,24 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the cleaning and turnover need",
-                        "name": "service_need",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "standard"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232594"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "fast_quote"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "service"
+                        "required": false
                       }
                     }
                   ],
                   "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "buttonText": "<b>Send cleaning request</b>",
+                  "buttonText": "<b>Continue</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -950,7 +599,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -976,7 +625,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -985,27 +634,27 @@
         },
         {
           "id": "step374ca127f32e46ce",
-          "name": "Where should a pro follow up?",
+          "name": "Contact for scheduling",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "epd4a1fb2386e64013",
+                "id": "label23259430e124a",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#0F766E",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Plan a larger job</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Cleaning And Turnover</span><br><b>Where should a pro follow up?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1013,7 +662,7 @@
                 }
               },
               {
-                "id": "ep563ad58020fd4ff5",
+                "id": "body2325943e8d534",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1021,12 +670,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">For bigger jobs, share the scope and timing so the first conversation starts prepared.</div>",
+                  "text": "Add the best contact method so timing can be confirmed quickly.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1034,45 +683,42 @@
                 }
               },
               {
-                "id": "epc8437e5d5e7e45d4",
+                "id": "form2325943a723ea",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
-                  "buttonBackgroundColor": "#0F766E",
+                  "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
                     "step": "stepb26057c219b14b8f",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the cleaning and turnover need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -1082,16 +728,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -1101,115 +738,7 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the cleaning and turnover need",
-                        "name": "project_scope",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "project"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232594"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "fast_quote"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "service"
+                        "required": false
                       }
                     }
                   ],
@@ -1218,14 +747,15 @@
                   "vSpacingBottom": 1,
                   "buttonText": "<b>Send cleaning request</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -1241,7 +771,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1267,7 +797,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1276,202 +806,6 @@
         },
         {
           "id": "stepb26057c219b14b8f",
-          "name": "Not ready yet?",
-          "loading_screen": false,
-          "loading_message": "Matching your request...",
-          "conditional_skips": [],
-          "elements": {
-            "center": [
-              {
-                "id": "epe58d0de6746a40a8",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#0F766E",
-                  "fontSize": "28",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Still comparing options?</b>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "21",
-                    "lineHeight": "1.32",
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "epdd91a83c89d1474f",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#1F3A5F",
-                  "fontSize": "17",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 0,
-                  "vSpacingBottom": 1,
-                  "text": "Tell us the date, size, or obstacle and we will help route the request without overcomplicating it.<br><br>This is the low-pressure path: save it, ask a question, or get routed from context.",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "12",
-                    "lineHeight": "1.32",
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "epf6390aa904354a0e",
-                "type": "button",
-                "title": "Button",
-                "options": {
-                  "fontFamily": "roboto",
-                  "multiple": true,
-                  "amount": 2,
-                  "items": [
-                    {
-                      "id": "btn935fcc5d2d2c46ed",
-                      "color": "#ffffff",
-                      "backgroundColor": "#0F766E",
-                      "text": "<b>[spark] Help me pick the right cleaning path</b>",
-                      "action": {
-                        "type": "step",
-                        "link": null,
-                        "step": "stepa4de3dc2c6b247dd",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_offer",
-                        "custom_field_value": "free_match",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "help-me-pick-the-right-cleaning-path"
-                    },
-                    {
-                      "id": "btn082aab34d9ff4076",
-                      "color": "#ffffff",
-                      "backgroundColor": "#1F3A5F",
-                      "text": "<b>[box] Ask a timing question</b>",
-                      "action": {
-                        "type": "link",
-                        "link": "https://erie.pro/#concierge",
-                        "step": null,
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_offer",
-                        "custom_field_value": "concierge_interest",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "ask-a-timing-question"
-                    }
-                  ],
-                  "shape": "rounded",
-                  "size": "l",
-                  "width": "wide",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
-                  }
-                }
-              },
-              {
-                "id": "epabf72019104e4a14",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#5D6978",
-                  "fontSize": "12",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">You can stay with the free match. No pressure.</div>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "12",
-                    "lineHeight": "1.32",
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              }
-            ],
-            "left": [],
-            "right": []
-          },
-          "layout": {
-            "column_number": 1,
-            "column_layout": "center"
-          },
-          "background": {
-            "close": "#6B7280",
-            "center": {
-              "overlayEnabled": false,
-              "overlayColor": "#ffffff",
-              "color": "#ffffff",
-              "image": null,
-              "size": "fill",
-              "position": "center center"
-            },
-            "left": {
-              "overlayEnabled": false,
-              "overlayColor": "#ffffff",
-              "color": "#ffffff",
-              "image": null,
-              "size": "fill",
-              "position": "center center",
-              "hideOnMobile": false
-            },
-            "right": {
-              "overlayEnabled": false,
-              "overlayColor": "#ffffff",
-              "color": "#ffffff",
-              "image": null,
-              "size": "fill",
-              "position": "center center",
-              "hideOnMobile": false
-            },
-            "underlay": {
-              "overlayEnabled": false,
-              "overlayColor": "#ffffff",
-              "color": "#ffffff",
-              "image": null,
-              "size": "fill",
-              "position": "center center"
-            }
-          }
-        },
-        {
-          "id": "stepa4de3dc2c6b247dd",
           "name": "Request received",
           "loading_screen": false,
           "loading_message": "Matching your request...",
@@ -1479,20 +813,20 @@
           "elements": {
             "center": [
               {
-                "id": "ep0f80f6bc0ece4e0c",
+                "id": "label23259442da344",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
-                  "color": "#0F766E",
+                  "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 2,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F0FDFA;color:#0F766E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[spark] Cleaning, Moving, And Turnover</span><br><b>Request received with timing and property context.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Cleaning And Turnover</span><br><b>Request received.</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1500,7 +834,7 @@
                 }
               },
               {
-                "id": "epd0563a9df0f64eaa",
+                "id": "body232594481b79a",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1508,65 +842,15 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Thanks. Erie.Pro will use the service-family context before routing this request.",
+                  "text": "Your timing, size, and property context are included.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "epd1fe4d3762404dbb",
-                "type": "button",
-                "title": "Button",
-                "options": {
-                  "fontFamily": "roboto",
-                  "multiple": false,
-                  "amount": 1,
-                  "items": [
-                    {
-                      "id": "btn3da4f79a35ae45df",
-                      "color": "#ffffff",
-                      "backgroundColor": "#0F766E",
-                      "text": "<b>[spark] Cleaning or turnover</b>",
-                      "action": {
-                        "type": "close",
-                        "link": null,
-                        "step": null,
-                        "new_tab": false,
-                        "prevent_showing": true,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": false,
-                        "custom_field_name": null,
-                        "custom_field_value": null,
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": []
-                    }
-                  ],
-                  "shape": "rounded",
-                  "size": "l",
-                  "width": "wide",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
                   }
                 }
               }
@@ -1583,7 +867,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1609,7 +893,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F0FDFA",
               "image": null,
               "size": "fill",
               "position": "center center"

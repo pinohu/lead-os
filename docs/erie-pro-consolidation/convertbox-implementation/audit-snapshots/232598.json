@@ -1,7 +1,7 @@
 {
   "id": 232598,
   "created_at": "2026-05-10T07:56:21.000000Z",
-  "updated_at": "2026-05-10T10:16:42.000000Z",
+  "updated_at": "2026-05-10T10:24:02.000000Z",
   "deleted_at": null,
   "site_id": 0,
   "active": false,
@@ -25,7 +25,11 @@
     "ep_profile_photos_applied_at": "2026-05-10T10:11:13.842Z",
     "ep_profile_photo_id": 134779,
     "ep_low_pressure_path_fixed": true,
-    "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.165Z"
+    "ep_low_pressure_path_fixed_at": "2026-05-10T10:16:28.165Z",
+    "ep_persona_fit_steps_applied": true,
+    "ep_persona_fit_steps_applied_at": "2026-05-10T10:23:46.896Z",
+    "ep_desired_step_count": 7,
+    "ep_step_count_rationale": "High-value project estimates need enough context to make the first call useful."
   },
   "variations": [
     {
@@ -108,7 +112,7 @@
           "elements": {
             "center": [
               {
-                "id": "ep476dd488ee2c42ab",
+                "id": "label2325980ac5df5",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -117,11 +121,11 @@
                   "fontSize": "34",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
-                  "vSpacingBottom": 0,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[plan] Project Planning</span><br><b>Make the first estimate call more useful.</b>",
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>Which project path fits best?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -129,20 +133,20 @@
                 }
               },
               {
-                "id": "ep398ca073ac4a487b",
+                "id": "body23259805433b6",
                 "type": "text",
                 "title": "Text",
                 "options": {
                   "fontFamily": "roboto",
                   "color": "#1F3A5F",
-                  "fontSize": "18",
+                  "fontSize": "17",
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Choose the project family so Erie.Pro can ask the right scope questions.<br><br><b>Choose the closest path. You can still change direction later.</b>",
+                  "text": "This keeps the first estimate from being too broad.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "23",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -150,64 +154,7 @@
                 }
               },
               {
-                "id": "epd3bf22c56ab24153",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#4A4A4A",
-                  "fontSize": "20",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 0,
-                  "vSpacingBottom": 1,
-                  "text": "<b>Start with one quick choice. Contact details come after the request is clear.</b>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "13",
-                    "lineHeight": "1.32",
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "ep524b29d4c53742f7",
-                "type": "divider",
-                "title": "Divider",
-                "options": {
-                  "hideOnMobile": false,
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "color": "#D7DEE6",
-                  "width": 500,
-                  "height": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "visual-divider-232598-0",
-                "type": "divider",
-                "title": "Divider",
-                "options": {
-                  "hideOnMobile": false,
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "color": "#D7DEE6",
-                  "width": 500,
-                  "height": 1,
-                  "mobile": {
-                    "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1
-                  }
-                }
-              },
-              {
-                "id": "visual-trust-232598-0",
+                "id": "trust23259806a4eab",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -215,20 +162,20 @@
                   "color": "#4A4A4A",
                   "fontSize": "13",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Scope-first</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Better first call</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Local project fit</span></div>",
+                  "text": "<div style=\"text-align:center;font-size:13px;line-height:1.45;color:#4A4A4A;\"><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Private request</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">Erie County focused</span><span style=\"display:inline-block;margin:3px 6px;padding:5px 9px;border:1px solid #D7DEE6;border-radius:999px;background:#ffffff;\">One routed path</span></div>",
                   "mobile": {
                     "overwritten": true,
                     "fontSize": "13",
                     "lineHeight": "1.32",
-                    "vSpacingTop": 0,
+                    "vSpacingTop": 1,
                     "vSpacingBottom": 1
                   }
                 }
               },
               {
-                "id": "ep9eed023a9db54ee0",
+                "id": "btn2325980d03a0d",
                 "type": "button",
                 "title": "Button",
                 "options": {
@@ -237,88 +184,49 @@
                   "amount": 3,
                   "items": [
                     {
-                      "id": "btn37d396f4580e4923",
+                      "id": "btn2325980d03a0ditem0",
                       "color": "#ffffff",
                       "backgroundColor": "#C8102E",
                       "text": "<b>[tool] Kitchen, bath, basement, or remodel</b>",
+                      "value": "tool-kitchen-bath-basement-or-remodel",
                       "action": {
                         "type": "step",
                         "link": null,
                         "step": "step36356cd418354c37",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "urgent",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "kitchen-bath-basement-or-remodel"
+                      "automations_type": "immediately"
                     },
                     {
-                      "id": "btnbfe875d6e5a248cb",
+                      "id": "btn2325980d03a0ditem1",
                       "color": "#ffffff",
                       "backgroundColor": "#1F3A5F",
                       "text": "<b>[home] Roof, siding, windows, or exterior</b>",
+                      "value": "home-roof-siding-windows-or-exterior",
                       "action": {
                         "type": "step",
                         "link": null,
-                        "step": "step56cb291f816c42cd",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "standard",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "step": "step36356cd418354c37",
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "roof-siding-windows-or-exterior"
+                      "automations_type": "immediately"
                     },
                     {
-                      "id": "btncb9bca735d164ae8",
+                      "id": "btn2325980d03a0ditem2",
                       "color": "#ffffff",
                       "backgroundColor": "#6B7280",
                       "text": "<b>[?] Help me compare project options</b>",
+                      "value": "help-me-compare-project-options",
                       "action": {
                         "type": "step",
                         "link": null,
-                        "step": "step81cb98b000064892",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_path",
-                        "custom_field_value": "project",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
+                        "step": "step36356cd418354c37",
+                        "new_tab": false
                       },
                       "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "help-me-compare-project-options"
+                      "automations_type": "immediately"
                     }
                   ],
                   "shape": "rounded",
@@ -328,28 +236,7 @@
                   "vSpacingBottom": 1,
                   "mobile": {
                     "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
-                  }
-                }
-              },
-              {
-                "id": "ep4a93eb6179864fd5",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#5D6978",
-                  "fontSize": "12",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">You can stay with free matching; concierge help is optional.</div>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "12",
-                    "lineHeight": "1.32",
+                    "size": "m",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
                   }
@@ -403,14 +290,14 @@
         },
         {
           "id": "step36356cd418354c37",
-          "name": "Tell us your planning stage",
+          "name": "Goal and outcome",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "epbaa5c5a105984916",
+                "id": "label2325981af8a5c",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -420,10 +307,10 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[plan] Project Planning</span><br><b>Urgent Erie request</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>What outcome do you want?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -431,7 +318,7 @@
                 }
               },
               {
-                "id": "ep4b8cd4c2dd1941e6",
+                "id": "body232598147f9cc",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -439,12 +326,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">If this needs attention today, send the key details now.</div>",
+                  "text": "Repair, refresh, replacement, safety, energy savings, resale, or full transformation.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -452,45 +339,42 @@
                 }
               },
               {
-                "id": "epf0cc45a6d787471d",
+                "id": "form2325981ae3984",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
                   "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
-                    "step": "step28f1dd4743854a7f",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "step": "step56cb291f816c42cd",
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the planned home projects need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -500,16 +384,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -519,131 +394,24 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the planned home projects need",
-                        "name": "emergency_details",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "emergency"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232598"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "project_planner"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "project"
+                        "required": false
                       }
                     }
                   ],
                   "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "buttonText": "<b>Start project match</b>",
+                  "buttonText": "<b>Continue</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -659,7 +427,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -685,7 +453,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -694,14 +462,14 @@
         },
         {
           "id": "step56cb291f816c42cd",
-          "name": "Add scope details",
+          "name": "Scope details",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "epebca1d0ee18340b8",
+                "id": "label23259820ddcc3",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -711,10 +479,10 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[plan] Project Planning</span><br><b>Get matched free</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>Add the useful project details.</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -722,7 +490,7 @@
                 }
               },
               {
-                "id": "ep85b01e5b2cc4480b",
+                "id": "body2325982efc8fc",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -730,12 +498,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">Choose the project type and we will look for one solid Erie County match.</div>",
+                  "text": "Approximate size, count, rooms, material, surface, system, or current condition.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -743,45 +511,42 @@
                 }
               },
               {
-                "id": "epebe3186f5ff94fbf",
+                "id": "form2325982c4fc9c",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
                   "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
-                    "step": "stepbd4daf2e003347cf",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "step": "step81cb98b000064892",
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the planned home projects need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -791,16 +556,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -810,131 +566,24 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the planned home projects need",
-                        "name": "service_need",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "standard"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232598"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "project_planner"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "project"
+                        "required": false
                       }
                     }
                   ],
                   "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "buttonText": "<b>Start project match</b>",
+                  "buttonText": "<b>Continue</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -950,7 +599,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -976,7 +625,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -985,14 +634,14 @@
         },
         {
           "id": "step81cb98b000064892",
-          "name": "Share contact details",
+          "name": "Decision stage",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "epd1f97a28df68404e",
+                "id": "label232598381e581",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1002,10 +651,10 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[plan] Project Planning</span><br><b>Plan a larger job</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>Where are you in the decision?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1013,7 +662,7 @@
                 }
               },
               {
-                "id": "ep33e32c55a06347ca",
+                "id": "body23259831b32c4",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1021,12 +670,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">For bigger jobs, share the scope and timing so the first conversation starts prepared.</div>",
+                  "text": "Researching, pricing, selecting a pro, ready to start, or urgent repair.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1034,45 +683,42 @@
                 }
               },
               {
-                "id": "ep107cf5a498f947f5",
+                "id": "form232598395263e",
                 "type": "form",
                 "title": "Form",
                 "options": {
                   "size": "m",
-                  "shape": "rounded",
                   "fontFamily": "roboto",
                   "buttonBackgroundColor": "#C8102E",
                   "buttonTextColor": "#ffffff",
                   "checkboxTextColor": "#4A4A4A",
-                  "labelTextColor": "#1F3A5F",
-                  "hidePrefilledFields": true,
                   "action": {
-                    "type": "next_step",
+                    "type": "step",
                     "link": null,
                     "pass": false,
                     "step": "stepbd4daf2e003347cf",
-                    "prevent_showing": true,
-                    "box": null,
-                    "close": false
+                    "fire_scripts": false,
+                    "scripts": null
                   },
                   "fields": [
                     {
-                      "type": "full_name",
+                      "type": "textarea",
                       "composite": false,
                       "input": {
-                        "placeholder": "First and last name",
-                        "name": "full_name",
+                        "placeholder": "Briefly describe the planned home projects need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": false
                       }
                     },
                     {
@@ -1082,16 +728,7 @@
                         "placeholder": "Best phone number",
                         "name": "phone",
                         "type": "tel",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
+                        "required": true
                       }
                     },
                     {
@@ -1101,131 +738,24 @@
                         "placeholder": "Best email",
                         "name": "email",
                         "type": "text",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "textarea",
-                      "composite": false,
-                      "input": {
-                        "placeholder": "Briefly describe the planned home projects need",
-                        "name": "project_scope",
-                        "type": "textarea",
-                        "required": true,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_urgency",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "project"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_convertbox_id",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "232598"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_intent",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "project_planner"
-                      }
-                    },
-                    {
-                      "type": "hidden",
-                      "composite": false,
-                      "input": {
-                        "placeholder": null,
-                        "name": "ep_family",
-                        "type": "hidden",
-                        "required": false,
-                        "show_label": false,
-                        "label": null,
-                        "prefill_custom_url_param": false,
-                        "custom_url_param": null,
-                        "prefill_cookie": false,
-                        "cookie_param": null,
-                        "use_custom_redirect_param": false,
-                        "custom_redirect_param": null,
-                        "hide_prefilled": false,
-                        "value": "project"
+                        "required": false
                       }
                     }
                   ],
                   "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "buttonText": "<b>Start project match</b>",
+                  "buttonText": "<b>Continue</b>",
                   "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
+                    "vSpacingBottom": 1
                   },
-                  "conditional_integrations": [],
-                  "conditional_actions": []
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -1241,7 +771,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1267,7 +797,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1276,14 +806,14 @@
         },
         {
           "id": "stepbd4daf2e003347cf",
-          "name": "Not ready yet?",
+          "name": "Timing and constraints",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "ep943a29f0fb174b90",
+                "id": "label2325984f42f54",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1293,10 +823,10 @@
                   "lineHeight": "1.32",
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[plan] Project Planning</span><br><b>Need help comparing project options?</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>What timing or constraints matter?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1304,7 +834,7 @@
                 }
               },
               {
-                "id": "ep5ea3dde997984e7f",
+                "id": "body2325984b0fa3b",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1312,12 +842,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Share where you are stuck: budget, scope, timing, materials, or who to call first.<br><br>This is the low-pressure path: save it, ask a question, or get routed from context.",
+                  "text": "Start date, deadline, financing, insurance, access, or permit concerns.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1325,103 +855,79 @@
                 }
               },
               {
-                "id": "ep676d5c3662dc48e3",
-                "type": "button",
-                "title": "Button",
+                "id": "form232598413cd06",
+                "type": "form",
+                "title": "Form",
                 "options": {
+                  "size": "m",
                   "fontFamily": "roboto",
-                  "multiple": true,
-                  "amount": 2,
-                  "items": [
+                  "buttonBackgroundColor": "#C8102E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "action": {
+                    "type": "step",
+                    "link": null,
+                    "pass": false,
+                    "step": "step28f1dd4743854a7f",
+                    "fire_scripts": false,
+                    "scripts": null
+                  },
+                  "fields": [
                     {
-                      "id": "btnf3ff4437de274be3",
-                      "color": "#ffffff",
-                      "backgroundColor": "#C8102E",
-                      "text": "<b>[tool] Help me compare options</b>",
-                      "action": {
-                        "type": "step",
-                        "link": null,
-                        "step": "step28f1dd4743854a7f",
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_offer",
-                        "custom_field_value": "free_match",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "help-me-compare-options"
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the planned home projects need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
                     },
                     {
-                      "id": "btn315923c977d44917",
-                      "color": "#ffffff",
-                      "backgroundColor": "#1F3A5F",
-                      "text": "<b>[home] Get project guidance</b>",
-                      "action": {
-                        "type": "link",
-                        "link": "https://erie.pro/#concierge",
-                        "step": null,
-                        "new_tab": false,
-                        "prevent_showing": false,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": true,
-                        "custom_field_name": "ep_offer",
-                        "custom_field_value": "concierge_interest",
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": [],
-                      "value": "get-project-guidance"
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
+                        "type": "text",
+                        "required": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": false
+                      }
                     }
                   ],
+                  "actions": [],
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "buttonText": "<b>Continue</b>",
+                  "layout": "vertical",
                   "shape": "rounded",
-                  "size": "l",
-                  "width": "wide",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
                   "mobile": {
                     "overwritten": true,
-                    "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
-                  }
-                }
-              },
-              {
-                "id": "ep7702b559a4db46c7",
-                "type": "text",
-                "title": "Text",
-                "options": {
-                  "fontFamily": "roboto",
-                  "color": "#5D6978",
-                  "fontSize": "12",
-                  "lineHeight": "1.32",
-                  "vSpacingTop": 1,
-                  "vSpacingBottom": 1,
-                  "text": "<div style=\"text-align:center;\">You can stay with the free match. No pressure.</div>",
-                  "mobile": {
-                    "overwritten": true,
-                    "fontSize": "12",
-                    "lineHeight": "1.32",
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
-                  }
+                  },
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -1437,7 +943,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1463,7 +969,7 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1472,14 +978,14 @@
         },
         {
           "id": "step28f1dd4743854a7f",
-          "name": "Project request received",
+          "name": "Contact and next step",
           "loading_screen": false,
           "loading_message": "Matching your request...",
           "conditional_skips": [],
           "elements": {
             "center": [
               {
-                "id": "epd05588c6c6864b36",
+                "id": "label2325985f58042",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1487,12 +993,12 @@
                   "color": "#C8102E",
                   "fontSize": "28",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 2,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0;\">[plan] Project Planning</span><br><b>Project details saved for a more useful match.</b>",
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>How should the next step happen?</b>",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "21",
+                    "fontSize": "22",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1500,7 +1006,7 @@
                 }
               },
               {
-                "id": "ep36728bebc30a41a2",
+                "id": "body23259859401dc",
                 "type": "text",
                 "title": "Text",
                 "options": {
@@ -1508,12 +1014,12 @@
                   "color": "#1F3A5F",
                   "fontSize": "17",
                   "lineHeight": "1.32",
-                  "vSpacingTop": 0,
+                  "vSpacingTop": 1,
                   "vSpacingBottom": 1,
-                  "text": "Thanks. Erie.Pro will use the service-family context before routing this request.",
+                  "text": "Choose contact preference and whether you want free matching or extra guidance.",
                   "mobile": {
                     "overwritten": true,
-                    "fontSize": "12",
+                    "fontSize": "17",
                     "lineHeight": "1.32",
                     "vSpacingTop": 1,
                     "vSpacingBottom": 1
@@ -1521,53 +1027,79 @@
                 }
               },
               {
-                "id": "ep498e873e82224e75",
-                "type": "button",
-                "title": "Button",
+                "id": "form23259859c2dfb",
+                "type": "form",
+                "title": "Form",
                 "options": {
+                  "size": "m",
                   "fontFamily": "roboto",
-                  "multiple": false,
-                  "amount": 1,
-                  "items": [
+                  "buttonBackgroundColor": "#C8102E",
+                  "buttonTextColor": "#ffffff",
+                  "checkboxTextColor": "#4A4A4A",
+                  "action": {
+                    "type": "step",
+                    "link": null,
+                    "pass": false,
+                    "step": "step232598694dda7",
+                    "fire_scripts": false,
+                    "scripts": null
+                  },
+                  "fields": [
                     {
-                      "id": "btnc585a3e81deb438d",
-                      "color": "#ffffff",
-                      "backgroundColor": "#C8102E",
-                      "text": "<b>[tool] Kitchen, bath, basement, or remodel</b>",
-                      "action": {
-                        "type": "close",
-                        "link": null,
-                        "step": null,
-                        "new_tab": false,
-                        "prevent_showing": true,
-                        "fire_scripts": false,
-                        "scripts": null,
-                        "custom_field": false,
-                        "custom_field_name": null,
-                        "custom_field_value": null,
-                        "quiz": false,
-                        "quiz_score": 0,
-                        "pass_field_params": false
-                      },
-                      "automations": [],
-                      "type": "button",
-                      "size": 200,
-                      "align": "center",
-                      "internal_id": null,
-                      "image": []
+                      "type": "textarea",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Briefly describe the planned home projects need",
+                        "name": "request_context",
+                        "type": "textarea",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Erie County ZIP or community",
+                        "name": "zip_or_community",
+                        "type": "text",
+                        "required": false
+                      }
+                    },
+                    {
+                      "type": "phone",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best phone number",
+                        "name": "phone",
+                        "type": "tel",
+                        "required": true
+                      }
+                    },
+                    {
+                      "type": "email",
+                      "composite": false,
+                      "input": {
+                        "placeholder": "Best email",
+                        "name": "email",
+                        "type": "text",
+                        "required": false
+                      }
                     }
                   ],
-                  "shape": "rounded",
-                  "size": "l",
-                  "width": "wide",
+                  "actions": [],
                   "vSpacingTop": 1,
                   "vSpacingBottom": 1,
+                  "buttonText": "<b>Start project match</b>",
+                  "layout": "vertical",
+                  "shape": "rounded",
                   "mobile": {
                     "overwritten": true,
+                    "size": "m",
+                    "shape": "rounded",
                     "vSpacingTop": 1,
-                    "vSpacingBottom": 1,
-                    "size": "m"
-                  }
+                    "vSpacingBottom": 1
+                  },
+                  "conditional_integrations": []
                 }
               }
             ],
@@ -1583,7 +1115,7 @@
             "center": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
-              "color": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
@@ -1609,7 +1141,103 @@
             "underlay": {
               "overlayEnabled": false,
               "overlayColor": "#ffffff",
+              "color": "#F8FAFC",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            }
+          }
+        },
+        {
+          "id": "step232598694dda7",
+          "name": "Project details saved",
+          "loading_screen": false,
+          "loading_message": "Matching your request...",
+          "conditional_skips": [],
+          "elements": {
+            "center": [
+              {
+                "id": "label2325986ae24a9",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#C8102E",
+                  "fontSize": "28",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "<span style=\"display:inline-block;padding:5px 10px;border-radius:999px;background:#F8FAFC;color:#C8102E;font-size:13px;font-weight:700;text-transform:uppercase;\">Planned Home Projects</span><br><b>Project details saved.</b>",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "22",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              },
+              {
+                "id": "body2325986fc88a7",
+                "type": "text",
+                "title": "Text",
+                "options": {
+                  "fontFamily": "roboto",
+                  "color": "#1F3A5F",
+                  "fontSize": "17",
+                  "lineHeight": "1.32",
+                  "vSpacingTop": 1,
+                  "vSpacingBottom": 1,
+                  "text": "The request is more specific than a generic project quote.",
+                  "mobile": {
+                    "overwritten": true,
+                    "fontSize": "17",
+                    "lineHeight": "1.32",
+                    "vSpacingTop": 1,
+                    "vSpacingBottom": 1
+                  }
+                }
+              }
+            ],
+            "left": [],
+            "right": []
+          },
+          "layout": {
+            "column_number": 1,
+            "column_layout": "center"
+          },
+          "background": {
+            "close": "#6B7280",
+            "center": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#F8FAFC",
+              "image": null,
+              "size": "fill",
+              "position": "center center"
+            },
+            "left": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
               "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "right": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#ffffff",
+              "image": null,
+              "size": "fill",
+              "position": "center center",
+              "hideOnMobile": false
+            },
+            "underlay": {
+              "overlayEnabled": false,
+              "overlayColor": "#ffffff",
+              "color": "#F8FAFC",
               "image": null,
               "size": "fill",
               "position": "center center"
