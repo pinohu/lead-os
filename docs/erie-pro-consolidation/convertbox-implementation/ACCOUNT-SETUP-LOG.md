@@ -217,6 +217,18 @@ Sixth correction recorded after reviewing shared ConvertBox design `https://app.
 
 All 10 boxes saved successfully and verified as `active=false`.
 
+Seventh correction recorded after visual-system pass: professional visual elements were applied to all 10 inactive draft previews. The pass added service-family labels, icon-style prefixes on choice buttons, trust rows, family-specific accent colors, profile titles, and teaser labels. Verification confirmed `ep_professional_visual_system_applied=true`, `active=false`, a saved visual label, trust-row markup, and icon-backed choice text on all 10 boxes.
+
+Visual labels now include:
+
+- `Urgent Erie County Help`
+- `Project Planning`
+- `Cleaning, Moving, And Turnover`
+- `Private Appointment Request`
+- `Professional Consultation`
+- `Provider Category Review`
+- `Finish Or Save Your Request`
+
 The visual editor opened successfully, but the builder uses a drag-and-drop canvas and normal browser text-fill automation intermittently failed on text entry with the in-browser clipboard layer. To avoid leaving blank shells, the completed designs were written through ConvertBox's authenticated editor save endpoint using the same structured JSON schema the builder saves.
 
 To protect Erie.Pro user experience, the boxes were left inactive. They are designed and fielded, but should not be activated until final mobile/desktop preview and test submissions are reviewed.

@@ -10,6 +10,8 @@ Update after audit application: the findings in this document have now been appl
 
 Update after reviewing shared ConvertBox design `SE6OC2LI`: the Erie.Pro draft previews now also include the useful structural lessons from that design. The ecommerce urgency, countdown, and pressure style were intentionally not copied. The adopted pattern is: easy first choice, branched follow-up, useful alternate path when the visitor declines or is unsure, and contact details only after the service context is clear.
 
+Update after professional visual pass: all 10 inactive draft previews now include service-family visual labels, icon-style choice prefixes, trust rows, family-specific accent colors, profile titles, and teaser labels. This improves the professional visual hierarchy, but visual/mobile QA in the actual ConvertBox editor is still required before activation.
+
 ## Audit Criteria
 
 Each box is audited across four dimensions:
