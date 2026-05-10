@@ -494,7 +494,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Coverage zone ───────────────────────────────────── */}
+      {/* ── Service area ───────────────────────────────────── */}
       <section className="border-t bg-muted/40 py-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
           <div className="mb-12 text-center">

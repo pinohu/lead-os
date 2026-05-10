@@ -26,7 +26,7 @@ export interface CityConfig {
   metroArea: string;
   /** Counties served */
   counties: string[];
-  /** 30-mile drive-time coverage zone: ZIP codes we route leads in */
+  /** County-focused service footprint: ZIP codes we route leads in */
   coverageZips?: string[];
   /** Cross-state overlap cities we route to if distance permits */
   overlapAreas?: Array<{ city: string; stateCode: string; zip: string }>;
@@ -54,8 +54,8 @@ const CITIES: CityConfig[] = [
     pricingMultiplier: 1.0,
     metroArea: "Erie Metro Area",
     counties: ["Erie County"],
-    // 30-mile drive-time coverage zone per the Erie Pro Launch Kit.
-    // Core Erie + Millcreek/Harborcreek/Wesleyville/Lawrence Park + N/S/E/W overlap.
+    // Erie County-focused footprint per the Erie Pro Launch Kit.
+    // Core Erie + Millcreek/Harborcreek/Wesleyville/Lawrence Park + practical county overlap.
     coverageZips: [
       "16501", "16502", "16503", "16504", "16505", "16506", "16507",
       "16508", "16509", "16510", "16511",                     // core Erie + inner ring
@@ -94,7 +94,7 @@ const CITIES: CityConfig[] = [
     metroArea: "Crawford County",
     counties: ["Crawford County"],
     // Coverage: Meadville core + inner Crawford County. Cambridge
-    // Springs (16403) is shared with Erie's drive-time zone.
+    // Springs (16403) is shared with Erie's county-adjacent footprint.
     coverageZips: [
       "16335", "16354", "16327", "16407", "16424",
       "16314", "16403", "16316", "16433",
@@ -171,7 +171,7 @@ const CITIES: CityConfig[] = [
   // Ashtabula OH — 5th city, second cross-state deployment.
   // Lake Erie coastline, northern-Ohio market, priced below Erie at
   // 0.75x. Conneaut ZIP (44030) already overlaps with Erie's
-  // drive-time zone.
+  // county-adjacent footprint.
   {
     slug: "ashtabula",
     name: "Ashtabula",

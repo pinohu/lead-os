@@ -126,7 +126,7 @@ export const ERIE_LOCAL_SEO: LocalSeoData = {
     "Bicentennial Tower", "Perry Square", "UPMC Hamot", "Erie International Airport",
   ],
 
-  // 30-mile drive-time coverage zone per the Launch Kit. Source of truth
+  // Erie County-focused service footprint per the Launch Kit. Source of truth
   // is cityConfig.coverageZips; we mirror it here as an array literal so
   // SEO rendering stays fully static.
   zipCodes: [
@@ -213,8 +213,8 @@ export const MEADVILLE_LOCAL_SEO: LocalSeoData = {
     "French Creek", "Crawford County Courthouse",
   ],
 
-  // 30-mile coverage zone centered on Meadville. Includes Cambridge
-  // Springs (16403) which is shared with Erie's drive-time ring.
+  // Crawford County-focused footprint centered on Meadville. Includes Cambridge
+  // Springs (16403) which is shared with Erie's county-adjacent footprint.
   zipCodes: [
     "16335", "16354", "16327", "16407", "16424",
     "16314", "16403", "16316", "16433",

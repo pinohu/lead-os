@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 
 // Pricing ladder per Launch Kit Part 2 & Broker Strategy.
 // Starter is pay-per-lead, Pro is the flagship subscription with the
-// founding discount, Pro+ adds zone expansion + cross-sell, Dominate
+// founding discount, Pro+ adds county-adjacent expansion + cross-sell, Dominate
 // locks the category.
 interface TierCard {
   key: "starter" | "pro" | "pro-plus" | "dominate"
@@ -136,7 +136,7 @@ export default async function ProsPage() {
       name: "Pro+",
       price: "$249",
       priceSub: "per month",
-      tagline: "Expand your coverage zone and cross-sell adjacent work.",
+      tagline: "Expand your service footprint and cross-sell adjacent work.",
       bullets: [
         "Everything in Pro",
         "County-adjacent expansion options (incl. OH/NY overlap where practical)",
@@ -389,7 +389,7 @@ export default async function ProsPage() {
               Pick the plan that fits how you work
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-              Start pay-per-lead, grow into exclusive leads, expand your zone,
+              Start pay-per-lead, grow into exclusive leads, expand your service footprint,
               or own your category outright.
             </p>
           </div>
