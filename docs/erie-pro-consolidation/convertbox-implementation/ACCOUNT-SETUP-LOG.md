@@ -29,6 +29,7 @@ The following inactive ConvertBoxes were created and then fully populated with r
 Each ConvertBox now uses Erie.Pro brand positioning and colors:
 
 - Promise: `One pro. No bidding. Always Erie.`
+- Geography: Erie County focused; avoid radius-based geography copy in ConvertBox messaging.
 - Primary action color: Erie Red `#C8102E`
 - Trust/heading color: Bayfront Blue `#1F3A5F`
 - Support text: Steel Gray `#4A4A4A`
@@ -179,7 +180,7 @@ Total configured designs:
 
 No ConvertBox was activated.
 
-Correction recorded after visual QA: the first save pass created form/text objects, but those objects used null element ids and therefore appeared as empty move/drop placeholders in the visual builder. The corrected pass assigns unique element ids to every editor element and button item. A later funnel pass replaced the shallow one-step capture boxes with native ConvertBox multi-step funnels using Erie.Pro branding, segmentation buttons, routed forms, hidden metadata, optional Concierge offer steps, and confirmation steps. Render verification confirmed the visible editor now shows the Erie.Pro promise, headings, path buttons, fields, and CTA buttons.
+Correction recorded after visual QA: the first save pass created form/text objects, but those objects used null element ids and therefore appeared as empty move/drop placeholders in the visual builder. The corrected pass assigns unique element ids to every editor element and button item. A later funnel pass replaced the shallow one-step capture boxes with native ConvertBox multi-step funnels using Erie.Pro branding, segmentation buttons, routed forms, hidden metadata, optional Concierge offer steps, and confirmation steps. A geography correction then replaced radius-based messaging with Erie County-focused copy. Render verification confirmed the visible editor now shows the Erie.Pro promise, headings, path buttons, fields, and CTA buttons.
 
 The visual editor opened successfully, but the builder uses a drag-and-drop canvas and normal browser text-fill automation intermittently failed on text entry with the in-browser clipboard layer. To avoid leaving blank shells, the completed designs were written through ConvertBox's authenticated editor save endpoint using the same structured JSON schema the builder saves.
 

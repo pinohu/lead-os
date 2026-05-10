@@ -31,7 +31,7 @@ export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: "For Pros",
-  description: `Become an ${cityConfig.name} pro on ${cityConfig.domain}. We find service requests across Craigslist, Facebook, Nextdoor, and direct inbound — then send one to one pro in your 30-mile zone. Founding members: $39/mo, locked for 24 months.`,
+  description: `Become an ${cityConfig.name} pro on ${cityConfig.domain}. We find service requests across Craigslist, Facebook, Nextdoor, and direct inbound — then send one to one pro serving Erie County. Founding members: $39/mo, locked for 24 months.`,
   alternates: { canonical: `https://${cityConfig.domain}/pros` },
   openGraph: {
     title: `Erie pros: exclusive local leads. No bidding. Ever.`,
@@ -66,7 +66,7 @@ const reasons: Array<{ title: string; body: string; icon: React.ReactNode }> = [
   {
     title: "Local signal, not spray-and-pray",
     body:
-      "We pull real service requests from Craigslist, Facebook groups, Nextdoor, and direct inbound — then filter to your 30-mile zone.",
+      "We pull real service requests from Craigslist, Facebook groups, Nextdoor, and direct inbound — then filter for Erie County service fit.",
     icon: <Target className="h-5 w-5" />,
   },
   {
@@ -139,7 +139,7 @@ export default async function ProsPage() {
       tagline: "Expand your coverage zone and cross-sell adjacent work.",
       bullets: [
         "Everything in Pro",
-        "Extended 45-mile coverage zone (incl. OH/NY overlap)",
+        "County-adjacent expansion options (incl. OH/NY overlap where practical)",
         "Cross-sell routing from adjacent niches you opt into",
         "Featured badge on every local page",
         "Automated review collection after each closed job",
@@ -216,7 +216,7 @@ export default async function ProsPage() {
 
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
             We find service requests across Craigslist, Facebook, Nextdoor,
-            and direct inbound — then send one to one pro in your 30-mile zone.
+            and direct inbound — then send one to one pro serving Erie County.
             No auctions. No shared leads. Just work that&apos;s yours to close.
           </p>
 

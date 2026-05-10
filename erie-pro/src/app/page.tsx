@@ -90,7 +90,7 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-5xl px-4 pb-16 pt-24 text-center sm:px-6">
           <Badge variant="secondary" className="mb-6">
             <Shield className="mr-1.5 h-3 w-3" />
-            Vetted {cityConfig.name}, {cityConfig.stateCode} pros · 30-mile zone
+            Vetted {cityConfig.name}, {cityConfig.stateCode} pros · Erie County focused
           </Badge>
 
           <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
@@ -101,7 +101,7 @@ export default function HomePage() {
 
           <p className="mx-auto mt-6 max-w-2xl text-lg text-foreground/80">
             Post what you need. We match you with <strong>one</strong> vetted
-            local pro within 30 miles. No bidding wars. No five phone calls.
+            Erie County pro. No bidding wars. No five phone calls.
             No strangers. Just the right person for the job.
           </p>
 
@@ -188,7 +188,7 @@ export default function HomePage() {
             },
             {
               icon: <MapPin className="h-5 w-5 text-primary" />,
-              label: "Within 30 driving miles — or your next match is free",
+              label: "Focused on Erie County service coverage",
             },
             {
               icon: <Lock className="h-5 w-5 text-primary" />,
@@ -225,7 +225,7 @@ export default function HomePage() {
             {
               step: "2",
               title: "We pick one pro, not five.",
-              desc: `A single vetted ${cityConfig.name} pro inside your 30-mile zone. We text you their name, phone, and reviews.`,
+              desc: `A single vetted ${cityConfig.name} pro serving Erie County. We text you their name, phone, and reviews.`,
             },
             {
               step: "3",
@@ -500,15 +500,15 @@ export default function HomePage() {
           <div className="mb-12 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary">
               <MapPin className="h-4 w-4" />
-              30-mile drive-time zone
+              Erie County service area
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
               Every match stays local.
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-              We only route leads to pros inside a 30-mile driving radius of
-              your location — roughly 45 minutes by car, an hour in snow
-              season. If the closest pro is farther, your next match is free.
+              We focus routing around Erie County and nearby local service
+              areas, so matches stay practical, accountable, and close enough
+              for real response times.
             </p>
           </div>
 
@@ -530,7 +530,7 @@ export default function HomePage() {
               {cityConfig.overlapAreas
                 .map((o) => `${o.city}, ${o.stateCode}`)
                 .join(" · ")}{" "}
-              when within the 30-mile zone.
+              when they fit the Erie County service footprint.
             </p>
           )}
 
