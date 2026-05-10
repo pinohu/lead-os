@@ -46,6 +46,9 @@ function numberValue(...values: unknown[]) {
 }
 
 function verifySignature(rawBody: string, request: NextRequest) {
+  const token = process.env.THRIVECART_WEBHOOK_TOKEN
+  if (token && request.nextUrl.searchParams.get("token") === token) return true
+
   const secret = process.env.THRIVECART_WEBHOOK_SECRET
   if (!secret) return process.env.NODE_ENV !== "production"
 
