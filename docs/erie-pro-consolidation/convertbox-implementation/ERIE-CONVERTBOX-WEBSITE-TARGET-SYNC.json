@@ -1,0 +1,1138 @@
+{
+  "synced_at": "2026-05-10T11:39:07.817Z",
+  "install_uuid": "d2c3d694-a219-4659-a17f-93165afe8ba0",
+  "install_uuid_source": "https://app.convertbox.com/api/sites/8358",
+  "install_uuid_checked": [
+    {
+      "endpoint": "https://app.convertbox.com/api/sites/8358",
+      "ok": true,
+      "status": 200
+    }
+  ],
+  "attempted": 112,
+  "updated": 112,
+  "unchanged": 0,
+  "failed": 0,
+  "results": [
+    {
+      "box_id": 232604,
+      "service": "Plumbing",
+      "serviceSlug": "plumbing",
+      "convertBoxSlug": "plumbing",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232605,
+      "service": "HVAC",
+      "serviceSlug": "hvac",
+      "convertBoxSlug": "hvac",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232606,
+      "service": "Electrical",
+      "serviceSlug": "electrical",
+      "convertBoxSlug": "electrical",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232607,
+      "service": "Roofing",
+      "serviceSlug": "roofing",
+      "convertBoxSlug": "roofing",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232608,
+      "service": "Landscaping",
+      "serviceSlug": "landscaping",
+      "convertBoxSlug": "landscaping",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232609,
+      "service": "Dental",
+      "serviceSlug": "dental",
+      "convertBoxSlug": "dental",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232610,
+      "service": "Legal",
+      "serviceSlug": "legal",
+      "convertBoxSlug": "legal",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232611,
+      "service": "Cleaning",
+      "serviceSlug": "cleaning",
+      "convertBoxSlug": "cleaning",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232612,
+      "service": "Auto Repair",
+      "serviceSlug": "auto-repair",
+      "convertBoxSlug": "auto-repair",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232613,
+      "service": "Pest Control",
+      "serviceSlug": "pest-control",
+      "convertBoxSlug": "pest-control",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232614,
+      "service": "Painting",
+      "serviceSlug": "painting",
+      "convertBoxSlug": "painting",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232615,
+      "service": "Real Estate",
+      "serviceSlug": "real-estate",
+      "convertBoxSlug": "real-estate",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232616,
+      "service": "Garage Door",
+      "serviceSlug": "garage-door",
+      "convertBoxSlug": "garage-door",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232617,
+      "service": "Fencing",
+      "serviceSlug": "fencing",
+      "convertBoxSlug": "fencing",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232618,
+      "service": "Flooring",
+      "serviceSlug": "flooring",
+      "convertBoxSlug": "flooring",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232619,
+      "service": "Windows & Doors",
+      "serviceSlug": "windows-doors",
+      "convertBoxSlug": "windows-doors",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232620,
+      "service": "Moving",
+      "serviceSlug": "moving",
+      "convertBoxSlug": "moving",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232621,
+      "service": "Tree Service",
+      "serviceSlug": "tree-service",
+      "convertBoxSlug": "tree-service",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232622,
+      "service": "Appliance Repair",
+      "serviceSlug": "appliance-repair",
+      "convertBoxSlug": "appliance-repair",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232623,
+      "service": "Foundation & Waterproofing",
+      "serviceSlug": "foundation",
+      "convertBoxSlug": "foundation-waterproofing",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232624,
+      "service": "Home Security",
+      "serviceSlug": "home-security",
+      "convertBoxSlug": "home-security",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232625,
+      "service": "Concrete & Masonry",
+      "serviceSlug": "concrete",
+      "convertBoxSlug": "concrete-masonry",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232626,
+      "service": "Septic & Sewer",
+      "serviceSlug": "septic",
+      "convertBoxSlug": "septic-sewer",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232627,
+      "service": "Chimney & Fireplace",
+      "serviceSlug": "chimney",
+      "convertBoxSlug": "chimney-fireplace",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232628,
+      "service": "Pool & Spa Services",
+      "serviceSlug": "pool-spa",
+      "convertBoxSlug": "pool-spa-services",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232629,
+      "service": "Locksmith Services",
+      "serviceSlug": "locksmith",
+      "convertBoxSlug": "locksmith-services",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232630,
+      "service": "Towing & Roadside Assistance",
+      "serviceSlug": "towing",
+      "convertBoxSlug": "towing-roadside-assistance",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232631,
+      "service": "Carpet Cleaning",
+      "serviceSlug": "carpet-cleaning",
+      "convertBoxSlug": "carpet-cleaning",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232632,
+      "service": "Pressure Washing",
+      "serviceSlug": "pressure-washing",
+      "convertBoxSlug": "pressure-washing",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232633,
+      "service": "Drywall & Plastering",
+      "serviceSlug": "drywall",
+      "convertBoxSlug": "drywall-plastering",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232634,
+      "service": "Insulation Services",
+      "serviceSlug": "insulation",
+      "convertBoxSlug": "insulation-services",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232635,
+      "service": "Solar & Energy",
+      "serviceSlug": "solar",
+      "convertBoxSlug": "solar-energy",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232636,
+      "service": "Gutter Services",
+      "serviceSlug": "gutters",
+      "convertBoxSlug": "gutter-services",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232637,
+      "service": "Handyman Services",
+      "serviceSlug": "handyman",
+      "convertBoxSlug": "handyman-services",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232638,
+      "service": "Veterinary Services",
+      "serviceSlug": "veterinary",
+      "convertBoxSlug": "veterinary-services",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232639,
+      "service": "Chiropractic Care",
+      "serviceSlug": "chiropractic",
+      "convertBoxSlug": "chiropractic-care",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232640,
+      "service": "Accounting & Tax",
+      "serviceSlug": "accounting",
+      "convertBoxSlug": "accounting-tax",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232641,
+      "service": "Photography Services",
+      "serviceSlug": "photography",
+      "convertBoxSlug": "photography-services",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232642,
+      "service": "Pet Grooming",
+      "serviceSlug": "pet-grooming",
+      "convertBoxSlug": "pet-grooming",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232643,
+      "service": "Snow Removal",
+      "serviceSlug": "snow-removal",
+      "convertBoxSlug": "snow-removal",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232644,
+      "service": "Water Damage Restoration",
+      "serviceSlug": "restoration",
+      "convertBoxSlug": "water-damage-restoration",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232645,
+      "service": "Glass & Glazing",
+      "serviceSlug": "glass",
+      "convertBoxSlug": "glass-glazing",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232646,
+      "service": "Irrigation & Sprinklers",
+      "serviceSlug": "irrigation",
+      "convertBoxSlug": "irrigation-sprinklers",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232647,
+      "service": "Demolition & Excavation",
+      "serviceSlug": "demolition",
+      "convertBoxSlug": "demolition-excavation",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232648,
+      "service": "General Contractor",
+      "serviceSlug": "general-contractor",
+      "convertBoxSlug": "general-contractor",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232649,
+      "service": "Home Remodeling",
+      "serviceSlug": "home-remodeling",
+      "convertBoxSlug": "home-remodeling",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232650,
+      "service": "Kitchen Remodeling",
+      "serviceSlug": "kitchen-remodeling",
+      "convertBoxSlug": "kitchen-remodeling",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232651,
+      "service": "Bathroom Remodeling",
+      "serviceSlug": "bathroom-remodeling",
+      "convertBoxSlug": "bathroom-remodeling",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232652,
+      "service": "Siding",
+      "serviceSlug": "siding",
+      "convertBoxSlug": "siding",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232653,
+      "service": "Decks & Patios",
+      "serviceSlug": "decks-patios",
+      "convertBoxSlug": "decks-patios",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232654,
+      "service": "Basement Finishing",
+      "serviceSlug": "basement-finishing",
+      "convertBoxSlug": "basement-finishing",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232655,
+      "service": "Mold Remediation",
+      "serviceSlug": "mold-remediation",
+      "convertBoxSlug": "mold-remediation",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232656,
+      "service": "Fire Damage Restoration",
+      "serviceSlug": "fire-damage-restoration",
+      "convertBoxSlug": "fire-damage-restoration",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232657,
+      "service": "Storm Damage Repair",
+      "serviceSlug": "storm-damage-repair",
+      "convertBoxSlug": "storm-damage-repair",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232658,
+      "service": "Water Heater Services",
+      "serviceSlug": "water-heater-services",
+      "convertBoxSlug": "water-heater-services",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232659,
+      "service": "Drain Cleaning",
+      "serviceSlug": "drain-cleaning",
+      "convertBoxSlug": "drain-cleaning",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232660,
+      "service": "Sewer Line Repair",
+      "serviceSlug": "sewer-line-repair",
+      "convertBoxSlug": "sewer-line-repair",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232661,
+      "service": "AC Repair",
+      "serviceSlug": "ac-repair",
+      "convertBoxSlug": "ac-repair",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232662,
+      "service": "Furnace Repair",
+      "serviceSlug": "furnace-repair",
+      "convertBoxSlug": "furnace-repair",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232663,
+      "service": "Duct Cleaning",
+      "serviceSlug": "duct-cleaning",
+      "convertBoxSlug": "duct-cleaning",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232664,
+      "service": "Driveway Paving",
+      "serviceSlug": "driveway-paving",
+      "convertBoxSlug": "driveway-paving",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232665,
+      "service": "Asphalt Sealing",
+      "serviceSlug": "asphalt-sealing",
+      "convertBoxSlug": "asphalt-sealing",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232666,
+      "service": "Junk Removal",
+      "serviceSlug": "junk-removal",
+      "convertBoxSlug": "junk-removal",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232667,
+      "service": "Dumpster Rental",
+      "serviceSlug": "dumpster-rental",
+      "convertBoxSlug": "dumpster-rental",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232668,
+      "service": "Home Inspection",
+      "serviceSlug": "home-inspection",
+      "convertBoxSlug": "home-inspection",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232669,
+      "service": "Property Management",
+      "serviceSlug": "property-management",
+      "convertBoxSlug": "property-management",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232670,
+      "service": "Rental Turnover Cleaning",
+      "serviceSlug": "rental-turnover-cleaning",
+      "convertBoxSlug": "rental-turnover-cleaning",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232671,
+      "service": "Commercial Cleaning",
+      "serviceSlug": "commercial-cleaning",
+      "convertBoxSlug": "commercial-cleaning",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232672,
+      "service": "Commercial Snow Removal",
+      "serviceSlug": "commercial-snow-removal",
+      "convertBoxSlug": "commercial-snow-removal",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232673,
+      "service": "Home Builders",
+      "serviceSlug": "home-builders",
+      "convertBoxSlug": "home-builders",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232674,
+      "service": "Outdoor Lighting",
+      "serviceSlug": "outdoor-lighting",
+      "convertBoxSlug": "outdoor-lighting",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232675,
+      "service": "Holiday Lighting",
+      "serviceSlug": "holiday-lighting",
+      "convertBoxSlug": "holiday-lighting",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232676,
+      "service": "Fence Repair",
+      "serviceSlug": "fence-repair",
+      "convertBoxSlug": "fence-repair",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232677,
+      "service": "Retaining Walls",
+      "serviceSlug": "retaining-walls",
+      "convertBoxSlug": "retaining-walls",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232678,
+      "service": "Epoxy Flooring",
+      "serviceSlug": "epoxy-flooring",
+      "convertBoxSlug": "epoxy-flooring",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232679,
+      "service": "Closet & Storage Systems",
+      "serviceSlug": "closet-storage-systems",
+      "convertBoxSlug": "closet-storage-systems",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232680,
+      "service": "Cabinet Refinishing",
+      "serviceSlug": "cabinet-refinishing",
+      "convertBoxSlug": "cabinet-refinishing",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232681,
+      "service": "Countertops",
+      "serviceSlug": "countertops",
+      "convertBoxSlug": "countertops",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232682,
+      "service": "Tile Installation",
+      "serviceSlug": "tile-installation",
+      "convertBoxSlug": "tile-installation",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232683,
+      "service": "Smart Home Installation",
+      "serviceSlug": "smart-home-installation",
+      "convertBoxSlug": "smart-home-installation",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232684,
+      "service": "EV Charger Installation",
+      "serviceSlug": "ev-charger-installation",
+      "convertBoxSlug": "ev-charger-installation",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232685,
+      "service": "Generator Installation",
+      "serviceSlug": "generator-installation",
+      "convertBoxSlug": "generator-installation",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232686,
+      "service": "Radon Testing & Mitigation",
+      "serviceSlug": "radon-testing-mitigation",
+      "convertBoxSlug": "radon-testing-mitigation",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232687,
+      "service": "Wildlife Removal",
+      "serviceSlug": "wildlife-removal",
+      "convertBoxSlug": "wildlife-removal",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232688,
+      "service": "Bat Removal",
+      "serviceSlug": "bat-removal",
+      "convertBoxSlug": "bat-removal",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232689,
+      "service": "Bee/Wasp Removal",
+      "serviceSlug": "bee-wasp-removal",
+      "convertBoxSlug": "bee-wasp-removal",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232690,
+      "service": "Septic Inspection",
+      "serviceSlug": "septic-inspection",
+      "convertBoxSlug": "septic-inspection",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232691,
+      "service": "Well Water Testing",
+      "serviceSlug": "well-water-testing",
+      "convertBoxSlug": "well-water-testing",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232692,
+      "service": "Boat Repair / Marine Services",
+      "serviceSlug": "boat-repair-marine-services",
+      "convertBoxSlug": "boat-repair-marine-services",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232693,
+      "service": "Dock Installation & Repair",
+      "serviceSlug": "dock-installation-repair",
+      "convertBoxSlug": "dock-installation-repair",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232694,
+      "service": "Marina / Boat Winterization",
+      "serviceSlug": "marina-boat-winterization",
+      "convertBoxSlug": "marina-boat-winterization",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232695,
+      "service": "Ice Dam Removal",
+      "serviceSlug": "ice-dam-removal",
+      "convertBoxSlug": "ice-dam-removal",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232696,
+      "service": "Emergency Board-Up",
+      "serviceSlug": "emergency-board-up",
+      "convertBoxSlug": "emergency-board-up",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232697,
+      "service": "Basement Flood Cleanup",
+      "serviceSlug": "basement-flood-cleanup",
+      "convertBoxSlug": "basement-flood-cleanup",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232698,
+      "service": "Lakefront Property Maintenance",
+      "serviceSlug": "lakefront-property-maintenance",
+      "convertBoxSlug": "lakefront-property-maintenance",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232699,
+      "service": "Vacation Rental Cleaning",
+      "serviceSlug": "vacation-rental-cleaning",
+      "convertBoxSlug": "vacation-rental-cleaning",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232700,
+      "service": "Airbnb Property Management",
+      "serviceSlug": "airbnb-property-management",
+      "convertBoxSlug": "airbnb-property-management",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232701,
+      "service": "Snow Plow Contractors",
+      "serviceSlug": "snow-plow-contractors",
+      "convertBoxSlug": "snow-plow-contractors",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232702,
+      "service": "Salt & De-Icing Services",
+      "serviceSlug": "salt-deicing-services",
+      "convertBoxSlug": "salt-de-icing-services",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232703,
+      "service": "Storm Window Repair",
+      "serviceSlug": "storm-window-repair",
+      "convertBoxSlug": "storm-window-repair",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232704,
+      "service": "Optometry",
+      "serviceSlug": "optometry",
+      "convertBoxSlug": "optometry",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232705,
+      "service": "Dermatology",
+      "serviceSlug": "dermatology",
+      "convertBoxSlug": "dermatology",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232706,
+      "service": "Physical Therapy",
+      "serviceSlug": "physical-therapy",
+      "convertBoxSlug": "physical-therapy",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232707,
+      "service": "Mental Health Counseling",
+      "serviceSlug": "mental-health-counseling",
+      "convertBoxSlug": "mental-health-counseling",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232708,
+      "service": "Senior Home Care",
+      "serviceSlug": "senior-home-care",
+      "convertBoxSlug": "senior-home-care",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232709,
+      "service": "Home Health Care",
+      "serviceSlug": "home-health-care",
+      "convertBoxSlug": "home-health-care",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232710,
+      "service": "Hearing Aids / Audiology",
+      "serviceSlug": "hearing-aids-audiology",
+      "convertBoxSlug": "hearing-aids-audiology",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232711,
+      "service": "Funeral Homes",
+      "serviceSlug": "funeral-homes",
+      "convertBoxSlug": "funeral-homes",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232712,
+      "service": "Insurance Agents",
+      "serviceSlug": "insurance-agents",
+      "convertBoxSlug": "insurance-agents",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232713,
+      "service": "Financial Advisors",
+      "serviceSlug": "financial-advisors",
+      "convertBoxSlug": "financial-advisors",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232714,
+      "service": "Mortgage Brokers",
+      "serviceSlug": "mortgage-brokers",
+      "convertBoxSlug": "mortgage-brokers",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    },
+    {
+      "box_id": 232715,
+      "service": "Estate Sale Services",
+      "serviceSlug": "estate-sale-services",
+      "convertBoxSlug": "estate-sale-services",
+      "ok": true,
+      "active": false,
+      "action": "updated",
+      "target_count": 11
+    }
+  ]
+}

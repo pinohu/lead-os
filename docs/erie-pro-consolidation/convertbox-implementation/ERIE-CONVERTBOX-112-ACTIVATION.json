@@ -1,0 +1,1128 @@
+{
+  "activated_at": "2026-05-10T11:40:32.507Z",
+  "attempted": 112,
+  "activated": 112,
+  "failed": 0,
+  "results": [
+    {
+      "box_id": 232604,
+      "service_number": 1,
+      "service_label": "Plumbing",
+      "service_slug": "plumbing",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232605,
+      "service_number": 2,
+      "service_label": "HVAC",
+      "service_slug": "hvac",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232606,
+      "service_number": 3,
+      "service_label": "Electrical",
+      "service_slug": "electrical",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232607,
+      "service_number": 4,
+      "service_label": "Roofing",
+      "service_slug": "roofing",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232608,
+      "service_number": 5,
+      "service_label": "Landscaping",
+      "service_slug": "landscaping",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232609,
+      "service_number": 6,
+      "service_label": "Dental",
+      "service_slug": "dental",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232610,
+      "service_number": 7,
+      "service_label": "Legal",
+      "service_slug": "legal",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232611,
+      "service_number": 8,
+      "service_label": "Cleaning",
+      "service_slug": "cleaning",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232612,
+      "service_number": 9,
+      "service_label": "Auto Repair",
+      "service_slug": "auto-repair",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232613,
+      "service_number": 10,
+      "service_label": "Pest Control",
+      "service_slug": "pest-control",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232614,
+      "service_number": 11,
+      "service_label": "Painting",
+      "service_slug": "painting",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232615,
+      "service_number": 12,
+      "service_label": "Real Estate",
+      "service_slug": "real-estate",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232616,
+      "service_number": 13,
+      "service_label": "Garage Door",
+      "service_slug": "garage-door",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232617,
+      "service_number": 14,
+      "service_label": "Fencing",
+      "service_slug": "fencing",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232618,
+      "service_number": 15,
+      "service_label": "Flooring",
+      "service_slug": "flooring",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232619,
+      "service_number": 16,
+      "service_label": "Windows & Doors",
+      "service_slug": "windows-doors",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232620,
+      "service_number": 17,
+      "service_label": "Moving",
+      "service_slug": "moving",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232621,
+      "service_number": 18,
+      "service_label": "Tree Service",
+      "service_slug": "tree-service",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232622,
+      "service_number": 19,
+      "service_label": "Appliance Repair",
+      "service_slug": "appliance-repair",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232623,
+      "service_number": 20,
+      "service_label": "Foundation & Waterproofing",
+      "service_slug": "foundation",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232624,
+      "service_number": 21,
+      "service_label": "Home Security",
+      "service_slug": "home-security",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232625,
+      "service_number": 22,
+      "service_label": "Concrete & Masonry",
+      "service_slug": "concrete",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232626,
+      "service_number": 23,
+      "service_label": "Septic & Sewer",
+      "service_slug": "septic",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232627,
+      "service_number": 24,
+      "service_label": "Chimney & Fireplace",
+      "service_slug": "chimney",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232628,
+      "service_number": 25,
+      "service_label": "Pool & Spa Services",
+      "service_slug": "pool-spa",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232629,
+      "service_number": 26,
+      "service_label": "Locksmith Services",
+      "service_slug": "locksmith",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232630,
+      "service_number": 27,
+      "service_label": "Towing & Roadside Assistance",
+      "service_slug": "towing",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232631,
+      "service_number": 28,
+      "service_label": "Carpet Cleaning",
+      "service_slug": "carpet-cleaning",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232632,
+      "service_number": 29,
+      "service_label": "Pressure Washing",
+      "service_slug": "pressure-washing",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232633,
+      "service_number": 30,
+      "service_label": "Drywall & Plastering",
+      "service_slug": "drywall",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232634,
+      "service_number": 31,
+      "service_label": "Insulation Services",
+      "service_slug": "insulation",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232635,
+      "service_number": 32,
+      "service_label": "Solar & Energy",
+      "service_slug": "solar",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232636,
+      "service_number": 33,
+      "service_label": "Gutter Services",
+      "service_slug": "gutters",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232637,
+      "service_number": 34,
+      "service_label": "Handyman Services",
+      "service_slug": "handyman",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232638,
+      "service_number": 35,
+      "service_label": "Veterinary Services",
+      "service_slug": "veterinary",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232639,
+      "service_number": 36,
+      "service_label": "Chiropractic Care",
+      "service_slug": "chiropractic",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232640,
+      "service_number": 37,
+      "service_label": "Accounting & Tax",
+      "service_slug": "accounting",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232641,
+      "service_number": 38,
+      "service_label": "Photography Services",
+      "service_slug": "photography",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232642,
+      "service_number": 39,
+      "service_label": "Pet Grooming",
+      "service_slug": "pet-grooming",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232643,
+      "service_number": 40,
+      "service_label": "Snow Removal",
+      "service_slug": "snow-removal",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232644,
+      "service_number": 41,
+      "service_label": "Water Damage Restoration",
+      "service_slug": "restoration",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232645,
+      "service_number": 42,
+      "service_label": "Glass & Glazing",
+      "service_slug": "glass",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232646,
+      "service_number": 43,
+      "service_label": "Irrigation & Sprinklers",
+      "service_slug": "irrigation",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232647,
+      "service_number": 44,
+      "service_label": "Demolition & Excavation",
+      "service_slug": "demolition",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232648,
+      "service_number": 45,
+      "service_label": "General Contractor",
+      "service_slug": "general-contractor",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232649,
+      "service_number": 46,
+      "service_label": "Home Remodeling",
+      "service_slug": "home-remodeling",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232650,
+      "service_number": 47,
+      "service_label": "Kitchen Remodeling",
+      "service_slug": "kitchen-remodeling",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232651,
+      "service_number": 48,
+      "service_label": "Bathroom Remodeling",
+      "service_slug": "bathroom-remodeling",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232652,
+      "service_number": 49,
+      "service_label": "Siding",
+      "service_slug": "siding",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232653,
+      "service_number": 50,
+      "service_label": "Decks & Patios",
+      "service_slug": "decks-patios",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232654,
+      "service_number": 51,
+      "service_label": "Basement Finishing",
+      "service_slug": "basement-finishing",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232655,
+      "service_number": 52,
+      "service_label": "Mold Remediation",
+      "service_slug": "mold-remediation",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232656,
+      "service_number": 53,
+      "service_label": "Fire Damage Restoration",
+      "service_slug": "fire-damage-restoration",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232657,
+      "service_number": 54,
+      "service_label": "Storm Damage Repair",
+      "service_slug": "storm-damage-repair",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232658,
+      "service_number": 55,
+      "service_label": "Water Heater Services",
+      "service_slug": "water-heater-services",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232659,
+      "service_number": 56,
+      "service_label": "Drain Cleaning",
+      "service_slug": "drain-cleaning",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232660,
+      "service_number": 57,
+      "service_label": "Sewer Line Repair",
+      "service_slug": "sewer-line-repair",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232661,
+      "service_number": 58,
+      "service_label": "AC Repair",
+      "service_slug": "ac-repair",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232662,
+      "service_number": 59,
+      "service_label": "Furnace Repair",
+      "service_slug": "furnace-repair",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232663,
+      "service_number": 60,
+      "service_label": "Duct Cleaning",
+      "service_slug": "duct-cleaning",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232664,
+      "service_number": 61,
+      "service_label": "Driveway Paving",
+      "service_slug": "driveway-paving",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232665,
+      "service_number": 62,
+      "service_label": "Asphalt Sealing",
+      "service_slug": "asphalt-sealing",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232666,
+      "service_number": 63,
+      "service_label": "Junk Removal",
+      "service_slug": "junk-removal",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232667,
+      "service_number": 64,
+      "service_label": "Dumpster Rental",
+      "service_slug": "dumpster-rental",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232668,
+      "service_number": 65,
+      "service_label": "Home Inspection",
+      "service_slug": "home-inspection",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232669,
+      "service_number": 66,
+      "service_label": "Property Management",
+      "service_slug": "property-management",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232670,
+      "service_number": 67,
+      "service_label": "Rental Turnover Cleaning",
+      "service_slug": "rental-turnover-cleaning",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232671,
+      "service_number": 68,
+      "service_label": "Commercial Cleaning",
+      "service_slug": "commercial-cleaning",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232672,
+      "service_number": 69,
+      "service_label": "Commercial Snow Removal",
+      "service_slug": "commercial-snow-removal",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232673,
+      "service_number": 70,
+      "service_label": "Home Builders",
+      "service_slug": "home-builders",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232674,
+      "service_number": 71,
+      "service_label": "Outdoor Lighting",
+      "service_slug": "outdoor-lighting",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232675,
+      "service_number": 72,
+      "service_label": "Holiday Lighting",
+      "service_slug": "holiday-lighting",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232676,
+      "service_number": 73,
+      "service_label": "Fence Repair",
+      "service_slug": "fence-repair",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232677,
+      "service_number": 74,
+      "service_label": "Retaining Walls",
+      "service_slug": "retaining-walls",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232678,
+      "service_number": 75,
+      "service_label": "Epoxy Flooring",
+      "service_slug": "epoxy-flooring",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232679,
+      "service_number": 76,
+      "service_label": "Closet & Storage Systems",
+      "service_slug": "closet-storage-systems",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232680,
+      "service_number": 77,
+      "service_label": "Cabinet Refinishing",
+      "service_slug": "cabinet-refinishing",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232681,
+      "service_number": 78,
+      "service_label": "Countertops",
+      "service_slug": "countertops",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232682,
+      "service_number": 79,
+      "service_label": "Tile Installation",
+      "service_slug": "tile-installation",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232683,
+      "service_number": 80,
+      "service_label": "Smart Home Installation",
+      "service_slug": "smart-home-installation",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232684,
+      "service_number": 81,
+      "service_label": "EV Charger Installation",
+      "service_slug": "ev-charger-installation",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232685,
+      "service_number": 82,
+      "service_label": "Generator Installation",
+      "service_slug": "generator-installation",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232686,
+      "service_number": 83,
+      "service_label": "Radon Testing & Mitigation",
+      "service_slug": "radon-testing-mitigation",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232687,
+      "service_number": 84,
+      "service_label": "Wildlife Removal",
+      "service_slug": "wildlife-removal",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232688,
+      "service_number": 85,
+      "service_label": "Bat Removal",
+      "service_slug": "bat-removal",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232689,
+      "service_number": 86,
+      "service_label": "Bee/Wasp Removal",
+      "service_slug": "bee-wasp-removal",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232690,
+      "service_number": 87,
+      "service_label": "Septic Inspection",
+      "service_slug": "septic-inspection",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232691,
+      "service_number": 88,
+      "service_label": "Well Water Testing",
+      "service_slug": "well-water-testing",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232692,
+      "service_number": 89,
+      "service_label": "Boat Repair / Marine Services",
+      "service_slug": "boat-repair-marine-services",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232693,
+      "service_number": 90,
+      "service_label": "Dock Installation & Repair",
+      "service_slug": "dock-installation-repair",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232694,
+      "service_number": 91,
+      "service_label": "Marina / Boat Winterization",
+      "service_slug": "marina-boat-winterization",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232695,
+      "service_number": 92,
+      "service_label": "Ice Dam Removal",
+      "service_slug": "ice-dam-removal",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232696,
+      "service_number": 93,
+      "service_label": "Emergency Board-Up",
+      "service_slug": "emergency-board-up",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232697,
+      "service_number": 94,
+      "service_label": "Basement Flood Cleanup",
+      "service_slug": "basement-flood-cleanup",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232698,
+      "service_number": 95,
+      "service_label": "Lakefront Property Maintenance",
+      "service_slug": "lakefront-property-maintenance",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232699,
+      "service_number": 96,
+      "service_label": "Vacation Rental Cleaning",
+      "service_slug": "vacation-rental-cleaning",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232700,
+      "service_number": 97,
+      "service_label": "Airbnb Property Management",
+      "service_slug": "airbnb-property-management",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232701,
+      "service_number": 98,
+      "service_label": "Snow Plow Contractors",
+      "service_slug": "snow-plow-contractors",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232702,
+      "service_number": 99,
+      "service_label": "Salt & De-Icing Services",
+      "service_slug": "salt-deicing-services",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232703,
+      "service_number": 100,
+      "service_label": "Storm Window Repair",
+      "service_slug": "storm-window-repair",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232704,
+      "service_number": 101,
+      "service_label": "Optometry",
+      "service_slug": "optometry",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232705,
+      "service_number": 102,
+      "service_label": "Dermatology",
+      "service_slug": "dermatology",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232706,
+      "service_number": 103,
+      "service_label": "Physical Therapy",
+      "service_slug": "physical-therapy",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232707,
+      "service_number": 104,
+      "service_label": "Mental Health Counseling",
+      "service_slug": "mental-health-counseling",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232708,
+      "service_number": 105,
+      "service_label": "Senior Home Care",
+      "service_slug": "senior-home-care",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232709,
+      "service_number": 106,
+      "service_label": "Home Health Care",
+      "service_slug": "home-health-care",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232710,
+      "service_number": 107,
+      "service_label": "Hearing Aids / Audiology",
+      "service_slug": "hearing-aids-audiology",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232711,
+      "service_number": 108,
+      "service_label": "Funeral Homes",
+      "service_slug": "funeral-homes",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232712,
+      "service_number": 109,
+      "service_label": "Insurance Agents",
+      "service_slug": "insurance-agents",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232713,
+      "service_number": 110,
+      "service_label": "Financial Advisors",
+      "service_slug": "financial-advisors",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232714,
+      "service_number": 111,
+      "service_label": "Mortgage Brokers",
+      "service_slug": "mortgage-brokers",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    },
+    {
+      "box_id": 232715,
+      "service_number": 112,
+      "service_label": "Estate Sale Services",
+      "service_slug": "estate-sale-services",
+      "active": true,
+      "ok": true,
+      "action": "activated",
+      "status": 200
+    }
+  ]
+}
