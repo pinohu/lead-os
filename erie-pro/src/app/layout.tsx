@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { LocalSeoFooter } from "@/components/local-seo-footer"
 import { CookieBanner } from "@/components/cookie-banner"
+import { ConvertBoxEventTracker } from "@/components/convertbox-event-tracker"
 import { ConvertBoxLoader } from "@/components/convertbox-loader"
 import { ConvertBoxPageContext } from "@/components/convertbox-page-context"
 import { TrackedPhoneLink } from "@/components/tracked-phone-link"
@@ -106,6 +107,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <ConvertBoxLoader />
         <ConvertBoxPageContext />
+        <ConvertBoxEventTracker />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

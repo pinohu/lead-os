@@ -31,6 +31,65 @@ export const PhoneClickEventSchema = z.object({
 
 export type PhoneClickEventInput = z.infer<typeof PhoneClickEventSchema>
 
+const convertBoxEventTypes = [
+  "convertbox.context_loaded",
+  "convertbox.script_loaded",
+  "convertbox.box_displayed",
+  "convertbox.box_closed",
+  "convertbox.step_viewed",
+  "convertbox.button_clicked",
+  "convertbox.option_selected",
+  "convertbox.form_started",
+  "convertbox.form_submitted",
+  "convertbox.lead_submitted",
+  "convertbox.direct_link_opened",
+  "convertbox.data_layer_event",
+] as const
+
+export const ConvertBoxEventSchema = z.object({
+  eventType: z.enum(convertBoxEventTypes),
+  eventId: optionalText(300),
+  sourceDomain: z.string().max(200).default("erie.pro"),
+  sourcePage: optionalText(1000),
+  sourcePageType: optionalText(100),
+  serviceNiche: optionalText(100),
+  serviceSlug: optionalText(100),
+  serviceLabel: optionalText(200),
+  family: optionalText(100),
+  keywordCluster: optionalText(200),
+  intentType: optionalText(100),
+  urgency: z.enum(["standard", "urgent", "emergency"]).default("standard"),
+  boxId: z.union([z.string().max(100), z.number().int()]).optional().nullable(),
+  boxName: optionalText(200),
+  variation: optionalText(100),
+  stepId: optionalText(200),
+  stepName: optionalText(200),
+  stepIndex: z.coerce.number().int().min(0).max(100).optional().nullable(),
+  actionId: optionalText(200),
+  actionLabel: optionalText(500),
+  actionType: optionalText(100),
+  branchId: optionalText(200),
+  branchLabel: optionalText(500),
+  consumerName: optionalText(200),
+  consumerPhone: z.string().max(40).transform((p) => (p ? normalizePhone(p) : p)).optional().nullable(),
+  consumerEmail: z.string().email().max(255).transform((e) => e.toLowerCase().trim()).optional().nullable(),
+  requestSummary: optionalText(5000),
+  requestedProviderName: optionalText(200),
+  requestedProviderSlug: optionalText(200),
+  routingModel: z.enum(["provider_specific", "exclusive_niche", "general", "unknown"]).default("unknown"),
+  consentToContact: z.boolean().default(false),
+  marketingConsent: z.boolean().default(false),
+  sessionId: optionalText(300),
+  visitorId: optionalText(300),
+  utmSource: optionalText(200),
+  utmMedium: optionalText(200),
+  utmCampaign: optionalText(200),
+  gclid: optionalText(300),
+  metadata: z.record(z.string(), z.unknown()).optional().nullable(),
+})
+
+export type ConvertBoxEventInput = z.infer<typeof ConvertBoxEventSchema>
+
 export const UniversalCallEventSchema = z.object({
   eventType: z
     .enum([
@@ -203,6 +262,73 @@ export async function recordPhoneClickEvent(input: PhoneClickEventInput, rawPayl
       marketingConsent: false,
       rawPayload: rawPayload as object,
       normalizedPayload: normalized as object,
+    },
+  })
+}
+
+export async function recordConvertBoxEvent(input: ConvertBoxEventInput, rawPayload: unknown) {
+  const normalized = ConvertBoxEventSchema.parse(input)
+  const textForUrgency = [
+    normalized.requestSummary,
+    normalized.actionLabel,
+    normalized.branchLabel,
+    normalized.stepName,
+    normalized.intentType,
+  ].filter(Boolean).join(" ")
+  const urgency = normalized.urgency === "standard" ? inferUrgencyFromText(textForUrgency) : normalized.urgency
+  const boxId = normalized.boxId == null ? null : String(normalized.boxId)
+  const serviceNiche = normalized.serviceNiche ?? normalized.serviceSlug ?? normalized.serviceLabel ?? null
+  const serviceSlug = normalized.serviceSlug ?? normalized.serviceNiche ?? null
+  const normalizedPayload = {
+    ...normalized,
+    urgency,
+    boxId,
+    convertBox: {
+      boxId,
+      boxName: normalized.boxName ?? null,
+      variation: normalized.variation ?? null,
+      stepId: normalized.stepId ?? null,
+      stepName: normalized.stepName ?? null,
+      stepIndex: normalized.stepIndex ?? null,
+      actionId: normalized.actionId ?? null,
+      actionLabel: normalized.actionLabel ?? null,
+      actionType: normalized.actionType ?? null,
+      branchId: normalized.branchId ?? null,
+      branchLabel: normalized.branchLabel ?? null,
+      family: normalized.family ?? null,
+      serviceLabel: normalized.serviceLabel ?? null,
+    },
+  }
+
+  return prisma.leadEvent.create({
+    data: {
+      eventType: normalized.eventType,
+      sourceSystem: "convertbox",
+      sourceDomain: normalized.sourceDomain,
+      sourcePage: normalized.sourcePage ?? null,
+      sourcePageType: normalized.sourcePageType ?? null,
+      serviceNiche,
+      serviceSlug,
+      city: "erie",
+      keywordCluster: normalized.keywordCluster ?? null,
+      intentType: normalized.intentType ?? normalized.actionType ?? null,
+      urgency,
+      externalEventId: normalized.eventId ?? null,
+      consumerName: normalized.consumerName ?? null,
+      consumerPhone: normalized.consumerPhone ?? null,
+      consumerEmail: normalized.consumerEmail ?? null,
+      requestSummary: normalized.requestSummary ?? normalized.actionLabel ?? normalized.branchLabel ?? null,
+      requestedProviderName: normalized.requestedProviderName ?? null,
+      requestedProviderSlug: normalized.requestedProviderSlug ?? null,
+      routingModel: normalized.routingModel,
+      providerDeliveryStatus: normalized.eventType === "convertbox.lead_submitted" || normalized.eventType === "convertbox.form_submitted"
+        ? "ready_to_route"
+        : "attribution_only",
+      manualReviewRequired: urgency === "emergency" && normalized.eventType.includes("submitted"),
+      consentToContact: normalized.consentToContact,
+      marketingConsent: normalized.marketingConsent,
+      rawPayload: rawPayload as object,
+      normalizedPayload: normalizedPayload as object,
     },
   })
 }
