@@ -659,7 +659,11 @@ Monthly review:
 
 ## Full 112-Service Coverage By Family
 
-The implementation matrix lives in `SERVICE-FAMILY-MAP.csv` and currently accounts for all 112 live services:
+The source family map lives in `SERVICE-FAMILY-MAP.csv` and currently accounts for all 112 live services. The generated implementation outputs are:
+
+- `ERIE-CONVERTBOX-112-SERVICE-MATRIX.json`: machine-readable service-specific implementation data.
+- `ERIE-CONVERTBOX-112-SERVICE-MATRIX.md`: human-readable build sheet.
+- `scripts/generate-erie-convertbox-service-matrix.js`: repeatable generator.
 
 - Emergency Home Response: 20 services.
 - Planned Home Projects: 32 services.
@@ -812,4 +816,3 @@ No box may activate unless:
 ## Final Operating Rule
 
 ConvertBox should feel like Erie.Pro quietly removing friction at the exact moment the visitor needs help. It should not feel like a popup campaign. It should feel like the site got smarter because the visitor's page, timing, urgency, and service context were understood.
-
