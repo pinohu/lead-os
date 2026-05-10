@@ -24,7 +24,31 @@ The following groups were created in the `erie.pro` ConvertBox site:
 
 ## Designed ConvertBoxes Created
 
-The following inactive ConvertBoxes were created and then fully populated with render-verified designed content, form fields, hidden metadata fields, two-step confirmation flows, visitor-safe trigger settings, profile/teaser settings where appropriate, and URL targeting rules:
+The following inactive ConvertBoxes were created and then fully populated with render-verified Erie.Pro-themed funnel content, form fields, hidden metadata fields, multi-step routing, visitor-safe trigger settings, profile/teaser settings where appropriate, and URL targeting rules.
+
+Each ConvertBox now uses Erie.Pro brand positioning and colors:
+
+- Promise: `One pro. No bidding. Always Erie.`
+- Primary action color: Erie Red `#C8102E`
+- Trust/heading color: Bayfront Blue `#1F3A5F`
+- Support text: Steel Gray `#4A4A4A`
+
+Each full funnel contains six native ConvertBox steps:
+
+- `Choose request path`
+- `Urgent details`
+- `Free match details`
+- `Project details`
+- `Optional concierge offer`
+- `Confirmation`
+
+The opening step segments visitors with ConvertBox button actions:
+
+- `Emergency or today`
+- `Get matched free`
+- `Plan a larger job`
+
+The button actions store path metadata through ConvertBox custom field settings where supported, and the downstream form steps add hidden fields for `ep_convertbox_id`, `ep_intent`, `ep_family`, and `ep_urgency`.
 
 - `EP-03 Service - Fast Quote - v1`
   - Group: `Erie.Pro - Core`
@@ -34,7 +58,7 @@ The following inactive ConvertBoxes were created and then fully populated with r
   - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: 45% scroll
   - URL targeting: URLs containing `/services`, `/service`, `/quote`
-  - Features: profile enabled, teaser enabled, two-step confirmation
+  - Features: profile enabled, teaser enabled, six-step routed funnel, optional Concierge offer
 
 - `EP-02 Emergency - Callback Request - v1`
   - Group: `Erie.Pro - Service Families`
@@ -44,7 +68,7 @@ The following inactive ConvertBoxes were created and then fully populated with r
   - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: immediate
   - URL targeting: emergency and high-intent trade pages
-  - Features: profile enabled, teaser enabled, two-step confirmation
+  - Features: profile enabled, teaser enabled, six-step routed funnel, optional Concierge offer
 
 - `EP-04 Pricing - Cost Confidence - v1`
   - Group: `Erie.Pro - Research Nurture`
@@ -54,7 +78,7 @@ The following inactive ConvertBoxes were created and then fully populated with r
   - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: inactivity
   - URL targeting: pricing, cost, service research pages
-  - Features: profile enabled, teaser enabled, two-step confirmation
+  - Features: profile enabled, teaser enabled, six-step routed funnel, optional Concierge offer
 
 - `EP-01 Visitor - Service Finder - v1`
   - Group: `Erie.Pro - Core`
@@ -64,7 +88,7 @@ The following inactive ConvertBoxes were created and then fully populated with r
   - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: delayed
   - URL targeting: homepage and service category pages
-  - Features: two-step confirmation
+  - Features: six-step routed funnel, optional Concierge offer
 
 - `EP-05 Project - Planner - v1`
   - Group: `Erie.Pro - Service Families`
@@ -74,7 +98,7 @@ The following inactive ConvertBoxes were created and then fully populated with r
   - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: 55% scroll
   - URL targeting: project, renovation, installation, construction pages
-  - Features: profile enabled, two-step confirmation
+  - Features: profile enabled, six-step routed funnel, optional Concierge offer
 
 - `EP-06 Appointment - Professional Services - v1`
   - Group: `Erie.Pro - Service Families`
@@ -84,7 +108,7 @@ The following inactive ConvertBoxes were created and then fully populated with r
   - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: delayed
   - URL targeting: appointment, consultation, professional service pages
-  - Features: profile enabled, teaser enabled, two-step confirmation
+  - Features: profile enabled, teaser enabled, six-step routed funnel, optional Concierge offer
 
 - `EP-07 Research - Checklist Capture - v1`
   - Group: `Erie.Pro - Research Nurture`
@@ -94,7 +118,7 @@ The following inactive ConvertBoxes were created and then fully populated with r
   - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: 65% scroll
   - URL targeting: guide, checklist, learning, blog, service pages
-  - Features: profile enabled, teaser enabled, two-step confirmation
+  - Features: profile enabled, teaser enabled, six-step routed funnel, optional Concierge offer
 
 - `EP-08 Provider - Claim Territory - v1`
   - Group: `Erie.Pro - Provider Acquisition`
@@ -104,7 +128,7 @@ The following inactive ConvertBoxes were created and then fully populated with r
   - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: delayed
   - URL targeting: provider, partner, join, professional pages
-  - Features: profile enabled, teaser enabled, two-step confirmation
+  - Features: profile enabled, teaser enabled, six-step routed funnel, optional provider-claim routing
 
 - `EP-09 Exit - Quote Rescue - v1`
   - Group: `Erie.Pro - Core`
@@ -114,7 +138,7 @@ The following inactive ConvertBoxes were created and then fully populated with r
   - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: exit intent
   - URL targeting: service, quote, pricing pages
-  - Features: profile enabled, two-step confirmation
+  - Features: profile enabled, six-step routed funnel, optional Concierge offer
 
 - `EP-10 Returning - Resume Request - v1`
   - Group: `Erie.Pro - Core`
@@ -124,7 +148,7 @@ The following inactive ConvertBoxes were created and then fully populated with r
   - Hidden fields: `ep_convertbox_id`, `ep_intent`, `ep_family`
   - Trigger configured: delayed
   - URL targeting: service, quote, request pages
-  - Features: profile enabled, teaser enabled, two-step confirmation
+  - Features: profile enabled, teaser enabled, six-step routed funnel, optional Concierge offer
 
 ## Dashboard Count Verification
 
@@ -143,15 +167,19 @@ Total configured designs:
 - 10 ConvertBoxes with real editor elements.
 - 10 ConvertBoxes with forms.
 - 10 ConvertBoxes with no null editor element ids.
-- 10 ConvertBoxes with two steps: request details and confirmation.
+- 10 ConvertBoxes with six native funnel steps.
+- 10 ConvertBoxes with button-based path segmentation.
+- 10 ConvertBoxes with three routed form paths: urgent, free match, and project.
+- 10 ConvertBoxes with optional Concierge offer step before confirmation.
 - 10 ConvertBoxes with hidden metadata fields for routing attribution.
 - 10 ConvertBoxes with `specific_pages` URL targeting and privacy/terms/admin exclusions.
+- 10 ConvertBoxes themed with Erie.Pro's red, blue, gray, and local trust promise.
 
 ## Important Implementation Note
 
 No ConvertBox was activated.
 
-Correction recorded after visual QA: the first save pass created form/text objects, but those objects used null element ids and therefore appeared as empty move/drop placeholders in the visual builder. The corrected pass assigns unique element ids to every editor element and button item. Render verification confirmed the visible editor now shows headlines, body copy, fields, and CTA buttons.
+Correction recorded after visual QA: the first save pass created form/text objects, but those objects used null element ids and therefore appeared as empty move/drop placeholders in the visual builder. The corrected pass assigns unique element ids to every editor element and button item. A later funnel pass replaced the shallow one-step capture boxes with native ConvertBox multi-step funnels using Erie.Pro branding, segmentation buttons, routed forms, hidden metadata, optional Concierge offer steps, and confirmation steps. Render verification confirmed the visible editor now shows the Erie.Pro promise, headings, path buttons, fields, and CTA buttons.
 
 The visual editor opened successfully, but the builder uses a drag-and-drop canvas and normal browser text-fill automation intermittently failed on text entry with the in-browser clipboard layer. To avoid leaving blank shells, the completed designs were written through ConvertBox's authenticated editor save endpoint using the same structured JSON schema the builder saves.
 
