@@ -429,8 +429,18 @@ export async function sendOfferDeliveryEmail(purchaseId: string, publicToken: st
 }
 
 export async function syncOfferPurchaseToBoostspace(purchaseId: string) {
-  const webhookUrl = process.env.BOOST_SPACE_OFFER_WEBHOOK_URL || process.env.BOOSTSPACE_OFFER_WEBHOOK_URL
-  if (!webhookUrl) {
+  const webhookUrl =
+    process.env.BOOST_SPACE_OFFER_WEBHOOK_URL ||
+    process.env.BOOSTSPACE_OFFER_WEBHOOK_URL ||
+    process.env.BOOST_SPACE_LEAD_WEBHOOK_URL ||
+    process.env.BOOSTSPACE_LEAD_WEBHOOK_URL
+  const apiToken =
+    process.env.BOOST_SPACE_API_TOKEN ||
+    process.env.BOOSTSPACE_API_TOKEN ||
+    process.env.BOOST_SPACE_API_KEY ||
+    process.env.BOOSTSPACE_API_KEY
+
+  if (!webhookUrl && !apiToken) {
     await prisma.offerPurchase.update({
       where: { id: purchaseId },
       data: { boostspaceSyncStatus: "not_configured" },
@@ -477,12 +487,16 @@ export async function syncOfferPurchaseToBoostspace(purchaseId: string) {
   })
 
   try {
-    const response = await fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "User-Agent": "EriePro-OfferSync/1.0" },
-      body: JSON.stringify(payload),
-    })
-    if (!response.ok) throw new Error(`Boost.space offer webhook failed: ${response.status} ${await response.text().catch(() => "")}`)
+    if (apiToken) {
+      await createBoostspaceOfferRecord(payload, apiToken)
+    } else if (webhookUrl) {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "User-Agent": "EriePro-OfferSync/1.0" },
+        body: JSON.stringify(payload),
+      })
+      if (!response.ok) throw new Error(`Boost.space offer webhook failed: ${response.status} ${await response.text().catch(() => "")}`)
+    }
     await prisma.offerPurchase.update({
       where: { id: purchaseId },
       data: { boostspaceSyncStatus: "synced", boostspaceSyncedAt: new Date(), boostspaceLastError: null },
@@ -493,6 +507,120 @@ export async function syncOfferPurchaseToBoostspace(purchaseId: string) {
       where: { id: purchaseId },
       data: { boostspaceSyncStatus: "failed", boostspaceLastError: message },
     }).catch(() => {})
+  }
+}
+
+async function createBoostspaceOfferRecord(payload: {
+  event: string
+  eventVersion: string
+  sentAt: string
+  purchase: {
+    id: string
+    offerSlug: string
+    offerTitle: string
+    serviceSlug: string
+    serviceLabel: string
+    serviceFamily: string
+    amountCents: number
+    status: string
+    sourceSystem: string
+    sourcePage: string | null
+    assetUrl: string | null
+  }
+  customer: {
+    email: string
+    name: string | null
+    phone: string | null
+    companyName: string | null
+    websiteUrl: string | null
+    googleBusinessUrl: string | null
+  }
+}, apiToken: string) {
+  const apiBaseUrl = (
+    process.env.BOOST_SPACE_API_BASE_URL ||
+    process.env.BOOSTSPACE_API_BASE_URL ||
+    "https://neatcircle.boost.space/api"
+  ).replace(/\/$/, "")
+  const spaceId = Number(process.env.BOOST_SPACE_LEAD_EVENT_SPACE_ID ?? 5)
+  const statusSystemId = Number(process.env.BOOST_SPACE_LEAD_EVENT_STATUS_SYSTEM_ID ?? 94)
+  const fieldIds: Record<string, number> = {
+    "Erie Event ID": 2917,
+    "Event Type": 2925,
+    "Event Version": 2929,
+    "Source System": 2933,
+    "Source Domain": 2937,
+    "Source Page URL": 2941,
+    "Source Page Type": 2945,
+    "Service Niche": 2949,
+    "Service Slug": 2953,
+    City: 2957,
+    State: 2961,
+    "Intent Type": 2973,
+    Urgency: 2977,
+    "Consumer Full Name": 3045,
+    "Consumer Phone": 3049,
+    "Consumer Email": 3053,
+    "Request Summary": 3061,
+    "Service Needed": 3065,
+    "Raw Payload": 3173,
+    "Normalized Payload": 3177,
+    "Boost.space Sync Status": 3181,
+    "SuiteDash Sync Status": 3185,
+    "Created At": 3205,
+    "Updated At": 3209,
+  }
+  const flatPayload: Record<string, unknown> = {
+    "Erie Event ID": payload.purchase.id,
+    "Event Type": payload.event,
+    "Event Version": payload.eventVersion,
+    "Source System": payload.purchase.sourceSystem,
+    "Source Domain": "erie.pro",
+    "Source Page URL": payload.purchase.sourcePage,
+    "Source Page Type": "automated_offer",
+    "Service Niche": payload.purchase.serviceLabel,
+    "Service Slug": payload.purchase.serviceSlug,
+    City: "erie",
+    State: "PA",
+    "Intent Type": payload.purchase.offerSlug,
+    Urgency: "standard",
+    "Consumer Full Name": payload.customer.name ?? payload.customer.companyName,
+    "Consumer Phone": payload.customer.phone,
+    "Consumer Email": payload.customer.email,
+    "Request Summary": `${payload.purchase.offerTitle} fulfilled for ${payload.purchase.serviceLabel}. Asset: ${payload.purchase.assetUrl ?? "pending"}`,
+    "Service Needed": payload.purchase.serviceLabel,
+    "Raw Payload": JSON.stringify(payload),
+    "Normalized Payload": JSON.stringify(payload),
+    "Boost.space Sync Status": "pending",
+    "SuiteDash Sync Status": "pending",
+    "Created At": payload.sentAt,
+    "Updated At": new Date().toISOString(),
+  }
+  const customFieldsValues = Object.entries(fieldIds)
+    .map(([fieldName, customFieldInputId]) => {
+      const value = flatPayload[fieldName]
+      if (value === null || value === undefined || value === "") return null
+      return {
+        customFieldInputId,
+        module: "custom-module-item",
+        value: typeof value === "boolean" ? (value ? "1" : "0") : String(value),
+      }
+    })
+    .filter((entry): entry is { customFieldInputId: number; module: string; value: string } => Boolean(entry))
+
+  const response = await fetch(`${apiBaseUrl}/custom-module-item`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiToken}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "User-Agent": "EriePro-OfferSync/1.0",
+    },
+    body: JSON.stringify({ spaceId, statusSystemId, customFieldsValues }),
+  })
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => "")
+    throw new Error(`Boost.space API offer create failed: ${response.status} ${text.slice(0, 300)}`)
   }
 }
 
