@@ -1,5 +1,10 @@
 import { prisma } from "@/lib/db"
 import { logger } from "@/lib/logger"
+import {
+  createSuiteDashContact,
+  isSuiteDashConfigured,
+  readSuiteDashRecordId,
+} from "@/lib/suitedash"
 
 const BOOSTSPACE_LEAD_EVENT_FIELD_IDS: Record<string, number> = {
   "Erie Event ID": 2917,
@@ -99,6 +104,30 @@ type LeadForSync = {
   tcpaConsent: boolean
   tcpaConsentText: string | null
   tcpaConsentAt: Date | null
+  createdAt: Date
+}
+
+type LeadForSuiteDashSync = LeadForSync & {
+  boostspaceSyncStatus: string
+}
+
+type LeadEventForSuiteDashSync = {
+  id: string
+  eventType: string
+  sourceSystem: string
+  sourcePage: string | null
+  sourcePageType: string | null
+  serviceNiche: string | null
+  serviceSlug: string | null
+  urgency: string
+  consumerName: string | null
+  consumerPhone: string | null
+  consumerEmail: string | null
+  requestSummary: string | null
+  requestedProviderName: string | null
+  requestedProviderSlug: string | null
+  providerDeliveryStatus: string
+  boostspaceSyncStatus: string
   createdAt: Date
 }
 
@@ -235,6 +264,8 @@ export async function syncLeadToBoostspace(leadId: string): Promise<void> {
         suitedashSyncStatus: "pending",
       },
     })
+
+    await syncLeadToSuiteDash(leadId)
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown Boost.space sync error"
     logger.error("lead-external-sync", "Boost.space sync failed", error)
@@ -244,6 +275,69 @@ export async function syncLeadToBoostspace(leadId: string): Promise<void> {
         boostspaceSyncStatus: "failed",
         boostspaceLastError: message,
       },
+    }).catch(() => {})
+  }
+}
+
+export async function syncLeadToSuiteDash(leadId: string): Promise<void> {
+  if (!isSuiteDashConfigured()) {
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: { suitedashSyncStatus: "not_configured" },
+    }).catch(() => {})
+    return
+  }
+
+  const lead = await prisma.lead.findUnique({
+    where: { id: leadId },
+    select: {
+      id: true,
+      niche: true,
+      city: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      phone: true,
+      message: true,
+      source: true,
+      sourcePage: true,
+      routeType: true,
+      routingIntent: true,
+      providerDeliveryStatus: true,
+      requestedProviderName: true,
+      requestedProviderSlug: true,
+      requestedProviderPhone: true,
+      requestedProviderAddress: true,
+      tcpaConsent: true,
+      tcpaConsentText: true,
+      tcpaConsentAt: true,
+      createdAt: true,
+      boostspaceSyncStatus: true,
+    },
+  })
+
+  if (!lead) return
+
+  await prisma.lead.update({
+    where: { id: leadId },
+    data: { suitedashSyncStatus: "pending" },
+  })
+
+  try {
+    const response = await createSuiteDashContact(buildLeadSuiteDashContactPayload(lead))
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: {
+        suitedashSyncStatus: "synced",
+        suitedashRecordId: readSuiteDashRecordId(response),
+      },
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown SuiteDash sync error"
+    logger.error("lead-external-sync", "SuiteDash lead sync failed", error)
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: { suitedashSyncStatus: "failed", boostspaceLastError: message },
     }).catch(() => {})
   }
 }
@@ -430,6 +524,8 @@ export async function syncLeadEventToBoostspace(eventId: string): Promise<void> 
         suitedashSyncStatus: "pending",
       },
     })
+
+    await syncLeadEventToSuiteDash(eventId)
   } catch (directError) {
     if (apiToken && webhookUrl) {
       try {
@@ -443,6 +539,7 @@ export async function syncLeadEventToBoostspace(eventId: string): Promise<void> 
             suitedashSyncStatus: "pending",
           },
         })
+        await syncLeadEventToSuiteDash(eventId)
         return
       } catch (webhookError) {
         const directMessage = directError instanceof Error ? directError.message : "Unknown Boost.space API sync error"
@@ -465,6 +562,75 @@ export async function syncLeadEventToBoostspace(eventId: string): Promise<void> 
       where: { id: eventId },
       data: {
         boostspaceSyncStatus: "failed",
+        boostspaceLastError: message,
+      },
+    }).catch(() => {})
+  }
+}
+
+export async function syncLeadEventToSuiteDash(eventId: string): Promise<void> {
+  const event = await prisma.leadEvent.findUnique({
+    where: { id: eventId },
+    select: {
+      id: true,
+      eventType: true,
+      sourceSystem: true,
+      sourcePage: true,
+      sourcePageType: true,
+      serviceNiche: true,
+      serviceSlug: true,
+      urgency: true,
+      consumerName: true,
+      consumerPhone: true,
+      consumerEmail: true,
+      requestSummary: true,
+      requestedProviderName: true,
+      requestedProviderSlug: true,
+      providerDeliveryStatus: true,
+      boostspaceSyncStatus: true,
+      createdAt: true,
+    },
+  })
+
+  if (!event) return
+
+  if (!isCrmWorthyLeadEvent(event)) {
+    await prisma.leadEvent.update({
+      where: { id: eventId },
+      data: { suitedashSyncStatus: "not_applicable" },
+    }).catch(() => {})
+    return
+  }
+
+  if (!isSuiteDashConfigured()) {
+    await prisma.leadEvent.update({
+      where: { id: eventId },
+      data: { suitedashSyncStatus: "not_configured" },
+    }).catch(() => {})
+    return
+  }
+
+  await prisma.leadEvent.update({
+    where: { id: eventId },
+    data: { suitedashSyncStatus: "pending" },
+  })
+
+  try {
+    const response = await createSuiteDashContact(buildLeadEventSuiteDashContactPayload(event))
+    await prisma.leadEvent.update({
+      where: { id: eventId },
+      data: {
+        suitedashSyncStatus: "synced",
+        suitedashRecordId: readSuiteDashRecordId(response),
+      },
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown SuiteDash event sync error"
+    logger.error("lead-external-sync", "SuiteDash lead-event sync failed", error)
+    await prisma.leadEvent.update({
+      where: { id: eventId },
+      data: {
+        suitedashSyncStatus: "failed",
         boostspaceLastError: message,
       },
     }).catch(() => {})
@@ -527,6 +693,93 @@ async function createBoostspaceLeadEventRecord(flatPayload: Record<string, unkno
   if (!response.ok) {
     const text = await response.text().catch(() => "")
     throw new Error(`Boost.space API create failed: ${response.status} ${text.slice(0, 300)}`)
+  }
+}
+
+function buildLeadSuiteDashContactPayload(lead: LeadForSuiteDashSync) {
+  const firstName = lead.firstName?.trim() || "Erie.Pro"
+  const lastName = lead.lastName?.trim() || "Lead"
+  const notes = [
+    `Erie.Pro lead ID: ${lead.id}`,
+    `Service: ${lead.niche}`,
+    `City: ${lead.city}`,
+    `Route type: ${lead.routeType}`,
+    `Routing intent: ${lead.routingIntent ?? "general"}`,
+    `Provider delivery status: ${lead.providerDeliveryStatus}`,
+    `Boost.space status: ${lead.boostspaceSyncStatus}`,
+    lead.sourcePage ? `Source page: ${lead.sourcePage}` : null,
+    lead.requestedProviderName ? `Requested provider: ${lead.requestedProviderName}` : null,
+    lead.message ? `Request: ${lead.message}` : null,
+  ].filter((note): note is string => Boolean(note))
+
+  return {
+    first_name: firstName,
+    last_name: lastName,
+    email: lead.email,
+    phone: lead.phone ?? undefined,
+    role: "Lead",
+    company_name: lead.requestedProviderName ?? "Erie.Pro Service Request",
+    tags: [
+      "erie-pro",
+      "lead",
+      `service:${lead.niche}`,
+      `city:${lead.city}`,
+      lead.requestedProviderSlug ? "provider-specific" : "general-request",
+      lead.source === "convertbox" ? "convertbox" : `source:${lead.source}`,
+    ],
+    notes,
+    send_welcome_email: false,
+  }
+}
+
+function isCrmWorthyLeadEvent(event: LeadEventForSuiteDashSync) {
+  if (!event.consumerEmail) return false
+  if (event.eventType.includes("submitted") || event.eventType.includes("lead_captured")) return true
+  if (event.providerDeliveryStatus === "ready_to_route") return true
+  return false
+}
+
+function splitName(fullName: string | null) {
+  const parts = (fullName ?? "").trim().split(/\s+/).filter(Boolean)
+  return {
+    firstName: parts[0] || "Erie.Pro",
+    lastName: parts.slice(1).join(" ") || "Lead",
+  }
+}
+
+function buildLeadEventSuiteDashContactPayload(event: LeadEventForSuiteDashSync) {
+  const { firstName, lastName } = splitName(event.consumerName)
+  const service = event.serviceNiche ?? event.serviceSlug ?? "unknown-service"
+  const notes = [
+    `Erie.Pro lead event ID: ${event.id}`,
+    `Event type: ${event.eventType}`,
+    `Source system: ${event.sourceSystem}`,
+    `Service: ${service}`,
+    `Urgency: ${event.urgency}`,
+    `Provider delivery status: ${event.providerDeliveryStatus}`,
+    `Boost.space status: ${event.boostspaceSyncStatus}`,
+    event.sourcePage ? `Source page: ${event.sourcePage}` : null,
+    event.requestedProviderName ? `Requested provider: ${event.requestedProviderName}` : null,
+    event.requestSummary ? `Request: ${event.requestSummary}` : null,
+  ].filter((note): note is string => Boolean(note))
+
+  return {
+    first_name: firstName,
+    last_name: lastName,
+    email: event.consumerEmail!,
+    phone: event.consumerPhone ?? undefined,
+    role: "Lead",
+    company_name: event.requestedProviderName ?? "Erie.Pro ConvertBox Lead",
+    tags: [
+      "erie-pro",
+      "lead-event",
+      event.sourceSystem,
+      `event:${event.eventType}`,
+      `service:${service}`,
+      event.requestedProviderSlug ? "provider-specific" : "general-request",
+    ],
+    notes,
+    send_welcome_email: false,
   }
 }
 
