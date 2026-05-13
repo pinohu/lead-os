@@ -17,6 +17,7 @@
     "scrape:places:dry": "npx tsx src/scripts/scrape-google-places.ts --dry-run --skip-reviews --limit=5",
     "scrape:places:new": "npx tsx src/scripts/scrape-google-places.ts --new-only",
     "convertbox:verify": "npx tsx src/scripts/verify-convertbox-placement.ts",
+    "revenue:e2e": "npx tsx src/scripts/revenue-e2e-qa.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
