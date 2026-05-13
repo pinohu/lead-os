@@ -73,6 +73,14 @@ export async function GET() {
     revenueActionPlaybook,
     revenueActionCounts: actionCounts,
     recentRevenueActions: recentActions,
+    automationEndpoints: {
+      pendingActions: "/api/revenue-actions?status=planned",
+      allActions: "/api/revenue-actions?status=all",
+      markActionStatus: "PATCH /api/revenue-actions",
+      auth: process.env.REVENUE_ACTIONS_API_TOKEN
+        ? "Bearer token required with REVENUE_ACTIONS_API_TOKEN"
+        : "No token configured in this environment",
+    },
     thriveCartReadiness: getThriveCartReadiness(),
     thriveCartFunnels: automatedOffers
       .filter((offer) => offer.thriveCartFunnel)
