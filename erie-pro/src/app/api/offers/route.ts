@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db"
 import { automatedOffers, getServiceOfferRecommendations } from "@/lib/automated-offers"
 import { getNicheBySlug, niches } from "@/lib/niches"
 import { syncAutomatedOfferCatalog } from "@/lib/offer-catalog-sync"
+import { recordRevenueActionPlan } from "@/lib/revenue-actions"
 import { logger } from "@/lib/logger"
 
 export const dynamic = "force-dynamic"
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const offer = parsed.data.offerSlug
-      ? await prisma.offer.findUnique({ where: { slug: parsed.data.offerSlug }, select: { id: true } })
+      ? await prisma.offer.findUnique({ where: { slug: parsed.data.offerSlug }, select: { id: true, title: true, checkoutProductId: true } })
       : null
     const customer = parsed.data.email
       ? await prisma.offerCustomer.upsert({
@@ -103,8 +104,41 @@ export async function POST(request: NextRequest) {
         metadata: (parsed.data.metadata ?? {}) as Prisma.InputJsonValue,
       },
     })
+    const actionPlanResult = await recordRevenueActionPlan({
+      sourceSystem: "erie-pro",
+      eventType: parsed.data.eventType,
+      offerSlug: parsed.data.offerSlug,
+      offerTitle: offer?.title,
+      customerId: customer?.id,
+      customerEmail: parsed.data.email,
+      serviceSlug: parsed.data.serviceSlug,
+      serviceLabel: parsed.data.serviceLabel,
+      serviceFamily: parsed.data.serviceFamily,
+      sourcePage: parsed.data.sourcePage,
+      sourcePageType: parsed.data.sourcePageType ?? "offer_interaction",
+      convertBoxId: parsed.data.convertBoxId == null ? null : String(parsed.data.convertBoxId),
+      productId: offer?.checkoutProductId,
+      utmSource: parsed.data.utmSource,
+      utmMedium: parsed.data.utmMedium,
+      utmCampaign: parsed.data.utmCampaign,
+      gclid: parsed.data.gclid,
+      metadata: {
+        interactionId: interaction.id,
+        visitorSegment: parsed.data.visitorSegment ?? null,
+        sessionId: parsed.data.sessionId ?? null,
+        visitorId: parsed.data.visitorId ?? null,
+        ...(parsed.data.metadata ?? {}),
+      },
+    }).catch((error) => {
+      logger.error("api/offers", "Failed to record revenue action plan", error)
+      return null
+    })
 
-    return NextResponse.json({ success: true, interactionId: interaction.id })
+    return NextResponse.json({
+      success: true,
+      interactionId: interaction.id,
+      actionPlan: actionPlanResult?.plan ?? null,
+    })
   } catch (error) {
     logger.error("api/offers", "Failed to record offer interaction", error)
     return NextResponse.json({ success: false, error: "Could not record interaction" }, { status: 500 })

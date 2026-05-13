@@ -2,6 +2,7 @@ import { after, NextRequest, NextResponse } from "next/server"
 import { audit } from "@/lib/audit-log"
 import { logger } from "@/lib/logger"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { recordRevenueActionPlan } from "@/lib/revenue-actions"
 import { syncLeadEventToBoostspace } from "@/lib/lead-external-sync"
 import { ConvertBoxEventSchema, recordConvertBoxEvent } from "@/lib/universal-lead-events"
 import { formatZodErrors, MAX_BODY_SIZE } from "@/lib/validation"
@@ -28,6 +29,40 @@ export async function POST(request: NextRequest) {
 
     const event = await recordConvertBoxEvent(parsed.data, body)
     const ipAddress = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown"
+    const actionPlanResult = await recordRevenueActionPlan({
+      sourceSystem: "convertbox",
+      eventType: parsed.data.eventType,
+      customerEmail: parsed.data.consumerEmail,
+      serviceSlug: parsed.data.serviceSlug ?? parsed.data.serviceNiche,
+      serviceLabel: parsed.data.serviceLabel ?? parsed.data.serviceNiche,
+      serviceFamily: parsed.data.family,
+      sourcePage: parsed.data.sourcePage,
+      sourcePageType: parsed.data.sourcePageType ?? "convertbox_event",
+      convertBoxId: parsed.data.boxId == null ? null : String(parsed.data.boxId),
+      utmSource: parsed.data.utmSource,
+      utmMedium: parsed.data.utmMedium,
+      utmCampaign: parsed.data.utmCampaign,
+      gclid: parsed.data.gclid,
+      metadata: {
+        leadEventId: event.id,
+        urgency: event.urgency,
+        intentType: event.intentType,
+        routingModel: event.routingModel,
+        providerDeliveryStatus: event.providerDeliveryStatus,
+        manualReviewRequired: event.manualReviewRequired,
+        boxName: parsed.data.boxName ?? null,
+        variation: parsed.data.variation ?? null,
+        stepId: parsed.data.stepId ?? null,
+        stepName: parsed.data.stepName ?? null,
+        actionId: parsed.data.actionId ?? null,
+        actionLabel: parsed.data.actionLabel ?? null,
+        branchId: parsed.data.branchId ?? null,
+        branchLabel: parsed.data.branchLabel ?? null,
+      },
+    }).catch((error) => {
+      logger.error("api/events/convertbox", "Failed to record revenue action plan", error)
+      return null
+    })
 
     after(async () => {
       await Promise.allSettled([
@@ -53,6 +88,7 @@ export async function POST(request: NextRequest) {
       eventType: event.eventType,
       boostspaceSyncStatus: event.boostspaceSyncStatus,
       suitedashSyncStatus: event.suitedashSyncStatus,
+      actionPlan: actionPlanResult?.plan ?? null,
     })
   } catch (error) {
     logger.error("api/events/convertbox", "Failed to capture ConvertBox event", error)
