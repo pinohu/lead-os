@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-05-13T04:52:47.445Z",
+  "appUrl": "https://erie.pro",
+  "tokenVariable": "SUITEDASH_REVENUE_ACTION_TOKEN",
+  "endpoints": {
+    "poll": "https://erie.pro/api/integrations/suitedash/revenue-actions",
+    "statusCallback": "https://erie.pro/api/integrations/suitedash/revenue-actions",
+    "genericPoll": "https://erie.pro/api/revenue-actions?ownerTool=suitedash"
+  },
+  "operationKinds": [
+    {
+      "kind": "customer_contact",
+      "purpose": "Create or update the buyer/requester/provider contact with service, offer, and attribution context.",
+      "manualFallback": "Create a contact manually and paste the Erie.Pro action ID into the notes/custom field."
+    },
+    {
+      "kind": "provider_contact",
+      "purpose": "Attach provider/business context so service delivery can be managed by company, not only person.",
+      "manualFallback": "Create or tag the provider/company contact and link it to the customer contact."
+    },
+    {
+      "kind": "project",
+      "purpose": "Open the operational workspace for fulfillment, routing, or onboarding.",
+      "manualFallback": "Create a SuiteDash project using the operation title and copy all payload fields into notes."
+    },
+    {
+      "kind": "portal",
+      "purpose": "Prepare the customer/provider portal for deliverables, files, and onboarding context.",
+      "manualFallback": "Enable portal access from the contact/project once the matching template is configured."
+    },
+    {
+      "kind": "support_record",
+      "purpose": "Create a recoverable support/revenue record for urgent fulfillment, refunds, failed payments, and cancellations.",
+      "manualFallback": "Create a ticket with the action title, body, and source URL."
+    },
+    {
+      "kind": "fulfillment_task",
+      "purpose": "Create the concrete task queue item so every event becomes deliver, recover, route, or learn work.",
+      "manualFallback": "Create a task under the project and paste the idempotency key into the task description."
+    }
+  ],
+  "pollViews": [
+    {
+      "name": "SuiteDash deliver actions",
+      "url": "https://erie.pro/api/integrations/suitedash/revenue-actions?status=planned&outcome=deliver",
+      "purpose": "Paid purchases that need SuiteDash contact, project, portal, and fulfillment task work."
+    },
+    {
+      "name": "SuiteDash route actions",
+      "url": "https://erie.pro/api/integrations/suitedash/revenue-actions?status=planned&outcome=route",
+      "purpose": "Context-routing actions where SuiteDash is owner or downstream operations record."
+    },
+    {
+      "name": "SuiteDash recovery actions",
+      "url": "https://erie.pro/api/integrations/suitedash/revenue-actions?status=planned&outcome=recover",
+      "purpose": "Refund, cancellation, failed-payment, and abandoned-cart follow-up records."
+    }
+  ]
+}

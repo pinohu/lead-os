@@ -1,4 +1,5 @@
 const SUITEDASH_API_BASE_URL = "https://app.suitedash.com/secure-api"
+const SUITEDASH_MAX_ATTEMPTS = 3
 
 export class SuiteDashError extends Error {
   constructor(
@@ -33,6 +34,11 @@ export type SuiteDashResponse = {
   }
 }
 
+export type SuiteDashRequestOptions = {
+  idempotencyKey?: string
+  attempts?: number
+}
+
 function stripQuotes(value: string | undefined) {
   if (!value) return ""
   const trimmed = value.trim()
@@ -65,7 +71,7 @@ export function isSuiteDashConfigured() {
   return Boolean(getSuiteDashCredentials())
 }
 
-function getHeaders() {
+function getHeaders(options: SuiteDashRequestOptions = {}) {
   const credentials = getSuiteDashCredentials()
   if (!credentials) {
     throw new SuiteDashError(
@@ -76,6 +82,7 @@ function getHeaders() {
   return {
     "X-Public-ID": credentials.publicId,
     "X-Secret-Key": credentials.secretKey,
+    ...(options.idempotencyKey ? { "Idempotency-Key": options.idempotencyKey } : {}),
     Accept: "application/json",
     "Content-Type": "application/json",
     "User-Agent": "EriePro-SuiteDashSync/1.0",
@@ -96,29 +103,57 @@ export function readSuiteDashRecordId(response: SuiteDashResponse) {
   return id == null ? null : String(id)
 }
 
-export async function createSuiteDashContact(payload: SuiteDashContactPayload): Promise<SuiteDashResponse> {
-  const response = await fetch(`${SUITEDASH_API_BASE_URL}/contact`, {
-    method: "POST",
-    headers: getHeaders(),
-    body: JSON.stringify(payload),
-  })
+function isRetryableStatus(status: number) {
+  return status === 408 || status === 429 || status >= 500
+}
 
-  const text = await response.text()
-  let parsed: SuiteDashResponse
-  try {
-    parsed = JSON.parse(text) as SuiteDashResponse
-  } catch {
-    throw new SuiteDashError("Invalid JSON response from SuiteDash", response.status, text)
-  }
+async function sleep(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms))
+}
 
-  if (response.ok && parsed.success !== false) return parsed
-  if (isAlreadyExists(parsed)) {
-    return {
-      success: true,
-      message: "Contact already exists",
-      data: parsed.data,
+export async function suiteDashRequest<TPayload>(
+  path: string,
+  payload: TPayload,
+  options: SuiteDashRequestOptions = {},
+): Promise<SuiteDashResponse> {
+  const attempts = Math.max(1, options.attempts ?? SUITEDASH_MAX_ATTEMPTS)
+  let lastError: SuiteDashError | null = null
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const response = await fetch(`${SUITEDASH_API_BASE_URL}${path}`, {
+      method: "POST",
+      headers: getHeaders(options),
+      body: JSON.stringify(payload),
+    })
+
+    const text = await response.text()
+    let parsed: SuiteDashResponse
+    try {
+      parsed = JSON.parse(text) as SuiteDashResponse
+    } catch {
+      throw new SuiteDashError("Invalid JSON response from SuiteDash", response.status, text)
     }
+
+    if (response.ok && parsed.success !== false) return parsed
+    if (isAlreadyExists(parsed)) {
+      return {
+        success: true,
+        message: "Contact already exists",
+        data: parsed.data,
+      }
+    }
+
+    lastError = new SuiteDashError(parsed.message ?? "SuiteDash request failed", response.status, text)
+    if (!isRetryableStatus(response.status) || attempt === attempts) break
+    await sleep(250 * attempt)
   }
 
-  throw new SuiteDashError(parsed.message ?? "SuiteDash contact sync failed", response.status, text)
+  throw lastError ?? new SuiteDashError("SuiteDash request failed")
+}
+
+export async function createSuiteDashContact(
+  payload: SuiteDashContactPayload,
+  options: SuiteDashRequestOptions = {},
+): Promise<SuiteDashResponse> {
+  return suiteDashRequest("/contact", payload, options)
 }
