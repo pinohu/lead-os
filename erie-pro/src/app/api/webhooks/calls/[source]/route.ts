@@ -3,6 +3,7 @@ import { checkRateLimit } from "@/lib/rate-limit"
 import { audit } from "@/lib/audit-log"
 import { logger } from "@/lib/logger"
 import { syncLeadEventToBoostspace } from "@/lib/lead-external-sync"
+import { recordRevenueActionPlan } from "@/lib/revenue-actions"
 import {
   normalizeVendorCallPayload,
   recordUniversalCallEvent,
@@ -53,6 +54,44 @@ export async function POST(request: NextRequest, context: RouteContext) {
     }
 
     const event = await recordUniversalCallEvent(parsed.data, body)
+    const actionPlanResult = await recordRevenueActionPlan({
+      sourceSystem: event.sourceSystem ?? source,
+      eventType: event.eventType,
+      customerEmail: event.consumerEmail,
+      serviceSlug: event.serviceSlug ?? event.serviceNiche,
+      serviceLabel: event.serviceNiche ?? event.serviceSlug,
+      sourcePage: event.sourcePage,
+      sourcePageType: event.sourcePageType ?? "call_webhook",
+      metadata: {
+        leadEventId: event.id,
+        externalEventId: event.externalEventId,
+        callId: event.callId,
+        sourceWebhook: source,
+        urgency: event.urgency,
+        intentType: event.intentType,
+        keywordCluster: event.keywordCluster,
+        trackingNumber: event.trackingNumber,
+        dialedNumber: event.dialedNumber,
+        callerPhone: event.callerPhone,
+        consumerPhone: event.consumerPhone,
+        requestSummary: event.requestSummary,
+        aiSummary: parsed.data.aiSummary ?? null,
+        transcriptPresent: Boolean(parsed.data.transcriptText || parsed.data.transcriptUrl),
+        callDurationSeconds: event.callDurationSeconds,
+        callOutcome: event.callOutcome,
+        transferStatus: event.transferStatus,
+        requestedProviderName: event.requestedProviderName,
+        requestedProviderSlug: event.requestedProviderSlug,
+        exclusiveProviderId: event.exclusiveProviderId,
+        exclusiveProviderName: event.exclusiveProviderName,
+        routingModel: event.routingModel,
+        manualReviewRequired: event.manualReviewRequired,
+        providerDeliveryStatus: event.providerDeliveryStatus,
+      },
+    }).catch((error) => {
+      logger.error("api/webhooks/calls", `Failed to create revenue action plan for ${source} call event`, error)
+      return null
+    })
     const ipAddress = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown"
 
     after(async () => {
@@ -82,6 +121,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       sourceSystem: event.sourceSystem,
       manualReviewRequired: event.manualReviewRequired,
       providerDeliveryStatus: event.providerDeliveryStatus,
+      actionPlan: actionPlanResult?.plan ?? null,
     })
   } catch (error) {
     logger.error("api/webhooks/calls", `Failed to capture ${source} call event`, error)

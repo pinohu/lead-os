@@ -4,6 +4,7 @@ import { formatZodErrors, MAX_BODY_SIZE } from "@/lib/validation"
 import { audit } from "@/lib/audit-log"
 import { logger } from "@/lib/logger"
 import { syncLeadEventToBoostspace } from "@/lib/lead-external-sync"
+import { recordRevenueActionPlan } from "@/lib/revenue-actions"
 import { PhoneClickEventSchema, recordPhoneClickEvent } from "@/lib/universal-lead-events"
 
 export async function POST(request: NextRequest) {
@@ -27,6 +28,33 @@ export async function POST(request: NextRequest) {
     }
 
     const event = await recordPhoneClickEvent(parsed.data, body)
+    const actionPlanResult = await recordRevenueActionPlan({
+      sourceSystem: "erie-pro",
+      eventType: event.eventType,
+      serviceSlug: event.serviceSlug ?? event.serviceNiche,
+      serviceLabel: event.serviceNiche ?? event.serviceSlug,
+      sourcePage: event.sourcePage,
+      sourcePageType: event.sourcePageType ?? "phone_click",
+      utmSource: parsed.data.utmSource,
+      utmMedium: parsed.data.utmMedium,
+      utmCampaign: parsed.data.utmCampaign,
+      gclid: parsed.data.gclid,
+      metadata: {
+        leadEventId: event.id,
+        externalEventId: event.externalEventId,
+        phoneNumberClicked: event.phoneNumberClicked,
+        requestedProviderName: event.requestedProviderName,
+        requestedProviderSlug: event.requestedProviderSlug,
+        exclusiveProviderId: event.exclusiveProviderId,
+        exclusiveProviderName: event.exclusiveProviderName,
+        routingModel: event.routingModel,
+        keywordCluster: event.keywordCluster,
+        sessionId: parsed.data.sessionId ?? null,
+      },
+    }).catch((error) => {
+      logger.error("api/events/phone-click", "Failed to create revenue action plan for phone click", error)
+      return null
+    })
     const ipAddress = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown"
 
     after(async () => {
@@ -52,6 +80,7 @@ export async function POST(request: NextRequest) {
       eventId: event.id,
       eventType: event.eventType,
       boostspaceSyncStatus: event.boostspaceSyncStatus,
+      actionPlan: actionPlanResult?.plan ?? null,
     })
   } catch (error) {
     logger.error("api/events/phone-click", "Failed to capture phone click event", error)
