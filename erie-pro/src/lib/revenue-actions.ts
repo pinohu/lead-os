@@ -41,6 +41,46 @@ export type RevenueAction = {
   dueInMinutes?: number
 }
 
+export type RevenueActionAutomationPayload = {
+  actionId: string
+  automationKey: string | null
+  outcome: RevenueOutcome
+  status: string
+  priority: RevenueAction["priority"]
+  ownerTool: string
+  targetTools: string[]
+  title: string
+  action: string | null
+  routing: {
+    preferredTool: string
+    fallbackTools: string[]
+    suggestedStatus: "queued"
+  }
+  context: {
+    sourceSystem?: string | null
+    sourceEventType?: string | null
+    purchaseId?: string | null
+    offerSlug?: string | null
+    offerTitle?: string | null
+    customerEmail?: string | null
+    funnelSlug?: string | null
+    orderId?: string | null
+    productId?: string | null
+    serviceSlug?: string | null
+    serviceLabel?: string | null
+    serviceFamily?: string | null
+    sourcePage?: string | null
+    sourcePageType?: string | null
+    coupon?: string | null
+    affiliate?: string | null
+    amountCents?: number | null
+    utmSource?: string | null
+    utmMedium?: string | null
+    utmCampaign?: string | null
+    gclid?: string | null
+  }
+}
+
 export type RevenueActionPlan = {
   eventType: string
   primaryOutcome: RevenueOutcome
@@ -189,6 +229,82 @@ export async function recordRevenueActionPlan(input: RevenueActionInput) {
   ))
 
   return { plan, records }
+}
+
+export function buildRevenueActionAutomationPayload(input: {
+  actionId: string
+  eventType: string
+  status?: string | null
+  action?: RevenueAction | null
+  sourceSystem?: string | null
+  sourceEventType?: string | null
+  purchaseId?: string | null
+  offerSlug?: string | null
+  offerTitle?: string | null
+  customerEmail?: string | null
+  funnelSlug?: string | null
+  orderId?: string | null
+  productId?: string | null
+  coupon?: string | null
+  affiliate?: string | null
+  amountCents?: number | null
+  serviceSlug?: string | null
+  serviceLabel?: string | null
+  serviceFamily?: string | null
+  sourcePage?: string | null
+  sourcePageType?: string | null
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  gclid?: string | null
+}): RevenueActionAutomationPayload {
+  const outcome = input.eventType.replace("revenue_action.", "") as RevenueOutcome
+  const action = input.action
+  const targetTools = action?.targetTools ?? []
+  const preferredTool =
+    action?.ownerTool === "neon"
+      ? targetTools.find((tool) => tool !== "neon") ?? "boostspace"
+      : action?.ownerTool ?? "boostspace"
+
+  return {
+    actionId: input.actionId,
+    automationKey: action?.automationKey ?? null,
+    outcome,
+    status: input.status ?? "planned",
+    priority: action?.priority ?? "normal",
+    ownerTool: action?.ownerTool ?? "neon",
+    targetTools,
+    title: action?.title ?? "Planned revenue action",
+    action: action?.action ?? null,
+    routing: {
+      preferredTool,
+      fallbackTools: targetTools.filter((tool) => tool !== preferredTool),
+      suggestedStatus: "queued",
+    },
+    context: {
+      sourceSystem: input.sourceSystem ?? null,
+      sourceEventType: input.sourceEventType ?? null,
+      purchaseId: input.purchaseId ?? null,
+      offerSlug: input.offerSlug ?? null,
+      offerTitle: input.offerTitle ?? null,
+      customerEmail: input.customerEmail ?? null,
+      funnelSlug: input.funnelSlug ?? null,
+      orderId: input.orderId ?? null,
+      productId: input.productId ?? null,
+      serviceSlug: input.serviceSlug ?? null,
+      serviceLabel: input.serviceLabel ?? null,
+      serviceFamily: input.serviceFamily ?? null,
+      sourcePage: input.sourcePage ?? null,
+      sourcePageType: input.sourcePageType ?? null,
+      coupon: input.coupon ?? null,
+      affiliate: input.affiliate ?? null,
+      amountCents: input.amountCents ?? null,
+      utmSource: input.utmSource ?? null,
+      utmMedium: input.utmMedium ?? null,
+      utmCampaign: input.utmCampaign ?? null,
+      gclid: input.gclid ?? null,
+    },
+  }
 }
 
 export const revenueActionPlaybook: Array<{

@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import type { Prisma } from "@/generated/prisma"
-import type { RevenueAction } from "@/lib/revenue-actions"
+import {
+  buildRevenueActionAutomationPayload,
+  type RevenueAction,
+  type RevenueActionAutomationPayload,
+} from "@/lib/revenue-actions"
 import { prisma } from "@/lib/db"
 import { logger } from "@/lib/logger"
 
@@ -69,6 +73,33 @@ function serializeAction(item: {
 }) {
   const metadata = (item.metadata ?? {}) as RevenueActionMetadata
   const action = metadata.action
+  const automationPayload = buildRevenueActionAutomationPayload({
+    actionId: item.id,
+    eventType: item.eventType,
+    status: metadata.status,
+    action,
+    sourceSystem: metadata.sourceSystem,
+    sourceEventType: metadata.sourceEventType,
+    purchaseId: metadata.purchaseId,
+    offerSlug: metadata.offerSlug,
+    offerTitle: metadata.offerTitle,
+    customerEmail: metadata.customerEmail,
+    funnelSlug: metadata.funnelSlug,
+    orderId: metadata.orderId,
+    productId: metadata.productId,
+    coupon: metadata.coupon,
+    affiliate: metadata.affiliate,
+    amountCents: metadata.amountCents,
+    serviceSlug: item.serviceSlug,
+    serviceLabel: item.serviceLabel,
+    serviceFamily: item.serviceFamily,
+    sourcePage: item.sourcePage,
+    sourcePageType: item.sourcePageType,
+    utmSource: item.utmSource,
+    utmMedium: item.utmMedium,
+    utmCampaign: item.utmCampaign,
+    gclid: item.gclid,
+  })
   return {
     id: item.id,
     eventType: item.eventType,
@@ -107,7 +138,27 @@ function serializeAction(item: {
     externalRecordId: metadata.externalRecordId ?? null,
     externalSystem: metadata.externalSystem ?? null,
     statusUpdatedAt: metadata.statusUpdatedAt ?? null,
+    automationPayload,
     createdAt: item.createdAt.toISOString(),
+  }
+}
+
+type SerializedRevenueAction = ReturnType<typeof serializeAction>
+
+function summarizeAutomationPayloads(actions: SerializedRevenueAction[]) {
+  const byPreferredTool = new Map<string, number>()
+  const byAutomationKey = new Map<string, number>()
+  for (const item of actions) {
+    const payload = item.automationPayload as RevenueActionAutomationPayload
+    byPreferredTool.set(payload.routing.preferredTool, (byPreferredTool.get(payload.routing.preferredTool) ?? 0) + 1)
+    if (payload.automationKey) {
+      byAutomationKey.set(payload.automationKey, (byAutomationKey.get(payload.automationKey) ?? 0) + 1)
+    }
+  }
+
+  return {
+    byPreferredTool: Object.fromEntries(byPreferredTool.entries()),
+    byAutomationKey: Object.fromEntries(byAutomationKey.entries()),
   }
 }
 
@@ -142,6 +193,7 @@ export async function GET(request: NextRequest) {
       outcome: outcome ?? "all",
       ownerTool: ownerTool ?? "all",
       count: filtered.length,
+      automationSummary: summarizeAutomationPayloads(filtered),
       actions: filtered,
     })
   } catch (error) {
@@ -152,6 +204,7 @@ export async function GET(request: NextRequest) {
         outcome: outcome ?? "all",
         ownerTool: ownerTool ?? "all",
         count: 0,
+        automationSummary: { byPreferredTool: {}, byAutomationKey: {} },
         actions: [],
         warning: "DATABASE_URL is not configured; revenue actions cannot be loaded in this environment.",
       })

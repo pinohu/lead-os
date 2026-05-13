@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { buildRevenueActionPlan } from "../revenue-actions"
+import { buildRevenueActionAutomationPayload, buildRevenueActionPlan } from "../revenue-actions"
 
 describe("revenue action engine", () => {
   it("turns paid orders into deliver, route, and learn actions", () => {
@@ -42,5 +42,39 @@ describe("revenue action engine", () => {
 
     expect(plan.primaryOutcome).toBe("route")
     expect(plan.actions.map((action) => action.outcome)).toEqual(["route", "learn"])
+  })
+
+  it("builds automation payloads with routing context for external tools", () => {
+    const plan = buildRevenueActionPlan({
+      sourceSystem: "thrivecart",
+      eventType: "order.success",
+      offerSlug: "client-portal-starter-pack",
+      offerTitle: "Client Portal Starter Pack",
+      serviceSlug: "cleaning",
+      serviceLabel: "Cleaning",
+      amountCents: 19900,
+    })
+    const routeAction = plan.actions.find((action) => action.outcome === "route")
+
+    const payload = buildRevenueActionAutomationPayload({
+      actionId: "action_123",
+      eventType: "revenue_action.route",
+      status: "planned",
+      action: routeAction,
+      sourceSystem: "thrivecart",
+      sourceEventType: "order.success",
+      offerSlug: "client-portal-starter-pack",
+      offerTitle: "Client Portal Starter Pack",
+      serviceSlug: "cleaning",
+      serviceLabel: "Cleaning",
+      amountCents: 19900,
+    })
+
+    expect(payload.actionId).toBe("action_123")
+    expect(payload.outcome).toBe("route")
+    expect(payload.routing.preferredTool).toBe("boostspace")
+    expect(payload.routing.suggestedStatus).toBe("queued")
+    expect(payload.context.offerSlug).toBe("client-portal-starter-pack")
+    expect(payload.context.serviceLabel).toBe("Cleaning")
   })
 })
