@@ -1,12 +1,13 @@
 import Link from "next/link"
 import type { Metadata } from "next"
 import { ArrowRight, Calculator, DollarSign, ShieldCheck } from "lucide-react"
-import { automatedOffers } from "@/lib/automated-offers"
+import { automatedOffers, type AutomatedOfferSlug } from "@/lib/automated-offers"
 import { cityConfig } from "@/lib/city-config"
 import { niches } from "@/lib/niches"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { FunnelEventLink } from "@/components/funnel-event-link"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -37,10 +38,26 @@ const featuredPricingSlugs = [
   "snow-removal",
 ]
 
+const offerFunnelSlugs: Partial<Record<AutomatedOfferSlug, string>> = {
+  "service-page-conversion-blueprint": "service-page-blueprint",
+  "provider-launch-kit": "provider-launch",
+  "growth-intelligence-subscription": "growth-intelligence",
+  "convertbox-funnel-in-a-box": "convertbox-funnel",
+  "review-reputation-growth-kit": "review-reputation",
+  "missed-call-recovery-kit": "missed-call-recovery",
+  "seasonal-booking-campaign-pack": "seasonal-booking",
+  "government-opportunity-scanner": "government-opportunity",
+  "client-portal-starter-pack": "client-portal-starter",
+}
+
 function providerCheckoutUrl(url: string, offerSlug: string) {
   const checkout = new URL(url)
   checkout.searchParams.set("offerSlug", offerSlug)
+  const funnelSlug = offerFunnelSlugs[offerSlug as AutomatedOfferSlug]
+  if (funnelSlug) checkout.searchParams.set("funnelSlug", funnelSlug)
   checkout.searchParams.set("sourcePageType", "pricing_page")
+  checkout.searchParams.set("sourcePage", "/pricing")
+  checkout.searchParams.set("visitorSegment", "provider")
   checkout.searchParams.set("utm_source", "erie_pro")
   checkout.searchParams.set("utm_medium", "pricing_page")
   checkout.searchParams.set("utm_campaign", "provider_offers")
@@ -208,10 +225,17 @@ export default function PricingGuidesPage() {
                 <CardContent>
                   <p className="mb-4 text-sm leading-6 text-muted-foreground">{offer.description}</p>
                   <Button asChild size="sm">
-                    <Link href={providerCheckoutUrl(offer.checkoutUrl!, offer.slug)}>
+                    <FunnelEventLink
+                      href={providerCheckoutUrl(offer.checkoutUrl!, offer.slug)}
+                      eventType="pricing.provider_checkout_clicked"
+                      funnelSlug={offerFunnelSlugs[offer.slug]}
+                      offerSlug={offer.slug}
+                      visitorSegment="provider"
+                      sourcePageType="pricing_page"
+                    >
                       {offer.primaryCta}
                       <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
+                    </FunnelEventLink>
                   </Button>
                 </CardContent>
               </Card>

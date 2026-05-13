@@ -13,6 +13,7 @@ import {
   getServiceFamilySummary,
   salesFunnels,
 } from "@/lib/sales-funnels"
+import { recordRevenueActionPlan } from "@/lib/revenue-actions"
 import { logger } from "@/lib/logger"
 
 export const dynamic = "force-dynamic"
@@ -94,7 +95,12 @@ export async function POST(request: NextRequest) {
         eventType: parsed.data.eventType,
       })
     const offerSlug = parsed.data.offerSlug ?? funnel?.primaryOfferSlug
-    const offer = offerSlug ? await prisma.offer.findUnique({ where: { slug: offerSlug }, select: { id: true } }) : null
+    const offer = offerSlug
+      ? await prisma.offer.findUnique({
+          where: { slug: offerSlug },
+          select: { id: true, title: true, checkoutProductId: true },
+        })
+      : null
     const customer = parsed.data.email
       ? await prisma.offerCustomer.upsert({
           where: { email: parsed.data.email.toLowerCase().trim() },
@@ -129,12 +135,42 @@ export async function POST(request: NextRequest) {
         } as Prisma.InputJsonValue,
       },
     })
+    const actionPlanResult = await recordRevenueActionPlan({
+      sourceSystem: "erie-pro",
+      eventType: parsed.data.eventType,
+      offerSlug,
+      offerTitle: offer?.title ?? undefined,
+      customerId: customer?.id ?? undefined,
+      customerEmail: parsed.data.email,
+      serviceSlug: parsed.data.serviceSlug,
+      serviceLabel: parsed.data.serviceLabel,
+      serviceFamily: parsed.data.serviceFamily,
+      sourcePage: parsed.data.sourcePage,
+      sourcePageType: parsed.data.sourcePageType ?? "funnel_event",
+      funnelSlug: funnel?.slug ?? parsed.data.funnelSlug,
+      productId: offer?.checkoutProductId ?? undefined,
+      utmSource: parsed.data.utmSource,
+      utmMedium: parsed.data.utmMedium,
+      utmCampaign: parsed.data.utmCampaign,
+      gclid: parsed.data.gclid,
+      metadata: {
+        interactionId: interaction.id,
+        visitorSegment: parsed.data.visitorSegment ?? null,
+        sessionId: parsed.data.sessionId ?? null,
+        visitorId: parsed.data.visitorId ?? null,
+        ...(parsed.data.metadata ?? {}),
+      },
+    }).catch((error) => {
+      logger.error("api/funnels", "Failed to record funnel action plan", error)
+      return null
+    })
 
     return NextResponse.json({
       success: true,
       interactionId: interaction.id,
       funnelSlug: funnel?.slug ?? null,
       offerSlug: offerSlug ?? null,
+      actionPlan: actionPlanResult?.plan ?? null,
     })
   } catch (error) {
     logger.error("api/funnels", "Failed to record funnel event", error)

@@ -77,12 +77,14 @@ function formatPrice(cents: number) {
 function buildProviderCheckoutUrl(input: {
   checkoutUrl: string
   offerSlug: string
+  funnelSlug?: string
   serviceSlug: string
   serviceLabel: string
   serviceFamily: string
 }) {
   const checkout = new URL(input.checkoutUrl)
   checkout.searchParams.set("offerSlug", input.offerSlug)
+  if (input.funnelSlug) checkout.searchParams.set("funnelSlug", input.funnelSlug)
   checkout.searchParams.set("serviceSlug", input.serviceSlug)
   checkout.searchParams.set("serviceLabel", input.serviceLabel)
   checkout.searchParams.set("serviceFamily", input.serviceFamily)
@@ -394,6 +396,7 @@ export default async function NichePricingPage({ params }: Props) {
                 const checkoutUrl = buildProviderCheckoutUrl({
                   checkoutUrl: offer.checkoutUrl,
                   offerSlug: offer.slug,
+                  funnelSlug: offerFunnelSlugs[offer.slug],
                   serviceSlug: niche.slug,
                   serviceLabel: niche.label,
                   serviceFamily,
