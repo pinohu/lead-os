@@ -1,7 +1,7 @@
 # Erie.Pro Autonomous Completion Status
 
 - DONE-VERIFIED — Confirm Vercel production deployment from latest commit on master; verified Ready deployment `erie-o74vw9jao-polycarpohu-gmailcoms-projects.vercel.app` aliases `erie.pro`/`www.erie.pro`, and live `https://erie.pro/plumbing/pricing` contains current pricing/provider copy.
-- TODO — Wire Boost.space integration: code-side polling endpoint, status update endpoint, scenario JSON exports, setup doc.
+- BLOCKED-EXTERNAL — Wire Boost.space integration: code-side polling endpoint and status callback implemented at `/api/integrations/boostspace/revenue-actions`; scenario export generated at `docs/external-setup/boostspace/revenue-action-scenarios.json`; setup doc at `docs/external-setup/boostspace.md`; blocked only on creating scenarios in Boost.space dashboard/API with a valid Boost.space token.
 - TODO — Finish SuiteDash operational sync: API client, create/update flows, retry/backoff, idempotency keys, tests.
 - TODO — ThriveCart product/page configuration: master setup checklist and API-driven setup where supported.
 - TODO — ConvertBox live placement verification: Playwright script and placement matrix doc.
