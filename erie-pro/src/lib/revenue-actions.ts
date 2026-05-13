@@ -78,6 +78,7 @@ export type RevenueActionAutomationPayload = {
     utmMedium?: string | null
     utmCampaign?: string | null
     gclid?: string | null
+    eventMetadata?: Record<string, unknown> | null
   }
 }
 
@@ -257,6 +258,7 @@ export function buildRevenueActionAutomationPayload(input: {
   utmMedium?: string | null
   utmCampaign?: string | null
   gclid?: string | null
+  eventMetadata?: Record<string, unknown> | null
 }): RevenueActionAutomationPayload {
   const outcome = input.eventType.replace("revenue_action.", "") as RevenueOutcome
   const action = input.action
@@ -303,6 +305,7 @@ export function buildRevenueActionAutomationPayload(input: {
       utmMedium: input.utmMedium ?? null,
       utmCampaign: input.utmCampaign ?? null,
       gclid: input.gclid ?? null,
+      eventMetadata: input.eventMetadata ?? null,
     },
   }
 }

@@ -68,6 +68,10 @@ describe("revenue action engine", () => {
       serviceSlug: "cleaning",
       serviceLabel: "Cleaning",
       amountCents: 19900,
+      eventMetadata: {
+        checkoutEngine: "thrivecart",
+        orderBumpAccepted: true,
+      },
     })
 
     expect(payload.actionId).toBe("action_123")
@@ -76,5 +80,9 @@ describe("revenue action engine", () => {
     expect(payload.routing.suggestedStatus).toBe("queued")
     expect(payload.context.offerSlug).toBe("client-portal-starter-pack")
     expect(payload.context.serviceLabel).toBe("Cleaning")
+    expect(payload.context.eventMetadata).toEqual({
+      checkoutEngine: "thrivecart",
+      orderBumpAccepted: true,
+    })
   })
 })

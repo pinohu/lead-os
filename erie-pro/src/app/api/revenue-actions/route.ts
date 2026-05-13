@@ -99,6 +99,7 @@ function serializeAction(item: {
     utmMedium: item.utmMedium,
     utmCampaign: item.utmCampaign,
     gclid: item.gclid,
+    eventMetadata: metadata.eventMetadata ?? null,
   })
   return {
     id: item.id,
@@ -134,6 +135,7 @@ function serializeAction(item: {
     utmMedium: item.utmMedium,
     utmCampaign: item.utmCampaign,
     gclid: item.gclid,
+    eventMetadata: metadata.eventMetadata ?? null,
     ownerNote: metadata.ownerNote ?? null,
     externalRecordId: metadata.externalRecordId ?? null,
     externalSystem: metadata.externalSystem ?? null,
