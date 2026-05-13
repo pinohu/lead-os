@@ -40,23 +40,21 @@ export function CookieBanner() {
     <div
       role="dialog"
       aria-label="Cookie consent"
-      className="fixed bottom-0 left-0 right-0 z-[60] border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 p-4 shadow-lg"
+      className="fixed bottom-4 left-3 right-3 z-[60] mx-auto max-w-2xl rounded-lg border bg-background/95 p-3 shadow-xl backdrop-blur supports-[backdrop-filter]:bg-background/90 sm:left-4 sm:right-4 sm:p-4"
     >
-      <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 sm:flex-row sm:justify-between">
-        <p className="text-sm text-muted-foreground text-center sm:text-left">
-          We use cookies to improve your experience and analyze site traffic. By
-          clicking &quot;Accept&quot;, you consent to our use of cookies. See
-          our{" "}
+      <div className="mx-auto flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+        <p className="text-xs leading-5 text-muted-foreground text-center sm:text-left sm:text-sm">
+          We use cookies to improve Erie.Pro and analyze traffic. See{" "}
           <a href="/privacy" className="underline hover:text-foreground">
             Privacy Policy
           </a>{" "}
           for details.
         </p>
         <div className="flex gap-2 shrink-0">
-          <Button variant="outline" size="sm" onClick={handleDecline}>
+          <Button variant="outline" className="h-11" onClick={handleDecline}>
             Decline
           </Button>
-          <Button size="sm" onClick={handleAccept}>
+          <Button className="h-11" onClick={handleAccept}>
             Accept
           </Button>
         </div>

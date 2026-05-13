@@ -26,6 +26,8 @@ export async function syncAutomatedOfferCatalog() {
         sortOrder: offer.sortOrder,
         metadata: {
           primaryCta: offer.primaryCta,
+          thriveCartFunnel: offer.thriveCartFunnel ?? null,
+          fulfillmentChannels: offer.fulfillmentChannels ?? [],
           seededFrom: "src/lib/automated-offers.ts",
         },
       },
@@ -43,6 +45,8 @@ export async function syncAutomatedOfferCatalog() {
         autoFulfillable: true,
         metadata: {
           primaryCta: offer.primaryCta,
+          thriveCartFunnel: offer.thriveCartFunnel ?? null,
+          fulfillmentChannels: offer.fulfillmentChannels ?? [],
           seededFrom: "src/lib/automated-offers.ts",
         },
       },

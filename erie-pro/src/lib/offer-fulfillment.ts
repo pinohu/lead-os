@@ -110,7 +110,11 @@ export async function createOfferPurchase(input: CreateOfferPurchaseInput) {
       checkoutProductId: offerDefinition.checkoutProductId,
       repoSource: offerDefinition.repoSource,
       sortOrder: offerDefinition.sortOrder,
-      metadata: { primaryCta: offerDefinition.primaryCta },
+      metadata: {
+        primaryCta: offerDefinition.primaryCta,
+        thriveCartFunnel: offerDefinition.thriveCartFunnel ?? null,
+        fulfillmentChannels: offerDefinition.fulfillmentChannels ?? [],
+      },
     },
     update: {
       title: offerDefinition.title,
@@ -122,7 +126,11 @@ export async function createOfferPurchase(input: CreateOfferPurchaseInput) {
       checkoutProductId: offerDefinition.checkoutProductId,
       repoSource: offerDefinition.repoSource,
       sortOrder: offerDefinition.sortOrder,
-      metadata: { primaryCta: offerDefinition.primaryCta },
+      metadata: {
+        primaryCta: offerDefinition.primaryCta,
+        thriveCartFunnel: offerDefinition.thriveCartFunnel ?? null,
+        fulfillmentChannels: offerDefinition.fulfillmentChannels ?? [],
+      },
     },
   })
 

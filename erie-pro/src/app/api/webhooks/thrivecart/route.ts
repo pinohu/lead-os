@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db"
 import { automatedOffers } from "@/lib/automated-offers"
 import { createOfferPurchase, fulfillOfferPurchase } from "@/lib/offer-fulfillment"
 import { syncAutomatedOfferCatalog } from "@/lib/offer-catalog-sync"
+import { recordRevenueActionPlan } from "@/lib/revenue-actions"
 import { logger } from "@/lib/logger"
 
 export const dynamic = "force-dynamic"
@@ -17,6 +18,12 @@ const PassthroughSchema = z.object({
   source_page: z.string().optional(),
   convertBoxId: z.union([z.string(), z.number()]).optional(),
   convertbox_id: z.union([z.string(), z.number()]).optional(),
+  offerSlug: z.string().optional(),
+  offer_slug: z.string().optional(),
+  funnelSlug: z.string().optional(),
+  funnel_slug: z.string().optional(),
+  sourcePageType: z.string().optional(),
+  source_page_type: z.string().optional(),
   utm_source: z.string().optional(),
   utm_medium: z.string().optional(),
   utm_campaign: z.string().optional(),
@@ -47,6 +54,35 @@ function numberValue(...values: unknown[]) {
     if (typeof value === "string" && value.trim() && Number.isFinite(Number(value))) return Number(value)
   }
   return undefined
+}
+
+function arrayValue(value: unknown) {
+  return Array.isArray(value) ? value : []
+}
+
+function normalizeEventType(value: string) {
+  const lower = value.toLowerCase()
+  if (lower.includes("abandon")) return "cart.abandoned"
+  if (lower.includes("refund")) return "order.refunded"
+  if (lower.includes("cancel")) return "subscription.cancelled"
+  if (lower.includes("subscription") && lower.includes("payment")) return "subscription.payment"
+  if (lower.includes("subscription")) return "subscription.updated"
+  if (lower.includes("bump")) return "order.payment_bump"
+  if (lower.includes("upsell")) return "order.payment_upsell"
+  if (lower.includes("downsell")) return "order.payment_downsell"
+  if (lower.includes("success") || lower.includes("complete") || lower.includes("purchase")) return "order.success"
+  return value
+}
+
+function isPaidEvent(eventType: string) {
+  return ["order.success", "order.payment_bump", "order.payment_upsell", "order.payment_downsell", "subscription.payment"].includes(eventType)
+}
+
+function statusForEvent(eventType: string) {
+  if (eventType === "order.refunded") return "refunded"
+  if (eventType === "cart.abandoned") return "abandoned"
+  if (eventType === "subscription.cancelled") return "cancelled"
+  return "paid"
 }
 
 function verifySignature(rawBody: string, request: NextRequest) {
@@ -88,17 +124,21 @@ function normalizeThriveCartPayload(body: AnyRecord) {
       })
     : {}
 
+  const purchases = arrayValue(body.purchases).map((item) => asRecord(item))
+  const firstPurchase = purchases[0] ?? {}
   const productId = stringValue(
     body.product_id,
     body.productId,
     product.id,
     product.product_id,
     purchase.product_id,
+    firstPurchase.product_id,
+    firstPurchase.productId,
   )
-  const productName = stringValue(body.product_name, body.productName, product.name, purchase.product_name)
+  const productName = stringValue(body.product_name, body.productName, product.name, purchase.product_name, firstPurchase.name, firstPurchase.product_name)
   const offer =
     automatedOffers.find((item) => item.checkoutProductId === productId) ||
-    automatedOffers.find((item) => item.slug === stringValue(body.offerSlug, body.offer_slug)) ||
+    automatedOffers.find((item) => item.slug === stringValue(body.offerSlug, body.offer_slug, passthrough.offerSlug, passthrough.offer_slug)) ||
     automatedOffers.find((item) => productName?.toLowerCase().includes(item.shortTitle.toLowerCase())) ||
     automatedOffers[1]
 
@@ -107,12 +147,32 @@ function normalizeThriveCartPayload(body: AnyRecord) {
     offer.basePriceCents / 100
   const amountCents = amount > 1000 ? Math.round(amount) : Math.round(amount * 100)
 
+  const eventType = normalizeEventType(stringValue(body.event, body.event_type, body.type) ?? "order.success")
+  const normalizedPurchases = purchases.map((item) => {
+    const itemProductId = stringValue(item.product_id, item.productId, item.id)
+    const itemProductName = stringValue(item.product_name, item.productName, item.name)
+    const itemOffer =
+      automatedOffers.find((offerItem) => offerItem.checkoutProductId === itemProductId) ||
+      automatedOffers.find((offerItem) => itemProductName?.toLowerCase().includes(offerItem.shortTitle.toLowerCase())) ||
+      offer
+    const itemAmount = numberValue(item.amount, item.total, item.price) ?? itemOffer.basePriceCents / 100
+    return {
+      productId: itemProductId ?? itemOffer.checkoutProductId,
+      productName: itemProductName ?? itemOffer.title,
+      offerSlug: itemOffer.slug,
+      purchaseType: normalizeEventType(stringValue(item.type, item.purchase_type, item.kind) ?? eventType),
+      amountCents: itemAmount > 1000 ? Math.round(itemAmount) : Math.round(itemAmount * 100),
+    }
+  })
+
   return {
-    eventType: stringValue(body.event, body.event_type, body.type) ?? "purchase.completed",
+    eventType,
     orderId: stringValue(body.order_id, body.orderId, order.id, purchase.order_id),
     productId: productId ?? offer.checkoutProductId,
     productName,
     offerSlug: offer.slug,
+    funnelSlug: stringValue(body.funnelSlug, body.funnel_slug, passthrough.funnelSlug, passthrough.funnel_slug),
+    sourcePageType: stringValue(body.sourcePageType, body.source_page_type, passthrough.sourcePageType, passthrough.source_page_type),
     serviceSlug: stringValue(
       body.serviceSlug,
       body.service_slug,
@@ -140,6 +200,8 @@ function normalizeThriveCartPayload(body: AnyRecord) {
     utmCampaign: stringValue(body.utm_campaign, passthrough.utm_campaign),
     gclid: stringValue(body.gclid, passthrough.gclid),
     externalSubscriptionId: stringValue(body.subscription_id, body.subscriptionId, asRecord(body.subscription).id),
+    purchases: normalizedPurchases,
+    orderStatus: statusForEvent(eventType),
   }
 }
 
@@ -181,35 +243,166 @@ export async function POST(request: NextRequest) {
 
   try {
     await syncAutomatedOfferCatalog().catch(() => null)
-    const { purchase } = await createOfferPurchase({
-      offerSlug: normalized.offerSlug,
-      serviceSlug: normalized.serviceSlug,
-      amountCents: normalized.amountCents,
-      currency: normalized.currency,
-      status: "paid",
-      sourceSystem: "thrivecart",
-      sourcePage: normalized.sourcePage,
-      sourcePageType: "thrivecart_checkout",
-      convertBoxId: normalized.convertBoxId,
-      thriveCartOrderId: normalized.orderId,
-      thriveCartProductId: normalized.productId,
-      coupon: normalized.coupon,
-      affiliate: normalized.affiliate,
-      utmSource: normalized.utmSource,
-      utmMedium: normalized.utmMedium,
-      utmCampaign: normalized.utmCampaign,
-      gclid: normalized.gclid,
-      rawPayload: body,
-      normalizedPayload: normalized,
-      customer: normalized.customer,
-    })
+
+    if (!isPaidEvent(normalized.eventType)) {
+      const customer = normalized.customer.email
+        ? await prisma.offerCustomer.upsert({
+            where: { email: normalized.customer.email.toLowerCase().trim() },
+            create: {
+              email: normalized.customer.email.toLowerCase().trim(),
+              fullName: normalized.customer.fullName ?? null,
+              firstName: normalized.customer.firstName ?? null,
+              lastName: normalized.customer.lastName ?? null,
+              phone: normalized.customer.phone ?? null,
+              companyName: normalized.customer.companyName ?? null,
+              websiteUrl: normalized.customer.websiteUrl ?? null,
+              googleBusinessUrl: normalized.customer.googleBusinessUrl ?? null,
+            },
+            update: {
+              fullName: normalized.customer.fullName ?? undefined,
+              firstName: normalized.customer.firstName ?? undefined,
+              lastName: normalized.customer.lastName ?? undefined,
+              phone: normalized.customer.phone ?? undefined,
+              companyName: normalized.customer.companyName ?? undefined,
+              websiteUrl: normalized.customer.websiteUrl ?? undefined,
+              googleBusinessUrl: normalized.customer.googleBusinessUrl ?? undefined,
+            },
+            select: { id: true },
+          })
+        : null
+      await prisma.offerInteraction.create({
+        data: {
+          eventType: `thrivecart.${normalized.eventType}`,
+          customerId: customer?.id ?? null,
+          serviceSlug: normalized.serviceSlug,
+          sourcePage: normalized.sourcePage,
+          sourcePageType: normalized.sourcePageType ?? "thrivecart_checkout",
+          convertBoxId: normalized.convertBoxId,
+          utmSource: normalized.utmSource,
+          utmMedium: normalized.utmMedium,
+          utmCampaign: normalized.utmCampaign,
+          gclid: normalized.gclid,
+          metadata: {
+            offerSlug: normalized.offerSlug,
+            funnelSlug: normalized.funnelSlug,
+            orderId: normalized.orderId,
+            productId: normalized.productId,
+            productName: normalized.productName,
+            orderStatus: normalized.orderStatus,
+            coupon: normalized.coupon,
+            affiliate: normalized.affiliate,
+            purchases: normalized.purchases,
+          } as Prisma.InputJsonValue,
+        },
+      })
+      const actionPlan = await recordRevenueActionPlan({
+        sourceSystem: "thrivecart",
+        eventType: normalized.eventType,
+        offerSlug: normalized.offerSlug,
+        customerId: customer?.id,
+        customerEmail: normalized.customer.email,
+        serviceSlug: normalized.serviceSlug,
+        sourcePage: normalized.sourcePage,
+        sourcePageType: normalized.sourcePageType ?? "thrivecart_checkout",
+        convertBoxId: normalized.convertBoxId,
+        funnelSlug: normalized.funnelSlug,
+        orderId: normalized.orderId,
+        productId: normalized.productId,
+        coupon: normalized.coupon,
+        affiliate: normalized.affiliate,
+        utmSource: normalized.utmSource,
+        utmMedium: normalized.utmMedium,
+        utmCampaign: normalized.utmCampaign,
+        gclid: normalized.gclid,
+        amountCents: normalized.amountCents,
+        metadata: { purchases: normalized.purchases, orderStatus: normalized.orderStatus },
+      })
+      await prisma.thriveCartEvent.update({
+        where: { id: thriveCartEvent.id },
+        data: {
+          processingStatus: "processed",
+          processedAt: new Date(),
+          normalizedPayload: {
+            ...normalized,
+            revenueActionPlan: actionPlan.plan,
+            revenueActionRecordIds: actionPlan.records.map((record) => record.id),
+          } as Prisma.InputJsonValue,
+        },
+      })
+      return NextResponse.json({ success: true, recordedEvent: normalized.eventType, revenueActions: actionPlan.records.length })
+    }
+
+    const purchaseItems = normalized.purchases.length > 0
+      ? normalized.purchases
+      : [{
+          offerSlug: normalized.offerSlug,
+          productId: normalized.productId,
+          amountCents: normalized.amountCents,
+          purchaseType: normalized.eventType,
+        }]
+
+    const createdPurchases: Array<{ id: string }> = []
+    for (const item of purchaseItems) {
+      const { purchase } = await createOfferPurchase({
+        offerSlug: item.offerSlug,
+        serviceSlug: normalized.serviceSlug,
+        amountCents: item.amountCents,
+        currency: normalized.currency,
+        status: "paid",
+        sourceSystem: "thrivecart",
+        sourcePage: normalized.sourcePage,
+        sourcePageType: normalized.sourcePageType ?? item.purchaseType ?? "thrivecart_checkout",
+        convertBoxId: normalized.convertBoxId,
+        thriveCartOrderId: normalized.orderId,
+        thriveCartProductId: item.productId,
+        coupon: normalized.coupon,
+        affiliate: normalized.affiliate,
+        utmSource: normalized.utmSource,
+        utmMedium: normalized.utmMedium,
+        utmCampaign: normalized.utmCampaign,
+        gclid: normalized.gclid,
+        rawPayload: body,
+        normalizedPayload: {
+          ...normalized,
+          activePurchase: item,
+        },
+        customer: normalized.customer,
+      })
+      await recordRevenueActionPlan({
+        sourceSystem: "thrivecart",
+        eventType: item.purchaseType,
+        offerSlug: item.offerSlug,
+        purchaseId: purchase.id,
+        customerId: purchase.customerId,
+        customerEmail: normalized.customer.email,
+        serviceSlug: purchase.serviceSlug,
+        serviceLabel: purchase.serviceLabel,
+        serviceFamily: purchase.serviceFamily,
+        sourcePage: normalized.sourcePage,
+        sourcePageType: normalized.sourcePageType ?? item.purchaseType ?? "thrivecart_checkout",
+        convertBoxId: normalized.convertBoxId,
+        funnelSlug: normalized.funnelSlug,
+        orderId: normalized.orderId,
+        productId: item.productId,
+        coupon: normalized.coupon,
+        affiliate: normalized.affiliate,
+        utmSource: normalized.utmSource,
+        utmMedium: normalized.utmMedium,
+        utmCampaign: normalized.utmCampaign,
+        gclid: normalized.gclid,
+        amountCents: item.amountCents,
+        metadata: { activePurchase: item, allPurchases: normalized.purchases },
+      })
+      createdPurchases.push(purchase)
+    }
 
     await prisma.thriveCartEvent.update({
       where: { id: thriveCartEvent.id },
-      data: { purchaseId: purchase.id, processingStatus: "processed", processedAt: new Date() },
+      data: { purchaseId: createdPurchases[0]?.id, processingStatus: "processed", processedAt: new Date() },
     })
 
-    if (normalized.externalSubscriptionId) {
+    if (normalized.externalSubscriptionId && createdPurchases[0]) {
+      const purchase = createdPurchases[0]
       const purchaseWithRelations = await prisma.offerPurchase.findUnique({
         where: { id: purchase.id },
         select: { offerId: true, customerId: true, serviceSlug: true, serviceFamily: true },
@@ -230,12 +423,14 @@ export async function POST(request: NextRequest) {
     }
 
     after(async () => {
-      await fulfillOfferPurchase(purchase.id).catch((error) => {
-        logger.error("api/webhooks/thrivecart", "Async ThriveCart fulfillment failed", error)
-      })
+      await Promise.all(createdPurchases.map((purchase) =>
+        fulfillOfferPurchase(purchase.id).catch((error) => {
+          logger.error("api/webhooks/thrivecart", "Async ThriveCart fulfillment failed", error)
+        }),
+      ))
     })
 
-    return NextResponse.json({ success: true, purchaseId: purchase.id })
+    return NextResponse.json({ success: true, purchaseIds: createdPurchases.map((purchase) => purchase.id) })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown ThriveCart processing error"
     logger.error("api/webhooks/thrivecart", "Failed to process ThriveCart webhook", error)

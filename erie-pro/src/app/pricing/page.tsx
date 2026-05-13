@@ -1,6 +1,7 @@
 import Link from "next/link"
 import type { Metadata } from "next"
 import { ArrowRight, Calculator, DollarSign, ShieldCheck } from "lucide-react"
+import { automatedOffers } from "@/lib/automated-offers"
 import { cityConfig } from "@/lib/city-config"
 import { niches } from "@/lib/niches"
 import { Button } from "@/components/ui/button"
@@ -36,10 +37,21 @@ const featuredPricingSlugs = [
   "snow-removal",
 ]
 
+function providerCheckoutUrl(url: string, offerSlug: string) {
+  const checkout = new URL(url)
+  checkout.searchParams.set("offerSlug", offerSlug)
+  checkout.searchParams.set("sourcePageType", "pricing_page")
+  checkout.searchParams.set("utm_source", "erie_pro")
+  checkout.searchParams.set("utm_medium", "pricing_page")
+  checkout.searchParams.set("utm_campaign", "provider_offers")
+  return checkout.toString()
+}
+
 export default function PricingGuidesPage() {
   const featured = featuredPricingSlugs
     .map((slug) => niches.find((n) => n.slug === slug))
     .filter(Boolean) as typeof niches
+  const providerOffers = automatedOffers.filter((offer) => offer.basePriceCents > 0 && offer.checkoutUrl)
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -171,6 +183,39 @@ export default function PricingGuidesPage() {
                 insurance outcomes, or licensed-work estimates without verified support.
               </CardContent>
             </Card>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+          <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <Badge variant="outline" className="mb-3">For Erie County providers</Badge>
+              <h2 className="text-2xl font-bold">Provider growth packages</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                Choose a focused Erie.Pro package when you want your service page, follow-up, reviews, seasonal demand, or opportunity tracking to work harder.
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {providerOffers.map((offer) => (
+              <Card key={offer.slug} className="transition-colors hover:border-primary/40">
+                <CardHeader>
+                  <CardTitle className="text-lg">{offer.shortTitle}</CardTitle>
+                  <div className="text-2xl font-bold">
+                    {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(offer.basePriceCents / 100)}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="mb-4 text-sm leading-6 text-muted-foreground">{offer.description}</p>
+                  <Button asChild size="sm">
+                    <Link href={providerCheckoutUrl(offer.checkoutUrl!, offer.slug)}>
+                      {offer.primaryCta}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </section>
       </main>

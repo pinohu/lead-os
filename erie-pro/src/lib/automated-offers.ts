@@ -29,9 +29,31 @@ export type AutomatedOfferDefinition = {
   basePriceCents: number
   checkoutProductId?: string
   checkoutUrl?: string
+  thriveCartFunnel?: ThriveCartFunnelDefinition
+  fulfillmentChannels?: FulfillmentChannelDefinition[]
   repoSource: string
   sortOrder: number
   primaryCta: string
+}
+
+export type ThriveCartFunnelDefinition = {
+  checkoutUrl: string
+  productId: string
+  orderBumpSlug?: AutomatedOfferSlug
+  upsellSlug?: AutomatedOfferSlug
+  downsellSlug?: AutomatedOfferSlug
+  successPath: string
+  abandonedCartTag: string
+  affiliateEligible: boolean
+  subscriptionEligible: boolean
+  couponFamilies: string[]
+  splitTests: string[]
+}
+
+export type FulfillmentChannelDefinition = {
+  toolId: "erie-pro" | "boostspace" | "suitedash" | "taskade" | "productdyno" | "documents"
+  role: string
+  required: boolean
 }
 
 export type ServiceOfferRecommendation = {
@@ -178,6 +200,25 @@ export const automatedOffers: AutomatedOfferDefinition[] = [
     basePriceCents: 9900,
     checkoutProductId: "157",
     checkoutUrl: "https://relgard.thrivecart.com/erie-conversion-blueprint/",
+    thriveCartFunnel: {
+      checkoutUrl: "https://relgard.thrivecart.com/erie-conversion-blueprint/",
+      productId: "157",
+      orderBumpSlug: "review-reputation-growth-kit",
+      upsellSlug: "provider-launch-kit",
+      downsellSlug: "missed-call-recovery-kit",
+      successPath: "/offers/success/service-page-conversion-blueprint",
+      abandonedCartTag: "tc_abandoned_conversion_blueprint",
+      affiliateEligible: true,
+      subscriptionEligible: false,
+      couponFamilies: ["launch", "partner", "provider", "recovery"],
+      splitTests: ["checkout-headline", "guarantee-copy", "order-bump-copy"],
+    },
+    fulfillmentChannels: [
+      { toolId: "erie-pro", role: "Generate HTML blueprint asset and success page", required: true },
+      { toolId: "boostspace", role: "Sync purchase and fulfillment event", required: true },
+      { toolId: "suitedash", role: "Create provider/client operations record", required: true },
+      { toolId: "documents", role: "Optional PDF blueprint when document delivery is enabled", required: false },
+    ],
     repoSource: "lead-os,dynasty-authority-template",
     sortOrder: 20,
     primaryCta: "Build my blueprint",
@@ -192,6 +233,26 @@ export const automatedOffers: AutomatedOfferDefinition[] = [
     basePriceCents: 39900,
     checkoutProductId: "158",
     checkoutUrl: "https://relgard.thrivecart.com/erie-provider-launch-kit/",
+    thriveCartFunnel: {
+      checkoutUrl: "https://relgard.thrivecart.com/erie-provider-launch-kit/",
+      productId: "158",
+      orderBumpSlug: "growth-intelligence-subscription",
+      upsellSlug: "client-portal-starter-pack",
+      downsellSlug: "service-page-conversion-blueprint",
+      successPath: "/offers/success/provider-launch-kit",
+      abandonedCartTag: "tc_abandoned_provider_launch",
+      affiliateEligible: true,
+      subscriptionEligible: false,
+      couponFamilies: ["launch", "partner", "provider"],
+      splitTests: ["checkout-layout", "proof-block", "order-bump-copy"],
+    },
+    fulfillmentChannels: [
+      { toolId: "erie-pro", role: "Generate launch kit asset", required: true },
+      { toolId: "boostspace", role: "Route automation event", required: true },
+      { toolId: "suitedash", role: "Create provider workspace record", required: true },
+      { toolId: "taskade", role: "Create manual review task for serious providers", required: false },
+      { toolId: "productdyno", role: "Protected kit delivery when member access is enabled", required: false },
+    ],
     repoSource: "dynasty-launcher,dynasty-services,lead-os",
     sortOrder: 30,
     primaryCta: "Launch my provider kit",
@@ -206,6 +267,25 @@ export const automatedOffers: AutomatedOfferDefinition[] = [
     basePriceCents: 19900,
     checkoutProductId: "160",
     checkoutUrl: "https://relgard.thrivecart.com/erie-growth-intelligence/",
+    thriveCartFunnel: {
+      checkoutUrl: "https://relgard.thrivecart.com/erie-growth-intelligence/",
+      productId: "160",
+      orderBumpSlug: "seasonal-booking-campaign-pack",
+      upsellSlug: "provider-launch-kit",
+      downsellSlug: "review-reputation-growth-kit",
+      successPath: "/offers/success/growth-intelligence-subscription",
+      abandonedCartTag: "tc_abandoned_growth_intelligence",
+      affiliateEligible: true,
+      subscriptionEligible: true,
+      couponFamilies: ["launch", "partner", "monthly", "winback"],
+      splitTests: ["subscription-price-frame", "monthly-proof", "guarantee-copy"],
+    },
+    fulfillmentChannels: [
+      { toolId: "erie-pro", role: "Generate subscription entitlement and first report", required: true },
+      { toolId: "boostspace", role: "Sync subscription lifecycle events", required: true },
+      { toolId: "suitedash", role: "Create ongoing provider operations record", required: true },
+      { toolId: "taskade", role: "Create monthly review queue item", required: false },
+    ],
     repoSource: "lead-os,SAM-Scout,leadOSGov",
     sortOrder: 40,
     primaryCta: "Start monthly intelligence",
@@ -220,6 +300,25 @@ export const automatedOffers: AutomatedOfferDefinition[] = [
     basePriceCents: 29900,
     checkoutProductId: "159",
     checkoutUrl: "https://relgard.thrivecart.com/erie-convertbox-funnel/",
+    thriveCartFunnel: {
+      checkoutUrl: "https://relgard.thrivecart.com/erie-convertbox-funnel/",
+      productId: "159",
+      orderBumpSlug: "missed-call-recovery-kit",
+      upsellSlug: "provider-launch-kit",
+      downsellSlug: "review-reputation-growth-kit",
+      successPath: "/offers/success/convertbox-funnel-in-a-box",
+      abandonedCartTag: "tc_abandoned_convertbox_funnel",
+      affiliateEligible: true,
+      subscriptionEligible: false,
+      couponFamilies: ["launch", "provider", "recovery"],
+      splitTests: ["service-specific-copy", "order-bump-copy", "success-path-copy"],
+    },
+    fulfillmentChannels: [
+      { toolId: "erie-pro", role: "Generate service-specific ConvertBox plan", required: true },
+      { toolId: "boostspace", role: "Sync purchase and implementation event", required: true },
+      { toolId: "suitedash", role: "Create provider operations record", required: true },
+      { toolId: "productdyno", role: "Optional protected template library", required: false },
+    ],
     repoSource: "lead-os,lead-os-embed-widgets",
     sortOrder: 50,
     primaryCta: "Get my funnel kit",
@@ -234,6 +333,25 @@ export const automatedOffers: AutomatedOfferDefinition[] = [
     basePriceCents: 9900,
     checkoutProductId: "165",
     checkoutUrl: "https://relgard.thrivecart.com/erie-review-reputation/",
+    thriveCartFunnel: {
+      checkoutUrl: "https://relgard.thrivecart.com/erie-review-reputation/",
+      productId: "165",
+      orderBumpSlug: "missed-call-recovery-kit",
+      upsellSlug: "service-page-conversion-blueprint",
+      downsellSlug: "seasonal-booking-campaign-pack",
+      successPath: "/offers/success/review-reputation-growth-kit",
+      abandonedCartTag: "tc_abandoned_review_reputation",
+      affiliateEligible: true,
+      subscriptionEligible: false,
+      couponFamilies: ["launch", "provider", "reputation"],
+      splitTests: ["review-proof", "checkout-headline", "bump-position"],
+    },
+    fulfillmentChannels: [
+      { toolId: "erie-pro", role: "Generate reputation kit asset", required: true },
+      { toolId: "boostspace", role: "Sync reputation purchase", required: true },
+      { toolId: "suitedash", role: "Attach kit to provider record", required: true },
+      { toolId: "documents", role: "Optional printable scripts and QR guidance", required: false },
+    ],
     repoSource: "lead-os,SuiteDash",
     sortOrder: 60,
     primaryCta: "Improve my reviews",
@@ -248,6 +366,25 @@ export const automatedOffers: AutomatedOfferDefinition[] = [
     basePriceCents: 14900,
     checkoutProductId: "163",
     checkoutUrl: "https://relgard.thrivecart.com/erie-missed-call-kit/",
+    thriveCartFunnel: {
+      checkoutUrl: "https://relgard.thrivecart.com/erie-missed-call-kit/",
+      productId: "163",
+      orderBumpSlug: "review-reputation-growth-kit",
+      upsellSlug: "convertbox-funnel-in-a-box",
+      downsellSlug: "service-page-conversion-blueprint",
+      successPath: "/offers/success/missed-call-recovery-kit",
+      abandonedCartTag: "tc_abandoned_missed_call",
+      affiliateEligible: true,
+      subscriptionEligible: false,
+      couponFamilies: ["launch", "emergency", "recovery"],
+      splitTests: ["urgency-copy", "order-bump-copy", "checkout-headline"],
+    },
+    fulfillmentChannels: [
+      { toolId: "erie-pro", role: "Generate missed-call recovery kit", required: true },
+      { toolId: "boostspace", role: "Sync recovery event", required: true },
+      { toolId: "suitedash", role: "Store response workflow context", required: true },
+      { toolId: "taskade", role: "Create implementation reminder when configured", required: false },
+    ],
     repoSource: "lead-os,leadnest-flow-forge",
     sortOrder: 70,
     primaryCta: "Recover missed calls",
@@ -262,6 +399,25 @@ export const automatedOffers: AutomatedOfferDefinition[] = [
     basePriceCents: 14900,
     checkoutProductId: "164",
     checkoutUrl: "https://relgard.thrivecart.com/erie-seasonal-booking/",
+    thriveCartFunnel: {
+      checkoutUrl: "https://relgard.thrivecart.com/erie-seasonal-booking/",
+      productId: "164",
+      orderBumpSlug: "growth-intelligence-subscription",
+      upsellSlug: "provider-launch-kit",
+      downsellSlug: "review-reputation-growth-kit",
+      successPath: "/offers/success/seasonal-booking-campaign-pack",
+      abandonedCartTag: "tc_abandoned_seasonal_booking",
+      affiliateEligible: true,
+      subscriptionEligible: false,
+      couponFamilies: ["seasonal", "launch", "provider"],
+      splitTests: ["seasonal-window-copy", "order-bump-copy", "calendar-proof"],
+    },
+    fulfillmentChannels: [
+      { toolId: "erie-pro", role: "Generate seasonal campaign calendar and copy", required: true },
+      { toolId: "boostspace", role: "Sync seasonal campaign event", required: true },
+      { toolId: "suitedash", role: "Attach campaign assets to provider record", required: true },
+      { toolId: "documents", role: "Optional campaign PDF", required: false },
+    ],
     repoSource: "lead-os,dynasty-services",
     sortOrder: 80,
     primaryCta: "Plan my season",
@@ -276,6 +432,25 @@ export const automatedOffers: AutomatedOfferDefinition[] = [
     basePriceCents: 29900,
     checkoutProductId: "161",
     checkoutUrl: "https://relgard.thrivecart.com/erie-gov-opportunity/",
+    thriveCartFunnel: {
+      checkoutUrl: "https://relgard.thrivecart.com/erie-gov-opportunity/",
+      productId: "161",
+      orderBumpSlug: "client-portal-starter-pack",
+      upsellSlug: "growth-intelligence-subscription",
+      downsellSlug: "seasonal-booking-campaign-pack",
+      successPath: "/offers/success/government-opportunity-scanner",
+      abandonedCartTag: "tc_abandoned_gov_opportunity",
+      affiliateEligible: true,
+      subscriptionEligible: true,
+      couponFamilies: ["launch", "government", "partner", "monthly"],
+      splitTests: ["opportunity-proof", "subscription-price-frame", "order-bump-copy"],
+    },
+    fulfillmentChannels: [
+      { toolId: "erie-pro", role: "Generate first opportunity scanner asset", required: true },
+      { toolId: "boostspace", role: "Sync opportunity and subscription events", required: true },
+      { toolId: "suitedash", role: "Create provider operations record", required: true },
+      { toolId: "taskade", role: "Create recurring opportunity review task", required: false },
+    ],
     repoSource: "SAM-Scout,leadOSGov",
     sortOrder: 90,
     primaryCta: "Find government opportunities",
@@ -290,6 +465,25 @@ export const automatedOffers: AutomatedOfferDefinition[] = [
     basePriceCents: 19900,
     checkoutProductId: "162",
     checkoutUrl: "https://relgard.thrivecart.com/erie-client-portal/",
+    thriveCartFunnel: {
+      checkoutUrl: "https://relgard.thrivecart.com/erie-client-portal/",
+      productId: "162",
+      orderBumpSlug: "review-reputation-growth-kit",
+      upsellSlug: "provider-launch-kit",
+      downsellSlug: "service-page-conversion-blueprint",
+      successPath: "/offers/success/client-portal-starter-pack",
+      abandonedCartTag: "tc_abandoned_client_portal",
+      affiliateEligible: true,
+      subscriptionEligible: false,
+      couponFamilies: ["launch", "operations", "provider"],
+      splitTests: ["portal-outcome-copy", "order-bump-copy", "checkout-layout"],
+    },
+    fulfillmentChannels: [
+      { toolId: "erie-pro", role: "Generate portal starter pack", required: true },
+      { toolId: "boostspace", role: "Sync operations purchase", required: true },
+      { toolId: "suitedash", role: "Prepare client/provider portal record", required: true },
+      { toolId: "productdyno", role: "Optional template library delivery", required: false },
+    ],
     repoSource: "SuiteDash,dynasty-saas-template",
     sortOrder: 100,
     primaryCta: "Set up my client portal",

@@ -34,6 +34,7 @@ import { getDirectoryListingsByNiche } from "@/lib/directory-store"
 import { getFeaturedProviderId } from "@/lib/perk-manager"
 import LeadForm from "@/components/lead-form"
 import { ProviderGrowthOffer } from "@/components/provider-growth-offer"
+import { ServiceFunnelSystem } from "@/components/service-funnel-system"
 import { inferServiceFamily } from "@/lib/automated-offers"
 
 type Props = { params: Promise<{ niche: string }> }
@@ -366,6 +367,7 @@ export default async function NichePage({ params }: Props) {
         serviceLabel={niche.label}
         serviceFamily={serviceFamily}
       />
+      <ServiceFunnelSystem serviceSlug={niche.slug} serviceLabel={niche.label} />
       <section className="mx-auto max-w-4xl px-4 py-8 text-center sm:px-6">
         <p className="text-sm text-muted-foreground">
           Are you a {niche.label.toLowerCase()} provider?{" "}
