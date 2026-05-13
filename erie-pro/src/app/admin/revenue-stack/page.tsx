@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { ArrowRight, CheckCircle2, CircleDashed, Database, GitBranch, LockKeyhole, Workflow } from "lucide-react"
 import { automatedOffers, getOfferBySlug } from "@/lib/automated-offers"
 import { prisma } from "@/lib/db"
+import type { RevenueAction, RevenueOutcome } from "@/lib/revenue-actions"
 import { revenueActionPlaybook } from "@/lib/revenue-actions"
 import { getCoreEventPath, getRevenueToolStackSummary, revenueToolStack } from "@/lib/revenue-tool-stack"
 import { getThriveCartReadiness } from "@/lib/thrivecart-readiness"
@@ -36,6 +37,27 @@ function statusVariant(status: string) {
 function money(cents: number) {
   if (cents === 0) return "Free"
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(cents / 100)
+}
+
+type RevenueActionMetadata = {
+  status?: string
+  sourceSystem?: string
+  sourceEventType?: string
+  primaryOutcome?: RevenueOutcome
+  offerSlug?: string | null
+  offerTitle?: string | null
+  customerEmail?: string | null
+  action?: RevenueAction
+}
+
+function metadataFor(action: Awaited<ReturnType<typeof prisma.offerInteraction.findMany>>[number]) {
+  return (action.metadata ?? {}) as RevenueActionMetadata
+}
+
+function priorityVariant(priority?: string) {
+  if (priority === "immediate" || priority === "high") return "default"
+  if (priority === "normal") return "secondary"
+  return "outline"
 }
 
 export default async function RevenueToolStackPage() {
@@ -151,22 +173,48 @@ export default async function RevenueToolStackPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Outcome</TableHead>
+                <TableHead>Action</TableHead>
+                <TableHead>Owner</TableHead>
                 <TableHead>Service</TableHead>
                 <TableHead>Source</TableHead>
                 <TableHead>Created</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentActions.length > 0 ? recentActions.map((action) => (
-                <TableRow key={action.id}>
-                  <TableCell><Badge variant="secondary">{action.eventType.replace("revenue_action.", "")}</Badge></TableCell>
-                  <TableCell>{action.serviceLabel ?? action.serviceSlug ?? "Not captured"}</TableCell>
-                  <TableCell className="text-sm text-gray-600">{action.sourcePageType ?? "revenue event"}</TableCell>
-                  <TableCell className="text-sm text-gray-500">{action.createdAt.toLocaleString()}</TableCell>
-                </TableRow>
-              )) : (
+              {recentActions.length > 0 ? recentActions.map((action) => {
+                const metadata = metadataFor(action)
+                const plannedAction = metadata.action
+                return (
+                  <TableRow key={action.id}>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <Badge variant="secondary">{action.eventType.replace("revenue_action.", "")}</Badge>
+                        <Badge variant={priorityVariant(plannedAction?.priority)}>{plannedAction?.priority ?? "normal"}</Badge>
+                      </div>
+                    </TableCell>
+                    <TableCell className="max-w-md">
+                      <div className="font-medium text-gray-900 dark:text-white">{plannedAction?.title ?? "Planned revenue action"}</div>
+                      <div className="mt-1 text-xs leading-5 text-gray-500">{plannedAction?.action ?? metadata.sourceEventType ?? "Awaiting event details"}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm font-medium">{plannedAction?.ownerTool ?? "neon"}</div>
+                      <div className="mt-1 flex max-w-48 flex-wrap gap-1">
+                        {(plannedAction?.targetTools ?? []).map((tool) => (
+                          <Badge key={`${action.id}-${tool}`} variant="outline">{tool}</Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>{action.serviceLabel ?? action.serviceSlug ?? "Not captured"}</TableCell>
+                    <TableCell className="text-sm text-gray-600">
+                      <div>{action.sourcePageType ?? metadata.sourceSystem ?? "revenue event"}</div>
+                      <div className="text-xs text-gray-500">{metadata.sourceEventType ?? action.eventType}</div>
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-500">{action.createdAt.toLocaleString()}</TableCell>
+                  </TableRow>
+                )
+              }) : (
                 <TableRow>
-                  <TableCell colSpan={4} className="py-6 text-center text-sm text-gray-500">
+                  <TableCell colSpan={6} className="py-6 text-center text-sm text-gray-500">
                     Revenue action tracking is ready; records will appear as ThriveCart and funnel events arrive.
                   </TableCell>
                 </TableRow>
