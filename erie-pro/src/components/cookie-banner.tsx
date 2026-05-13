@@ -40,21 +40,23 @@ export function CookieBanner() {
     <div
       role="dialog"
       aria-label="Cookie consent"
-      className="fixed bottom-4 left-3 right-3 z-[60] mx-auto max-w-2xl rounded-lg border bg-background/95 p-3 shadow-xl backdrop-blur supports-[backdrop-filter]:bg-background/90 sm:left-4 sm:right-4 sm:p-4"
+      className="fixed bottom-2 left-2 right-2 z-[60] mx-auto max-w-xl rounded-md border bg-background/95 p-2 shadow-xl backdrop-blur supports-[backdrop-filter]:bg-background/90 sm:bottom-4 sm:left-4 sm:right-4 sm:max-w-2xl sm:rounded-lg sm:p-4"
     >
-      <div className="mx-auto flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-        <p className="text-xs leading-5 text-muted-foreground text-center sm:text-left sm:text-sm">
-          We use cookies to improve Erie.Pro and analyze traffic. See{" "}
+      <div className="mx-auto grid gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3">
+        <p className="text-left text-xs leading-5 text-muted-foreground sm:text-sm">
+          <span className="sm:hidden">Cookies help improve Erie.Pro. </span>
+          <span className="hidden sm:inline">We use cookies to improve Erie.Pro and analyze traffic. </span>
+          See{" "}
           <a href="/privacy" className="underline hover:text-foreground">
             Privacy Policy
           </a>{" "}
           for details.
         </p>
-        <div className="flex gap-2 shrink-0">
-          <Button variant="outline" className="h-11" onClick={handleDecline}>
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
+          <Button variant="outline" className="h-9 sm:h-11" onClick={handleDecline}>
             Decline
           </Button>
-          <Button className="h-11" onClick={handleAccept}>
+          <Button className="h-9 sm:h-11" onClick={handleAccept}>
             Accept
           </Button>
         </div>
