@@ -97,6 +97,34 @@ function buildProviderCheckoutUrl(input: {
   return checkout.toString()
 }
 
+function providerSignalCopy(
+  urgency: "standard" | "urgent" | "emergency" | "seasonal",
+  serviceLabel: string,
+) {
+  if (urgency === "emergency") {
+    return {
+      label: "Urgent-call recovery",
+      detail: `Best for ${serviceLabel.toLowerCase()} buyers who compare quickly and call the next available provider.`,
+    }
+  }
+  if (urgency === "urgent") {
+    return {
+      label: "Fast-response demand",
+      detail: "Best when buyers need a clear reason to trust you before they request help.",
+    }
+  }
+  if (urgency === "seasonal") {
+    return {
+      label: "Seasonal booking window",
+      detail: "Best when demand arrives in waves and follow-up timing decides who gets booked first.",
+    }
+  }
+  return {
+    label: "Steady inquiry growth",
+    detail: "Best when buyers need proof, clarity, and a simple next step before they reach out.",
+  }
+}
+
 export function generateStaticParams() {
   return getAllNicheSlugs().map((slug) => ({ niche: slug }))
 }
@@ -326,9 +354,9 @@ export default async function NichePricingPage({ params }: Props) {
             Get an Exact Price for Your Project
           </h2>
           <p className="mt-2 text-muted-foreground">
-            These are averages. Get a free, personalized quote from a
-            verified {niche.label.toLowerCase()} provider in{" "}
-            {cityConfig.name}.
+            These are planning ranges, not final quotes. Share the basics of
+            what you need and Erie.Pro will help you move toward a clearer
+            next step with a local {niche.label.toLowerCase()} provider.
           </p>
           <Button asChild size="lg" className="mt-6">
             <Link href={`/${slug}#quote`}>
@@ -353,7 +381,8 @@ export default async function NichePricingPage({ params }: Props) {
               <p className="mt-4 text-sm leading-6 text-slate-200">
                 If you provide {niche.label.toLowerCase()} in Erie County, this page
                 shows what buyers are trying to understand before they contact someone.
-                Use that intent to improve your page, proof, response path, and follow-up.
+                Use that intent to improve your page, proof, response path, and follow-up
+                while the buyer is still motivated.
               </p>
               <div className="mt-6 rounded-md border border-white/15 bg-white/10 p-4">
                 <div className="flex items-start gap-3">
@@ -393,6 +422,7 @@ export default async function NichePricingPage({ params }: Props) {
               {paidProviderOffers.map(({ recommendation, offer }) => {
                 if (!offer?.checkoutUrl) return null
                 const copy = buildOfferVariantCopy(offer, niche)
+                const signal = providerSignalCopy(recommendation.urgency, niche.label)
                 const checkoutUrl = buildProviderCheckoutUrl({
                   checkoutUrl: offer.checkoutUrl,
                   offerSlug: offer.slug,
@@ -420,9 +450,17 @@ export default async function NichePricingPage({ params }: Props) {
                       <p className="text-sm leading-6 text-slate-700">
                         {copy.promise}
                       </p>
+                      <div className="mt-4 rounded-md border border-slate-200 bg-slate-50 p-3">
+                        <Badge variant="outline" className="border-slate-300 bg-white text-slate-700">
+                          {signal.label}
+                        </Badge>
+                        <p className="mt-2 text-sm leading-6 text-slate-600">
+                          {signal.detail}
+                        </p>
+                      </div>
                       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                          {recommendation.urgency} path · {serviceFamily}
+                        <p className="text-sm text-slate-600">
+                          Built around {niche.label.toLowerCase()} buyer intent in Erie County.
                         </p>
                         <Button asChild size="sm">
                           <FunnelEventLink
