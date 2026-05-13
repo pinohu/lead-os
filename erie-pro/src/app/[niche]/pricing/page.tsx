@@ -348,7 +348,7 @@ export default async function NichePricingPage({ params }: Props) {
       </section>
 
       {/* ── CTA ───────────────────────────────────────────────── */}
-      <section className="py-12">
+      <section className="scroll-mt-24 py-12">
         <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
           <h2 className="text-xl font-bold">
             Get an Exact Price for Your Project
@@ -367,7 +367,7 @@ export default async function NichePricingPage({ params }: Props) {
         </div>
       </section>
 
-      <section className="border-y bg-slate-950 py-14 text-white">
+      <section id="provider-growth" className="scroll-mt-24 border-y bg-slate-950 py-14 text-white">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>

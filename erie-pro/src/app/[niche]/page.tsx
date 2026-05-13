@@ -283,7 +283,7 @@ export default async function NichePage({ params }: Props) {
       </section>
 
       {/* ── Quote form ──────────────────────────────────────── */}
-      <section id="quote" className="mx-auto max-w-2xl px-4 pb-16 sm:px-6">
+      <section id="quote" className="mx-auto max-w-2xl scroll-mt-28 px-4 pb-16 sm:px-6">
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle>
