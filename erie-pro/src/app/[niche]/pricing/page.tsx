@@ -358,7 +358,7 @@ export default async function NichePricingPage({ params }: Props) {
             what you need and Erie.Pro will help you move toward a clearer
             next step with a local {niche.label.toLowerCase()} provider.
           </p>
-          <Button asChild size="lg" className="mt-6">
+          <Button asChild size="lg" className="mt-6 h-auto whitespace-normal px-6 py-3 text-center">
             <Link href={`/${slug}#quote`}>
               {content.ctaPrimary}
               <ArrowRight className="ml-2 h-4 w-4" />

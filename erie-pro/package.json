@@ -20,6 +20,7 @@
     "revenue:e2e": "npx tsx src/scripts/revenue-e2e-qa.ts",
     "neon:audit": "npx tsx src/scripts/audit-neon.ts",
     "fulfillment:setup": "npx tsx src/scripts/setup-offer-fulfillment.ts",
+    "service-pages:qa": "npx tsx src/scripts/qa-service-pages.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

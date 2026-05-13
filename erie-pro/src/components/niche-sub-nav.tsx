@@ -38,8 +38,8 @@ export function NicheSubNav({ niche }: { niche: string }) {
       aria-label="Section navigation"
       className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur-sm"
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="flex overflow-x-auto scrollbar-hide -mb-px">
+      <div className="mx-auto max-w-6xl overflow-hidden px-4 sm:px-6">
+        <div className="-mb-px flex max-w-full overflow-x-auto scrollbar-hide">
           {NICHE_PAGES.map((page) => {
             const href = page.segment ? `/${niche}/${page.segment}` : `/${niche}`
             const isActive = activeSegment === page.segment
