@@ -9,6 +9,7 @@ import { audit } from "@/lib/audit-log"
 import { prisma } from "@/lib/db"
 import { deliverWebhookEvent } from "@/lib/webhook-delivery"
 import { syncLeadToBoostspace } from "@/lib/lead-external-sync"
+import { recordRevenueActionPlan } from "@/lib/revenue-actions"
 
 export async function POST(request: NextRequest) {
   try {
@@ -251,6 +252,28 @@ export async function POST(request: NextRequest) {
         })
 
     const leadName = `${firstName ?? ""} ${lastName ?? ""}`.trim() || "New Lead"
+    const actionPlanResult = await recordRevenueActionPlan({
+      sourceSystem: "erie-pro",
+      eventType: result.routedTo ? "lead.routed" : "lead.submitted",
+      customerEmail: email,
+      serviceSlug: niche,
+      serviceLabel: niche,
+      sourcePage,
+      sourcePageType: isProviderSpecific ? "provider_specific_lead_form" : "lead_form",
+      metadata: {
+        leadId: result.leadId,
+        routeType: result.routeType,
+        city,
+        routedToId: result.routedTo?.id ?? null,
+        routedToName: result.routedTo?.businessName ?? null,
+        routingIntent: isProviderSpecific ? "provider_specific" : "general",
+        requestedProviderName: targetProviderName ?? null,
+        requestedProviderSlug: requestedProviderSlug ?? null,
+      },
+    }).catch((error) => {
+      logger.error("lead", "Revenue action plan failed", error)
+      return null
+    })
 
     // ── Schedule emails + audit to run AFTER response is sent ────
     // Using Next.js after() so the response returns immediately
@@ -347,6 +370,7 @@ export async function POST(request: NextRequest) {
       success: true,
       leadId: result.leadId,
       routedTo: result.routedTo?.businessName ?? "Queued for matching",
+      actionPlan: actionPlanResult?.plan ?? null,
       message:
         result.routedTo
           ? `Your request has been received and routed to ${result.routedTo.businessName}.`

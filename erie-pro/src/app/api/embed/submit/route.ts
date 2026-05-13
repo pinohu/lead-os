@@ -7,6 +7,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { routeLead } from "@/lib/lead-routing";
 import { syncLeadToBoostspace } from "@/lib/lead-external-sync";
+import { recordRevenueActionPlan } from "@/lib/revenue-actions";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { audit } from "@/lib/audit-log";
@@ -148,11 +149,35 @@ export async function POST(req: NextRequest) {
     syncLeadToBoostspace(result.leadId).catch((error) => {
       logger.error("api/embed/submit", "Boost.space sync failed:", error);
     });
+    const actionPlanResult = await recordRevenueActionPlan({
+      sourceSystem: "embed",
+      eventType: result.routedTo ? "lead.routed" : "lead.submitted",
+      customerEmail: data.email,
+      serviceSlug: niche,
+      serviceLabel: niche,
+      sourcePage: data.sourcePage,
+      sourcePageType: "embed_lead_form",
+      metadata: {
+        leadId: result.leadId,
+        routeType: result.routeType,
+        providerId: apiKey.providerId,
+        apiKeyId: apiKey.id,
+        routedToId: result.routedTo?.id ?? null,
+        routedToName: result.routedTo?.businessName ?? null,
+        routingIntent: data.routingIntent ?? (data.requestedProviderSlug || data.requestedProviderName ? "provider_specific" : "general"),
+        requestedProviderName: data.requestedProviderName ?? null,
+        requestedProviderSlug: data.requestedProviderSlug ?? null,
+      },
+    }).catch((error) => {
+      logger.error("api/embed/submit", "Revenue action plan failed:", error);
+      return null;
+    });
 
     return corsJson({
       success: true,
       leadId: result.leadId,
       routedTo: result.routedTo?.businessName ?? "Queued",
+      actionPlan: actionPlanResult?.plan ?? null,
     }, 200, origin);
   } catch (err) {
     logger.error("api/embed/submit", "Error:", err);
