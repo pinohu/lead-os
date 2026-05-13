@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-05-13T05:24:02.653Z",
+  "status": "passed",
+  "counts": {
+    "leadEvents": 451,
+    "thriveCartEvents": 0,
+    "offerPurchases": 0,
+    "fulfillmentJobs": 0,
+    "generatedAssets": 0,
+    "offerInteractions": 767,
+    "revenueActions": {
+      "total": 764,
+      "byStatus": {
+        "planned": 764
+      },
+      "byOutcome": {
+        "route": 382,
+        "learn": 382
+      },
+      "missingActionMetadata": 0
+    }
+  },
+  "duplicateThriveCartOrders": [],
+  "findings": [
+    {
+      "severity": "info",
+      "code": "no_findings",
+      "message": "No Neon revenue data issues found by the current audit rules."
+    }
+  ]
+}
