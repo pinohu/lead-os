@@ -1,0 +1,60 @@
+{
+  "generatedAt": "2026-05-13T05:14:53.030Z",
+  "appUrl": "https://erie.pro",
+  "checked": 5,
+  "passed": 5,
+  "failed": 0,
+  "submitProbe": false,
+  "results": [
+    {
+      "url": "https://erie.pro/plumbing/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "plumbing",
+      "expectedBoxId": 232604,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/hvac/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "hvac",
+      "expectedBoxId": 232605,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/electrical/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "electrical",
+      "expectedBoxId": 232606,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/roofing/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "roofing",
+      "expectedBoxId": 232607,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/landscaping/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "landscaping",
+      "expectedBoxId": 232608,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    }
+  ]
+}

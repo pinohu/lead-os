@@ -16,6 +16,7 @@
     "scrape:places": "npx tsx src/scripts/scrape-google-places.ts",
     "scrape:places:dry": "npx tsx src/scripts/scrape-google-places.ts --dry-run --skip-reviews --limit=5",
     "scrape:places:new": "npx tsx src/scripts/scrape-google-places.ts --new-only",
+    "convertbox:verify": "npx tsx src/scripts/verify-convertbox-placement.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -83,6 +84,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4.1.7",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
