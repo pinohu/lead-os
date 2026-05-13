@@ -14,6 +14,10 @@ import {
   isSuiteDashConfigured,
   readSuiteDashRecordId,
 } from "@/lib/suitedash"
+import {
+  buildFulfillmentAutomationActions,
+  executeFulfillmentAutomationActions,
+} from "@/lib/offer-fulfillment-automation"
 
 type CustomerInput = {
   email: string
@@ -241,12 +245,21 @@ export async function fulfillOfferPurchase(purchaseId: string) {
       },
     })
 
+    const assetUrl = `${getSiteUrl()}/offer-assets/${asset.publicToken}`
+    const automationActions = buildFulfillmentAutomationActions(purchase, assetUrl)
+    const automationResults = await executeFulfillmentAutomationActions(automationActions)
+
     await prisma.fulfillmentJob.update({
       where: { id: job.id },
       data: {
         status: "fulfilled",
         completedAt: new Date(),
-        output: { generatedAssetId: asset.id, publicToken: token },
+        output: {
+          generatedAssetId: asset.id,
+          publicToken: token,
+          assetUrl,
+          automationResults,
+        } as object,
       },
     })
 
@@ -282,6 +295,35 @@ export async function fulfillOfferPurchase(purchaseId: string) {
     ])
     throw error
   }
+}
+
+export async function processPendingOfferFulfillmentJobs(limit = 10) {
+  const jobs = await prisma.fulfillmentJob.findMany({
+    where: {
+      status: "pending",
+      OR: [{ runAfter: null }, { runAfter: { lte: new Date() } }],
+    },
+    orderBy: { createdAt: "asc" },
+    take: Math.max(1, Math.min(limit, 50)),
+    select: { id: true, purchaseId: true },
+  })
+
+  const results = []
+  for (const job of jobs) {
+    try {
+      const asset = await fulfillOfferPurchase(job.purchaseId)
+      results.push({ jobId: job.id, purchaseId: job.purchaseId, status: "fulfilled", assetId: asset.id })
+    } catch (error) {
+      results.push({
+        jobId: job.id,
+        purchaseId: job.purchaseId,
+        status: "failed",
+        error: error instanceof Error ? error.message : "Unknown fulfillment error",
+      })
+    }
+  }
+
+  return { processed: results.length, results }
 }
 
 type PurchaseForAsset = Awaited<ReturnType<typeof prisma.offerPurchase.findUnique>> & {
