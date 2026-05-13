@@ -10,6 +10,7 @@ import { ClaimRequestSchema, formatZodErrors, MAX_BODY_SIZE } from "@/lib/valida
 import { checkRateLimit } from "@/lib/rate-limit";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { recordRevenueActionPlan } from "@/lib/revenue-actions";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
@@ -177,6 +178,33 @@ export async function POST(req: NextRequest) {
       tier,
       provider.id
     );
+    const actionPlanResult = await recordRevenueActionPlan({
+      sourceSystem: "stripe",
+      eventType: "stripe.checkout.started",
+      offerSlug: "territory-claim",
+      offerTitle: `${nicheData.label} territory claim`,
+      customerId: provider.id,
+      customerEmail: providerEmail,
+      serviceSlug: niche,
+      serviceLabel: nicheData.label,
+      serviceFamily: "provider-territory",
+      sourcePage: "/for-business/claim",
+      sourcePageType: "provider_claim_checkout",
+      orderId: checkout.sessionId,
+      amountCents: checkout.monthlyFee * 100,
+      metadata: {
+        providerId: provider.id,
+        providerSlug: provider.slug,
+        providerName,
+        city: cityConfig.slug,
+        tier,
+        listingId: listingId ?? null,
+        checkoutEngine: "stripe_legacy",
+      },
+    }).catch((error) => {
+      logger.error("/api/claim", "Failed to create revenue action plan for territory claim checkout", error);
+      return null;
+    });
 
     return NextResponse.json({
       success: true,
@@ -186,6 +214,7 @@ export async function POST(req: NextRequest) {
       sessionId: checkout.sessionId,
       monthlyFee: checkout.monthlyFee,
       serviceTier: tier,
+      actionPlan: actionPlanResult?.plan ?? null,
     });
   } catch (err) {
     logger.error("/api/claim", "Error:", err);

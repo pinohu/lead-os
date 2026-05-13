@@ -13,6 +13,7 @@ import {
   createAnnualMembershipCheckout,
 } from "@/lib/stripe-integration";
 import { logger } from "@/lib/logger";
+import { recordRevenueActionPlan } from "@/lib/revenue-actions";
 
 const BodySchema = z.object({
   plan: z.enum(["concierge", "annual"]),
@@ -47,6 +48,29 @@ export async function POST(req: Request) {
             parsed.data.context ?? "Concierge match",
           )
         : await createAnnualMembershipCheckout(parsed.data.email);
+    const offerSlug = parsed.data.plan === "concierge" ? "concierge-match" : "annual-member";
+    const actionPlanResult = await recordRevenueActionPlan({
+      sourceSystem: "stripe",
+      eventType: "stripe.checkout.started",
+      offerSlug,
+      offerTitle: parsed.data.plan === "concierge" ? "Concierge match" : "Annual member",
+      customerEmail: parsed.data.email,
+      serviceSlug: parsed.data.plan,
+      serviceLabel: parsed.data.plan === "concierge" ? "Concierge match" : "Annual membership",
+      serviceFamily: "requester-upgrade",
+      sourcePage: "/",
+      sourcePageType: "requester_upgrade_checkout",
+      orderId: result.sessionId,
+      amountCents: result.price * 100,
+      metadata: {
+        plan: parsed.data.plan,
+        context: parsed.data.context ?? null,
+        checkoutEngine: "stripe_legacy",
+      },
+    }).catch((error) => {
+      logger.error("checkout/requester", "Failed to create revenue action plan for requester checkout", error);
+      return null;
+    });
 
     return NextResponse.json({
       plan: result.plan,
@@ -54,6 +78,7 @@ export async function POST(req: Request) {
       price: result.price,
       checkoutUrl: result.checkoutUrl,
       sessionId: result.sessionId,
+      actionPlan: actionPlanResult?.plan ?? null,
     });
   } catch (err) {
     logger.error("checkout/requester", err);

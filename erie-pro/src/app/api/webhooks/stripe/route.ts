@@ -24,6 +24,7 @@ import {
   type ProviderTier,
 } from "@/lib/premium-rewards";
 import { logger } from "@/lib/logger";
+import { recordRevenueActionPlan } from "@/lib/revenue-actions";
 import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
 
 function getVerificationCodeSendAttempts(notificationPrefs: unknown): number {
@@ -301,6 +302,30 @@ async function handleCheckoutCompleted(
 ): Promise<void> {
   const checkoutSession = await getCheckoutSession(stripeSessionId);
   if (!checkoutSession) return;
+  await recordRevenueActionPlan({
+    sourceSystem: "stripe",
+    eventType: "stripe.checkout.completed",
+    offerSlug: checkoutSession.sessionType,
+    offerTitle: checkoutSession.sessionType.replace(/_/g, " "),
+    customerId: checkoutSession.providerId,
+    customerEmail: checkoutSession.providerEmail,
+    serviceSlug: checkoutSession.niche,
+    serviceLabel: checkoutSession.niche,
+    serviceFamily: checkoutSession.sessionType,
+    sourcePageType: "stripe_webhook",
+    orderId: stripeSessionId,
+    amountCents: checkoutSession.price ? checkoutSession.price * 100 : checkoutSession.monthlyFee ? checkoutSession.monthlyFee * 100 : null,
+    metadata: {
+      stripeEventId: stripeEventId ?? null,
+      stripeSessionId,
+      city: checkoutSession.city,
+      monthlyFee: checkoutSession.monthlyFee ?? null,
+      checkoutEngine: "stripe_legacy",
+      status: checkoutSession.status,
+    },
+  }).catch((error) => {
+    logger.error("webhook/stripe", "Failed to create revenue action plan for completed Stripe checkout", error);
+  });
   const checkoutServiceTier = inferProviderTierFromMonthlyFee(
     getMonthlyFee(checkoutSession.niche),
     checkoutSession.monthlyFee
