@@ -7,6 +7,11 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit-log";
 
+// Token-driven verification mutates DB rows on every request and must not be
+// cached at build time. Explicit marker so future contributors don't have to
+// rely on Next's implicit dynamic detection via searchParams.
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   searchParams: Promise<{ token?: string }>;
 }
