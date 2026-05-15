@@ -35,7 +35,7 @@ if (!outscraperApiKey) {
 }
 
 const adapter = new PrismaPg({ connectionString })
-const prisma = new PrismaClient({ adapter }) as unknown as PrismaClient
+const prisma = new PrismaClient({ adapter })
 const client = new Outscraper(outscraperApiKey)
 
 // ── CLI args ──────────────────────────────────────────────────────

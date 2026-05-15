@@ -1,9 +1,10 @@
-# Lead OS — Tests & Build Health Audit
+# Lead OS — Tests, Build Health, and Code-Quality Audit
 
 **Date:** 2026-05-15
 **Branch:** `claude/full-codebase-audit-K30EH`
 **Scope:** All packages in the monorepo, including vendored `_n8n_sources/`.
-**Dimension:** Tests, type-checks, builds, lint, CI workflows, dependency audit findings.
+**Dimensions covered:** Tests, type-checks, builds, lint, CI workflows,
+dependency audit findings, code-quality and type-safety refactors.
 
 This audit was run against the working tree at the head of the branch. Findings
 are split into things actually fixed in this branch and things that need
@@ -12,13 +13,29 @@ prioritisation; "Critical" here means "CI is or should be red."
 
 ## TL;DR — what changed in this branch
 
+### Round 1 (commit `f1f3eed`) — broken CI gates restored
+
 | Fix | Where | Effect |
 |-----|-------|--------|
 | Restored hybrid typecheck (was failing on master) | `lead-os-hosted-runtime-wt-hybrid/tests/billing.test.ts`, `tests/package-provisioning.test.ts` | `npx tsc --noEmit` is back to exit 0 |
 | Repaired broken `npm test` in NeatCircle | `neatcircle-beta/package.json` | 22 tests now run (were 0) |
 | Repaired broken `npm test` in public runtime | `lead-os-hosted-runtime-wt-public/package.json` | 27 tests now run (were 0) |
 
-After these changes, every first-party package's typecheck, test, and build
+### Round 2 — code-quality and type-safety refactors
+
+| Fix | Where | Effect |
+|-----|-------|--------|
+| Killed 4 `as any` casts on runtime API responses | `lead-os-hosted-runtime-wt-hybrid/src/components/LiveDeliverableAction.tsx` | typed nested-property access through a `pick(value, ...path)` helper that returns `unknown` |
+| Killed `Object.keys(...) as unknown as WizardStep[]` cast | `lead-os-hosted-runtime-wt-hybrid/src/components/SetupWizardClient.tsx` | replaced with a typed `readonly WizardStep[]` literal |
+| Killed triple `as unknown as` casts on `deepMerge` | `lead-os-hosted-runtime-wt-hybrid/src/lib/niche-adapter.ts` (2 call-sites), `src/lib/context-engine.ts`, `src/app/api/niche-generator/[slug]/route.ts` | relaxed three local `deepMerge<T>` signatures from `T extends Record<string, unknown>` to `T extends object`; all four call-sites now compile without casts |
+| Killed double-cast spread | `lead-os-hosted-runtime-wt-hybrid/src/app/api/ai/score/route.ts:41` | `{ ...storedLead }` retains the `StoredLeadRecord` properties; assignment to `Record<string, unknown>` is structural |
+| Annotated optional out-of-band metadata access | `lead-os-hosted-runtime-wt-hybrid/src/app/api/gmb/ingest/[slug]/quality/route.ts:80` | replaced `(page as unknown as Record<string, unknown>).ingestedProfile` with a typed optional-property assertion plus comment explaining the contract |
+| Removed redundant double-parse of webhook body | `erie-pro/src/lib/webhook-delivery.ts` | one `JSON.parse(body)` at the top of the function instead of two inside the headers literal; also narrows the event/timestamp values rather than reading them as `any` |
+| Removed unneeded `as unknown as PrismaClient` casts | `erie-pro/src/lib/db.ts` plus 4 scripts under `erie-pro/src/scripts/` | `new PrismaClient({ adapter })` is already correctly typed under Prisma v7 + `@prisma/adapter-pg`; the casts were dead noise |
+| Added strict flags to public-runtime tsconfig | `lead-os-hosted-runtime-wt-public/tsconfig.json` | now matches hybrid: `noImplicitReturns: true`, `noFallthroughCasesInSwitch: true`. Public code already complies — zero new errors |
+| Logged silently-swallowed intake-fetch failures | `neatcircle-beta/src/components/{ROICalculator,ChatWidget,ExitIntent,AssessmentQuiz}.tsx` | fire-and-forget UX preserved, but errors now surface via `console.warn` for dev/debug |
+
+After both rounds, every first-party package's typecheck, test, and build
 runs locally without error.
 
 ## Verified build & test status (after fixes in this branch)
@@ -221,6 +238,89 @@ workflows are inert (see L1). License notes: `growchief-growchief` is
 AGPL-3.0, `czlonkowski-n8n-mcp` is MIT — neither is imported into
 first-party builds, so no cross-licence contamination, but worth flagging
 if anyone copies code out of `growchief-growchief`.
+
+## Code-quality findings — Round 2
+
+### Q1. Hybrid `as unknown as` cast inventory ✅ partial fix
+
+Pre-fix grep over `lead-os-hosted-runtime-wt-hybrid/src/`: **49** `as unknown
+as` / `as any` sites. Post-fix: **~40**, the remainder fall into categories
+that are correct at boundaries:
+
+- Persistence round-tripping (`payload: Record<string, unknown>` storage
+  fields holding typed objects) — `src/lib/integrations/*-adapter.ts`,
+  `src/lib/runtime-store.ts:345`.
+- BullMQ queue/worker generics that don't expose the underlying type
+  parameters — `src/lib/integrations/job-queue.ts`.
+- Revenue pipeline `Stage<T>` results that intentionally erase to
+  `Record<string, unknown>` for the orchestrator —
+  `src/lib/revenue-pipeline.ts` (16 sites, all in one function).
+
+I did **not** refactor those: they encode a design decision (typed-in-flight,
+generic-at-rest) that would require a new pipeline contract to clean up.
+
+### Q2. Three near-identical `deepMerge` implementations
+
+The same recursive merge appears in:
+- `lead-os-hosted-runtime-wt-hybrid/src/lib/niche-adapter.ts:135`
+- `lead-os-hosted-runtime-wt-hybrid/src/lib/context-engine.ts:154`
+- `lead-os-hosted-runtime-wt-hybrid/src/app/api/niche-generator/[slug]/route.ts:35`
+  (this one is `DeepPartial<T>`-shaped)
+
+All three were rewritten to `T extends object` to avoid the cast tax (see
+Round 2 table). Consolidating into a shared `src/lib/object-helpers.ts` is
+the obvious next step but would touch all callers; left as follow-up.
+
+### Q3. `erie-pro/src/lib/env.ts:73` returns undefined in dev fallback
+
+```typescript
+if (!result.success) {
+  ...
+  if (process.env.NODE_ENV === "development") {
+    _env = result.data as unknown as Env;   // result.data is undefined on failure
+    return _env;
+  }
+  throw new Error("Invalid environment configuration");
+}
+```
+
+Zod's `safeParse` returns `{ success: false, error: ZodError }` on failure —
+there is no `.data` field. The cast hides this. Result: in dev with an
+invalid env, `getEnv()` returns `undefined`, and the next property access
+throws `TypeError: Cannot read properties of undefined`. The "graceful
+partial dev setup" branch advertised by the comment does not work as written.
+
+Left unchanged this round (would change runtime behavior and consumer
+assumptions); flagged for a follow-up that either throws, or pulls a partial
+shape out of `process.env` directly.
+
+### Q4. Large files (>1500 lines) — not split this round
+
+These were flagged for future modularisation but not touched (each holds a
+self-contained domain catalog or template registry; splitting requires call-
+site review which is out of scope for a code-quality pass):
+
+- `lead-os-hosted-runtime-wt-hybrid/src/lib/dynasty-landing-engine.ts` (2143)
+- `lead-os-hosted-runtime-wt-hybrid/src/lib/niche-templates.ts` (1905)
+- `lead-os-hosted-runtime-wt-hybrid/src/lib/providers.ts` (1846)
+- `lead-os-hosted-runtime-wt-hybrid/src/lib/tool-catalog.ts` (1812)
+- `lead-os-hosted-runtime-wt-hybrid/src/mcp/tools.ts` (1622)
+- `erie-pro/src/lib/niche-content.ts` (3406 — niche-specific copy table, expected to be large)
+- `erie-pro/src/lib/convertbox-service-map.ts` (2054)
+- `erie-pro/src/lib/sales-funnels.ts` (1413)
+
+### Q5. False-positive findings from automated scan (not actual issues)
+
+For the record, the read-only investigation flagged these that turned out
+to be safe:
+
+- `src/lib/widget-preview.ts:650` `JSON.parse(rawOrigins)` — already inside a
+  `try { ... } catch` block.
+- `src/app/dashboard/pipeline/page.tsx:103` `JSON.parse(leadJson)` — same.
+- `erie-pro/src/lib/settings.ts:19` `JSON.parse(row.value) as T` — wrapped
+  in `try/catch` with fallback.
+- `src/components/RealtimeProvider.tsx:73-75` empty `catch {}` — comment
+  documents intentional ignore of malformed EventSource messages.
 
 ## Recommended follow-up (not done in this branch)
 

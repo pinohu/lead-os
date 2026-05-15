@@ -58,6 +58,7 @@ const STEP_LABELS: Record<WizardStep, string> = {
 };
 
 const TOTAL_STEPS = 5;
+const WIZARD_STEPS: readonly WizardStep[] = [0, 1, 2, 3, 4] as const;
 
 // ---------------------------------------------------------------------------
 // Step progress indicator
@@ -70,13 +71,12 @@ function StepProgress({ current }: { current: WizardStep }) {
         role="list"
         className="flex list-none flex-wrap items-center gap-2 p-0"
       >
-        {(Object.keys(STEP_LABELS) as unknown as WizardStep[]).map((step) => {
-          const stepNum = Number(step) as WizardStep;
+        {WIZARD_STEPS.map((stepNum) => {
           const isCompleted = stepNum < current;
           const isCurrent = stepNum === current;
           return (
             <li
-              key={step}
+              key={stepNum}
               className="flex items-center gap-2"
             >
               <span

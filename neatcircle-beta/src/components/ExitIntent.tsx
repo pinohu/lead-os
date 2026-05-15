@@ -133,7 +133,9 @@ export default function ExitIntent() {
           stepId: "exit-intent-capture",
         }),
       ),
-    }).catch(() => {});
+    }).catch((err) => {
+      console.warn("[ExitIntent] intake fetch failed:", err);
+    });
 
     setSubmitted(true);
     setLoading(false);

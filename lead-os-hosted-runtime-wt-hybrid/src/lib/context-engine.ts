@@ -151,10 +151,11 @@ function defaultPsychologyProfile(): PsychologyProfile {
 // Deep merge
 // ---------------------------------------------------------------------------
 
-function deepMerge<T extends Record<string, unknown>>(target: T, source: Record<string, unknown>): T {
+function deepMerge<T extends object>(target: T, source: object): T {
   const result = { ...target };
-  for (const key of Object.keys(source)) {
-    const srcVal = source[key];
+  const sourceRec = source as Record<string, unknown>;
+  for (const key of Object.keys(sourceRec)) {
+    const srcVal = sourceRec[key];
     const tgtVal = (target as Record<string, unknown>)[key];
 
     if (
@@ -370,7 +371,7 @@ export function updateContext(leadKey: string, partial: LeadContextUpdate): Lead
   const existing = store.get(leadKey);
   if (!existing) return null;
 
-  const merged = deepMerge(existing as unknown as Record<string, unknown>, partial as Record<string, unknown>) as unknown as LeadContext;
+  const merged = deepMerge(existing, partial);
   merged.updatedAt = new Date().toISOString();
   merged.lastSeen = merged.updatedAt;
 

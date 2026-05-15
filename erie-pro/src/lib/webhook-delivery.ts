@@ -65,6 +65,12 @@ async function deliverToEndpoint(
   body: string
 ): Promise<void> {
   const signature = signPayload(body, secret);
+  const parsed = JSON.parse(body) as { event?: unknown; timestamp?: unknown };
+  const eventHeader = typeof parsed.event === "string" ? parsed.event : "";
+  const timestampHeader =
+    typeof parsed.timestamp === "string" || typeof parsed.timestamp === "number"
+      ? String(parsed.timestamp)
+      : "";
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
@@ -76,8 +82,8 @@ async function deliverToEndpoint(
         headers: {
           "Content-Type": "application/json",
           "X-Webhook-Signature": signature,
-          "X-Webhook-Event": JSON.parse(body).event,
-          "X-Webhook-Timestamp": JSON.parse(body).timestamp,
+          "X-Webhook-Event": eventHeader,
+          "X-Webhook-Timestamp": timestampHeader,
           "User-Agent": "EriePro-Webhooks/1.0",
         },
         body,

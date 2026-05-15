@@ -32,7 +32,7 @@ type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
-function deepMerge<T extends Record<string, unknown>>(target: T, source: DeepPartial<T>): T {
+function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
   const result = { ...target };
   for (const key of Object.keys(source) as Array<keyof T>) {
     const sourceVal = source[key];
@@ -97,10 +97,7 @@ export async function PATCH(
       }
     }
 
-    const updated = deepMerge(
-      config as unknown as Record<string, unknown>,
-      body as DeepPartial<Record<string, unknown>>,
-    ) as unknown as GeneratedNicheConfig;
+    const updated = deepMerge(config, body as DeepPartial<GeneratedNicheConfig>);
 
     nicheStore.set(slug, updated);
 

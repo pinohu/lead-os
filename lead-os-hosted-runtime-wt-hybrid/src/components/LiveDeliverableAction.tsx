@@ -189,6 +189,15 @@ export function LiveDeliverableAction({ slug }: LiveDeliverableActionProps) {
   return null;
 }
 
+function pick(value: unknown, ...path: string[]): unknown {
+  let cur: unknown = value;
+  for (const key of path) {
+    if (!cur || typeof cur !== "object") return undefined;
+    cur = (cur as Record<string, unknown>)[key];
+  }
+  return cur;
+}
+
 function ResultBlock({
   slug,
   status,
@@ -208,10 +217,10 @@ function ResultBlock({
   const summary =
     slug === "lead-scoring-routing"
       ? {
-          composite: (result.scores as any)?.composite?.score,
+          composite: pick(result, "scores", "composite", "score"),
           temperature: result.temperature,
-          route: (result.decision as any)?.family,
-          destination: (result.decision as any)?.destination,
+          route: pick(result, "decision", "family"),
+          destination: pick(result, "decision", "destination"),
         }
       : slug === "support-lane"
         ? result
@@ -219,7 +228,7 @@ function ResultBlock({
             leadKey: result.leadKey,
             score: result.score,
             stage: result.stage,
-            route: (result.decision as any)?.family,
+            route: pick(result, "decision", "family"),
             dryRun: result.dryRun,
           };
 

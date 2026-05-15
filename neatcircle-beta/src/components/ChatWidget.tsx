@@ -272,7 +272,9 @@ export default function ChatWidget() {
             stepId: "chat-capture",
           }),
         ),
-      }).catch(() => {});
+      }).catch((err) => {
+        console.warn("[ChatWidget] intake fetch failed:", err);
+      });
     }
 
     setTimeout(() => {

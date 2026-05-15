@@ -29,7 +29,7 @@ function createPrismaClient(): PrismaClient {
       process.env.NODE_ENV === "development"
         ? ["query", "error", "warn"]
         : ["error"],
-  }) as unknown as PrismaClient;
+  });
 }
 
 export function getPrisma(): PrismaClient {

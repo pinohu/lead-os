@@ -77,10 +77,11 @@ export async function GET(
       );
     }
 
-    const metadata = (page as unknown as Record<string, unknown>).ingestedProfile;
-    const profile: IngestedBusinessProfile = metadata
-      ? (metadata as IngestedBusinessProfile)
-      : buildDefaultProfile(page);
+    // GMB ingestor may attach an ingestedProfile to the page record; the type
+    // doesn't declare it because attachment is optional and out-of-band.
+    const maybeProfile = (page as { ingestedProfile?: IngestedBusinessProfile })
+      .ingestedProfile;
+    const profile: IngestedBusinessProfile = maybeProfile ?? buildDefaultProfile(page);
 
     const report = scoreContentQuality(page, profile);
 

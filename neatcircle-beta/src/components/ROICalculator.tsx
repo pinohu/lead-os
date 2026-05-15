@@ -108,7 +108,9 @@ export default function ROICalculator() {
           stepId: "roi-capture",
         }),
       ),
-    }).catch(() => {});
+    }).catch((err) => {
+      console.warn("[ROICalculator] intake fetch failed:", err);
+    });
 
     setSubmitted(true);
     setLoading(false);

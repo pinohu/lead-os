@@ -132,10 +132,11 @@ export interface NicheListFilters {
 // Deep merge
 // ---------------------------------------------------------------------------
 
-function deepMerge<T extends Record<string, unknown>>(target: T, source: Record<string, unknown>): T {
+function deepMerge<T extends object>(target: T, source: object): T {
   const result = { ...target };
-  for (const key of Object.keys(source)) {
-    const srcVal = source[key];
+  const sourceRec = source as Record<string, unknown>;
+  for (const key of Object.keys(sourceRec)) {
+    const srcVal = sourceRec[key];
     const tgtVal = (target as Record<string, unknown>)[key];
 
     if (
@@ -752,10 +753,7 @@ export function updateNicheConfig(
   const existing = nicheConfigStore.get(slug);
   if (!existing) return null;
 
-  const merged = deepMerge(
-    existing as unknown as Record<string, unknown>,
-    partial as Record<string, unknown>,
-  ) as unknown as NicheConfig;
+  const merged = deepMerge(existing, partial);
   merged.slug = slug;
 
   nicheConfigStore.set(slug, merged);
@@ -794,7 +792,7 @@ export function resolveNicheConfig(slug: string): NicheConfig | null {
   if (!config) return null;
 
   const defaults = { ...DEFAULT_NICHE_CONFIG, slug: config.slug, name: config.name, industry: config.industry };
-  return deepMerge(defaults as unknown as Record<string, unknown>, config as unknown as Record<string, unknown>) as unknown as NicheConfig;
+  return deepMerge(defaults, config);
 }
 
 export function applyNicheToScoring(nicheConfig: NicheConfig): ScoringWeightOverrides {

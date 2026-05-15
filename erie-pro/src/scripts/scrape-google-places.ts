@@ -59,7 +59,7 @@ if (!process.env.OUTSCRAPER_API_KEY) {
 }
 
 const adapter = new PrismaPg({ connectionString })
-const prisma = new PrismaClient({ adapter }) as unknown as PrismaClient
+const prisma = new PrismaClient({ adapter })
 
 // ── Erie coordinates ──────────────────────────────────────────────
 

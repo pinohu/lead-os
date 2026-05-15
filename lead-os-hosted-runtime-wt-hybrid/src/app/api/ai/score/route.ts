@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     try {
       const storedLead = await getLeadRecord(leadKey);
       if (storedLead) {
-        leadData = { ...storedLead } as unknown as Record<string, unknown>;
+        leadData = { ...storedLead };
       }
     } catch {
       // Proceed with minimal lead data
