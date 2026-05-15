@@ -30,7 +30,18 @@ export const metadata: Metadata = {
   alternates: { canonical: `https://${cityConfig.domain}/directory` },
 }
 
-export const dynamic = "force-dynamic"
+// ── Caching strategy ───────────────────────────────────────────────
+// Previously this used `force-dynamic`, which combined with Next 15's
+// streaming SSR caused <title> to be rendered after </head> (~byte 33k in
+// the response). That's invisible to JS-aware crawlers but skipped by
+// social-card crawlers, RSS readers, and assistive tech.
+//
+// Switching to ISR with a 60-second revalidate window:
+//   - keeps directory listing counts fresh enough for a directory page
+//   - lets Next render metadata into <head> deterministically
+//   - revalidate(0) -> revalidate(60) is the smallest change that fixes
+//     the streaming-title problem without losing data freshness.
+export const revalidate = 60
 
 export default async function DirectoryIndexPage() {
   // Fetch listing counts and claimed territory counts per niche in parallel

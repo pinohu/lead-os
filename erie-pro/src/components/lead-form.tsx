@@ -199,11 +199,17 @@ export default function LeadForm({ nicheSlug, nicheLabel, citySlug, cityName }: 
             name="firstName"
             required
             aria-required="true"
+            aria-invalid={!!errors.firstName}
+            aria-describedby={errors.firstName ? "firstName-error" : undefined}
             placeholder="John"
             onBlur={(e) => handleBlur("firstName", e.target.value)}
             onChange={() => clearError("firstName")}
           />
-          {errors.firstName && <p className="text-sm text-destructive mt-1">{errors.firstName}</p>}
+          {errors.firstName && (
+            <p id="firstName-error" role="alert" className="text-sm text-destructive mt-1">
+              {errors.firstName}
+            </p>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="lastName">Last name</Label>
@@ -219,12 +225,18 @@ export default function LeadForm({ nicheSlug, nicheLabel, citySlug, cityName }: 
           name="phone"
           required
           aria-required="true"
+          aria-invalid={!!errors.phone}
+          aria-describedby={errors.phone ? "phone-error" : undefined}
           placeholder="(814) 555-0199"
           value={phoneDisplay}
           onChange={handlePhoneChange}
           onBlur={(e) => handleBlur("phone", e.target.value)}
         />
-        {errors.phone && <p className="text-sm text-destructive mt-1">{errors.phone}</p>}
+        {errors.phone && (
+          <p id="phone-error" role="alert" className="text-sm text-destructive mt-1">
+            {errors.phone}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -235,11 +247,17 @@ export default function LeadForm({ nicheSlug, nicheLabel, citySlug, cityName }: 
           name="email"
           required
           aria-required="true"
+          aria-invalid={!!errors.email}
+          aria-describedby={errors.email ? "email-error" : undefined}
           placeholder="john@example.com"
           onBlur={(e) => handleBlur("email", e.target.value)}
           onChange={() => clearError("email")}
         />
-        {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
+        {errors.email && (
+          <p id="email-error" role="alert" className="text-sm text-destructive mt-1">
+            {errors.email}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">

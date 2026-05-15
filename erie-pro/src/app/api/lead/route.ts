@@ -366,17 +366,31 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // ── Honest customer messaging ─────────────────────────────────
+    // Previously we returned "A provider will contact you shortly" even
+    // when the lead routed to nobody (the current state for every niche
+    // until the first provider claims). That message is a false promise:
+    // there is literally no one to make the call. Pre-launch audit caught
+    // this; we tell the truth here and surface the concierge phone as
+    // the immediate-action path.
+    const niceNiche = niche.replace(/-/g, " ")
+    let responseMessage: string
+    if (result.routedTo) {
+      responseMessage = `Your request has been received and routed to ${result.routedTo.businessName}. Expect outreach within 30 minutes.`
+    } else if (isProviderSpecific) {
+      responseMessage = `Your request for ${targetProviderName ?? "this business"} has been received. Erie.pro will review it for provider follow-up and reach out within 24 hours.`
+    } else {
+      responseMessage = `Your request has been received. We don't have a verified Erie ${niceNiche} provider claimed yet — we've banked your request and will reach out within 24 hours if one activates. To speak with someone now, call (814) 200-0328.`
+    }
+
     return NextResponse.json({
       success: true,
       leadId: result.leadId,
-      routedTo: result.routedTo?.businessName ?? "Queued for matching",
+      routedTo: result.routedTo?.businessName ?? null,
+      matched: !!result.routedTo,
+      conciergePhone: result.routedTo ? null : "+1-814-200-0328",
       actionPlan: actionPlanResult?.plan ?? null,
-      message:
-        result.routedTo
-          ? `Your request has been received and routed to ${result.routedTo.businessName}.`
-          : isProviderSpecific
-            ? "Your request has been received. Erie.pro will review it for provider follow-up."
-            : "Your request has been received. A provider will contact you shortly.",
+      message: responseMessage,
     })
   } catch (err) {
     logger.error("/api/lead", "Error:", err)
