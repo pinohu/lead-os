@@ -27,17 +27,20 @@ import {
   getSubscriptionStatus,
 } from "../src/lib/billing.ts";
 
-const ORIGINAL_NODE_ENV = process.env.NODE_ENV;
-const ORIGINAL_VERCEL_ENV = process.env.VERCEL_ENV;
-const ORIGINAL_STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+// TS 5+ marks process.env.NODE_ENV as readonly; tests need to mutate it.
+const env = process.env as Record<string, string | undefined>;
+
+const ORIGINAL_NODE_ENV = env.NODE_ENV;
+const ORIGINAL_VERCEL_ENV = env.VERCEL_ENV;
+const ORIGINAL_STRIPE_SECRET_KEY = env.STRIPE_SECRET_KEY;
 
 function restoreBillingEnv() {
-  if (ORIGINAL_NODE_ENV === undefined) delete process.env.NODE_ENV;
-  else process.env.NODE_ENV = ORIGINAL_NODE_ENV;
-  if (ORIGINAL_VERCEL_ENV === undefined) delete process.env.VERCEL_ENV;
-  else process.env.VERCEL_ENV = ORIGINAL_VERCEL_ENV;
-  if (ORIGINAL_STRIPE_SECRET_KEY === undefined) delete process.env.STRIPE_SECRET_KEY;
-  else process.env.STRIPE_SECRET_KEY = ORIGINAL_STRIPE_SECRET_KEY;
+  if (ORIGINAL_NODE_ENV === undefined) delete env.NODE_ENV;
+  else env.NODE_ENV = ORIGINAL_NODE_ENV;
+  if (ORIGINAL_VERCEL_ENV === undefined) delete env.VERCEL_ENV;
+  else env.VERCEL_ENV = ORIGINAL_VERCEL_ENV;
+  if (ORIGINAL_STRIPE_SECRET_KEY === undefined) delete env.STRIPE_SECRET_KEY;
+  else env.STRIPE_SECRET_KEY = ORIGINAL_STRIPE_SECRET_KEY;
 }
 
 // ---------------------------------------------------------------------------
@@ -346,9 +349,9 @@ test("getPlanForTenant returns null for cancelled subscription", async () => {
 
 test("createCheckoutSession returns dry-run when Stripe not configured", async () => {
   restoreBillingEnv();
-  delete process.env.VERCEL_ENV;
-  process.env.NODE_ENV = "test";
-  delete process.env.STRIPE_SECRET_KEY;
+  delete env.VERCEL_ENV;
+  env.NODE_ENV = "test";
+  delete env.STRIPE_SECRET_KEY;
   const result = await createCheckoutSession("dry-tenant", "managed-starter", "/success", "/cancel");
   assert.equal(result.dryRun, true);
   assert.equal(result.url, "/success");

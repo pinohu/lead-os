@@ -100,7 +100,7 @@ describe("package provisioning", () => {
   it("includes the 2026 autonomous agency products as concrete provisionable outcomes", () => {
     const slugs = new Set(provisionablePackages.map((pkg) => pkg.slug));
 
-    for (const slug of [
+    const requiredAgencySlugs: PackageSlug[] = [
       "ai-opportunity-audit",
       "ghost-expert-course-factory",
       "ai-receptionist-missed-call-recovery",
@@ -112,7 +112,8 @@ describe("package provisioning", () => {
       "webinar-lead-magnet-factory",
       "founder-ai-chief-of-staff",
       "ai-first-business-os",
-    ]) {
+    ];
+    for (const slug of requiredAgencySlugs) {
       assert.ok(slugs.has(slug), `${slug} should be a sellable autonomous agency product`);
     }
 
