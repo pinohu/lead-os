@@ -234,11 +234,17 @@ export default function ContactForm({
           name="name"
           required
           aria-required="true"
+          aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? "name-error" : undefined}
           placeholder="John Smith"
           onBlur={(e) => handleBlur("name", e.target.value)}
           onChange={() => clearError("name")}
         />
-        {errors.name && <p className="text-sm text-destructive mt-1">{errors.name}</p>}
+        {errors.name && (
+          <p id="name-error" role="alert" className="text-sm text-destructive mt-1">
+            {errors.name}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -249,11 +255,17 @@ export default function ContactForm({
           name="email"
           required
           aria-required="true"
+          aria-invalid={!!errors.email}
+          aria-describedby={errors.email ? "email-error" : undefined}
           placeholder="john@example.com"
           onBlur={(e) => handleBlur("email", e.target.value)}
           onChange={() => clearError("email")}
         />
-        {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
+        {errors.email && (
+          <p id="email-error" role="alert" className="text-sm text-destructive mt-1">
+            {errors.email}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -262,12 +274,18 @@ export default function ContactForm({
           id="phone"
           type="tel"
           name="phone"
+          aria-invalid={!!errors.phone}
+          aria-describedby={errors.phone ? "phone-error" : undefined}
           placeholder="(814) 555-0199"
           value={phoneDisplay}
           onChange={handlePhoneChange}
           onBlur={(e) => handleBlur("phone", e.target.value)}
         />
-        {errors.phone && <p className="text-sm text-destructive mt-1">{errors.phone}</p>}
+        {errors.phone && (
+          <p id="phone-error" role="alert" className="text-sm text-destructive mt-1">
+            {errors.phone}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
