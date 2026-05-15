@@ -126,11 +126,38 @@ export async function sendConsumerConfirmation(
   statusToken?: string,
   options?: { requestedProviderName?: string | null }
 ): Promise<boolean> {
+  // ── Honest messaging matrix ─────────────────────────────────────
+  // Three states. We tell the truth in each:
+  //   1. Routed to an active provider — name them, set expectations
+  //   2. Provider-specific request    — name the requested business
+  //   3. Unmatched (no claimed niche) — admit it, give the concierge phone
+  // The third branch previously said "we're matching your request" which
+  // was a soft false promise when no provider existed to be matched to.
+  const niceNiche = escapeHtml(niche.replace(/-/g, " "));
   const statusMessage = routedToProvider
-    ? `Your request has been sent to <strong>${escapeHtml(routedToProvider)}</strong>, a verified ${escapeHtml(niche)} provider in ${cityConfig.name}. They will contact you shortly.`
+    ? `Your request has been sent to <strong>${escapeHtml(routedToProvider)}</strong>, a verified ${niceNiche} provider in ${cityConfig.name}. They will contact you shortly.`
     : options?.requestedProviderName
-      ? `We received your request for <strong>${escapeHtml(options.requestedProviderName)}</strong>. Erie.pro will hold the request for provider follow-up. If the vehicle issue is urgent, please call the shop directly.`
-    : `We&apos;re matching your request with a ${escapeHtml(niche)} provider in ${cityConfig.name}. You&apos;ll be contacted once a match is found.`;
+      ? `We received your request for <strong>${escapeHtml(options.requestedProviderName)}</strong>. Erie.pro will hold the request for provider follow-up. If your situation is urgent, please call the business directly.`
+      : `We&apos;ve recorded your ${niceNiche} request in our system. We don&apos;t have a verified Erie ${niceNiche} provider claimed on our platform yet — we&apos;ve banked your request and will reach out within 24 hours if one activates. If you need help now, call us at <a href="tel:+18142000328" style="color:#2563eb">(814) 200-0328</a> and we&apos;ll route you to a vetted ${niceNiche} pro outside the platform.`;
+
+  // What-to-expect bullets should also match the actual state.
+  const expectationItems = routedToProvider
+    ? [
+        "A provider will reach out within 30 minutes (often sooner)",
+        "They may contact you by phone, text, or email",
+        "You are under no obligation — get a quote and decide",
+      ]
+    : options?.requestedProviderName
+      ? [
+          "Erie.pro will review and route your request within 24 hours",
+          "We&apos;ll contact you with next steps via email or phone",
+          "You are under no obligation",
+        ]
+      : [
+          "We&apos;ll bank your request and reach out within 24 hours",
+          "If a verified provider activates in this category, we&apos;ll route your request to them first",
+          "For immediate help, call <a href=\"tel:+18142000328\" style=\"color:#2563eb\">(814) 200-0328</a>",
+        ];
 
   const statusLink = statusToken
     ? `<p style="color:#374151;margin:16px 0"><a href="${SITE_URL}/lead-status?token=${encodeURIComponent(statusToken)}" style="color:#2563eb;text-decoration:underline">Check your request status</a></p>`
@@ -138,7 +165,7 @@ export async function sendConsumerConfirmation(
 
   return sendEmail({
     to: consumerEmail,
-    subject: `Your ${escapeHtml(niche)} service request — ${cityConfig.name} Pro`,
+    subject: `Your ${niceNiche} service request — ${cityConfig.name} Pro`,
     html: baseTemplate(`
       <h2 style="margin:0 0 16px;color:#111827;font-size:20px">We Received Your Request</h2>
       <p style="color:#374151;margin:0 0 16px">Hi${consumerName ? ` ${escapeHtml(consumerName)}` : ""},</p>
@@ -146,9 +173,7 @@ export async function sendConsumerConfirmation(
       ${statusLink}
       <h3 style="color:#111827;font-size:16px;margin:24px 0 12px">What to Expect</h3>
       <ul style="color:#374151;padding-left:20px;margin:0 0 24px">
-        <li style="margin:8px 0">A provider will reach out within 24 hours (often much sooner)</li>
-        <li style="margin:8px 0">They may contact you by phone, text, or email</li>
-        <li style="margin:8px 0">You are under no obligation — get a quote and decide</li>
+        ${expectationItems.map((item) => `<li style="margin:8px 0">${item}</li>`).join("")}
       </ul>
       <p style="color:#6b7280;font-size:13px;margin:0">You consented to be contacted when you submitted this request. If you no longer wish to be contacted, reply to this email with &quot;cancel&quot; and we will remove your request.</p>
     `, consumerEmail),
