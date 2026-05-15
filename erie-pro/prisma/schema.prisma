@@ -877,6 +877,15 @@ model OfferPurchase {
   generatedAssets GeneratedAsset[]
   subscriptions   OfferSubscriptionEntitlement[]
 
+  // ── ThriveCart idempotency ─────────────────────────────────────
+  // Defense-in-depth alongside ThriveCartEvent.payloadHash. Two
+  // concurrent webhook deliveries could both pass the hash check
+  // (race window between SELECT and INSERT). A compound unique on
+  // (thriveCartOrderId, offerId) makes the second concurrent insert
+  // fail at the DB level. NULL orderIds are allowed to coexist by
+  // default Postgres unique semantics, so non-ThriveCart purchases
+  // (Stripe checkouts, manual entries) are unaffected.
+  @@unique([thriveCartOrderId, offerId])
   @@index([status, createdAt])
   @@index([serviceSlug])
   @@index([serviceFamily])
@@ -941,6 +950,12 @@ model ThriveCartEvent {
   signatureValid    Boolean   @default(false)
   rawPayload        Json      @default("{}")
   normalizedPayload Json?     @default("{}")
+  // ── Idempotency ────────────────────────────────────────────────
+  // SHA-256 of the raw request body. ThriveCart retries the same
+  // payload on delivery failures; this column lets the webhook handler
+  // short-circuit on a duplicate before creating any purchase rows.
+  // Nullable for backfill safety on existing rows.
+  payloadHash       String?   @unique
   processedAt       DateTime?
   processingStatus  String    @default("pending")
   lastError         String?

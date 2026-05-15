@@ -1,5 +1,5 @@
 import { after, NextRequest, NextResponse } from "next/server"
-import { createHmac, timingSafeEqual } from "crypto"
+import { createHash, createHmac, timingSafeEqual } from "crypto"
 import { z } from "zod"
 import type { Prisma } from "@/generated/prisma"
 import { prisma } from "@/lib/db"
@@ -215,6 +215,33 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Invalid JSON" }, { status: 400 })
   }
 
+  // ── Idempotency: payload hash short-circuit ─────────────────────
+  // ThriveCart retries failed webhook deliveries for ~24 hours with
+  // identical payloads. Without this check, a single $399 purchase
+  // would create multiple OfferPurchase rows, multiple fulfillment
+  // jobs, multiple confirmation emails, and multiple Boost.space syncs
+  // on every retry. We hash the raw body and short-circuit on duplicate.
+  // The OfferPurchase compound unique on (thriveCartOrderId, offerId)
+  // is the second-layer defense for the race-window case.
+  const payloadHash = createHash("sha256").update(rawBody).digest("hex")
+  const existingEvent = await prisma.thriveCartEvent.findUnique({
+    where: { payloadHash },
+    select: { id: true, processingStatus: true, processedAt: true },
+  })
+  if (existingEvent && existingEvent.processingStatus === "processed") {
+    logger.info("webhook/thrivecart", "Duplicate webhook short-circuited", {
+      eventId: existingEvent.id,
+      payloadHash: payloadHash.slice(0, 12),
+      processedAt: existingEvent.processedAt,
+    })
+    return NextResponse.json({
+      success: true,
+      duplicate: true,
+      originalEventId: existingEvent.id,
+      message: "Webhook payload already processed",
+    })
+  }
+
   const normalized = normalizeThriveCartPayload(body)
   const thriveCartEvent = await prisma.thriveCartEvent.create({
     data: {
@@ -225,6 +252,7 @@ export async function POST(request: NextRequest) {
       signatureValid,
       rawPayload: body as Prisma.InputJsonValue,
       normalizedPayload: normalized as Prisma.InputJsonValue,
+      payloadHash,
       processingStatus: signatureValid ? "pending" : "signature_failed",
     },
   })
@@ -343,31 +371,74 @@ export async function POST(request: NextRequest) {
 
     const createdPurchases: Array<{ id: string }> = []
     for (const item of purchaseItems) {
-      const { purchase } = await createOfferPurchase({
-        offerSlug: item.offerSlug,
-        serviceSlug: normalized.serviceSlug,
-        amountCents: item.amountCents,
-        currency: normalized.currency,
-        status: "paid",
-        sourceSystem: "thrivecart",
-        sourcePage: normalized.sourcePage,
-        sourcePageType: normalized.sourcePageType ?? item.purchaseType ?? "thrivecart_checkout",
-        convertBoxId: normalized.convertBoxId,
-        thriveCartOrderId: normalized.orderId,
-        thriveCartProductId: item.productId,
-        coupon: normalized.coupon,
-        affiliate: normalized.affiliate,
-        utmSource: normalized.utmSource,
-        utmMedium: normalized.utmMedium,
-        utmCampaign: normalized.utmCampaign,
-        gclid: normalized.gclid,
-        rawPayload: body,
-        normalizedPayload: {
-          ...normalized,
-          activePurchase: item,
-        },
-        customer: normalized.customer,
-      })
+      // ── Layer-2 idempotency: catch unique-constraint violation ──
+      // If two concurrent webhook deliveries both pass the payloadHash
+      // check (race window between SELECT and INSERT on ThriveCartEvent),
+      // the OfferPurchase compound unique on (thriveCartOrderId, offerId)
+      // will reject the second insert with Prisma error P2002. We treat
+      // that as success: the first insert already created the row and
+      // its fulfillment chain. Look up the existing row so downstream
+      // recordRevenueActionPlan still has a purchase to attach to.
+      let purchase: { id: string; customerId: string; serviceSlug: string; serviceLabel: string; serviceFamily: string }
+      try {
+        const result = await createOfferPurchase({
+          offerSlug: item.offerSlug,
+          serviceSlug: normalized.serviceSlug,
+          amountCents: item.amountCents,
+          currency: normalized.currency,
+          status: "paid",
+          sourceSystem: "thrivecart",
+          sourcePage: normalized.sourcePage,
+          sourcePageType: normalized.sourcePageType ?? item.purchaseType ?? "thrivecart_checkout",
+          convertBoxId: normalized.convertBoxId,
+          thriveCartOrderId: normalized.orderId,
+          thriveCartProductId: item.productId,
+          coupon: normalized.coupon,
+          affiliate: normalized.affiliate,
+          utmSource: normalized.utmSource,
+          utmMedium: normalized.utmMedium,
+          utmCampaign: normalized.utmCampaign,
+          gclid: normalized.gclid,
+          rawPayload: body,
+          normalizedPayload: {
+            ...normalized,
+            activePurchase: item,
+          },
+          customer: normalized.customer,
+        })
+        purchase = result.purchase
+      } catch (err) {
+        const isUniqueViolation =
+          typeof err === "object" &&
+          err !== null &&
+          "code" in err &&
+          (err as { code: unknown }).code === "P2002"
+        if (!isUniqueViolation || !normalized.orderId) throw err
+
+        logger.info("webhook/thrivecart", "Race-window duplicate caught by unique index", {
+          orderId: normalized.orderId,
+          offerSlug: item.offerSlug,
+        })
+        // Look up the existing row so the rest of the loop still runs
+        const existing = await prisma.offerPurchase.findFirst({
+          where: {
+            thriveCartOrderId: normalized.orderId,
+            offer: { slug: item.offerSlug },
+          },
+          select: {
+            id: true,
+            customerId: true,
+            serviceSlug: true,
+            serviceLabel: true,
+            serviceFamily: true,
+          },
+        })
+        if (!existing) {
+          // Genuinely impossible (P2002 means a row exists) but bail safely
+          throw err
+        }
+        purchase = existing
+      }
       await recordRevenueActionPlan({
         sourceSystem: "thrivecart",
         eventType: item.purchaseType,
