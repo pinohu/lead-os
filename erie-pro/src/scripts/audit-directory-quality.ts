@@ -30,21 +30,13 @@
 
 import { writeFileSync, mkdirSync } from "fs"
 import { resolve, dirname } from "path"
-import { neon } from "@neondatabase/serverless"
+import { prisma } from "@/lib/db"
 import {
   NICHE_EXPECTED_CATEGORIES as EXPECTED,
   NICHE_HARD_ANTI_PATTERNS as HARD_ANTI_PATTERNS,
 } from "../lib/niche-category-map"
 
 const apply = process.argv.includes("--apply")
-
-const connectionString = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL
-if (!connectionString) {
-  console.error("DATABASE_URL_UNPOOLED is not set.")
-  process.exit(1)
-}
-const sql = neon(connectionString)
-
 
 type Listing = {
   id: string
@@ -54,11 +46,10 @@ type Listing = {
 }
 
 async function main() {
-  const rows = (await sql`
-    SELECT id, niche, "businessName", categories
-    FROM directory_listings
-    WHERE "isActive" = true
-  `) as Listing[]
+  const rows = (await prisma.directoryListing.findMany({
+    where: { isActive: true },
+    select: { id: true, niche: true, businessName: true, categories: true },
+  })) as Listing[]
 
   console.log(`Audited ${rows.length} active listings.`)
 
@@ -135,13 +126,11 @@ async function main() {
 
   if (apply && hardMismatches.length > 0) {
     const ids = hardMismatches.map((r) => r.id)
-    const result = await sql`
-      UPDATE directory_listings
-      SET "isActive" = false, "updatedAt" = NOW()
-      WHERE id = ANY(${ids})
-      RETURNING id
-    `
-    console.log(`\nDeactivated ${(result as { id: string }[]).length} listings.`)
+    const result = await prisma.directoryListing.updateMany({
+      where: { id: { in: ids } },
+      data: { isActive: false, updatedAt: new Date() },
+    })
+    console.log(`\nDeactivated ${result.count} listings.`)
   } else if (hardMismatches.length > 0) {
     console.log("\nRun with --apply to deactivate these listings.")
   }
