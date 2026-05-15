@@ -1,0 +1,1645 @@
+{
+  "auditedAt": "2026-05-15T20:56:47.314Z",
+  "totalActive": 1698,
+  "softSuspectCount": 182,
+  "hardMismatchCount": 0,
+  "hardMismatches": [],
+  "softSuspects": [
+    {
+      "id": "cmoufhe6g003migtqk17bhdm8",
+      "niche": "drain-cleaning",
+      "businessName": "SERVPRO of Erie",
+      "categories": [
+        "Water damage restoration service",
+        "Air duct cleaning service",
+        "Building restoration service",
+        "Cleaners",
+        "Crime victim service",
+        "Debris removal service",
+        "Fire damage restoration service",
+        "Waste management service"
+      ]
+    },
+    {
+      "id": "cmoudsjsn0015p0tqxu26loqo",
+      "niche": "pressure-washing",
+      "businessName": "Sirco Industrial Supply, Inc.",
+      "categories": [
+        "Industrial equipment supplier",
+        "Hose supplier"
+      ]
+    },
+    {
+      "id": "cmnlftlpr00154ktq27sa7b20",
+      "niche": "moving",
+      "businessName": "The UPS Store",
+      "categories": [
+        "Shipping and mailing service",
+        "Business center",
+        "Freight forwarding service",
+        "Mailbox rental service",
+        "Notary public",
+        "Office supply store",
+        "Packaging supply store",
+        "Print shop",
+        "Shredding service"
+      ]
+    },
+    {
+      "id": "cmoudf576000rp0tqb9xuhiyd",
+      "niche": "windows-doors",
+      "businessName": "Braendel Services, Inc",
+      "categories": [
+        "General contractor",
+        "Painter",
+        "Roofing contractor"
+      ]
+    },
+    {
+      "id": "cmoudtn46001ap0tqd0q546l7",
+      "niche": "drywall",
+      "businessName": "ABC Supply Co. Inc.",
+      "categories": [
+        "Roofing supply store",
+        "Building materials store",
+        "Building materials supplier",
+        "Construction material wholesaler",
+        "Wholesaler",
+        "Window supplier"
+      ]
+    },
+    {
+      "id": "cmnhqilen0013fotqxl4cxkwp",
+      "niche": "electrical",
+      "businessName": "Keystone Electric Construction",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmnlftksq000y4ktqhttr4vrl",
+      "niche": "moving",
+      "businessName": "Durst Warehouse",
+      "categories": [
+        "Trucking company"
+      ]
+    },
+    {
+      "id": "cmoudtn9q001bp0tq3om3z92j",
+      "niche": "drywall",
+      "businessName": "Faust Unit Home Improvement",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmouf8rna000z3ktqw508k51x",
+      "niche": "dermatology",
+      "businessName": "Wendy L Ripple, MD",
+      "categories": [
+        "Pediatrician",
+        "Doctor"
+      ]
+    },
+    {
+      "id": "cmoudtmm30017p0tq0k67gx7n",
+      "niche": "drywall",
+      "businessName": "DLK Construction",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmoudj1ng000wp0tqxui32vus",
+      "niche": "appliance-repair",
+      "businessName": "Doug Yaple Vacuum Cleaner Centers",
+      "categories": [
+        "Vacuum cleaner store"
+      ]
+    },
+    {
+      "id": "cmoueqtl50035p0tqipq3dhor",
+      "niche": "duct-cleaning",
+      "businessName": "North Erie Air Duct Cleaning And Dyer Vent Cleaning, PA",
+      "categories": [
+        "Mechanical contractor"
+      ]
+    },
+    {
+      "id": "cmnhrfmtq00f6fotqwrkcpqb2",
+      "niche": "pressure-washing",
+      "businessName": "Hotsy Pressure Washers",
+      "categories": [
+        "Equipment supplier"
+      ]
+    },
+    {
+      "id": "cmnhruxki00ldfotqpjnc4r6q",
+      "niche": "restoration",
+      "businessName": "Advanced Drying",
+      "categories": [
+        "Cleaning service"
+      ]
+    },
+    {
+      "id": "cmnhqthg70062fotqqe77stud",
+      "niche": "pest-control",
+      "businessName": "Commercial Turf Fertilization Inc.",
+      "categories": [
+        "Lawn care service"
+      ]
+    },
+    {
+      "id": "cmnhr92kw00c5fotqe2qxyvru",
+      "niche": "concrete",
+      "businessName": "Erie Strayer Co",
+      "categories": [
+        "Professional services"
+      ]
+    },
+    {
+      "id": "cmnhr85ur00bgfotqmma8s6l1",
+      "niche": "home-security",
+      "businessName": "Master Fire & Security Systems",
+      "categories": [
+        "Fire protection service"
+      ]
+    },
+    {
+      "id": "cmnhr1zu8009ffotq2e2dr4w4",
+      "niche": "windows-doors",
+      "businessName": "Frontier Lumber, Inc.",
+      "categories": [
+        "Lumber store",
+        "Building materials store"
+      ]
+    },
+    {
+      "id": "cmnhqy8ot0080fotqw0dwzag3",
+      "niche": "garage-door",
+      "businessName": "Flying J's Construction",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmnhqlv1g002dfotqxf3gdemi",
+      "niche": "landscaping",
+      "businessName": "Steve Danylko Land Service",
+      "categories": [
+        "Excavating contractor"
+      ]
+    },
+    {
+      "id": "cmnhqthpk0065fotqo1g29sne",
+      "niche": "pest-control",
+      "businessName": "SiteOne Landscape Supply",
+      "categories": [
+        "Landscape lighting designer",
+        "Fertilizer supplier",
+        "Irrigation equipment supplier",
+        "Landscape designer",
+        "Landscaping supply store",
+        "Lawn irrigation equipment supplier",
+        "Seed supplier"
+      ]
+    },
+    {
+      "id": "cmnhrhsgx00frfotq3wfu7gwj",
+      "niche": "insulation",
+      "businessName": "Energy Solutions of Erie",
+      "categories": [
+        "Contractor"
+      ]
+    },
+    {
+      "id": "cmnhr3ynh009vfotq68lenloi",
+      "niche": "moving",
+      "businessName": "The UPS Store",
+      "categories": [
+        "Shipping and mailing service",
+        "Business center",
+        "Freight forwarding service",
+        "Mailbox rental service",
+        "Notary public",
+        "Office supply store",
+        "Packaging supply store",
+        "Print shop",
+        "Shredding service"
+      ]
+    },
+    {
+      "id": "cmnhr3yhw009tfotq9prseb7j",
+      "niche": "moving",
+      "businessName": "HaulPros LLC",
+      "categories": [
+        "Junk removal service",
+        "Debris removal service",
+        "Waste management service"
+      ]
+    },
+    {
+      "id": "cmnhr3xv8009rfotq4kc4kw84",
+      "niche": "moving",
+      "businessName": "Best Bet Hauling",
+      "categories": [
+        "Waste management service"
+      ]
+    },
+    {
+      "id": "cmnhr5cfp00affotqnlozwd7q",
+      "niche": "tree-service",
+      "businessName": "️ ❄️Foringer Property Maintenance🍁",
+      "categories": [
+        "Lawn care service",
+        "Gutter cleaning service",
+        "Snow removal service"
+      ]
+    },
+    {
+      "id": "cmouetb2i003np0tqdnea6no8",
+      "niche": "junk-removal",
+      "businessName": "Erie Trash & Hauling",
+      "categories": [
+        "Trucking company"
+      ]
+    },
+    {
+      "id": "cmnhr6npu00arfotq9u48pt1g",
+      "niche": "appliance-repair",
+      "businessName": "Hobart Sales & Services",
+      "categories": [
+        "Restaurant supply store"
+      ]
+    },
+    {
+      "id": "cmnlfqe0t000t4ktq817hqypk",
+      "niche": "fencing",
+      "businessName": "Amish Sheds For Less",
+      "categories": [
+        "Shed builder"
+      ]
+    },
+    {
+      "id": "cmnhr86ov00bpfotqhg1cj0bj",
+      "niche": "home-security",
+      "businessName": "New York Burglar & Fire Alarm",
+      "categories": [
+        "Association / Organization"
+      ]
+    },
+    {
+      "id": "cmnhrgrsq00fmfotqpwlltj49",
+      "niche": "drywall",
+      "businessName": "SMK Stucco & Plaster",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmouhsy1b001vfgtqj1g6bpk0",
+      "niche": "salt-deicing-services",
+      "businessName": "Boss Landscaping",
+      "categories": [
+        "Landscaper"
+      ]
+    },
+    {
+      "id": "cmnhr94bt00cifotqymooude5",
+      "niche": "concrete",
+      "businessName": "T D Laughlin Masonry Builders For Chimney Installation, Waterford, PA",
+      "categories": [
+        "Home builder"
+      ]
+    },
+    {
+      "id": "cmnhrwqrx00lsfotqzj34uhcd",
+      "niche": "demolition",
+      "businessName": "Pro Waste Services Inc.",
+      "categories": [
+        "Waste management service"
+      ]
+    },
+    {
+      "id": "cmnhrdz3v00ekfotqj6ctwlr3",
+      "niche": "towing",
+      "businessName": "Brink's Auto Services",
+      "categories": [
+        "Auto repair shop"
+      ]
+    },
+    {
+      "id": "cmnhradya00cwfotqyh1b7iuh",
+      "niche": "septic",
+      "businessName": "Erie Public Works",
+      "categories": [
+        "Public works department"
+      ]
+    },
+    {
+      "id": "cmnhrae8d00cyfotqemwfsbjw",
+      "niche": "septic",
+      "businessName": "Green Distributors Co Inc",
+      "categories": [
+        "Pipe supplier"
+      ]
+    },
+    {
+      "id": "cmnlfs619000w4ktq4mwz195c",
+      "niche": "windows-doors",
+      "businessName": "Kraus Department Store",
+      "categories": [
+        "Hardware store",
+        "Paint store"
+      ]
+    },
+    {
+      "id": "cmnhrgrg500fjfotqvq1ghpkv",
+      "niche": "drywall",
+      "businessName": "American Handyman Erie",
+      "categories": [
+        "Handyman/Handywoman/Handyperson"
+      ]
+    },
+    {
+      "id": "cmoud80k9000hp0tqj4bcl3kh",
+      "niche": "pest-control",
+      "businessName": "Potratz Greenhouses",
+      "categories": [
+        "Garden center",
+        "Landscaper",
+        "Plant nursery"
+      ]
+    },
+    {
+      "id": "cmoueta6j003fp0tqevdp11wq",
+      "niche": "junk-removal",
+      "businessName": "Cheap Dumpsters",
+      "categories": [
+        "Dumpster rental service"
+      ]
+    },
+    {
+      "id": "cmnhrhtjw00g0fotqulsb3i1g",
+      "niche": "insulation",
+      "businessName": "Insul-Board",
+      "categories": [
+        "Plastic fabrication company"
+      ]
+    },
+    {
+      "id": "cmnhrdzd300enfotql8edwgr0",
+      "niche": "towing",
+      "businessName": "Ed's Transmission & Auto Services",
+      "categories": [
+        "Transmission shop",
+        "Auto repair shop",
+        "Brake shop",
+        "Muffler shop",
+        "Oil change service"
+      ]
+    },
+    {
+      "id": "cmnhrwq8d00lnfotq7v4z2hxt",
+      "niche": "demolition",
+      "businessName": "Team DeMo",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmnhrb4s900dafotq318wpxmu",
+      "niche": "chimney",
+      "businessName": "Ferrier's True Value Hardware & Fireplace Shoppe",
+      "categories": [
+        "Home improvement store",
+        "Garden center",
+        "Hardware store",
+        "Home builder",
+        "Plumbing supply store"
+      ]
+    },
+    {
+      "id": "cmnhrwqil00lqfotqub95kc9b",
+      "niche": "demolition",
+      "businessName": "Frontier General Contracting",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmoueveim0046p0tq9ydckd3h",
+      "niche": "home-inspection",
+      "businessName": "Erie Inspection Services",
+      "categories": [
+        "Engineer",
+        "Engineering consultant"
+      ]
+    },
+    {
+      "id": "cmnlflo3d000m4ktqbg1y8e4n",
+      "niche": "pest-control",
+      "businessName": "Aesthetic Turf Solutions",
+      "categories": [
+        "Lawn care service",
+        "Landscape designer"
+      ]
+    },
+    {
+      "id": "cmnlftlks00144ktq3241p351",
+      "niche": "moving",
+      "businessName": "Warner Theatre",
+      "categories": [
+        "Performing arts theater"
+      ]
+    },
+    {
+      "id": "cmnhrwrn200m1fotqkba1z9er",
+      "niche": "demolition",
+      "businessName": "Konzel Construction Co Inc",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmnhrwrzp00m4fotqp2pu43ak",
+      "niche": "demolition",
+      "businessName": "Roads Paving",
+      "categories": [
+        "Asphalt contractor",
+        "Paving contractor",
+        "Contractor",
+        "Masonry contractor"
+      ]
+    },
+    {
+      "id": "cmnhrws3p00m5fotqedin22kt",
+      "niche": "demolition",
+      "businessName": "Maya Brothers Inc",
+      "categories": [
+        "Concrete contractor"
+      ]
+    },
+    {
+      "id": "cmouda3bp000mp0tqv2ttqugy",
+      "niche": "painting",
+      "businessName": "Splatter Paint Erie",
+      "categories": [
+        "Recreation center"
+      ]
+    },
+    {
+      "id": "cmnlgkw3100294ktqti9dzj90",
+      "niche": "demolition",
+      "businessName": "Chivers Construction Co",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmouewzhe004fp0tqb3mu8vpu",
+      "niche": "property-management",
+      "businessName": "Winchester Apartments & Townhomes",
+      "categories": [
+        "Apartment complex",
+        "Apartment building"
+      ]
+    },
+    {
+      "id": "cmnhrwrqg00m2fotqlpd67m0w",
+      "niche": "demolition",
+      "businessName": "Ricchiuti Services",
+      "categories": [
+        "Contractor"
+      ]
+    },
+    {
+      "id": "cmnhrws7900m6fotqv7a5d0cu",
+      "niche": "demolition",
+      "businessName": "Pavement Care Services",
+      "categories": [
+        "Asphalt contractor"
+      ]
+    },
+    {
+      "id": "cmoudpsws0012p0tqhpqa2xyv",
+      "niche": "locksmith",
+      "businessName": "Intoxalock Ignition Interlock",
+      "categories": [
+        "Safety equipment supplier",
+        "Auto electrical service",
+        "Car inspection station"
+      ]
+    },
+    {
+      "id": "cmnhrrz8300kkfotqxti5pq2y",
+      "niche": "pet-grooming",
+      "businessName": "Lucky Dog Stay and Play",
+      "categories": [
+        "Pet boarding service",
+        "Dog day care center"
+      ]
+    },
+    {
+      "id": "cmouex0sh004qp0tqncupvjjy",
+      "niche": "property-management",
+      "businessName": "Alpine Village Apartments",
+      "categories": [
+        "Apartment building",
+        "Apartment complex"
+      ]
+    },
+    {
+      "id": "cmnhrtd6200l1fotq5iq0wmj5",
+      "niche": "snow-removal",
+      "businessName": "Hoffman United",
+      "categories": [
+        "Construction company",
+        "General contractor",
+        "Real estate rental agency"
+      ]
+    },
+    {
+      "id": "cmnhrtccj00l0fotqtigrhcjh",
+      "niche": "snow-removal",
+      "businessName": "Jerre's Service New & Used",
+      "categories": [
+        "Auto parts store"
+      ]
+    },
+    {
+      "id": "cmnlftl6j00114ktqmmdfavjt",
+      "niche": "moving",
+      "businessName": "Old Dominion Freight Line",
+      "categories": [
+        "Trucking company",
+        "Shipping company"
+      ]
+    },
+    {
+      "id": "cmnlftlgn00134ktq73kezo9q",
+      "niche": "moving",
+      "businessName": "PACA - Performing Artists Collective Alliance",
+      "categories": [
+        "Performing arts theater"
+      ]
+    },
+    {
+      "id": "cmnhr85nz00befotq6cexgos2",
+      "niche": "home-security",
+      "businessName": "Interstate Security Inc",
+      "categories": [
+        "Locksmith"
+      ]
+    },
+    {
+      "id": "cmnlftltr00164ktqhcdfyiar",
+      "niche": "moving",
+      "businessName": "BIGBAR",
+      "categories": [
+        "Bar & grill",
+        "Delivery service",
+        "Delivery Restaurant",
+        "Night club",
+        "Pizza delivery",
+        "Pizza restaurant"
+      ]
+    },
+    {
+      "id": "cmouf6kwg000nygtq3xwzyu67",
+      "niche": "generator-installation",
+      "businessName": "Ganzer Equipment Co.",
+      "categories": [
+        "Industrial equipment supplier",
+        "Construction equipment supplier",
+        "Equipment rental agency",
+        "Lawn equipment rental service",
+        "Tool rental service"
+      ]
+    },
+    {
+      "id": "cmnlfbuab00004ktqyd2p1r5e",
+      "niche": "electrical",
+      "businessName": "Newco Electric Co. Inc.",
+      "categories": [
+        "Contractor"
+      ]
+    },
+    {
+      "id": "cmoudct98000qp0tqa4klt0mg",
+      "niche": "fencing",
+      "businessName": "SHLY Deck & Fence",
+      "categories": [
+        "Deck builder"
+      ]
+    },
+    {
+      "id": "cmoueel3t002hp0tq2w2g2t1s",
+      "niche": "bathroom-remodeling",
+      "businessName": "Even Kiehl Remodeling",
+      "categories": [
+        "Contractor"
+      ]
+    },
+    {
+      "id": "cmnhr6ow900azfotqia5326vu",
+      "niche": "appliance-repair",
+      "businessName": "Dom's TV",
+      "categories": [
+        "Television repair service"
+      ]
+    },
+    {
+      "id": "cmnhrdz6v00elfotqg295wz70",
+      "niche": "towing",
+      "businessName": "Bizarro's Erie Auto Salvage and Towing",
+      "categories": [
+        "Salvage yard",
+        "Auto parts store"
+      ]
+    },
+    {
+      "id": "cmnlfwt0x001c4ktqypyksiee",
+      "niche": "home-security",
+      "businessName": "Absolute Fire Protection",
+      "categories": [
+        "Fire protection service"
+      ]
+    },
+    {
+      "id": "cmnlfwsjr00194ktq05kjh622",
+      "niche": "home-security",
+      "businessName": "Longnecker DataCom",
+      "categories": [
+        "Telecommunications contractor",
+        "Closed circuit television",
+        "Consultant",
+        "Fiber optic products supplier",
+        "Telecommunications engineer",
+        "Telecommunications equipment supplier"
+      ]
+    },
+    {
+      "id": "cmnlfwsus001b4ktq5odx28ho",
+      "niche": "home-security",
+      "businessName": "Velocity Network",
+      "categories": [
+        "Computer support and services",
+        "Telephone company"
+      ]
+    },
+    {
+      "id": "cmnlfzbum001f4ktqdycvoacr",
+      "niche": "septic",
+      "businessName": "Erie Insurance: Corporate Headquarters",
+      "categories": [
+        "Corporate campus"
+      ]
+    },
+    {
+      "id": "cmnhrb47h00d3fotqm3zsotym",
+      "niche": "chimney",
+      "businessName": "Suc Chimney Cleaning & Chimney Repairs Serv",
+      "categories": [
+        "Contractor",
+        "Asbestos testing service",
+        "Electrician",
+        "Home builder"
+      ]
+    },
+    {
+      "id": "cmnlg4c59001k4ktqz37n9m0e",
+      "niche": "towing",
+      "businessName": "TA Travel Center",
+      "categories": [
+        "Rest stop",
+        "Convenience store",
+        "Truck repair shop"
+      ]
+    },
+    {
+      "id": "cmnhqth5s005zfotq30k49z76",
+      "niche": "pest-control",
+      "businessName": "Erie Wildlife Removal Pro",
+      "categories": [
+        "Animal control service",
+        "Bird control service"
+      ]
+    },
+    {
+      "id": "cmnlgkvy500284ktqkomolgbv",
+      "niche": "demolition",
+      "businessName": "Chiocco Land Clearing & Excavating",
+      "categories": [
+        "Contractor"
+      ]
+    },
+    {
+      "id": "cmouex0mh004op0tqx1di21hz",
+      "niche": "property-management",
+      "businessName": "Willowood Village Apartments & Townhomes",
+      "categories": [
+        "Apartment building",
+        "Apartment complex"
+      ]
+    },
+    {
+      "id": "cmnlgkvno00264ktqn0u798xj",
+      "niche": "demolition",
+      "businessName": "West Ridge Gravel Company",
+      "categories": [
+        "Gravel pit"
+      ]
+    },
+    {
+      "id": "cmnhrwrtp00m3fotqa0kmysbf",
+      "niche": "demolition",
+      "businessName": "E E Austin & Son Inc",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmnhq84u9000krktqazqva3r5",
+      "niche": "plumbing",
+      "businessName": "Szewczyk Plumbing & Heating",
+      "categories": [
+        "Heating contractor"
+      ]
+    },
+    {
+      "id": "cmouex16a004up0tqul8d6724",
+      "niche": "property-management",
+      "businessName": "Maleno - Lake View Apartments",
+      "categories": [
+        "Apartment complex"
+      ]
+    },
+    {
+      "id": "cmnhr0p8p008vfotq0f82mlro",
+      "niche": "flooring",
+      "businessName": "Steen Flooring Systems",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmouex1bh004vp0tqm6tp3pba",
+      "niche": "property-management",
+      "businessName": "Laurel Ridge Apartments",
+      "categories": [
+        "Apartment building",
+        "Apartment complex"
+      ]
+    },
+    {
+      "id": "cmnhrwrcx00lyfotqsxde1azx",
+      "niche": "demolition",
+      "businessName": "Joseph McCormick Construction Co., Inc.",
+      "categories": [
+        "Asphalt contractor",
+        "Paving contractor",
+        "Asphalt mixing plant"
+      ]
+    },
+    {
+      "id": "cmouf7uqy0011ygtqzs674347",
+      "niche": "septic-inspection",
+      "businessName": "Tri-State Well Drilling",
+      "categories": [
+        "Well drilling contractor"
+      ]
+    },
+    {
+      "id": "cmnhr0ntx008gfotq7zqgczmn",
+      "niche": "flooring",
+      "businessName": "City Tile And Carpet",
+      "categories": [
+        "Store"
+      ]
+    },
+    {
+      "id": "cmouegwak002np0tqhrljp0ij",
+      "niche": "decks-patios",
+      "businessName": "The Deck 97",
+      "categories": [
+        "Bar"
+      ]
+    },
+    {
+      "id": "cmnhrwrjt00m0fotqs9zrcfu8",
+      "niche": "demolition",
+      "businessName": "Perry Construction Group Inc",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmoue8aix001wp0tqdrpq0i8a",
+      "niche": "demolition",
+      "businessName": "Necko Construction",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmouem12c002qp0tqiqc1c49j",
+      "niche": "storm-damage-repair",
+      "businessName": "Captain Dent",
+      "categories": [
+        "Auto repair shop"
+      ]
+    },
+    {
+      "id": "cmnhruxcl00lcfotql557ghnv",
+      "niche": "restoration",
+      "businessName": "Pennserie House Remodeling and Restoration and Mold Services PA",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmnhrdzg200eofotqcmq9f4h7",
+      "niche": "towing",
+      "businessName": "Lakeshore Towing Services Inc",
+      "categories": [
+        "Marina"
+      ]
+    },
+    {
+      "id": "cmnhradsh00cufotqe3taji6s",
+      "niche": "septic",
+      "businessName": "Erie Water Works - Administration Building",
+      "categories": [
+        "Government office"
+      ]
+    },
+    {
+      "id": "cmnlgkvdy00254ktqlpcubobd",
+      "niche": "demolition",
+      "businessName": "Amark Environmental",
+      "categories": [
+        "Asbestos testing service"
+      ]
+    },
+    {
+      "id": "cmouf4a9c000bygtqbxsrwfv5",
+      "niche": "cabinet-refinishing",
+      "businessName": "Erie Solid Surface",
+      "categories": [
+        "Countertop store"
+      ]
+    },
+    {
+      "id": "cmnhqggye000ifotqgmyn96v7",
+      "niche": "hvac",
+      "businessName": "Presque Isle PowerClean Inc.",
+      "categories": [
+        "Air duct cleaning service",
+        "Dryer vent cleaning service"
+      ]
+    },
+    {
+      "id": "cmoucwti00003p0tq900gqpp9",
+      "niche": "hvac",
+      "businessName": "R.E. Michel Company",
+      "categories": [
+        "Wholesaler"
+      ]
+    },
+    {
+      "id": "cmouhrwql000vfgtqmrzb17lz",
+      "niche": "basement-flood-cleanup",
+      "businessName": "Erie House Restoration And Mold Removal Cleaning Services, PA",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmnhquuov006xfotqcry696q0",
+      "niche": "painting",
+      "businessName": "Solid State Construction",
+      "categories": [
+        "Construction company",
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmouhrwv4000wfgtqg26pofzg",
+      "niche": "basement-flood-cleanup",
+      "businessName": "Father & Son House Development And Mold Removal Services,PA",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmouegwmh002op0tqf2obnf7z",
+      "niche": "decks-patios",
+      "businessName": "Lake Erie Outdoor Structures LLC",
+      "categories": [
+        "Shed builder"
+      ]
+    },
+    {
+      "id": "cmouf8sfb00183ktq2dz4fovp",
+      "niche": "dermatology",
+      "businessName": "Dr. Gunnar Bergqvist",
+      "categories": [
+        "Plastic surgeon",
+        "Cosmetic surgeon",
+        "Hand surgeon"
+      ]
+    },
+    {
+      "id": "cmouf8sl7001a3ktqlwz7g7wl",
+      "niche": "dermatology",
+      "businessName": "Hand Microsurgery",
+      "categories": [
+        "Doctor",
+        "Orthopedic clinic",
+        "Hand surgeon"
+      ]
+    },
+    {
+      "id": "cmouf8scb00173ktqakr4yiz2",
+      "niche": "dermatology",
+      "businessName": "Mitchell S Humphrey, DO",
+      "categories": [
+        "Family practice physician",
+        "Doctor"
+      ]
+    },
+    {
+      "id": "cmouf8xjs001230tq1pgeanq4",
+      "niche": "marina-boat-winterization",
+      "businessName": "Commodore Perry Yacht Club",
+      "categories": [
+        "Yacht club"
+      ]
+    },
+    {
+      "id": "cmnhriubg00gcfotqx7imyvs6",
+      "niche": "gutters",
+      "businessName": "The Heated Gutter Company",
+      "categories": [
+        "General contractor",
+        "Contractor"
+      ]
+    },
+    {
+      "id": "cmouf9nml003b3ktqx59s1poo",
+      "niche": "senior-home-care",
+      "businessName": "LECOM Senior Living Center",
+      "categories": [
+        "Nursing home"
+      ]
+    },
+    {
+      "id": "cmnhrb4ib00d6fotq9ape5c77",
+      "niche": "chimney",
+      "businessName": "Peter Hardner & Son Inc",
+      "categories": [
+        "Fire damage restoration service",
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmnhruwa300l6fotqkzkas9ao",
+      "niche": "restoration",
+      "businessName": "SCC Mold Remediation And Mold Environmental Inspection In Erie, PA",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmoue5qex001vp0tqbaeuk3z0",
+      "niche": "restoration",
+      "businessName": "GMNC House Development And Mold Services, PA",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmnhqpg8a004ufotqaym8du6s",
+      "niche": "cleaning",
+      "businessName": "Erie House Restoration And Mold Removal Cleaning Services, PA",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmouf9o8h003h3ktqyry73v1x",
+      "niche": "senior-home-care",
+      "businessName": "CARING HEART OF ERIE HOME CARE LLC",
+      "categories": [
+        "Home help service agency"
+      ]
+    },
+    {
+      "id": "cmouex0pi004pp0tq407x8ijj",
+      "niche": "property-management",
+      "businessName": "The Hammocks at Millcreek",
+      "categories": [
+        "Furnished apartment building",
+        "Apartment building",
+        "Apartment complex"
+      ]
+    },
+    {
+      "id": "cmoufbdao006r3ktqwbkk64lo",
+      "niche": "mortgage-brokers",
+      "businessName": "Small Business Lender Erie PA",
+      "categories": [
+        "Finance broker"
+      ]
+    },
+    {
+      "id": "cmoufc2gp001n30tq5ujn7ha5",
+      "niche": "storm-window-repair",
+      "businessName": "The Window Source",
+      "categories": [
+        "Contractor"
+      ]
+    },
+    {
+      "id": "cmoufei8j0004igtqkr1u9kez",
+      "niche": "decks-patios",
+      "businessName": "Budget Fence & Deck",
+      "categories": [
+        "Fence contractor"
+      ]
+    },
+    {
+      "id": "cmoufeicv0005igtq31d1bahj",
+      "niche": "decks-patios",
+      "businessName": "Leon Construction Inc.",
+      "categories": [
+        "Roofing contractor",
+        "Contractor",
+        "Insulation contractor",
+        "Siding contractor"
+      ]
+    },
+    {
+      "id": "cmoufeigy0006igtq399xnyhl",
+      "niche": "decks-patios",
+      "businessName": "Harbor Fence",
+      "categories": [
+        "Fence contractor"
+      ]
+    },
+    {
+      "id": "cmoufeilu0007igtqmdzmtgbz",
+      "niche": "decks-patios",
+      "businessName": "Mike Trippi's Anything But Board LLC",
+      "categories": [
+        "Remodeler"
+      ]
+    },
+    {
+      "id": "cmoufeiqz0008igtqer5owcew",
+      "niche": "decks-patios",
+      "businessName": "Amish Sheds For Less",
+      "categories": [
+        "Shed builder"
+      ]
+    },
+    {
+      "id": "cmoufej7y000bigtq74yiyipr",
+      "niche": "decks-patios",
+      "businessName": "Back Porch Ltd",
+      "categories": [
+        "Furniture repair shop"
+      ]
+    },
+    {
+      "id": "cmoufek4i000iigtqn4lmk4mt",
+      "niche": "decks-patios",
+      "businessName": "Antonio and Son Contracting",
+      "categories": [
+        "Contractor",
+        "Bricklayer",
+        "Foundation",
+        "Masonry contractor",
+        "Stone cutter",
+        "Waterproofing service"
+      ]
+    },
+    {
+      "id": "cmoufejzu000higtq05eh7sk4",
+      "niche": "decks-patios",
+      "businessName": "WeissEarley Landscape Design & Contracting LLC",
+      "categories": [
+        "Landscaper",
+        "Landscape architect",
+        "Landscape designer",
+        "Landscape lighting designer"
+      ]
+    },
+    {
+      "id": "cmoufejvi000gigtqmte4tsvc",
+      "niche": "decks-patios",
+      "businessName": "Elegant Landscaping",
+      "categories": [
+        "Landscaper",
+        "Janitorial service",
+        "Landscape designer",
+        "Landscape lighting designer",
+        "Lawn care service",
+        "Property maintenance",
+        "Snow removal service"
+      ]
+    },
+    {
+      "id": "cmoufejqw000figtqjfqypobj",
+      "niche": "decks-patios",
+      "businessName": "LM Wander & Sons Landscaping",
+      "categories": [
+        "Landscape designer",
+        "Landscaper",
+        "Snow removal service"
+      ]
+    },
+    {
+      "id": "cmoufejm2000eigtqmc2t1z7d",
+      "niche": "decks-patios",
+      "businessName": "Spiral Stairs of America",
+      "categories": [
+        "Stair contractor"
+      ]
+    },
+    {
+      "id": "cmoufekdi000kigtqcm9kwfem",
+      "niche": "decks-patios",
+      "businessName": "Boss D Landscape",
+      "categories": [
+        "Landscaper"
+      ]
+    },
+    {
+      "id": "cmoufekma000migtqzhzka9pl",
+      "niche": "decks-patios",
+      "businessName": "Erie Concrete",
+      "categories": [
+        "Concrete contractor"
+      ]
+    },
+    {
+      "id": "cmoufekzv000pigtq505xxhx5",
+      "niche": "decks-patios",
+      "businessName": "Flagship Outdoor Services LLC",
+      "categories": [
+        "Landscaper"
+      ]
+    },
+    {
+      "id": "cmoufel3u000qigtqo95hwyhx",
+      "niche": "decks-patios",
+      "businessName": "Carlos landscaping and snow removal",
+      "categories": [
+        "Landscape lighting designer"
+      ]
+    },
+    {
+      "id": "cmoufeldf000sigtq6vthol80",
+      "niche": "decks-patios",
+      "businessName": "Jesstone & Sons Landscape Services",
+      "categories": [
+        "Landscaper"
+      ]
+    },
+    {
+      "id": "cmoufelhl000tigtqx4m2ca06",
+      "niche": "decks-patios",
+      "businessName": "Montagna Concrete Construction",
+      "categories": [
+        "Concrete contractor"
+      ]
+    },
+    {
+      "id": "cmoufelnn000uigtq05kce6xc",
+      "niche": "decks-patios",
+      "businessName": "Superior Surface Solutions, LLC",
+      "categories": [
+        "Pressure washing service",
+        "Christmas market",
+        "Gutter cleaning service",
+        "Painting",
+        "Sandblasting service",
+        "Window cleaning service"
+      ]
+    },
+    {
+      "id": "cmouffutr002higtqy1943a8a",
+      "niche": "fire-damage-restoration",
+      "businessName": "Erie House Restoration And Mold Removal Cleaning Services, PA",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmoufelw2000wigtqhq3ryjf8",
+      "niche": "decks-patios",
+      "businessName": "Fox Renovation Services",
+      "categories": [
+        "Remodeler"
+      ]
+    },
+    {
+      "id": "cmoufem0m000xigtq7phik8g2",
+      "niche": "decks-patios",
+      "businessName": "Xtreme Exterior Cleaning",
+      "categories": [
+        "Pressure washing service",
+        "Cleaning service",
+        "Gutter cleaning service",
+        "House cleaning service",
+        "Window cleaning service"
+      ]
+    },
+    {
+      "id": "cmoufem4u000yigtqn71cjbhg",
+      "niche": "decks-patios",
+      "businessName": "Tops Roofing & Remodeling",
+      "categories": [
+        "Roofing contractor",
+        "Remodeler"
+      ]
+    },
+    {
+      "id": "cmoufemej0010igtqt8cdqzxk",
+      "niche": "decks-patios",
+      "businessName": "Advanced Windows & Siding",
+      "categories": [
+        "Window installation service",
+        "Roofing contractor",
+        "Siding contractor",
+        "Window supplier"
+      ]
+    },
+    {
+      "id": "cmoufemnm0012igtqycbf9w1e",
+      "niche": "decks-patios",
+      "businessName": "Al's Awning Shop Inc",
+      "categories": [
+        "Awning supplier",
+        "Curtain supplier and maker"
+      ]
+    },
+    {
+      "id": "cmouff4l0001uigtqnnvc79bd",
+      "niche": "mold-remediation",
+      "businessName": "SCC Mold Remediation And Mold Environmental Inspection In Erie, PA",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmouff5ku001xigtqvqh6k62p",
+      "niche": "mold-remediation",
+      "businessName": "Erie House Restoration And Mold Removal Cleaning Services, PA",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmouff62h001yigtqlp6yvigh",
+      "niche": "mold-remediation",
+      "businessName": "Erie Home Development And Mold Services, PA",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmouff6om0020igtq2725xjmg",
+      "niche": "mold-remediation",
+      "businessName": "GMNC House Development And Mold Services, PA",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmouff7ju0022igtqzxxh7a75",
+      "niche": "mold-remediation",
+      "businessName": "Amark Environmental",
+      "categories": [
+        "Asbestos testing service"
+      ]
+    },
+    {
+      "id": "cmouffu6c002figtqaq8slj31",
+      "niche": "fire-damage-restoration",
+      "businessName": "SCC Mold Remediation And Mold Environmental Inspection In Erie, PA",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmoufft3l002bigtqhhpe91z9",
+      "niche": "fire-damage-restoration",
+      "businessName": "Advanced Drying",
+      "categories": [
+        "Cleaning service"
+      ]
+    },
+    {
+      "id": "cmoufhjax003pigtqmlsqhbft",
+      "niche": "drain-cleaning",
+      "businessName": "Lakari Waterproofing",
+      "categories": [
+        "Waterproofing service"
+      ]
+    },
+    {
+      "id": "cmoufi6tu0045igtqwkc2if83",
+      "niche": "sewer-line-repair",
+      "businessName": "Klein Home Solutions",
+      "categories": [
+        "Waterproofing service",
+        "Bathroom remodeler"
+      ]
+    },
+    {
+      "id": "cmoufi7ji0047igtq6buf0hm2",
+      "niche": "sewer-line-repair",
+      "businessName": "Lakari Waterproofing",
+      "categories": [
+        "Waterproofing service"
+      ]
+    },
+    {
+      "id": "cmoufi8yp004aigtq6xrun9s4",
+      "niche": "sewer-line-repair",
+      "businessName": "Green Distributors Co Inc",
+      "categories": [
+        "Pipe supplier"
+      ]
+    },
+    {
+      "id": "cmouhrmoz0008dktqoyki9o4a",
+      "niche": "ac-repair",
+      "businessName": "Gallagher Plumbing & HVAC, Inc.",
+      "categories": [
+        "Plumber"
+      ]
+    },
+    {
+      "id": "cmouhrnpn000gdktqqhfznsdv",
+      "niche": "ac-repair",
+      "businessName": "Szewczyk Plumbing & Heating",
+      "categories": [
+        "Heating contractor"
+      ]
+    },
+    {
+      "id": "cmouhrnui000hdktq6utsyf71",
+      "niche": "ac-repair",
+      "businessName": "Presque Isle PowerClean Inc.",
+      "categories": [
+        "Air duct cleaning service",
+        "Dryer vent cleaning service"
+      ]
+    },
+    {
+      "id": "cmouhrou5000pdktq9p2so9pl",
+      "niche": "ac-repair",
+      "businessName": "Wm. T. Spaeder Company",
+      "categories": [
+        "Plumber",
+        "Fire protection service",
+        "Furnace repair service",
+        "Mechanical contractor",
+        "Water treatment supplier"
+      ]
+    },
+    {
+      "id": "cmouf8q0g000v30tqwelzyeld",
+      "niche": "dock-installation-repair",
+      "businessName": "Carmeuse Erie Dock Operation - Aggregates Dock & Truck Access",
+      "categories": [
+        "Natural stone supplier",
+        "Quarry",
+        "Sand & gravel supplier"
+      ]
+    },
+    {
+      "id": "cmouhrpyt000cfgtqntuq67ef",
+      "niche": "bee-wasp-removal",
+      "businessName": "Scott's Tree & Stump Removal",
+      "categories": [
+        "Tree service"
+      ]
+    },
+    {
+      "id": "cmouhrq3v000dfgtqveyn6vhq",
+      "niche": "bee-wasp-removal",
+      "businessName": "Best Bet Hauling",
+      "categories": [
+        "Waste management service"
+      ]
+    },
+    {
+      "id": "cmouhrvy90010dktqlnnjez6t",
+      "niche": "furnace-repair",
+      "businessName": "Gallagher Plumbing & HVAC, Inc.",
+      "categories": [
+        "Plumber"
+      ]
+    },
+    {
+      "id": "cmouhrvon000nfgtqpr9y530z",
+      "niche": "basement-flood-cleanup",
+      "businessName": "SCC Mold Remediation And Mold Environmental Inspection In Erie, PA",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmouhrw33000qfgtqds6h0x8a",
+      "niche": "basement-flood-cleanup",
+      "businessName": "GMNC House Development And Mold Services, PA",
+      "categories": [
+        "Construction company"
+      ]
+    },
+    {
+      "id": "cmouhse9e0024dktqgw1j7t5m",
+      "niche": "commercial-snow-removal",
+      "businessName": "Commercial Turf Fertilization Inc.",
+      "categories": [
+        "Lawn care service"
+      ]
+    },
+    {
+      "id": "cmouhsfej002cdktq3pweoaro",
+      "niche": "commercial-snow-removal",
+      "businessName": "Angelo's Roofing Inc.",
+      "categories": [
+        "Roofing contractor",
+        "Construction company",
+        "Siding contractor"
+      ]
+    },
+    {
+      "id": "cmouhsvzq001ifgtqxpkf4464",
+      "niche": "salt-deicing-services",
+      "businessName": "SERVPRO of Erie",
+      "categories": [
+        "Water damage restoration service",
+        "Air duct cleaning service",
+        "Building restoration service",
+        "Cleaners",
+        "Crime victim service",
+        "Debris removal service",
+        "Fire damage restoration service",
+        "Waste management service"
+      ]
+    },
+    {
+      "id": "cmouhsvtx001hfgtqrrbfqi5r",
+      "niche": "salt-deicing-services",
+      "businessName": "Enjet Aero Erie",
+      "categories": [
+        "Aerospace company",
+        "Manufacturer"
+      ]
+    },
+    {
+      "id": "cmouhsx3y001pfgtq2293v02k",
+      "niche": "salt-deicing-services",
+      "businessName": "Gerlach Property Maintenance",
+      "categories": [
+        "Property maintenance",
+        "Landscape designer"
+      ]
+    },
+    {
+      "id": "cmouhsx9l001qfgtqrh9qywae",
+      "niche": "salt-deicing-services",
+      "businessName": "Flagship Outdoor Services LLC",
+      "categories": [
+        "Landscaper"
+      ]
+    },
+    {
+      "id": "cmouhsxex001rfgtq7u046xn0",
+      "niche": "salt-deicing-services",
+      "businessName": "Kunco Landscape, Inc.",
+      "categories": [
+        "Landscape architect",
+        "Landscape designer",
+        "Landscape lighting designer",
+        "Landscaper"
+      ]
+    },
+    {
+      "id": "cmouhsycc001xfgtqq02x0itb",
+      "niche": "salt-deicing-services",
+      "businessName": "Just Mowing",
+      "categories": [
+        "Lawn care service"
+      ]
+    },
+    {
+      "id": "cmouhsyi6001yfgtq7coqknj5",
+      "niche": "salt-deicing-services",
+      "businessName": "Jerre's Service New & Used",
+      "categories": [
+        "Auto parts store"
+      ]
+    },
+    {
+      "id": "cmouhsy7e001wfgtqtlnmgtct",
+      "niche": "salt-deicing-services",
+      "businessName": "J.C. Orengia Landscaping",
+      "categories": [
+        "Landscaper"
+      ]
+    },
+    {
+      "id": "cmnhr3yb5009sfotqp2116tlr",
+      "niche": "moving",
+      "businessName": "Hoffman Industrial Co.",
+      "categories": [
+        "General contractor"
+      ]
+    },
+    {
+      "id": "cmouf8s9b00163ktqf302ff1j",
+      "niche": "dermatology",
+      "businessName": "UPMC Hamot",
+      "categories": [
+        "Hospital"
+      ]
+    },
+    {
+      "id": "cmouhsfix002ddktqm0j7s07i",
+      "niche": "commercial-snow-removal",
+      "businessName": "Perf-a-Lawn, Inc.",
+      "categories": [
+        "Lawn care service"
+      ]
+    },
+    {
+      "id": "cmoufejct000cigtqt6jbdf3i",
+      "niche": "decks-patios",
+      "businessName": "Bauer Specialty",
+      "categories": [
+        "Roofing contractor",
+        "Bathroom remodeler",
+        "Gutter cleaning service",
+        "Gutter service",
+        "Insulation contractor",
+        "Kitchen remodeler",
+        "Remodeler",
+        "Siding contractor"
+      ]
+    },
+    {
+      "id": "cmouhswsn001nfgtqc2qbmdkz",
+      "niche": "salt-deicing-services",
+      "businessName": "Gerlach's Power Equipment",
+      "categories": [
+        "Lawn mower store"
+      ]
+    },
+    {
+      "id": "cmoufgn5u002yigtqjtsftfty",
+      "niche": "water-heater-services",
+      "businessName": "Preece Heating and Cooling",
+      "categories": [
+        "HVAC contractor"
+      ]
+    },
+    {
+      "id": "cmnlftlak00124ktqqpagpsbq",
+      "niche": "moving",
+      "businessName": "Erie Pack & Ship LLC",
+      "categories": [
+        "Shipping and mailing service",
+        "Fax service",
+        "Freight forwarding service",
+        "Notary public",
+        "Packaging supply store",
+        "Rubber stamp store"
+      ]
+    },
+    {
+      "id": "cmouhsvj1001ffgtq0vrl1n6z",
+      "niche": "salt-deicing-services",
+      "businessName": "SERVPRO of Erie and Warren Counties, PA",
+      "categories": [
+        "Water damage restoration service",
+        "Air duct cleaning service",
+        "Building restoration service",
+        "Carpet cleaning service",
+        "Cleaners",
+        "Construction company",
+        "Crime victim service",
+        "Debris removal service",
+        "Fire damage restoration service",
+        "Waste management service"
+      ]
+    }
+  ]
+}

@@ -42,6 +42,7 @@ import {
   mapToDirectoryListing,
   distanceKm,
 } from "../lib/outscraper"
+import { evaluateNicheRelevance } from "../lib/niche-category-map"
 
 // ── DB setup (standalone script, not using Next.js runtime) ───────
 
@@ -170,6 +171,45 @@ async function main() {
 
     if (filtered > 0) {
       console.log(`  Filtered ${filtered} places beyond ${maxDistanceKm}km`)
+    }
+
+    // ── Step 2.5: Category-relevance filter (Outscraper broad search) ──
+    // Outscraper's keyword-based Google Maps search returns adjacent
+    // businesses that share lexical overlap with the query but aren't
+    // in the target niche (e.g. "bat removal Erie" returns nearby
+    // Walmart Supercenter; "pressure washing Erie" returns car
+    // washes). Before insert, drop places whose Google categories
+    // contain a hard anti-pattern for this niche AND no positive
+    // keyword match. The keyword/anti-pattern map lives in
+    // `lib/niche-category-map.ts` so the audit script and this filter
+    // stay in sync.
+    let categoryFiltered = 0
+    const categoryDrops: Array<{ name: string; reason: string }> = []
+    places = places.filter((place) => {
+      const cats = place.subtypes
+        ? place.subtypes.split(",").map((s) => s.trim()).filter(Boolean)
+        : place.category
+        ? [place.category]
+        : []
+      const relevance = evaluateNicheRelevance(cats, niche.slug)
+      if (!relevance.relevant) {
+        categoryFiltered++
+        const matched =
+          relevance.reason === "hard-anti-pattern"
+            ? relevance.matchedAntiPattern
+            : relevance.reason
+        categoryDrops.push({ name: place.name ?? "(no name)", reason: matched })
+        return false
+      }
+      return true
+    })
+    if (categoryFiltered > 0) {
+      console.log(
+        `  Filtered ${categoryFiltered} places by Google-category anti-pattern (e.g. ${categoryDrops
+          .slice(0, 3)
+          .map((d) => `${d.name}→${d.reason}`)
+          .join(", ")}${categoryDrops.length > 3 ? ", …" : ""})`,
+      )
     }
 
     if (niche.slug === "ev-charger-installation") {
