@@ -217,6 +217,56 @@ export default async function NichePage({ params }: Props) {
         </section>
       )}
 
+      {/* ── Empty-state for unclaimed categories ────────────────
+           Renders only when this niche has no claimed territory AND
+           no directory listings to show. Pre-launch audit flagged the
+           previous behavior — pages with zero data looked broken /
+           half-loaded. This frames the empty state as a provider
+           acquisition opportunity instead. */}
+      {!featuredProviderId && subtleListings.length === 0 && (
+        <section className="mx-auto max-w-4xl px-4 pb-8 sm:px-6">
+          <div className="rounded-lg border-2 border-dashed border-primary/30 bg-primary/5 p-6 sm:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex-1">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-primary">
+                  Open territory
+                </p>
+                <h3 className="mb-2 text-lg font-bold sm:text-xl">
+                  No {niche.label.toLowerCase()} provider has claimed {cityConfig.name} yet
+                </h3>
+                <p className="text-sm text-muted-foreground sm:text-base">
+                  Erie.pro routes every {niche.label.toLowerCase()} request to one exclusive
+                  provider per {cityConfig.name} territory — no bidding, no shared leads.
+                  The first qualified provider to claim this category keeps it.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 sm:min-w-[180px]">
+                <Link
+                  href={`/for-business/claim?niche=${slug}`}
+                  className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+                >
+                  Claim this category
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                </Link>
+                <Link
+                  href="/get-matched"
+                  className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2.5 text-sm font-medium hover:bg-accent"
+                >
+                  I need this service
+                </Link>
+              </div>
+            </div>
+            <p className="mt-4 text-xs text-muted-foreground">
+              Looking for a {niche.label.toLowerCase()} pro right now? Call{" "}
+              <a href="tel:+18142000328" className="font-medium text-primary hover:underline">
+                (814) 200-0328
+              </a>{" "}
+              and we&apos;ll route you to a vetted Erie pro outside the platform.
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* ── Service info cards ──────────────────────────────── */}
       <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6">
         <div className="grid gap-6 md:grid-cols-3">
