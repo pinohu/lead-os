@@ -54,6 +54,20 @@ describe("educational content generator", () => {
       expect(c.intro.length).toBeGreaterThan(20);
     });
 
+    it("every niche resolves to cluster-specific (non-generic) content", () => {
+      // Generic fallback uses a distinctive opening phrase. If every niche
+      // avoids that phrase, the cluster routing is doing its job.
+      const genericMarker = "Knowing what you can handle yourself and what needs a";
+      let fellThrough: string[] = [];
+      for (const n of niches) {
+        const c = getDiyVsProContent(n.slug);
+        if (c.intro.startsWith(genericMarker)) {
+          fellThrough.push(n.slug);
+        }
+      }
+      expect(fellThrough).toEqual([]);
+    });
+
     it("returns non-empty examples in every tier", () => {
       for (const n of niches) {
         const content = getDiyVsProContent(n.slug);
@@ -99,6 +113,18 @@ describe("educational content generator", () => {
         expect(c.costOfDelay.length).toBeGreaterThan(50);
       }
     });
+
+    it("every niche resolves to cluster-specific RedFlags content", () => {
+      const genericMarker = "Knowing the difference between";
+      let fellThrough: string[] = [];
+      for (const n of niches) {
+        const c = getRedFlagsContent(n.slug);
+        if (c.intro.includes(genericMarker)) {
+          fellThrough.push(n.slug);
+        }
+      }
+      expect(fellThrough).toEqual([]);
+    });
   });
 
   describe("getWhatToExpectContent", () => {
@@ -141,6 +167,21 @@ describe("educational content generator", () => {
           expect(f.a.length).toBeGreaterThan(30);
         }
       }
+    });
+
+    it("every niche resolves to cluster-specific WhatToExpect content", () => {
+      // The generic fallback uses a distinctive intro phrase. Tuned blocks
+      // use different framing, so any niche hitting this exact phrase is
+      // falling through the cluster routing.
+      const genericMarker = "appointment actually looks like, from first contact to follow-up";
+      let fellThrough: string[] = [];
+      for (const n of niches) {
+        const c = getWhatToExpectContent(n.slug);
+        if (c.intro.includes(genericMarker)) {
+          fellThrough.push(n.slug);
+        }
+      }
+      expect(fellThrough).toEqual([]);
     });
   });
 });
