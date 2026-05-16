@@ -23,6 +23,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import CountyAuthoritySection from "@/components/directory/county-authority"
 
 export const metadata: Metadata = {
   title: "Erie Service Directory",
@@ -249,6 +250,9 @@ export default async function DirectoryIndexPage() {
             })}
           </div>
         </section>
+
+        {/* County authority section — comprehensive Erie County data */}
+        <CountyAuthoritySection />
 
         {/* Business CTA */}
         <section className="border-t bg-muted/50 py-16">

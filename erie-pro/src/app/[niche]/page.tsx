@@ -3,7 +3,6 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import {
   ArrowRight,
-  CheckCircle2,
   MapPin,
   Clock,
   Shield,
@@ -17,6 +16,7 @@ import {
   getLocalMetaDescription,
   localSeo,
 } from "@/lib/local-seo"
+import { getNicheContent } from "@/lib/niche-content"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -36,10 +36,17 @@ import IntakeOrForm from "@/components/intake-or-form"
 import { ProviderGrowthOffer } from "@/components/provider-growth-offer"
 import { ServiceFunnelSystem } from "@/components/service-funnel-system"
 import { inferServiceFamily } from "@/lib/automated-offers"
+import NichePersonaQuickJump from "@/components/niche/persona-quick-jump"
+import NicheCostSection from "@/components/niche/cost-section"
+import NicheServiceScope from "@/components/niche/service-scope"
+import NicheVettingChecklist from "@/components/niche/vetting-checklist"
+import NicheFAQInline from "@/components/niche/faq-inline"
+import NicheTrustSignals from "@/components/niche/trust-signals"
+import NicheRelatedServices from "@/components/niche/related-services"
+import { buildNichePageSchema } from "@/lib/niche-page-schema"
 
 type Props = { params: Promise<{ niche: string }> }
 
-/** Append "Services" only when the label doesn't already end with "Service(s)". */
 function withServices(label: string): string {
   return /\bServices?\s*$/i.test(label) ? label : `${label} Services`;
 }
@@ -53,17 +60,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const niche = getNicheBySlug(slug)
   if (!niche) return { title: "Not Found" }
 
-  // Use the enriched local SEO meta description
   const description = getLocalMetaDescription(slug)
+  const content = getNicheContent(slug)
+  const title = content?.metaTitle
+    ?? `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode} — Get a Free Quote`
+
+  const allKeywords = [
+    ...(content?.primaryKeywords ?? []),
+    ...(content?.secondaryKeywords ?? []),
+  ].slice(0, 12)
 
   return {
-    title: `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode} — Get a Free Quote`,
+    title,
     description,
+    keywords: allKeywords.length > 0 ? allKeywords.join(", ") : undefined,
     openGraph: {
       type: "website",
       siteName: cityConfig.domain,
       locale: "en_US",
-      title: `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode} — Get a Free Quote`,
+      title,
       description,
       url: `https://${cityConfig.domain}/${slug}`,
       images: [
@@ -85,12 +100,26 @@ export default async function NichePage({ params }: Props) {
   if (!niche) notFound()
   const serviceFamily = inferServiceFamily(niche.slug)
 
-  // ── Local SEO data ──────────────────────────────────────────────
+  const content = getNicheContent(slug)
   const localSnippet = getLocalSeoSnippet(slug)
-  const localSchema = getLocalSchemaOrg(slug)
+  const localBusinessSchema = getLocalSchemaOrg(slug)
   const neighborhoods = localSeo.neighborhoods
+  const pageUrl = `https://${cityConfig.domain}/${slug}`
 
-  // ── Directory listings for subtle links ────────────────────────
+  const combinedSchema = buildNichePageSchema({
+    nicheSlug: slug,
+    nicheLabel: niche.label,
+    nicheDescription: niche.description,
+    pageUrl,
+    domain: cityConfig.domain,
+    cityName: cityConfig.name,
+    cityStateCode: cityConfig.stateCode,
+    countyName: localSeo.countyName,
+    faqItems: content?.faqItems ?? [],
+    localBusinessSchema,
+    priceRange: niche.avgProjectValue,
+  })
+
   let directoryListings: Awaited<ReturnType<typeof getDirectoryListingsByNiche>> = []
   let featuredProviderId: string | null = null
   try {
@@ -101,10 +130,15 @@ export default async function NichePage({ params }: Props) {
   } catch {
     // DB unavailable during static build
   }
-  // Exclude the territory owner from the subtle links (they're featured above)
   const subtleListings = featuredProviderId
     ? directoryListings.filter((l) => l.claimedByProviderId !== featuredProviderId)
     : directoryListings
+
+  const heroHeadline = content?.heroHeadline
+    ?? `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode}`
+  const heroSubheadline = content?.heroSubheadline
+    ?? `${niche.description}. Serving ${neighborhoods.slice(0, 5).join(", ")} and surrounding areas.`
+  const aboutDescription = content?.aboutDescription ?? localSnippet
 
   return (
     <main>
@@ -113,10 +147,10 @@ export default async function NichePage({ params }: Props) {
         <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
           <ol className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <li><Link href="/" className="hover:text-foreground">Home</Link></li>
-            <li>/</li>
+            <li aria-hidden="true">/</li>
             <li><Link href="/services" className="hover:text-foreground">Services</Link></li>
-            <li>/</li>
-            <li className="text-foreground font-medium">{niche.label}</li>
+            <li aria-hidden="true">/</li>
+            <li className="text-foreground font-medium" aria-current="page">{niche.label}</li>
           </ol>
         </div>
       </nav>
@@ -125,75 +159,91 @@ export default async function NichePage({ params }: Props) {
       <FeaturedProvider niche={niche.slug} city={cityConfig.slug} />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative border-b pb-12 pt-16 overflow-hidden">
-        {/* Decorative gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-muted/30 to-primary/10 dark:from-primary/10 dark:via-background dark:to-primary/5" />
-        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
-        <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-primary/5 blur-3xl" />
+      <section
+        aria-labelledby="hero-heading"
+        className="relative border-b pb-10 pt-12 sm:pt-16 overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-muted/30 to-primary/10 dark:from-primary/10 dark:via-background dark:to-primary/5" aria-hidden="true" />
+        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-primary/5 blur-3xl" aria-hidden="true" />
+        <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-primary/5 blur-3xl" aria-hidden="true" />
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6">
-          <div className="mb-6 text-6xl">{niche.icon}</div>
+          <div className="mb-4 text-5xl sm:text-6xl" aria-hidden="true">{niche.icon}</div>
           <Badge variant="secondary" className="mb-4">
-            <MapPin className="mr-1.5 h-3 w-3" />
+            <MapPin className="mr-1.5 h-3 w-3" aria-hidden="true" />
             {cityConfig.name}, {cityConfig.stateCode}
           </Badge>
 
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-            {niche.label} in {cityConfig.name},{" "}
-            {cityConfig.stateCode}
+          <h1
+            id="hero-heading"
+            className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl"
+          >
+            {heroHeadline}
           </h1>
 
-          <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-            {niche.description}. Serving{" "}
-            {neighborhoods.slice(0, 5).join(", ")} and
-            surrounding areas.
+          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
+            {heroSubheadline}
           </p>
-
-          <div className="mt-6 flex items-center justify-center gap-4">
-            <Button asChild size="lg">
-              <a href="#quote">
-                Get a Free Quote
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
-          </div>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <Shield className="h-4 w-4 text-primary" />
+              <Shield className="h-4 w-4 text-primary" aria-hidden="true" />
               Verified providers
             </span>
             <span className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4 text-primary" />
+              <Clock className="h-4 w-4 text-primary" aria-hidden="true" />
               Quick response
             </span>
             <span className="flex items-center gap-1.5">
-              <Star className="h-4 w-4 text-primary" />
+              <Star className="h-4 w-4 text-primary" aria-hidden="true" />
               Top rated
             </span>
           </div>
         </div>
       </section>
 
-      {/* ── Local SEO Context Section ─────────────────────────── */}
-      <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-        <h2 className="mb-4 text-xl font-bold tracking-tight">
+      {/* ── Persona quick-jump ─────────────────────────────────── */}
+      <div className="pt-6">
+        <NichePersonaQuickJump nicheLabel={niche.label} />
+      </div>
+
+      {/* ── Local context (county + neighborhoods) ─────────────── */}
+      <section
+        aria-labelledby="local-heading"
+        className="mx-auto max-w-4xl px-4 py-10 sm:px-6"
+      >
+        <h2
+          id="local-heading"
+          className="mb-4 text-xl font-bold tracking-tight"
+        >
           {withServices(niche.label)} in {localSeo.countyName}
         </h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          {localSnippet}
+        <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+          {aboutDescription}
         </p>
+        {neighborhoods.length > 0 && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            <span className="font-semibold">Serving:</span>{" "}
+            {neighborhoods.join(" · ")}
+          </p>
+        )}
       </section>
 
-      {/* ── Subtle provider links ────────────────────────────── */}
+      {/* ── Subtle provider links (existing listings) ────────── */}
       {subtleListings.length > 0 && (
-        <section className="mx-auto max-w-4xl px-4 pb-6 sm:px-6">
-          <p className="mb-2 text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">
+        <section
+          aria-labelledby="other-providers-heading"
+          className="mx-auto max-w-4xl px-4 pb-4 sm:px-6"
+        >
+          <h2
+            id="other-providers-heading"
+            className="mb-2 text-xs font-medium text-muted-foreground/60 uppercase tracking-wider"
+          >
             Other {niche.label.toLowerCase()} providers in {cityConfig.name}
-          </p>
+          </h2>
           <div className="flex flex-wrap gap-x-1 gap-y-0.5">
             {subtleListings.slice(0, 15).map((listing, i) => (
               <span key={listing.id}>
-                {i > 0 && <span className="text-muted-foreground/30 mr-1">&middot;</span>}
+                {i > 0 && <span className="text-muted-foreground/30 mr-1" aria-hidden="true">·</span>}
                 <Link
                   href={`/${slug}/${listing.slug}`}
                   className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
@@ -204,7 +254,7 @@ export default async function NichePage({ params }: Props) {
             ))}
             {subtleListings.length > 15 && (
               <span>
-                <span className="text-muted-foreground/30 mr-1">&middot;</span>
+                <span className="text-muted-foreground/30 mr-1" aria-hidden="true">·</span>
                 <Link
                   href={`/${slug}/directory`}
                   className="text-xs text-muted-foreground/50 hover:text-primary transition-colors"
@@ -217,12 +267,7 @@ export default async function NichePage({ params }: Props) {
         </section>
       )}
 
-      {/* ── Empty-state for unclaimed categories ────────────────
-           Renders only when this niche has no claimed territory AND
-           no directory listings to show. Pre-launch audit flagged the
-           previous behavior — pages with zero data looked broken /
-           half-loaded. This frames the empty state as a provider
-           acquisition opportunity instead. */}
+      {/* ── Empty-state for unclaimed categories ────────────────*/}
       {!featuredProviderId && subtleListings.length === 0 && (
         <section className="mx-auto max-w-4xl px-4 pb-8 sm:px-6">
           <div className="rounded-lg border-2 border-dashed border-primary/30 bg-primary/5 p-6 sm:p-8">
@@ -246,7 +291,7 @@ export default async function NichePage({ params }: Props) {
                   className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
                 >
                   Claim this category
-                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                  <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
                 </Link>
                 <Link
                   href="/get-matched"
@@ -267,81 +312,36 @@ export default async function NichePage({ params }: Props) {
         </section>
       )}
 
-      {/* ── Service info cards ──────────────────────────────── */}
-      <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6">
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Service Area</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {neighborhoods.join(", ")}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">What&apos;s Included</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {niche.description}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Typical Project</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {niche.avgProjectValue}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+      {/* ── Cost transparency (priceRanges from niche-content) ─ */}
+      {(content?.pricingRanges?.length ?? 0) > 0 && (
+        <NicheCostSection
+          nicheSlug={niche.slug}
+          nicheLabel={niche.label}
+          pricingRanges={content!.pricingRanges}
+        />
+      )}
 
-      {/* ── Explore niche resources ──────────────────────────── */}
-      <section className="mx-auto max-w-4xl px-4 pb-12 sm:px-6">
-        <h2 className="mb-4 text-lg font-bold tracking-tight">
-          Explore {niche.label} Resources
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          {[
-            { href: `/${slug}/directory`, label: "Provider Directory" },
-            { href: `/${slug}/reviews`, label: "Reviews" },
-            { href: `/${slug}/pricing`, label: "Pricing Guide" },
-            { href: `/${slug}/costs`, label: "Cost Breakdown" },
-            { href: `/${slug}/faq`, label: "FAQ" },
-            { href: `/${slug}/guides`, label: "Hiring Guides" },
-            { href: `/${slug}/blog`, label: "Blog" },
-            { href: `/${slug}/compare`, label: "Compare Providers" },
-            { href: `/${slug}/tips`, label: "Tips" },
-            { href: `/${slug}/emergency`, label: "Emergency Services" },
-            { href: `/${slug}/seasonal`, label: "Seasonal Guide" },
-            { href: `/${slug}/checklist`, label: "Hiring Checklist" },
-            { href: `/${slug}/certifications`, label: "Certifications" },
-            { href: `/${slug}/glossary`, label: "Glossary" },
-          ].map((link) => (
-            <Button key={link.href} asChild variant="outline" size="sm">
-              <Link href={link.href}>{link.label}</Link>
-            </Button>
-          ))}
-        </div>
-      </section>
+      {/* ── Service scope (common, emergency, seasonal) ─────── */}
+      <NicheServiceScope
+        nicheLabel={niche.label}
+        commonServices={content?.commonServices ?? []}
+        emergencyServices={content?.emergencyServices ?? []}
+        seasonalTips={content?.seasonalTips ?? []}
+      />
 
-      {/* ── Quote form ──────────────────────────────────────── */}
-      <section id="quote" className="mx-auto max-w-2xl scroll-mt-28 px-4 pb-16 sm:px-6">
+      {/* ── Quote form (intake widget) ──────────────────────── */}
+      <section
+        id="quote"
+        aria-labelledby="quote-heading"
+        className="mx-auto max-w-2xl scroll-mt-28 px-4 pb-16 sm:px-6"
+      >
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle>
-              Get a free {niche.label.toLowerCase()} quote
+            <CardTitle id="quote-heading">
+              {content?.quoteFormTitle ?? `Get a free ${niche.label.toLowerCase()} quote`}
             </CardTitle>
             <CardDescription>
-              Tell us what you need. We&apos;ll connect you with the best{" "}
-              {niche.label.toLowerCase()} provider in {cityConfig.name}.
+              {content?.quoteFormDescription ?? `Tell us what you need. We'll connect you with the best ${niche.label.toLowerCase()} provider in ${cityConfig.name}.`}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -355,17 +355,42 @@ export default async function NichePage({ params }: Props) {
         </Card>
       </section>
 
-      {/* ── Why choose us ───────────────────────────────────── */}
-      <section className="bg-muted/50 py-16">
+      {/* ── Vetting checklist (research-mode persona) ─────────── */}
+      <NicheVettingChecklist
+        nicheLabel={niche.label}
+        comparisonPoints={content?.comparisonPoints ?? []}
+      />
+
+      {/* ── Trust signals (certifications, licensing) ────────── */}
+      <NicheTrustSignals
+        nicheLabel={niche.label}
+        certifications={content?.certifications ?? []}
+        trustSignals={content?.trustSignals ?? []}
+      />
+
+      {/* ── FAQ (inline — was previously only at subroute) ───── */}
+      <NicheFAQInline
+        nicheLabel={niche.label}
+        faqItems={content?.faqItems ?? []}
+      />
+
+      {/* ── Why choose us ─────────────────────────────────────── */}
+      <section
+        aria-labelledby="why-heading"
+        className="bg-muted/50 py-12"
+      >
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <h2 className="mb-8 text-center text-2xl font-bold tracking-tight">
+          <h2
+            id="why-heading"
+            className="mb-8 text-center text-2xl font-bold tracking-tight"
+          >
             Why choose {cityConfig.domain} for {niche.label.toLowerCase()}?
           </h2>
           <div className="grid gap-6 md:grid-cols-2">
             {[
               {
-                title: "Verified professionals",
-                desc: `Every ${niche.label.toLowerCase()} provider on our platform is verified and vetted.`,
+                title: "One verified provider per territory",
+                desc: `No bidding wars or shared leads. ${niche.label} requests in ${cityConfig.name} route to one vetted local pro.`,
               },
               {
                 title: "Free, no-obligation quotes",
@@ -373,7 +398,7 @@ export default async function NichePage({ params }: Props) {
               },
               {
                 title: "Fast response times",
-                desc: `${cityConfig.name} providers typically respond within hours, not days.`,
+                desc: `${cityConfig.name} ${niche.label.toLowerCase()} providers typically respond within hours, not days.`,
               },
               {
                 title: `Serving all of ${localSeo.countyName}`,
@@ -381,7 +406,7 @@ export default async function NichePage({ params }: Props) {
               },
             ].map(({ title, desc }) => (
               <div key={title} className="flex gap-3">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                <Shield className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" aria-hidden="true" />
                 <div>
                   <h3 className="font-semibold">{title}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
@@ -392,23 +417,46 @@ export default async function NichePage({ params }: Props) {
         </div>
       </section>
 
-      {/* ── Other services ──────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <h2 className="mb-6 text-xl font-bold">
-          Other services in {cityConfig.name}
+      {/* ── Resource links (deeper subroutes) ─────────────────── */}
+      <section
+        aria-labelledby="resources-heading"
+        className="mx-auto max-w-4xl px-4 py-12 sm:px-6"
+      >
+        <h2
+          id="resources-heading"
+          className="mb-4 text-lg font-bold tracking-tight"
+        >
+          Go deeper on {niche.label.toLowerCase()}
         </h2>
         <div className="flex flex-wrap gap-2">
-          {niches
-            .filter((n) => n.slug !== niche.slug)
-            .map((n) => (
-              <Button key={n.slug} asChild variant="outline" size="sm">
-                <Link href={`/${n.slug}`}>
-                  {n.icon} {n.label}
-                </Link>
-              </Button>
-            ))}
+          {[
+            { href: `/${slug}/directory`, label: "Full provider directory" },
+            { href: `/${slug}/costs`, label: "Detailed cost guide" },
+            { href: `/${slug}/faq`, label: "Complete FAQ" },
+            { href: `/${slug}/guides`, label: "Hiring guides" },
+            { href: `/${slug}/checklist`, label: "Hiring checklist" },
+            { href: `/${slug}/compare`, label: "Compare providers" },
+            { href: `/${slug}/reviews`, label: "Reviews" },
+            { href: `/${slug}/blog`, label: "Blog & news" },
+            { href: `/${slug}/tips`, label: "Tips" },
+            { href: `/${slug}/seasonal`, label: "Seasonal guide" },
+            { href: `/${slug}/emergency`, label: "Emergency services" },
+            { href: `/${slug}/certifications`, label: "Certifications" },
+            { href: `/${slug}/glossary`, label: "Glossary" },
+            { href: `/${slug}/pricing`, label: "Pricing guide" },
+          ].map((link) => (
+            <Button key={link.href} asChild variant="outline" size="sm">
+              <Link href={link.href}>{link.label}</Link>
+            </Button>
+          ))}
         </div>
       </section>
+
+      {/* ── Related niches (curated, not the wall of 112) ─────── */}
+      <NicheRelatedServices
+        nicheSlug={niche.slug}
+        nicheLabel={niche.label}
+      />
 
       {/* ── Provider CTA ────────────────────────────────────── */}
       <Separator />
@@ -426,16 +474,16 @@ export default async function NichePage({ params }: Props) {
             className="font-medium text-primary hover:underline"
           >
             Claim this territory
-            <ArrowRight className="ml-1 inline h-3 w-3" />
+            <ArrowRight className="ml-1 inline h-3 w-3" aria-hidden="true" />
           </Link>
         </p>
       </section>
 
-      {/* ── Enhanced Schema.org with local SEO data ────────── */}
+      {/* ── Enhanced Schema.org graph ─────────────────────────── */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(localSchema),
+          __html: JSON.stringify(combinedSchema),
         }}
       />
 
