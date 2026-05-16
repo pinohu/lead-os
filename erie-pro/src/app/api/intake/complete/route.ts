@@ -23,6 +23,8 @@ import { logger } from "@/lib/logger";
 import {
   TCPA_TEXT_V2,
   TCPA_VERSION,
+  temperatureForUrgency,
+  slaDeadlineForUrgency,
 } from "@/lib/intake/conversation";
 import type { IntakeOutcome, IntakeUrgency } from "@/lib/intake/types";
 
@@ -157,6 +159,28 @@ export async function POST(request: NextRequest) {
       tcpaIpAddress,
       intakeConversationId: conversationId,
     });
+
+    // ── Patch the Lead with urgency-derived temperature + slaDeadline ──
+    // routeLead() doesn't accept these fields in its leadData arg, so the
+    // Lead row gets the default `temperature: warm` and a null slaDeadline.
+    // For intake-widget leads, the urgency signal carries real routing
+    // information ("emergency" plumbing needs a hot temperature + 1h SLA;
+    // "researching" stays warm with a 48h SLA). Patch in place so the
+    // existing /api/lead flow stays untouched.
+    if (outcome.urgency) {
+      const temperature = temperatureForUrgency(outcome.urgency);
+      const slaDeadline = slaDeadlineForUrgency(
+        outcome.primaryNiche,
+        outcome.urgency
+      );
+      await prisma.lead.update({
+        where: { id: result.leadId },
+        data: {
+          temperature,
+          slaDeadline,
+        },
+      });
+    }
 
     // Link conversation to lead
     await prisma.intakeConversation.update({
