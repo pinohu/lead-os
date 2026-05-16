@@ -11,6 +11,7 @@ const NICHE_PAGES = [
   "", "/blog", "/guides", "/faq", "/pricing", "/costs", "/compare",
   "/emergency", "/glossary", "/seasonal", "/checklist", "/directory",
   "/reviews", "/tips", "/certifications", "/permits", "/when-to-call",
+  "/diy-vs-pro", "/red-flags", "/what-to-expect",
 ]
 
 // ── Lastmod timestamps ───────────────────────────────────────────────
@@ -38,6 +39,9 @@ const NICHE_SUB_DATES: Record<string, Date> = {
   "/certifications": new Date("2026-01-25"),
   "/permits":        new Date("2026-05-16"),
   "/when-to-call":   new Date("2026-05-16"),
+  "/diy-vs-pro":     new Date("2026-05-16"),
+  "/red-flags":      new Date("2026-05-16"),
+  "/what-to-expect": new Date("2026-05-16"),
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
