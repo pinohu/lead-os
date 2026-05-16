@@ -43,6 +43,7 @@ import NicheVettingChecklist from "@/components/niche/vetting-checklist"
 import NicheFAQInline from "@/components/niche/faq-inline"
 import NicheTrustSignals from "@/components/niche/trust-signals"
 import NicheRelatedServices from "@/components/niche/related-services"
+import NicheStickyCTA from "@/components/niche/sticky-cta"
 import { buildNichePageSchema } from "@/lib/niche-page-schema"
 
 type Props = { params: Promise<{ niche: string }> }
@@ -432,6 +433,8 @@ export default async function NichePage({ params }: Props) {
           {[
             { href: `/${slug}/directory`, label: "Full provider directory" },
             { href: `/${slug}/costs`, label: "Detailed cost guide" },
+            { href: `/${slug}/permits`, label: "Permits & licensing" },
+            { href: `/${slug}/when-to-call`, label: "When to call a pro" },
             { href: `/${slug}/faq`, label: "Complete FAQ" },
             { href: `/${slug}/guides`, label: "Hiring guides" },
             { href: `/${slug}/checklist`, label: "Hiring checklist" },
@@ -490,6 +493,9 @@ export default async function NichePage({ params }: Props) {
       <SeoLaunchEnhancement nicheSlug={niche.slug} nicheLabel={niche.label} pageType="core" />
 
       <InternalLinks niche={niche.slug} currentPage="" />
+
+      {/* Mobile sticky CTA — keeps the intake reachable as visitor scrolls */}
+      <NicheStickyCTA nicheLabel={niche.label} />
     </main>
   )
 }
