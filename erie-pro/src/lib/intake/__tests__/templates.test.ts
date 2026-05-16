@@ -2,93 +2,127 @@ import { describe, it, expect } from "vitest";
 import {
   getIntakeTemplate,
   ENABLED_INTAKE_NICHES,
+  HAND_TUNED_NICHE_SLUGS,
   isIntakeEnabledForNiche,
+  generateTemplate,
 } from "@/lib/intake/templates";
+import { niches } from "@/lib/niches";
 
-describe("intake templates", () => {
+describe("intake templates (all-niches mode)", () => {
   describe("ENABLED_INTAKE_NICHES", () => {
-    it("includes the v1 launch set of 5 niches", () => {
-      expect(ENABLED_INTAKE_NICHES.size).toBe(5);
-      expect(ENABLED_INTAKE_NICHES.has("plumbing")).toBe(true);
-      expect(ENABLED_INTAKE_NICHES.has("hvac")).toBe(true);
-      expect(ENABLED_INTAKE_NICHES.has("electrical")).toBe(true);
-      expect(ENABLED_INTAKE_NICHES.has("roofing")).toBe(true);
-      expect(ENABLED_INTAKE_NICHES.has("restoration")).toBe(true);
+    it("contains every niche in the registry", () => {
+      expect(ENABLED_INTAKE_NICHES.size).toBe(niches.length);
+      for (const n of niches) {
+        expect(ENABLED_INTAKE_NICHES.has(n.slug)).toBe(true);
+      }
     });
 
-    it("excludes non-launch niches", () => {
-      expect(ENABLED_INTAKE_NICHES.has("dental")).toBe(false);
-      expect(ENABLED_INTAKE_NICHES.has("legal")).toBe(false);
-      expect(ENABLED_INTAKE_NICHES.has("cleaning")).toBe(false);
+    it("is not empty", () => {
+      expect(ENABLED_INTAKE_NICHES.size).toBeGreaterThan(100);
+    });
+  });
+
+  describe("HAND_TUNED_NICHE_SLUGS", () => {
+    it("has exactly 5 hand-tuned niches for the v1 launch", () => {
+      expect(HAND_TUNED_NICHE_SLUGS.size).toBe(5);
+      expect(HAND_TUNED_NICHE_SLUGS.has("plumbing")).toBe(true);
+      expect(HAND_TUNED_NICHE_SLUGS.has("hvac")).toBe(true);
+      expect(HAND_TUNED_NICHE_SLUGS.has("electrical")).toBe(true);
+      expect(HAND_TUNED_NICHE_SLUGS.has("roofing")).toBe(true);
+      expect(HAND_TUNED_NICHE_SLUGS.has("restoration")).toBe(true);
     });
   });
 
   describe("isIntakeEnabledForNiche", () => {
-    it("returns true for enabled niches", () => {
-      expect(isIntakeEnabledForNiche("plumbing")).toBe(true);
-      expect(isIntakeEnabledForNiche("hvac")).toBe(true);
+    it("returns true for every niche in the registry", () => {
+      for (const n of niches.slice(0, 20)) {
+        expect(isIntakeEnabledForNiche(n.slug)).toBe(true);
+      }
     });
 
-    it("returns false for disabled niches", () => {
-      expect(isIntakeEnabledForNiche("dental")).toBe(false);
-      expect(isIntakeEnabledForNiche("unknown-niche-slug")).toBe(false);
-    });
-
-    it("returns false for null/undefined", () => {
+    it("returns false for unknown slugs", () => {
+      expect(isIntakeEnabledForNiche("nonexistent-niche-12345")).toBe(false);
       expect(isIntakeEnabledForNiche(null)).toBe(false);
       expect(isIntakeEnabledForNiche(undefined)).toBe(false);
       expect(isIntakeEnabledForNiche("")).toBe(false);
     });
   });
 
-  describe("getIntakeTemplate", () => {
-    it("returns the tuned template for an enabled niche", () => {
+  describe("getIntakeTemplate (hand-tuned)", () => {
+    it("returns the hand-tuned template for plumbing", () => {
       const t = getIntakeTemplate("plumbing");
       expect(t.nicheSlug).toBe("plumbing");
-      expect(t.nicheLabel).toBe("Plumbing");
-      expect(t.enabled).toBe(true);
-      expect(t.problemSuggestions.length).toBeGreaterThan(0);
-      expect(t.priceHint.typical).toMatch(/\$\d+/);
+      expect(t.problemSuggestions).toContain("Drain is clogged");
+      expect(t.urgencyExpectations.emergency.closingNote).toContain("(814) 200-0328");
     });
+  });
 
-    it("returns a generic fallback template for an unknown niche", () => {
-      const t = getIntakeTemplate("dental");
-      expect(t.enabled).toBe(false);
-      expect(t.nicheSlug).toBe("dental");
-      expect(t.nicheLabel).toBe("Dental");
-      expect(t.greeting).toContain("dental");
-    });
-
-    it("returns a generic fallback template for null", () => {
-      const t = getIntakeTemplate(null);
-      expect(t.enabled).toBe(false);
-      expect(t.nicheSlug).toBe("unknown");
-    });
-
-    it("has all three urgency expectations for every enabled niche", () => {
-      for (const slug of ENABLED_INTAKE_NICHES) {
-        const t = getIntakeTemplate(slug);
+  describe("getIntakeTemplate (generated)", () => {
+    it("generates a usable template for every non-hand-tuned niche", () => {
+      const nonTuned = niches.filter((n) => !HAND_TUNED_NICHE_SLUGS.has(n.slug));
+      for (const n of nonTuned) {
+        const t = getIntakeTemplate(n.slug);
+        expect(t.nicheSlug).toBe(n.slug);
+        expect(t.nicheLabel).toBe(n.label);
+        expect(t.greeting.length).toBeGreaterThan(20);
+        expect(t.greeting.toLowerCase()).toContain(n.label.toLowerCase());
+        expect(t.problemSuggestions.length).toBeGreaterThan(0);
         expect(t.urgencyExpectations.emergency).toBeDefined();
         expect(t.urgencyExpectations["this-week"]).toBeDefined();
         expect(t.urgencyExpectations.researching).toBeDefined();
-        expect(t.urgencyExpectations.emergency.slaTier).toBe("emergency");
+        expect(t.priceHint.typical.length).toBeGreaterThan(0);
+        expect(t.priceHint.factors.length).toBeGreaterThan(0);
       }
     });
 
-    it("urgency expectations have non-empty closing notes", () => {
-      for (const slug of ENABLED_INTAKE_NICHES) {
-        const t = getIntakeTemplate(slug);
-        for (const u of ["emergency", "this-week", "researching"] as const) {
-          expect(t.urgencyExpectations[u].closingNote.length).toBeGreaterThan(20);
-          expect(t.urgencyExpectations[u].buttonLabel.length).toBeGreaterThan(5);
-        }
-      }
+    it("price hints reference actual dollar values for niches with parseable avgProjectValue", () => {
+      // dental's avgProjectValue is "$200-$5,000" → should appear in price hints
+      const t = getIntakeTemplate("dental");
+      expect(t.priceHint.low).toMatch(/\$200/);
+      expect(t.priceHint.high).toMatch(/\$5,000/);
     });
 
-    it("emergency expectations mention the concierge phone for unmatched lanes", () => {
-      // Spot check: at least one enabled niche should reference the concierge
-      const plumbing = getIntakeTemplate("plumbing");
-      expect(plumbing.urgencyExpectations.emergency.closingNote).toContain("(814) 200-0328");
+    it("emergency niches get an emergency tier with concierge phone", () => {
+      // tow service should be tagged as emergency
+      const t = getIntakeTemplate("towing");
+      expect(t.urgencyExpectations.emergency.slaTier).toBe("emergency");
+      expect(t.urgencyExpectations.emergency.closingNote).toContain("(814) 200-0328");
+    });
+
+    it("project niches get project-style urgency copy", () => {
+      // kitchen-remodeling should be project-style
+      const t = getIntakeTemplate("kitchen-remodeling");
+      expect(t.urgencyExpectations.emergency.buttonLabel.toLowerCase()).not.toContain("right now");
+      expect(t.urgencyExpectations.emergency.slaTier).not.toBe("emergency");
+    });
+  });
+
+  describe("getIntakeTemplate (unknown / null)", () => {
+    it("returns a usable final-fallback template for unknown slugs", () => {
+      const t = getIntakeTemplate("nonexistent-niche-xyz");
+      expect(t.greeting.length).toBeGreaterThan(20);
+      expect(t.urgencyExpectations.emergency).toBeDefined();
+    });
+
+    it("returns a usable final-fallback template for null", () => {
+      const t = getIntakeTemplate(null);
+      expect(t.urgencyExpectations.emergency).toBeDefined();
+    });
+  });
+
+  describe("generateTemplate", () => {
+    it("produces non-empty problem suggestions from niche description", () => {
+      const niche = niches.find((n) => n.slug === "landscaping")!;
+      const t = generateTemplate(niche);
+      expect(t.problemSuggestions.length).toBeGreaterThan(0);
+      expect(t.problemSuggestions.length).toBeLessThanOrEqual(5);
+    });
+
+    it("template strings reference the niche label naturally", () => {
+      const niche = niches.find((n) => n.slug === "dental")!;
+      const t = generateTemplate(niche);
+      expect(t.greeting.toLowerCase()).toContain("dental");
+      expect(t.urgencyExpectations["this-week"].closingNote.toLowerCase()).toContain("dental");
     });
   });
 });

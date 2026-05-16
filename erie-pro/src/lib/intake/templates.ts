@@ -1,36 +1,31 @@
 // ── Per-Niche Intake Templates ────────────────────────────────────────
-// Per-niche conversation copy and pricing context for the intake widget.
-// Five niches enabled for the v1 launch; the wrapper falls back to a
-// generic template for the other 109 niches until they're tuned.
+// Every niche in niches.ts gets an intake template:
+//   - HAND_TUNED_TEMPLATES holds the 5 v1 launch niches with bespoke copy.
+//   - generateTemplate(niche) produces a high-quality template from niche
+//     metadata (label, description, searchTerms, avgProjectValue) for the
+//     remaining ~107 niches.
+//   - getIntakeTemplate(slug) returns the hand-tuned template if one
+//     exists, otherwise the generated one, otherwise a final-fallback.
+//
+// All niches are intake-enabled. The widget appears on every niche page.
 
-import { getNicheBySlug } from "@/lib/niches";
+import { getNicheBySlug, niches, type LocalNiche } from "@/lib/niches";
 import type { IntakeUrgency } from "./types";
 
 export interface IntakeTemplate {
-  /** Niche slug this template applies to */
   nicheSlug: string;
-  /** Display label (matches niches.ts) */
   nicheLabel: string;
-  /** Whether this niche is "live" in the intake widget (enabled for the v1 launch) */
+  /** Whether this niche has been hand-tuned (true) or auto-generated (false). UI parity either way. */
   enabled: boolean;
-  /** Empathetic opening line on the problem step. {label} = niche label. */
   greeting: string;
-  /** Placeholder text for the problem free-text field */
   problemPlaceholder: string;
-  /** Example "problem" texts shown as suggestion chips */
   problemSuggestions: string[];
-  /** Per-urgency expectation copy. Used to compose the assistant reply after urgency selection. */
   urgencyExpectations: Record<IntakeUrgency, {
-    /** Short label shown on the urgency button */
     buttonLabel: string;
-    /** Customer-facing expected response time */
     expectedResponseTime: string;
-    /** Internal SLA tier — feeds into Lead.slaDeadline */
     slaTier: "emergency" | "same-day" | "next-day" | "standard";
-    /** Closing message after they pick urgency */
     closingNote: string;
   }>;
-  /** Price hint range — used in the assistant reply after urgency, and on the niche page */
   priceHint: {
     typical: string;
     low: string;
@@ -39,8 +34,10 @@ export interface IntakeTemplate {
   };
 }
 
-const FIVE_NICHES: IntakeTemplate[] = [
-  {
+// ── Hand-tuned templates for the v1 launch niches ────────────────────
+
+const HAND_TUNED_TEMPLATES: Record<string, IntakeTemplate> = {
+  plumbing: {
     nicheSlug: "plumbing",
     nicheLabel: "Plumbing",
     enabled: true,
@@ -80,7 +77,7 @@ const FIVE_NICHES: IntakeTemplate[] = [
       factors: ["Time of day (after-hours adds ~25–50%)", "Parts availability", "Whether walls or ground need to be opened", "Permit requirements for major work"],
     },
   },
-  {
+  hvac: {
     nicheSlug: "hvac",
     nicheLabel: "HVAC",
     enabled: true,
@@ -120,7 +117,7 @@ const FIVE_NICHES: IntakeTemplate[] = [
       factors: ["System age", "Type of fuel (gas, oil, electric, heat pump)", "Refrigerant work adds cost", "Ductwork modifications"],
     },
   },
-  {
+  electrical: {
     nicheSlug: "electrical",
     nicheLabel: "Electrical",
     enabled: true,
@@ -160,7 +157,7 @@ const FIVE_NICHES: IntakeTemplate[] = [
       factors: ["Permit requirements (most cities require for panel work)", "Drywall opening", "Code compliance for older homes", "Inspector fees"],
     },
   },
-  {
+  roofing: {
     nicheSlug: "roofing",
     nicheLabel: "Roofing",
     enabled: true,
@@ -200,7 +197,7 @@ const FIVE_NICHES: IntakeTemplate[] = [
       factors: ["Roof material (asphalt cheapest, slate priciest)", "Pitch and height", "Insurance claim involvement", "Permit + inspection", "Decking condition under shingles"],
     },
   },
-  {
+  restoration: {
     nicheSlug: "restoration",
     nicheLabel: "Water Damage Restoration",
     enabled: true,
@@ -240,69 +237,261 @@ const FIVE_NICHES: IntakeTemplate[] = [
       factors: ["Water category (clean / gray / sewage)", "How long water sat before mitigation", "Square footage affected", "Insurance coverage (most homeowners' policies cover sudden, not gradual)", "Mold remediation if needed"],
     },
   },
+};
+
+// ── Heuristic categorization for generated templates ─────────────────
+
+/** Niches where same-hour emergency response is realistic and necessary. */
+const EMERGENCY_KEYWORDS = [
+  "repair", "emergency", "leak", "damage", "broken", "cleanup", "restoration",
+  "heat", "cool", "hvac", "plumb", "electric", "roof", "water", "fire",
+  "tow", "locksmith", "chimney", "septic", "sewer", "lockout", "burst",
+  "flood", "storm", "outage", "garage-door", "pest", "rodent",
 ];
 
-const GENERIC_TEMPLATE: Omit<IntakeTemplate, "nicheSlug" | "nicheLabel"> = {
-  enabled: false, // Don't surface the widget for non-tuned niches yet
-  greeting: "Hi — I'll connect you with a {label} contractor in Erie. What's going on?",
+/** Niches where the work is project-scoped (quotes, schedules) rather than urgent. */
+const PROJECT_KEYWORDS = [
+  "remodel", "renovation", "kitchen", "bathroom", "addition", "build",
+  "design", "install", "construction", "deck", "fence", "siding",
+  "windows", "doors", "flooring", "landscape", "concrete", "paving",
+  "solar", "insulation", "painting", "basement-finishing",
+];
+
+function isEmergencyNiche(niche: LocalNiche): boolean {
+  const text = `${niche.slug} ${niche.description}`.toLowerCase();
+  return EMERGENCY_KEYWORDS.some((k) => text.includes(k));
+}
+
+function isProjectNiche(niche: LocalNiche): boolean {
+  const text = `${niche.slug} ${niche.description}`.toLowerCase();
+  return PROJECT_KEYWORDS.some((k) => text.includes(k));
+}
+
+// ── Programmatic template generator ──────────────────────────────────
+
+function parseAvgProjectValue(s: string): { low: number; high: number } | null {
+  const match = s.match(/\$\s*([0-9,]+)\s*[-–—]\s*\$\s*([0-9,]+)/);
+  if (!match) return null;
+  const low = parseInt(match[1].replace(/,/g, ""), 10);
+  const high = parseInt(match[2].replace(/,/g, ""), 10);
+  if (!Number.isFinite(low) || !Number.isFinite(high)) return null;
+  return { low, high };
+}
+
+function formatMoney(n: number): string {
+  return `$${n.toLocaleString()}`;
+}
+
+function deriveProblemSuggestions(niche: LocalNiche): string[] {
+  // Parse the description into discrete suggestion phrases.
+  // Most niches describe themselves as comma-separated services:
+  //   "Heating, cooling, ventilation, and air quality services"
+  const parts = niche.description
+    .replace(/,\s+and\s+/gi, ", ")
+    .replace(/\s+and\s+/gi, ", ")
+    .split(",")
+    .map((p) => p.trim())
+    .filter((p) => p.length > 2 && p.length < 60);
+
+  const suggestions = parts.map((p) => {
+    // Capitalize first letter; trim a trailing "services" / "service" since it's redundant in a suggestion button
+    let s = p.charAt(0).toUpperCase() + p.slice(1);
+    s = s.replace(/\s+services?$/i, "");
+    return s;
+  });
+
+  // Dedupe, limit to 5
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const s of suggestions) {
+    const key = s.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      out.push(s);
+      if (out.length >= 5) break;
+    }
+  }
+  return out;
+}
+
+function derivePriceHint(niche: LocalNiche): IntakeTemplate["priceHint"] {
+  const parsed = parseAvgProjectValue(niche.avgProjectValue);
+  if (!parsed) {
+    return {
+      typical: "Varies by scope",
+      low: "Service calls typically $95–$200",
+      high: "Complex projects can run several thousand dollars",
+      factors: ["Scope of work", "Materials", "Time involved", "Permit requirements where applicable"],
+    };
+  }
+  const { low, high } = parsed;
+  const midLow = Math.round(low + (high - low) * 0.15);
+  const midHigh = Math.round(low + (high - low) * 0.45);
+
+  return {
+    typical: `${formatMoney(midLow)}–${formatMoney(midHigh)} for most ${niche.label.toLowerCase()} jobs`,
+    low: `${formatMoney(low)} for basic service or smaller jobs`,
+    high: `${formatMoney(high)}+ for the largest or most complex projects`,
+    factors: ["Scope and complexity", "Materials and parts", "Time required", "Permit requirements where applicable"],
+  };
+}
+
+function deriveUrgencyExpectations(niche: LocalNiche): IntakeTemplate["urgencyExpectations"] {
+  const isEmergency = isEmergencyNiche(niche);
+  const isProject = isProjectNiche(niche);
+  const label = niche.label.toLowerCase();
+
+  if (isEmergency) {
+    return {
+      "emergency": {
+        buttonLabel: `Right now — urgent ${label} issue`,
+        expectedResponseTime: "within 60–90 minutes",
+        slaTier: "emergency",
+        closingNote: `Got it. Urgent ${label} calls go to the front of the queue. If nobody's claimed the lane in Erie, the concierge line at (814) 200-0328 will route you to whoever can help fastest.`,
+      },
+      "this-week": {
+        buttonLabel: "This week — it can wait a day or two",
+        expectedResponseTime: "within 24 hours",
+        slaTier: "next-day",
+        closingNote: `Sounds good. A ${label} contractor will reach out within a business day.`,
+      },
+      "researching": {
+        buttonLabel: "Just researching — no rush",
+        expectedResponseTime: "within 2 business days",
+        slaTier: "standard",
+        closingNote: "Perfect, no rush. A contractor will follow up when they have time to give a thoughtful answer.",
+      },
+    };
+  }
+
+  if (isProject) {
+    return {
+      "emergency": {
+        buttonLabel: "ASAP — ready to start soon",
+        expectedResponseTime: "within 24 hours",
+        slaTier: "same-day",
+        closingNote: `Got it. Project-based work like ${label} usually starts with a quote — a contractor will reach out within 24 hours to schedule a site visit.`,
+      },
+      "this-week": {
+        buttonLabel: "This week — getting quotes",
+        expectedResponseTime: "within 2 business days",
+        slaTier: "next-day",
+        closingNote: "Sounds good. A contractor will be in touch to schedule a quote.",
+      },
+      "researching": {
+        buttonLabel: "Just researching — planning ahead",
+        expectedResponseTime: "within 3–5 business days",
+        slaTier: "standard",
+        closingNote: `Smart to plan ahead for a ${label} project. A contractor will follow up to discuss scope and timing.`,
+      },
+    };
+  }
+
+  // Default / professional services
+  return {
+    "emergency": {
+      buttonLabel: "ASAP — need this soon",
+      expectedResponseTime: "within 24 hours",
+      slaTier: "same-day",
+      closingNote: `Got it. A ${label} provider will get back to you within a business day.`,
+    },
+    "this-week": {
+      buttonLabel: "This week — sometime soon",
+      expectedResponseTime: "within 24–48 hours",
+      slaTier: "next-day",
+      closingNote: `Sounds good. A ${label} provider will reach out within a couple of business days.`,
+    },
+    "researching": {
+      buttonLabel: "Just researching — exploring options",
+      expectedResponseTime: "within 2–3 business days",
+      slaTier: "standard",
+      closingNote: "Perfect. A provider will follow up when they have time to give a thoughtful response.",
+    },
+  };
+}
+
+/**
+ * Generate a complete, high-quality template from niche metadata.
+ * Used for the ~107 niches without hand-tuned templates.
+ */
+export function generateTemplate(niche: LocalNiche): IntakeTemplate {
+  return {
+    nicheSlug: niche.slug,
+    nicheLabel: niche.label,
+    enabled: true,
+    greeting: `Hi — I'll connect you with a ${niche.label.toLowerCase()} provider in Erie. What do you need help with?`,
+    problemPlaceholder: "Describe what you need help with",
+    problemSuggestions: deriveProblemSuggestions(niche),
+    urgencyExpectations: deriveUrgencyExpectations(niche),
+    priceHint: derivePriceHint(niche),
+  };
+}
+
+// ── Public API ─────────────────────────────────────────────────────────
+
+/** Final fallback when no niche data is available (e.g. homepage start). */
+const FINAL_FALLBACK_TEMPLATE: IntakeTemplate = {
+  nicheSlug: "unknown",
+  nicheLabel: "service",
+  enabled: true,
+  greeting: "Hi — what kind of help do you need in Erie? Describe what's going on and I'll route you to the right local pro.",
   problemPlaceholder: "Describe what you need help with",
   problemSuggestions: [],
   urgencyExpectations: {
     "emergency": {
-      buttonLabel: "Right now",
+      buttonLabel: "Right now — urgent",
       expectedResponseTime: "within a few hours",
       slaTier: "emergency",
-      closingNote: "Got it. We'll route this as urgent.",
+      closingNote: "Got it. We'll route this as urgent. If nobody's claimed your lane in Erie, the concierge at (814) 200-0328 can help immediately.",
     },
     "this-week": {
       buttonLabel: "This week",
       expectedResponseTime: "within 24 hours",
       slaTier: "next-day",
-      closingNote: "Got it. A contractor will reach out within a business day.",
+      closingNote: "Got it. A local provider will reach out within a business day.",
     },
     "researching": {
       buttonLabel: "Just researching",
       expectedResponseTime: "within 2 business days",
       slaTier: "standard",
-      closingNote: "Perfect. A contractor will follow up when they have time to give a thoughtful answer.",
+      closingNote: "Perfect. A provider will follow up when they have time to give a thoughtful answer.",
     },
   },
   priceHint: {
     typical: "Varies by scope",
-    low: "Service-call diagnostics often $95–$200",
-    high: "Full projects can run several thousand dollars",
-    factors: ["Scope of work", "Materials", "Time involved", "Permit requirements"],
+    low: "Service calls typically $95–$200",
+    high: "Complex projects can run several thousand dollars",
+    factors: ["Scope of work", "Materials", "Time involved", "Permit requirements where applicable"],
   },
 };
 
-const TEMPLATES: Record<string, IntakeTemplate> = Object.fromEntries(
-  FIVE_NICHES.map((t) => [t.nicheSlug, t])
-);
-
-/** Returns the template for a niche slug, or a generic fallback. */
+/** Returns the template for a niche slug. Always succeeds (falls back). */
 export function getIntakeTemplate(nicheSlug: string | null | undefined): IntakeTemplate {
-  if (nicheSlug && TEMPLATES[nicheSlug]) return TEMPLATES[nicheSlug];
-
-  // Fallback: synthesize a template from niche data
-  const fromRegistry = nicheSlug ? getNicheBySlug(nicheSlug) : null;
-  const label = fromRegistry?.label ?? "service";
-  return {
-    ...GENERIC_TEMPLATE,
-    nicheSlug: nicheSlug ?? "unknown",
-    nicheLabel: label,
-    greeting: GENERIC_TEMPLATE.greeting.replace("{label}", label.toLowerCase()),
-  };
+  if (nicheSlug && HAND_TUNED_TEMPLATES[nicheSlug]) {
+    return HAND_TUNED_TEMPLATES[nicheSlug];
+  }
+  if (nicheSlug) {
+    const niche = getNicheBySlug(nicheSlug);
+    if (niche) return generateTemplate(niche);
+  }
+  return FINAL_FALLBACK_TEMPLATE;
 }
 
-/** Slugs of niches where the intake widget is fully tuned and enabled. */
+/** All niche slugs supported by the intake widget. Now: every niche in the registry. */
 export const ENABLED_INTAKE_NICHES: ReadonlySet<string> = new Set(
-  FIVE_NICHES.filter((t) => t.enabled).map((t) => t.nicheSlug)
+  niches.map((n) => n.slug)
 );
 
-/** Whether to surface the intake widget for this niche, given the feature flag. */
+/** Slugs of niches with hand-tuned templates (used for analytics / QA spot-checks). */
+export const HAND_TUNED_NICHE_SLUGS: ReadonlySet<string> = new Set(
+  Object.keys(HAND_TUNED_TEMPLATES)
+);
+
+/** Whether the intake widget should be surfaced for this niche. True for every real niche. */
 export function isIntakeEnabledForNiche(nicheSlug: string | null | undefined): boolean {
   if (!nicheSlug) return false;
   return ENABLED_INTAKE_NICHES.has(nicheSlug);
 }
 
-export { FIVE_NICHES };
+// Backwards-compat export for code that imported FIVE_NICHES
+export const FIVE_NICHES = Object.values(HAND_TUNED_TEMPLATES);
