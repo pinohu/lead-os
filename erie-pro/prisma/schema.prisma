@@ -1024,3 +1024,35 @@ model OfferSubscriptionEntitlement {
   @@index([externalSubscriptionId])
   @@map("offer_subscription_entitlements")
 }
+
+// ── Intake Widget Conversations ─────────────────────────────────────
+// Conversational intake (AI-led) sessions. One row per conversation.
+// Conversations that finish successfully create a Lead row and store the
+// resulting leadId. Conversations that are abandoned stay here for
+// funnel analysis and are cleaned up by the cleanup cron after 30 days.
+
+model IntakeConversation {
+  id                      String   @id @default(cuid())
+  citySlug                String   @default("erie")
+  startedFromNicheSlug    String?
+  currentStep             String   @default("problem") // problem | location | urgency | budget | contact | complete
+  /** Full ordered list of {role, content, meta, at} messages */
+  messages                Json     @default("[]")
+  /** Partial then complete IntakeOutcome */
+  outcome                 Json     @default("{}")
+  /** A/B variant served. Either "intake" (this widget) or "form" (legacy fallback) */
+  variant                 String   @default("intake")
+  /** Stamp how the conversation ended */
+  outcomeStatus           String   @default("in_progress") // in_progress | completed | abandoned | error
+  /** Once a Lead is created from this conversation, link to it */
+  leadId                  String?  @unique
+  /** Visitor IP for rate-limiting and abuse mitigation (truncated) */
+  ipPrefix                String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@index([citySlug, currentStep])
+  @@index([outcomeStatus, updatedAt])
+  @@index([startedFromNicheSlug])
+  @@map("intake_conversations")
+}

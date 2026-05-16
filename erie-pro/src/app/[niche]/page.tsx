@@ -32,7 +32,7 @@ import { SeoLaunchEnhancement } from "@/components/seo-launch-enhancement"
 import { FeaturedProvider } from "@/components/featured-provider"
 import { getDirectoryListingsByNiche } from "@/lib/directory-store"
 import { getFeaturedProviderId } from "@/lib/perk-manager"
-import LeadForm from "@/components/lead-form"
+import IntakeOrForm from "@/components/intake-or-form"
 import { ProviderGrowthOffer } from "@/components/provider-growth-offer"
 import { ServiceFunnelSystem } from "@/components/service-funnel-system"
 import { inferServiceFamily } from "@/lib/automated-offers"
@@ -345,7 +345,7 @@ export default async function NichePage({ params }: Props) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <LeadForm
+            <IntakeOrForm
               nicheSlug={niche.slug}
               nicheLabel={niche.label}
               citySlug={cityConfig.slug}
