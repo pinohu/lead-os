@@ -18,6 +18,26 @@ This directory contains per-niche curation guides for the Viloud TV channels tha
 
 These match the priority niches already hand-tuned in the educational content generator (`src/lib/niche/educational-content.ts` on PR #46/#47). Same audiences, same content gravitational pull — curating them first means a Viloud channel always pairs with the best educational content.
 
+## Cluster-level guides (remaining 107 niches)
+
+The 11 functional clusters defined in `src/lib/niche/educational-content.ts` each have a comprehensive curation guide. One Viloud channel per cluster is operationally realistic (vs. 112 channels); the guides indicate where sub-niches share content and where Phase 2 splitting would help.
+
+| Cluster guide | Niches covered |
+|---|---|
+| `cluster-outdoor-seasonal.md` | landscaping, lawn, snow-removal, tree-service/removal, irrigation, gutters, ice-dam, salt-deicing, outdoor/holiday lighting, asphalt-sealing, driveway-paving, decks-patios, lakefront, retaining-walls, snow-plow (16) |
+| `cluster-trades-interior.md` | drywall/plaster, flooring/hardwood, painting, tile, epoxy-flooring, cabinets, countertops, closet-storage, bath/kitchen/basement remodeling (11) |
+| `cluster-trades-exterior.md` | concrete, masonry/brick, fencing, windows-doors, glass, storm-window (6) |
+| `cluster-cleaning.md` | cleaning, carpet-cleaning, pressure-washing, commercial/rental-turnover/vacation-rental cleaning (6) |
+| `cluster-specialty-repair.md` | appliance-repair, garage-door, chimney/fireplace, locksmith, handyman (5) |
+| `cluster-install-bigticket.md` | solar, pool-spa, home-security, insulation (4) |
+| `cluster-auto.md` | auto-repair, auto-body, mechanic, towing (4) |
+| `cluster-healthcare.md` | dental, chiropractic, veterinary, dermatology, optometry, physical-therapy, mental-health, senior-home-care, home-health-care, hearing-aids-audiology (10) |
+| `cluster-professional-services.md` | legal, accounting/tax, real-estate, financial-advisors, insurance-agents, mortgage-brokers, property-management, airbnb-property-management, estate-sale, funeral-homes, home-inspection (11) |
+| `cluster-underground-structural.md` | septic, septic-inspection, foundation, basement-waterproofing, radon, well-water (6) |
+| `cluster-niche-services.md` | pest-control, pet-grooming, photography, moving, demolition, excavation, bat/bee-wasp/wildlife removal, junk-removal, dumpster-rental, boat-repair, dock-install, marina, general-contractor, home-builders, home-remodeling (17) |
+
+**Operational reality:** With these cluster guides, setting up Viloud channels for all 112 niches becomes ~16 channels (5 priority + 11 cluster anchors), not 112. Per-cluster setup time is ~30-60 min in the Viloud UI. Total Phase 2 work: ~10-15 hours of UI clicks vs. ~55-65 hours if you went per-niche.
+
 ## Workflow per niche
 
 For each niche file:
