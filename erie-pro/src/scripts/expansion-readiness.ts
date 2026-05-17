@@ -3,16 +3,17 @@
 // Validates that a new city deployment is correctly configured.
 // Run: npx tsx src/scripts/expansion-readiness.ts [city-slug]
 //
-// Checks:
-// 1. City exists in registry
-// 2. Domain is configured
-// 3. All configured niches generate valid pages
-// 4. Pricing multiplier produces sane values
-// 5. Service area is populated
-// 6. Database connectivity
+// Uses src/lib/city-helpers.ts for the actual validation rules. Surfacing
+// the same checks that show up on /admin/cities, plus registry-wide
+// overlap / conflict detection.
 
 import { getCityBySlug, getAllCities } from "../lib/city-registry";
 import { niches } from "../lib/niches";
+import {
+  validateCityConfig,
+  findCoverageOverlaps,
+  findRegistryConflicts,
+} from "../lib/city-helpers";
 
 const slug = process.argv[2];
 
@@ -35,101 +36,97 @@ if (!city) {
 
 console.log(`\n🏙️  Expansion Readiness Check: ${city.name}, ${city.stateCode}\n`);
 
-const checks: { name: string; pass: boolean; detail: string }[] = [];
+// ── Per-city validation ──────────────────────────────────────────────
 
-// 1. Registry
-checks.push({
-  name: "City in registry",
-  pass: true,
-  detail: `${city.slug} → ${city.name}, ${city.stateCode}`,
-});
+const result = validateCityConfig(city);
+const errors = result.issues.filter((i) => i.severity === "error");
+const warnings = result.issues.filter((i) => i.severity === "warning");
+const infos = result.issues.filter((i) => i.severity === "info");
 
-// 2. Domain
-checks.push({
-  name: "Domain configured",
-  pass: city.domain.length > 0 && city.domain.includes("."),
-  detail: city.domain,
-});
-
-// 3. Service area
-checks.push({
-  name: "Service area populated",
-  pass: city.serviceArea.length >= 3,
-  detail: `${city.serviceArea.length} areas: ${city.serviceArea.slice(0, 5).join(", ")}${city.serviceArea.length > 5 ? "..." : ""}`,
-});
-
-// 4. Coordinates
-checks.push({
-  name: "GPS coordinates set",
-  pass: city.coordinates.lat !== 0 && city.coordinates.lng !== 0,
-  detail: `${city.coordinates.lat}, ${city.coordinates.lng}`,
-});
-
-// 5. Pricing multiplier
-const sampleNiche = niches[0];
-const adjustedPrice = Math.round(sampleNiche.monthlyFee * city.pricingMultiplier);
-checks.push({
-  name: "Pricing multiplier sane",
-  pass: city.pricingMultiplier >= 0.3 && city.pricingMultiplier <= 3.0,
-  detail: `${city.pricingMultiplier}x → ${sampleNiche.label}: $${sampleNiche.monthlyFee} → $${adjustedPrice}/mo`,
-});
-
-// 6. Niche coverage
-const nicheCount = niches.length;
-checks.push({
-  name: "All niches available",
-  pass: nicheCount > 0,
-  detail: `${nicheCount} niches × 15 page types = ${nicheCount * 15} pages`,
-});
-
-// 7. Population
-checks.push({
-  name: "Population recorded",
-  pass: city.population > 0,
-  detail: `${city.population.toLocaleString()} residents`,
-});
-
-// 8. Timezone
-checks.push({
-  name: "Timezone set",
-  pass: city.timezone.length > 0,
-  detail: city.timezone,
-});
-
-// 9. Counties
-checks.push({
-  name: "Counties defined",
-  pass: city.counties.length > 0,
-  detail: city.counties.join(", "),
-});
-
-// 10. Metro area
-checks.push({
-  name: "Metro area name",
-  pass: city.metroArea.length > 0,
-  detail: city.metroArea,
-});
-
-// ── Report ────────────────────────────────────────────────────────────
 console.log("─".repeat(60));
-let failCount = 0;
-for (const check of checks) {
-  const icon = check.pass ? "✅" : "❌";
-  if (!check.pass) failCount++;
-  console.log(`  ${icon} ${check.name.padEnd(25)} ${check.detail}`);
-}
+console.log("Per-city validation");
 console.log("─".repeat(60));
-
-if (failCount === 0) {
-  console.log(`\n✅ ${city.name} is ready for deployment.`);
-  console.log(`\nDeploy steps:`);
-  console.log(`  1. Register domain: ${city.domain}`);
-  console.log(`  2. Create Vercel project with env CITY_SLUG=${city.slug}`);
-  console.log(`  3. Set DATABASE_URL for the city's database`);
-  console.log(`  4. Run: npx prisma migrate deploy`);
-  console.log(`  5. Run: npx tsx src/scripts/stripe-setup.ts`);
-  console.log(`  6. Deploy: vercel --prod\n`);
+if (errors.length === 0 && warnings.length === 0 && infos.length === 0) {
+  console.log("  ✅ All checks pass.");
 } else {
-  console.log(`\n❌ ${failCount} check(s) failed. Fix them before deploying.\n`);
+  for (const e of errors) {
+    console.log(`  ❌ [error]   ${e.field.padEnd(24)} ${e.message}`);
+  }
+  for (const w of warnings) {
+    console.log(`  ⚠️  [warning] ${w.field.padEnd(24)} ${w.message}`);
+  }
+  for (const i of infos) {
+    console.log(`  ℹ️  [info]    ${i.field.padEnd(24)} ${i.message}`);
+  }
+}
+
+// ── Registry-wide checks ─────────────────────────────────────────────
+
+const allCities = getAllCities();
+const conflicts = findRegistryConflicts(allCities);
+const overlaps = findCoverageOverlaps(allCities).filter((o) =>
+  o.cities.includes(slug)
+);
+
+console.log("\n" + "─".repeat(60));
+console.log("Registry-wide checks");
+console.log("─".repeat(60));
+
+if (conflicts.length > 0) {
+  for (const c of conflicts) {
+    const involved = c.cities.includes(slug) ? " (involves this city)" : "";
+    console.log(
+      `  ❌ ${c.type === "duplicate_slug" ? "Duplicate slug" : "Duplicate domain"} "${c.value}" → ${c.cities.join(", ")}${involved}`
+    );
+  }
+} else {
+  console.log("  ✅ No registry-wide slug/domain conflicts.");
+}
+
+if (overlaps.length > 0) {
+  console.log(`\n  ZIP coverage overlaps involving ${slug}:`);
+  for (const o of overlaps) {
+    const others = o.cities.filter((c) => c !== slug);
+    console.log(`    ${o.zip} → also served by ${others.join(", ")}`);
+  }
+  console.log(
+    "  (Overlaps may be intentional — county-adjacent ZIPs. Review case-by-case.)"
+  );
+} else {
+  console.log("  ✅ No ZIP coverage overlap with other cities.");
+}
+
+// ── Summary + deploy steps ───────────────────────────────────────────
+
+const nicheCount = niches.length;
+console.log("\n" + "─".repeat(60));
+console.log("Summary");
+console.log("─".repeat(60));
+console.log(`  Domain:          ${city.domain}`);
+console.log(`  Population:      ${city.population.toLocaleString()}`);
+console.log(`  Coverage ZIPs:   ${(city.coverageZips ?? []).length}`);
+console.log(`  Service area:    ${city.serviceArea.length} communities`);
+console.log(`  Niches:          ${nicheCount} (${nicheCount * 15} total pages)`);
+console.log(`  Price multiplier:${city.pricingMultiplier}x`);
+
+if (errors.length > 0) {
+  console.log(
+    `\n❌ ${errors.length} error(s) must be fixed before deploying ${city.name}.\n`
+  );
   process.exit(1);
 }
+
+if (warnings.length > 0) {
+  console.log(
+    `\n⚠️  ${warnings.length} warning(s) — review before deploying ${city.name}.\n`
+  );
+}
+
+console.log(`\n✅ ${city.name} is ready for deployment.\n`);
+console.log("Deploy steps:");
+console.log(`  1. Register domain: ${city.domain}`);
+console.log(`  2. Create Vercel project with env CITY_SLUG=${city.slug}`);
+console.log(`  3. Set DATABASE_URL for the city's database`);
+console.log("  4. Run: npx prisma migrate deploy");
+console.log("  5. Run: npx tsx src/scripts/stripe-setup.ts");
+console.log("  6. Deploy: vercel --prod\n");
