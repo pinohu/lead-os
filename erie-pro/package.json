@@ -24,7 +24,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "website-opps:seed": "npx tsx src/scripts/setup-website-opportunities.ts"
+    "website-opps:seed": "npx tsx src/scripts/setup-website-opportunities.ts",
+    "youtube:vet": "npx tsx src/scripts/vet-youtube.ts",
+    "youtube:vet:dry": "npx tsx src/scripts/vet-youtube.ts --dry-run"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
