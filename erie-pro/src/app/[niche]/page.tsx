@@ -42,6 +42,7 @@ import NicheServiceScope from "@/components/niche/service-scope"
 import NicheVettingChecklist from "@/components/niche/vetting-checklist"
 import NicheFAQInline from "@/components/niche/faq-inline"
 import NicheTrustSignals from "@/components/niche/trust-signals"
+import { ViloudChannelEmbed } from "@/components/viloud-channel-embed"
 import NicheRelatedServices from "@/components/niche/related-services"
 import NicheStickyCTA from "@/components/niche/sticky-cta"
 import { buildNichePageSchema } from "@/lib/niche-page-schema"
@@ -368,6 +369,11 @@ export default async function NichePage({ params }: Props) {
         certifications={content?.certifications ?? []}
         trustSignals={content?.trustSignals ?? []}
       />
+
+      {/* ── Viloud TV channel (renders only if configured) ───── */}
+      <section className="mx-auto max-w-4xl px-4 sm:px-6">
+        <ViloudChannelEmbed nicheSlug={niche.slug} nicheLabel={niche.label} />
+      </section>
 
       {/* ── FAQ (inline — was previously only at subroute) ───── */}
       <NicheFAQInline
