@@ -66,6 +66,14 @@ export default function IntakeWidget({
   const [urgency, setUrgency] = useState<IntakeUrgency | null>(null);
   const [budget, setBudget] = useState<IntakeBudget | null>(null);
 
+  // "Did you mean?" niche confirmation surfaced after the problem step
+  // when the classifier flagged alternative niches as plausible candidates.
+  const [nicheConfirmation, setNicheConfirmation] = useState<{
+    routedNicheSlug: string;
+    routedNicheLabel: string;
+    alternatives: Array<{ slug: string; label: string }>;
+  } | null>(null);
+
   // Contact step
   const [firstName, setFirstName] = useState("");
   const [phone, setPhoneDisplay] = useState("");
@@ -194,7 +202,78 @@ export default function IntakeWidget({
       setIsThinking(false);
       appendMessage({ role: "assistant", content: data.assistantReply });
       setStep(data.nextStep);
+
+      // Manage the "did you mean?" confirmation:
+      //   • Show when the problem step returned alternatives other than what
+      //     the backend routed to.
+      //   • Clear on every subsequent step transition (user committed).
+      if (
+        forStep === "problem" &&
+        data.routedNicheSlug &&
+        Array.isArray(data.candidateNiches) &&
+        data.candidateNiches.length > 0
+      ) {
+        const alternatives = data.candidateNiches
+          .filter(
+            (c: { slug: string; label: string; confidence: number }) =>
+              c.slug !== data.routedNicheSlug
+          )
+          .slice(0, 3)
+          .map((c: { slug: string; label: string }) => ({
+            slug: c.slug,
+            label: c.label,
+          }));
+        if (alternatives.length > 0) {
+          const routedLabel =
+            data.candidateNiches.find(
+              (c: { slug: string; label: string }) =>
+                c.slug === data.routedNicheSlug
+            )?.label ?? template.nicheLabel;
+          setNicheConfirmation({
+            routedNicheSlug: data.routedNicheSlug,
+            routedNicheLabel: routedLabel,
+            alternatives,
+          });
+        } else {
+          setNicheConfirmation(null);
+        }
+      } else {
+        // Any other step: clear stale confirmation
+        setNicheConfirmation(null);
+      }
     } catch (err) {
+      setIsThinking(false);
+      setErrorMessage("Network hiccup. Try again or use the form below.");
+    }
+  };
+
+  // ── Switch niche (from "did you mean?" UI) ──────────────────────
+  const switchToNiche = async (nicheSlug: string, nicheLabel: string) => {
+    if (!conversationId) return;
+    setErrorMessage(null);
+    appendMessage({
+      role: "user",
+      content: `Switch to ${nicheLabel}`,
+    });
+    setIsThinking(true);
+    setNicheConfirmation(null); // hide chips immediately for responsiveness
+
+    try {
+      const res = await fetch("/api/intake/switch-niche", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversationId, nicheSlug }),
+      });
+      const data = await res.json();
+      setIsThinking(false);
+      if (!res.ok || !data.success) {
+        setErrorMessage(
+          "Couldn't switch the routing. We'll continue with the current selection."
+        );
+        return;
+      }
+      appendMessage({ role: "assistant", content: data.assistantReply });
+    } catch {
       setIsThinking(false);
       setErrorMessage("Network hiccup. Try again or use the form below.");
     }
@@ -606,6 +685,38 @@ export default function IntakeWidget({
           </div>
         )}
       </div>
+      {nicheConfirmation && !isThinking && (
+        <div
+          className="px-4 py-2.5 bg-amber-50 border-t border-amber-200"
+          aria-live="polite"
+        >
+          <div className="text-xs text-amber-900 mb-2">
+            Routing to {nicheConfirmation.routedNicheLabel}. Did you mean
+            something else?
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {nicheConfirmation.alternatives.map((alt) => (
+              <button
+                key={alt.slug}
+                type="button"
+                onClick={() => switchToNiche(alt.slug, alt.label)}
+                className="px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 active:bg-amber-200 transition min-h-[36px]"
+                aria-label={`Switch routing to ${alt.label}`}
+              >
+                Switch to {alt.label}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setNicheConfirmation(null)}
+              className="px-3 py-1.5 rounded-full text-xs text-amber-900 hover:bg-amber-100 active:bg-amber-200 transition min-h-[36px]"
+              aria-label="Dismiss alternatives"
+            >
+              Keep as-is
+            </button>
+          </div>
+        </div>
+      )}
       <div className="p-4 border-t border-gray-200 bg-white">
         {errorMessage && (
           <div

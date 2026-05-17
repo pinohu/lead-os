@@ -151,8 +151,78 @@ export async function advanceConversation(
   }
 }
 
-// ── Niche-routing decision (pure; exported for testing) ──────────────
+// ── Switch niche (post-problem-step correction) ──────────────────────
 //
+// Lets the customer re-route their conversation to a different niche
+// without re-doing the problem step. Used when the "did you mean?" UI
+// surfaces alternative candidates and the customer picks one.
+//
+// Constraints:
+//   • Conversation must be in progress
+//   • Conversation must be past the "problem" step
+//   • Target niche slug must be valid
+//   • Switch updates outcome.primaryNiche and appends a brief assistant
+//     confirmation message; does NOT reset progress on later steps.
+export async function switchNiche(
+  conversationId: string,
+  newNicheSlug: string
+): Promise<IntakeMessageResponse> {
+  const convo = await prisma.intakeConversation.findUnique({
+    where: { id: conversationId },
+  });
+  if (!convo) throw new Error("conversation-not-found");
+  if (convo.outcomeStatus !== "in_progress") {
+    throw new Error("conversation-not-active");
+  }
+
+  const newNiche = getNicheBySlug(newNicheSlug);
+  if (!newNiche) throw new Error("invalid-niche-slug");
+
+  // Don't allow switching before problem-step has run (no primary set yet)
+  const messages = (convo.messages as unknown as IntakeMessage[]) ?? [];
+  const outcome = (convo.outcome as unknown as Partial<IntakeOutcome>) ?? {};
+  if (!outcome.primaryNiche) {
+    throw new Error("cannot-switch-before-problem-classified");
+  }
+  if (outcome.primaryNiche === newNicheSlug) {
+    // No-op switch — just acknowledge so the client doesn't get an error
+    return {
+      conversationId,
+      nextStep: convo.currentStep as IntakeStep,
+      assistantReply: `Already routing to ${newNiche.label}.`,
+      routedNicheSlug: newNicheSlug,
+    };
+  }
+
+  const ackContent = `Got it — switching to ${newNiche.label}. Continuing from where we were.`;
+  const switchMsg: IntakeMessage = {
+    role: "assistant",
+    content: ackContent,
+    meta: {
+      matchedNiche: newNicheSlug,
+      classifierSource: "user-correction",
+      previousNiche: outcome.primaryNiche,
+    },
+    at: new Date().toISOString(),
+  };
+
+  await updateConversation(conversationId, {
+    outcome: {
+      ...outcome,
+      primaryNiche: newNicheSlug,
+      // Mark confidence as user-confirmed (1.0) since they explicitly chose
+      primaryNicheConfidence: 1.0,
+    },
+    messages: [...messages, switchMsg],
+  });
+
+  return {
+    conversationId,
+    nextStep: convo.currentStep as IntakeStep,
+    assistantReply: ackContent,
+    routedNicheSlug: newNicheSlug,
+  };
+}
 // Three signals are in play:
 //   1. `classifyResult.primary` — the top candidate IF its confidence ≥ 0.4
 //   2. `classifyResult.candidates[]` — ranked list including sub-threshold matches
@@ -329,6 +399,7 @@ async function handleProblem(
     nextStep: "location",
     assistantReply: ackReply,
     candidateNiches,
+    routedNicheSlug: primaryNiche,
   };
 }
 

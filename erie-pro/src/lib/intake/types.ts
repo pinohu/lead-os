@@ -124,6 +124,10 @@ export interface IntakeMessageResponse {
   assistantReply: string;
   /** Optional candidate niches shown to user for problem-step confirmation */
   candidateNiches?: Array<{ slug: string; label: string; confidence: number }>;
+  /** The niche slug the backend routed to (when known). Lets the UI show
+   *  "did you mean?" alternatives by excluding the routed slug from
+   *  candidateNiches. */
+  routedNicheSlug?: string;
   /** Optional price hint shown to user post-urgency-step */
   priceHint?: {
     range: string;
