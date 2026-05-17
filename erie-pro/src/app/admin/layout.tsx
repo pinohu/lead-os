@@ -37,6 +37,7 @@ const navSections: NavSection[] = [
       { href: "/admin", label: "Dashboard", icon: "📊" },
       { href: "/admin/leads", label: "Leads", icon: "📋" },
       { href: "/admin/intake-analytics", label: "Intake Analytics", icon: "📈" },
+      { href: "/admin/lead-sla", label: "Lead SLA", icon: "⏱️" },
       { href: "/admin/providers", label: "Providers", icon: "👥" },
       { href: "/admin/territories", label: "Territories", icon: "📍" },
       { href: "/admin/listings", label: "Listings", icon: "🏢" },
