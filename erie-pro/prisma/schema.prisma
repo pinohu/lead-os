@@ -1056,3 +1056,40 @@ model IntakeConversation {
   @@index([startedFromNicheSlug])
   @@map("intake_conversations")
 }
+
+// ── A/B Testing Experiments ──────────────────────────────────────────
+// Track exposures (visitor saw a variant) and conversions (visitor
+// completed the experiment's success event). Experiment definitions
+// live in code (src/lib/experiments/registry.ts), so these tables
+// only store the runtime data.
+
+model ExperimentExposure {
+  id            String   @id @default(cuid())
+  visitorId     String   // stable cookie-derived visitor identifier
+  experimentKey String
+  variantKey    String
+  nicheSlug     String?
+  exposedAt     DateTime @default(now())
+
+  // Idempotency: a visitor should appear at most once per experiment.
+  // The runtime layer is responsible for upserting on (visitorId, experimentKey).
+  @@unique([visitorId, experimentKey])
+  @@index([experimentKey, exposedAt])
+  @@index([visitorId])
+  @@map("experiment_exposures")
+}
+
+model ExperimentConversion {
+  id            String   @id @default(cuid())
+  visitorId     String
+  experimentKey String
+  /** True when the visitor was already exposed to a variant before converting */
+  exposedFirst  Boolean  @default(false)
+  /** Optional payload — revenue, leadId, etc. */
+  payload       Json?
+  convertedAt   DateTime @default(now())
+
+  @@index([experimentKey, convertedAt])
+  @@index([visitorId])
+  @@map("experiment_conversions")
+}
