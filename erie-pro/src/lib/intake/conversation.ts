@@ -151,6 +151,65 @@ export async function advanceConversation(
   }
 }
 
+// ── Niche-routing decision (pure; exported for testing) ──────────────
+//
+// Three signals are in play:
+//   1. `classifyResult.primary` — the top candidate IF its confidence ≥ 0.4
+//   2. `classifyResult.candidates[]` — ranked list including sub-threshold matches
+//   3. `hintedNicheSlug` — the page the customer was browsing
+//
+// The previous logic silently used the page hint whenever `primary` was null.
+// That broke when the classifier had real-but-sub-threshold signal pointing
+// elsewhere: a customer on /dental typing "my toilet is leaking" got routed
+// to dental even though the classifier flagged plumbing at 0.3.
+//
+// The decision tree:
+//   • `primary` set → use it (high-confidence classifier).
+//   • Candidates explicitly disagree with hint AND top candidate ≥ 0.25 →
+//     route to candidate ("candidate-override").
+//   • Hint matches a candidate, or no candidates exist → use hint.
+//   • No signal at all (no candidates, no hint) → ambiguous (ask rephrase).
+//
+// The caller is responsible for surfacing `candidateNiches` so the UI can
+// show a "did you mean?" prompt regardless of which branch fires.
+export type RoutingDecision =
+  | "classifier-primary"
+  | "hint"
+  | "candidate-override"
+  | "ambiguous";
+
+export function decideNicheRouting(
+  classifyResult: {
+    primary: string | null;
+    candidates: Array<{ slug: string; confidence: number; reason?: string }>;
+  },
+  hintedNicheSlug: string | null
+): { primaryNiche: string | null; decision: RoutingDecision } {
+  const candidates = classifyResult.candidates ?? [];
+  const topCandidate = candidates[0] ?? null;
+  const hintInCandidates = hintedNicheSlug
+    ? candidates.some((c) => c.slug === hintedNicheSlug)
+    : false;
+  const candidatesDisagreeWithHint = !!(
+    hintedNicheSlug &&
+    topCandidate &&
+    !hintInCandidates &&
+    topCandidate.confidence >= 0.25
+  );
+
+  if (classifyResult.primary) {
+    return { primaryNiche: classifyResult.primary, decision: "classifier-primary" };
+  }
+  if (candidatesDisagreeWithHint && topCandidate) {
+    return { primaryNiche: topCandidate.slug, decision: "candidate-override" };
+  }
+  if (hintedNicheSlug) {
+    // Hint exists; classifier signal (if any) wasn't strong enough to override.
+    return { primaryNiche: hintedNicheSlug, decision: "hint" };
+  }
+  return { primaryNiche: null, decision: "ambiguous" };
+}
+
 // ── Step handlers ────────────────────────────────────────────────────
 
 async function handleProblem(
@@ -173,18 +232,32 @@ async function handleProblem(
     Promise.resolve(getIntakeTemplate(startedFromNicheSlug)),
   ]);
 
-  // Use the page-context niche if we have one and the classifier didn't strongly disagree.
-  const useHinted =
-    startedFromNicheSlug &&
-    (!classifyResult.primary || classifyResult.primary === startedFromNicheSlug);
-  const primaryNiche = useHinted ? startedFromNicheSlug : classifyResult.primary;
+  // ── Niche-routing decision ──────────────────────────────────────────
+  const routing = decideNicheRouting(classifyResult, startedFromNicheSlug);
+  const primaryNiche = routing.primaryNiche;
+  const routingDecision = routing.decision;
+  const candidates = classifyResult.candidates ?? [];
+  const topCandidate = candidates[0] ?? null;
 
   if (!primaryNiche) {
-    // Couldn't route to any niche; ask the customer to rephrase
+    // Couldn't route to any niche; ask the customer to rephrase.
+    // If the classifier had a low-confidence candidate, surface it as a "did
+    // you mean?" prompt rather than the generic rephrase fallback.
+    let askContent: string;
+    if (topCandidate) {
+      const candidateLabel =
+        getNicheBySlug(topCandidate.slug)?.label ?? topCandidate.slug;
+      askContent = `Just to make sure — does this sound like a ${candidateLabel.toLowerCase()} issue, or did you mean something else? You can rephrase or pick one of: ${candidates
+        .slice(0, 3)
+        .map((c) => getNicheBySlug(c.slug)?.label ?? c.slug)
+        .join(", ")}.`;
+    } else {
+      askContent =
+        "Sorry — I'm not sure which service that falls under. Could you say it a different way? For example, 'leaking pipe' or 'no heat' or 'roof damage'.";
+    }
     const askAgain: IntakeMessage = {
       role: "assistant",
-      content:
-        "Sorry — I'm not sure which service that falls under. Could you say it a different way? For example, 'leaking pipe' or 'no heat' or 'roof damage'.",
+      content: askContent,
       at: new Date().toISOString(),
     };
     const userEcho: IntakeMessage = {
@@ -200,6 +273,11 @@ async function handleProblem(
       conversationId,
       nextStep: "problem",
       assistantReply: askAgain.content,
+      candidateNiches: candidates.slice(0, 3).map((c) => ({
+        slug: c.slug,
+        label: getNicheBySlug(c.slug)?.label ?? c.slug,
+        confidence: c.confidence,
+      })),
     };
   }
 
@@ -211,7 +289,8 @@ async function handleProblem(
     ...outcome,
     primaryNiche,
     primaryNicheConfidence:
-      classifyResult.candidates[0]?.confidence ?? (useHinted ? 0.6 : 0.5),
+      classifyResult.candidates[0]?.confidence ??
+      (routingDecision === "hint" ? 0.6 : 0.5),
     candidateNiches: classifyResult.candidates.map((c) => ({
       slug: c.slug,
       confidence: c.confidence,
