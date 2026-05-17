@@ -1,0 +1,35 @@
+{
+  "channels": [
+    {
+      "slug": "plumbing",
+      "name": "Erie Plumbing TV",
+      "description": "24/7 plumbing education for Erie homeowners — emergencies, repairs, code, and maintenance.",
+      "niches": [
+        "plumbing",
+        "drain-cleaning",
+        "sewer-line-repair",
+        "water-heater-services"
+      ],
+      "videos": [
+        {
+          "youtubeId": "dQw4w9WgXcQ",
+          "title": "How plumbing works in your home",
+          "block": 1,
+          "notes": "PLACEHOLDER — replace with real YouTube ID from vet-youtube top-10"
+        },
+        {
+          "youtubeId": "aaaaaaaaaaa",
+          "title": "DIY plumbing fixes — and when to call a pro",
+          "block": 2,
+          "notes": "PLACEHOLDER — real videos come from cluster-plumbing-candidates.md"
+        },
+        {
+          "youtubeId": "bbbbbbbbbbb",
+          "title": "Frozen pipe prevention in cold climates",
+          "block": 3,
+          "notes": "PLACEHOLDER — Erie-specific winter content"
+        }
+      ]
+    }
+  ]
+}
