@@ -1,0 +1,123 @@
+project_id = "brzeuhnscuanypkoqcru"
+
+# ============================================
+# PUBLIC FUNCTIONS (No JWT Required)
+# ============================================
+
+# Distance calculation - public utility
+[functions.calculate-distance]
+verify_jwt = false
+
+# Verification code system - public for booking flow
+[functions.send-verification-code]
+verify_jwt = false
+
+[functions.verify-code]
+verify_jwt = false
+
+# Payment flow - uses Turnstile for security
+[functions.create-payment-secure]
+verify_jwt = false
+
+# Webhooks - use signature verification instead
+[functions.smsit-webhook]
+verify_jwt = false
+
+[functions.suitedash-webhook]
+verify_jwt = false
+
+[functions.callscaler-webhook]
+verify_jwt = false
+
+# DNI script - public delivery
+[functions.serve-dni-script]
+verify_jwt = false
+
+# ============================================
+# PROTECTED FUNCTIONS (JWT Required)
+# ============================================
+
+# Email sending - requires authentication
+[functions.send-booking-confirmation]
+verify_jwt = true
+
+# SMS notifications - requires authentication to prevent abuse
+[functions.send-sms-notification]
+verify_jwt = true
+
+# Sync operations - require authentication
+[functions.sync-booking-to-suitedash]
+verify_jwt = true
+
+[functions.suitedash-contact-sync]
+verify_jwt = true
+
+[functions.sync-calendar]
+verify_jwt = true
+
+[functions.smsit-sync]
+verify_jwt = true
+
+# ============================================
+# AUTOMATION FUNCTIONS (Internal Only - JWT Required)
+# ============================================
+# These should only be called by scheduled jobs or other functions
+
+[functions.smsit-auto-followup]
+verify_jwt = true
+
+[functions.smsit-appointment-reminders]
+verify_jwt = true
+
+[functions.smsit-post-service]
+verify_jwt = true
+
+[functions.smsit-retention]
+verify_jwt = true
+
+[functions.smsit-referral]
+verify_jwt = true
+
+[functions.smsit-voice-call]
+verify_jwt = true
+
+[functions.smsit-send-mms]
+verify_jwt = true
+
+[functions.smsit-campaign-manager]
+verify_jwt = true
+
+[functions.smsit-smart-segment]
+verify_jwt = true
+
+[functions.smsit-lead-scoring]
+verify_jwt = true
+
+[functions.smsit-master-automation]
+verify_jwt = true
+
+[functions.agent-booking-handler]
+verify_jwt = false  # Called by external voice AI providers
+
+# One-time setup function - requires JWT for security
+[functions.create-tc-stripe-products]
+verify_jwt = true  # Requires authentication to prevent unauthorized product creation
+
+[functions.insighto-webhook]
+verify_jwt = false  # Called by external voice AI providers
+
+[functions.smsit-missed-call]
+verify_jwt = true  # Internal automation - called by webhooks
+
+[functions.smsit-booking-confirm]
+verify_jwt = true  # Internal automation - called by webhooks
+
+[functions.wbiztool-send-checklist]
+verify_jwt = true  # Internal automation - called by webhooks
+
+# ============================================
+# DEPRECATED FUNCTIONS (Disabled)
+# ============================================
+
+[functions.create-payment]
+verify_jwt = true  # Deprecated - use create-payment-secure instead
