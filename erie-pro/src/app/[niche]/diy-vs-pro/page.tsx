@@ -12,6 +12,7 @@ import {
 import { cityConfig } from "@/lib/city-config"
 import { getNicheBySlug, niches } from "@/lib/niches"
 import { getDiyVsProContent } from "@/lib/niche/educational-content"
+import { CONCIERGE_PHONE_TEL } from "@/lib/concierge"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -183,7 +184,7 @@ export default async function DiyVsProPage({ params }: Props) {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
-                <a href={`tel:${"8142000328"}`}>
+                <a href={CONCIERGE_PHONE_TEL}>
                   <Phone className="mr-2 h-4 w-4" />
                   Or call concierge
                 </a>

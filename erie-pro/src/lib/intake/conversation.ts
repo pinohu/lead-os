@@ -5,9 +5,11 @@
 
 import { prisma } from "@/lib/db";
 import { cityConfig } from "@/lib/city-config";
+import { TCPA_TEXT_V2, TCPA_VERSION } from "@/lib/tcpa-text";
 import { classifyNiche, composeProblemAck } from "./anthropic-client";
 import { getIntakeTemplate } from "./templates";
 import { getNicheBySlug } from "@/lib/niches";
+import { mintSessionToken, verifySessionToken } from "./session";
 import type {
   IntakeConversationState,
   IntakeMessage,
@@ -20,17 +22,12 @@ import type {
   IntakeUrgency,
 } from "./types";
 
-// TCPA consent text version — must match the version recorded on lead submission.
-const TCPA_TEXT_V2 = (domain: string) =>
-  `By submitting this form, I consent to be contacted by phone, text message, or email by a service provider regarding my service request. I understand that message and data rates may apply for text messages. I can opt out at any time by replying STOP to any text message or contacting us at hello@${domain}.`;
-const TCPA_VERSION = "v2-2026-04-02";
-
 // ── Start a conversation ─────────────────────────────────────────────
 
 export async function startConversation(
   req: IntakeStartRequest,
   ipPrefix?: string
-): Promise<IntakeStartResponse> {
+): Promise<IntakeStartResponse & { sessionToken: string }> {
   const template = getIntakeTemplate(req.startedFromNicheSlug);
   const greeting = template.greeting;
 
@@ -40,6 +37,7 @@ export async function startConversation(
     at: new Date().toISOString(),
   };
 
+  const sessionToken = mintSessionToken();
   const conversation = await prisma.intakeConversation.create({
     data: {
       citySlug: cityConfig.slug,
@@ -50,6 +48,7 @@ export async function startConversation(
       variant: req.variant === "form" ? "form" : "intake",
       outcomeStatus: "in_progress",
       ipPrefix: ipPrefix ?? null,
+      sessionToken,
     },
   });
 
@@ -57,6 +56,7 @@ export async function startConversation(
     conversationId: conversation.id,
     step: "problem",
     greeting,
+    sessionToken,
   };
 }
 
@@ -112,13 +112,17 @@ async function updateConversation(
 }
 
 export async function advanceConversation(
-  req: IntakeMessageRequest
+  req: IntakeMessageRequest,
+  presentedSessionToken?: string | null
 ): Promise<IntakeMessageResponse> {
   const convo = await prisma.intakeConversation.findUnique({
     where: { id: req.conversationId },
   });
   if (!convo) {
     throw new Error("conversation-not-found");
+  }
+  if (!verifySessionToken(convo.sessionToken, presentedSessionToken)) {
+    throw new Error("session-token-mismatch");
   }
   if (convo.outcomeStatus !== "in_progress") {
     throw new Error("conversation-not-active");
@@ -165,12 +169,16 @@ export async function advanceConversation(
 //     confirmation message; does NOT reset progress on later steps.
 export async function switchNiche(
   conversationId: string,
-  newNicheSlug: string
+  newNicheSlug: string,
+  presentedSessionToken?: string | null
 ): Promise<IntakeMessageResponse> {
   const convo = await prisma.intakeConversation.findUnique({
     where: { id: conversationId },
   });
   if (!convo) throw new Error("conversation-not-found");
+  if (!verifySessionToken(convo.sessionToken, presentedSessionToken)) {
+    throw new Error("session-token-mismatch");
+  }
   if (convo.outcomeStatus !== "in_progress") {
     throw new Error("conversation-not-active");
   }
@@ -355,12 +363,21 @@ async function handleProblem(
   const matchedLabel = matchedNiche?.label ?? hintedTemplate.nicheLabel;
   const ackReply = await composeProblemAck(problemText, matchedLabel);
 
+  // Audit H3: store the REAL classifier confidence (0 if none) and the
+  // routingDecision separately, so analytics can distinguish "high-confidence
+  // classifier pick" from "we fell back to the page hint and stamped a synthetic
+  // 0.6". Analytics queries should bucket by (decision, confidence), not
+  // confidence alone.
+  const realConfidence =
+    classifyResult.candidates.find((c) => c.slug === primaryNiche)?.confidence ??
+    classifyResult.candidates[0]?.confidence ??
+    0;
+
   const updatedOutcome: Partial<IntakeOutcome> = {
     ...outcome,
     primaryNiche,
-    primaryNicheConfidence:
-      classifyResult.candidates[0]?.confidence ??
-      (routingDecision === "hint" ? 0.6 : 0.5),
+    primaryNicheConfidence: realConfidence,
+    routingDecision,
     candidateNiches: classifyResult.candidates.map((c) => ({
       slug: c.slug,
       confidence: c.confidence,
@@ -603,4 +620,6 @@ export function temperatureForUrgency(
   }
 }
 
+// Re-exported for back-compat with callers that previously imported from
+// this module. Prefer importing from "@/lib/tcpa-text" directly going forward.
 export { TCPA_TEXT_V2, TCPA_VERSION };

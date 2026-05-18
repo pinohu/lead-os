@@ -27,7 +27,10 @@ describe("ViloudChannelEmbed", () => {
     expect(iframe).toBeTruthy();
     const src = iframe.getAttribute("src") ?? "";
     expect(src).toContain("app.viloud.tv/player/embed/channel/abc123def456abc123def456abc123de");
-    expect(src).toContain("autoplay=1");
+    // Autoplay must NOT be on (audit M9 + WCAG 1.4.2). Viewer must press play.
+    expect(src).not.toContain("autoplay=1");
+    // The iframe `allow` attribute still lists autoplay so users CAN play
+    // (sandbox would otherwise block media autoplay even after user gesture).
     expect(iframe.getAttribute("allow")).toContain("autoplay");
     expect(iframe.hasAttribute("allowfullscreen")).toBe(true);
   });

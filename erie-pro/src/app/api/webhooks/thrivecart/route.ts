@@ -90,7 +90,10 @@ function verifySignature(rawBody: string, request: NextRequest) {
   if (token && request.nextUrl.searchParams.get("token") === token) return true
 
   const secret = process.env.THRIVECART_WEBHOOK_SECRET
-  if (!secret) return process.env.NODE_ENV !== "production"
+  // Audit M6: previously accepted unsigned webhooks outside production. Now
+  // requires the secret in every environment. Use signed fixtures for local
+  // testing; never accept unsigned events.
+  if (!secret) return false
 
   const signature =
     request.headers.get("x-thrivecart-signature") ||

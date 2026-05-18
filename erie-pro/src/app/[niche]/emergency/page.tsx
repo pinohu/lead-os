@@ -13,6 +13,10 @@ import {
   CheckCircle2,
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
+import {
+  CONCIERGE_PHONE_DISPLAY,
+  CONCIERGE_PHONE_E164,
+} from "@/lib/concierge"
 import { getNicheBySlug } from "@/lib/niches"
 import {
   getNicheContent,
@@ -74,7 +78,7 @@ export default async function NicheEmergencyPage({ params }: Props) {
       "@type": "LocalBusiness",
       "@id": `https://${cityConfig.domain}/${slug}/#business`,
       name: cityConfig.domain,
-      telephone: "+18142000328",
+      telephone: CONCIERGE_PHONE_E164,
       address: {
         "@type": "PostalAddress",
         addressLocality: cityConfig.name,
@@ -341,7 +345,7 @@ export default async function NicheEmergencyPage({ params }: Props) {
             </Button>
             <Button asChild size="lg" variant="outline">
               <TrackedPhoneLink
-                phone="+18142000328"
+                phone={CONCIERGE_PHONE_E164}
                 serviceNiche={niche.slug}
                 serviceSlug={niche.slug}
                 sourcePageType="emergency_page"
@@ -349,7 +353,7 @@ export default async function NicheEmergencyPage({ params }: Props) {
                 routingModel="general"
               >
                 <Phone className="mr-2 h-4 w-4" />
-                Call (814) 200-0328
+                Call {CONCIERGE_PHONE_DISPLAY}
               </TrackedPhoneLink>
             </Button>
             <p className="mt-2 text-sm text-muted-foreground">

@@ -27,6 +27,22 @@ import { logger } from "@/lib/logger";
 import { recordRevenueActionPlan } from "@/lib/revenue-actions";
 import { sendWelcomeEmail, sendEmail, sendEmailVerification, sendClaimVerificationCode, sendAdminVerificationAlert } from "@/lib/email";
 
+/**
+ * Audit H6: mask emails before logging so centralized log aggregators (Vercel,
+ * Datadog, CloudWatch) don't become a secondary PII store with looser ACLs
+ * than the database. The masked form preserves enough to correlate with the
+ * full address in the DB (where access is properly gated).
+ */
+function maskEmail(email: string | null | undefined): string {
+  if (!email) return "(none)";
+  const at = email.indexOf("@");
+  if (at <= 0) return "(masked)";
+  const local = email.slice(0, at);
+  const domain = email.slice(at + 1);
+  const visible = local.slice(0, Math.min(3, local.length));
+  return `${visible}***@${domain}`;
+}
+
 function getVerificationCodeSendAttempts(notificationPrefs: unknown): number {
   if (!notificationPrefs || typeof notificationPrefs !== "object") return 0;
   const value = (notificationPrefs as { verificationCodeSendAttempts?: unknown }).verificationCodeSendAttempts;
@@ -669,7 +685,7 @@ async function handleCheckoutCompleted(
       logger.error("stripe-webhook", "Concierge audit failed", err);
     });
 
-    logger.info("webhook/stripe", `Concierge job paid: ${stripeSessionId} (${requesterEmail})`);
+    logger.info("webhook/stripe", `Concierge job paid: ${stripeSessionId} (${maskEmail(requesterEmail)})`);
   } else if (checkoutSession.sessionType === "annual_membership") {
     // ── Annual membership: $199/yr ───────────────────────────────
     // Mark completed, welcome the requester, note for ops.
@@ -726,7 +742,7 @@ async function handleCheckoutCompleted(
       logger.error("stripe-webhook", "Annual audit failed", err);
     });
 
-    logger.info("webhook/stripe", `Annual membership: ${stripeSessionId} (${requesterEmail})`);
+    logger.info("webhook/stripe", `Annual membership: ${stripeSessionId} (${maskEmail(requesterEmail)})`);
   } else {
     // Unknown session type — mark completed and log.
     await prisma.checkoutSession.updateMany({

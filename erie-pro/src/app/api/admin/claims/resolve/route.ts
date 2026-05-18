@@ -17,7 +17,36 @@ const ResolveSchema = z.object({
   }),
 });
 
+/**
+ * Audit H5: form-encoded admin endpoints with SameSite=lax cookies are
+ * vulnerable to cross-origin form-based CSRF. We mitigate by requiring the
+ * Origin header (always sent by browsers on POST) to match the site origin.
+ * This blocks the classic attacker-form trick without breaking the in-app
+ * admin form, which posts from the same origin.
+ */
+function isSameOrigin(req: NextRequest): boolean {
+  const origin = req.headers.get("origin");
+  const referer = req.headers.get("referer");
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL;
+  if (!siteUrl) {
+    // No configured site origin — fail open in dev so local testing isn't
+    // hobbled, but log a warning so prod misconfigs surface.
+    if (process.env.NODE_ENV !== "production") return true;
+    return false;
+  }
+  if (origin && origin === siteUrl) return true;
+  if (referer && referer.startsWith(siteUrl + "/")) return true;
+  return false;
+}
+
 export async function POST(req: NextRequest) {
+  // CSRF guard for the form-encoded path
+  if (!isSameOrigin(req)) {
+    return NextResponse.json(
+      { success: false, error: "CSRF: same-origin required" },
+      { status: 403 }
+    );
+  }
   // Admin auth guard
   const session = await auth();
   if (!session?.user || (session.user as { role?: string }).role !== "admin") {

@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { CheckCircle2, ArrowRight, Clock, Phone } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
+import { CONCIERGE_PHONE_DISPLAY } from "@/lib/concierge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -49,7 +50,7 @@ export default async function ConciergeSuccessPage({
               <span>
                 <strong>Next step:</strong> expect a text from{" "}
                 <code className="rounded bg-background px-1 py-0.5 text-xs">
-                  (814) 200-0328
+                  {CONCIERGE_PHONE_DISPLAY}
                 </code>{" "}
                 with the pro&apos;s name, price quote, and booking link.
               </span>

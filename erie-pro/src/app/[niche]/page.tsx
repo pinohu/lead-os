@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { niches, getNicheBySlug } from "@/lib/niches"
+import { CONCIERGE_PHONE_DISPLAY, CONCIERGE_PHONE_TEL } from "@/lib/concierge"
 import {
   getLocalSeoSnippet,
   getLocalSchemaOrg,
@@ -248,7 +249,7 @@ export default async function NichePage({ params }: Props) {
                 {i > 0 && <span className="text-muted-foreground/30 mr-1" aria-hidden="true">·</span>}
                 <Link
                   href={`/${slug}/${listing.slug}`}
-                  className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                  className="text-xs text-muted-foreground/70 hover:text-foreground transition-colors"
                 >
                   {listing.businessName}
                 </Link>
@@ -259,7 +260,7 @@ export default async function NichePage({ params }: Props) {
                 <span className="text-muted-foreground/30 mr-1" aria-hidden="true">·</span>
                 <Link
                   href={`/${slug}/directory`}
-                  className="text-xs text-muted-foreground/50 hover:text-primary transition-colors"
+                  className="text-xs text-muted-foreground/70 hover:text-primary transition-colors"
                 >
                   +{subtleListings.length - 15} more
                 </Link>
@@ -305,8 +306,8 @@ export default async function NichePage({ params }: Props) {
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
               Looking for a {niche.label.toLowerCase()} pro right now? Call{" "}
-              <a href="tel:+18142000328" className="font-medium text-primary hover:underline">
-                (814) 200-0328
+              <a href={CONCIERGE_PHONE_TEL} className="font-medium text-primary hover:underline">
+                {CONCIERGE_PHONE_DISPLAY}
               </a>{" "}
               and we&apos;ll route you to a vetted Erie pro outside the platform.
             </p>

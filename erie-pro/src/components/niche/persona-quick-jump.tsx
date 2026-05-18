@@ -7,6 +7,7 @@
 // user at a different anchor on the page.
 
 import { Phone, Search, ListChecks } from "lucide-react";
+import { CONCIERGE_PHONE_DISPLAY, CONCIERGE_PHONE_TEL } from "@/lib/concierge";
 
 interface Props {
   nicheLabel: string;
@@ -21,7 +22,7 @@ export default function NichePersonaQuickJump({ nicheLabel }: Props) {
     >
       <div className="grid gap-2 sm:grid-cols-3">
         <a
-          href="tel:+18142000328"
+          href={CONCIERGE_PHONE_TEL}
           className="group flex items-center gap-3 rounded-lg border-2 border-red-200 bg-red-50 px-4 py-3 transition hover:border-red-300 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-400"
         >
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
@@ -32,7 +33,7 @@ export default function NichePersonaQuickJump({ nicheLabel }: Props) {
               Right now
             </div>
             <div className="text-sm font-medium text-red-900">
-              Emergency? Call (814) 200-0328
+              Emergency? Call {CONCIERGE_PHONE_DISPLAY}
             </div>
           </div>
         </a>

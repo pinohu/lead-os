@@ -273,10 +273,13 @@ model Lead {
   externalSyncPayload  Json?
 
   // TCPA compliance fields
-  tcpaConsent     Boolean   @default(false)
-  tcpaConsentText String?
-  tcpaConsentAt   DateTime?
-  tcpaIpAddress   String?
+  tcpaConsent        Boolean   @default(false)
+  tcpaConsentText    String?
+  /// Version label (e.g. "v2-2026-04-02") of the TCPA copy the visitor agreed to.
+  /// Pairs with tcpaConsentText so an audit can prove which wording was shown.
+  tcpaConsentVersion String?
+  tcpaConsentAt      DateTime?
+  tcpaIpAddress      String?
 
   // Routing
   routedToId String?
@@ -295,6 +298,8 @@ model Lead {
   @@index([routeType, niche])
   @@index([requestedProviderSlug])
   @@index([providerDeliveryStatus])
+  @@index([email])
+  @@index([phone, niche, city])
   @@map("leads")
 }
 
@@ -1048,6 +1053,13 @@ model IntakeConversation {
   leadId                  String?  @unique
   /** Visitor IP for rate-limiting and abuse mitigation (truncated) */
   ipPrefix                String?
+  /**
+   * Server-issued opaque session token (set as HTTP-only cookie on /api/intake/start
+   * and required on every subsequent message/switch-niche/complete call). Prevents
+   * anonymous conversation hijack via guessed/leaked conversationId. Null on
+   * pre-cookie rows; new rows always have a value.
+   */
+  sessionToken            String?
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
 

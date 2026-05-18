@@ -18,9 +18,21 @@ const UnsubscribeSchema = z
     message: "Email or phone required",
   });
 
-/** Generate a simple HMAC token for email unsubscribe links */
+/**
+ * Generate a simple HMAC token for email unsubscribe links.
+ *
+ * Audit M5: previously fell back to the literal "default-unsubscribe-secret"
+ * if both env vars were missing, making tokens forgeable. Now requires
+ * UNSUBSCRIBE_SECRET or NEXTAUTH_SECRET to be set; throws otherwise so a
+ * misconfigured deploy fails loudly instead of generating predictable tokens.
+ */
 function generateUnsubscribeToken(email: string): string {
-  const secret = process.env.UNSUBSCRIBE_SECRET || process.env.NEXTAUTH_SECRET || "default-unsubscribe-secret";
+  const secret = process.env.UNSUBSCRIBE_SECRET || process.env.NEXTAUTH_SECRET;
+  if (!secret) {
+    throw new Error(
+      "UNSUBSCRIBE_SECRET or NEXTAUTH_SECRET must be set to generate unsubscribe tokens"
+    );
+  }
   return createHash("sha256").update(`${email}:${secret}`).digest("hex").slice(0, 32);
 }
 

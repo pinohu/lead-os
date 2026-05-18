@@ -45,6 +45,9 @@ export default function NicheStickyCTA({
       className={`fixed inset-x-0 bottom-0 z-40 md:hidden transition-transform duration-200 ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
+      // Audit M7: respect iOS home-indicator safe area so the CTA isn't
+      // partially obscured on iPhones.
+      style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom))" }}
     >
       <div className="border-t border-border bg-background/95 px-4 py-3 backdrop-blur-md shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
         <a

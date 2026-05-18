@@ -7,6 +7,7 @@ import {
   generateTemplate,
 } from "@/lib/intake/templates";
 import { niches } from "@/lib/niches";
+import { CONCIERGE_PHONE_DISPLAY } from "@/lib/concierge";
 
 describe("intake templates (all-niches mode)", () => {
   describe("ENABLED_INTAKE_NICHES", () => {
@@ -53,7 +54,7 @@ describe("intake templates (all-niches mode)", () => {
       const t = getIntakeTemplate("plumbing");
       expect(t.nicheSlug).toBe("plumbing");
       expect(t.problemSuggestions).toContain("Drain is clogged");
-      expect(t.urgencyExpectations.emergency.closingNote).toContain("(814) 200-0328");
+      expect(t.urgencyExpectations.emergency.closingNote).toContain(CONCIERGE_PHONE_DISPLAY);
     });
   });
 
@@ -86,7 +87,7 @@ describe("intake templates (all-niches mode)", () => {
       // tow service should be tagged as emergency
       const t = getIntakeTemplate("towing");
       expect(t.urgencyExpectations.emergency.slaTier).toBe("emergency");
-      expect(t.urgencyExpectations.emergency.closingNote).toContain("(814) 200-0328");
+      expect(t.urgencyExpectations.emergency.closingNote).toContain(CONCIERGE_PHONE_DISPLAY);
     });
 
     it("project niches get project-style urgency copy", () => {

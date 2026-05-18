@@ -23,13 +23,21 @@ function fnv1a32(input: string): number {
   return hash >>> 0;
 }
 
-/** Return a value in [0, 100) for (visitorId, experimentKey). */
-export function hashToBucket(visitorId: string, experimentKey: string): number {
-  // Salt the hash with the experiment key so different experiments
-  // bucket the same visitor INDEPENDENTLY. Without the salt, any
-  // visitor in bucket 0-50 for experiment A would also be in 0-50 for
-  // experiment B — defeating the point of running multiple at once.
-  return fnv1a32(`${experimentKey}::${visitorId}`) % 10000 / 100;
+/**
+ * Return a value in [0, 100) for (visitorId, experimentKey, nicheSlug).
+ *
+ * Salts: experimentKey isolates different experiments, nicheSlug isolates
+ * niche-scoped variants of the same experiment. Global (cross-niche)
+ * experiments should pass `null`/undefined for `nicheSlug` and will salt
+ * with the literal "global" so all visitors fall into a single space.
+ */
+export function hashToBucket(
+  visitorId: string,
+  experimentKey: string,
+  nicheSlug?: string | null
+): number {
+  const nicheSalt = nicheSlug ?? "global";
+  return fnv1a32(`${experimentKey}::${visitorId}::${nicheSalt}`) % 10000 / 100;
 }
 
 /**
@@ -78,8 +86,14 @@ export function assignVariant(
     };
   }
 
-  // Bucket the visitor
-  const bucket = hashToBucket(ctx.visitorId, exp.key);
+  // Bucket the visitor. nicheSlug is carried on the ExperimentContext
+  // so cross-niche experiments can keep a single hash space ("global")
+  // while niche-specific variants stay isolated per niche.
+  const bucket = hashToBucket(
+    ctx.visitorId,
+    exp.key,
+    (ctx as { nicheSlug?: string | null }).nicheSlug ?? null
+  );
   let cumulative = 0;
   for (const v of exp.variants) {
     cumulative += v.weight;

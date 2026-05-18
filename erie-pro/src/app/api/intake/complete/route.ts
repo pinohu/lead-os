@@ -20,10 +20,12 @@ import { recordRevenueActionPlan } from "@/lib/revenue-actions";
 import { deliverWebhookEvent } from "@/lib/webhook-delivery";
 import { audit } from "@/lib/audit-log";
 import { logger } from "@/lib/logger";
+import { TCPA_TEXT_V2, TCPA_VERSION } from "@/lib/tcpa-text";
+import { CONCIERGE_PHONE_DISPLAY, CONCIERGE_PHONE_TEL } from "@/lib/concierge";
 import {
-  TCPA_TEXT_V2,
-  TCPA_VERSION,
-} from "@/lib/intake/conversation";
+  INTAKE_SESSION_COOKIE,
+  verifySessionToken,
+} from "@/lib/intake/session";
 import type { IntakeOutcome, IntakeUrgency } from "@/lib/intake/types";
 
 const CompleteSchema = z.object({
@@ -58,6 +60,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { success: false, error: "conversation-not-found" },
       { status: 404 }
+    );
+  }
+
+  // C4: only the cookie-bearer that started the conversation can complete it.
+  // Legacy pre-cookie rows (sessionToken === null) fall through.
+  const presentedSessionToken =
+    request.cookies.get(INTAKE_SESSION_COOKIE)?.value ?? null;
+  if (!verifySessionToken(convo.sessionToken, presentedSessionToken)) {
+    return NextResponse.json(
+      { success: false, error: "session-token-mismatch" },
+      { status: 403 }
     );
   }
 
@@ -379,8 +392,8 @@ function buildRoutingResponse(
     return {
       routeType: "concierge" as const,
       expectedResponseTime: "within an hour",
-      nextActionLabel: "Call the concierge: (814) 200-0328",
-      nextActionHref: "tel:8142000328",
+      nextActionLabel: `Call the concierge: ${CONCIERGE_PHONE_DISPLAY}`,
+      nextActionHref: CONCIERGE_PHONE_TEL,
     };
   }
   return {
@@ -399,7 +412,7 @@ function composeClosing(
   urgency: IntakeUrgency | undefined
 ): string {
   if (routeType === "unmatched") {
-    return `Nobody has claimed this lane in ${cityConfig.name} yet, so the concierge line will route you to whoever can help right now. Call (814) 200-0328 if you want to talk to a human immediately.`;
+    return `Nobody has claimed this lane in ${cityConfig.name} yet, so the concierge line will route you to whoever can help right now. Call ${CONCIERGE_PHONE_DISPLAY} if you want to talk to a human immediately.`;
   }
   if (providerName) {
     const window =

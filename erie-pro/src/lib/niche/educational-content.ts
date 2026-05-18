@@ -8,6 +8,7 @@
 
 import { getNicheBySlug } from "@/lib/niches";
 import { getNicheContent } from "@/lib/niche-content";
+import { CONCIERGE_PHONE_DISPLAY } from "@/lib/concierge";
 
 // ── DIY-vs-Pro Content ───────────────────────────────────────────────
 
@@ -1350,7 +1351,7 @@ export function getRedFlagsContent(nicheSlug: string): RedFlagsContent {
         { q: `Should I worry about pre-storm tree assessment?`, a: `Yes, especially in Erie's lakefront and snow-belt zones. A pre-season assessment from an arborist is typically $0-$150 and identifies what you don't see from the ground.` },
         { q: `How quickly should I respond to water at the foundation?`, a: `Within days. Erie's freeze-thaw cycles compound foundation damage faster than most regions. Once water is getting in, mold timeline (48-72 hours) starts.` },
         { q: `Does my insurance cover storm-damaged trees?`, a: `Generally yes if the tree damages a structure (house, fence, vehicle). Generally no if it falls in your yard without damaging anything — homeowner pays for removal. Document with photos before cleanup.` },
-        { q: `When should I plan vs. emergency-call for ${labelLower}?`, a: `Plan: any of the "watch" or "schedule" items above. Emergency: anything labeled urgent, anything actively causing damage, anything involving safety. Call concierge at (814) 200-0328 if unsure.` },
+        { q: `When should I plan vs. emergency-call for ${labelLower}?`, a: `Plan: any of the "watch" or "schedule" items above. Emergency: anything labeled urgent, anything actively causing damage, anything involving safety. Call concierge at ${CONCIERGE_PHONE_DISPLAY} if unsure.` },
       ],
     };
   }

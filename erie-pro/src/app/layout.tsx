@@ -4,6 +4,7 @@ import Link from "next/link"
 import "./globals.css"
 import { cityConfig } from "@/lib/city-config"
 import { niches } from "@/lib/niches"
+import { CONCIERGE_PHONE_DISPLAY, CONCIERGE_PHONE_E164 } from "@/lib/concierge"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { MobileNav } from "@/components/mobile-nav"
@@ -284,12 +285,12 @@ export default function RootLayout({
                   <div className="mt-4 space-y-1.5 text-sm text-muted-foreground">
                     <p>
                       <TrackedPhoneLink
-                        phone="+18142000328"
+                        phone={CONCIERGE_PHONE_E164}
                         className="hover:text-foreground transition-colors"
                         sourcePageType="site_footer"
                         routingModel="general"
                       >
-                        (814) 200-0328
+                        {CONCIERGE_PHONE_DISPLAY}
                       </TrackedPhoneLink>
                     </p>
                     <p>

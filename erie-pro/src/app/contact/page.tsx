@@ -9,6 +9,11 @@ import {
 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import {
+  CONCIERGE_PHONE_DISPLAY,
+  CONCIERGE_PHONE_E164,
+  CONCIERGE_PHONE_DASHED,
+} from "@/lib/concierge"
+import {
   Card,
   CardContent,
   CardDescription,
@@ -104,12 +109,12 @@ export default function ContactPage() {
                   <div>
                     <p className="text-sm font-medium">Phone</p>
                     <TrackedPhoneLink
-                      phone="+18142000328"
+                      phone={CONCIERGE_PHONE_E164}
                       className="text-sm text-muted-foreground hover:text-primary"
                       sourcePageType="contact_page"
                       routingModel="general"
                     >
-                      (814) 200-0328
+                      {CONCIERGE_PHONE_DISPLAY}
                     </TrackedPhoneLink>
                   </div>
                 </div>
@@ -219,7 +224,7 @@ export default function ContactPage() {
             mainEntity: {
               "@type": "LocalBusiness",
               name: cityConfig.domain,
-              telephone: "+1-814-200-0328",
+              telephone: CONCIERGE_PHONE_DASHED,
               email: `hello@${cityConfig.domain}`,
               url: `https://${cityConfig.domain}`,
               areaServed: {

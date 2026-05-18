@@ -38,8 +38,23 @@ export interface IntakeMessage {
 export interface IntakeOutcome {
   /** Classified primary niche slug (the one we're going to route on) */
   primaryNiche: string;
-  /** Confidence score 0-1 from the classifier */
+  /**
+   * Confidence score 0-1 — the REAL value reported by the classifier for the
+   * primary niche, or 0 when the classifier returned nothing. Never a synthetic
+   * value (audit H3); use `routingDecision` to interpret why a low-confidence
+   * pick won the route.
+   */
   primaryNicheConfidence: number;
+  /**
+   * Which routing branch produced `primaryNiche`. Lets analytics bucket
+   * `(decision, confidence)` cleanly rather than conflating "the classifier was
+   * 0.6 sure" with "we fell back to the page hint."
+   */
+  routingDecision?:
+    | "classifier-primary"
+    | "candidate-override"
+    | "hint"
+    | "ambiguous";
   /** Secondary candidates the classifier considered (top 3 incl. primary) */
   candidateNiches: Array<{ slug: string; confidence: number; reason?: string }>;
   /** Customer's free-text problem description */

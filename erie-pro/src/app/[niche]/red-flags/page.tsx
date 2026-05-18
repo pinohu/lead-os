@@ -12,6 +12,7 @@ import {
 import { cityConfig } from "@/lib/city-config"
 import { getNicheBySlug, niches } from "@/lib/niches"
 import { getRedFlagsContent, type RedFlag } from "@/lib/niche/educational-content"
+import { CONCIERGE_PHONE_DISPLAY, CONCIERGE_PHONE_TEL } from "@/lib/concierge"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -134,7 +135,7 @@ export default async function RedFlagsPage({ params }: Props) {
 
       <Tier
         title="Urgent — call now"
-        description={`If you see any of these, stop reading and pick up the phone. ${cityConfig.name} concierge line: ${"(814) 200-0328"}.`}
+        description={`If you see any of these, stop reading and pick up the phone. ${cityConfig.name} concierge line: ${CONCIERGE_PHONE_DISPLAY}.`}
         icon={Siren}
         flags={data.urgent}
         bg="bg-rose-50"
@@ -161,7 +162,7 @@ export default async function RedFlagsPage({ params }: Props) {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
-                <a href={`tel:${"8142000328"}`}>
+                <a href={CONCIERGE_PHONE_TEL}>
                   <Phone className="mr-2 h-4 w-4" />
                   Call concierge
                 </a>

@@ -13,6 +13,7 @@ import { cityConfig } from "@/lib/city-config"
 import { getNicheBySlug, niches } from "@/lib/niches"
 import { getNicheContent } from "@/lib/niche-content"
 import { getIntakeTemplate } from "@/lib/intake/templates"
+import { CONCIERGE_PHONE_DISPLAY, CONCIERGE_PHONE_TEL } from "@/lib/concierge"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -81,7 +82,7 @@ export default async function WhenToCallPage({ params }: Props) {
     },
     {
       q: `Are there ${labelLower} services available 24/7 in ${cityConfig.name}?`,
-      a: `Yes. Most ${labelLower} emergencies in ${cityConfig.name} can be reached after hours. If the listed providers don't answer immediately, the Erie.pro concierge line at (814) 200-0328 will route you to whoever's on call.`,
+      a: `Yes. Most ${labelLower} emergencies in ${cityConfig.name} can be reached after hours. If the listed providers don't answer immediately, the Erie.pro concierge line at ${CONCIERGE_PHONE_DISPLAY} will route you to whoever's on call.`,
     },
     {
       q: `What does a ${labelLower} emergency call cost?`,
@@ -204,11 +205,11 @@ export default async function WhenToCallPage({ params }: Props) {
             </ul>
             <div className="flex flex-col gap-2 sm:flex-row">
               <a
-                href="tel:+18142000328"
+                href={CONCIERGE_PHONE_TEL}
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
               >
                 <Phone className="h-4 w-4" aria-hidden="true" />
-                Concierge: (814) 200-0328
+                Concierge: {CONCIERGE_PHONE_DISPLAY}
               </a>
               <Link
                 href={`/${slug}#quote`}
@@ -347,9 +348,9 @@ export default async function WhenToCallPage({ params }: Props) {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <a href="tel:+18142000328">
+              <a href={CONCIERGE_PHONE_TEL}>
                 <Phone className="mr-2 h-4 w-4" aria-hidden="true" />
-                (814) 200-0328
+                {CONCIERGE_PHONE_DISPLAY}
               </a>
             </Button>
           </div>

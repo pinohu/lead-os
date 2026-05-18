@@ -10,6 +10,7 @@
 // All niches are intake-enabled. The widget appears on every niche page.
 
 import { getNicheBySlug, niches, type LocalNiche } from "@/lib/niches";
+import { CONCIERGE_PHONE_DISPLAY } from "@/lib/concierge";
 import type { IntakeUrgency } from "./types";
 
 export interface IntakeTemplate {
@@ -55,7 +56,7 @@ const HAND_TUNED_TEMPLATES: Record<string, IntakeTemplate> = {
         buttonLabel: "Right now — water is running / shutoff failed",
         expectedResponseTime: "within 60 minutes",
         slaTier: "emergency",
-        closingNote: "Got it. Emergency plumbing calls go to the front of the queue. If nobody's claimed the lane, the concierge line at (814) 200-0328 will route you to whoever's on call right now.",
+        closingNote: `Got it. Emergency plumbing calls go to the front of the queue. If nobody's claimed the lane, the concierge line at ${CONCIERGE_PHONE_DISPLAY} will route you to whoever's on call right now.`,
       },
       "this-week": {
         buttonLabel: "This week — it can wait a day or two",
@@ -95,7 +96,7 @@ const HAND_TUNED_TEMPLATES: Record<string, IntakeTemplate> = {
         buttonLabel: "Right now — no heat / no AC in extreme weather",
         expectedResponseTime: "within 90 minutes",
         slaTier: "emergency",
-        closingNote: "No-heat-in-winter and no-AC-in-summer are real emergencies. If nobody's claimed the lane, the concierge line at (814) 200-0328 will help right away.",
+        closingNote: `No-heat-in-winter and no-AC-in-summer are real emergencies. If nobody's claimed the lane, the concierge line at ${CONCIERGE_PHONE_DISPLAY} will help right away.`,
       },
       "this-week": {
         buttonLabel: "This week — system is on but not great",
@@ -135,7 +136,7 @@ const HAND_TUNED_TEMPLATES: Record<string, IntakeTemplate> = {
         buttonLabel: "Right now — sparks / burning smell / no power",
         expectedResponseTime: "within 60 minutes",
         slaTier: "emergency",
-        closingNote: "Sparks or burning smells are real safety issues. If you're seeing either, also call your local utility's emergency line. The concierge at (814) 200-0328 can route you to whoever's on call.",
+        closingNote: `Sparks or burning smells are real safety issues. If you're seeing either, also call your local utility's emergency line. The concierge at ${CONCIERGE_PHONE_DISPLAY} can route you to whoever's on call.`,
       },
       "this-week": {
         buttonLabel: "This week — needs fixing soon",
@@ -175,7 +176,7 @@ const HAND_TUNED_TEMPLATES: Record<string, IntakeTemplate> = {
         buttonLabel: "Right now — active leak / structural damage",
         expectedResponseTime: "within 4 hours (or sooner during storms)",
         slaTier: "emergency",
-        closingNote: "Active leaks compound fast. If a roofer can't be there in hours, ask about emergency tarping. The concierge at (814) 200-0328 can route you to someone equipped for that.",
+        closingNote: `Active leaks compound fast. If a roofer can't be there in hours, ask about emergency tarping. The concierge at ${CONCIERGE_PHONE_DISPLAY} can route you to someone equipped for that.`,
       },
       "this-week": {
         buttonLabel: "This week — needs repair soon",
@@ -215,7 +216,7 @@ const HAND_TUNED_TEMPLATES: Record<string, IntakeTemplate> = {
         buttonLabel: "Right now — active water / fresh damage",
         expectedResponseTime: "within 60 minutes",
         slaTier: "emergency",
-        closingNote: "Every hour after water intrusion increases mold and structural risk. Restoration companies typically run 24/7 — the concierge at (814) 200-0328 will route you to whoever can be on-site fastest.",
+        closingNote: `Every hour after water intrusion increases mold and structural risk. Restoration companies typically run 24/7 — the concierge at ${CONCIERGE_PHONE_DISPLAY} will route you to whoever can be on-site fastest.`,
       },
       "this-week": {
         buttonLabel: "This week — damage already drying / mold concern",
@@ -347,7 +348,7 @@ function deriveUrgencyExpectations(niche: LocalNiche): IntakeTemplate["urgencyEx
         buttonLabel: `Right now — urgent ${label} issue`,
         expectedResponseTime: "within 60–90 minutes",
         slaTier: "emergency",
-        closingNote: `Got it. Urgent ${label} calls go to the front of the queue. If nobody's claimed the lane in Erie, the concierge line at (814) 200-0328 will route you to whoever can help fastest.`,
+        closingNote: `Got it. Urgent ${label} calls go to the front of the queue. If nobody's claimed the lane in Erie, the concierge line at ${CONCIERGE_PHONE_DISPLAY} will route you to whoever can help fastest.`,
       },
       "this-week": {
         buttonLabel: "This week — it can wait a day or two",
@@ -442,7 +443,7 @@ const FINAL_FALLBACK_TEMPLATE: IntakeTemplate = {
       buttonLabel: "Right now — urgent",
       expectedResponseTime: "within a few hours",
       slaTier: "emergency",
-      closingNote: "Got it. We'll route this as urgent. If nobody's claimed your lane in Erie, the concierge at (814) 200-0328 can help immediately.",
+      closingNote: `Got it. We'll route this as urgent. If nobody's claimed your lane in Erie, the concierge at ${CONCIERGE_PHONE_DISPLAY} can help immediately.`,
     },
     "this-week": {
       buttonLabel: "This week",

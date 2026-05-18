@@ -4,6 +4,7 @@
 
 import { createHash } from "crypto";
 import { cityConfig } from "@/lib/city-config";
+import { CONCIERGE_PHONE_DISPLAY, CONCIERGE_PHONE_TEL } from "@/lib/concierge";
 import { logger } from "@/lib/logger";
 
 /** Escape HTML special characters to prevent XSS in email templates */
@@ -138,7 +139,7 @@ export async function sendConsumerConfirmation(
     ? `Your request has been sent to <strong>${escapeHtml(routedToProvider)}</strong>, a verified ${niceNiche} provider in ${cityConfig.name}. They will contact you shortly.`
     : options?.requestedProviderName
       ? `We received your request for <strong>${escapeHtml(options.requestedProviderName)}</strong>. Erie.pro will hold the request for provider follow-up. If your situation is urgent, please call the business directly.`
-      : `We&apos;ve recorded your ${niceNiche} request in our system. We don&apos;t have a verified Erie ${niceNiche} provider claimed on our platform yet — we&apos;ve banked your request and will reach out within 24 hours if one activates. If you need help now, call us at <a href="tel:+18142000328" style="color:#2563eb">(814) 200-0328</a> and we&apos;ll route you to a vetted ${niceNiche} pro outside the platform.`;
+      : `We&apos;ve recorded your ${niceNiche} request in our system. We don&apos;t have a verified Erie ${niceNiche} provider claimed on our platform yet — we&apos;ve banked your request and will reach out within 24 hours if one activates. If you need help now, call us at <a href="${CONCIERGE_PHONE_TEL}" style="color:#2563eb">${CONCIERGE_PHONE_DISPLAY}</a> and we&apos;ll route you to a vetted ${niceNiche} pro outside the platform.`;
 
   // What-to-expect bullets should also match the actual state.
   const expectationItems = routedToProvider
@@ -156,7 +157,7 @@ export async function sendConsumerConfirmation(
       : [
           "We&apos;ll bank your request and reach out within 24 hours",
           "If a verified provider activates in this category, we&apos;ll route your request to them first",
-          "For immediate help, call <a href=\"tel:+18142000328\" style=\"color:#2563eb\">(814) 200-0328</a>",
+          `For immediate help, call <a href="${CONCIERGE_PHONE_TEL}" style="color:#2563eb">${CONCIERGE_PHONE_DISPLAY}</a>`,
         ];
 
   const statusLink = statusToken

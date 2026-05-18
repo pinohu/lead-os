@@ -279,52 +279,57 @@ export async function routeLead(
     }
   }
 
-  // Create the lead record with unique status tracking token
+  // Create the lead record with unique status tracking token.
+  // Lead.create + Provider.totalLeads increment are wrapped in $transaction so
+  // dashboards / SLA math can't drift on partial failure (audit H1 + M10).
   const statusToken = crypto.randomUUID();
-  const lead = await prisma.lead.create({
-    data: {
-      niche,
-      city: city.toLowerCase(),
-      firstName: (leadData.firstName as string) ?? null,
-      lastName: (leadData.lastName as string) ?? null,
-      email: ((leadData.email as string) ?? "").toLowerCase(),
-      phone: (leadData.phone as string) ?? null,
-      message: (leadData.message as string) ?? null,
-      routeType,
-      routedToId,
-      slaDeadline,
-      statusToken,
-      source: (leadData.source as string) ?? "erie-pro",
-      deliverAt: deliverAt ?? undefined,
-      requestedProviderName: (leadData.requestedProviderName as string) ?? null,
-      requestedProviderSlug: (leadData.requestedProviderSlug as string) ?? null,
-      requestedProviderPhone: (leadData.requestedProviderPhone as string) ?? null,
-      requestedProviderAddress: (leadData.requestedProviderAddress as string) ?? null,
-      sourcePage: (leadData.sourcePage as string) ?? null,
-      routingIntent: (leadData.routingIntent as string) ?? "general",
-      providerDeliveryStatus: leadData.requestedProviderName
-        ? routedToId
-          ? "delivered"
-          : "pending_provider_delivery"
-        : "not_applicable",
-      providerDeliveredAt: leadData.requestedProviderName && routedToId ? now : null,
-      tcpaConsent: (leadData.tcpaConsent as boolean) ?? false,
-      tcpaConsentText: (leadData.tcpaConsentText as string) ?? null,
-      tcpaIpAddress: (leadData.tcpaIpAddress as string) ?? null,
-      tcpaConsentAt: leadData.tcpaConsent ? now : null,
-    },
-  });
-
-  // Update provider's lead count if routed
-  if (routedToId) {
-    await prisma.provider.update({
-      where: { id: routedToId },
+  const [lead] = await prisma.$transaction([
+    prisma.lead.create({
       data: {
-        totalLeads: { increment: 1 },
-        lastLeadAt: now,
+        niche,
+        city: city.toLowerCase(),
+        firstName: (leadData.firstName as string) ?? null,
+        lastName: (leadData.lastName as string) ?? null,
+        email: ((leadData.email as string) ?? "").toLowerCase(),
+        phone: (leadData.phone as string) ?? null,
+        message: (leadData.message as string) ?? null,
+        routeType,
+        routedToId,
+        slaDeadline,
+        statusToken,
+        source: (leadData.source as string) ?? "erie-pro",
+        deliverAt: deliverAt ?? undefined,
+        requestedProviderName: (leadData.requestedProviderName as string) ?? null,
+        requestedProviderSlug: (leadData.requestedProviderSlug as string) ?? null,
+        requestedProviderPhone: (leadData.requestedProviderPhone as string) ?? null,
+        requestedProviderAddress: (leadData.requestedProviderAddress as string) ?? null,
+        sourcePage: (leadData.sourcePage as string) ?? null,
+        routingIntent: (leadData.routingIntent as string) ?? "general",
+        providerDeliveryStatus: leadData.requestedProviderName
+          ? routedToId
+            ? "delivered"
+            : "pending_provider_delivery"
+          : "not_applicable",
+        providerDeliveredAt: leadData.requestedProviderName && routedToId ? now : null,
+        tcpaConsent: (leadData.tcpaConsent as boolean) ?? false,
+        tcpaConsentText: (leadData.tcpaConsentText as string) ?? null,
+        tcpaConsentVersion: (leadData.tcpaConsentVersion as string) ?? null,
+        tcpaIpAddress: (leadData.tcpaIpAddress as string) ?? null,
+        tcpaConsentAt: leadData.tcpaConsent ? now : null,
       },
-    });
-  }
+    }),
+    ...(routedToId
+      ? [
+          prisma.provider.update({
+            where: { id: routedToId },
+            data: {
+              totalLeads: { increment: 1 },
+              lastLeadAt: now,
+            },
+          }),
+        ]
+      : []),
+  ]);
 
   return {
     leadId: lead.id,
@@ -381,23 +386,27 @@ export async function recordLeadOutcome(
     "cancelled": "cancelled",
   };
 
-  const record = await prisma.leadOutcome.create({
-    data: {
-      leadId,
-      providerId: lead.routedToId,
-      outcome: outcomeMap[outcome] ?? "responded",
-      responseTimeSeconds: details?.responseTimeSeconds,
-      satisfactionRating: details?.satisfactionRating,
-    },
-  });
-
-  // If converted, update provider's converted count
-  if (outcome === "converted") {
-    await prisma.provider.update({
-      where: { id: lead.routedToId },
-      data: { convertedLeads: { increment: 1 } },
-    });
-  }
+  // Outcome create + provider convertedLeads bump are wrapped in $transaction so
+  // SLA / conversion math doesn't drift on partial failure (audit H1 + M10).
+  const [record] = await prisma.$transaction([
+    prisma.leadOutcome.create({
+      data: {
+        leadId,
+        providerId: lead.routedToId,
+        outcome: outcomeMap[outcome] ?? "responded",
+        responseTimeSeconds: details?.responseTimeSeconds,
+        satisfactionRating: details?.satisfactionRating,
+      },
+    }),
+    ...(outcome === "converted"
+      ? [
+          prisma.provider.update({
+            where: { id: lead.routedToId },
+            data: { convertedLeads: { increment: 1 } },
+          }),
+        ]
+      : []),
+  ]);
 
   return {
     leadId: record.leadId,

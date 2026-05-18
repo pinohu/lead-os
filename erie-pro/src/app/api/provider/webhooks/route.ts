@@ -20,6 +20,39 @@ const ALLOWED_EVENTS = [
   "lead.disputed",
 ];
 
+/**
+ * Audit H2: block webhook URLs that resolve to internal / private / link-local
+ * / metadata networks so a provider can't register an SSRF target and have
+ * lead deliveries POST'd to internal services. This is a conservative
+ * hostname-based check; a defense-in-depth DNS resolve-time check should be
+ * added later in the actual webhook-delivery layer.
+ */
+const BLOCKED_HOSTNAME_PATTERNS = [
+  /^localhost$/i,
+  /^127\./,
+  /^10\./,
+  /^192\.168\./,
+  /^172\.(1[6-9]|2\d|3[01])\./,
+  /^169\.254\./, // link-local / AWS+GCP metadata
+  /^metadata\.google\.internal$/i,
+  /^metadata\./i,
+  /^0\.0\.0\.0$/,
+  /^::1$/,
+  /^fe80::/i, // IPv6 link-local
+  /^fc00::/i, // IPv6 unique-local
+];
+
+function isBlockedWebhookUrl(rawUrl: string): boolean {
+  let url: URL;
+  try {
+    url = new URL(rawUrl);
+  } catch {
+    return true; // unparseable → reject
+  }
+  const host = url.hostname;
+  return BLOCKED_HOSTNAME_PATTERNS.some((re) => re.test(host));
+}
+
 /** Resolve the authenticated user's provider ID */
 async function getProviderId(): Promise<string | null> {
   const session = await auth();
@@ -86,6 +119,18 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { success: false, error: parsed.error.issues.map((e) => e.message).join("; ") },
+        { status: 400 }
+      );
+    }
+
+    // SSRF guard: reject internal/private/metadata destinations.
+    if (isBlockedWebhookUrl(parsed.data.url)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Webhook URL targets a private, internal, or metadata host and is not permitted",
+        },
         { status: 400 }
       );
     }

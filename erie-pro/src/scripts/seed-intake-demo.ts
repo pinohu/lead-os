@@ -93,6 +93,21 @@ function getPrisma(): PrismaClient {
     console.error("❌ DATABASE_URL is not set in .env.local");
     process.exit(1);
   }
+  // Audit M11: refuse to seed demo data against production unless explicitly
+  // opted in. Production Neon URLs typically contain "ep-" (endpoint id) and
+  // not "localhost"; that's a heuristic, not proof, so we also require an
+  // explicit env-var override to satisfy edge cases.
+  const looksLikeProd =
+    !connectionString.includes("localhost") &&
+    !connectionString.includes("127.0.0.1") &&
+    process.env.NODE_ENV === "production";
+  if (looksLikeProd && process.env.ALLOW_DEMO_SEED_AGAINST_PROD !== "1") {
+    console.error(
+      "❌ Refusing to run demo seed against what looks like a production DB.\n" +
+        "   Set ALLOW_DEMO_SEED_AGAINST_PROD=1 only if you are absolutely certain."
+    );
+    process.exit(1);
+  }
   const adapter = new PrismaPg({ connectionString });
   return new PrismaClient({ adapter }) as unknown as PrismaClient;
 }

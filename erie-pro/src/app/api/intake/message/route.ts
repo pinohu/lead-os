@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { advanceConversation } from "@/lib/intake/conversation";
+import { INTAKE_SESSION_COOKIE } from "@/lib/intake/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 import { sanitizeText, normalizePhone } from "@/lib/validation";
@@ -79,10 +80,18 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const result = await advanceConversation(parsed.data);
+    const presentedSessionToken =
+      request.cookies.get(INTAKE_SESSION_COOKIE)?.value ?? null;
+    const result = await advanceConversation(parsed.data, presentedSessionToken);
     return NextResponse.json({ success: true, ...result });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    if (msg === "session-token-mismatch") {
+      return NextResponse.json(
+        { success: false, error: msg },
+        { status: 403 }
+      );
+    }
     if (
       msg === "conversation-not-found" ||
       msg === "conversation-not-active" ||

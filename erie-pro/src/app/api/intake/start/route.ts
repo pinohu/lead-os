@@ -10,6 +10,10 @@ import {
   INTAKE_AB_COOKIE_MAX_AGE,
 } from "@/lib/intake/feature-flag";
 import { isIntakeEnabledForNiche } from "@/lib/intake/templates";
+import {
+  INTAKE_SESSION_COOKIE,
+  INTAKE_SESSION_MAX_AGE,
+} from "@/lib/intake/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 
@@ -78,9 +82,23 @@ export async function POST(request: NextRequest) {
       ipPrefix
     );
 
+    // Strip the session token out of the JSON response — it must travel
+    // exclusively via the HTTP-only cookie so it can't be read by client JS.
+    const { sessionToken, ...publicResult } = result;
     const response = NextResponse.json({
       success: true,
-      ...result,
+      ...publicResult,
+    });
+
+    // C4: bind this conversation to an opaque server-issued session token.
+    response.cookies.set({
+      name: INTAKE_SESSION_COOKIE,
+      value: sessionToken,
+      maxAge: INTAKE_SESSION_MAX_AGE,
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     });
 
     // Persist the variant cookie if it wasn't already set

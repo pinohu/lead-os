@@ -8,6 +8,7 @@
 // blocks hide when their data array is empty.
 
 import { CheckCircle2, AlertTriangle, Calendar } from "lucide-react";
+import { CONCIERGE_PHONE_DISPLAY } from "@/lib/concierge";
 
 interface Props {
   nicheLabel: string;
@@ -85,7 +86,7 @@ export default function NicheServiceScope({
               ))}
             </ul>
             <p className="mt-3 text-xs font-medium text-red-700">
-              For active emergencies, call (814) 200-0328
+              For active emergencies, call {CONCIERGE_PHONE_DISPLAY}
             </p>
           </div>
         )}

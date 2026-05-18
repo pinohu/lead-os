@@ -10,6 +10,8 @@ import { prisma } from "@/lib/db"
 import { deliverWebhookEvent } from "@/lib/webhook-delivery"
 import { syncLeadToBoostspace } from "@/lib/lead-external-sync"
 import { recordRevenueActionPlan } from "@/lib/revenue-actions"
+import { CONCIERGE_PHONE_DISPLAY, CONCIERGE_PHONE_DASHED } from "@/lib/concierge"
+import { TCPA_VERSION } from "@/lib/tcpa-text"
 
 export async function POST(request: NextRequest) {
   try {
@@ -128,42 +130,46 @@ export async function POST(request: NextRequest) {
       ? await (async () => {
           const statusToken = crypto.randomUUID()
           const now = new Date()
-          const lead = await prisma.lead.create({
-            data: {
-              niche,
-              city: city.toLowerCase(),
-              firstName: firstName ?? null,
-              lastName: lastName ?? null,
-              email: email.toLowerCase(),
-              phone: phone ?? null,
-              message,
-              routeType: "primary",
-              routedToId: preferredProvider.id,
-              slaDeadline: new Date(now.getTime() + 1800 * 1000),
-              source: "client-site",
-              requestedProviderName: targetProviderName ?? null,
-              requestedProviderSlug: requestedProviderSlug ?? preferredProvider.slug,
-              requestedProviderPhone: requestedProviderPhone ?? preferredProvider.phone,
-              requestedProviderAddress,
-              sourcePage,
-              routingIntent: "provider_specific",
-              providerDeliveryStatus: "delivered",
-              providerDeliveredAt: now,
-              statusToken,
-              tcpaConsent: true,
-              tcpaConsentText: parsed.data.tcpaConsentText,
-              tcpaConsentAt: now,
-              tcpaIpAddress,
-            },
-          })
-
-          await prisma.provider.update({
-            where: { id: preferredProvider.id },
-            data: {
-              totalLeads: { increment: 1 },
-              lastLeadAt: now,
-            },
-          })
+          // Wrapped in $transaction so the lead + provider counter never drift
+          // on partial failure (audit H1 + M10).
+          const [lead] = await prisma.$transaction([
+            prisma.lead.create({
+              data: {
+                niche,
+                city: city.toLowerCase(),
+                firstName: firstName ?? null,
+                lastName: lastName ?? null,
+                email: email.toLowerCase(),
+                phone: phone ?? null,
+                message,
+                routeType: "primary",
+                routedToId: preferredProvider.id,
+                slaDeadline: new Date(now.getTime() + 1800 * 1000),
+                source: "client-site",
+                requestedProviderName: targetProviderName ?? null,
+                requestedProviderSlug: requestedProviderSlug ?? preferredProvider.slug,
+                requestedProviderPhone: requestedProviderPhone ?? preferredProvider.phone,
+                requestedProviderAddress,
+                sourcePage,
+                routingIntent: "provider_specific",
+                providerDeliveryStatus: "delivered",
+                providerDeliveredAt: now,
+                statusToken,
+                tcpaConsent: true,
+                tcpaConsentText: parsed.data.tcpaConsentText,
+                tcpaConsentVersion: TCPA_VERSION,
+                tcpaConsentAt: now,
+                tcpaIpAddress,
+              },
+            }),
+            prisma.provider.update({
+              where: { id: preferredProvider.id },
+              data: {
+                totalLeads: { increment: 1 },
+                lastLeadAt: now,
+              },
+            }),
+          ])
 
           return {
             leadId: lead.id,
@@ -214,6 +220,7 @@ export async function POST(request: NextRequest) {
               statusToken,
               tcpaConsent: true,
               tcpaConsentText: parsed.data.tcpaConsentText,
+              tcpaConsentVersion: TCPA_VERSION,
               tcpaConsentAt: new Date(),
               tcpaIpAddress,
             },
@@ -247,6 +254,7 @@ export async function POST(request: NextRequest) {
           timestamp: new Date().toISOString(),
           tcpaConsent: true,
           tcpaConsentText: parsed.data.tcpaConsentText,
+          tcpaConsentVersion: TCPA_VERSION,
           tcpaConsentAt: new Date().toISOString(),
           tcpaIpAddress,
         })
@@ -380,7 +388,7 @@ export async function POST(request: NextRequest) {
     } else if (isProviderSpecific) {
       responseMessage = `Your request for ${targetProviderName ?? "this business"} has been received. Erie.pro will review it for provider follow-up and reach out within 24 hours.`
     } else {
-      responseMessage = `Your request has been received. We don't have a verified Erie ${niceNiche} provider claimed yet — we've banked your request and will reach out within 24 hours if one activates. To speak with someone now, call (814) 200-0328.`
+      responseMessage = `Your request has been received. We don't have a verified Erie ${niceNiche} provider claimed yet — we've banked your request and will reach out within 24 hours if one activates. To speak with someone now, call ${CONCIERGE_PHONE_DISPLAY}.`
     }
 
     return NextResponse.json({
@@ -388,7 +396,7 @@ export async function POST(request: NextRequest) {
       leadId: result.leadId,
       routedTo: result.routedTo?.businessName ?? null,
       matched: !!result.routedTo,
-      conciergePhone: result.routedTo ? null : "+1-814-200-0328",
+      conciergePhone: result.routedTo ? null : CONCIERGE_PHONE_DASHED,
       actionPlan: actionPlanResult?.plan ?? null,
       message: responseMessage,
     })

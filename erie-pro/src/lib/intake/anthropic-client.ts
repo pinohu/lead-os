@@ -162,11 +162,21 @@ export async function classifyNiche(
         };
       }
     } catch (parseErr) {
+      // Audit L3: differentiate from a timeout (where `raw` would be null and
+      // we wouldn't reach this branch) by tagging the reason explicitly.
       logger.warn("classifyNiche LLM JSON parse failed", {
+        reason: "parse-error",
         rawSnippet: raw.slice(0, 200),
         error: parseErr instanceof Error ? parseErr.message : String(parseErr),
       });
     }
+  } else {
+    // raw === null means the LLM call timed out or errored; the underlying
+    // log was emitted by callAnthropic. This warn is a hot-loop signal that
+    // the keyword-fallback path is being taken.
+    logger.warn("classifyNiche falling back to keyword search", {
+      reason: "no-llm-response",
+    });
   }
 
   // ── Keyword fallback ─────────────────────────────────────────────

@@ -33,7 +33,10 @@ export function ViloudChannelEmbed({
   // No channel configured for this niche yet — render nothing.
   if (!channelId) return null;
 
-  const embedUrl = `https://app.viloud.tv/player/embed/channel/${channelId}?autoplay=1&volume=1&controls=1&title=1&share=1`;
+  // Audit M9: dropped autoplay=1 from the URL. WCAG 1.4.2 discourages
+  // unconditional autoplay > 3s; also reduces mobile data cost on landing.
+  // Visitor presses the iframe play control to begin.
+  const embedUrl = `https://app.viloud.tv/player/embed/channel/${channelId}?volume=1&controls=1&title=1&share=1`;
 
   return (
     <section

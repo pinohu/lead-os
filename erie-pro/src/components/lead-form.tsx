@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CheckCircle2 } from "lucide-react";
 import { cityConfig } from "@/lib/city-config";
+import { TCPA_TEXT_V2 } from "@/lib/tcpa-text";
 
-// TCPA consent text — v2 (2026-04-02). Update version when changing text.
-const TCPA_TEXT = `By submitting this form, I consent to be contacted by phone, text message, or email by a service provider regarding my service request. I understand that message and data rates may apply for text messages. I can opt out at any time by replying STOP to any text message or contacting us at hello@${cityConfig.domain}.`;
+// TCPA text — single source of truth in src/lib/tcpa-text.ts
+const TCPA_TEXT = TCPA_TEXT_V2(cityConfig.domain);
 
 // ── Validation helpers ──────────────────────────────────────────────
 function isValidEmail(v: string) {

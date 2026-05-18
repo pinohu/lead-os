@@ -1,6 +1,7 @@
 import { MapPin, Shield, FileText } from "lucide-react"
 import { localSeo } from "@/lib/local-seo"
 import { cityConfig } from "@/lib/city-config"
+import { CONCIERGE_PHONE_DASHED } from "@/lib/concierge"
 
 /**
  * Local SEO Footer — renders on every page with deep local signals.
@@ -86,7 +87,7 @@ export function LocalSeoFooter() {
             name: cityConfig.domain,
             description: `Find verified local service providers in ${seo.city}, ${seo.stateCode}. Free quotes, no obligation.`,
             url: `https://${cityConfig.domain}`,
-            telephone: "+1-814-200-0328",
+            telephone: CONCIERGE_PHONE_DASHED,
             address: {
               "@type": "PostalAddress",
               addressLocality: seo.city,

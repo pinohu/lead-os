@@ -3,6 +3,7 @@
 // script entry point so they're unit-testable without a database.
 
 import type { IntakeStep, IntakeMessage, IntakeOutcome } from "@/lib/intake/types";
+import { CONCIERGE_PHONE_DISPLAY } from "@/lib/concierge";
 
 /**
  * Simple seeded PRNG (mulberry32). Deterministic given a seed, which is
@@ -338,7 +339,7 @@ export function buildConversation(rng: Rng, opts: BuildOpts): GeneratedConversat
     messages.push({
       role: "assistant",
       content: urgency === "emergency"
-        ? `Got it — for emergencies you can also call the concierge at (814) 200-0328. Last few questions...`
+        ? `Got it — for emergencies you can also call the concierge at ${CONCIERGE_PHONE_DISPLAY}. Last few questions...`
         : `OK, what's your budget range?`,
       at: tAt(3.2),
     });

@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CheckCircle2, Phone, Send, Loader2, ArrowRight } from "lucide-react";
 import { cityConfig } from "@/lib/city-config";
+import { TCPA_TEXT_V2 } from "@/lib/tcpa-text";
+import { CONCIERGE_PHONE_DISPLAY, CONCIERGE_PHONE_TEL } from "@/lib/concierge";
 import type {
   IntakeStep,
   IntakeUrgency,
@@ -25,8 +27,8 @@ import type {
 } from "@/lib/intake/types";
 import { getIntakeTemplate } from "@/lib/intake/templates";
 
-// TCPA text (mirrors the server-side TCPA_TEXT_V2)
-const TCPA_TEXT = `By submitting this form, I consent to be contacted by phone, text message, or email by a service provider regarding my service request. I understand that message and data rates may apply for text messages. I can opt out at any time by replying STOP to any text message or contacting us at hello@${cityConfig.domain}.`;
+// TCPA text — single source of truth in src/lib/tcpa-text.ts
+const TCPA_TEXT = TCPA_TEXT_V2(cityConfig.domain);
 
 // Message shown in the bubble feed
 interface UIMessage {
@@ -249,7 +251,9 @@ export default function IntakeWidget({
 
   // ── Switch niche (from "did you mean?" UI) ──────────────────────
   const switchToNiche = async (nicheSlug: string, nicheLabel: string) => {
-    if (!conversationId) return;
+    // Audit L2: ignore rapid double-clicks so analytics don't double-count
+    // the switch event.
+    if (!conversationId || isThinking) return;
     setErrorMessage(null);
     appendMessage({
       role: "user",
@@ -293,7 +297,7 @@ export default function IntakeWidget({
       setIsThinking(false);
       if (!res.ok || !data.success) {
         setErrorMessage(
-          "Sorry — something went wrong submitting your request. Please use the form below or call (814) 200-0328."
+          `Sorry — something went wrong submitting your request. Please use the form below or call ${CONCIERGE_PHONE_DISPLAY}.`
         );
         return;
       }
@@ -308,7 +312,7 @@ export default function IntakeWidget({
     } catch {
       setIsThinking(false);
       setErrorMessage(
-        "Network hiccup. Please use the form below or call (814) 200-0328."
+        `Network hiccup. Please use the form below or call ${CONCIERGE_PHONE_DISPLAY}.`
       );
     }
   };
