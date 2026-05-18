@@ -1,6 +1,7 @@
 import { createHmac } from "crypto"
 import { mkdirSync, writeFileSync } from "fs"
 import { resolve } from "path"
+import { erieDocsPath } from "./paths"
 
 type QaStep = {
   name: string
@@ -11,7 +12,7 @@ type QaStep = {
 
 const baseUrl = (process.env.REVENUE_QA_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://erie.pro").replace(/\/$/, "")
 const writeMode = process.env.REVENUE_QA_WRITE === "1" || process.argv.includes("--write")
-const outputDir = resolve(process.cwd(), "..", "docs", "qa")
+const outputDir = erieDocsPath("qa")
 const outputPath = resolve(outputDir, "revenue-e2e-results.json")
 const serviceSlug = process.env.REVENUE_QA_SERVICE || "plumbing"
 const qaEmail = process.env.REVENUE_QA_EMAIL || `qa+revenue-${Date.now()}@erie.pro`

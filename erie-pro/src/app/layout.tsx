@@ -11,10 +11,15 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { LocalSeoFooter } from "@/components/local-seo-footer"
 import { CookieBanner } from "@/components/cookie-banner"
+import { SiteAnalytics } from "@/components/site-analytics"
+import { LiveChatEmbed } from "@/components/live-chat-embed"
+import { EmergencyMobileCallBar } from "@/components/emergency-mobile-call-bar"
 import { ConvertBoxEventTracker } from "@/components/convertbox-event-tracker"
 import { ConvertBoxLoader } from "@/components/convertbox-loader"
 import { ConvertBoxPageContext } from "@/components/convertbox-page-context"
 import { TrackedPhoneLink } from "@/components/tracked-phone-link"
+import { buildOrganizationJsonLd, buildOrganizationPostalAddress, organizationNap } from "@/lib/organization-nap"
+import { homeOpenGraphImage } from "@/lib/seo-metadata"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -26,25 +31,31 @@ import {
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
+const pilotServiceLabels = (cityConfig.pilotCategories ?? niches.slice(0, 6).map((n) => n.slug))
+  .map((slug) => niches.find((n) => n.slug === slug)?.label)
+  .filter((label): label is string => Boolean(label))
+
 export const metadata: Metadata = {
   metadataBase: new URL(`https://${cityConfig.domain}`),
   title: {
-    default: `Find Local Services in ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
+    default: `One Vetted ${cityConfig.name} Pro — Free Match in 4 Hours | ${cityConfig.domain}`,
     template: `%s | ${cityConfig.domain}`,
   },
-  description: `Find the best local service providers in ${cityConfig.name}, ${cityConfig.state}. Verified businesses, free quotes, no obligation. Serving ${cityConfig.serviceArea.slice(0, 5).join(", ")} and surrounding areas.`,
+  description: `Get matched with one vetted local pro in ${cityConfig.name}, ${cityConfig.stateCode}. No bidding wars. Erie County focused. Free for homeowners.`,
   openGraph: {
     type: "website",
     siteName: cityConfig.domain,
     locale: "en_US",
-    title: `Find Local Services in ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
-    description: `Find the best local service providers in ${cityConfig.name}, ${cityConfig.state}. Verified businesses, free quotes, no obligation.`,
+    title: `One Vetted ${cityConfig.name} Pro — Free Match | ${cityConfig.domain}`,
+    description: `One vetted Erie County pro for plumbing, HVAC, cleaning, and more. Free matching. No spam calls.`,
     url: `https://${cityConfig.domain}`,
+    images: [homeOpenGraphImage()],
   },
   twitter: {
     card: "summary_large_image",
-    title: `Find Local Services in ${cityConfig.name}, ${cityConfig.stateCode} | ${cityConfig.domain}`,
-    description: `Find the best local service providers in ${cityConfig.name}, ${cityConfig.state}. Verified businesses, free quotes, no obligation.`,
+    title: `One Vetted ${cityConfig.name} Pro — Free Match | ${cityConfig.domain}`,
+    description: `One vetted Erie County pro. Free matching. No bidding wars.`,
+    images: [homeOpenGraphImage().url],
   },
   icons: {
     icon: [
@@ -68,36 +79,37 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
+      buildOrganizationJsonLd(),
       {
         "@type": "LocalBusiness",
-        "@id": `https://${cityConfig.domain}/#organization`,
-        name: cityConfig.domain,
+        "@id": `https://${cityConfig.domain}/#localbusiness`,
+        name: organizationNap.name,
         url: `https://${cityConfig.domain}`,
-        description: `Find the best local service providers in ${cityConfig.name}, ${cityConfig.state}. Verified businesses, free quotes, no obligation.`,
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: cityConfig.name,
-          addressRegion: cityConfig.stateCode,
-          addressCountry: "US",
-        },
+        telephone: organizationNap.phone,
+        address: buildOrganizationPostalAddress(),
         areaServed: cityConfig.serviceArea.map((area) => ({
           "@type": "City",
           name: area,
         })),
-        serviceType: niches.map((n) => n.label),
+        serviceType: pilotServiceLabels,
       },
       {
         "@type": "WebSite",
         "@id": `https://${cityConfig.domain}/#website`,
         url: `https://${cityConfig.domain}`,
-        name: `Find Local Services in ${cityConfig.name} | ${cityConfig.domain}`,
+        name: `One Vetted ${cityConfig.name} Pro | ${cityConfig.domain}`,
         publisher: { "@id": `https://${cityConfig.domain}/#organization` },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `https://${cityConfig.domain}/get-matched`,
+          "query-input": "required name=search_term_string",
+        },
       },
     ],
   }
 
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en-US" className={inter.variable} suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -293,10 +305,22 @@ export default function RootLayout({
                       </TrackedPhoneLink>
                     </p>
                     <p>
-                      <a href={`mailto:hello@${cityConfig.domain}`} className="hover:text-foreground transition-colors">
-                        hello@{cityConfig.domain}
+                      <a href={`mailto:${organizationNap.email}`} className="hover:text-foreground transition-colors">
+                        {organizationNap.email}
                       </a>
                     </p>
+                    {organizationNap.googleBusinessUrl ? (
+                      <p>
+                        <a
+                          href={organizationNap.googleBusinessUrl}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          className="hover:text-foreground transition-colors"
+                        >
+                          Google Business Profile
+                        </a>
+                      </p>
+                    ) : null}
                   </div>
                   <nav aria-label="Company links" className="mt-4 space-y-2">
                     <Link
@@ -437,6 +461,9 @@ export default function RootLayout({
 
           {/* ── Cookie Consent Banner ─────────────────────────── */}
           <CookieBanner />
+          <EmergencyMobileCallBar />
+          <SiteAnalytics />
+          <LiveChatEmbed />
         </ThemeProvider>
       </body>
     </html>

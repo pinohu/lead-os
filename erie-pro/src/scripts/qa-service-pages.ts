@@ -1,6 +1,7 @@
 import { createHash } from "crypto"
 import { mkdirSync, writeFileSync } from "fs"
 import { resolve } from "path"
+import { erieDocsPath } from "./paths"
 import { chromium, type Browser, type Page } from "@playwright/test"
 import { niches } from "@/lib/niches"
 import { getOfferBySlug, getServiceOfferRecommendations } from "@/lib/automated-offers"
@@ -18,9 +19,15 @@ type PageQaResult = {
 
 const appUrl = (process.env.SERVICE_QA_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://erie.pro").replace(/\/$/, "")
 const limitArg = process.argv.find((arg) => arg.startsWith("--limit="))
+const onlyArg = process.argv.find((arg) => arg.startsWith("--only="))
 const limit = limitArg ? Number(limitArg.split("=")[1]) : Number(process.env.SERVICE_QA_LIMIT || 0)
-const serviceList = limit > 0 ? niches.slice(0, limit) : niches
-const outputDir = resolve(process.cwd(), "..", "docs", "qa", "service-pages")
+const onlySlug = onlyArg?.split("=")[1]
+const serviceList = onlySlug
+  ? niches.filter((n) => n.slug === onlySlug)
+  : limit > 0
+    ? niches.slice(0, limit)
+    : niches
+const outputDir = erieDocsPath("qa", "service-pages")
 const resultsPath = resolve(outputDir, "service-page-qa-results.json")
 const snapshotsPath = resolve(outputDir, "visual-snapshots.json")
 
@@ -46,13 +53,38 @@ async function visibleText(page: Page) {
   return page.locator("body").innerText({ timeout: 5000 }).catch(() => "")
 }
 
+function tokenAppearsInH1(text: string, token: string) {
+  if (token.length < 4) return false
+  if (text.includes(token)) return true
+  if (token.endsWith("ing")) {
+    const stem = token.slice(0, -3)
+    if (stem.length >= 4 && (text.includes(stem) || text.includes(`${stem}er`) || text.includes(`${stem}ers`))) return true
+  }
+  return false
+}
+
+function h1MatchesService(
+  h1: string,
+  service: { slug: string; label: string; searchTerms?: string[] },
+) {
+  const text = h1.toLowerCase()
+  const tokens = [
+    ...service.label.toLowerCase().split(/\s+/),
+    ...service.slug.split("-"),
+    ...(service.searchTerms ?? []),
+  ]
+    .map((word) => word.toLowerCase().trim())
+    .filter((word) => word.length >= 4)
+  return tokens.some((token) => tokenAppearsInH1(text, token))
+}
+
 async function linkHrefs(page: Page) {
   return page.locator("a").evaluateAll((links) => links.map((link) => (link as HTMLAnchorElement).href))
 }
 
 async function qaOnePage(
   browser: Browser,
-  service: { slug: string; label: string },
+  service: { slug: string; label: string; searchTerms?: string[] },
   path: string,
   viewport: PageQaResult["viewport"],
 ): Promise<PageQaResult> {
@@ -66,11 +98,12 @@ async function qaOnePage(
   let screenshotHash: string | null = null
 
   try {
-    const response = await page.goto(url, { waitUntil: "networkidle", timeout: 20000 })
+    const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45_000 })
+    await page.waitForLoadState("networkidle", { timeout: 15_000 }).catch(() => {})
     status = response?.status() ?? null
     checks.statusOk = Boolean(response?.ok())
-    checks.h1MentionsService = await page.locator("h1").first().innerText({ timeout: 5000 })
-      .then((text) => text.toLowerCase().includes(service.label.toLowerCase().split(" ")[0]))
+    checks.h1MentionsService = await page.locator("h1").first().innerText({ timeout: 8000 })
+      .then((text) => h1MatchesService(text, service))
       .catch(() => false)
     checks.noHorizontalOverflow = await noHorizontalOverflow(page)
     checks.hasCountyOrErieContext = (await visibleText(page)).toLowerCase().includes("erie")
@@ -113,6 +146,12 @@ async function qaOnePage(
 }
 
 async function main() {
+  if (serviceList.length === 0) {
+    console.error(onlySlug ? `Unknown service slug: ${onlySlug}` : "No services selected for QA.")
+    process.exitCode = 1
+    return
+  }
+
   mkdirSync(outputDir, { recursive: true })
   const browser = await chromium.launch({ headless: true })
   const results: PageQaResult[] = []

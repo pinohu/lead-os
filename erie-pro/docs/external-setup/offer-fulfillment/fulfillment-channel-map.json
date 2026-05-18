@@ -1,0 +1,284 @@
+{
+  "generatedAt": "2026-05-18T06:02:04.714Z",
+  "environmentVariables": [
+    "PRODUCTDYNO_API_KEY",
+    "PRODUCTDYNO_WEBHOOK_URL",
+    "PRODUCTDYNO_PRODUCT_MAP_JSON",
+    "DOCUMENT_DELIVERY_WEBHOOK_URL",
+    "DOCUMENT_DELIVERY_TOKEN",
+    "TASKADE_WEBHOOK_URL",
+    "TASKADE_API_KEY"
+  ],
+  "offers": [
+    {
+      "slug": "erie-lead-readiness-scorecard",
+      "title": "Erie County Lead Readiness Scorecard",
+      "fulfillmentType": "scorecard",
+      "checkoutProductId": "erie-scorecard",
+      "channels": [
+        {
+          "toolId": "erie-pro",
+          "role": "Generate Erie.Pro asset",
+          "required": true
+        }
+      ]
+    },
+    {
+      "slug": "service-page-conversion-blueprint",
+      "title": "Service Page Conversion Blueprint",
+      "fulfillmentType": "blueprint",
+      "checkoutProductId": "157",
+      "channels": [
+        {
+          "toolId": "erie-pro",
+          "role": "Generate HTML blueprint asset and success page",
+          "required": true
+        },
+        {
+          "toolId": "boostspace",
+          "role": "Sync purchase and fulfillment event",
+          "required": true
+        },
+        {
+          "toolId": "suitedash",
+          "role": "Create provider/client operations record",
+          "required": true
+        },
+        {
+          "toolId": "documents",
+          "role": "Optional PDF blueprint when document delivery is enabled",
+          "required": false
+        }
+      ]
+    },
+    {
+      "slug": "provider-launch-kit",
+      "title": "Provider Launch Kit",
+      "fulfillmentType": "template_kit",
+      "checkoutProductId": "158",
+      "channels": [
+        {
+          "toolId": "erie-pro",
+          "role": "Generate launch kit asset",
+          "required": true
+        },
+        {
+          "toolId": "boostspace",
+          "role": "Route automation event",
+          "required": true
+        },
+        {
+          "toolId": "suitedash",
+          "role": "Create provider workspace record",
+          "required": true
+        },
+        {
+          "toolId": "taskade",
+          "role": "Create manual review task for serious providers",
+          "required": false
+        },
+        {
+          "toolId": "productdyno",
+          "role": "Protected kit delivery when member access is enabled",
+          "required": false
+        }
+      ]
+    },
+    {
+      "slug": "growth-intelligence-subscription",
+      "title": "Growth Intelligence Subscription",
+      "fulfillmentType": "subscription_report",
+      "checkoutProductId": "160",
+      "channels": [
+        {
+          "toolId": "erie-pro",
+          "role": "Generate subscription entitlement and first report",
+          "required": true
+        },
+        {
+          "toolId": "boostspace",
+          "role": "Sync subscription lifecycle events",
+          "required": true
+        },
+        {
+          "toolId": "suitedash",
+          "role": "Create ongoing provider operations record",
+          "required": true
+        },
+        {
+          "toolId": "taskade",
+          "role": "Create monthly review queue item",
+          "required": false
+        }
+      ]
+    },
+    {
+      "slug": "convertbox-funnel-in-a-box",
+      "title": "ConvertBox Funnel-in-a-Box",
+      "fulfillmentType": "automation_kit",
+      "checkoutProductId": "159",
+      "channels": [
+        {
+          "toolId": "erie-pro",
+          "role": "Generate service-specific ConvertBox plan",
+          "required": true
+        },
+        {
+          "toolId": "boostspace",
+          "role": "Sync purchase and implementation event",
+          "required": true
+        },
+        {
+          "toolId": "suitedash",
+          "role": "Create provider operations record",
+          "required": true
+        },
+        {
+          "toolId": "productdyno",
+          "role": "Optional protected template library",
+          "required": false
+        }
+      ]
+    },
+    {
+      "slug": "review-reputation-growth-kit",
+      "title": "Review & Reputation Growth Kit",
+      "fulfillmentType": "template_kit",
+      "checkoutProductId": "165",
+      "channels": [
+        {
+          "toolId": "erie-pro",
+          "role": "Generate reputation kit asset",
+          "required": true
+        },
+        {
+          "toolId": "boostspace",
+          "role": "Sync reputation purchase",
+          "required": true
+        },
+        {
+          "toolId": "suitedash",
+          "role": "Attach kit to provider record",
+          "required": true
+        },
+        {
+          "toolId": "documents",
+          "role": "Optional printable scripts and QR guidance",
+          "required": false
+        }
+      ]
+    },
+    {
+      "slug": "missed-call-recovery-kit",
+      "title": "Missed-Call Recovery Kit",
+      "fulfillmentType": "automation_kit",
+      "checkoutProductId": "163",
+      "channels": [
+        {
+          "toolId": "erie-pro",
+          "role": "Generate missed-call recovery kit",
+          "required": true
+        },
+        {
+          "toolId": "boostspace",
+          "role": "Sync recovery event",
+          "required": true
+        },
+        {
+          "toolId": "suitedash",
+          "role": "Store response workflow context",
+          "required": true
+        },
+        {
+          "toolId": "taskade",
+          "role": "Create implementation reminder when configured",
+          "required": false
+        }
+      ]
+    },
+    {
+      "slug": "seasonal-booking-campaign-pack",
+      "title": "Seasonal Booking Campaign Pack",
+      "fulfillmentType": "campaign_kit",
+      "checkoutProductId": "164",
+      "channels": [
+        {
+          "toolId": "erie-pro",
+          "role": "Generate seasonal campaign calendar and copy",
+          "required": true
+        },
+        {
+          "toolId": "boostspace",
+          "role": "Sync seasonal campaign event",
+          "required": true
+        },
+        {
+          "toolId": "suitedash",
+          "role": "Attach campaign assets to provider record",
+          "required": true
+        },
+        {
+          "toolId": "documents",
+          "role": "Optional campaign PDF",
+          "required": false
+        }
+      ]
+    },
+    {
+      "slug": "government-opportunity-scanner",
+      "title": "Government Opportunity Scanner",
+      "fulfillmentType": "subscription_report",
+      "checkoutProductId": "161",
+      "channels": [
+        {
+          "toolId": "erie-pro",
+          "role": "Generate first opportunity scanner asset",
+          "required": true
+        },
+        {
+          "toolId": "boostspace",
+          "role": "Sync opportunity and subscription events",
+          "required": true
+        },
+        {
+          "toolId": "suitedash",
+          "role": "Create provider operations record",
+          "required": true
+        },
+        {
+          "toolId": "taskade",
+          "role": "Create recurring opportunity review task",
+          "required": false
+        }
+      ]
+    },
+    {
+      "slug": "client-portal-starter-pack",
+      "title": "Client Portal Starter Pack",
+      "fulfillmentType": "template_kit",
+      "checkoutProductId": "162",
+      "channels": [
+        {
+          "toolId": "erie-pro",
+          "role": "Generate portal starter pack",
+          "required": true
+        },
+        {
+          "toolId": "boostspace",
+          "role": "Sync operations purchase",
+          "required": true
+        },
+        {
+          "toolId": "suitedash",
+          "role": "Prepare client/provider portal record",
+          "required": true
+        },
+        {
+          "toolId": "productdyno",
+          "role": "Optional template library delivery",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

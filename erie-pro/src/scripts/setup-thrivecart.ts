@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from "fs"
 import { resolve } from "path"
+import { erieDocsPath } from "./paths"
 import {
   buildThriveCartSetupExport,
   type ThriveCartEventSubscription,
@@ -8,7 +9,7 @@ import {
 const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://erie.pro"
 const accountSlug = process.env.THRIVECART_ACCOUNT_SLUG || "relgard"
 const setup = buildThriveCartSetupExport(appUrl, accountSlug)
-const outputDir = resolve(process.cwd(), "..", "docs", "external-setup", "thrivecart")
+const outputDir = erieDocsPath("external-setup", "thrivecart")
 const outputPath = resolve(outputDir, "master-setup.json")
 
 mkdirSync(outputDir, { recursive: true })

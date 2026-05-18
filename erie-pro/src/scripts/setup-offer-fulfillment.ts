@@ -1,8 +1,9 @@
 import { mkdirSync, writeFileSync } from "fs"
 import { resolve } from "path"
+import { erieDocsPath } from "./paths"
 import { buildFulfillmentSetupExport } from "@/lib/offer-fulfillment-automation"
 
-const outputDir = resolve(process.cwd(), "..", "docs", "external-setup", "offer-fulfillment")
+const outputDir = erieDocsPath("external-setup", "offer-fulfillment")
 const outputPath = resolve(outputDir, "fulfillment-channel-map.json")
 const setup = buildFulfillmentSetupExport()
 

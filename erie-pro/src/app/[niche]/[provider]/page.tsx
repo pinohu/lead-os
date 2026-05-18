@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import type { Metadata } from "next"
 import {
   ArrowRight,
@@ -46,6 +46,10 @@ import ContactForm from "@/components/contact-form"
 import { TrackedPhoneLink } from "@/components/tracked-phone-link"
 import { PhotoGalleryDialog } from "@/components/photo-gallery-dialog"
 import { cleanProviderPhotoRefs, getBestProviderPhoto, getProviderPhotoSrc } from "@/lib/provider-photos"
+import { isReservedNicheSegment } from "@/lib/service-modifiers"
+import { getServiceAreaBySlug } from "@/lib/area-registry"
+import { getAreaNicheCanonicalPath } from "@/lib/area-niche-urls"
+import { resolveModifierFromSegment } from "@/lib/modifier-segment-aliases"
 
 type Props = { params: Promise<{ niche: string; provider: string }> }
 
@@ -305,6 +309,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { niche: nicheSlug, provider: providerSlug } = await params
+  if (isReservedNicheSegment(providerSlug)) return { title: "Not Found" }
   const niche = getNicheBySlug(nicheSlug)
   if (!niche) return { title: "Not Found" }
 
@@ -332,10 +337,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProviderPage({ params }: Props) {
   const { niche: nicheSlug, provider: providerSlug } = await params
+  if (isReservedNicheSegment(providerSlug)) notFound()
   const niche = getNicheBySlug(nicheSlug)
   if (!niche) notFound()
 
+  const modifierSlug = resolveModifierFromSegment(nicheSlug, providerSlug)
+  if (modifierSlug) redirect(`/${nicheSlug}/modifiers/${modifierSlug}`)
+
   const data = await resolveProvider(nicheSlug, providerSlug)
+
+  if (!data) {
+    const area = getServiceAreaBySlug(providerSlug)
+    if (area) redirect(getAreaNicheCanonicalPath(nicheSlug, area.slug))
+  }
 
   const providerName = data?.businessName ?? providerSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
 

@@ -1,0 +1,1130 @@
+{
+  "generatedAt": "2026-05-18T06:05:30.423Z",
+  "appUrl": "https://erie.pro",
+  "checked": 112,
+  "passed": 112,
+  "failed": 0,
+  "submitProbe": false,
+  "results": [
+    {
+      "url": "https://erie.pro/plumbing/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "plumbing",
+      "expectedBoxId": 232604,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/hvac/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "hvac",
+      "expectedBoxId": 232605,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/electrical/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "electrical",
+      "expectedBoxId": 232606,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/roofing/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "roofing",
+      "expectedBoxId": 232607,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/landscaping/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "landscaping",
+      "expectedBoxId": 232608,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/dental/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "dental",
+      "expectedBoxId": 232609,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/legal/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "legal",
+      "expectedBoxId": 232610,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/cleaning/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "cleaning",
+      "expectedBoxId": 232611,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/auto-repair/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "auto-repair",
+      "expectedBoxId": 232612,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/pest-control/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "pest-control",
+      "expectedBoxId": 232613,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/painting/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "painting",
+      "expectedBoxId": 232614,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/real-estate/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "real-estate",
+      "expectedBoxId": 232615,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/garage-door/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "garage-door",
+      "expectedBoxId": 232616,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/fencing/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "fencing",
+      "expectedBoxId": 232617,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/flooring/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "flooring",
+      "expectedBoxId": 232618,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/windows-doors/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "windows-doors",
+      "expectedBoxId": 232619,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/moving/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "moving",
+      "expectedBoxId": 232620,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/tree-service/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "tree-service",
+      "expectedBoxId": 232621,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/appliance-repair/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "appliance-repair",
+      "expectedBoxId": 232622,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/foundation/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "foundation",
+      "expectedBoxId": 232623,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/home-security/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "home-security",
+      "expectedBoxId": 232624,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/concrete/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "concrete",
+      "expectedBoxId": 232625,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/septic/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "septic",
+      "expectedBoxId": 232626,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/chimney/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "chimney",
+      "expectedBoxId": 232627,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/pool-spa/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "pool-spa",
+      "expectedBoxId": 232628,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/locksmith/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "locksmith",
+      "expectedBoxId": 232629,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/towing/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "towing",
+      "expectedBoxId": 232630,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/carpet-cleaning/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "carpet-cleaning",
+      "expectedBoxId": 232631,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/pressure-washing/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "pressure-washing",
+      "expectedBoxId": 232632,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/drywall/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "drywall",
+      "expectedBoxId": 232633,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/insulation/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "insulation",
+      "expectedBoxId": 232634,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/solar/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "solar",
+      "expectedBoxId": 232635,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/gutters/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "gutters",
+      "expectedBoxId": 232636,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/handyman/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "handyman",
+      "expectedBoxId": 232637,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/veterinary/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "veterinary",
+      "expectedBoxId": 232638,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/chiropractic/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "chiropractic",
+      "expectedBoxId": 232639,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/accounting/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "accounting",
+      "expectedBoxId": 232640,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/photography/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "photography",
+      "expectedBoxId": 232641,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/pet-grooming/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "pet-grooming",
+      "expectedBoxId": 232642,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/snow-removal/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "snow-removal",
+      "expectedBoxId": 232643,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/restoration/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "restoration",
+      "expectedBoxId": 232644,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/glass/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "glass",
+      "expectedBoxId": 232645,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/irrigation/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "irrigation",
+      "expectedBoxId": 232646,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/demolition/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "demolition",
+      "expectedBoxId": 232647,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/general-contractor/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "general-contractor",
+      "expectedBoxId": 232648,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/home-remodeling/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "home-remodeling",
+      "expectedBoxId": 232649,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/kitchen-remodeling/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "kitchen-remodeling",
+      "expectedBoxId": 232650,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/bathroom-remodeling/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "bathroom-remodeling",
+      "expectedBoxId": 232651,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/siding/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "siding",
+      "expectedBoxId": 232652,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/decks-patios/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "decks-patios",
+      "expectedBoxId": 232653,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/basement-finishing/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "basement-finishing",
+      "expectedBoxId": 232654,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/mold-remediation/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "mold-remediation",
+      "expectedBoxId": 232655,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/fire-damage-restoration/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "fire-damage-restoration",
+      "expectedBoxId": 232656,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/storm-damage-repair/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "storm-damage-repair",
+      "expectedBoxId": 232657,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/water-heater-services/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "water-heater-services",
+      "expectedBoxId": 232658,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/drain-cleaning/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "drain-cleaning",
+      "expectedBoxId": 232659,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/sewer-line-repair/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "sewer-line-repair",
+      "expectedBoxId": 232660,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/ac-repair/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "ac-repair",
+      "expectedBoxId": 232661,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/furnace-repair/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "furnace-repair",
+      "expectedBoxId": 232662,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/duct-cleaning/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "duct-cleaning",
+      "expectedBoxId": 232663,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/driveway-paving/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "driveway-paving",
+      "expectedBoxId": 232664,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/asphalt-sealing/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "asphalt-sealing",
+      "expectedBoxId": 232665,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/junk-removal/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "junk-removal",
+      "expectedBoxId": 232666,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/dumpster-rental/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "dumpster-rental",
+      "expectedBoxId": 232667,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/home-inspection/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "home-inspection",
+      "expectedBoxId": 232668,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/property-management/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "property-management",
+      "expectedBoxId": 232669,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/rental-turnover-cleaning/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "rental-turnover-cleaning",
+      "expectedBoxId": 232670,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/commercial-cleaning/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "commercial-cleaning",
+      "expectedBoxId": 232671,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/commercial-snow-removal/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "commercial-snow-removal",
+      "expectedBoxId": 232672,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/home-builders/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "home-builders",
+      "expectedBoxId": 232673,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/outdoor-lighting/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "outdoor-lighting",
+      "expectedBoxId": 232674,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/holiday-lighting/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "holiday-lighting",
+      "expectedBoxId": 232675,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/fence-repair/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "fence-repair",
+      "expectedBoxId": 232676,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/retaining-walls/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "retaining-walls",
+      "expectedBoxId": 232677,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/epoxy-flooring/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "epoxy-flooring",
+      "expectedBoxId": 232678,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/closet-storage-systems/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "closet-storage-systems",
+      "expectedBoxId": 232679,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/cabinet-refinishing/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "cabinet-refinishing",
+      "expectedBoxId": 232680,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/countertops/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "countertops",
+      "expectedBoxId": 232681,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/tile-installation/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "tile-installation",
+      "expectedBoxId": 232682,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/smart-home-installation/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "smart-home-installation",
+      "expectedBoxId": 232683,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/ev-charger-installation/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "ev-charger-installation",
+      "expectedBoxId": 232684,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/generator-installation/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "generator-installation",
+      "expectedBoxId": 232685,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/radon-testing-mitigation/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "radon-testing-mitigation",
+      "expectedBoxId": 232686,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/wildlife-removal/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "wildlife-removal",
+      "expectedBoxId": 232687,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/bat-removal/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "bat-removal",
+      "expectedBoxId": 232688,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/bee-wasp-removal/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "bee-wasp-removal",
+      "expectedBoxId": 232689,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/septic-inspection/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "septic-inspection",
+      "expectedBoxId": 232690,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/well-water-testing/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "well-water-testing",
+      "expectedBoxId": 232691,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/boat-repair-marine-services/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "boat-repair-marine-services",
+      "expectedBoxId": 232692,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/dock-installation-repair/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "dock-installation-repair",
+      "expectedBoxId": 232693,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/marina-boat-winterization/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "marina-boat-winterization",
+      "expectedBoxId": 232694,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/ice-dam-removal/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "ice-dam-removal",
+      "expectedBoxId": 232695,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/emergency-board-up/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "emergency-board-up",
+      "expectedBoxId": 232696,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/basement-flood-cleanup/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "basement-flood-cleanup",
+      "expectedBoxId": 232697,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/lakefront-property-maintenance/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "lakefront-property-maintenance",
+      "expectedBoxId": 232698,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/vacation-rental-cleaning/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "vacation-rental-cleaning",
+      "expectedBoxId": 232699,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/airbnb-property-management/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "airbnb-property-management",
+      "expectedBoxId": 232700,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/snow-plow-contractors/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "snow-plow-contractors",
+      "expectedBoxId": 232701,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/salt-deicing-services/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "salt-deicing-services",
+      "expectedBoxId": 232702,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/storm-window-repair/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "storm-window-repair",
+      "expectedBoxId": 232703,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/optometry/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "optometry",
+      "expectedBoxId": 232704,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/dermatology/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "dermatology",
+      "expectedBoxId": 232705,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/physical-therapy/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "physical-therapy",
+      "expectedBoxId": 232706,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/mental-health-counseling/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "mental-health-counseling",
+      "expectedBoxId": 232707,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/senior-home-care/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "senior-home-care",
+      "expectedBoxId": 232708,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/home-health-care/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "home-health-care",
+      "expectedBoxId": 232709,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/hearing-aids-audiology/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "hearing-aids-audiology",
+      "expectedBoxId": 232710,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/funeral-homes/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "funeral-homes",
+      "expectedBoxId": 232711,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/insurance-agents/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "insurance-agents",
+      "expectedBoxId": 232712,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/financial-advisors/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "financial-advisors",
+      "expectedBoxId": 232713,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/mortgage-brokers/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "mortgage-brokers",
+      "expectedBoxId": 232714,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    },
+    {
+      "url": "https://erie.pro/estate-sale-services/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement",
+      "serviceSlug": "estate-sale-services",
+      "expectedBoxId": 232715,
+      "scriptPresent": true,
+      "uuidPresent": true,
+      "contextPresent": true,
+      "datasetMatches": true,
+      "errors": []
+    }
+  ]
+}

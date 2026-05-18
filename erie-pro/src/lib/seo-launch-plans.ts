@@ -30,7 +30,7 @@ type GeneratedRegistry = {
 
 const registry = generated as GeneratedRegistry
 
-const canonicalToGenerated: Record<string, string> = {
+export const canonicalToGenerated: Record<string, string> = {
   accounting: "accounting-and-tax",
   chimney: "chimney-and-fireplace",
   chiropractic: "chiropractic-care",

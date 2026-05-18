@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-05-18T05:29:05.640Z",
+  "baseUrl": "https://erie.pro",
+  "writeMode": false,
+  "status": "passed",
+  "steps": [
+    {
+      "name": "health",
+      "status": "passed",
+      "responseStatus": 200,
+      "detail": "{\"status\":\"healthy\"}"
+    },
+    {
+      "name": "revenue stack readiness",
+      "status": "passed",
+      "responseStatus": 200,
+      "detail": "{\"success\":true,\"stack\":[{\"id\":\"erie-pro\",\"name\":\"Erie.Pro / LeadOS\",\"phase\":\"core\",\"status\":\"active\",\"ownerRole\":\"Public experience and source-of-truth interface\",\"job\":\"Host service pages, funnel pages, request routing, admin review, and customer-safe public copy.\",\"inputs\":[\"service catalog\",\"visitor behavior\",\"lead requests\",\"offer clicks\",\"purchase status\"],\"outputs\":[\"service-aware pages\",\"funnel events\",\"lead records\",\"offer recommendations\"],\"fallback\":\"Keep public pages in Next.js even when external tools are unavailable.\",\"activationRule\":\"Always active for Erie.Pro customer and provider journeys.\",\"publicFacing\":true},{\"id\":\"neon\",\"name\":\"Neon\",\"phase\":\"core\",\"status\":\"active\",\"ow"
+    },
+    {
+      "name": "Boost.space queue signal",
+      "status": "passed",
+      "responseStatus": 200,
+      "detail": "{\"success\":true,\"integration\":\"boostspace\",\"status\":\"planned\",\"outcome\":\"all\",\"count\":1,\"actions\":[{\"id\":\"cmp3hpkyf000404l80hmfx8k3\",\"outcome\":\"route\",\"status\":\"planned\",\"automationPayload\":{\"actionId\":\"cmp3hpkyf000404l80hmfx8k3\",\"automationKey\":\"revenue.route.context\",\"outcome\":\"route\",\"status\":\"planned\",\"priority\":\"normal\",\"ownerTool\":\"neon\",\"targetTools\":[\"boostspace\",\"suitedash\"],\"title\":\"Route Missed-Call Recovery Kit context\",\"action\":\"Sync the canonical Neon record to boostspace, keeping customer, service, coupon, affiliate, funnel, and UTM context attached.\",\"routing\":{\"preferredTool\":\"boostspace\",\"fallbackTools\":[\"suitedash\"],\"suggestedStatus\":\"queued\"},\"context\":{\"sourceSystem\":\"er"
+    },
+    {
+      "name": "SuiteDash queue signal",
+      "status": "passed",
+      "responseStatus": 200,
+      "detail": "{\"success\":true,\"integration\":\"suitedash\",\"status\":\"planned\",\"outcome\":\"all\",\"count\":1,\"packages\":[{\"id\":\"cmp3hpkyf000404l80hmfx8k3\",\"status\":\"planned\",\"source\":\"erie-pro\",\"integration\":\"suitedash\",\"action\":{\"actionId\":\"cmp3hpkyf000404l80hmfx8k3\",\"automationKey\":\"revenue.route.context\",\"outcome\":\"route\",\"status\":\"planned\",\"priority\":\"normal\",\"ownerTool\":\"neon\",\"targetTools\":[\"boostspace\",\"suitedash\"],\"title\":\"Route Missed-Call Recovery Kit context\",\"action\":\"Sync the canonical Neon record to boostspace, keeping customer, service, coupon, affiliate, funnel, and UTM context attached.\",\"routing\":{\"preferredTool\":\"boostspace\",\"fallbackTools\":[\"suitedash\"],\"suggestedStatus\":\"queued\"},\"context\":{\""
+    },
+    {
+      "name": "synthetic ConvertBox submit",
+      "status": "skipped",
+      "detail": "Set REVENUE_QA_WRITE=1 or pass --write to create QA-marked production events."
+    },
+    {
+      "name": "synthetic ThriveCart webhook",
+      "status": "skipped",
+      "detail": "Set REVENUE_QA_WRITE=1 and provide THRIVECART_WEBHOOK_TOKEN or THRIVECART_WEBHOOK_SECRET."
+    },
+    {
+      "name": "revenue actions contain all outcomes",
+      "status": "passed",
+      "responseStatus": 200,
+      "detail": "Observed outcomes: route, learn"
+    }
+  ]
+}

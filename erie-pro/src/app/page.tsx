@@ -1,4 +1,5 @@
 import Link from "next/link"
+import type { Metadata } from "next"
 import {
   Wrench,
   Zap,
@@ -45,6 +46,20 @@ import {
 } from "@/components/ui/accordion"
 import { ServiceSearch } from "@/components/service-search"
 import { HomepageLeadForm } from "@/components/homepage-lead-form"
+import { homeOpenGraphImage } from "@/lib/seo-metadata"
+import { LocalProofTicker } from "@/components/local-proof-ticker"
+
+export const metadata: Metadata = {
+  title: `Local Home Services in ${cityConfig.name}, ${cityConfig.stateCode} — One Vetted Pro`,
+  description: `Plumbing, HVAC, cleaning, and more in ${cityConfig.name}, ${cityConfig.stateCode}. Get matched with one vetted Erie County pro. Free. No bidding wars.`,
+  alternates: { canonical: `https://${cityConfig.domain}/` },
+  openGraph: {
+    title: `One Vetted ${cityConfig.name} Pro — Free Match`,
+    description: `One local pro for your job in Erie County. Free matching in under 4 hours.`,
+    url: `https://${cityConfig.domain}/`,
+    images: [homeOpenGraphImage()],
+  },
+}
 
 const nicheIcons: Record<string, React.ReactNode> = {
   plumbing: <Wrench className="h-6 w-6" aria-hidden="true" />,
@@ -94,9 +109,9 @@ export default function HomePage() {
           </Badge>
 
           <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            Need a pro in {cityConfig.name}?
+            Local home services in {cityConfig.name}, {cityConfig.stateCode}
             <br />
-            <span className="text-primary">We&apos;ll find you one. Free.</span>
+            <span className="text-primary">One vetted pro. Free match.</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg text-foreground/80">
@@ -109,8 +124,24 @@ export default function HomePage() {
             Average response: under 4 hours. Emergency jobs: under 30 minutes.
           </p>
 
-          {/* ── Search bar ──────────────────────────────────── */}
-          <div className="mt-10">
+          <LocalProofTicker className="mx-auto mt-6 max-w-2xl text-left" />
+
+          <div className="mt-10 flex flex-col items-center gap-3">
+            <Button asChild size="lg" className="text-base">
+              <Link href="/get-matched">
+                Get Matched Free
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <p className="text-sm text-muted-foreground">
+              No account · No spam · Your info stays private until you approve the pro
+            </p>
+          </div>
+
+          <div className="mt-8">
+            <p className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Or find your service
+            </p>
             <ServiceSearch niches={searchNiches} cityName={cityConfig.name} />
           </div>
 

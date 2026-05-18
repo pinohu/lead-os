@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { MapPin, ArrowRight, Building2 } from "lucide-react"
 import { cityConfig } from "@/lib/city-config"
 import { niches } from "@/lib/niches"
+import { getServiceAreaSlugForLabel } from "@/lib/area-registry"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -77,12 +78,19 @@ export default function AreasPage() {
       {/* ── Area Cards ────────────────────────────────────────── */}
       <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
         <div className="grid gap-4 sm:grid-cols-2">
-          {cityConfig.serviceArea.map((area) => (
+          {cityConfig.serviceArea.map((area) => {
+            const areaSlug = getServiceAreaSlugForLabel(area)
+            return (
             <Card key={area}>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <MapPin className="h-4 w-4 text-primary" />
-                  {area}, {cityConfig.stateCode}
+                  <Link
+                    href={areaSlug ? `/areas/${areaSlug}` : "/areas"}
+                    className="hover:text-primary transition-colors"
+                  >
+                    {area}, {cityConfig.stateCode}
+                  </Link>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -90,6 +98,14 @@ export default function AreasPage() {
                   {AREA_DESCRIPTIONS[area] ??
                     `A valued community in the ${cityConfig.name} metro area served by verified professionals on ${cityConfig.domain}.`}
                 </p>
+                {areaSlug ? (
+                  <Button asChild variant="link" className="mb-3 h-auto p-0 text-sm">
+                    <Link href={`/areas/${areaSlug}`}>
+                      View all services in {area}
+                      <ArrowRight className="ml-1 h-3 w-3" />
+                    </Link>
+                  </Button>
+                ) : null}
                 <div className="flex flex-wrap gap-1.5">
                   {niches.slice(0, 4).map((niche) => (
                     <Badge key={niche.slug} variant="outline" className="text-xs">
@@ -102,7 +118,8 @@ export default function AreasPage() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+            )
+          })}
         </div>
       </section>
 

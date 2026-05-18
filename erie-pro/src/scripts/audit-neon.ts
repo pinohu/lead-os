@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs"
 import { resolve } from "path"
+import { erieDocsPath } from "./paths"
 import { prisma } from "@/lib/db"
 
 type Finding = {
@@ -9,7 +10,7 @@ type Finding = {
   count?: number
 }
 
-const outputDir = resolve(process.cwd(), "..", "docs", "qa")
+const outputDir = erieDocsPath("qa")
 const outputPath = resolve(outputDir, "neon-audit-results.json")
 const envFile = process.env.REVENUE_AUDIT_ENV_FILE
 

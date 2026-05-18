@@ -18,6 +18,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import ContactForm from "@/components/contact-form"
 import { TrackedPhoneLink } from "@/components/tracked-phone-link"
+import { buildOrganizationJsonLd, googleMapsEmbedUrl, organizationNap } from "@/lib/organization-nap"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -204,6 +205,37 @@ export default function ContactPage() {
               </CardContent>
             </Card>
           </div>
+        </div>
+      </section>
+
+      <section className="border-t bg-muted/20">
+        <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
+          <h2 className="text-xl font-semibold tracking-tight">Service area map</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {organizationNap.addressLocality}, {organizationNap.addressRegion}{" "}
+            {organizationNap.postalCode} — Erie County and nearby communities.
+          </p>
+          <div className="mt-6 overflow-hidden rounded-lg border">
+            <iframe
+              title={`${cityConfig.name} service area map`}
+              src={googleMapsEmbedUrl()}
+              className="h-72 w-full"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+          {organizationNap.googleBusinessUrl ? (
+            <p className="mt-3 text-sm">
+              <a
+                href={organizationNap.googleBusinessUrl}
+                rel="noopener noreferrer"
+                target="_blank"
+                className="text-primary hover:underline"
+              >
+                View our Google Business Profile
+              </a>
+            </p>
+          ) : null}
         </div>
       </section>
 

@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from "fs"
 import { resolve } from "path"
-import { chromium } from "@playwright/test"
+import { erieDocsPath } from "./paths"
+import { chromium, type Page } from "@playwright/test"
 import { convertBoxServiceMap, convertBoxServiceSlugs, type ConvertBoxServiceSlug } from "@/lib/convertbox-service-map"
 
 type VerificationResult = {
@@ -16,10 +17,16 @@ type VerificationResult = {
 
 const appUrl = (process.env.CONVERTBOX_VERIFY_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://erie.pro").replace(/\/$/, "")
 const limitArg = process.argv.find((arg) => arg.startsWith("--limit="))
+const onlyArg = process.argv.find((arg) => arg.startsWith("--only="))
 const limit = limitArg ? Number(limitArg.split("=")[1]) : Number(process.env.CONVERTBOX_VERIFY_LIMIT || 0)
+const onlySlug = onlyArg?.split("=")[1] as ConvertBoxServiceSlug | undefined
 const submitProbe = process.argv.includes("--submit-probe") || process.env.CONVERTBOX_SUBMIT_PROBE === "1"
-const slugs = limit > 0 ? convertBoxServiceSlugs.slice(0, limit) : convertBoxServiceSlugs
-const outputDir = resolve(process.cwd(), "..", "docs", "external-setup", "convertbox")
+const slugs = onlySlug
+  ? (convertBoxServiceSlugs.includes(onlySlug) ? [onlySlug] : [])
+  : limit > 0
+    ? convertBoxServiceSlugs.slice(0, limit)
+    : convertBoxServiceSlugs
+const outputDir = erieDocsPath("external-setup", "convertbox")
 const matrixPath = resolve(outputDir, "placement-matrix.json")
 const resultsPath = resolve(outputDir, "placement-verification-results.json")
 
@@ -59,6 +66,35 @@ function buildMatrix() {
   }
 }
 
+async function waitForConvertBoxSignals(page: Page, entry: (typeof convertBoxServiceMap)[ConvertBoxServiceSlug]) {
+  const deadline = Date.now() + 15_000
+  let scriptPresent = false
+  let uuidPresent = false
+  let contextPresent = false
+  let datasetMatches = false
+
+  while (Date.now() < deadline) {
+    scriptPresent = await page.locator("script#app-convertbox-script").count().then((count) => count > 0)
+    uuidPresent = await page.locator("script#app-convertbox-script[data-uuid]").count().then((count) => count > 0)
+    const context = await page.evaluate(() => (window as unknown as { erieProConvertBox?: unknown }).erieProConvertBox ?? null)
+    const dataset = await page.evaluate(() => ({
+      serviceSlug: document.documentElement.dataset.epServiceSlug ?? null,
+      boxId: document.documentElement.dataset.epConvertboxId ?? null,
+      countyFocus: document.documentElement.dataset.epCountyFocus ?? null,
+    }))
+    contextPresent = Boolean(context)
+    datasetMatches =
+      dataset.serviceSlug === entry.serviceSlug &&
+      dataset.boxId === String(entry.boxId) &&
+      dataset.countyFocus === "Erie County"
+
+    if (scriptPresent && uuidPresent && contextPresent && datasetMatches) break
+    await page.waitForTimeout(400)
+  }
+
+  return { scriptPresent, uuidPresent, contextPresent, datasetMatches }
+}
+
 async function verifyPage(browser: Awaited<ReturnType<typeof chromium.launch>>, serviceSlug: ConvertBoxServiceSlug): Promise<VerificationResult> {
   const entry = convertBoxServiceMap[serviceSlug]
   const url = `${appUrl}/${entry.serviceSlug}/pricing?utm_source=qa&utm_medium=convertbox&utm_campaign=placement`
@@ -66,22 +102,9 @@ async function verifyPage(browser: Awaited<ReturnType<typeof chromium.launch>>, 
   const errors: string[] = []
 
   try {
-    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 })
-    await page.waitForTimeout(1200)
-    const scriptPresent = await page.locator("script#app-convertbox-script").count().then((count) => count > 0)
-    const uuidPresent = await page.locator("script#app-convertbox-script[data-uuid]").count().then((count) => count > 0)
-    const context = await page.evaluate(() => (window as unknown as { erieProConvertBox?: unknown }).erieProConvertBox ?? null)
-    const dataset = await page.evaluate(() => ({
-      serviceSlug: document.documentElement.dataset.epServiceSlug ?? null,
-      boxId: document.documentElement.dataset.epConvertboxId ?? null,
-      countyFocus: document.documentElement.dataset.epCountyFocus ?? null,
-    }))
-    const contextPresent = Boolean(context)
-    const datasetMatches =
-      dataset.serviceSlug === entry.serviceSlug &&
-      dataset.boxId === String(entry.boxId) &&
-      dataset.countyFocus === "Erie County"
-
+    await page.goto(url, { waitUntil: "networkidle", timeout: 45_000 })
+    await page.waitForSelector("script#app-convertbox-script", { timeout: 15_000 }).catch(() => {})
+    const { scriptPresent, uuidPresent, contextPresent, datasetMatches } = await waitForConvertBoxSignals(page, entry)
     if (!scriptPresent) errors.push("Missing ConvertBox script tag.")
     if (!uuidPresent) errors.push("Missing ConvertBox UUID data attribute.")
     if (!contextPresent) errors.push("Missing window.erieProConvertBox context.")
@@ -125,6 +148,12 @@ async function verifyPage(browser: Awaited<ReturnType<typeof chromium.launch>>, 
 }
 
 async function main() {
+  if (slugs.length === 0) {
+    console.error(onlySlug ? `Unknown service slug: ${onlySlug}` : "No services selected for verification.")
+    process.exitCode = 1
+    return
+  }
+
   mkdirSync(outputDir, { recursive: true })
   writeFileSync(matrixPath, `${JSON.stringify(buildMatrix(), null, 2)}\n`, "utf8")
 

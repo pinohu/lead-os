@@ -51,6 +51,26 @@ export async function getDirectoryListingsByNiche(
   });
 }
 
+export async function getDirectoryListingsByNicheAndArea(
+  niche: string,
+  areaLabel: string,
+  options?: { limit?: number; orderBy?: "rating" | "reviewCount" | "businessName" },
+): Promise<DirectoryListing[]> {
+  const { limit = 24, orderBy = "rating" } = options ?? {};
+  return prisma.directoryListing.findMany({
+    where: {
+      niche,
+      isActive: true,
+      OR: [
+        { addressCity: { equals: areaLabel, mode: "insensitive" } },
+        { addressFormatted: { contains: areaLabel, mode: "insensitive" } },
+      ],
+    },
+    orderBy: { [orderBy]: "desc" },
+    take: limit,
+  });
+}
+
 export async function getDirectoryListingByGooglePlaceId(
   googlePlaceId: string
 ): Promise<DirectoryListing | null> {

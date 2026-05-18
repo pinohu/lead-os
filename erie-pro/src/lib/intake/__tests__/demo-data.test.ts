@@ -170,7 +170,7 @@ describe("generateCreatedAt", () => {
       const d = generateCreatedAt(rng, 30, now);
       const ageMs = now.getTime() - d.getTime();
       const ageDays = ageMs / 86400000;
-      expect(ageDays).toBeGreaterThanOrEqual(-0.5); // allow same-day with hour shift
+      expect(ageDays).toBeGreaterThanOrEqual(-1); // allow same-day with hour shift / TZ edge
       expect(ageDays).toBeLessThanOrEqual(30.5);
     }
   });

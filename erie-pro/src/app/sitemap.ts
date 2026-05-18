@@ -3,6 +3,16 @@ import { niches } from "@/lib/niches"
 import { cityConfig } from "@/lib/city-config"
 import { getAllDirectoryListingSlugs } from "@/lib/directory-store"
 import { prisma } from "@/lib/db"
+import {
+  shouldNoindexAreaHubPage,
+  shouldNoindexAreaMatrixPage,
+  shouldNoindexModifierPage,
+  shouldNoindexNichePage,
+  type SeoPlanPageType,
+} from "@/lib/seo-publish-gate"
+import { getServiceAreaSlugs } from "@/lib/area-registry"
+import { getNicheAreaStaticParams, getModifierStaticParams } from "@/lib/seo-matrix"
+import { getAreaNicheCanonicalPath } from "@/lib/area-niche-urls"
 
 const BASE = `https://${cityConfig.domain}`
 
@@ -20,7 +30,7 @@ const STATIC_DATE   = new Date("2025-12-01")
 const BUSINESS_DATE = new Date("2026-01-15")
 const NICHE_MAIN    = new Date("2026-03-15")
 const GROWTH_DATE   = new Date("2026-04-01")
-const CURRENT_DATE  = new Date("2026-04-02")
+const BUILD_DATE = new Date()
 
 const NICHE_SUB_DATES: Record<string, Date> = {
   "/blog":           new Date("2026-03-10"),
@@ -44,16 +54,21 @@ const NICHE_SUB_DATES: Record<string, Date> = {
   "/what-to-expect": new Date("2026-05-16"),
 }
 
+function nichePageType(pathSuffix: string): SeoPlanPageType {
+  if (pathSuffix === "") return "core"
+  return pathSuffix.replace(/^\//, "") as SeoPlanPageType
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // ── 1. Static / marketing pages ────────────────────────────────────
   const staticPages: MetadataRoute.Sitemap = [
-    { url: BASE,                          lastModified: CURRENT_DATE,  changeFrequency: "weekly",   priority: 1.0 },
-    { url: `${BASE}/get-matched`,         lastModified: CURRENT_DATE,  changeFrequency: "weekly",   priority: 0.95 },
+    { url: BASE,                          lastModified: BUILD_DATE,    changeFrequency: "weekly",   priority: 1.0 },
+    { url: `${BASE}/get-matched`,         lastModified: BUILD_DATE,    changeFrequency: "weekly",   priority: 0.95 },
     { url: `${BASE}/services`,            lastModified: BUSINESS_DATE, changeFrequency: "monthly",  priority: 0.8 },
-    { url: `${BASE}/directory`,           lastModified: CURRENT_DATE,  changeFrequency: "weekly",   priority: 0.9 },
-    { url: `${BASE}/emergency`,           lastModified: CURRENT_DATE,  changeFrequency: "weekly",   priority: 0.9 },
-    { url: `${BASE}/pricing`,             lastModified: CURRENT_DATE,  changeFrequency: "monthly",  priority: 0.85 },
+    { url: `${BASE}/directory`,           lastModified: BUILD_DATE,    changeFrequency: "weekly",   priority: 0.9 },
+    { url: `${BASE}/emergency`,           lastModified: BUILD_DATE,    changeFrequency: "weekly",   priority: 0.9 },
+    { url: `${BASE}/pricing`,             lastModified: BUILD_DATE,    changeFrequency: "monthly",  priority: 0.85 },
     { url: `${BASE}/areas`,               lastModified: BUSINESS_DATE, changeFrequency: "monthly",  priority: 0.7 },
     { url: `${BASE}/about`,               lastModified: STATIC_DATE,   changeFrequency: "monthly",  priority: 0.6 },
     { url: `${BASE}/contact`,             lastModified: STATIC_DATE,   changeFrequency: "monthly",  priority: 0.7 },
@@ -64,24 +79,52 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/terms`,               lastModified: STATIC_DATE,   changeFrequency: "yearly",   priority: 0.3 },
   ]
 
-  // ── 2. Niche hub + sub-pages (46 niches × 15 types = 690 URLs) ────
+  // ── 2. Area hubs + neighborhood × service matrix ───────────────────
+  const areaHubPages: MetadataRoute.Sitemap = getServiceAreaSlugs()
+    .filter((areaSlug) => !shouldNoindexAreaHubPage(areaSlug))
+    .map((areaSlug) => ({
+      url: `${BASE}/areas/${areaSlug}`,
+      lastModified: BUILD_DATE,
+      changeFrequency: "monthly" as const,
+      priority: 0.65,
+    }))
+
+  const areaMatrixPages: MetadataRoute.Sitemap = getNicheAreaStaticParams()
+    .filter(({ area, niche }) => !shouldNoindexAreaMatrixPage(niche, area))
+    .map(({ area, niche }) => ({
+      url: `${BASE}${getAreaNicheCanonicalPath(niche, area)}`,
+      lastModified: BUILD_DATE,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }))
+
+  const modifierPages: MetadataRoute.Sitemap = getModifierStaticParams()
+    .filter(({ niche }) => !shouldNoindexModifierPage(niche))
+    .map(({ niche, modifier }) => ({
+      url: `${BASE}/${niche}/modifiers/${modifier}`,
+      lastModified: BUILD_DATE,
+      changeFrequency: "weekly" as const,
+      priority: 0.55,
+    }))
+
+  // ── 3. Niche hub + sub-pages (46 niches × 15 types = 690 URLs) ────
   const nichePages: MetadataRoute.Sitemap = niches.flatMap((niche) =>
-    NICHE_PAGES.map((page) => ({
+    NICHE_PAGES.filter((page) => !shouldNoindexNichePage(niche.slug, nichePageType(page))).map((page) => ({
       url: `${BASE}/${niche.slug}${page}`,
-      lastModified: page === "" ? NICHE_MAIN : (NICHE_SUB_DATES[page] ?? NICHE_MAIN),
+      lastModified: page === "" ? BUILD_DATE : (NICHE_SUB_DATES[page] ?? BUILD_DATE),
       changeFrequency: "weekly" as const,
       priority: page === "" ? 0.9 : 0.7,
-    }))
+    })),
   )
 
-  // ── 3. Individual business pages (listings + claimed providers) ────
+  // ── 4. Individual business pages (listings + claimed providers) ────
   // Fetch both sources in parallel so we cover every resolvable
   // /[niche]/[provider] URL. De-duplicate by slug to avoid double-
   // indexing when a provider claims an existing listing.
   let businessPages: MetadataRoute.Sitemap = []
   try {
     if (!process.env.DATABASE_URL) {
-      return [...staticPages, ...nichePages]
+      return [...staticPages, ...areaHubPages, ...areaMatrixPages, ...modifierPages, ...nichePages]
     }
 
     const [listings, providers] = await Promise.all([
@@ -129,5 +172,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // /for-business/claim/success, /for-business/leads/success
   // All blocked in robots.txt — not useful for search engines.
 
-  return [...staticPages, ...nichePages, ...businessPages]
+  return [
+    ...staticPages,
+    ...areaHubPages,
+    ...areaMatrixPages,
+    ...modifierPages,
+    ...nichePages,
+    ...businessPages,
+  ]
 }

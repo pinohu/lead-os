@@ -5,6 +5,7 @@
 import { createHash } from "crypto";
 import { cityConfig } from "@/lib/city-config";
 import { logger } from "@/lib/logger";
+import { buildPrivacySelfServiceUrl } from "@/lib/privacy-self-service";
 
 /** Escape HTML special characters to prevent XSS in email templates */
 function escapeHtml(text: string): string {
@@ -98,6 +99,14 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 
 function baseTemplate(content: string, recipientEmail?: string): string {
   const unsubLink = recipientEmail ? getUnsubscribeUrl(recipientEmail) : `${SITE_URL}/api/unsubscribe`;
+  let privacyDataLink = `https://${cityConfig.domain}/manage-data`;
+  if (recipientEmail && process.env.AUTH_SECRET) {
+    try {
+      privacyDataLink = buildPrivacySelfServiceUrl(SITE_URL, recipientEmail, "export");
+    } catch {
+      /* AUTH_SECRET missing — static page only */
+    }
+  }
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -110,7 +119,7 @@ function baseTemplate(content: string, recipientEmail?: string): string {
     <div style="text-align:center;margin-top:24px;font-size:12px;color:#9ca3af">
       <p style="margin:0">${cityConfig.name} Pro &middot; <a href="https://${cityConfig.domain}" style="color:#9ca3af">${cityConfig.domain}</a></p>
       <p style="margin:4px 0 0">${PHYSICAL_ADDRESS}</p>
-      <p style="margin:8px 0 0"><a href="mailto:hello@${cityConfig.domain}" style="color:#9ca3af">hello@${cityConfig.domain}</a> &middot; <a href="https://${cityConfig.domain}/privacy" style="color:#9ca3af">Privacy Policy</a></p>
+      <p style="margin:8px 0 0"><a href="mailto:hello@${cityConfig.domain}" style="color:#9ca3af">hello@${cityConfig.domain}</a> &middot; <a href="https://${cityConfig.domain}/privacy" style="color:#9ca3af">Privacy Policy</a> &middot; <a href="${privacyDataLink}" style="color:#9ca3af">Your data</a></p>
       <p style="margin:8px 0 0"><a href="${unsubLink}" style="color:#9ca3af">Unsubscribe</a></p>
     </div>
   </div>

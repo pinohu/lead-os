@@ -30,6 +30,7 @@
 
 import { writeFileSync, mkdirSync } from "fs"
 import { resolve, dirname } from "path"
+import { erieDocsPath } from "./paths"
 import { prisma } from "@/lib/db"
 import {
   NICHE_EXPECTED_CATEGORIES as EXPECTED,
@@ -89,7 +90,7 @@ async function main() {
   console.log(`Hard mismatches (anti-pattern hit AND no positive match): ${hardMismatches.length}`)
 
   // ── Persist audit ──
-  const outPath = resolve(process.cwd(), "..", "docs", "qa", "directory-quality-audit.json")
+  const outPath = erieDocsPath("qa", "directory-quality-audit.json")
   mkdirSync(dirname(outPath), { recursive: true })
   writeFileSync(
     outPath,

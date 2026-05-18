@@ -46,6 +46,7 @@ import { ViloudChannelEmbed } from "@/components/viloud-channel-embed"
 import NicheRelatedServices from "@/components/niche/related-services"
 import NicheStickyCTA from "@/components/niche/sticky-cta"
 import { buildNichePageSchema } from "@/lib/niche-page-schema"
+import { withSeoPublishGate, nicheOpenGraphImage } from "@/lib/seo-metadata"
 
 type Props = { params: Promise<{ niche: string }> }
 
@@ -72,28 +73,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ...(content?.secondaryKeywords ?? []),
   ].slice(0, 12)
 
-  return {
-    title,
-    description,
-    keywords: allKeywords.length > 0 ? allKeywords.join(", ") : undefined,
-    openGraph: {
-      type: "website",
-      siteName: cityConfig.domain,
-      locale: "en_US",
+  return withSeoPublishGate(
+    {
       title,
       description,
-      url: `https://${cityConfig.domain}/${slug}`,
-      images: [
-        {
-          url: `https://${cityConfig.domain}/api/og/${slug}`,
-          width: 1200,
-          height: 630,
-          alt: `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode}`,
-        },
-      ],
+      keywords: allKeywords.length > 0 ? allKeywords.join(", ") : undefined,
+      openGraph: {
+        type: "website",
+        siteName: cityConfig.domain,
+        locale: "en_US",
+        title,
+        description,
+        url: `https://${cityConfig.domain}/${slug}`,
+        images: [
+          nicheOpenGraphImage(
+            slug,
+            `${withServices(niche.label)} in ${cityConfig.name}, ${cityConfig.stateCode}`,
+          ),
+        ],
+      },
+      alternates: { canonical: `https://${cityConfig.domain}/${slug}` },
     },
-    alternates: { canonical: `https://${cityConfig.domain}/${slug}` },
-  }
+    slug,
+    "core",
+  )
 }
 
 export default async function NichePage({ params }: Props) {

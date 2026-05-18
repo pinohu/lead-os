@@ -1,12 +1,13 @@
 import { writeFileSync, mkdirSync } from "node:fs"
 import { resolve } from "node:path"
+import { erieDocsPath } from "./paths"
 import { buildBoostspaceScenarioExport } from "@/lib/boostspace-revenue-actions"
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://erie.pro"
 const tokenVariable = process.env.BOOST_SPACE_REVENUE_ACTION_TOKEN
   ? "BOOST_SPACE_REVENUE_ACTION_TOKEN"
   : "REVENUE_ACTIONS_API_TOKEN"
-const outputDir = resolve(process.cwd(), "..", "docs", "external-setup", "boostspace")
+const outputDir = erieDocsPath("external-setup", "boostspace")
 const outputPath = resolve(outputDir, "revenue-action-scenarios.json")
 const exportPayload = buildBoostspaceScenarioExport(appUrl, tokenVariable)
 

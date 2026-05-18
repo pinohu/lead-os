@@ -24,15 +24,6 @@ export default function robots(): MetadataRoute.Robots {
           "/setup-admin",
         ],
       },
-      // Block aggressive crawlers that waste bandwidth
-      {
-        userAgent: "GPTBot",
-        disallow: "/",
-      },
-      {
-        userAgent: "CCBot",
-        disallow: "/",
-      },
     ],
     sitemap: `https://${cityConfig.domain}/sitemap.xml`,
   }

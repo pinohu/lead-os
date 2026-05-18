@@ -188,7 +188,12 @@ export default function PrivacyPage() {
               <li>Object to certain processing of your personal information</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-3">
-              To exercise these rights, contact us at the information provided below.
+              Use our{" "}
+              <Link href="/manage-data" className="font-medium text-primary underline">
+                data self-service page
+              </Link>{" "}
+              with the secure link from your confirmation email, or contact us at the
+              information provided below.
             </p>
           </div>
 

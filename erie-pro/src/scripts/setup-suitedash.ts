@@ -1,10 +1,11 @@
 import { mkdirSync, writeFileSync } from "fs"
 import { resolve } from "path"
+import { erieDocsPath } from "./paths"
 import { buildSuiteDashSetupExport } from "@/lib/suitedash-operational-sync"
 import { isSuiteDashConfigured } from "@/lib/suitedash"
 
 const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://erie.pro"
-const outputDir = resolve(process.cwd(), "..", "docs", "external-setup", "suitedash")
+const outputDir = erieDocsPath("external-setup", "suitedash")
 const outputPath = resolve(outputDir, "operational-sync-package.json")
 const setup = buildSuiteDashSetupExport(appUrl)
 

@@ -2,6 +2,13 @@
   "framework": "nextjs",
   "installCommand": "npm install",
   "buildCommand": "npm run build",
+  "env": {
+    "SEO_PUBLISH_GATE": "1",
+    "SEO_PILOT_INDEX_OVERRIDE": "1",
+    "SEO_AREA_MATRIX_INDEX": "1",
+    "SEO_MODIFIER_INDEX": "1",
+    "SEO_AREA_MATRIX_MODE": "pilot"
+  },
   "redirects": [
     {
       "source": "/(.*)",

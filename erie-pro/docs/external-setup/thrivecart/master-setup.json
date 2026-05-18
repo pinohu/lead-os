@@ -1,0 +1,959 @@
+{
+  "generatedAt": "2026-05-18T06:01:56.688Z",
+  "appUrl": "https://erie.pro",
+  "accountSlug": "relgard",
+  "webhookUrl": "https://erie.pro/api/webhooks/thrivecart",
+  "webhookTokenVariable": "THRIVECART_WEBHOOK_TOKEN",
+  "apiKeyVariable": "THRIVECART_API_KEY",
+  "references": [
+    {
+      "title": "ThriveCart Event Subscription API",
+      "url": "https://developers.thrivecart.com/documentation/event_subscription/intro/"
+    },
+    {
+      "title": "ThriveCart API key authentication",
+      "url": "https://developers.thrivecart.com/documentation/intro/authentication-via-api-key/"
+    },
+    {
+      "title": "ThriveCart passthrough custom variables",
+      "url": "https://support.thrivecart.com/help/passing-custom-variables-through-the-checkout/"
+    }
+  ],
+  "globalPassthroughFields": [
+    "serviceSlug",
+    "serviceLabel",
+    "serviceFamily",
+    "sourcePage",
+    "sourcePageType",
+    "convertBoxId",
+    "offerSlug",
+    "funnelSlug",
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "gclid",
+    "affiliate",
+    "coupon"
+  ],
+  "products": [
+    {
+      "slug": "service-page-conversion-blueprint",
+      "title": "Service Page Conversion Blueprint",
+      "productId": "157",
+      "checkoutUrl": "https://relgard.thrivecart.com/erie-conversion-blueprint/",
+      "priceCents": 9900,
+      "successUrl": "https://erie.pro/offers/success/service-page-conversion-blueprint",
+      "fulfillmentUrl": "https://erie.pro/api/webhooks/thrivecart?token=${THRIVECART_WEBHOOK_TOKEN}",
+      "orderBump": {
+        "slug": "review-reputation-growth-kit",
+        "title": "Review & Reputation Growth Kit",
+        "productId": "165",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-review-reputation/",
+        "priceCents": 9900
+      },
+      "upsell": {
+        "slug": "provider-launch-kit",
+        "title": "Provider Launch Kit",
+        "productId": "158",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-provider-launch-kit/",
+        "priceCents": 39900
+      },
+      "downsell": {
+        "slug": "missed-call-recovery-kit",
+        "title": "Missed-Call Recovery Kit",
+        "productId": "163",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-missed-call-kit/",
+        "priceCents": 14900
+      },
+      "abandonedCartTag": "tc_abandoned_conversion_blueprint",
+      "couponFamilies": [
+        "launch",
+        "partner",
+        "provider",
+        "recovery"
+      ],
+      "splitTests": [
+        "checkout-headline",
+        "guarantee-copy",
+        "order-bump-copy"
+      ],
+      "affiliateEligible": true,
+      "subscriptionEligible": false,
+      "passthroughFields": [
+        "serviceSlug",
+        "serviceLabel",
+        "serviceFamily",
+        "sourcePage",
+        "sourcePageType",
+        "convertBoxId",
+        "offerSlug",
+        "funnelSlug",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "gclid",
+        "affiliate",
+        "coupon"
+      ],
+      "checkoutDesignChecklist": [
+        "Use a two-column desktop checkout with order summary visible and a single-column mobile flow.",
+        "Place Erie County/service-specific outcome copy above the payment section.",
+        "Use strong text/background contrast, concise labels, and no internal strategy language.",
+        "Show guarantee/risk-reversal copy directly before payment.",
+        "Place order bump immediately after customer details and before payment.",
+        "Frame the purchase as Conversion Blueprint, not generic consulting.",
+        "Keep the primary CTA action-oriented and customer-facing."
+      ],
+      "webhookEvents": [
+        "order_created",
+        "order_payment_product",
+        "order_payment_bump",
+        "order_payment_upsell",
+        "order_payment_downsell",
+        "order_rebill",
+        "order_rebill_failed",
+        "order_rebill_completed",
+        "order_rebill_cancelled",
+        "order_refund_product",
+        "order_refund_bump",
+        "order_refund_upsell",
+        "order_refund_downsell",
+        "subscription_paused",
+        "subscription_resumed",
+        "cart_abandoned",
+        "affiliate_approved",
+        "affiliate_rejected",
+        "affiliate_commission_earned",
+        "affiliate_commission_payout",
+        "affiliate_commission_refund"
+      ]
+    },
+    {
+      "slug": "provider-launch-kit",
+      "title": "Provider Launch Kit",
+      "productId": "158",
+      "checkoutUrl": "https://relgard.thrivecart.com/erie-provider-launch-kit/",
+      "priceCents": 39900,
+      "successUrl": "https://erie.pro/offers/success/provider-launch-kit",
+      "fulfillmentUrl": "https://erie.pro/api/webhooks/thrivecart?token=${THRIVECART_WEBHOOK_TOKEN}",
+      "orderBump": {
+        "slug": "growth-intelligence-subscription",
+        "title": "Growth Intelligence Subscription",
+        "productId": "160",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-growth-intelligence/",
+        "priceCents": 19900
+      },
+      "upsell": {
+        "slug": "client-portal-starter-pack",
+        "title": "Client Portal Starter Pack",
+        "productId": "162",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-client-portal/",
+        "priceCents": 19900
+      },
+      "downsell": {
+        "slug": "service-page-conversion-blueprint",
+        "title": "Service Page Conversion Blueprint",
+        "productId": "157",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-conversion-blueprint/",
+        "priceCents": 9900
+      },
+      "abandonedCartTag": "tc_abandoned_provider_launch",
+      "couponFamilies": [
+        "launch",
+        "partner",
+        "provider"
+      ],
+      "splitTests": [
+        "checkout-layout",
+        "proof-block",
+        "order-bump-copy"
+      ],
+      "affiliateEligible": true,
+      "subscriptionEligible": false,
+      "passthroughFields": [
+        "serviceSlug",
+        "serviceLabel",
+        "serviceFamily",
+        "sourcePage",
+        "sourcePageType",
+        "convertBoxId",
+        "offerSlug",
+        "funnelSlug",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "gclid",
+        "affiliate",
+        "coupon"
+      ],
+      "checkoutDesignChecklist": [
+        "Use a two-column desktop checkout with order summary visible and a single-column mobile flow.",
+        "Place Erie County/service-specific outcome copy above the payment section.",
+        "Use strong text/background contrast, concise labels, and no internal strategy language.",
+        "Show guarantee/risk-reversal copy directly before payment.",
+        "Place order bump immediately after customer details and before payment.",
+        "Frame the purchase as Provider Launch Kit, not generic consulting.",
+        "Keep the primary CTA action-oriented and customer-facing."
+      ],
+      "webhookEvents": [
+        "order_created",
+        "order_payment_product",
+        "order_payment_bump",
+        "order_payment_upsell",
+        "order_payment_downsell",
+        "order_rebill",
+        "order_rebill_failed",
+        "order_rebill_completed",
+        "order_rebill_cancelled",
+        "order_refund_product",
+        "order_refund_bump",
+        "order_refund_upsell",
+        "order_refund_downsell",
+        "subscription_paused",
+        "subscription_resumed",
+        "cart_abandoned",
+        "affiliate_approved",
+        "affiliate_rejected",
+        "affiliate_commission_earned",
+        "affiliate_commission_payout",
+        "affiliate_commission_refund"
+      ]
+    },
+    {
+      "slug": "growth-intelligence-subscription",
+      "title": "Growth Intelligence Subscription",
+      "productId": "160",
+      "checkoutUrl": "https://relgard.thrivecart.com/erie-growth-intelligence/",
+      "priceCents": 19900,
+      "successUrl": "https://erie.pro/offers/success/growth-intelligence-subscription",
+      "fulfillmentUrl": "https://erie.pro/api/webhooks/thrivecart?token=${THRIVECART_WEBHOOK_TOKEN}",
+      "orderBump": {
+        "slug": "seasonal-booking-campaign-pack",
+        "title": "Seasonal Booking Campaign Pack",
+        "productId": "164",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-seasonal-booking/",
+        "priceCents": 14900
+      },
+      "upsell": {
+        "slug": "provider-launch-kit",
+        "title": "Provider Launch Kit",
+        "productId": "158",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-provider-launch-kit/",
+        "priceCents": 39900
+      },
+      "downsell": {
+        "slug": "review-reputation-growth-kit",
+        "title": "Review & Reputation Growth Kit",
+        "productId": "165",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-review-reputation/",
+        "priceCents": 9900
+      },
+      "abandonedCartTag": "tc_abandoned_growth_intelligence",
+      "couponFamilies": [
+        "launch",
+        "partner",
+        "monthly",
+        "winback"
+      ],
+      "splitTests": [
+        "subscription-price-frame",
+        "monthly-proof",
+        "guarantee-copy"
+      ],
+      "affiliateEligible": true,
+      "subscriptionEligible": true,
+      "passthroughFields": [
+        "serviceSlug",
+        "serviceLabel",
+        "serviceFamily",
+        "sourcePage",
+        "sourcePageType",
+        "convertBoxId",
+        "offerSlug",
+        "funnelSlug",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "gclid",
+        "affiliate",
+        "coupon"
+      ],
+      "checkoutDesignChecklist": [
+        "Use a two-column desktop checkout with order summary visible and a single-column mobile flow.",
+        "Place Erie County/service-specific outcome copy above the payment section.",
+        "Use strong text/background contrast, concise labels, and no internal strategy language.",
+        "Show guarantee/risk-reversal copy directly before payment.",
+        "Place order bump immediately after customer details and before payment.",
+        "Frame the purchase as Growth Intelligence, not generic consulting.",
+        "Keep the primary CTA action-oriented and customer-facing."
+      ],
+      "webhookEvents": [
+        "order_created",
+        "order_payment_product",
+        "order_payment_bump",
+        "order_payment_upsell",
+        "order_payment_downsell",
+        "order_rebill",
+        "order_rebill_failed",
+        "order_rebill_completed",
+        "order_rebill_cancelled",
+        "order_refund_product",
+        "order_refund_bump",
+        "order_refund_upsell",
+        "order_refund_downsell",
+        "subscription_paused",
+        "subscription_resumed",
+        "cart_abandoned",
+        "affiliate_approved",
+        "affiliate_rejected",
+        "affiliate_commission_earned",
+        "affiliate_commission_payout",
+        "affiliate_commission_refund"
+      ]
+    },
+    {
+      "slug": "convertbox-funnel-in-a-box",
+      "title": "ConvertBox Funnel-in-a-Box",
+      "productId": "159",
+      "checkoutUrl": "https://relgard.thrivecart.com/erie-convertbox-funnel/",
+      "priceCents": 29900,
+      "successUrl": "https://erie.pro/offers/success/convertbox-funnel-in-a-box",
+      "fulfillmentUrl": "https://erie.pro/api/webhooks/thrivecart?token=${THRIVECART_WEBHOOK_TOKEN}",
+      "orderBump": {
+        "slug": "missed-call-recovery-kit",
+        "title": "Missed-Call Recovery Kit",
+        "productId": "163",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-missed-call-kit/",
+        "priceCents": 14900
+      },
+      "upsell": {
+        "slug": "provider-launch-kit",
+        "title": "Provider Launch Kit",
+        "productId": "158",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-provider-launch-kit/",
+        "priceCents": 39900
+      },
+      "downsell": {
+        "slug": "review-reputation-growth-kit",
+        "title": "Review & Reputation Growth Kit",
+        "productId": "165",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-review-reputation/",
+        "priceCents": 9900
+      },
+      "abandonedCartTag": "tc_abandoned_convertbox_funnel",
+      "couponFamilies": [
+        "launch",
+        "provider",
+        "recovery"
+      ],
+      "splitTests": [
+        "service-specific-copy",
+        "order-bump-copy",
+        "success-path-copy"
+      ],
+      "affiliateEligible": true,
+      "subscriptionEligible": false,
+      "passthroughFields": [
+        "serviceSlug",
+        "serviceLabel",
+        "serviceFamily",
+        "sourcePage",
+        "sourcePageType",
+        "convertBoxId",
+        "offerSlug",
+        "funnelSlug",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "gclid",
+        "affiliate",
+        "coupon"
+      ],
+      "checkoutDesignChecklist": [
+        "Use a two-column desktop checkout with order summary visible and a single-column mobile flow.",
+        "Place Erie County/service-specific outcome copy above the payment section.",
+        "Use strong text/background contrast, concise labels, and no internal strategy language.",
+        "Show guarantee/risk-reversal copy directly before payment.",
+        "Place order bump immediately after customer details and before payment.",
+        "Frame the purchase as Funnel-in-a-Box, not generic consulting.",
+        "Keep the primary CTA action-oriented and customer-facing."
+      ],
+      "webhookEvents": [
+        "order_created",
+        "order_payment_product",
+        "order_payment_bump",
+        "order_payment_upsell",
+        "order_payment_downsell",
+        "order_rebill",
+        "order_rebill_failed",
+        "order_rebill_completed",
+        "order_rebill_cancelled",
+        "order_refund_product",
+        "order_refund_bump",
+        "order_refund_upsell",
+        "order_refund_downsell",
+        "subscription_paused",
+        "subscription_resumed",
+        "cart_abandoned",
+        "affiliate_approved",
+        "affiliate_rejected",
+        "affiliate_commission_earned",
+        "affiliate_commission_payout",
+        "affiliate_commission_refund"
+      ]
+    },
+    {
+      "slug": "review-reputation-growth-kit",
+      "title": "Review & Reputation Growth Kit",
+      "productId": "165",
+      "checkoutUrl": "https://relgard.thrivecart.com/erie-review-reputation/",
+      "priceCents": 9900,
+      "successUrl": "https://erie.pro/offers/success/review-reputation-growth-kit",
+      "fulfillmentUrl": "https://erie.pro/api/webhooks/thrivecart?token=${THRIVECART_WEBHOOK_TOKEN}",
+      "orderBump": {
+        "slug": "missed-call-recovery-kit",
+        "title": "Missed-Call Recovery Kit",
+        "productId": "163",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-missed-call-kit/",
+        "priceCents": 14900
+      },
+      "upsell": {
+        "slug": "service-page-conversion-blueprint",
+        "title": "Service Page Conversion Blueprint",
+        "productId": "157",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-conversion-blueprint/",
+        "priceCents": 9900
+      },
+      "downsell": {
+        "slug": "seasonal-booking-campaign-pack",
+        "title": "Seasonal Booking Campaign Pack",
+        "productId": "164",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-seasonal-booking/",
+        "priceCents": 14900
+      },
+      "abandonedCartTag": "tc_abandoned_review_reputation",
+      "couponFamilies": [
+        "launch",
+        "provider",
+        "reputation"
+      ],
+      "splitTests": [
+        "review-proof",
+        "checkout-headline",
+        "bump-position"
+      ],
+      "affiliateEligible": true,
+      "subscriptionEligible": false,
+      "passthroughFields": [
+        "serviceSlug",
+        "serviceLabel",
+        "serviceFamily",
+        "sourcePage",
+        "sourcePageType",
+        "convertBoxId",
+        "offerSlug",
+        "funnelSlug",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "gclid",
+        "affiliate",
+        "coupon"
+      ],
+      "checkoutDesignChecklist": [
+        "Use a two-column desktop checkout with order summary visible and a single-column mobile flow.",
+        "Place Erie County/service-specific outcome copy above the payment section.",
+        "Use strong text/background contrast, concise labels, and no internal strategy language.",
+        "Show guarantee/risk-reversal copy directly before payment.",
+        "Place order bump immediately after customer details and before payment.",
+        "Frame the purchase as Review Growth Kit, not generic consulting.",
+        "Keep the primary CTA action-oriented and customer-facing."
+      ],
+      "webhookEvents": [
+        "order_created",
+        "order_payment_product",
+        "order_payment_bump",
+        "order_payment_upsell",
+        "order_payment_downsell",
+        "order_rebill",
+        "order_rebill_failed",
+        "order_rebill_completed",
+        "order_rebill_cancelled",
+        "order_refund_product",
+        "order_refund_bump",
+        "order_refund_upsell",
+        "order_refund_downsell",
+        "subscription_paused",
+        "subscription_resumed",
+        "cart_abandoned",
+        "affiliate_approved",
+        "affiliate_rejected",
+        "affiliate_commission_earned",
+        "affiliate_commission_payout",
+        "affiliate_commission_refund"
+      ]
+    },
+    {
+      "slug": "missed-call-recovery-kit",
+      "title": "Missed-Call Recovery Kit",
+      "productId": "163",
+      "checkoutUrl": "https://relgard.thrivecart.com/erie-missed-call-kit/",
+      "priceCents": 14900,
+      "successUrl": "https://erie.pro/offers/success/missed-call-recovery-kit",
+      "fulfillmentUrl": "https://erie.pro/api/webhooks/thrivecart?token=${THRIVECART_WEBHOOK_TOKEN}",
+      "orderBump": {
+        "slug": "review-reputation-growth-kit",
+        "title": "Review & Reputation Growth Kit",
+        "productId": "165",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-review-reputation/",
+        "priceCents": 9900
+      },
+      "upsell": {
+        "slug": "convertbox-funnel-in-a-box",
+        "title": "ConvertBox Funnel-in-a-Box",
+        "productId": "159",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-convertbox-funnel/",
+        "priceCents": 29900
+      },
+      "downsell": {
+        "slug": "service-page-conversion-blueprint",
+        "title": "Service Page Conversion Blueprint",
+        "productId": "157",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-conversion-blueprint/",
+        "priceCents": 9900
+      },
+      "abandonedCartTag": "tc_abandoned_missed_call",
+      "couponFamilies": [
+        "launch",
+        "emergency",
+        "recovery"
+      ],
+      "splitTests": [
+        "urgency-copy",
+        "order-bump-copy",
+        "checkout-headline"
+      ],
+      "affiliateEligible": true,
+      "subscriptionEligible": false,
+      "passthroughFields": [
+        "serviceSlug",
+        "serviceLabel",
+        "serviceFamily",
+        "sourcePage",
+        "sourcePageType",
+        "convertBoxId",
+        "offerSlug",
+        "funnelSlug",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "gclid",
+        "affiliate",
+        "coupon"
+      ],
+      "checkoutDesignChecklist": [
+        "Use a two-column desktop checkout with order summary visible and a single-column mobile flow.",
+        "Place Erie County/service-specific outcome copy above the payment section.",
+        "Use strong text/background contrast, concise labels, and no internal strategy language.",
+        "Show guarantee/risk-reversal copy directly before payment.",
+        "Place order bump immediately after customer details and before payment.",
+        "Frame the purchase as Missed-Call Kit, not generic consulting.",
+        "Keep the primary CTA action-oriented and customer-facing."
+      ],
+      "webhookEvents": [
+        "order_created",
+        "order_payment_product",
+        "order_payment_bump",
+        "order_payment_upsell",
+        "order_payment_downsell",
+        "order_rebill",
+        "order_rebill_failed",
+        "order_rebill_completed",
+        "order_rebill_cancelled",
+        "order_refund_product",
+        "order_refund_bump",
+        "order_refund_upsell",
+        "order_refund_downsell",
+        "subscription_paused",
+        "subscription_resumed",
+        "cart_abandoned",
+        "affiliate_approved",
+        "affiliate_rejected",
+        "affiliate_commission_earned",
+        "affiliate_commission_payout",
+        "affiliate_commission_refund"
+      ]
+    },
+    {
+      "slug": "seasonal-booking-campaign-pack",
+      "title": "Seasonal Booking Campaign Pack",
+      "productId": "164",
+      "checkoutUrl": "https://relgard.thrivecart.com/erie-seasonal-booking/",
+      "priceCents": 14900,
+      "successUrl": "https://erie.pro/offers/success/seasonal-booking-campaign-pack",
+      "fulfillmentUrl": "https://erie.pro/api/webhooks/thrivecart?token=${THRIVECART_WEBHOOK_TOKEN}",
+      "orderBump": {
+        "slug": "growth-intelligence-subscription",
+        "title": "Growth Intelligence Subscription",
+        "productId": "160",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-growth-intelligence/",
+        "priceCents": 19900
+      },
+      "upsell": {
+        "slug": "provider-launch-kit",
+        "title": "Provider Launch Kit",
+        "productId": "158",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-provider-launch-kit/",
+        "priceCents": 39900
+      },
+      "downsell": {
+        "slug": "review-reputation-growth-kit",
+        "title": "Review & Reputation Growth Kit",
+        "productId": "165",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-review-reputation/",
+        "priceCents": 9900
+      },
+      "abandonedCartTag": "tc_abandoned_seasonal_booking",
+      "couponFamilies": [
+        "seasonal",
+        "launch",
+        "provider"
+      ],
+      "splitTests": [
+        "seasonal-window-copy",
+        "order-bump-copy",
+        "calendar-proof"
+      ],
+      "affiliateEligible": true,
+      "subscriptionEligible": false,
+      "passthroughFields": [
+        "serviceSlug",
+        "serviceLabel",
+        "serviceFamily",
+        "sourcePage",
+        "sourcePageType",
+        "convertBoxId",
+        "offerSlug",
+        "funnelSlug",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "gclid",
+        "affiliate",
+        "coupon"
+      ],
+      "checkoutDesignChecklist": [
+        "Use a two-column desktop checkout with order summary visible and a single-column mobile flow.",
+        "Place Erie County/service-specific outcome copy above the payment section.",
+        "Use strong text/background contrast, concise labels, and no internal strategy language.",
+        "Show guarantee/risk-reversal copy directly before payment.",
+        "Place order bump immediately after customer details and before payment.",
+        "Frame the purchase as Seasonal Campaign Pack, not generic consulting.",
+        "Keep the primary CTA action-oriented and customer-facing."
+      ],
+      "webhookEvents": [
+        "order_created",
+        "order_payment_product",
+        "order_payment_bump",
+        "order_payment_upsell",
+        "order_payment_downsell",
+        "order_rebill",
+        "order_rebill_failed",
+        "order_rebill_completed",
+        "order_rebill_cancelled",
+        "order_refund_product",
+        "order_refund_bump",
+        "order_refund_upsell",
+        "order_refund_downsell",
+        "subscription_paused",
+        "subscription_resumed",
+        "cart_abandoned",
+        "affiliate_approved",
+        "affiliate_rejected",
+        "affiliate_commission_earned",
+        "affiliate_commission_payout",
+        "affiliate_commission_refund"
+      ]
+    },
+    {
+      "slug": "government-opportunity-scanner",
+      "title": "Government Opportunity Scanner",
+      "productId": "161",
+      "checkoutUrl": "https://relgard.thrivecart.com/erie-gov-opportunity/",
+      "priceCents": 29900,
+      "successUrl": "https://erie.pro/offers/success/government-opportunity-scanner",
+      "fulfillmentUrl": "https://erie.pro/api/webhooks/thrivecart?token=${THRIVECART_WEBHOOK_TOKEN}",
+      "orderBump": {
+        "slug": "client-portal-starter-pack",
+        "title": "Client Portal Starter Pack",
+        "productId": "162",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-client-portal/",
+        "priceCents": 19900
+      },
+      "upsell": {
+        "slug": "growth-intelligence-subscription",
+        "title": "Growth Intelligence Subscription",
+        "productId": "160",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-growth-intelligence/",
+        "priceCents": 19900
+      },
+      "downsell": {
+        "slug": "seasonal-booking-campaign-pack",
+        "title": "Seasonal Booking Campaign Pack",
+        "productId": "164",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-seasonal-booking/",
+        "priceCents": 14900
+      },
+      "abandonedCartTag": "tc_abandoned_gov_opportunity",
+      "couponFamilies": [
+        "launch",
+        "government",
+        "partner",
+        "monthly"
+      ],
+      "splitTests": [
+        "opportunity-proof",
+        "subscription-price-frame",
+        "order-bump-copy"
+      ],
+      "affiliateEligible": true,
+      "subscriptionEligible": true,
+      "passthroughFields": [
+        "serviceSlug",
+        "serviceLabel",
+        "serviceFamily",
+        "sourcePage",
+        "sourcePageType",
+        "convertBoxId",
+        "offerSlug",
+        "funnelSlug",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "gclid",
+        "affiliate",
+        "coupon"
+      ],
+      "checkoutDesignChecklist": [
+        "Use a two-column desktop checkout with order summary visible and a single-column mobile flow.",
+        "Place Erie County/service-specific outcome copy above the payment section.",
+        "Use strong text/background contrast, concise labels, and no internal strategy language.",
+        "Show guarantee/risk-reversal copy directly before payment.",
+        "Place order bump immediately after customer details and before payment.",
+        "Frame the purchase as Gov Opportunity Scanner, not generic consulting.",
+        "Keep the primary CTA action-oriented and customer-facing."
+      ],
+      "webhookEvents": [
+        "order_created",
+        "order_payment_product",
+        "order_payment_bump",
+        "order_payment_upsell",
+        "order_payment_downsell",
+        "order_rebill",
+        "order_rebill_failed",
+        "order_rebill_completed",
+        "order_rebill_cancelled",
+        "order_refund_product",
+        "order_refund_bump",
+        "order_refund_upsell",
+        "order_refund_downsell",
+        "subscription_paused",
+        "subscription_resumed",
+        "cart_abandoned",
+        "affiliate_approved",
+        "affiliate_rejected",
+        "affiliate_commission_earned",
+        "affiliate_commission_payout",
+        "affiliate_commission_refund"
+      ]
+    },
+    {
+      "slug": "client-portal-starter-pack",
+      "title": "Client Portal Starter Pack",
+      "productId": "162",
+      "checkoutUrl": "https://relgard.thrivecart.com/erie-client-portal/",
+      "priceCents": 19900,
+      "successUrl": "https://erie.pro/offers/success/client-portal-starter-pack",
+      "fulfillmentUrl": "https://erie.pro/api/webhooks/thrivecart?token=${THRIVECART_WEBHOOK_TOKEN}",
+      "orderBump": {
+        "slug": "review-reputation-growth-kit",
+        "title": "Review & Reputation Growth Kit",
+        "productId": "165",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-review-reputation/",
+        "priceCents": 9900
+      },
+      "upsell": {
+        "slug": "provider-launch-kit",
+        "title": "Provider Launch Kit",
+        "productId": "158",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-provider-launch-kit/",
+        "priceCents": 39900
+      },
+      "downsell": {
+        "slug": "service-page-conversion-blueprint",
+        "title": "Service Page Conversion Blueprint",
+        "productId": "157",
+        "checkoutUrl": "https://relgard.thrivecart.com/erie-conversion-blueprint/",
+        "priceCents": 9900
+      },
+      "abandonedCartTag": "tc_abandoned_client_portal",
+      "couponFamilies": [
+        "launch",
+        "operations",
+        "provider"
+      ],
+      "splitTests": [
+        "portal-outcome-copy",
+        "order-bump-copy",
+        "checkout-layout"
+      ],
+      "affiliateEligible": true,
+      "subscriptionEligible": false,
+      "passthroughFields": [
+        "serviceSlug",
+        "serviceLabel",
+        "serviceFamily",
+        "sourcePage",
+        "sourcePageType",
+        "convertBoxId",
+        "offerSlug",
+        "funnelSlug",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "gclid",
+        "affiliate",
+        "coupon"
+      ],
+      "checkoutDesignChecklist": [
+        "Use a two-column desktop checkout with order summary visible and a single-column mobile flow.",
+        "Place Erie County/service-specific outcome copy above the payment section.",
+        "Use strong text/background contrast, concise labels, and no internal strategy language.",
+        "Show guarantee/risk-reversal copy directly before payment.",
+        "Place order bump immediately after customer details and before payment.",
+        "Frame the purchase as Client Portal Pack, not generic consulting.",
+        "Keep the primary CTA action-oriented and customer-facing."
+      ],
+      "webhookEvents": [
+        "order_created",
+        "order_payment_product",
+        "order_payment_bump",
+        "order_payment_upsell",
+        "order_payment_downsell",
+        "order_rebill",
+        "order_rebill_failed",
+        "order_rebill_completed",
+        "order_rebill_cancelled",
+        "order_refund_product",
+        "order_refund_bump",
+        "order_refund_upsell",
+        "order_refund_downsell",
+        "subscription_paused",
+        "subscription_resumed",
+        "cart_abandoned",
+        "affiliate_approved",
+        "affiliate_rejected",
+        "affiliate_commission_earned",
+        "affiliate_commission_payout",
+        "affiliate_commission_refund"
+      ]
+    }
+  ],
+  "eventSubscriptions": [
+    {
+      "event": "order_created",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_payment_product",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_payment_bump",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_payment_upsell",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_payment_downsell",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_rebill",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_rebill_failed",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_rebill_completed",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_rebill_cancelled",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_refund_product",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_refund_bump",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_refund_upsell",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "order_refund_downsell",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "subscription_paused",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "subscription_resumed",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "cart_abandoned",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "affiliate_approved",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "affiliate_rejected",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "affiliate_commission_earned",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "affiliate_commission_payout",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    },
+    {
+      "event": "affiliate_commission_refund",
+      "target_url": "https://erie.pro/api/webhooks/thrivecart"
+    }
+  ],
+  "manualDashboardTasks": [
+    "Create or confirm each product/page listed in products.",
+    "Attach the listed order bump, upsell, and downsell to each product funnel.",
+    "Set each product success URL to the Erie.Pro success path.",
+    "Enable abandoned cart behavior with the listed tag.",
+    "Create coupon families listed for each product.",
+    "Enable affiliate eligibility where listed.",
+    "Configure split tests listed for each product.",
+    "Confirm each checkout URL passes the required passthrough fields.",
+    "Install event subscriptions via API or create the account webhook manually."
+  ]
+}
