@@ -46,6 +46,7 @@ export default async function IntakeAnalyticsPage({ searchParams }: PageProps) {
     where: {
       createdAt: { gte: rangeStart, lte: rangeEnd },
       variant: "intake", // exclude legacy form fallback
+      NOT: { ipPrefix: { startsWith: "demo:" } }, // exclude seed:intake-demo rows
     },
     select: {
       id: true,

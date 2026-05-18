@@ -33,3 +33,6 @@ npm-debug.log*
 
 .vercel
 .env*.local
+
+# Generated YouTube vetting reports (may contain raw creator metadata)
+docs/viloud-curation/output/
