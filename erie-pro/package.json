@@ -25,6 +25,8 @@
     "fulfillment:setup": "npx tsx src/scripts/setup-offer-fulfillment.ts",
     "service-pages:qa": "npx tsx src/scripts/qa-service-pages.ts",
     "seo:content-qa": "npx tsx src/scripts/seo-content-qa.ts",
+    "directory:audit-gbp": "npx tsx src/scripts/audit-gbp-urls.ts",
+    "directory:enrich-gbp": "npx tsx src/scripts/enrich-listing-gbp-urls.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

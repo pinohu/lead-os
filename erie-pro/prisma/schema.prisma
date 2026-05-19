@@ -650,6 +650,7 @@ model DirectoryListing {
   phone               String?
   email               String?
   website             String?
+  googleBusinessUrl   String?
   addressStreet       String?
   addressCity         String?
   addressState        String?

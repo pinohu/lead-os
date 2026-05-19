@@ -6,6 +6,7 @@
 
 import Outscraper from "outscraper"
 import { normalizePhone, distanceKm } from "./google-places"
+import { buildGoogleBusinessUrlFromPlace } from "./google-business-url"
 import { cleanProviderPhotoRefs } from "./provider-photos"
 
 // Re-export utilities used by the scraper script
@@ -44,6 +45,9 @@ export interface OutscraperPlace {
   site_photos?: string[] | null
   photos_count: number | null
   business_status: string | null
+  location_link?: string | null
+  link?: string | null
+  cid?: string | number | null
   // Reviews data (when fetched via googleMapsReviews)
   reviews_data?: OutscraperReview[] | null
 }
@@ -70,7 +74,9 @@ export function getOutscraperApiKey(): string {
   ]
 
   for (const name of envNames) {
-    const value = process.env[name]?.trim()
+    const raw = process.env[name]
+    if (!raw) continue
+    const value = raw.trim().replace(/^["']|["']$/g, "")
     if (value) return value
   }
 
@@ -216,6 +222,7 @@ export function mapToDirectoryListing(
     phone: normalizePhone(place.phone),
     email: null,
     website: place.website ?? null,
+    googleBusinessUrl: buildGoogleBusinessUrlFromPlace(place),
     addressStreet: place.street ?? null,
     addressCity: place.city ?? null,
     addressState: place.state_code ?? place.state ?? null,

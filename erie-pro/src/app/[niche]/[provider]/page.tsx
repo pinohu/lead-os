@@ -50,6 +50,7 @@ import { isReservedNicheSegment } from "@/lib/service-modifiers"
 import { getServiceAreaBySlug } from "@/lib/area-registry"
 import { getAreaNicheCanonicalPath } from "@/lib/area-niche-urls"
 import { resolveModifierFromSegment } from "@/lib/modifier-segment-aliases"
+import { buildGoogleBusinessUrlFromPlaceId } from "@/lib/google-business-url"
 
 type Props = { params: Promise<{ niche: string; provider: string }> }
 
@@ -84,6 +85,8 @@ interface ProviderData {
   yearEstablished: number | null
   categories: string[]
   servicesOffered: string[]
+  googleBusinessUrl: string | null
+  googlePlaceId: string | null
 }
 
 async function resolveProvider(
@@ -123,6 +126,8 @@ async function resolveProvider(
         yearEstablished: provider.yearEstablished ?? null,
         categories: [],
         servicesOffered: [],
+        googleBusinessUrl: null,
+        googlePlaceId: null,
       }
     }
   } catch {
@@ -162,6 +167,8 @@ async function resolveProvider(
         yearEstablished: null,
         categories: listing.categories,
         servicesOffered: listing.servicesOffered,
+        googleBusinessUrl: listing.googleBusinessUrl,
+        googlePlaceId: listing.googlePlaceId,
       }
     }
   } catch {
@@ -396,9 +403,12 @@ export default async function ProviderPage({ params }: Props) {
   const hasPhotos = photoRefs.length > 0
   const heroPhoto = bestPhoto ? getProviderPhotoSrc(bestPhoto, 1200) : null
 
-  const mapsUrl = data?.latitude && data?.longitude
-    ? `https://maps.google.com/?q=${data.latitude},${data.longitude}`
-    : `https://maps.google.com/?q=${encodeURIComponent(`${providerName} ${cityConfig.name} ${cityConfig.stateCode}`)}`
+  const mapsUrl =
+    data?.googleBusinessUrl ??
+    buildGoogleBusinessUrlFromPlaceId(data?.googlePlaceId) ??
+    (data?.latitude && data?.longitude
+      ? `https://maps.google.com/?q=${data.latitude},${data.longitude}`
+      : `https://maps.google.com/?q=${encodeURIComponent(`${providerName} ${cityConfig.name} ${cityConfig.stateCode}`)}`)
 
   const mapsEmbedUrl = data?.latitude && data?.longitude
     ? `https://www.google.com/maps?q=${data.latitude},${data.longitude}&z=14&output=embed`

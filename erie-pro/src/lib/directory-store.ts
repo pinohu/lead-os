@@ -103,6 +103,7 @@ export interface UpsertDirectoryListingInput {
   phone?: string | null;
   email?: string | null;
   website?: string | null;
+  googleBusinessUrl?: string | null;
   addressStreet?: string | null;
   addressCity?: string | null;
   addressState?: string | null;
@@ -144,6 +145,7 @@ export async function upsertDirectoryListing(
         phone: data.phone,
         email: data.email,
         website: data.website,
+        googleBusinessUrl: data.googleBusinessUrl,
         addressStreet: data.addressStreet,
         addressCity: data.addressCity,
         addressState: data.addressState,
@@ -184,6 +186,7 @@ export async function upsertDirectoryListing(
       phone: data.phone,
       email: data.email,
       website: data.website,
+      googleBusinessUrl: data.googleBusinessUrl,
       addressStreet: data.addressStreet,
       addressCity: data.addressCity,
       addressState: data.addressState,
