@@ -1,8 +1,23 @@
 // erie-pro/src/lib/organization-nap.ts
 import { cityConfig } from "@/lib/city-config"
+import {
+  isGoogleMapsSearchUrl,
+  isGoogleMapsUrl,
+  isOrganizationGoogleBusinessProfileUrl,
+} from "@/lib/google-business-url"
 
 const DEFAULT_PHONE = "+18142000328"
 const DEFAULT_PHONE_DISPLAY = "(814) 200-0328"
+
+const DEFAULT_GOOGLE_BUSINESS_SEARCH_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+  `${cityConfig.domain} ${cityConfig.name} ${cityConfig.stateCode}`,
+)}`
+
+function resolveOrganizationGoogleBusinessUrl() {
+  const fromEnv = process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_PROFILE_URL?.trim()
+  if (fromEnv && isGoogleMapsUrl(fromEnv)) return fromEnv
+  return DEFAULT_GOOGLE_BUSINESS_SEARCH_URL
+}
 
 export const organizationNap = {
   name: cityConfig.domain,
@@ -15,7 +30,7 @@ export const organizationNap = {
   addressLocality: cityConfig.name,
   addressRegion: cityConfig.stateCode,
   addressCountry: "US",
-  googleBusinessUrl: process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_PROFILE_URL,
+  googleBusinessUrl: resolveOrganizationGoogleBusinessUrl(),
   facebookUrl: process.env.NEXT_PUBLIC_FACEBOOK_URL,
   bbbUrl: process.env.NEXT_PUBLIC_BBB_URL,
   hours: [
@@ -26,8 +41,14 @@ export const organizationNap = {
 
 export function buildOrganizationSameAs() {
   return [organizationNap.googleBusinessUrl, organizationNap.facebookUrl, organizationNap.bbbUrl].filter(
-    (url): url is string => Boolean(url),
+    (url): url is string =>
+      Boolean(url) && (!isGoogleMapsUrl(url) || isOrganizationGoogleBusinessProfileUrl(url)),
   )
+}
+
+export function organizationGoogleBusinessLinkLabel() {
+  if (isGoogleMapsSearchUrl(organizationNap.googleBusinessUrl)) return "Find us on Google Maps"
+  return "Google Business Profile"
 }
 
 export function buildOrganizationPostalAddress() {

@@ -4,6 +4,7 @@ import {
   buildGoogleBusinessUrlFromPlace,
   buildGoogleBusinessUrlFromPlaceId,
   isGoogleMapsUrl,
+  isPlaceIdOnlyGoogleBusinessUrl,
 } from "@/lib/google-business-url"
 
 describe("google-business-url", () => {
@@ -22,5 +23,18 @@ describe("google-business-url", () => {
     expect(buildGoogleBusinessUrlFromPlaceId("ChIJ4zGFAZpYwokRGUGph3Mf37k")).toBe(
       "https://www.google.com/maps/place/?q=place_id:ChIJ4zGFAZpYwokRGUGph3Mf37k",
     )
+  })
+
+  it("detects place_id-only URLs", () => {
+    expect(
+      isPlaceIdOnlyGoogleBusinessUrl(
+        "https://www.google.com/maps/place/?q=place_id:ChIJ4zGFAZpYwokRGUGph3Mf37k",
+      ),
+    ).toBe(true)
+    expect(
+      isPlaceIdOnlyGoogleBusinessUrl(
+        "https://www.google.com/maps/place/Acme+Plumbing/@42.1,-80.0,15z",
+      ),
+    ).toBe(false)
   })
 })

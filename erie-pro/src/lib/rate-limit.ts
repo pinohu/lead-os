@@ -21,6 +21,7 @@ export const RATE_LIMITS = {
   "call-event": { limit: 120, windowSeconds: 60 } as RateLimitConfig,
   "places-photo": { limit: 100, windowSeconds: 60 } as RateLimitConfig,
   "provider-image": { limit: 200, windowSeconds: 60 } as RateLimitConfig,
+  "provider-interest": { limit: 5, windowSeconds: 60 } as RateLimitConfig,
 } as const;
 
 // ── Postgres Rate Limiting (via Prisma) ─────────────────────────────

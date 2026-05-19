@@ -8,6 +8,8 @@ import { createOfferPurchase, fulfillOfferPurchase } from "@/lib/offer-fulfillme
 import { syncAutomatedOfferCatalog } from "@/lib/offer-catalog-sync"
 import { recordRevenueActionPlan } from "@/lib/revenue-actions"
 import { logger } from "@/lib/logger"
+import { handleProviderOfferThriveCartEvent } from "@/lib/provider-offer-thrivecart"
+import { syncProviderOfferCatalog } from "@/lib/provider-offer-catalog-sync"
 
 export const dynamic = "force-dynamic"
 
@@ -20,6 +22,10 @@ const PassthroughSchema = z.object({
   convertbox_id: z.union([z.string(), z.number()]).optional(),
   offerSlug: z.string().optional(),
   offer_slug: z.string().optional(),
+  planSlug: z.string().optional(),
+  plan_slug: z.string().optional(),
+  providerId: z.string().optional(),
+  provider_id: z.string().optional(),
   funnelSlug: z.string().optional(),
   funnel_slug: z.string().optional(),
   sourcePageType: z.string().optional(),
@@ -171,6 +177,8 @@ function normalizeThriveCartPayload(body: AnyRecord) {
     productId: productId ?? offer.checkoutProductId,
     productName,
     offerSlug: offer.slug,
+    planSlug: stringValue(body.planSlug, body.plan_slug, passthrough.planSlug, passthrough.plan_slug),
+    providerId: stringValue(body.providerId, body.provider_id, passthrough.providerId, passthrough.provider_id),
     funnelSlug: stringValue(body.funnelSlug, body.funnel_slug, passthrough.funnelSlug, passthrough.funnel_slug),
     sourcePageType: stringValue(body.sourcePageType, body.source_page_type, passthrough.sourcePageType, passthrough.source_page_type),
     serviceSlug: stringValue(
@@ -271,6 +279,58 @@ export async function POST(request: NextRequest) {
 
   try {
     await syncAutomatedOfferCatalog().catch(() => null)
+    await syncProviderOfferCatalog().catch(() => null)
+
+    if (isPaidEvent(normalized.eventType)) {
+      const providerResult = await handleProviderOfferThriveCartEvent(thriveCartEvent.id, {
+        eventType: normalized.eventType,
+        orderId: normalized.orderId,
+        productId: normalized.productId,
+        planSlug: normalized.planSlug,
+        amountCents: normalized.amountCents,
+        customer: normalized.customer,
+        serviceSlug: normalized.serviceSlug,
+        providerId: normalized.providerId,
+        externalSubscriptionId: normalized.externalSubscriptionId,
+        rawPayload: body,
+      })
+      if (providerResult.handled && providerResult.reconciled) {
+        await prisma.thriveCartEvent.update({
+          where: { id: thriveCartEvent.id },
+          data: {
+            processingStatus: "processed",
+            processedAt: new Date(),
+            providerSubscriptionId: providerResult.subscriptionId,
+            normalizedPayload: {
+              ...normalized,
+              providerOffer: providerResult,
+            } as Prisma.InputJsonValue,
+          },
+        })
+        return NextResponse.json({
+          success: true,
+          flow: "provider_offer",
+          providerId: providerResult.providerId,
+          subscriptionId: providerResult.subscriptionId,
+        })
+      }
+      if (providerResult.handled && !providerResult.reconciled) {
+        await prisma.thriveCartEvent.update({
+          where: { id: thriveCartEvent.id },
+          data: {
+            processingStatus: "processed",
+            processedAt: new Date(),
+            reconciliationStatus: "unmatched",
+            normalizedPayload: { ...normalized, providerOffer: providerResult } as Prisma.InputJsonValue,
+          },
+        })
+        return NextResponse.json({
+          success: true,
+          flow: "provider_offer_reconciliation",
+          message: "Payment recorded; manual reconciliation required",
+        })
+      }
+    }
 
     if (!isPaidEvent(normalized.eventType)) {
       const customer = normalized.customer.email

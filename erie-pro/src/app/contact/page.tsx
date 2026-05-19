@@ -18,7 +18,12 @@ import {
 import { Badge } from "@/components/ui/badge"
 import ContactForm from "@/components/contact-form"
 import { TrackedPhoneLink } from "@/components/tracked-phone-link"
-import { buildOrganizationJsonLd, googleMapsEmbedUrl, organizationNap } from "@/lib/organization-nap"
+import {
+  buildOrganizationJsonLd,
+  googleMapsEmbedUrl,
+  organizationGoogleBusinessLinkLabel,
+  organizationNap,
+} from "@/lib/organization-nap"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -232,7 +237,7 @@ export default function ContactPage() {
                 target="_blank"
                 className="text-primary hover:underline"
               >
-                View our Google Business Profile
+                {organizationGoogleBusinessLinkLabel()}
               </a>
             </p>
           ) : null}
