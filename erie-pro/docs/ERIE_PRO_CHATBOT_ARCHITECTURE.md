@@ -27,7 +27,12 @@ src/lib/chatbot/
   escalation.ts          # Human handoff
   analytics.ts           # user_actions logging
   orchestrator.ts        # LLM + tool loop
-  llm.ts                 # Anthropic Messages API (tools)
+  llm.ts                 # Provider router (open-weight default)
+  llm-config.ts          # CHAT_LLM_PROVIDER / env resolution
+  llm-openai-compatible.ts  # OpenRouter, Groq, Ollama (OpenAI tools API)
+  llm-anthropic.ts       # Optional Claude Messages API
+  llm-prompt-tools.ts    # JSON prompt fallback when native tools missing
+  llm-message-converter.ts  # Anthropic ↔ OpenAI message shapes
   session.ts             # Session CRUD
   tools/
     consumer-tools.ts
@@ -62,9 +67,32 @@ Migration: `prisma/migrations/20260519160000_chatbot_sessions/`
 - `StatusAssistant` — embedded on request status page
 - Uses `AudienceProvider` pathname for persona defaults
 
+## LLM providers (open-weight default)
+
+Production recommendation: **OpenRouter** with a capable open model (tool calling via OpenAI-compatible API). **Groq** is a good alternative for low latency. **Anthropic** remains available only when explicitly selected.
+
+| Provider | Env | Default model | API |
+|----------|-----|---------------|-----|
+| `openrouter` | `OPENROUTER_API_KEY` | `meta-llama/llama-3.3-70b-instruct` | `https://openrouter.ai/api/v1/chat/completions` |
+| `groq` | `GROQ_API_KEY` | `llama-3.3-70b-versatile` | Groq OpenAI-compatible |
+| `ollama` | `OLLAMA_BASE_URL` (dev) | `llama3.2` | Local `/v1/chat/completions` |
+| `anthropic` | `ANTHROPIC_API_KEY` + `CHAT_LLM_PROVIDER=anthropic` | `claude-haiku-4-5-20251001` | Anthropic Messages + tools |
+
+Shared env:
+
+- `CHAT_LLM_PROVIDER` — `openrouter` \| `groq` \| `anthropic` \| `ollama` (optional; auto-detect if unset)
+- `CHAT_LLM_MODEL` — override model id per provider
+
+Auto-detect when `CHAT_LLM_PROVIDER` is unset: OpenRouter (if key) → Groq → Ollama. Claude is **not** auto-selected.
+
+The orchestrator still uses the same tool loop: `runChatLlmTurn` returns `{ text, toolCalls }`. Open-weight providers use native `tool_calls` when supported; otherwise `llm-prompt-tools.ts` requests a JSON `tool_calls` payload.
+
+Without any LLM credentials, persona-specific deterministic fallbacks (e.g. provider growth keyword flow) and guardrailed copy still apply.
+
 ## Environment
 
-- `ANTHROPIC_API_KEY` — optional; without it, deterministic fallbacks still enforce tool-first status messaging
+- `OPENROUTER_API_KEY` / `GROQ_API_KEY` / `OLLAMA_BASE_URL` — chat LLM (see table above)
+- `ANTHROPIC_API_KEY` — only when `CHAT_LLM_PROVIDER=anthropic`
 - `DATABASE_URL` — required for sessions and tools
 
 ## Trust rule
