@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { checkRateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
+import { classifyChatApiError } from "@/lib/chatbot/api-errors"
 import { createEscalation } from "@/lib/chatbot/escalation"
 import { recordChatAnalytics } from "@/lib/chatbot/analytics"
 import { prisma } from "@/lib/db"
@@ -60,6 +61,10 @@ export async function POST(request: NextRequest) {
     })
   } catch (err) {
     logger.error("/api/chat/escalate", err)
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 })
+    const classified = classifyChatApiError(err)
+    return NextResponse.json(
+      { success: false, error: classified.error, code: classified.code },
+      { status: classified.status },
+    )
   }
 }

@@ -1,6 +1,7 @@
 // erie-pro/src/lib/chatbot/session.ts
 
 import { prisma } from "@/lib/db"
+import { logger } from "@/lib/logger"
 import type { ChatPersona } from "@/lib/chatbot/personas"
 import type { ChatPersona as PrismaChatPersona } from "@/generated/prisma"
 import { appendChatMessage } from "@/lib/chatbot/memory"
@@ -36,19 +37,26 @@ export async function createChatSession(input: CreateChatSessionInput) {
     },
   })
 
-  const opening = CHAT_PERSONA_UI[input.persona].openingMessage
-  await appendChatMessage({
-    sessionId: session.id,
-    role: "assistant",
-    content: opening,
-  })
+  try {
+    const opening = CHAT_PERSONA_UI[input.persona].openingMessage
+    await appendChatMessage({
+      sessionId: session.id,
+      role: "assistant",
+      content: opening,
+    })
 
-  await recordChatAnalytics({
-    sessionId: session.id,
-    persona: input.persona,
-    eventType: "session_started",
-    metadata: { contextPath: input.contextPath },
-  })
+    await recordChatAnalytics({
+      sessionId: session.id,
+      persona: input.persona,
+      eventType: "session_started",
+      metadata: { contextPath: input.contextPath },
+    })
+  } catch (err) {
+    logger.warn("chatbot.session post-create failed", {
+      sessionId: session.id,
+      message: err instanceof Error ? err.message : String(err),
+    })
+  }
 
   return session
 }

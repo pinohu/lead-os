@@ -8,6 +8,7 @@ import { checkRateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
 import { resolveAudienceFromPathname } from "@/lib/page-audience-registry"
 import { resolveChatPersona } from "@/lib/chatbot/personas"
+import { classifyChatApiError } from "@/lib/chatbot/api-errors"
 import { createChatSession } from "@/lib/chatbot/session"
 
 const BodySchema = z.object({
@@ -96,6 +97,10 @@ export async function POST(request: NextRequest) {
     })
   } catch (err) {
     logger.error("/api/chat/session", err)
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 })
+    const classified = classifyChatApiError(err)
+    return NextResponse.json(
+      { success: false, error: classified.error, code: classified.code },
+      { status: classified.status },
+    )
   }
 }

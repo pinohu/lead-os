@@ -45,6 +45,8 @@ src/lib/chatbot/
 
 Migration: `prisma/migrations/20260519160000_chatbot_sessions/`
 
+**Production deploy:** After shipping chatbot code, run `npx prisma migrate deploy` against the Neon production database (Vercel does not run migrations automatically). Pending migrations as of the chatbot launch include `20260519120000_provider_offer_system`, `20260519140000_action_status_notifications`, and `20260519160000_chatbot_sessions`. Without `chat_sessions`, `POST /api/chat/session` returns HTTP 503 with `chat_schema_missing`.
+
 ## API
 
 | Method | Path | Role |

@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { checkRateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
+import { classifyChatApiError } from "@/lib/chatbot/api-errors"
 import { handleChatMessage } from "@/lib/chatbot/orchestrator"
 
 const BodySchema = z.object({
@@ -61,6 +62,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: msg }, { status: 400 })
     }
     logger.error("/api/chat/message", err)
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 })
+    const classified = classifyChatApiError(err)
+    return NextResponse.json(
+      { success: false, error: classified.error, code: classified.code },
+      { status: classified.status },
+    )
   }
 }

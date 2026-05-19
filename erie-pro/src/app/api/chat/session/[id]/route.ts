@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
+import { classifyChatApiError } from "@/lib/chatbot/api-errors"
 import { getChatSessionForClient } from "@/lib/chatbot/session"
 import { logger } from "@/lib/logger"
 
@@ -28,6 +29,10 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ success: true, session })
   } catch (err) {
     logger.error("/api/chat/session/[id]", err)
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 })
+    const classified = classifyChatApiError(err)
+    return NextResponse.json(
+      { success: false, error: classified.error, code: classified.code },
+      { status: classified.status },
+    )
   }
 }
