@@ -36,7 +36,7 @@ export const CHAT_PERSONA_UI: Record<ChatPersona, ChatPersonaUiConfig> = {
     launcherLabel: "Provider plans",
     panelTitle: "Growth assistant",
     openingMessage:
-      "I can explain plans, checkout links, and how claiming works. I won't promise lead volume or instant publication.",
+      "I can explain Starter, Professional, Premium, and Elite plans — plus checkout links and claiming. Name a plan or tell me your goals.",
     placeholder: "Ask about plans or claiming…",
   },
   provider_operations: {

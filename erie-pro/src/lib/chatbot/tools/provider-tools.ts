@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db"
 import { getDirectoryListingBySlug } from "@/lib/directory-store"
 import { getProviderOfferPlan } from "@/lib/provider-offer-plans"
 import { syncProviderOfferCatalog } from "@/lib/provider-offer-catalog-sync"
+import { resolvePlanSlugFromGoals } from "@/lib/chatbot/provider-plan-resolver"
 import type { ChatToolContext, ToolResult } from "@/lib/chatbot/tools/types"
 
 function str(v: unknown): string | undefined {
@@ -65,10 +66,8 @@ export async function executeProviderTool(
       return { ok: true, data: { id: row.id, email: row.email } }
     }
     case "recommendProviderPlan": {
-      const goals = (str(input.goals) ?? "").toLowerCase()
-      let planSlug = "starter"
-      if (goals.includes("growth") || goals.includes("lead")) planSlug = "growth"
-      if (goals.includes("premium") || goals.includes("full")) planSlug = "premium"
+      const goals = str(input.goals) ?? ""
+      const planSlug = resolvePlanSlugFromGoals(goals)
       const def = getProviderOfferPlan(planSlug)
       return {
         ok: true,

@@ -10,6 +10,7 @@ import {
 import { shouldBlockUngroundedStatusReply, sanitizeUserMessage } from "@/lib/chatbot/guardrails"
 import { appendChatMessage, loadRecentMessages } from "@/lib/chatbot/memory"
 import { runChatLlmTurn, type LlmMessage } from "@/lib/chatbot/llm"
+import { runProviderGrowthFallback } from "@/lib/chatbot/provider-growth-fallback"
 import { recordChatAnalytics } from "@/lib/chatbot/analytics"
 import type { ChatPersona } from "@/lib/chatbot/personas"
 import type { ChatToolContext, ToolResult } from "@/lib/chatbot/tools/types"
@@ -51,7 +52,7 @@ function fallbackReply(persona: ChatPersona, userText: string): string {
     return "I can check your request status from our database, but I need your request ID and the access token from your confirmation email. You can also view the timeline on your request status page."
   }
   if (persona === "provider_growth") {
-    return "I can help with provider plans and checkout links. Tell me your business goals (starter vs growth), or ask for a checkout URL for a specific plan."
+    return "I can explain **Starter**, **Professional**, **Premium**, and **Elite** plans — name a plan or describe your goals for details and a checkout link."
   }
   return "I'm here to help. Ask a specific question and I'll use our system tools when needed — I won't guess about delivery or account status."
 }
@@ -87,7 +88,14 @@ async function runToolLoop(
     rounds += 1
     const turn = await runChatLlmTurn({ systemPrompt, messages, tools })
 
-    if (!turn) break
+    if (!turn) {
+      if (persona === "provider_growth") {
+        const finalText = await runProviderGrowthFallback(userText, toolCtx)
+        await appendChatMessage({ sessionId: session.id, role: "assistant", content: finalText })
+        return finalText
+      }
+      break
+    }
 
     if (turn.toolCalls.length === 0) {
       const draft = turn.text ?? fallbackReply(persona, userText)
@@ -155,7 +163,10 @@ async function runToolLoop(
     messages = [...messages, { role: "user", content: toolResults }]
   }
 
-  const finalText = fallbackReply(persona, userText)
+  const finalText =
+    persona === "provider_growth"
+      ? await runProviderGrowthFallback(userText, toolCtx)
+      : fallbackReply(persona, userText)
   await appendChatMessage({ sessionId: session.id, role: "assistant", content: finalText })
   return finalText
 }
