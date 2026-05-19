@@ -151,6 +151,70 @@ enum GeneratedAssetType {
   dashboard_link
 }
 
+enum ProviderLifecycleStatus {
+  pending_payment
+  paid_pending_onboarding
+  provisioning
+  live
+  failed
+  suspended
+  cancelled
+}
+
+enum ProvisioningJobStatus {
+  pending
+  running
+  completed
+  failed
+  cancelled
+}
+
+enum MicrositeStatus {
+  draft
+  provisioning
+  live
+  suspended
+  archived
+}
+
+enum ProviderInterestStatus {
+  new
+  contacted
+  qualified
+  converted
+  archived
+}
+
+enum ClaimRequestStatus {
+  pending
+  approved
+  rejected
+  expired
+}
+
+enum ProviderEligibilityTier {
+  paid_unverified
+  data_pending
+  eligible_draft
+  eligible_live
+  suspended_trust
+  admin_hold
+}
+
+enum MicrositePublishMode {
+  draft
+  review_required
+  auto_eligible
+}
+
+enum ThriveCartReconciliationStatus {
+  pending
+  matched
+  unmatched
+  manual_resolved
+  ignored
+}
+
 // ── Provider ───────────────────────────────────────────────────────
 
 model Provider {
@@ -194,6 +258,11 @@ model Provider {
   verificationAttempts Int                @default(0) // Code-entry brute-force protection
   claimedListingId     String? // DirectoryListing.id being claimed
 
+  // Local Authority Microsite commercial OS (payment ≠ trust)
+  lifecycleStatus      ProviderLifecycleStatus @default(pending_payment)
+  eligibilityTier      ProviderEligibilityTier @default(paid_unverified)
+  thriveCartCustomerId String?
+
   // SLA tracking
   slaViolationCount Int     @default(0)
   businessHours     Json?
@@ -224,10 +293,19 @@ model Provider {
   disputes         LeadDispute[]
   auditLogs        AuditLog[]
   checkoutSessions CheckoutSession[]
-  apiKeys          ApiKey[]
-  webhookEndpoints WebhookEndpoint[]
+  apiKeys              ApiKey[]
+  webhookEndpoints     WebhookEndpoint[]
+  providerSubscription ProviderSubscription?
+  microsites           Microsite[]
+  provisioningJobs     ProvisioningJob[]
+  providerLeads        ProviderLead[]
+  providerTasks        ProviderTask[]
+  claimRequests        ClaimRequest[]
+  providerOrderItems   ProviderOrderItem[]
 
   @@index([niche, city])
+  @@index([lifecycleStatus])
+  @@index([eligibilityTier])
   @@index([niche, subscriptionStatus])
   @@index([email])
   @@index([stripeCustomerId])
@@ -958,16 +1036,21 @@ model ThriveCartEvent {
   // Nullable for backfill safety on existing rows.
   payloadHash       String?   @unique
   processedAt       DateTime?
-  processingStatus  String    @default("pending")
-  lastError         String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  processingStatus      String                       @default("pending")
+  reconciliationStatus ThriveCartReconciliationStatus @default(pending)
+  providerSubscriptionId String?
+  lastError             String?
+  createdAt             DateTime                     @default(now())
+  updatedAt             DateTime                     @updatedAt
+
+  reconciliationItems ThriveCartReconciliationItem[]
 
   @@index([eventType])
   @@index([orderId])
   @@index([productId])
   @@index([customerEmail])
   @@index([processingStatus])
+  @@index([reconciliationStatus])
   @@map("thrivecart_events")
 }
 
@@ -1024,6 +1107,518 @@ model OfferSubscriptionEntitlement {
   @@index([customerId])
   @@index([externalSubscriptionId])
   @@map("offer_subscription_entitlements")
+}
+
+// ── Provider Offer System (ThriveCart + microsites) ─────────────────
+
+model ProviderPlan {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  displayName         String
+  setupFeeCents       Int
+  monthlyFeeCents     Int
+  monthlyFeeMinCents  Int?
+  foundingPhase       String   @default("maturity_1")
+  maintenanceLimits   Json     @default("{}")
+  valueStack          Json     @default("{}")
+  disclaimers         Json     @default("{}")
+  thriveCartSetupId   String?
+  thriveCartMonthlyId String?
+  sortOrder           Int      @default(100)
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  subscriptions ProviderSubscription[]
+  productMaps   ThriveCartProductMapping[]
+
+  @@map("provider_plans")
+}
+
+model ProviderSubscription {
+  id                     String                 @id @default(cuid())
+  providerId             String                 @unique
+  provider               Provider               @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  planId                 String
+  plan                   ProviderPlan           @relation(fields: [planId], references: [id], onDelete: Restrict)
+  lifecycleStatus        ProviderLifecycleStatus @default(pending_payment)
+  eligibilityTier        ProviderEligibilityTier @default(paid_unverified)
+  thriveCartOrderId      String?
+  thriveCartSubscriptionId String?
+  setupPaidAt            DateTime?
+  monthlyStartsAt        DateTime?
+  cancelledAt            DateTime?
+  metadata               Json?                  @default("{}")
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+
+  provisioningJobs ProvisioningJob[]
+  orderItems       ProviderOrderItem[]
+
+  @@index([planId])
+  @@index([lifecycleStatus])
+  @@index([thriveCartOrderId])
+  @@map("provider_subscriptions")
+}
+
+model Microsite {
+  id                String               @id @default(cuid())
+  providerId        String
+  provider          Provider             @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  slug              String
+  categorySlug      String
+  citySlug          String               @default("erie")
+  stateCode         String               @default("PA")
+  status            MicrositeStatus      @default(draft)
+  publishMode       MicrositePublishMode @default(draft)
+  dataQualityScore  Float                @default(0)
+  publicProfile     Json                 @default("{}")
+  privateIntel      Json                 @default("{}")
+  schemaJson        Json?                @default("{}")
+  profileJsonPath   String?
+  profileMdPath     String?
+  publishedAt       DateTime?
+  lastReviewedAt    DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@unique([categorySlug, citySlug, stateCode, slug])
+  @@index([providerId])
+  @@index([status, publishMode])
+  @@map("microsites")
+}
+
+model ProvisioningJob {
+  id             String                @id @default(cuid())
+  providerId     String
+  provider       Provider              @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  subscriptionId String?
+  subscription   ProviderSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  jobType        String                @default("microsite_initial")
+  status         ProvisioningJobStatus @default(pending)
+  attempts       Int                   @default(0)
+  lastError      String?
+  input          Json?                 @default("{}")
+  output         Json?                 @default("{}")
+  runAfter       DateTime?
+  startedAt      DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  @@index([status, runAfter])
+  @@index([providerId])
+  @@map("provisioning_jobs")
+}
+
+model ProviderInterest {
+  id                String               @id @default(cuid())
+  email             String
+  businessName      String?
+  phone             String?
+  niche             String?
+  planSlug          String?
+  sourcePage        String?
+  convertBoxId      String?
+  status            ProviderInterestStatus @default(new)
+  metadata          Json?                @default("{}")
+  providerId        String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@index([email])
+  @@index([status, createdAt])
+  @@map("provider_interests")
+}
+
+model ProviderLead {
+  id           String   @id @default(cuid())
+  providerId   String
+  provider     Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  micrositeId  String?
+  firstName    String?
+  lastName     String?
+  email        String?
+  phone        String?
+  message      String?
+  source       String   @default("microsite_quote")
+  sourcePage   String?
+  status       String   @default("new")
+  metadata     Json?    @default("{}")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([providerId, createdAt])
+  @@map("provider_leads")
+}
+
+model ProviderEvent {
+  id         String   @id @default(cuid())
+  providerId String?
+  eventType  String
+  source     String   @default("erie-pro")
+  metadata   Json?    @default("{}")
+  createdAt  DateTime @default(now())
+
+  @@index([providerId, createdAt])
+  @@index([eventType])
+  @@map("provider_events")
+}
+
+model ProviderTask {
+  id          String    @id @default(cuid())
+  providerId  String
+  provider    Provider  @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      String    @default("open")
+  sortOrder   Int       @default(0)
+  dueAt       DateTime?
+  completedAt DateTime?
+  metadata    Json?     @default("{}")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([providerId, sortOrder])
+  @@map("provider_tasks")
+}
+
+model ProviderReport {
+  id         String   @id @default(cuid())
+  providerId String
+  reportType String
+  periodStart DateTime?
+  periodEnd   DateTime?
+  summary    String?
+  data       Json?    @default("{}")
+  createdAt  DateTime @default(now())
+
+  @@index([providerId, reportType])
+  @@map("provider_reports")
+}
+
+model ClaimRequest {
+  id                  String             @id @default(cuid())
+  providerId          String?
+  provider            Provider?          @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  directoryListingId  String?
+  email               String
+  businessName        String?
+  status              ClaimRequestStatus @default(pending)
+  verificationMethod  String?
+  exclusivity         Json               @default("{}")
+  metadata            Json?              @default("{}")
+  expiresAt           DateTime?
+  resolvedAt          DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@map("claim_requests")
+}
+
+model ThriveCartProductMapping {
+  id               String       @id @default(cuid())
+  thriveCartProductId String    @unique
+  planId           String?
+  plan             ProviderPlan? @relation(fields: [planId], references: [id], onDelete: SetNull)
+  offerSlug        String?
+  lineItemType     String       @default("setup")
+  isActive         Boolean      @default(true)
+  metadata         Json?        @default("{}")
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([planId])
+  @@map("thrivecart_product_mappings")
+}
+
+model ThriveCartReconciliationItem {
+  id               String                       @id @default(cuid())
+  thriveCartEventId String                      @unique
+  thriveCartEvent  ThriveCartEvent              @relation(fields: [thriveCartEventId], references: [id], onDelete: Cascade)
+  status           ThriveCartReconciliationStatus @default(unmatched)
+  reason           String
+  suggestedAction  String?
+  resolvedBy       String?
+  resolvedAt       DateTime?
+  resolutionNotes  String?
+  metadata         Json?                        @default("{}")
+  createdAt        DateTime                     @default(now())
+  updatedAt        DateTime                     @updatedAt
+
+  @@index([status, createdAt])
+  @@map("thrivecart_reconciliation_items")
+}
+
+model ProviderOrderItem {
+  id               String               @id @default(cuid())
+  providerId       String
+  provider         Provider             @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  subscriptionId   String?
+  subscription     ProviderSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  thriveCartOrderId String?
+  thriveCartProductId String?
+  lineItemType     String               @default("setup")
+  amountCents      Int                  @default(0)
+  currency         String               @default("USD")
+  metadata         Json?                @default("{}")
+  createdAt        DateTime             @default(now())
+
+  @@index([providerId])
+  @@index([thriveCartOrderId])
+  @@map("provider_order_items")
+}
+
+// ── Service Request Action / Notification / Status (P0) ─────────────
+// Separate from Lead: tracks consumer-visible lifecycle, notification
+// events, and honest delivery status. Links to Lead via leadId when routed.
+
+enum ServiceRequestStatus {
+  draft
+  submitted
+  consumer_confirmation_queued
+  consumer_confirmation_sent
+  consumer_confirmation_failed
+  provider_notification_queued
+  provider_notification_sent
+  provider_notification_failed
+  completed
+  cancelled
+}
+
+enum NotificationEventStatus {
+  queued
+  sending
+  sent
+  failed
+}
+
+enum NotificationRecipientRole {
+  consumer
+  provider
+  admin
+}
+
+model UserAction {
+  id                String   @id @default(cuid())
+  correlationId     String
+  actionType        String
+  actorType         String   @default("consumer")
+  actorId           String?
+  serviceRequestId  String?
+  serviceRequest    ServiceRequest? @relation(fields: [serviceRequestId], references: [id], onDelete: SetNull)
+  metadata          Json?    @default("{}")
+  createdAt         DateTime @default(now())
+
+  @@index([correlationId])
+  @@index([serviceRequestId])
+  @@index([actionType, createdAt])
+  @@map("user_actions")
+}
+
+model ServiceRequest {
+  id                      String               @id @default(cuid())
+  requestId               String               @unique
+  correlationId           String               @unique
+  status                  ServiceRequestStatus @default(submitted)
+  statusAccessToken       String               @unique
+  leadId                  String?
+
+  niche                   String
+  city                    String               @default("erie")
+  firstName               String?
+  lastName                String?
+  email                   String
+  phone                   String?
+  message                 String?
+  sourcePage              String?
+  routingIntent           String               @default("general")
+  requestedProviderName   String?
+  requestedProviderSlug   String?
+  requestedProviderPhone  String?
+  requestedProviderAddress String?
+  routedToProviderId      String?
+  routedToProviderName    String?
+  routeType               String?
+
+  tcpaConsent             Boolean              @default(false)
+  tcpaConsentText         String?
+  tcpaConsentAt           DateTime?
+  tcpaIpAddress           String?
+
+  metadata                Json?                @default("{}")
+
+  userActions             UserAction[]
+  notificationEvents      NotificationEvent[]
+  statusEvents            StatusEvent[]
+
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([correlationId])
+  @@index([leadId])
+  @@map("service_requests")
+}
+
+model NotificationTemplate {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  subject     String
+  htmlBody    String
+  textBody    String?
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  events      NotificationEvent[]
+
+  @@map("notification_templates")
+}
+
+model NotificationEvent {
+  id                String                    @id @default(cuid())
+  serviceRequestId  String
+  serviceRequest    ServiceRequest            @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  templateSlug      String
+  template          NotificationTemplate      @relation(fields: [templateSlug], references: [slug], onDelete: Restrict)
+  recipientEmail    String
+  recipientRole     NotificationRecipientRole
+  status            NotificationEventStatus   @default(queued)
+  retryCount        Int                       @default(0)
+  maxRetries        Int                       @default(3)
+  nextRetryAt       DateTime?
+  lastError         String?
+  providerMessageId String?
+  sentAt            DateTime?
+  metadata          Json?                     @default("{}")
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+
+  @@index([serviceRequestId])
+  @@index([status, nextRetryAt])
+  @@index([templateSlug])
+  @@map("notification_events")
+}
+
+model StatusEvent {
+  id               String               @id @default(cuid())
+  serviceRequestId String
+  serviceRequest   ServiceRequest       @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  status           ServiceRequestStatus
+  message          String?
+  metadata         Json?                @default("{}")
+  createdAt        DateTime             @default(now())
+
+  @@index([serviceRequestId, createdAt])
+  @@map("status_events")
+}
+
+// ── Persona-locked chatbot ───────────────────────────────────────────
+
+enum ChatPersona {
+  consumer_service
+  consumer_status
+  provider_growth
+  provider_operations
+  admin_operations
+}
+
+enum ChatSessionStatus {
+  active
+  closed
+  escalated
+}
+
+enum ChatMessageRole {
+  user
+  assistant
+  system
+  tool
+}
+
+enum ChatActionStatus {
+  pending
+  completed
+  failed
+}
+
+enum ChatEscalationStatus {
+  open
+  in_progress
+  resolved
+}
+
+model ChatSession {
+  id                String            @id @default(cuid())
+  persona           ChatPersona
+  status            ChatSessionStatus @default(active)
+  visitorId         String?
+  userId            String?
+  providerId        String?
+  serviceRequestId  String?
+  contextPath       String?
+  contextJson       Json?             @default("{}")
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  messages     ChatMessage[]
+  actions      ChatAction[]
+  escalations  ChatEscalation[]
+
+  @@index([persona, status])
+  @@index([visitorId])
+  @@index([serviceRequestId])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id          String          @id @default(cuid())
+  sessionId   String
+  session     ChatSession     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  role        ChatMessageRole
+  content     String
+  toolName    String?
+  toolPayload Json?
+  createdAt   DateTime        @default(now())
+
+  @@index([sessionId, createdAt])
+  @@map("chat_messages")
+}
+
+model ChatAction {
+  id         String           @id @default(cuid())
+  sessionId  String
+  session    ChatSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  toolName   String
+  input      Json             @default("{}")
+  output     Json?
+  status     ChatActionStatus @default(pending)
+  error      String?
+  createdAt  DateTime         @default(now())
+
+  @@index([sessionId, createdAt])
+  @@index([toolName, status])
+  @@map("chat_actions")
+}
+
+model ChatEscalation {
+  id         String               @id @default(cuid())
+  sessionId  String
+  session    ChatSession          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  reason     String
+  status     ChatEscalationStatus @default(open)
+  metadata   Json?                @default("{}")
+  createdAt  DateTime             @default(now())
+  resolvedAt DateTime?
+
+  @@index([sessionId])
+  @@index([status, createdAt])
+  @@map("chat_escalations")
 }
 
 // ── Intake Widget Conversations ─────────────────────────────────────

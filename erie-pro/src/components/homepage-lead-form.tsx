@@ -4,8 +4,10 @@ import { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Send, CheckCircle2 } from "lucide-react";
+import { Send } from "lucide-react";
 import { cityConfig } from "@/lib/city-config";
+import { ServiceRequestSuccess } from "@/components/service-request-success";
+import type { ServiceRequestSubmitResponse } from "@/lib/service-requests/types";
 
 const TCPA_TEXT = `By submitting this form, I consent to be contacted by phone, text message, or email by a service provider regarding my service request. I understand that message and data rates may apply for text messages. I can opt out at any time by replying STOP to any text message or contacting us at hello@${cityConfig.domain}.`;
 
@@ -43,7 +45,7 @@ interface HomepageLeadFormProps {
 
 export function HomepageLeadForm({ niches, citySlug, cityName }: HomepageLeadFormProps) {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [result, setResult] = useState<ServiceRequestSubmitResponse | { success: false; message: string } | null>(null);
   const [tcpaConsent, setTcpaConsent] = useState(false);
   const [selectedNiche, setSelectedNiche] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -116,7 +118,7 @@ export function HomepageLeadForm({ niches, citySlug, cityName }: HomepageLeadFor
     setResult(null);
 
     try {
-      const res = await fetch("/api/lead", {
+      const res = await fetch("/api/service-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -136,11 +138,8 @@ export function HomepageLeadForm({ niches, citySlug, cityName }: HomepageLeadFor
 
       const data = await res.json();
 
-      if (data.success) {
-        setResult({
-          success: true,
-          message: "A verified provider will contact you within 4 hours.",
-        });
+      if (data.success && data.requestId) {
+        setResult(data as ServiceRequestSubmitResponse);
         formRef.current?.reset();
         setTcpaConsent(false);
         setSelectedNiche("");
@@ -161,27 +160,17 @@ export function HomepageLeadForm({ niches, citySlug, cityName }: HomepageLeadFor
     }
   }
 
-  if (result?.success) {
+  if (result && "requestId" in result) {
     return (
-      <div
-        role="alert"
-        aria-live="polite"
-        className="animate-in fade-in-0 duration-300 rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-6 text-center"
-      >
-        <CheckCircle2 className="mx-auto h-10 w-10 text-green-600 dark:text-green-400" />
-        <p className="mt-3 text-lg font-bold text-green-800 dark:text-green-300">
-          Request Submitted!
-        </p>
-        <p className="mt-1 text-sm text-green-700 dark:text-green-400">
-          {result.message}
-        </p>
+      <div className="space-y-4">
+        <ServiceRequestSuccess result={result} />
         <button
           type="button"
           disabled={!canResubmit}
           onClick={() => setResult(null)}
-          className="mt-4 inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Submit Another Request
+          Submit another request
         </button>
       </div>
     );
@@ -189,7 +178,7 @@ export function HomepageLeadForm({ niches, citySlug, cityName }: HomepageLeadFor
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit} ref={formRef}>
-      {result && !result.success && (
+      {result && !("requestId" in result) && (
         <div
           role="alert"
           aria-live="polite"

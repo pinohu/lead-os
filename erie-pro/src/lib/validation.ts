@@ -141,6 +141,10 @@ export const LeadRequestSchema = z.object({
 });
 export type LeadRequest = z.infer<typeof LeadRequestSchema>;
 
+/** POST /api/service-requests — same payload as lead with traceable status */
+export const ServiceRequestSchema = LeadRequestSchema;
+export type ServiceRequestInput = z.infer<typeof ServiceRequestSchema>;
+
 /** POST /api/contact */
 export const ContactRequestSchema = z.object({
   name: z

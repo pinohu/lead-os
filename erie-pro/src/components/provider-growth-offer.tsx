@@ -1,6 +1,8 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { usePageAudience } from "@/components/audience/audience-provider"
+import { shouldShowProviderSalesBlock } from "@/lib/audience-context"
 import { ArrowRight, BarChart3, CheckCircle2, Loader2, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -27,6 +29,7 @@ export function ProviderGrowthOffer({
   serviceLabel,
   serviceFamily,
 }: ProviderGrowthOfferProps) {
+  const { audience } = usePageAudience()
   const [email, setEmail] = useState("")
   const [companyName, setCompanyName] = useState("")
   const [websiteUrl, setWebsiteUrl] = useState("")
@@ -90,6 +93,8 @@ export function ProviderGrowthOffer({
 
     setStatus("error")
   }
+
+  if (!shouldShowProviderSalesBlock(audience)) return null
 
   return (
     <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6">

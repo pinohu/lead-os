@@ -1,0 +1,45 @@
+---
+description: Erie.pro persona separation — one page, one audience, one job
+globs:
+  - "**/*"
+alwaysApply: false
+---
+
+# Erie.pro persona separation
+
+## Principle
+
+**One page → one primary audience → one primary job.**
+
+Do not mix consumer CTAs with provider sales on the same page.
+
+| Audience | Primary job | Zone |
+|----------|-------------|------|
+| **consumer** | Find, trust, contact providers | `/`, `/directory`, `/get-matched`, `/[niche]`, `/[niche]/[provider]`, `/areas/*` |
+| **provider** | Claim, subscribe, manage microsite & billing | `/pros`, `/for-business/*`, `/dashboard/*`, `/providers/*`, `/provider/*` |
+| **admin** | Operations only | `/admin/*` |
+
+## CTA policy (`allowProviderCTA`)
+
+- **consumer pages:** `footer-utility` only — e.g. “Own this business?” text link at page footer. No hero banners, no sidebar claim cards, no provider growth scorecards.
+- **provider pages:** provider CTAs may be primary.
+- **admin pages:** no marketing CTAs.
+
+## Forbidden on consumer surfaces
+
+- “Claim this territory/category” as primary CTA
+- Provider growth scorecard / “Become a pro” hero blocks
+- Exclusive-provider / territory sales copy in hero or main column
+
+## Implementation
+
+- Registry: `src/lib/page-audience-registry.ts`
+- Helpers: `src/lib/audience-context.ts`
+- Runtime nav: `src/components/audience/audience-provider.tsx` + `site-header-nav.tsx`
+- AI copy locks: `src/lib/audience-content-prompts.ts`
+- Architecture doc: `docs/ERIE_PRO_PERSONA_ARCHITECTURE.md`
+
+## TODO (follow-up)
+
+- Split `app/(consumer)/layout.tsx` vs `app/(provider)/layout.tsx` when route groups are introduced.
+- Audience-aware mobile nav and site footer columns.

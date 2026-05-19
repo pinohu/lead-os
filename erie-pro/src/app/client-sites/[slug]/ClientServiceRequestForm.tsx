@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react"
+import { ArrowRight, Loader2 } from "lucide-react"
+import { ServiceRequestSuccess } from "@/components/service-request-success"
+import type { ServiceRequestSubmitResponse } from "@/lib/service-requests/types"
 
 type SubmitState =
-  | { status: "idle"; message: string }
-  | { status: "submitting"; message: string }
-  | { status: "success"; message: string }
+  | { status: "idle" }
+  | { status: "submitting" }
+  | { status: "success"; result: ServiceRequestSubmitResponse }
   | { status: "error"; message: string }
 
 export function ClientServiceRequestForm({
@@ -28,10 +30,11 @@ export function ClientServiceRequestForm({
   requestedProviderAddress?: string | null
   sourcePage: string
 }) {
-  const [state, setState] = useState<SubmitState>({ status: "idle", message: "" })
+  const [state, setState] = useState<SubmitState>({ status: "idle" })
+  const [canResubmit, setCanResubmit] = useState(true)
 
   async function handleSubmit(formData: FormData) {
-    setState({ status: "submitting", message: "Sending your request..." })
+    setState({ status: "submitting" })
 
     const firstName = String(formData.get("firstName") ?? "").trim()
     const lastName = String(formData.get("lastName") ?? "").trim()
@@ -44,7 +47,7 @@ export function ClientServiceRequestForm({
     const tcpaConsent = formData.get("tcpaConsent") === "on"
 
     try {
-      const response = await fetch("/api/lead", {
+      const response = await fetch("/api/service-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -83,16 +86,32 @@ export function ClientServiceRequestForm({
         return
       }
 
-      setState({
-        status: "success",
-        message: result?.message ?? "Request received. Watch your phone or email for the next step.",
-      })
+      setState({ status: "success", result: result as ServiceRequestSubmitResponse })
+      setCanResubmit(false)
+      setTimeout(() => setCanResubmit(true), 5000)
     } catch {
       setState({
         status: "error",
         message: "Your request could not be sent because the connection failed. Please try again.",
       })
     }
+  }
+
+  if (state.status === "success") {
+    return (
+      <div className="mt-5 space-y-4">
+        <ServiceRequestSuccess result={state.result} />
+        {canResubmit && (
+          <button
+            type="button"
+            onClick={() => setState({ status: "idle" })}
+            className="w-full rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700"
+          >
+            Send another request
+          </button>
+        )}
+      </div>
+    )
   }
 
   return (
@@ -150,23 +169,14 @@ export function ClientServiceRequestForm({
       </label>
       <button
         type="submit"
-        disabled={state.status === "submitting"}
+        disabled={state.status === "submitting" || !canResubmit}
         className="flex w-full items-center justify-center gap-2 rounded-md bg-[#f93355] px-4 py-3 font-black text-white disabled:cursor-not-allowed disabled:opacity-70"
       >
         {state.status === "submitting" ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
         Send service request
       </button>
-      {state.message && (
-        <div
-          className={`flex gap-2 rounded-md p-3 text-sm font-semibold ${
-            state.status === "success"
-              ? "bg-emerald-50 text-emerald-800"
-              : state.status === "error"
-                ? "bg-red-50 text-red-800"
-                : "bg-slate-50 text-slate-700"
-          }`}
-        >
-          {state.status === "success" && <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />}
+      {state.status === "error" && (
+        <div className="rounded-md bg-red-50 p-3 text-sm font-semibold text-red-800">
           {state.message}
         </div>
       )}
