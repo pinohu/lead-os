@@ -1,0 +1,103 @@
+# Niche-specific overrides / specializations layered onto master types.
+# Pulled by getVideoTypesForNiche() in src/loader.ts.
+
+niches:
+  plumbing:
+    extends_types: ["business-intro", "service-explainer", "local-service-provider", "gbp-post", "video-ad"]
+    pinned_hooks:
+      - "Small leaks. Big bills."
+      - "Same-day fix, no surprises."
+    forbidden_phrases: ["guaranteed cheapest"]
+    recommended_durations_sec: [30, 45, 60]
+    recommended_tools: ["vimax", "vadoo", "supermachine"]
+
+  hvac:
+    extends_types: ["service-explainer", "seasonal-tuneup", "local-service-provider", "gbp-post"]
+    pinned_hooks:
+      - "Don't wait for the first cold snap."
+    recommended_durations_sec: [30, 60, 90]
+
+  roofing:
+    extends_types: ["service-explainer", "before-after", "local-service-provider"]
+    pinned_hooks:
+      - "Storm damage doesn't wait. Neither should you."
+    recommended_durations_sec: [45, 60]
+
+  pest-control:
+    extends_types: ["service-explainer", "before-after", "local-service-provider"]
+    recommended_durations_sec: [30, 45]
+
+  landscaping:
+    extends_types: ["before-after", "service-explainer", "local-service-provider"]
+    recommended_durations_sec: [45, 60]
+
+  cleaning:
+    extends_types: ["before-after", "service-explainer"]
+    recommended_durations_sec: [30, 45]
+
+  real-estate-agent:
+    extends_types: ["real-estate-listing", "personalized-outreach", "business-intro"]
+    forbidden_phrases: ["guaranteed price increase", "specific neighborhood demographic claims"]
+    recommended_durations_sec: [60, 120, 180]
+
+  med-spa:
+    extends_types: ["before-after", "service-explainer", "ai-avatar-talking-head"]
+    forbidden_phrases: ["FDA approved", "cure", "guaranteed results"]
+    recommended_durations_sec: [30, 60]
+
+  dental:
+    extends_types: ["service-explainer", "patient-education"]
+    forbidden_phrases: ["painless", "guaranteed"]
+    recommended_durations_sec: [60, 90]
+
+  auto-repair:
+    extends_types: ["service-explainer", "before-after", "gbp-post"]
+    recommended_durations_sec: [30, 60]
+
+  legal-immigration:
+    extends_types: ["service-explainer", "faq", "ai-avatar-talking-head"]
+    forbidden_phrases: ["guaranteed outcome", "we win every case"]
+    recommended_durations_sec: [60, 120]
+    requires_clinician_or_attorney_review: true
+
+  home-care-senior-care:
+    extends_types: ["service-explainer", "testimonial"]
+    forbidden_phrases: ["medical claims"]
+    recommended_durations_sec: [60, 120]
+
+  church-ministry:
+    extends_types: ["church-ministry", "faith-inspirational", "event-recap"]
+    recommended_durations_sec: [60, 180, 300]
+
+  childrens-education:
+    extends_types: ["childrens-story", "educational"]
+    age_gating_required: true
+
+  healthcare-education:
+    extends_types: ["healthcare-education", "patient-education"]
+    requires_clinician_or_attorney_review: true
+
+  nursing-education:
+    extends_types: ["healthcare-education", "training-module"]
+    requires_clinician_or_attorney_review: true
+
+  manufacturing-training:
+    extends_types: ["manufacturing-training", "sop-process", "training-module"]
+
+  industrial-engineering:
+    extends_types: ["training-module", "sop-process"]
+
+  saas-software:
+    extends_types: ["product-explainer", "onboarding", "case-study"]
+
+  affiliate-authority:
+    extends_types: ["authority-site", "seo-content", "blog-to-video"]
+
+  ecommerce-product:
+    extends_types: ["ecommerce-product", "social-shortform", "video-ad"]
+
+  government-contracting:
+    extends_types: ["grant-proposal", "investor", "data-report"]
+
+  investor-pitch:
+    extends_types: ["investor", "data-report"]

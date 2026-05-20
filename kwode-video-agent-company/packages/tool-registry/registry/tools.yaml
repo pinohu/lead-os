@@ -1,0 +1,486 @@
+# Tool registry — AppSumo + open-source + commercial tools.
+# Loaded by packages/tool-registry/src/loader.ts.
+
+tools:
+  # ── Production & video generation ────────────────────────
+  - tool_id: vimax
+    name: ViMax (HKUDS/ViMax)
+    category: video-planning
+    role_in_video_factory: Script→scene→prompt planning packets
+    best_use_cases: ["AI video production planning", "Prompt packs for image/video models"]
+    input_types: ["script", "storyboard", "brand_profile"]
+    output_types: ["planning_packet", "asset_uris"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: mock
+    env_keys: ["VIMAX_ENABLED", "VIMAX_COMMAND", "VIMAX_WORKSPACE_PATH"]
+    notes: Local CLI; we ship a deterministic mock runner until it's wired.
+
+  - tool_id: supermachine
+    name: SUPERMACHINE
+    category: image-generation
+    role_in_video_factory: Stylized image generation for scenes / thumbnails
+    best_use_cases: ["Branded scene imagery", "Thumbnails"]
+    input_types: ["prompt", "negative_prompt"]
+    output_types: ["png", "jpg"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+    env_keys: ["SUPERMACHINE_API_KEY"]
+
+  - tool_id: vadoo
+    name: Vadoo AI
+    category: video-generation
+    role_in_video_factory: Short-form vertical video generation
+    best_use_cases: ["Shorts", "Reels", "TikTok"]
+    input_types: ["script"]
+    output_types: ["mp4"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: zebracat
+    name: Zebracat
+    category: video-generation
+    role_in_video_factory: Alternative short-form generation
+    best_use_cases: ["Faceless shorts"]
+    input_types: ["script"]
+    output_types: ["mp4"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: reelcraft
+    name: ReelCraft
+    category: video-generation
+    role_in_video_factory: AI reel generation
+    best_use_cases: ["Reels"]
+    input_types: ["script", "brand"]
+    output_types: ["mp4"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: fliki
+    name: Fliki
+    category: video-generation
+    role_in_video_factory: Text-to-video with TTS
+    best_use_cases: ["Blog-to-video", "Explainers"]
+    input_types: ["text"]
+    output_types: ["mp4"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: bigvu
+    name: BIGVU
+    category: talking-head
+    role_in_video_factory: Teleprompter + face capture
+    best_use_cases: ["Talking-head", "Founder videos"]
+    input_types: ["script"]
+    output_types: ["mp4"]
+    automation_possible: false
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: manual
+
+  - tool_id: onetakeai
+    name: OneTake AI
+    category: long-form-edit
+    role_in_video_factory: Auto-edit long-form into shorts
+    best_use_cases: ["Webinar repurposing"]
+    input_types: ["mp4"]
+    output_types: ["mp4_clips"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: minvo
+    name: Minvo
+    category: repurposing
+    role_in_video_factory: Clip extraction from long-form source
+    best_use_cases: ["Podcast clips", "Highlight extraction"]
+    input_types: ["mp4", "audio"]
+    output_types: ["mp4_clips"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: flexclip
+    name: FlexClip
+    category: assembly
+    role_in_video_factory: Template-based assembly + branding
+    best_use_cases: ["Final assembly"]
+    input_types: ["assets", "template"]
+    output_types: ["mp4"]
+    automation_possible: false
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: manual
+
+  - tool_id: invideo-studio
+    name: InVideo Studio
+    category: assembly
+    role_in_video_factory: Drag-and-drop assembly
+    best_use_cases: ["Manual assembly"]
+    input_types: ["assets"]
+    output_types: ["mp4"]
+    automation_possible: false
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: manual
+
+  - tool_id: gumlet
+    name: Gumlet Video
+    category: hosting
+    role_in_video_factory: Adaptive video hosting + analytics
+    best_use_cases: ["HLS hosting", "Embeds"]
+    input_types: ["mp4"]
+    output_types: ["m3u8"]
+    automation_possible: true
+    api_available: yes
+    manual_workflow_supported: true
+    connector_status: mock
+    env_keys: ["GUMLET_ENABLED", "GUMLET_API_KEY"]
+
+  - tool_id: publitio
+    name: Publitio
+    category: hosting
+    role_in_video_factory: Alternative media hosting
+    best_use_cases: ["Lightweight hosting"]
+    input_types: ["mp4", "audio", "image"]
+    output_types: ["url"]
+    automation_possible: true
+    api_available: yes
+    manual_workflow_supported: true
+    connector_status: mock
+    env_keys: ["PUBLITIO_ENABLED", "PUBLITIO_API_KEY", "PUBLITIO_API_SECRET"]
+
+  - tool_id: viloud
+    name: Viloud
+    category: channel-embed
+    role_in_video_factory: 24/7 niche channel embeds
+    best_use_cases: ["Niche page embeds"]
+    input_types: ["youtube_ids"]
+    output_types: ["channel_iframe"]
+    automation_possible: false
+    api_available: no
+    manual_workflow_supported: true
+    connector_status: manual
+
+  - tool_id: facepop
+    name: FacePop
+    category: overlay
+    role_in_video_factory: Face overlay for repurposed content
+    best_use_cases: ["Founder face on B-roll"]
+    input_types: ["mp4", "face_capture"]
+    output_types: ["mp4"]
+    automation_possible: false
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: manual
+
+  - tool_id: nexweave
+    name: Nexweave
+    category: personalization
+    role_in_video_factory: Personalized 1:1 video / image overlays
+    best_use_cases: ["Outreach personalization"]
+    input_types: ["template", "merge_fields"]
+    output_types: ["mp4", "image"]
+    automation_possible: true
+    api_available: yes
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: yeetdl
+    name: YeetDL
+    category: source-ingest
+    role_in_video_factory: Lawful media download (client-owned / licensed sources)
+    best_use_cases: ["Client-supplied raw footage"]
+    input_types: ["url"]
+    output_types: ["mp4"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: manual
+    notes: USE ONLY with client-owned or licensed source URLs. Operator must confirm rights.
+
+  - tool_id: teliportme
+    name: TeliportMe Virtual Tours
+    category: real-estate
+    role_in_video_factory: 360 virtual tour ingest for listings
+    best_use_cases: ["Real estate", "Airbnb"]
+    input_types: ["360_image"]
+    output_types: ["virtual_tour_url"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  # ── Content & SEO ────────────────────────────────────────
+  - tool_id: blogify
+    name: Blogify
+    category: content
+    role_in_video_factory: Blog-to-video bridge
+    best_use_cases: ["Blog repurposing"]
+    input_types: ["blog_url"]
+    output_types: ["mp4", "script"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: neuronwriter
+    name: NeuronWriter
+    category: seo
+    role_in_video_factory: SEO research for the topic
+    best_use_cases: ["Keyword research"]
+    input_types: ["keyword"]
+    output_types: ["brief"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: katteb
+    name: Katteb
+    category: content
+    role_in_video_factory: Fact verification on generated copy
+    best_use_cases: ["Fact-check"]
+    input_types: ["text"]
+    output_types: ["citations"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: castmagic
+    name: Castmagic
+    category: transcription
+    role_in_video_factory: Transcribe + extract highlights
+    best_use_cases: ["Podcast → shorts"]
+    input_types: ["audio", "mp4"]
+    output_types: ["transcript", "highlights"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: spoken
+    name: Spoken
+    category: tts
+    role_in_video_factory: Text-to-speech voice rendering
+    best_use_cases: ["Voiceover"]
+    input_types: ["text"]
+    output_types: ["audio"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: rumble-studio
+    name: Rumble Studio
+    category: audio
+    role_in_video_factory: Audio interview production
+    best_use_cases: ["Interview series"]
+    input_types: ["interview"]
+    output_types: ["audio"]
+    automation_possible: false
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: manual
+
+  # ── Monetization & delivery ──────────────────────────────
+  - tool_id: suitedash
+    name: SuiteDash
+    category: client-portal
+    role_in_video_factory: Client portal delivery + asset access
+    best_use_cases: ["Client portal"]
+    input_types: ["asset", "client_ref"]
+    output_types: ["portal_link"]
+    automation_possible: true
+    api_available: yes
+    manual_workflow_supported: true
+    connector_status: mock
+    env_keys: ["SUITEDASH_ENABLED", "SUITEDASH_API_KEY"]
+
+  - tool_id: thrivecart
+    name: ThriveCart
+    category: billing
+    role_in_video_factory: Checkout / billing for video packages
+    best_use_cases: ["One-time + recurring checkout"]
+    input_types: ["plan", "customer"]
+    output_types: ["charge"]
+    automation_possible: true
+    api_available: yes
+    manual_workflow_supported: true
+    connector_status: mock
+    env_keys: ["THRIVECART_ENABLED", "THRIVECART_WEBHOOK_SECRET"]
+
+  - tool_id: productdyno
+    name: ProductDyno
+    category: membership
+    role_in_video_factory: Member delivery / drip
+    best_use_cases: ["Course delivery", "Membership"]
+    input_types: ["asset", "member_ref"]
+    output_types: ["member_link"]
+    automation_possible: true
+    api_available: yes
+    manual_workflow_supported: true
+    connector_status: mock
+    env_keys: ["PRODUCTDYNO_ENABLED", "PRODUCTDYNO_API_KEY"]
+
+  - tool_id: convertbox
+    name: ConvertBox
+    category: conversion
+    role_in_video_factory: Site overlay opt-ins for video offers
+    best_use_cases: ["Site-wide opt-ins"]
+    input_types: ["funnel"]
+    output_types: ["lead"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: kuicklist
+    name: Kuicklist
+    category: list
+    role_in_video_factory: List-builder for video content
+    best_use_cases: ["Listicles"]
+    input_types: ["topic"]
+    output_types: ["list"]
+    automation_possible: false
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: manual
+
+  - tool_id: acumbamail
+    name: Acumbamail
+    category: email
+    role_in_video_factory: Email distribution for video nurture
+    best_use_cases: ["Email nurture send"]
+    input_types: ["list", "campaign"]
+    output_types: ["send_result"]
+    automation_possible: true
+    api_available: yes
+    manual_workflow_supported: true
+    connector_status: planned
+    notes: Outreach send requires SAFE_OUTREACH_ENABLED=true.
+
+  # ── Forms & automation ───────────────────────────────────
+  - tool_id: gozen-forms
+    name: GoZen Forms
+    category: forms
+    role_in_video_factory: Intake forms for video requests
+    best_use_cases: ["Intake"]
+    input_types: ["form_def"]
+    output_types: ["form_submission"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: formaloo
+    name: Formaloo
+    category: forms
+    role_in_video_factory: Alternative intake forms
+    best_use_cases: ["Intake"]
+    input_types: ["form_def"]
+    output_types: ["form_submission"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: activepieces
+    name: Activepieces
+    category: workflow
+    role_in_video_factory: Open-source workflow orchestration
+    best_use_cases: ["Automation"]
+    input_types: ["workflow"]
+    output_types: ["run"]
+    automation_possible: true
+    api_available: yes
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: pabbly
+    name: Pabbly Connect
+    category: workflow
+    role_in_video_factory: Workflow orchestration
+    best_use_cases: ["Automation"]
+    input_types: ["workflow"]
+    output_types: ["run"]
+    automation_possible: true
+    api_available: yes
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: konnectzit
+    name: KonnectzIT
+    category: workflow
+    role_in_video_factory: Workflow orchestration
+    best_use_cases: ["Automation"]
+    input_types: ["workflow"]
+    output_types: ["run"]
+    automation_possible: true
+    api_available: yes
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: boost-space
+    name: Boost.space
+    category: workflow
+    role_in_video_factory: Data sync between tools
+    best_use_cases: ["Data sync"]
+    input_types: ["mapping"]
+    output_types: ["sync"]
+    automation_possible: true
+    api_available: yes
+    manual_workflow_supported: true
+    connector_status: planned
+
+  # ── Directory & distribution ─────────────────────────────
+  - tool_id: brilliant-directories
+    name: Brilliant Directories
+    category: directory
+    role_in_video_factory: Directory site embed / listing
+    best_use_cases: ["Directory listings"]
+    input_types: ["listing", "video_url"]
+    output_types: ["listing_url"]
+    automation_possible: true
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: planned
+
+  - tool_id: directorist
+    name: Directorist
+    category: directory
+    role_in_video_factory: WordPress directory distribution
+    best_use_cases: ["WordPress directories"]
+    input_types: ["listing", "video_url"]
+    output_types: ["listing_url"]
+    automation_possible: false
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: manual
+
+  - tool_id: twidget
+    name: Twidget
+    category: distribution
+    role_in_video_factory: Lightweight social embed widgets
+    best_use_cases: ["Social embeds"]
+    input_types: ["embed_def"]
+    output_types: ["html"]
+    automation_possible: false
+    api_available: unknown
+    manual_workflow_supported: true
+    connector_status: manual

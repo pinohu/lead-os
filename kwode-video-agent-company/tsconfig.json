@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "outDir": "dist",
+    "rootDir": ".",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": false,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "allowJs": false,
+    "noImplicitAny": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "baseUrl": ".",
+    "paths": {
+      "@schemas/*": ["packages/schemas/src/*"],
+      "@agents/*": ["packages/agents/src/*"],
+      "@video-catalog/*": ["packages/video-catalog/src/*"],
+      "@tool-registry/*": ["packages/tool-registry/src/*"],
+      "@workflow-engine/*": ["packages/workflow-engine/src/*"],
+      "@connectors/*": ["packages/connectors/src/*"],
+      "@qa/*": ["packages/qa/src/*"],
+      "@billing/*": ["packages/billing/src/*"],
+      "@memory/*": ["packages/memory/src/*"],
+      "@audit/*": ["packages/audit/src/*"],
+      "@prompts/*": ["packages/prompts/src/*"],
+      "@config/*": ["packages/config/src/*"]
+    }
+  },
+  "include": ["apps/**/*.ts", "packages/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules", "dist", "storage"]
+}

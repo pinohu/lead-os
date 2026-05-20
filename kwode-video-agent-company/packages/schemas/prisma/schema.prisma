@@ -1,0 +1,542 @@
+// Kwode Video Factory — database schema
+//
+// Design notes:
+// - Every domain action writes an AuditLog row.
+// - Every generated artifact (brief/script/storyboard/etc.) is stored as a row
+//   with a `version` field so revisions are inspectable.
+// - VideoJob.status is the single source of truth for state-machine position.
+// - Anything involving a person's likeness, voice, testimonial, or client-owned
+//   asset is gated through ConsentRecord and Asset.consentStatus.
+// - JSON columns are used liberally so the MVP can ship without dozens of
+//   relational sub-tables; downstream we can normalize as needed.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Tenancy & identity
+// ─────────────────────────────────────────────────────────────
+
+model Tenant {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  kind      String   // internal | erie-pro | yourdeputy | white-label | external
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users          User[]
+  clients        Client[]
+  providers      Provider[]
+  videoJobs      VideoJob[]
+  brandProfiles  BrandProfile[]
+  subscriptions  SubscriptionMock[]
+  entitlements   Entitlement[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  tenantId  String
+  email     String
+  name      String?
+  role      String   // operator | admin | reviewer | client | viewer
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, email])
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  email     String?
+  phone     String?
+  notes     String?
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  tenant       Tenant         @relation(fields: [tenantId], references: [id])
+  brandProfile BrandProfile?
+  videoJobs    VideoJob[]
+}
+
+model Provider {
+  id          String   @id @default(cuid())
+  tenantId    String
+  externalId  String?  // e.g. erie.pro provider id when linked
+  businessName String
+  niche       String?
+  serviceArea String?
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now())
+
+  tenant   Tenant     @relation(fields: [tenantId], references: [id])
+  videoJobs VideoJob[]
+}
+
+// ─────────────────────────────────────────────────────────────
+// Brand context
+// ─────────────────────────────────────────────────────────────
+
+model BrandProfile {
+  id          String   @id @default(cuid())
+  tenantId    String
+  clientId    String?  @unique
+  brandName   String
+  voiceTone   String?
+  palette     Json     @default("{}")
+  typography  Json     @default("{}")
+  taglines    Json     @default("[]")
+  proofPoints Json     @default("[]")
+  forbidden   Json     @default("[]")  // language / claims to avoid
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant  @relation(fields: [tenantId], references: [id])
+  client Client? @relation(fields: [clientId], references: [id])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Video jobs & generated artifacts
+// ─────────────────────────────────────────────────────────────
+
+model VideoJob {
+  id              String   @id @default(cuid())
+  tenantId        String
+  clientId        String?
+  providerId      String?
+  videoTypeId     String
+  title           String
+  status          String   @default("draft")  // see workflow-engine/state-machine.ts
+  priority        String   @default("normal") // low | normal | high | rush
+  blockedReason   String?
+  failureReason   String?
+  consentStatus   String   @default("not_required") // not_required | pending | approved | rejected
+  qaResult        String?  // pending | passed | failed
+  approvalResult  String?  // pending | approved | rejected | revision_requested
+  deliveredAt     DateTime?
+  publishedAt     DateTime?
+  archivedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  metadata        Json     @default("{}")
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id])
+  client   Client?   @relation(fields: [clientId], references: [id])
+  provider Provider? @relation(fields: [providerId], references: [id])
+
+  inputs          VideoInput[]
+  briefs          CreativeBrief[]
+  scripts         Script[]
+  storyboards     Storyboard[]
+  scenes          Scene[]
+  prompts         Prompt[]
+  generationRuns  GenerationRun[]
+  assets          Asset[]
+  qaReviews       QAReview[]
+  approvals       Approval[]
+  revisions       Revision[]
+  deliverables    Deliverable[]
+  publishingRecords PublishingRecord[]
+  agentRuns       AgentRun[]
+  toolRuns        ToolRun[]
+  consentRecords  ConsentRecord[]
+
+  @@index([tenantId, status])
+  @@index([videoTypeId])
+}
+
+model VideoInput {
+  id        String   @id @default(cuid())
+  jobId     String
+  kind      String   // brief_form | uploaded_asset | url | text | answer
+  payload   Json
+  source    String?
+  createdAt DateTime @default(now())
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model CreativeBrief {
+  id          String   @id @default(cuid())
+  jobId       String
+  version     Int
+  objective   String?
+  audience    String?
+  hook        String?
+  cta         String?
+  toneOfVoice String?
+  trustSignals Json    @default("[]")
+  constraints Json     @default("{}")
+  raw         Json
+  createdAt   DateTime @default(now())
+  authorAgent String?
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, version])
+}
+
+model Script {
+  id          String   @id @default(cuid())
+  jobId       String
+  version     Int
+  format      String   // shot-list | continuous | dialogue | voiceover
+  body        String
+  wordCount   Int      @default(0)
+  language    String   @default("en-US")
+  raw         Json
+  createdAt   DateTime @default(now())
+  authorAgent String?
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, version])
+}
+
+model Storyboard {
+  id          String   @id @default(cuid())
+  jobId       String
+  version     Int
+  body        Json     // ordered scene cards
+  createdAt   DateTime @default(now())
+  authorAgent String?
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, version])
+}
+
+model Scene {
+  id            String   @id @default(cuid())
+  jobId         String
+  storyboardId  String?
+  order         Int
+  durationSec   Float?
+  description   String
+  visualNotes   String?
+  audioNotes    String?
+  cameraNotes   String?
+  metadata      Json     @default("{}")
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, order])
+}
+
+model Prompt {
+  id        String   @id @default(cuid())
+  jobId     String
+  sceneOrder Int?
+  kind      String   // image | video | voice | music | sfx | text-to-3d
+  toolHint  String?
+  body      String
+  params    Json     @default("{}")
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  authorAgent String?
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, sceneOrder])
+}
+
+model GenerationRun {
+  id         String   @id @default(cuid())
+  jobId      String
+  toolId     String
+  status     String   // queued | running | completed | failed | mocked
+  mode       String   @default("mock") // mock | api | manual | hermes
+  startedAt  DateTime @default(now())
+  finishedAt DateTime?
+  input      Json
+  output     Json     @default("{}")
+  error      String?
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, status])
+}
+
+model Asset {
+  id            String   @id @default(cuid())
+  jobId         String
+  kind          String   // image | video | audio | caption | thumbnail | document
+  uri           String   // local path or remote URL
+  mimeType      String?
+  durationSec   Float?
+  bytes         BigInt?
+  width         Int?
+  height        Int?
+  consentStatus String   @default("not_required") // not_required | pending | approved | rejected
+  metadata      Json     @default("{}")
+  createdAt     DateTime @default(now())
+  producedBy    String?  // agent_id or tool_id
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, kind])
+}
+
+// ─────────────────────────────────────────────────────────────
+// QA / Approval / Revisions
+// ─────────────────────────────────────────────────────────────
+
+model QAReview {
+  id          String   @id @default(cuid())
+  jobId       String
+  version     Int
+  reviewer    String?  // agent_id or user email
+  passed      Boolean
+  checks      Json     // { category: { passed: bool, notes: string } }
+  blockingIssues Json  @default("[]")
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, version])
+}
+
+model Approval {
+  id        String   @id @default(cuid())
+  jobId     String
+  decision  String   // approved | rejected | revision_requested
+  decidedBy String   // user email or "agent:<id>"
+  notes     String?
+  createdAt DateTime @default(now())
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model Revision {
+  id        String   @id @default(cuid())
+  jobId     String
+  requestedBy String?
+  reason    String
+  scope     Json     @default("[]")  // which artifact(s) to revise
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  resolvedAt DateTime?
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────────────────────────────
+// Delivery / Publishing
+// ─────────────────────────────────────────────────────────────
+
+model Deliverable {
+  id        String   @id @default(cuid())
+  jobId     String
+  assetId   String?
+  channel   String   // client_portal | download | suitedash | productdyno | manual
+  uri       String?
+  status    String   @default("pending") // pending | delivered | failed
+  deliveredAt DateTime?
+  notes     String?
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model PublishingRecord {
+  id        String   @id @default(cuid())
+  jobId     String
+  destination String  // youtube | gbp | facebook | instagram | tiktok | gumlet | publitio | viloud | erie.pro
+  status    String   @default("planned") // planned | published | failed | blocked_by_flag
+  externalId String?
+  payload   Json     @default("{}")
+  publishedAt DateTime?
+  notes     String?
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────────────────────────────
+// Billing (mock-only in MVP)
+// ─────────────────────────────────────────────────────────────
+
+model PricingPlan {
+  id          String   @id
+  name        String
+  cadence     String   // one_time | monthly | quarterly | annual | usage
+  priceUSD    Int      // cents
+  description String?
+  features    Json     @default("[]")
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now())
+}
+
+model Entitlement {
+  id        String   @id @default(cuid())
+  tenantId  String
+  planId    String
+  scope     Json     @default("{}")  // e.g. { videosPerMonth: 4 }
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+}
+
+model SubscriptionMock {
+  id        String   @id @default(cuid())
+  tenantId  String
+  planId    String
+  status    String   @default("active") // active | paused | cancelled | mocked
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  metadata  Json     @default("{}")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Agents, tools, runs
+// ─────────────────────────────────────────────────────────────
+
+model AgentDefinition {
+  id            String   @id            // agent_id from YAML
+  name          String
+  department    String
+  mission       String
+  responsibilities Json  @default("[]")
+  inputs        Json     @default("[]")
+  outputs       Json     @default("[]")
+  toolsAllowed  Json     @default("[]")
+  toolsDisallowed Json   @default("[]")
+  memoryScope   String   @default("job") // job | client | tenant | global | ephemeral
+  escalationRules Json   @default("[]")
+  qualityGates  Json     @default("[]")
+  successMetrics Json    @default("[]")
+  promptTemplate String  @default("")
+  exampleTasks  Json     @default("[]")
+  enabled       Boolean  @default(true)
+  source        String   @default("yaml")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model AgentRun {
+  id          String   @id @default(cuid())
+  jobId       String?
+  agentId     String
+  runtime     String   @default("mock")   // mock | hermes | direct-llm
+  status      String   @default("queued") // queued | running | completed | failed
+  input       Json
+  output      Json     @default("{}")
+  error       String?
+  cost        Json     @default("{}")     // tokens, dollars, ms
+  startedAt   DateTime @default(now())
+  finishedAt  DateTime?
+
+  job VideoJob? @relation(fields: [jobId], references: [id], onDelete: SetNull)
+
+  @@index([agentId, status])
+}
+
+model ToolRegistry {
+  id              String   @id            // tool_id from YAML
+  name            String
+  category        String
+  roleInFactory   String?
+  bestUseCases    Json     @default("[]")
+  inputTypes      Json     @default("[]")
+  outputTypes     Json     @default("[]")
+  automationPossible Boolean @default(false)
+  apiAvailable    String   @default("unknown") // yes | no | unknown
+  manualWorkflow  Boolean  @default(true)
+  connectorStatus String   @default("planned") // planned | mock | manual | api
+  envKeys         Json     @default("[]")
+  notes           String?
+  enabled         Boolean  @default(true)
+  createdAt       DateTime @default(now())
+}
+
+model ToolRun {
+  id        String   @id @default(cuid())
+  jobId     String?
+  toolId    String
+  mode      String   // mock | api | manual
+  status    String   @default("queued")
+  input     Json
+  output    Json     @default("{}")
+  error     String?
+  startedAt DateTime @default(now())
+  finishedAt DateTime?
+
+  job VideoJob? @relation(fields: [jobId], references: [id], onDelete: SetNull)
+}
+
+// ─────────────────────────────────────────────────────────────
+// Memory & audit
+// ─────────────────────────────────────────────────────────────
+
+model MemoryRecord {
+  id        String   @id @default(cuid())
+  scope     String   // global | tenant | client | brand | job | agent
+  scopeId   String?
+  key       String
+  value     Json
+  source    String?  // agent_id, user, system
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([scope, scopeId, key])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actor     String   // "user:<email>" | "agent:<id>" | "system" | "tool:<id>"
+  action    String
+  target    String?
+  jobId     String?
+  payload   Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([jobId, createdAt])
+  @@index([actor, createdAt])
+}
+
+model PerformanceMetric {
+  id        String   @id @default(cuid())
+  jobId     String?
+  metric    String   // brief.tokens | script.minutes | qa.failures | cost.usd | etc.
+  value     Float
+  unit      String?
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([metric, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Consent (likeness, voice, testimonial)
+// ─────────────────────────────────────────────────────────────
+
+model ConsentRecord {
+  id           String   @id @default(cuid())
+  jobId        String
+  kind         String   // face | voice | testimonial | logo | trademark | likeness | client_asset
+  subject      String   // person/entity name
+  evidenceUri  String?
+  status       String   @default("pending") // pending | approved | rejected | not_required
+  collectedBy  String?
+  collectedAt  DateTime @default(now())
+  expiresAt    DateTime?
+  notes        String?
+
+  job VideoJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, status])
+}

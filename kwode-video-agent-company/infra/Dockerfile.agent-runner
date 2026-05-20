@@ -1,0 +1,11 @@
+FROM node:20-alpine
+WORKDIR /app
+RUN apk add --no-cache openssl bash
+COPY package.json package-lock.json* ./
+RUN npm install --no-audit --no-fund
+COPY tsconfig.json ./
+COPY packages ./packages
+COPY apps ./apps
+COPY scripts ./scripts
+RUN npx prisma generate --schema packages/schemas/prisma/schema.prisma
+CMD ["npx", "tsx", "apps/agent-runner/src/index.ts"]

@@ -1,0 +1,57 @@
+{
+  "name": "kwode-video-agent-company",
+  "version": "0.1.0-mvp",
+  "description": "Kwode Video Factory — a company of Hermes agents that operates an AI video production pipeline.",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . --ext .ts || true",
+    "dev": "tsx watch apps/api/src/index.ts",
+    "start": "node dist/apps/api/src/index.js",
+    "worker": "tsx apps/worker/src/index.ts",
+    "agent-runner": "tsx apps/agent-runner/src/index.ts",
+    "cli": "tsx apps/cli/src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:generate": "prisma generate --schema packages/schemas/prisma/schema.prisma",
+    "db:migrate": "prisma migrate dev --schema packages/schemas/prisma/schema.prisma",
+    "db:migrate:deploy": "prisma migrate deploy --schema packages/schemas/prisma/schema.prisma",
+    "db:reset": "prisma migrate reset --schema packages/schemas/prisma/schema.prisma --force",
+    "db:seed": "tsx scripts/seed.ts",
+    "video:create-demo": "tsx apps/cli/src/index.ts video:create-demo",
+    "video:generate-brief": "tsx apps/cli/src/index.ts video:generate-brief",
+    "video:generate-script": "tsx apps/cli/src/index.ts video:generate-script",
+    "video:generate-storyboard": "tsx apps/cli/src/index.ts video:generate-storyboard",
+    "video:generate-prompts": "tsx apps/cli/src/index.ts video:generate-prompts",
+    "video:qa": "tsx apps/cli/src/index.ts video:qa",
+    "agents:list": "tsx apps/cli/src/index.ts agents:list",
+    "agents:run": "tsx apps/cli/src/index.ts agents:run",
+    "tools:list": "tsx apps/cli/src/index.ts tools:list",
+    "health": "tsx apps/cli/src/index.ts health"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "js-yaml": "^4.1.0",
+    "nanoid": "^5.0.7",
+    "pino": "^9.5.0",
+    "pino-http": "^10.3.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.7.4",
+    "prisma": "^5.22.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.3"
+  }
+}

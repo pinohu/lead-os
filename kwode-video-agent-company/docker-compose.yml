@@ -1,0 +1,97 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: kwode-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kwode
+      POSTGRES_PASSWORD: kwode
+      POSTGRES_DB: kwode_video
+    ports:
+      - "5433:5432"
+    volumes:
+      - kwode-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kwode -d kwode_video"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: kwode-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.api
+    container_name: kwode-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://kwode:kwode@db:5432/kwode_video?schema=public
+      REDIS_URL: redis://redis:6379
+      API_PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./storage:/app/storage
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  worker:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.worker
+    container_name: kwode-worker
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://kwode:kwode@db:5432/kwode_video?schema=public
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - ./storage:/app/storage
+
+  agent-runner:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.agent-runner
+    container_name: kwode-agent-runner
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://kwode:kwode@db:5432/kwode_video?schema=public
+    volumes:
+      - ./storage:/app/storage
+
+volumes:
+  kwode-pgdata:

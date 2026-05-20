@@ -1,0 +1,791 @@
+# Master video catalog — 50 base video types.
+# Niche-specific overrides live in catalog/niche-overrides.yaml.
+
+defaults:
+  default_agent_chain: &default_chain
+    - client-intake-agent
+    - brand-profile-agent
+    - creative-brief-agent
+    - scriptwriter-agent
+    - storyboard-director-agent
+    - scene-planning-agent
+    - prompt-engineer-agent
+    - visual-consistency-agent
+    - vimax-coordinator-agent
+    - qa-reviewer-agent
+    - brand-safety-agent
+    - legal-rights-consent-agent
+    - client-approval-agent
+    - delivery-agent
+
+  short_chain: &short_chain
+    - client-intake-agent
+    - brand-profile-agent
+    - creative-brief-agent
+    - scriptwriter-agent
+    - storyboard-director-agent
+    - prompt-engineer-agent
+    - qa-reviewer-agent
+    - delivery-agent
+
+  standard_qa: &standard_qa
+    - visual_quality
+    - business_accuracy
+    - brand_consistency
+    - caption_accuracy
+    - rights_and_consent
+    - claims_and_compliance
+    - platform_readiness
+    - conversion_strength
+    - client_readiness
+
+video_types:
+  - video_type_id: business-intro
+    category: business-introduction
+    title: Business Introduction Video
+    description: A 60-90s introduction to a business, its mission, and its differentiators.
+    target_audience: First-time visitors / prospects
+    funnel_stage: TOFU
+    recommended_duration: 90
+    recommended_aspect_ratios: ["16:9", "9:16"]
+    required_inputs: ["business_name", "services", "service_area"]
+    optional_inputs: ["proof_points", "logo", "founder_quote"]
+    ideal_tools: ["vimax", "supermachine", "flexclip", "gumlet", "suitedash"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Starter Video Pack", "Monthly Visibility Pack"]
+
+  - video_type_id: service-explainer
+    category: service-explainer
+    title: Service Explainer Video
+    description: Walk a viewer through a specific service from problem to outcome.
+    target_audience: Prospects in problem-aware stage
+    funnel_stage: MOFU
+    recommended_duration: 90
+    recommended_aspect_ratios: ["16:9", "9:16"]
+    required_inputs: ["service_name", "problem_statement", "outcome"]
+    optional_inputs: ["case_study"]
+    ideal_tools: ["vimax", "supermachine", "vadoo", "flexclip", "gumlet"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Starter Video Pack", "Monthly Visibility Pack"]
+
+  - video_type_id: product-explainer
+    category: product-explainer
+    title: Product Explainer Video
+    description: A short demo / explainer for a product or SaaS feature.
+    target_audience: Prospects in solution-aware stage
+    funnel_stage: MOFU
+    recommended_duration: 120
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["product_name", "core_features", "ideal_user"]
+    optional_inputs: ["pricing", "demo_screencast"]
+    ideal_tools: ["vimax", "comfyui", "supermachine", "gumlet"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["SaaS Product Explainer Package"]
+
+  - video_type_id: local-service-provider
+    category: local-service
+    title: Local Service Provider Video
+    description: Hyperlocal intro pegged to neighborhood + niche.
+    target_audience: Local searchers
+    funnel_stage: TOFU
+    recommended_duration: 60
+    recommended_aspect_ratios: ["9:16", "1:1"]
+    required_inputs: ["business_name", "service_area", "niche"]
+    optional_inputs: ["reviews"]
+    ideal_tools: ["vimax", "vadoo", "viloud", "gumlet"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Premium Lead Growth Pack"]
+
+  - video_type_id: directory-listing
+    category: directory-listing
+    title: Directory Listing Video
+    description: Profile video for a directory listing (Erie.pro, Brilliant Directories).
+    target_audience: Directory visitors
+    funnel_stage: MOFU
+    recommended_duration: 45
+    recommended_aspect_ratios: ["9:16", "16:9"]
+    required_inputs: ["business_name", "niche", "service_area"]
+    optional_inputs: ["badges", "awards"]
+    ideal_tools: ["vimax", "supermachine", "viloud"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Erie.pro Directory Elite Bundle"]
+
+  - video_type_id: social-shortform
+    category: social
+    title: Short-Form Vertical Social Video
+    description: 9:16 video tuned for Reels / TikTok / Shorts.
+    target_audience: Social audiences
+    funnel_stage: TOFU
+    recommended_duration: 30
+    recommended_aspect_ratios: ["9:16"]
+    required_inputs: ["hook", "value_prop"]
+    optional_inputs: ["trending_audio"]
+    ideal_tools: ["vadoo", "zebracat", "vimax", "minvo"]
+    agent_chain: *short_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Monthly Visibility Pack"]
+
+  - video_type_id: video-ad
+    category: ads
+    title: Paid Video Ad
+    description: Hook-led 15-60s ad creative for Meta / YouTube / TikTok.
+    target_audience: Paid-traffic audiences
+    funnel_stage: TOFU/MOFU
+    recommended_duration: 30
+    recommended_aspect_ratios: ["9:16", "1:1", "16:9"]
+    required_inputs: ["offer", "cta", "target_audience"]
+    optional_inputs: ["objection_handler"]
+    ideal_tools: ["vimax", "zebracat", "supermachine"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Premium Lead Growth Pack"]
+
+  - video_type_id: landing-page
+    category: landing-page
+    title: Landing Page Hero Video
+    description: Above-the-fold landing page video with hook + offer.
+    target_audience: Inbound visitors
+    funnel_stage: MOFU
+    recommended_duration: 60
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["offer", "audience", "cta"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Premium Lead Growth Pack"]
+
+  - video_type_id: sales-funnel
+    category: funnel
+    title: Sales Funnel Video
+    description: Funnel-stage specific (TOFU/MOFU/BOFU).
+    target_audience: Funnel visitors
+    funnel_stage: BOFU
+    recommended_duration: 120
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["funnel_stage", "offer"]
+    optional_inputs: ["testimonial"]
+    ideal_tools: ["vimax", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Premium Lead Growth Pack"]
+
+  - video_type_id: personalized-outreach
+    category: outreach
+    title: Personalized Outreach Video
+    description: 1-to-1 personalized prospect video. Requires outreach flag to send.
+    target_audience: Single named prospect
+    funnel_stage: TOFU
+    recommended_duration: 45
+    recommended_aspect_ratios: ["1:1", "16:9"]
+    required_inputs: ["prospect_name", "prospect_context"]
+    optional_inputs: ["screenshare_clip"]
+    ideal_tools: ["bigvu", "facepop", "nexweave"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Outreach add-on"]
+
+  - video_type_id: testimonial
+    category: testimonial
+    title: Testimonial / Review Video
+    description: Consent-gated compilation of customer reviews.
+    target_audience: Mid-funnel prospects
+    funnel_stage: MOFU
+    recommended_duration: 90
+    recommended_aspect_ratios: ["16:9", "9:16"]
+    required_inputs: ["reviews", "consent_records"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Monthly Visibility Pack"]
+
+  - video_type_id: case-study
+    category: case-study
+    title: Case Study Video
+    description: Customer success story with metrics + narrative arc.
+    target_audience: Late-stage prospects
+    funnel_stage: BOFU
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["customer_name", "metrics", "narrative"]
+    optional_inputs: ["interview_clip"]
+    ideal_tools: ["vimax", "flexclip", "gumlet"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Custom case-study production"]
+
+  - video_type_id: before-after
+    category: before-after
+    title: Before / After Video
+    description: Visual transformation showcase (cleanup, remodel, etc.).
+    target_audience: TOFU/MOFU
+    funnel_stage: MOFU
+    recommended_duration: 30
+    recommended_aspect_ratios: ["9:16"]
+    required_inputs: ["before_image", "after_image"]
+    optional_inputs: []
+    ideal_tools: ["flexclip", "vimax"]
+    agent_chain: *short_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Monthly Visibility Pack"]
+
+  - video_type_id: faq
+    category: faq
+    title: FAQ Video
+    description: Short answer-the-question video.
+    target_audience: Mid-funnel
+    funnel_stage: MOFU
+    recommended_duration: 60
+    recommended_aspect_ratios: ["9:16", "16:9"]
+    required_inputs: ["question", "answer"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "vadoo"]
+    agent_chain: *short_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Monthly Visibility Pack"]
+
+  - video_type_id: how-to
+    category: how-to
+    title: How-To Video
+    description: Step-by-step instructional video.
+    target_audience: TOFU
+    funnel_stage: TOFU
+    recommended_duration: 120
+    recommended_aspect_ratios: ["16:9", "9:16"]
+    required_inputs: ["topic", "steps"]
+    optional_inputs: ["materials_list"]
+    ideal_tools: ["vimax", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Monthly Visibility Pack"]
+
+  - video_type_id: educational
+    category: educational
+    title: Educational Video
+    description: Concept teaching video for a general audience.
+    target_audience: General
+    funnel_stage: TOFU
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["topic", "learning_objectives"]
+    optional_inputs: ["assessment"]
+    ideal_tools: ["vimax", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Training Video Production"]
+
+  - video_type_id: training-module
+    category: training
+    title: Training Module Video
+    description: Structured workforce training video.
+    target_audience: Internal staff
+    funnel_stage: N/A
+    recommended_duration: 600
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["module_title", "objectives", "assessment"]
+    optional_inputs: ["scenario"]
+    ideal_tools: ["vimax", "productdyno"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Training Video Production"]
+
+  - video_type_id: onboarding
+    category: onboarding
+    title: Customer Onboarding Video
+    description: Get a new customer to first value quickly.
+    target_audience: New customers
+    funnel_stage: BOFU
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["product", "first_value_moment"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "gumlet", "suitedash"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["YourDeputy Onboarding Pack"]
+
+  - video_type_id: sop-process
+    category: sop
+    title: SOP / Process Video
+    description: Document an internal SOP visually.
+    target_audience: Internal staff
+    funnel_stage: N/A
+    recommended_duration: 300
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["sop_steps"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Internal Kwode content factory"]
+
+  - video_type_id: customer-support
+    category: support
+    title: Customer Support Video
+    description: Answer a recurring support question or resolve a known issue.
+    target_audience: Existing customers
+    funnel_stage: N/A
+    recommended_duration: 90
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["question", "resolution_steps"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Internal Kwode content factory"]
+
+  - video_type_id: internal-ops
+    category: internal
+    title: Internal Operations Video
+    description: Internal team update / leadership message.
+    target_audience: Internal staff
+    funnel_stage: N/A
+    recommended_duration: 120
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["update", "speaker"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "bigvu"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Internal Kwode content factory"]
+
+  - video_type_id: recruitment
+    category: recruitment
+    title: Recruitment Video
+    description: Employer-brand video for hiring.
+    target_audience: Job candidates
+    funnel_stage: TOFU
+    recommended_duration: 120
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["role", "culture_points"]
+    optional_inputs: ["employee_quotes"]
+    ideal_tools: ["vimax", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Done-for-you production"]
+
+  - video_type_id: investor
+    category: investor
+    title: Investor Pitch Video
+    description: Concise investor narrative.
+    target_audience: Investors
+    funnel_stage: BOFU
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["problem", "solution", "traction", "ask"]
+    optional_inputs: ["team_bio"]
+    ideal_tools: ["vimax"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Custom investor production"]
+
+  - video_type_id: grant-proposal
+    category: investor
+    title: Grant Proposal Video
+    description: Mission-led video for grant applications.
+    target_audience: Grantmakers
+    funnel_stage: BOFU
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["mission", "impact_data", "ask"]
+    optional_inputs: []
+    ideal_tools: ["vimax"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Custom grant production"]
+
+  - video_type_id: real-estate-listing
+    category: real-estate
+    title: Real Estate Listing Walkthrough
+    description: Property walkthrough with key features highlighted.
+    target_audience: House hunters
+    funnel_stage: MOFU
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9", "9:16"]
+    required_inputs: ["property_photos", "specs"]
+    optional_inputs: ["neighborhood_clip"]
+    ideal_tools: ["vimax", "teliportme", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Real estate / Airbnb video product"]
+
+  - video_type_id: airbnb-hospitality
+    category: real-estate
+    title: Airbnb / Hospitality Video
+    description: Property + amenities + neighborhood highlights.
+    target_audience: Travelers
+    funnel_stage: MOFU
+    recommended_duration: 90
+    recommended_aspect_ratios: ["16:9", "9:16"]
+    required_inputs: ["property_photos", "amenities"]
+    optional_inputs: ["host_intro"]
+    ideal_tools: ["vimax", "teliportme"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Real estate / Airbnb video product"]
+
+  - video_type_id: church-ministry
+    category: faith
+    title: Church / Ministry Video
+    description: Sermon highlight, event recap, or ministry intro.
+    target_audience: Congregants
+    funnel_stage: TOFU
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["theme", "scripture_reference"]
+    optional_inputs: ["service_clip"]
+    ideal_tools: ["vimax", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Faith product line"]
+
+  - video_type_id: childrens-story
+    category: children
+    title: Children's Story Video
+    description: Kid-safe animated story with moral arc.
+    target_audience: Children + parents
+    funnel_stage: N/A
+    recommended_duration: 240
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["story_outline", "age_range"]
+    optional_inputs: ["custom_character"]
+    ideal_tools: ["vimax", "supermachine"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Personalized story products"]
+
+  - video_type_id: faith-inspirational
+    category: faith
+    title: Faith / Inspirational Video
+    description: Narrative inspirational video on a chosen theme.
+    target_audience: Faith audiences
+    funnel_stage: TOFU
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9", "9:16"]
+    required_inputs: ["theme"]
+    optional_inputs: ["scripture_reference", "music_mood"]
+    ideal_tools: ["vimax", "supermachine"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Faith product line"]
+
+  - video_type_id: healthcare-education
+    category: healthcare
+    title: Healthcare Education Video
+    description: Patient education / clinical training.
+    target_audience: Patients or clinicians
+    funnel_stage: MOFU
+    recommended_duration: 300
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["topic", "audience_level", "clinician_review"]
+    optional_inputs: []
+    ideal_tools: ["vimax"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Healthcare training packages"]
+
+  - video_type_id: manufacturing-training
+    category: manufacturing
+    title: Manufacturing Training Video
+    description: Safety / SOP module for a manufacturing facility.
+    target_audience: Plant workforce
+    funnel_stage: N/A
+    recommended_duration: 600
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["sop", "hazards", "ppe"]
+    optional_inputs: []
+    ideal_tools: ["vimax"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Manufacturing training packages"]
+
+  - video_type_id: academic-course
+    category: education
+    title: Academic Course Video
+    description: One module of an online course.
+    target_audience: Students
+    funnel_stage: N/A
+    recommended_duration: 600
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["learning_objectives", "lesson_outline"]
+    optional_inputs: ["assessment"]
+    ideal_tools: ["vimax", "productdyno"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Course production"]
+
+  - video_type_id: authority-site
+    category: seo
+    title: Authority Site Article Video
+    description: Video version of a pillar / authority article.
+    target_audience: Search audiences
+    funnel_stage: TOFU
+    recommended_duration: 300
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["article_body"]
+    optional_inputs: ["transcript"]
+    ideal_tools: ["vimax", "neuronwriter", "blogify"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Affiliate / authority video product"]
+
+  - video_type_id: seo-content
+    category: seo
+    title: SEO Content Video
+    description: Video targeting a specific keyword cluster.
+    target_audience: Search audiences
+    funnel_stage: TOFU
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["keyword_cluster", "intent"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "neuronwriter"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["SEO video product"]
+
+  - video_type_id: blog-to-video
+    category: repurposing
+    title: Blog-to-Video Repurposing
+    description: Convert an existing blog post into a video.
+    target_audience: Blog readers + new traffic
+    funnel_stage: TOFU
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["blog_url_or_body"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "blogify"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Repurposing pack"]
+
+  - video_type_id: podcast-to-video
+    category: repurposing
+    title: Podcast-to-Video
+    description: Turn podcast audio into video shorts + long-form.
+    target_audience: Podcast audience + new traffic
+    funnel_stage: TOFU
+    recommended_duration: 60
+    recommended_aspect_ratios: ["9:16", "16:9"]
+    required_inputs: ["audio_url"]
+    optional_inputs: []
+    ideal_tools: ["castmagic", "minvo", "onetakeai"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Repurposing pack"]
+
+  - video_type_id: webinar-repurpose
+    category: repurposing
+    title: Webinar Repurposing
+    description: Cut a webinar into highlights and shorts.
+    target_audience: Webinar audience + new traffic
+    funnel_stage: MOFU
+    recommended_duration: 60
+    recommended_aspect_ratios: ["9:16", "16:9"]
+    required_inputs: ["webinar_recording"]
+    optional_inputs: []
+    ideal_tools: ["castmagic", "minvo"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Repurposing pack"]
+
+  - video_type_id: event-recap
+    category: event
+    title: Event Recap Video
+    description: 60-90s recap of a live event.
+    target_audience: Attendees + new prospects
+    funnel_stage: TOFU
+    recommended_duration: 90
+    recommended_aspect_ratios: ["16:9", "9:16"]
+    required_inputs: ["event_footage"]
+    optional_inputs: []
+    ideal_tools: ["flexclip", "vimax"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Custom event production"]
+
+  - video_type_id: personalized-celebration
+    category: personalization
+    title: Personalized Celebration Video
+    description: Birthday / anniversary / milestone celebration video.
+    target_audience: Named recipient
+    funnel_stage: N/A
+    recommended_duration: 60
+    recommended_aspect_ratios: ["9:16", "1:1"]
+    required_inputs: ["recipient_name", "occasion"]
+    optional_inputs: ["photos"]
+    ideal_tools: ["vimax", "supermachine"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Personalized story products"]
+
+  - video_type_id: ai-avatar-talking-head
+    category: avatar
+    title: AI Avatar / Talking Head Video
+    description: Synthetic talking-head presenter video.
+    target_audience: General
+    funnel_stage: TOFU
+    recommended_duration: 90
+    recommended_aspect_ratios: ["16:9", "9:16"]
+    required_inputs: ["script", "avatar_choice"]
+    optional_inputs: []
+    ideal_tools: ["bigvu", "vimax"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Monthly Visibility Pack"]
+
+  - video_type_id: faceless
+    category: avatar
+    title: Faceless Video
+    description: No on-camera presenter; B-roll + VO + text.
+    target_audience: General
+    funnel_stage: TOFU
+    recommended_duration: 60
+    recommended_aspect_ratios: ["9:16", "16:9"]
+    required_inputs: ["topic"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "vadoo", "zebracat"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Monthly Visibility Pack"]
+
+  - video_type_id: animated-story
+    category: animation
+    title: Animated Story Video
+    description: Narrative animated short.
+    target_audience: General
+    funnel_stage: TOFU
+    recommended_duration: 120
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["story_outline"]
+    optional_inputs: ["character_sketch"]
+    ideal_tools: ["vimax", "supermachine"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Personalized story products"]
+
+  - video_type_id: cinematic-narrative
+    category: cinematic
+    title: Cinematic Narrative Video
+    description: Cinematic style 60-90s narrative spot.
+    target_audience: Premium brand audiences
+    funnel_stage: TOFU
+    recommended_duration: 90
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["theme", "narrative_arc"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "supermachine"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Custom premium production"]
+
+  - video_type_id: data-report
+    category: data
+    title: Data / Report Explanation Video
+    description: Animated explanation of a report or dataset.
+    target_audience: Business audiences
+    funnel_stage: MOFU
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["report_summary", "key_metrics"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["B2B content production"]
+
+  - video_type_id: local-seo
+    category: seo
+    title: Local SEO Video
+    description: Service-area targeted SEO video.
+    target_audience: Local searchers
+    funnel_stage: TOFU
+    recommended_duration: 90
+    recommended_aspect_ratios: ["9:16", "16:9"]
+    required_inputs: ["niche", "service_area"]
+    optional_inputs: []
+    ideal_tools: ["vimax"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Premium Lead Growth Pack"]
+
+  - video_type_id: gbp-post
+    category: gbp
+    title: Google Business Profile Video
+    description: GBP-spec short for the listing.
+    target_audience: GBP searchers
+    funnel_stage: TOFU
+    recommended_duration: 30
+    recommended_aspect_ratios: ["9:16", "1:1"]
+    required_inputs: ["niche", "offer"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "vadoo"]
+    agent_chain: *short_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Monthly Visibility Pack"]
+
+  - video_type_id: email-nurture
+    category: nurture
+    title: Email Nurture Video
+    description: Short video embed for nurture emails.
+    target_audience: Email list
+    funnel_stage: MOFU
+    recommended_duration: 45
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["nurture_topic"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "flexclip"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Monthly Visibility Pack"]
+
+  - video_type_id: client-portal
+    category: client-portal
+    title: Client Portal Welcome / Walkthrough
+    description: Portal walkthrough for newly onboarded clients.
+    target_audience: New clients
+    funnel_stage: BOFU
+    recommended_duration: 120
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["portal_url", "key_actions"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "suitedash"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["YourDeputy Onboarding Pack"]
+
+  - video_type_id: membership-community
+    category: membership
+    title: Membership / Community Video
+    description: Member-only update or content.
+    target_audience: Paying members
+    funnel_stage: N/A
+    recommended_duration: 180
+    recommended_aspect_ratios: ["16:9"]
+    required_inputs: ["topic"]
+    optional_inputs: []
+    ideal_tools: ["vimax", "productdyno"]
+    agent_chain: *default_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Membership product line"]
+
+  - video_type_id: ecommerce-product
+    category: ecommerce
+    title: E-Commerce Product Video
+    description: Product highlight video for an e-commerce listing.
+    target_audience: E-commerce shoppers
+    funnel_stage: MOFU
+    recommended_duration: 30
+    recommended_aspect_ratios: ["1:1", "9:16"]
+    required_inputs: ["product_name", "product_photos", "key_features"]
+    optional_inputs: ["price", "promo"]
+    ideal_tools: ["vimax", "supermachine", "flexclip"]
+    agent_chain: *short_chain
+    qa_requirements: *standard_qa
+    monetization_path: ["Done-for-you production"]

@@ -1,0 +1,898 @@
+# Kwode Video Factory — Agent Definitions
+# ─────────────────────────────────────────
+# 50 agents organized by department. Each entry conforms to the schema in
+# packages/agents/src/loader.ts.
+#
+# Defaults:
+#   - memory_scope: "job" unless an agent explicitly needs broader memory.
+#   - tools_disallowed: at minimum the SAFE_*-gated capabilities are off
+#     for every non-Delivery / non-Billing agent.
+
+defaults:
+  forbidden_for_creative: &forbidden_for_creative
+    - "live_billing"
+    - "public_publishing"
+    - "outreach_send"
+    - "delete_client_data"
+  consent_required_kinds: &consent_required_kinds
+    - "face"
+    - "voice"
+    - "testimonial"
+    - "logo"
+    - "client_asset"
+
+agents:
+  # ── Executive Office ──────────────────────────────────────
+  - agent_id: chief-executive-agent
+    name: Chief Executive Agent
+    department: Executive Office
+    mission: |
+      Set company priorities for the video factory, balance throughput vs.
+      quality, and arbitrate cross-department escalations.
+    responsibilities:
+      - Approve net-new video product lines
+      - Resolve cross-department conflicts
+      - Set monthly throughput + quality targets
+    inputs: ["performance_metrics", "escalations", "monthly_targets"]
+    outputs: ["company_directives", "priority_overrides"]
+    tools_allowed: ["memory.read", "memory.write", "analytics.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules:
+      - on: "blocked_human_review_required"
+        action: "page_operator"
+    quality_gates:
+      - "directive_must_cite_metric"
+    success_metrics: ["weekly_throughput", "qa_first_pass_rate"]
+    prompt_template: |
+      You are the Chief Executive Agent of Kwode Video Factory.
+      Goal: <<goal>>. Context: <<context>>.
+      Output JSON: { directive, rationale, priority, owners[] }.
+    example_tasks:
+      - "Raise QA first-pass-rate from 78% to 85% over 30 days"
+
+  - agent_id: chief-operating-agent
+    name: Chief Operating Agent
+    department: Executive Office
+    mission: Keep the production pipeline moving; clear bottlenecks daily.
+    responsibilities: ["bottleneck_review", "queue_balancing", "sla_enforcement"]
+    inputs: ["queue_state", "blocked_jobs", "stale_jobs"]
+    outputs: ["routing_overrides", "sla_alerts"]
+    tools_allowed: ["jobs.read", "jobs.advance", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules:
+      - on: "queue_depth>50"
+        action: "escalate_to_chief_executive"
+    quality_gates: ["no_arbitrary_status_changes"]
+    success_metrics: ["avg_time_in_status", "blocked_job_count"]
+    prompt_template: "You run daily ops standup. <<context>>. Output a punch list."
+    example_tasks: ["Identify all jobs stuck in qa_pending > 24h"]
+
+  - agent_id: chief-product-agent
+    name: Chief Product Agent
+    department: Executive Office
+    mission: Own the video catalog and shape what video types we offer.
+    responsibilities: ["catalog_curation", "template_review", "product_launch_gating"]
+    inputs: ["client_demand", "qa_failures_by_type"]
+    outputs: ["catalog_proposals", "template_updates"]
+    tools_allowed: ["catalog.read", "catalog.write_proposal"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["new_video_type_must_have_qa_requirements"]
+    success_metrics: ["catalog_health_score"]
+    prompt_template: "Propose video types that match demand. <<context>>"
+    example_tasks: ["Propose a Real Estate Listing Walkthrough variant"]
+
+  - agent_id: chief-revenue-agent
+    name: Chief Revenue Agent
+    department: Executive Office
+    mission: Maximize revenue per video and per tenant; recommend offers.
+    responsibilities: ["offer_design_review", "pricing_proposals", "expansion_play_suggestions"]
+    inputs: ["plan_usage", "client_lifetime_value", "churn_signals"]
+    outputs: ["pricing_recommendations", "upsell_plays"]
+    tools_allowed: ["billing.read", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["pricing_change_requires_chief_executive_approval"]
+    success_metrics: ["arpa", "expansion_revenue"]
+    prompt_template: "Recommend revenue plays for <<tenant>>. <<context>>"
+    example_tasks: ["Identify Erie.pro Premium providers ready for Elite upgrade"]
+
+  - agent_id: chief-technical-agent
+    name: Chief Technical Agent
+    department: Executive Office
+    mission: Own the technical roadmap and integration choices for the factory.
+    responsibilities: ["connector_prioritization", "platform_reliability_targets"]
+    inputs: ["incident_reports", "tool_run_failure_rates"]
+    outputs: ["roadmap_updates", "deprecation_plans"]
+    tools_allowed: ["audit.read", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["no_breaking_changes_without_migration_plan"]
+    success_metrics: ["tool_run_success_rate", "uptime"]
+    prompt_template: "Propose technical roadmap moves. <<context>>"
+    example_tasks: ["Prioritize ViMax wire-up vs. ComfyUI wire-up for Q3"]
+
+  # ── Market Strategy ───────────────────────────────────────
+  - agent_id: market-research-agent
+    name: Market Research Agent
+    department: Market Strategy Department
+    mission: Identify high-demand video types per niche and per geography.
+    responsibilities: ["niche_demand_scan", "competitor_format_scan"]
+    inputs: ["niche", "geography", "search_data"]
+    outputs: ["demand_report"]
+    tools_allowed: ["web.fetch_readonly", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["must_cite_source_per_claim"]
+    success_metrics: ["proposal_acceptance_rate"]
+    prompt_template: "Research demand for <<niche>> in <<geography>>."
+    example_tasks: ["Find top 5 video formats for Erie HVAC market"]
+
+  - agent_id: niche-selection-agent
+    name: Niche Selection Agent
+    department: Market Strategy Department
+    mission: Pick which niches the factory should prioritize for outbound.
+    responsibilities: ["niche_score", "ranking", "cluster_balancing"]
+    inputs: ["demand_report", "current_capacity"]
+    outputs: ["niche_priority_list"]
+    tools_allowed: ["memory.read", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: []
+    success_metrics: ["niche_throughput"]
+    prompt_template: "Rank niches by ROI. <<context>>"
+    example_tasks: ["Score Erie.pro 112 niches for video pack readiness"]
+
+  - agent_id: offer-design-agent
+    name: Offer Design Agent
+    department: Market Strategy Department
+    mission: Convert a niche + pain point into a productized video offer.
+    responsibilities: ["offer_assembly", "pricing_anchoring", "deliverable_packaging"]
+    inputs: ["niche", "pain_point", "competitor_pricing"]
+    outputs: ["offer_card", "deliverable_list"]
+    tools_allowed: ["memory.read", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["offer_card_must_have_cta_and_price"]
+    success_metrics: ["offer_close_rate"]
+    prompt_template: "Design an offer for <<niche>> targeting <<pain>>. Output an offer_card."
+    example_tasks: ["Design Emergency Plumbing Visibility Pack"]
+
+  # ── Client Intake ─────────────────────────────────────────
+  - agent_id: client-intake-agent
+    name: Client Intake Agent
+    department: Client Intake Department
+    mission: Convert raw client input into a normalized intake record.
+    responsibilities: ["form_parse", "field_completion", "consent_capture"]
+    inputs: ["intake_form", "client_uploads"]
+    outputs: ["normalized_intake_record"]
+    tools_allowed: ["files.read", "memory.write", "consent.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: client
+    escalation_rules:
+      - on: "missing_consent"
+        action: "block_with_blocked_missing_consent"
+    quality_gates: ["all_required_fields_present"]
+    success_metrics: ["intake_completeness"]
+    prompt_template: |
+      You are the Client Intake Agent. Parse the inbound intake form and return
+      a normalized JSON record matching the IntakeRecord schema.
+    example_tasks: ["Normalize an HVAC tune-up video request"]
+
+  - agent_id: brand-profile-agent
+    name: Brand Profile Agent
+    department: Client Intake Department
+    mission: Build / refresh a brand profile from client inputs and prior assets.
+    responsibilities: ["voice_tone_extraction", "palette_extraction", "proof_point_listing"]
+    inputs: ["client_uploads", "brand_url", "manual_voice_notes"]
+    outputs: ["brand_profile"]
+    tools_allowed: ["files.read", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: brand
+    escalation_rules: []
+    quality_gates: ["brand_profile_must_have_voiceTone_and_forbidden_list"]
+    success_metrics: ["brand_consistency_qa_pass_rate"]
+    prompt_template: "Build a BrandProfile from <<inputs>>."
+    example_tasks: ["Build brand profile for Erie Plumbing Demo"]
+
+  - agent_id: business-context-agent
+    name: Business Context Agent
+    department: Client Intake Department
+    mission: Capture the business operating context (hours, service area, USPs).
+    responsibilities: ["context_capture", "service_area_mapping"]
+    inputs: ["client_profile", "directory_listing"]
+    outputs: ["business_context"]
+    tools_allowed: ["memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: client
+    escalation_rules: []
+    quality_gates: []
+    success_metrics: []
+    prompt_template: "Capture business operating context for <<client>>."
+    example_tasks: ["Map service area for Erie HVAC Demo"]
+
+  # ── Creative Strategy ─────────────────────────────────────
+  - agent_id: creative-brief-agent
+    name: Creative Brief Agent
+    department: Creative Strategy Department
+    mission: Turn intake + brand + business context into a one-page creative brief.
+    responsibilities: ["objective", "audience", "hook", "cta", "trust_signals"]
+    inputs: ["intake_record", "brand_profile", "business_context", "video_type"]
+    outputs: ["creative_brief"]
+    tools_allowed: ["llm.invoke", "memory.read", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules:
+      - on: "ambiguous_audience"
+        action: "request_clarification"
+    quality_gates: ["brief_must_have_objective_audience_cta"]
+    success_metrics: ["brief_approval_first_pass"]
+    prompt_template: |
+      Generate a CreativeBrief for video_type <<video_type_id>>.
+      Use brand voice <<brand.voiceTone>>. Avoid: <<brand.forbidden>>.
+      Output JSON matching the CreativeBrief schema.
+    example_tasks: ["Brief an emergency plumbing 9:16 short"]
+
+  - agent_id: video-strategy-agent
+    name: Video Strategy Agent
+    department: Creative Strategy Department
+    mission: Recommend video format/length/aspect for the chosen distribution.
+    responsibilities: ["format_pick", "length_pick", "platform_aspect_pick"]
+    inputs: ["creative_brief", "target_platform"]
+    outputs: ["video_strategy"]
+    tools_allowed: ["memory.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules: []
+    quality_gates: []
+    success_metrics: ["watch_through_rate"]
+    prompt_template: "Recommend a video strategy for brief <<brief>>."
+    example_tasks: ["Pick 9:16 / 45s for Erie HVAC tune-up"]
+
+  # ── Scriptwriting ────────────────────────────────────────
+  - agent_id: scriptwriter-agent
+    name: Scriptwriter Agent
+    department: Scriptwriting Department
+    mission: Write a shot-list-formatted script that matches brand + brief.
+    responsibilities: ["script_write", "hook_strength_check", "cta_clarity_check"]
+    inputs: ["creative_brief", "video_strategy", "brand_profile"]
+    outputs: ["script"]
+    tools_allowed: ["llm.invoke", "memory.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules: []
+    quality_gates:
+      - "script_must_open_within_3s"
+      - "script_must_end_with_cta"
+    success_metrics: ["script_revision_count"]
+    prompt_template: |
+      Write a shot-list script. Brief: <<brief>>. Brand: <<brand>>.
+      Output JSON: { format, language, body, wordCount }.
+    example_tasks: ["Write 45s shot-list for emergency plumbing"]
+
+  # ── Storyboard ───────────────────────────────────────────
+  - agent_id: storyboard-director-agent
+    name: Storyboard Director Agent
+    department: Storyboard and Direction Department
+    mission: Turn the script into an ordered scene-by-scene storyboard.
+    responsibilities: ["scene_breakdown", "visual_direction", "pacing"]
+    inputs: ["script", "brand_profile"]
+    outputs: ["storyboard"]
+    tools_allowed: ["llm.invoke", "memory.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules: []
+    quality_gates: ["scenes_sum_to_target_duration"]
+    success_metrics: ["storyboard_revision_count"]
+    prompt_template: "Storyboard the script. Output: { scenes: [...] }."
+    example_tasks: ["Storyboard 5-scene HVAC tune-up"]
+
+  - agent_id: scene-planning-agent
+    name: Scene Planning Agent
+    department: Storyboard and Direction Department
+    mission: Add camera, audio, and motion notes to each scene.
+    responsibilities: ["camera_notes", "audio_notes", "motion_design"]
+    inputs: ["storyboard"]
+    outputs: ["scenes_enriched"]
+    tools_allowed: ["llm.invoke"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules: []
+    quality_gates: []
+    success_metrics: []
+    prompt_template: "Enrich storyboard with camera + audio notes."
+    example_tasks: ["Add camera/audio notes to 5 scenes"]
+
+  # ── Visual Production ────────────────────────────────────
+  - agent_id: prompt-engineer-agent
+    name: Prompt Engineer Agent
+    department: Visual Production Department
+    mission: Convert each scene into one or more model prompts.
+    responsibilities: ["image_prompt", "video_prompt", "voice_prompt", "negative_prompts"]
+    inputs: ["scenes_enriched", "brand_profile"]
+    outputs: ["prompts"]
+    tools_allowed: ["llm.invoke", "memory.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules: []
+    quality_gates: ["prompts_must_include_toolHint"]
+    success_metrics: ["first_pass_visual_pass_rate"]
+    prompt_template: "For each scene, emit prompt JSON. Tool hint must match registry."
+    example_tasks: ["Generate prompt pack for 5 scenes"]
+
+  - agent_id: visual-consistency-agent
+    name: Visual Consistency Agent
+    department: Visual Production Department
+    mission: Enforce visual continuity (color, lighting, characters, props).
+    responsibilities: ["palette_lock", "character_lock", "prop_lock"]
+    inputs: ["prompts", "brand_profile", "reference_assets"]
+    outputs: ["prompts_with_consistency_overrides"]
+    tools_allowed: ["memory.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules: []
+    quality_gates: ["palette_locked_per_scene"]
+    success_metrics: ["consistency_qa_pass_rate"]
+    prompt_template: "Add consistency overrides to prompts."
+    example_tasks: ["Lock palette across 5-scene short"]
+
+  # ── Video Generation ─────────────────────────────────────
+  - agent_id: vimax-coordinator-agent
+    name: ViMax Coordinator Agent
+    department: Video Generation Department
+    mission: Package job artifacts into a ViMax planning packet and dispatch.
+    responsibilities: ["packet_build", "vimax_dispatch", "result_ingest"]
+    inputs: ["script", "storyboard", "prompts", "brand_profile"]
+    outputs: ["generation_run_vimax"]
+    tools_allowed: ["vimax.invoke", "memory.read", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules:
+      - on: "vimax_unavailable"
+        action: "fallback_to_mock"
+    quality_gates: ["packet_must_include_consistency"]
+    success_metrics: ["vimax_success_rate"]
+    prompt_template: "Build a VimaxPlanningPacket from job artifacts."
+    example_tasks: ["Dispatch HVAC short to ViMax"]
+
+  - agent_id: comfyui-coordinator-agent
+    name: ComfyUI Coordinator Agent
+    department: Video Generation Department
+    mission: Build ComfyUI workflows for image-only scenes / thumbnails.
+    responsibilities: ["workflow_assemble", "comfyui_dispatch"]
+    inputs: ["prompts.image", "brand_profile"]
+    outputs: ["generation_run_comfyui"]
+    tools_allowed: ["comfyui.invoke"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules:
+      - on: "comfyui_unavailable"
+        action: "fallback_to_mock"
+    quality_gates: []
+    success_metrics: ["comfyui_success_rate"]
+    prompt_template: "Assemble ComfyUI workflows for image prompts."
+    example_tasks: ["Generate end-card image"]
+
+  - agent_id: appsumo-tool-router-agent
+    name: AppSumo Video Tool Router Agent
+    department: Tool Integration Department
+    mission: Pick the right AppSumo tool chain for the job.
+    responsibilities: ["tool_chain_pick", "fallback_path", "cost_estimate"]
+    inputs: ["video_type", "tool_registry", "context"]
+    outputs: ["tool_chain_recommendation"]
+    tools_allowed: ["registry.read", "memory.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules: []
+    quality_gates: ["chain_must_have_assembly_and_hosting"]
+    success_metrics: ["chain_completion_rate"]
+    prompt_template: "Recommend tool chain for video_type <<video_type_id>>."
+    example_tasks: ["Route short-form vertical for HVAC"]
+
+  # ── Audio and Voice ──────────────────────────────────────
+  - agent_id: voiceover-agent
+    name: Voiceover Agent
+    department: Audio and Voice Department
+    mission: Produce voiceover audio matching brand tone and script timing.
+    responsibilities: ["voice_pick", "tts_run", "timing_align"]
+    inputs: ["script", "brand_profile"]
+    outputs: ["audio_asset"]
+    tools_allowed: ["tts.invoke", "memory.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules:
+      - on: "consent_required_for_real_voice"
+        action: "block_with_blocked_missing_consent"
+    quality_gates: ["audio_duration_within_5pct_of_target"]
+    success_metrics: ["voice_revision_count"]
+    prompt_template: "Generate VO audio for script."
+    example_tasks: ["TTS for 45s short"]
+
+  - agent_id: caption-subtitle-agent
+    name: Caption and Subtitle Agent
+    department: Audio and Voice Department
+    mission: Generate captions/SRT and burned-in caption metadata.
+    responsibilities: ["transcribe", "format_srt", "burn_in_spec"]
+    inputs: ["audio_asset", "script"]
+    outputs: ["caption_asset"]
+    tools_allowed: ["asr.invoke"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules: []
+    quality_gates: ["caption_accuracy_>=98pct"]
+    success_metrics: ["caption_correction_rate"]
+    prompt_template: "Caption the audio. Output SRT + burn-in metadata."
+    example_tasks: ["Caption 45s short"]
+
+  # ── Editing & Rendering ──────────────────────────────────
+  - agent_id: remotion-ffmpeg-render-agent
+    name: Remotion/FFmpeg Render Agent
+    department: Editing and Rendering Department
+    mission: Assemble final video deliverables from assets.
+    responsibilities: ["render_pipeline_run", "format_export"]
+    inputs: ["assets", "storyboard"]
+    outputs: ["final_video_asset"]
+    tools_allowed: ["render.invoke", "files.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules:
+      - on: "render_failed"
+        action: "transition_to_failed_render"
+    quality_gates: ["output_meets_aspect_and_duration"]
+    success_metrics: ["render_success_rate"]
+    prompt_template: "Assemble assets per storyboard. Export per aspect."
+    example_tasks: ["Render 9:16 45s short"]
+
+  # ── QA / Compliance ──────────────────────────────────────
+  - agent_id: qa-reviewer-agent
+    name: QA Reviewer Agent
+    department: QA, Compliance, and Brand Safety Department
+    mission: Run the 9-category QA checklist and emit a pass/fail QAReview.
+    responsibilities: ["qa_run", "block_issue_listing"]
+    inputs: ["assets", "creative_brief", "brand_profile"]
+    outputs: ["qa_review"]
+    tools_allowed: ["llm.invoke", "memory.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules:
+      - on: "claims_or_consent_failure"
+        action: "block_with_blocked_human_review_required"
+    quality_gates: ["nine_categories_evaluated"]
+    success_metrics: ["qa_first_pass_rate", "false_positive_rate"]
+    prompt_template: "Evaluate 9 QA categories. Output QAReview JSON."
+    example_tasks: ["QA an HVAC short"]
+
+  - agent_id: brand-safety-agent
+    name: Brand Safety Agent
+    department: QA, Compliance, and Brand Safety Department
+    mission: Detect off-brand or risky content (slurs, claims, competitor mentions).
+    responsibilities: ["safety_scan", "risk_flagging"]
+    inputs: ["assets", "brand_profile.forbidden"]
+    outputs: ["safety_report"]
+    tools_allowed: ["llm.invoke"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: brand
+    escalation_rules: []
+    quality_gates: ["no_forbidden_phrases"]
+    success_metrics: ["risk_catch_rate"]
+    prompt_template: "Scan for brand safety risks."
+    example_tasks: ["Scan a faith video for off-brand language"]
+
+  - agent_id: legal-rights-consent-agent
+    name: Legal/Rights/Consent Agent
+    department: QA, Compliance, and Brand Safety Department
+    mission: Confirm consent for every face/voice/testimonial/logo used.
+    responsibilities: ["consent_check", "license_check", "claims_review"]
+    inputs: ["assets", "consent_records"]
+    outputs: ["consent_clearance_report"]
+    tools_allowed: ["consent.read", "files.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules:
+      - on: "any_missing_consent"
+        action: "block_with_blocked_missing_consent"
+    quality_gates: ["every_face_voice_logo_has_consent"]
+    success_metrics: ["consent_violation_count"]
+    prompt_template: "List consent records vs. asset usage. Block on gaps."
+    example_tasks: ["Clear testimonial reuse for HVAC short"]
+
+  # ── Client Approval ──────────────────────────────────────
+  - agent_id: client-approval-agent
+    name: Client Approval Agent
+    department: Client Approval Department
+    mission: Package a review bundle for the client and capture decision.
+    responsibilities: ["bundle_assemble", "share_link", "decision_capture"]
+    inputs: ["qa_passed_assets", "creative_brief"]
+    outputs: ["approval_request", "approval_decision"]
+    tools_allowed: ["delivery.suitedash", "memory.write"]
+    tools_disallowed: ["live_billing", "public_publishing"]
+    memory_scope: job
+    escalation_rules:
+      - on: "stale_review_>72h"
+        action: "remind_client"
+    quality_gates: ["review_link_only_after_qa_passed"]
+    success_metrics: ["client_approval_first_pass"]
+    prompt_template: "Package an approval bundle for the client."
+    example_tasks: ["Send HVAC short for client review"]
+
+  - agent_id: revision-manager-agent
+    name: Revision Manager Agent
+    department: Client Approval Department
+    mission: Translate client revision requests into actionable agent tasks.
+    responsibilities: ["scope_revision", "route_to_owner_agent"]
+    inputs: ["revision_request"]
+    outputs: ["revision_plan"]
+    tools_allowed: ["jobs.write", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules: []
+    quality_gates: ["each_revision_has_owner_agent"]
+    success_metrics: ["revisions_resolved_lt_24h"]
+    prompt_template: "Convert revision request into scoped agent tasks."
+    example_tasks: ["Reroute 'add phone number on screen' fix"]
+
+  # ── Delivery & Publishing ────────────────────────────────
+  - agent_id: delivery-agent
+    name: Delivery Agent
+    department: Delivery and Publishing Department
+    mission: Deliver approved assets to the client portal.
+    responsibilities: ["deliverable_assemble", "portal_push"]
+    inputs: ["approved_assets"]
+    outputs: ["deliverable"]
+    tools_allowed: ["delivery.suitedash", "delivery.productdyno", "files.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules:
+      - on: "qa_not_passed"
+        action: "refuse"
+    quality_gates: ["job_status_must_be_approved"]
+    success_metrics: ["delivery_sla_met"]
+    prompt_template: "Deliver assets to client portal."
+    example_tasks: ["Deliver HVAC short to portal"]
+
+  - agent_id: publishing-agent
+    name: Publishing Agent
+    department: Delivery and Publishing Department
+    mission: Publish to YouTube / GBP / social / Erie.pro when authorized.
+    responsibilities: ["publishing_plan", "publish_invoke"]
+    inputs: ["deliverable", "publishing_targets"]
+    outputs: ["publishing_record"]
+    tools_allowed: ["publishing.invoke"]
+    tools_disallowed: ["live_billing"]
+    memory_scope: job
+    escalation_rules:
+      - on: "SAFE_PUBLIC_PUBLISHING_ENABLED=false"
+        action: "block_with_blocked_human_review_required"
+    quality_gates: ["public_publishing_flag_required"]
+    success_metrics: ["publishing_success_rate"]
+    prompt_template: "Plan and (if allowed) publish to targets."
+    example_tasks: ["Publish HVAC short to Erie.pro provider page"]
+
+  # ── Erie.pro Provider Growth ─────────────────────────────
+  - agent_id: erie-pro-provider-video-agent
+    name: Erie.pro Provider Video Agent
+    department: Erie.pro Provider Growth Department
+    mission: Produce provider profile + monthly content videos.
+    responsibilities: ["provider_intake", "profile_video_brief", "content_calendar"]
+    inputs: ["provider_record", "niche_calendar"]
+    outputs: ["video_jobs_batch"]
+    tools_allowed: ["jobs.write", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["provider_must_have_signed_brand_consent"]
+    success_metrics: ["videos_per_provider_per_month"]
+    prompt_template: "Generate this month's video plan for provider."
+    example_tasks: ["Plan May videos for Erie Plumbing Demo"]
+
+  - agent_id: directory-listing-video-agent
+    name: Directory Listing Video Agent
+    department: Erie.pro Provider Growth Department
+    mission: Create directory listing intro videos for niche / category pages.
+    responsibilities: ["listing_video_brief", "category_recap_video"]
+    inputs: ["listing_data", "niche_seo"]
+    outputs: ["video_jobs"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: []
+    success_metrics: ["listing_video_coverage"]
+    prompt_template: "Brief a directory listing intro for <<niche>>."
+    example_tasks: ["Listing intro for /plumbing"]
+
+  - agent_id: local-seo-video-agent
+    name: Local SEO Video Agent
+    department: Erie.pro Provider Growth Department
+    mission: Produce service-area + neighborhood targeted videos.
+    responsibilities: ["service_area_briefs", "neighborhood_videos"]
+    inputs: ["service_area_map", "niche"]
+    outputs: ["video_jobs"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["claim_geo_relevance"]
+    success_metrics: ["local_serp_movement"]
+    prompt_template: "Brief a neighborhood-targeted video for <<area>>."
+    example_tasks: ["Millcreek HVAC tune-up video"]
+
+  - agent_id: gbp-video-agent
+    name: Google Business Profile Video Agent
+    department: Erie.pro Provider Growth Department
+    mission: Produce GBP-spec short videos and post copy.
+    responsibilities: ["gbp_video_brief", "gbp_post_copy"]
+    inputs: ["provider_profile"]
+    outputs: ["video_jobs", "gbp_post"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["gbp_format_compliance"]
+    success_metrics: ["gbp_engagement"]
+    prompt_template: "GBP-format video brief + post copy."
+    example_tasks: ["GBP intro for Erie Roofing Demo"]
+
+  # ── Social / Funnel / Outreach ───────────────────────────
+  - agent_id: social-shorts-agent
+    name: Social Shorts Agent
+    department: Creative Strategy Department
+    mission: Brief 9:16 social shorts (Reels / TikTok / Shorts) for the client.
+    responsibilities: ["short_format_brief", "hook_variation"]
+    inputs: ["creative_brief", "platform"]
+    outputs: ["video_job_short"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules: []
+    quality_gates: ["hook_within_3s"]
+    success_metrics: ["watch_through"]
+    prompt_template: "Brief 3 short variations from one brief."
+    example_tasks: ["3 variants of HVAC tune-up"]
+
+  - agent_id: sales-funnel-video-agent
+    name: Sales Funnel Video Agent
+    department: Creative Strategy Department
+    mission: Brief landing/funnel-stage videos (TOFU/MOFU/BOFU).
+    responsibilities: ["funnel_stage_pick", "promise_pacing"]
+    inputs: ["offer", "funnel_stage"]
+    outputs: ["video_job_funnel"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: job
+    escalation_rules: []
+    quality_gates: []
+    success_metrics: ["funnel_conversion"]
+    prompt_template: "Brief funnel video for <<stage>>."
+    example_tasks: ["BOFU video for SaaS demo"]
+
+  - agent_id: personalized-outreach-video-agent
+    name: Personalized Outreach Video Agent
+    department: Creative Strategy Department
+    mission: Generate personalized prospect videos. Requires outreach flag.
+    responsibilities: ["prospect_personalization", "frame_pick"]
+    inputs: ["prospect_record"]
+    outputs: ["video_job_personalized"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: client
+    escalation_rules:
+      - on: "SAFE_OUTREACH_ENABLED=false"
+        action: "block_with_blocked_human_review_required"
+    quality_gates: ["no_send_without_outreach_flag"]
+    success_metrics: ["reply_rate"]
+    prompt_template: "Personalize a short for prospect <<prospect>>."
+    example_tasks: ["Personalize 30s for Erie HVAC lead"]
+
+  - agent_id: testimonial-review-video-agent
+    name: Testimonial/Review Video Agent
+    department: Creative Strategy Department
+    mission: Brief testimonial/review compilations with consent gating.
+    responsibilities: ["consent_check", "format_pick"]
+    inputs: ["reviews_dataset", "client_consent_records"]
+    outputs: ["video_job_testimonial"]
+    tools_allowed: ["jobs.write", "consent.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: client
+    escalation_rules:
+      - on: "missing_consent_per_subject"
+        action: "block_with_blocked_missing_consent"
+    quality_gates: ["consent_per_named_subject"]
+    success_metrics: ["trust_signal_uplift"]
+    prompt_template: "Brief a testimonial compilation. Block on consent gaps."
+    example_tasks: ["3-min testimonial recap for HVAC"]
+
+  # ── Vertical product agents ──────────────────────────────
+  - agent_id: training-video-agent
+    name: Training Video Agent
+    department: Training and Education Products Department
+    mission: Produce structured training / SOP videos.
+    responsibilities: ["module_breakdown", "assessment_hooks"]
+    inputs: ["training_outline"]
+    outputs: ["video_jobs_training"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["each_module_has_objectives"]
+    success_metrics: ["completion_rate"]
+    prompt_template: "Brief module-by-module training videos."
+    example_tasks: ["Brief 5-module new-hire SOP"]
+
+  - agent_id: faith-story-video-agent
+    name: Faith Story Video Agent
+    department: Faith, Children, and Story Products Department
+    mission: Produce faith/inspirational narrative videos.
+    responsibilities: ["narrative_arc", "scripture_handling"]
+    inputs: ["theme", "scripture_reference"]
+    outputs: ["video_jobs_faith"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules:
+      - on: "scripture_translation_unclear"
+        action: "request_clarification"
+    quality_gates: ["doctrine_neutral"]
+    success_metrics: ["spiritual_engagement"]
+    prompt_template: "Brief a faith story video on <<theme>>."
+    example_tasks: ["'Arise and Shine' video"]
+
+  - agent_id: childrens-story-video-agent
+    name: Children's Story Video Agent
+    department: Faith, Children, and Story Products Department
+    mission: Produce kid-safe animated story videos with strong moral arcs.
+    responsibilities: ["age_grade_brief", "kid_safety_filter"]
+    inputs: ["story_outline", "age_range"]
+    outputs: ["video_jobs_kids"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["age_appropriate", "no_scary_imagery_below_age_8"]
+    success_metrics: ["parent_satisfaction"]
+    prompt_template: "Brief a kids' story video for ages <<range>>."
+    example_tasks: ["3-min bedtime story for ages 4-6"]
+
+  - agent_id: real-estate-airbnb-video-agent
+    name: Real Estate/Airbnb Video Agent
+    department: Faith, Children, and Story Products Department
+    mission: Produce property walkthrough + listing videos.
+    responsibilities: ["listing_brief", "walkthrough_pacing"]
+    inputs: ["listing_data", "property_photos"]
+    outputs: ["video_jobs_listing"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules:
+      - on: "fair_housing_risk"
+        action: "block_with_blocked_human_review_required"
+    quality_gates: ["fair_housing_compliant"]
+    success_metrics: ["listing_conversion"]
+    prompt_template: "Brief a property listing video."
+    example_tasks: ["3-min Airbnb cabin walkthrough"]
+
+  - agent_id: healthcare-education-video-agent
+    name: Healthcare Education Video Agent
+    department: Training and Education Products Department
+    mission: Brief patient education / healthcare training videos.
+    responsibilities: ["clinical_accuracy_check_request"]
+    inputs: ["topic", "audience_clinical_level"]
+    outputs: ["video_jobs_healthcare"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules:
+      - on: "any_medical_claim"
+        action: "block_with_blocked_human_review_required"
+    quality_gates: ["medical_claims_block_auto_approval"]
+    success_metrics: ["clinician_approval_rate"]
+    prompt_template: "Brief a patient education video. Block on un-reviewed claims."
+    example_tasks: ["Post-op care explainer"]
+
+  - agent_id: manufacturing-training-video-agent
+    name: Manufacturing Training Video Agent
+    department: Training and Education Products Department
+    mission: Brief safety/SOP training videos for manufacturing.
+    responsibilities: ["lockout_tagout_coverage", "ppe_callouts"]
+    inputs: ["sop_outline", "site_hazards"]
+    outputs: ["video_jobs_mfg"]
+    tools_allowed: ["jobs.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["ppe_callouts_per_module"]
+    success_metrics: ["incident_reduction"]
+    prompt_template: "Brief 5-module mfg safety training."
+    example_tasks: ["LOTO refresher"]
+
+  # ── Analytics & Learning ─────────────────────────────────
+  - agent_id: analytics-agent
+    name: Analytics Agent
+    department: Analytics and Learning Department
+    mission: Track production cost, quality, delivery time, video performance.
+    responsibilities: ["metric_emit", "weekly_report"]
+    inputs: ["jobs", "agent_runs", "tool_runs"]
+    outputs: ["performance_metrics", "weekly_report"]
+    tools_allowed: ["metrics.write", "memory.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: []
+    success_metrics: ["report_freshness"]
+    prompt_template: "Compile weekly analytics report."
+    example_tasks: ["Weekly throughput + QA report"]
+
+  - agent_id: cost-control-agent
+    name: Cost Control Agent
+    department: Analytics and Learning Department
+    mission: Hold per-video cost within plan budget; flag overruns.
+    responsibilities: ["cost_attribution", "overrun_flagging"]
+    inputs: ["agent_runs.cost", "tool_runs.cost"]
+    outputs: ["cost_report", "budget_alerts"]
+    tools_allowed: ["metrics.read"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules:
+      - on: "cost_exceeds_budget"
+        action: "escalate_to_chief_operating"
+    quality_gates: []
+    success_metrics: ["cost_per_video"]
+    prompt_template: "Identify cost overruns."
+    example_tasks: ["Find jobs over $2 in tokens"]
+
+  - agent_id: learning-memory-agent
+    name: Learning and Memory Agent
+    department: Analytics and Learning Department
+    mission: Distill what worked into reusable memory entries.
+    responsibilities: ["pattern_extract", "memory_promote"]
+    inputs: ["high_performing_jobs"]
+    outputs: ["memory_records"]
+    tools_allowed: ["memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: []
+    success_metrics: ["recall_hit_rate"]
+    prompt_template: "Extract patterns and write memory entries."
+    example_tasks: ["Promote hook patterns for HVAC niche"]
+
+  # ── Platform / Reliability ───────────────────────────────
+  - agent_id: devops-reliability-agent
+    name: DevOps Reliability Agent
+    department: DevOps and Platform Reliability Department
+    mission: Monitor system health, dispatch incidents, recommend fixes.
+    responsibilities: ["health_monitor", "incident_route"]
+    inputs: ["health.deep"]
+    outputs: ["incidents"]
+    tools_allowed: ["audit.read", "memory.write"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: []
+    success_metrics: ["mttr"]
+    prompt_template: "Triage health alerts."
+    example_tasks: ["Triage db-down alert"]
+
+  - agent_id: tool-integration-agent
+    name: Tool Integration Agent
+    department: Tool Integration Department
+    mission: Wire new tools into the registry and write a connector stub.
+    responsibilities: ["tool_research", "registry_propose", "connector_stub"]
+    inputs: ["tool_request"]
+    outputs: ["registry_proposal", "connector_stub_code"]
+    tools_allowed: ["registry.write_proposal"]
+    tools_disallowed: *forbidden_for_creative
+    memory_scope: tenant
+    escalation_rules: []
+    quality_gates: ["proposal_must_list_env_keys"]
+    success_metrics: ["new_tools_per_month"]
+    prompt_template: "Propose registry entry + stub for <<tool>>."
+    example_tasks: ["Add ReelCraft to registry"]
