@@ -1,0 +1,20 @@
+{
+  "name": "lead-os-embed-widgets",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "esbuild src/index.js --bundle --minify --format=iife --global-name=LeadOSEmbed --outfile=dist/lead-os-embed.js --target=es2020 --sourcemap",
+    "build:watch": "esbuild src/index.js --bundle --minify --format=iife --global-name=LeadOSEmbed --outfile=dist/lead-os-embed.js --target=es2020 --sourcemap --watch",
+    "test": "node --test tests/**/*.test.js",
+    "lint": "biome check src/ tests/"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.0",
+    "esbuild": "^0.25.0",
+    "jsdom": "^29.0.1"
+  }
+}

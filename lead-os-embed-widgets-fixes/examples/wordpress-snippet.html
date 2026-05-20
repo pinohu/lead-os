@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lead OS Embed Example</title>
+  </head>
+  <body>
+    <h1>Lead OS Embed Widget Example</h1>
+    <p>The launcher button appears in the bottom-right corner. Click it to open the lead capture drawer.</p>
+
+    <script>
+      window.LeadOSConfig = {
+        runtimeBaseUrl: "https://leads.example.com",
+        service: "process-automation",
+        niche: "general"
+      };
+    </script>
+    <!-- Use the built IIFE bundle (no type="module" needed) -->
+    <script src="../dist/lead-os-embed.js" defer></script>
+  </body>
+</html>
